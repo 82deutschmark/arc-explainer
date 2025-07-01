@@ -111,6 +111,7 @@ The application follows a full-stack architecture with a clear separation betwee
   - Added space-themed emoji mapping for alien communication patterns
   - Integrated OpenAI API for puzzle pattern analysis and solving strategies
   - Built puzzle examination interface to view solutions without solving
+  - Added automatic export of explained puzzles as JSON files
 
 ## Architecture Updates
 
@@ -123,6 +124,7 @@ The application follows a full-stack architecture with a clear separation betwee
 - Authentic puzzle data from fchollet/ARC-AGI/data/training
 - Local file system storage with metadata caching
 - Real-time filtering by difficulty, grid size, and consistency
+- Automatic export of analyzed puzzles to data/explained/ folder as {taskId}-EXPLAINED.json files
 
 **AI Analysis:**
 - Multi-model OpenAI support (gpt-4o, gpt-4.1-nano-2025-04-14, o1-mini-2025-04-16, etc.)

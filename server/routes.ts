@@ -211,6 +211,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save explained puzzle
+  app.post("/api/puzzle/save-explained/:taskId", async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      const { explanations } = req.body;
+
+      if (!explanations || Object.keys(explanations).length === 0) {
+        return res.status(400).json({ message: 'No explanations provided' });
+      }
+
+      const task = await puzzleLoader.loadPuzzle(taskId);
+      if (!task) {
+        return res.status(404).json({ message: 'Puzzle not found' });
+      }
+
+      const { puzzleExporter } = await import('./services/puzzleExporter');
+      const filepath = await puzzleExporter.saveExplainedPuzzle(taskId, task, explanations);
+      
+      res.json({ 
+        success: true, 
+        message: `Explained puzzle saved as ${taskId}-EXPLAINED.json`,
+        filepath
+      });
+    } catch (error) {
+      console.error(`Error saving explained puzzle ${req.params.taskId}:`, error);
+      res.status(500).json({ 
+        message: 'Failed to save explained puzzle',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

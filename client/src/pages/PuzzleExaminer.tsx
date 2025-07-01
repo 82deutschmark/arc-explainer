@@ -93,7 +93,7 @@ export default function PuzzleExaminer() {
 
   const {
     task,
-    isLoading: isLoadingTask,
+    isLoadingTask,
     taskError,
   } = usePuzzle(taskId);
 
@@ -105,6 +105,14 @@ export default function PuzzleExaminer() {
     { key: 'gpt-4o-mini-2024-07-18', name: 'GPT-4o Mini', color: 'bg-orange-500' }
   ];
 
+  // Save explained puzzle mutation
+  const saveExplainedMutation = useMutation({
+    mutationFn: async (explanations: Record<string, any>) => {
+      const response = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations });
+      return response.json();
+    }
+  });
+
   // Test specific model
   const testModelMutation = useMutation({
     mutationFn: async (modelKey: string) => {
@@ -112,7 +120,13 @@ export default function PuzzleExaminer() {
       return response.json();
     },
     onSuccess: (data, modelKey) => {
-      setAnalysisResults(prev => ({ ...prev, [modelKey]: data }));
+      const newResults = { ...analysisResults, [modelKey]: data };
+      setAnalysisResults(newResults);
+      
+      // Auto-save when we have explanations (after first model analysis)
+      if (Object.keys(newResults).length >= 1) {
+        saveExplainedMutation.mutate(newResults);
+      }
     }
   });
 
@@ -134,7 +148,7 @@ export default function PuzzleExaminer() {
       <div className="container mx-auto p-6 max-w-6xl">
         <Alert>
           <AlertDescription>
-            Failed to load puzzle: {taskError || 'Puzzle not found'}
+            Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
           </AlertDescription>
         </Alert>
       </div>
@@ -237,9 +251,22 @@ export default function PuzzleExaminer() {
             <Brain className="h-5 w-5" />
             AI Model Analysis
           </CardTitle>
-          <p className="text-sm text-gray-600">
-            Test how different AI models explain why this solution is correct and what the aliens might mean
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              Test how different AI models explain why this solution is correct and what the aliens might mean
+            </p>
+            {saveExplainedMutation.isPending && (
+              <div className="flex items-center gap-2 text-sm text-blue-600">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Saving explained puzzle...
+              </div>
+            )}
+            {saveExplainedMutation.isSuccess && (
+              <div className="text-sm text-green-600">
+                ✓ Saved as {taskId}-EXPLAINED.json
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
