@@ -4,14 +4,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import PuzzleSolver from "@/pages/PuzzleSolver";
+import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PuzzleBrowser} />
-      <Route path="/puzzle/:taskId" component={PuzzleSolver} />
+      <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
       <Route component={NotFound} />
     </Switch>
   );

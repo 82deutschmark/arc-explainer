@@ -1,8 +1,8 @@
-# ARC-AGI Puzzle Solver
+# ARC-AGI Puzzle Examination Tool
 
 ## Overview
 
-This is an interactive web application for solving ARC-AGI (Abstract Reasoning Corpus - Artificial General Intelligence) puzzles. The application presents puzzles as grids with symbolic representations using space-themed emojis, allowing users to interact with and solve pattern recognition challenges. The system provides AI-powered analysis and hints to help users understand and solve puzzles.
+This is an interactive web application for examining ARC-AGI (Abstract Reasoning Corpus - Artificial General Intelligence) puzzles to understand abstract reasoning patterns. The application presents puzzles as grids with space-themed emoji representations, treating them as alien communication patterns that humans can study. Rather than solving puzzles, users examine training examples alongside correct test answers to understand the underlying logic. The system provides AI-powered pattern analysis to help decode the alien communication rules.
 
 ## System Architecture
 
