@@ -3,11 +3,13 @@ import { useParams } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Eye, Hash, Lightbulb, ArrowLeft } from 'lucide-react';
+import { Loader2, Eye, Hash, Lightbulb, ArrowLeft, Brain } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { getSpaceEmoji } from '@/lib/spaceEmojis';
 import { Link } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
+import { useMutation } from '@tanstack/react-query';
 
 function GridDisplay({ 
   grid, 
@@ -29,7 +31,7 @@ function GridDisplay({
             {row.map((cell, colIndex) => (
               <div
                 key={colIndex}
-                className="w-8 h-8 border border-gray-200 flex items-center justify-center text-xs font-mono"
+                className="w-6 h-6 border border-gray-200 flex items-center justify-center text-xs font-mono"
                 style={{ 
                   backgroundColor: showEmojis ? 'white' : getBackgroundColor(cell)
                 }}
@@ -67,6 +69,8 @@ export default function PuzzleExaminer() {
   const { taskId } = useParams();
   const [showEmojis, setShowEmojis] = useState(true);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('gpt-4o');
+  const [analysisResults, setAnalysisResults] = useState<{[key: string]: any}>({});
   
   const {
     task,
@@ -75,6 +79,30 @@ export default function PuzzleExaminer() {
     isLoadingAnalysis,
     taskError,
   } = usePuzzle(taskId);
+
+  // Available OpenAI models
+  const models = [
+    { key: 'gpt-4o', name: 'GPT-4o' },
+    { key: 'gpt-4o-mini', name: 'GPT-4o Mini' },
+    { key: 'gpt-4o-nano', name: 'GPT-4.1 Nano' },
+    { key: 'o1-mini-2025', name: 'o1-mini 2025' },
+    { key: 'gpt-4o-mini-2025', name: 'GPT-4.1 Mini' },
+    { key: 'gpt-4o-mini-legacy', name: 'GPT-4o Mini Legacy' }
+  ];
+
+  // Test specific model
+  const testModelMutation = useMutation({
+    mutationFn: async (modelKey: string) => {
+      // First set the model
+      await apiRequest('POST', '/api/openai/model', { model: modelKey });
+      // Then get analysis
+      const response = await apiRequest('GET', `/api/puzzle/analyze/${taskId}`);
+      return response.json();
+    },
+    onSuccess: (data, modelKey) => {
+      setAnalysisResults(prev => ({ ...prev, [modelKey]: data }));
+    }
+  });
 
   if (isLoadingTask) {
     return (
@@ -158,36 +186,27 @@ export default function PuzzleExaminer() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Training Examples */}
-          <Card className="col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Training Examples
-                <Badge variant="outline">{task.train.length} examples</Badge>
-              </CardTitle>
-              <p className="text-sm text-gray-600">
-                These are the alien communication patterns we've observed
-              </p>
+        {/* Compact Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          {/* Training Examples - Compact */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Training Examples</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-3">
               {task.train.map((example, index) => (
-                <div key={index} className="border-b border-gray-100 pb-4 last:border-b-0">
-                  <h3 className="text-sm font-medium mb-3 text-gray-800">
-                    Training Example {index + 1}
-                  </h3>
-                  <div className="flex flex-col sm:flex-row gap-4">
+                <div key={index} className="border-b border-gray-100 pb-3 last:border-b-0">
+                  <h4 className="text-xs font-medium mb-2 text-gray-600">Example {index + 1}</h4>
+                  <div className="flex items-center gap-3">
                     <GridDisplay 
                       grid={example.input} 
-                      title="Input Signal"
+                      title="Input"
                       showEmojis={showEmojis}
                     />
-                    <div className="flex items-center justify-center">
-                      <div className="text-2xl text-gray-400">→</div>
-                    </div>
+                    <div className="text-lg text-gray-400">→</div>
                     <GridDisplay 
                       grid={example.output} 
-                      title="Output Pattern"
+                      title="Output"
                       showEmojis={showEmojis}
                     />
                   </div>
@@ -196,94 +215,122 @@ export default function PuzzleExaminer() {
             </CardContent>
           </Card>
 
-          {/* Test Case & Solution */}
-          <Card className="col-span-1">
-            <CardHeader>
-              <CardTitle>Test Case & Correct Answer</CardTitle>
-              <p className="text-sm text-gray-600">
-                The aliens gave us this input and expect this output
-              </p>
+          {/* Test Case */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Test & Answer</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               {task.test.map((testCase, index) => (
-                <div key={index} className="space-y-4">
+                <div key={index} className="space-y-3">
                   <GridDisplay 
                     grid={testCase.input} 
-                    title="Test Input Signal"
+                    title="Test Input"
                     showEmojis={showEmojis}
                   />
-                  
-                  <div className="flex items-center justify-center py-2">
-                    <div className="text-2xl text-green-500">↓</div>
+                  <div className="text-center">
+                    <div className="text-lg text-green-500">↓</div>
                   </div>
-                  
                   <GridDisplay 
                     grid={testCase.output} 
-                    title="Correct Output Pattern"
+                    title="Correct Answer"
                     showEmojis={showEmojis}
-                    className="bg-green-50 p-3 rounded-lg border-2 border-green-200"
+                    className="bg-green-50 p-2 rounded border-2 border-green-200"
                   />
                 </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* AI Model Testing */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                AI Models
+              </CardTitle>
+              <p className="text-sm text-gray-600">Test different models' explanations</p>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {models.map((model) => (
+                <Button
+                  key={model.key}
+                  variant={analysisResults[model.key] ? "default" : "outline"}
+                  size="sm"
+                  className="w-full justify-start"
+                  onClick={() => testModelMutation.mutate(model.key)}
+                  disabled={testModelMutation.isPending}
+                >
+                  {testModelMutation.isPending && testModelMutation.variables === model.key ? (
+                    <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                  ) : analysisResults[model.key] ? (
+                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2" />
+                  ) : (
+                    <div className="w-3 h-3 border border-gray-300 rounded-full mr-2" />
+                  )}
+                  {model.name}
+                </Button>
               ))}
             </CardContent>
           </Card>
         </div>
 
-        {/* AI Analysis */}
-        {showAnalysis && (
+        {/* Model Analysis Results */}
+        {Object.keys(analysisResults).length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="h-5 w-5" />
-                AI Pattern Analysis
+                Model Analysis Comparison
               </CardTitle>
               <p className="text-sm text-gray-600">
-                Our AI's attempt to understand the alien communication logic
+                Different AI models' explanations of the alien communication pattern
               </p>
             </CardHeader>
-            <CardContent>
-              {isLoadingAnalysis ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Analyzing alien communication pattern...</span>
-                </div>
-              ) : analysis ? (
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Pattern Description</h4>
-                    <p className="text-gray-700">{analysis.patternDescription}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium mb-2">Solving Strategy</h4>
-                    <p className="text-gray-700">{analysis.solvingStrategy}</p>
-                  </div>
-                  
-                  {analysis.hints && analysis.hints.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Key Insights</h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {analysis.hints.map((hint, index) => (
-                          <li key={index} className="text-gray-700">{hint}</li>
-                        ))}
-                      </ul>
+            <CardContent className="space-y-6">
+              {Object.entries(analysisResults).map(([modelKey, result]: [string, any]) => {
+                const model = models.find(m => m.key === modelKey);
+                return (
+                  <div key={modelKey} className="border-l-4 border-blue-200 pl-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="outline">{model?.name || modelKey}</Badge>
+                      {result.confidence && (
+                        <Badge variant={result.confidence > 0.7 ? "default" : "secondary"}>
+                          {Math.round(result.confidence * 100)}% confidence
+                        </Badge>
+                      )}
                     </div>
-                  )}
-                  
-                  <div className="flex items-center gap-2 mt-4">
-                    <span className="text-sm text-gray-600">AI Confidence:</span>
-                    <Badge variant={analysis.confidence > 0.7 ? "default" : "secondary"}>
-                      {Math.round(analysis.confidence * 100)}%
-                    </Badge>
+                    
+                    {result.patternDescription && (
+                      <div className="mb-3">
+                        <h4 className="text-sm font-medium mb-1">Pattern Explanation</h4>
+                        <p className="text-sm text-gray-700">{result.patternDescription}</p>
+                      </div>
+                    )}
+                    
+                    {result.solvingStrategy && (
+                      <div className="mb-3">
+                        <h4 className="text-sm font-medium mb-1">How It Works</h4>
+                        <p className="text-sm text-gray-700">{result.solvingStrategy}</p>
+                      </div>
+                    )}
+                    
+                    {result.hints && result.hints.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-1">Key Insights</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          {result.hints.map((hint: string, index: number) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span>{hint}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ) : (
-                <Alert>
-                  <AlertDescription>
-                    Unable to analyze this pattern. The alien communication may be too complex for our current AI understanding.
-                  </AlertDescription>
-                </Alert>
-              )}
+                );
+              })}
             </CardContent>
           </Card>
         )}

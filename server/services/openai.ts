@@ -1,23 +1,23 @@
 import OpenAI from "openai";
 
 // OpenAI Model Configuration
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+// the newest OpenAI model is NOT "gpt-4o" which was released May 13, 2024. explicitly requested by the user to use other models by default.
 const OPENAI_MODELS = {
   // Reasoning models
-  'o1-mini': 'o1-mini-2024-09-12',
-  'o1-preview': 'o1-preview-2024-09-12',
-  
+  "o1-mini": "o1-mini-2024-09-12",
+  "o1-preview": "o1-preview-2024-09-12",
+
   // GPT-4 models
-  'gpt-4o': 'gpt-4o',
-  'gpt-4o-mini': 'gpt-4o-mini-2024-07-18',
-  'gpt-4-turbo': 'gpt-4-turbo-2024-04-09',
-  'gpt-4': 'gpt-4-0613',
-  
+  "gpt-4o": "gpt-4o",
+  "gpt-4o-mini": "gpt-4o-mini-2024-07-18",
+  "gpt-4-turbo": "gpt-4-turbo-2024-04-09",
+  "gpt-4": "gpt-4-0613",
+
   // Newer models (as specified by user)
-  'gpt-4o-nano': 'gpt-4.1-nano-2025-04-14',
-  'o1-mini-2025': 'o1-mini-2025-04-16', 
-  'gpt-4o-mini-2025': 'gpt-4.1-mini-2025-04-14',
-  'gpt-4o-mini-legacy': 'gpt-4o-mini-2024-07-18'
+  "gpt-4o-nano": "gpt-4.1-nano-2025-04-14",
+  "o1-mini-2025": "o1-mini-2025-04-16",
+  "gpt-4o-mini-2025": "gpt-4.1-mini-2025-04-14",
+  "gpt-4o-mini-legacy": "gpt-4o-mini-2024-07-18",
 } as const;
 
 type ModelName = keyof typeof OPENAI_MODELS;
@@ -46,13 +46,13 @@ interface ValidationResult {
 
 class OpenAIService {
   private client: OpenAI;
-  private defaultModel: ModelName = 'gpt-4o';
-  private fallbackModels: ModelName[] = ['gpt-4o-mini', 'gpt-4-turbo', 'gpt-4'];
+  private defaultModel: ModelName = "gpt-4o";
+  private fallbackModels: ModelName[] = ["gpt-4o-mini", "gpt-4-turbo", "gpt-4"];
 
   constructor() {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is required');
+      throw new Error("OPENAI_API_KEY environment variable is required");
     }
 
     this.client = new OpenAI({ apiKey });
@@ -63,7 +63,9 @@ class OpenAIService {
    */
   setDefaultModel(model: ModelName): void {
     if (!OPENAI_MODELS[model]) {
-      throw new Error(`Unsupported model: ${model}. Supported models: ${Object.keys(OPENAI_MODELS).join(', ')}`);
+      throw new Error(
+        `Unsupported model: ${model}. Supported models: ${Object.keys(OPENAI_MODELS).join(", ")}`,
+      );
     }
     this.defaultModel = model;
   }
@@ -80,53 +82,64 @@ class OpenAIService {
    */
   private async makeCompletion(
     messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-    config: OpenAIConfig = {}
+    config: OpenAIConfig = {},
   ): Promise<OpenAI.Chat.Completions.ChatCompletion> {
-    const modelsToTry = [config.model || this.defaultModel, ...this.fallbackModels];
+    const modelsToTry = [
+      config.model || this.defaultModel,
+      ...this.fallbackModels,
+    ];
     const uniqueModels = Array.from(new Set(modelsToTry));
 
     for (const model of uniqueModels) {
       try {
-        console.log(`Attempting OpenAI request with model: ${this.getModelString(model)}`);
-        
-        const requestParams: OpenAI.Chat.Completions.ChatCompletionCreateParams = {
-          model: this.getModelString(model),
-          messages,
-          temperature: config.temperature ?? 0.3,
-          max_tokens: config.maxTokens,
-        };
+        console.log(
+          `Attempting OpenAI request with model: ${this.getModelString(model)}`,
+        );
+
+        const requestParams: OpenAI.Chat.Completions.ChatCompletionCreateParams =
+          {
+            model: this.getModelString(model),
+            messages,
+            temperature: config.temperature ?? 0.3,
+            max_tokens: config.maxTokens,
+          };
 
         // Add JSON mode if requested and model supports it
-        if (config.useJsonMode && !model.startsWith('o1')) {
+        if (config.useJsonMode && !model.startsWith("o1")) {
           requestParams.response_format = { type: "json_object" };
         }
 
-        const response = await this.client.chat.completions.create(requestParams);
-        console.log(`OpenAI request successful with model: ${this.getModelString(model)}`);
+        const response =
+          await this.client.chat.completions.create(requestParams);
+        console.log(
+          `OpenAI request successful with model: ${this.getModelString(model)}`,
+        );
         return response;
-
       } catch (error: any) {
-        console.warn(`Model ${this.getModelString(model)} failed:`, error.message);
-        
+        console.warn(
+          `Model ${this.getModelString(model)} failed:`,
+          error.message,
+        );
+
         // If this is the last model to try, throw the error
         if (model === uniqueModels[uniqueModels.length - 1]) {
           throw error;
         }
-        
+
         // Continue to next model
         continue;
       }
     }
 
-    throw new Error('All OpenAI models failed');
+    throw new Error("All OpenAI models failed");
   }
 
   /**
    * Analyze ARC-AGI puzzle patterns using AI
    */
   async analyzePuzzlePattern(
-    trainExamples: Array<{ input: number[][], output: number[][] }>,
-    preferredModel?: ModelName
+    trainExamples: Array<{ input: number[][]; output: number[][] }>,
+    preferredModel?: ModelName,
   ): Promise<AnalysisResult> {
     try {
       const spaceEmojiMapping = `
@@ -147,11 +160,14 @@ class OpenAIService {
       SYMBOLIC MEANING:${spaceEmojiMapping}
       
       TRAINING EXAMPLES:
-      ${trainExamples.map((example, i) => 
-        `Message ${i + 1}:
+      ${trainExamples
+        .map(
+          (example, i) =>
+            `Message ${i + 1}:
         Input Signal: ${JSON.stringify(example.input)}
-        Decoded Output: ${JSON.stringify(example.output)}`
-      ).join('\n\n')}
+        Decoded Output: ${JSON.stringify(example.output)}`,
+        )
+        .join("\n\n")}
 
       Your task is to decode the transformation rules the aliens use. Analyze as both:
       1. A pattern recognition expert identifying mathematical/logical transformations
@@ -171,51 +187,61 @@ class OpenAIService {
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
           role: "system",
-          content: "You are an expert xenolinguist and pattern analyst specializing in abstract reasoning puzzles. Provide clear, educational explanations that help humans understand alien logic patterns."
+          content:
+            "You are an expert xenolinguist and pattern analyst specializing in abstract reasoning puzzles. Provide clear, educational explanations that help humans understand alien logic patterns.",
         },
         {
-          role: "user", 
-          content: prompt
-        }
+          role: "user",
+          content: prompt,
+        },
       ];
 
       const response = await this.makeCompletion(messages, {
         model: preferredModel || this.defaultModel,
         temperature: 0.3,
-        useJsonMode: true
+        useJsonMode: true,
       });
 
       const content = response.choices[0].message.content;
       if (!content) {
-        throw new Error('Empty response from OpenAI');
+        throw new Error("Empty response from OpenAI");
       }
 
       const analysis = JSON.parse(content);
-      
-      return {
-        patternDescription: analysis.patternDescription || "Pattern analysis unavailable",
-        solvingStrategy: analysis.solvingStrategy || "Examine input-output relationships systematically",
-        hints: Array.isArray(analysis.hints) ? analysis.hints : [
-          "Look for repeating elements or structures",
-          "Check for spatial transformations (rotation, reflection, scaling)",
-          "Identify which elements change and which stay constant"
-        ],
-        confidence: Math.max(0, Math.min(1, Number(analysis.confidence) || 0.5))
-      };
 
-    } catch (error: any) {
-      console.error('Error analyzing puzzle pattern:', error);
       return {
-        patternDescription: "Analysis temporarily unavailable due to AI service issues",
-        solvingStrategy: "Manually examine the training examples to identify transformation patterns",
+        patternDescription:
+          analysis.patternDescription || "Pattern analysis unavailable",
+        solvingStrategy:
+          analysis.solvingStrategy ||
+          "Examine input-output relationships systematically",
+        hints: Array.isArray(analysis.hints)
+          ? analysis.hints
+          : [
+              "Look for repeating elements or structures",
+              "Check for spatial transformations (rotation, reflection, scaling)",
+              "Identify which elements change and which stay constant",
+            ],
+        confidence: Math.max(
+          0,
+          Math.min(1, Number(analysis.confidence) || 0.5),
+        ),
+      };
+    } catch (error: any) {
+      console.error("Error analyzing puzzle pattern:", error);
+      return {
+        patternDescription:
+          "Analysis temporarily unavailable due to AI service issues",
+        solvingStrategy:
+          "Manually examine the training examples to identify transformation patterns",
         hints: [
           "Compare input and output grids systematically",
           "Look for mathematical relationships (doubling, mirroring, etc.)",
           "Check if the pattern involves spatial manipulation",
-          "Consider if colors/symbols follow specific rules"
+          "Consider if colors/symbols follow specific rules",
         ],
         confidence: 0,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -227,18 +253,21 @@ class OpenAIService {
     input: number[][],
     userOutput: number[][],
     correctOutput: number[][],
-    preferredModel?: ModelName
+    preferredModel?: ModelName,
   ): Promise<ValidationResult> {
     try {
       // Calculate accuracy
-      if (!userOutput || !correctOutput || 
-          userOutput.length !== correctOutput.length || 
-          userOutput[0]?.length !== correctOutput[0]?.length) {
+      if (
+        !userOutput ||
+        !correctOutput ||
+        userOutput.length !== correctOutput.length ||
+        userOutput[0]?.length !== correctOutput[0]?.length
+      ) {
         return {
           isCorrect: false,
           accuracy: 0,
           feedback: "Grid dimensions don't match the expected output size.",
-          error: "Invalid grid dimensions"
+          error: "Invalid grid dimensions",
         };
       }
 
@@ -275,18 +304,19 @@ class OpenAIService {
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
           role: "system",
-          content: "You are a patient teacher helping someone learn pattern recognition. Provide encouraging, specific feedback."
+          content:
+            "You are a patient teacher helping someone learn pattern recognition. Provide encouraging, specific feedback.",
         },
         {
           role: "user",
-          content: prompt
-        }
+          content: prompt,
+        },
       ];
 
       const response = await this.makeCompletion(messages, {
         model: preferredModel || this.defaultModel,
         temperature: 0.7,
-        useJsonMode: true
+        useJsonMode: true,
       });
 
       const content = response.choices[0].message.content;
@@ -295,18 +325,20 @@ class OpenAIService {
       return {
         isCorrect,
         accuracy,
-        feedback: result.feedback || (isCorrect ? 
-          "Perfect! You correctly decoded the alien communication pattern!" : 
-          "Good effort! Pattern recognition takes practice - keep studying the examples.")
+        feedback:
+          result.feedback ||
+          (isCorrect
+            ? "Perfect! You correctly decoded the alien communication pattern!"
+            : "Good effort! Pattern recognition takes practice - keep studying the examples."),
       };
-
     } catch (error: any) {
-      console.error('Error validating solution:', error);
+      console.error("Error validating solution:", error);
       return {
         isCorrect: false,
         accuracy: 0,
-        feedback: "Unable to validate your solution due to a technical issue. Please try again.",
-        error: error.message
+        feedback:
+          "Unable to validate your solution due to a technical issue. Please try again.",
+        error: error.message,
       };
     }
   }
@@ -321,21 +353,26 @@ class OpenAIService {
   /**
    * Test connection to OpenAI
    */
-  async testConnection(): Promise<{ success: boolean; model: string; error?: string }> {
+  async testConnection(): Promise<{
+    success: boolean;
+    model: string;
+    error?: string;
+  }> {
     try {
-      const response = await this.makeCompletion([
-        { role: "user", content: "Respond with just 'OK'" }
-      ], { temperature: 0 });
-      
+      const response = await this.makeCompletion(
+        [{ role: "user", content: "Respond with just 'OK'" }],
+        { temperature: 0 },
+      );
+
       return {
         success: true,
-        model: this.getModelString(this.defaultModel)
+        model: this.getModelString(this.defaultModel),
       };
     } catch (error: any) {
       return {
         success: false,
         model: this.getModelString(this.defaultModel),
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -345,7 +382,7 @@ class OpenAIService {
 export const openaiService = new OpenAIService();
 
 export async function analyzePuzzlePattern(
-  trainExamples: Array<{ input: number[][], output: number[][] }>
+  trainExamples: Array<{ input: number[][]; output: number[][] }>,
 ): Promise<AnalysisResult> {
   return openaiService.analyzePuzzlePattern(trainExamples);
 }
@@ -353,7 +390,7 @@ export async function analyzePuzzlePattern(
 export async function validateSolution(
   input: number[][],
   userOutput: number[][],
-  correctOutput: number[][]
+  correctOutput: number[][],
 ): Promise<ValidationResult> {
   return openaiService.validateSolution(input, userOutput, correctOutput);
 }
