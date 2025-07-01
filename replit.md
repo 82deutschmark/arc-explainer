@@ -113,6 +113,13 @@ The application follows a full-stack architecture with a clear separation betwee
   - Built puzzle examination interface to view solutions without solving
   - Added automatic export of explained puzzles as JSON files
 
+- Updated model selection with exact OpenAI models and pricing (July 01, 2025):
+  - Added all 7 specified models: gpt-4.1-nano, gpt-4.1-mini, gpt-4o-mini, o3-mini, o4-mini, o1-mini, gpt-4.1
+  - Displayed token costs per million tokens for input/output on each model button
+  - Added premium model indicators with cost warnings for expensive models
+  - Fixed routing issue with "Back to Home" button
+  - Improved model selection UI with better grid layout and cost transparency
+
 ## Architecture Updates
 
 **GitHub Integration:**

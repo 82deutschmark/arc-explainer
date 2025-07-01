@@ -97,14 +97,57 @@ export default function PuzzleExaminer() {
     taskError,
   } = usePuzzle(taskId);
 
-  // Available OpenAI models - EXACT models requested
+  // Available OpenAI models with token costs per million tokens
   const models = [
-    { key: 'gpt-4.1-nano-2025-04-14', name: 'GPT-4.1 Nano', color: 'bg-blue-500', premium: false },
-    { key: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini', color: 'bg-purple-500', premium: false },
-    { key: 'gpt-4o-mini-2024-07-18', name: 'GPT-4o Mini', color: 'bg-orange-500', premium: false },
-    { key: 'o3-mini-2025-01-31', name: 'o3-mini', color: 'bg-red-500', premium: true },
-    { key: 'o1-mini-2025-04-16', name: 'o1-mini', color: 'bg-green-500', premium: true },
-    { key: 'gpt-4.1-2025-04-14', name: 'GPT-4.1', color: 'bg-yellow-500', premium: true }
+    { 
+      key: 'gpt-4.1-nano-2025-04-14', 
+      name: 'GPT-4.1 Nano', 
+      color: 'bg-blue-500', 
+      premium: false,
+      cost: { input: '$0.10', output: '$0.40' }
+    },
+    { 
+      key: 'gpt-4.1-mini-2025-04-14', 
+      name: 'GPT-4.1 Mini', 
+      color: 'bg-purple-500', 
+      premium: false,
+      cost: { input: '$0.40', output: '$1.60' }
+    },
+    { 
+      key: 'gpt-4o-mini-2024-07-18', 
+      name: 'GPT-4o Mini', 
+      color: 'bg-orange-500', 
+      premium: false,
+      cost: { input: '$0.15', output: '$0.60' }
+    },
+    { 
+      key: 'o3-mini-2025-01-31', 
+      name: 'o3-mini', 
+      color: 'bg-red-500', 
+      premium: true,
+      cost: { input: '$1.10', output: '$4.40' }
+    },
+    { 
+      key: 'o4-mini-2025-04-16', 
+      name: 'o4-mini', 
+      color: 'bg-pink-500', 
+      premium: true,
+      cost: { input: '$1.10', output: '$4.40' }
+    },
+    { 
+      key: 'o1-mini-2025-04-16', 
+      name: 'o1-mini', 
+      color: 'bg-green-500', 
+      premium: true,
+      cost: { input: '$1.10', output: '$4.40' }
+    },
+    { 
+      key: 'gpt-4.1-2025-04-14', 
+      name: 'GPT-4.1', 
+      color: 'bg-yellow-500', 
+      premium: true,
+      cost: { input: '$2.00', output: '$8.00' }
+    }
   ];
 
   // Save explained puzzle mutation
@@ -271,12 +314,12 @@ export default function PuzzleExaminer() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {models.map((model) => (
               <Button
                 key={model.key}
                 variant="outline"
-                className={`h-auto p-4 flex flex-col items-center gap-2 relative ${
+                className={`h-auto p-3 flex flex-col items-center gap-2 relative text-left ${
                   analysisResults[model.key] ? 'ring-2 ring-green-500' : ''
                 } ${model.premium ? 'border-amber-300 bg-amber-50' : ''}`}
                 onClick={() => testModelMutation.mutate(model.key)}
@@ -287,26 +330,31 @@ export default function PuzzleExaminer() {
                     💰
                   </div>
                 )}
-                {testModelMutation.isPending && testModelMutation.variables === model.key ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <div className={`w-4 h-4 rounded-full ${
-                    analysisResults[model.key] ? 'bg-green-500' : model.color
-                  }`} />
-                )}
-                <span className="text-sm font-medium text-center">{model.name}</span>
-                {model.premium && (
-                  <span className="text-xs text-amber-700">Higher cost</span>
-                )}
+                
+                <div className="flex items-center gap-2 w-full">
+                  {testModelMutation.isPending && testModelMutation.variables === model.key ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <div className={`w-4 h-4 rounded-full flex-shrink-0 ${
+                      analysisResults[model.key] ? 'bg-green-500' : model.color
+                    }`} />
+                  )}
+                  <span className="text-sm font-medium">{model.name}</span>
+                </div>
+                
+                <div className="text-xs text-gray-600 w-full">
+                  <div>In: {model.cost.input}/M tokens</div>
+                  <div>Out: {model.cost.output}/M tokens</div>
+                </div>
               </Button>
             ))}
           </div>
           
-          {/* Cost Warning */}
-          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm text-amber-800">
-              💰 Premium models (o3-mini, o1-mini, GPT-4.1) cost more per request. 
-              Regular models work well for most analyses.
+          {/* Cost Information */}
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              💡 Costs shown per million tokens. Most puzzle analyses use ~1K-5K tokens.
+              Premium models (💰) provide advanced reasoning but cost more.
             </p>
           </div>
 
