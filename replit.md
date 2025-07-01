@@ -125,9 +125,10 @@ The application follows a full-stack architecture with a clear separation betwee
 - Real-time filtering by difficulty, grid size, and consistency
 
 **AI Analysis:**
-- OpenAI GPT-4o integration for pattern recognition
-- Puzzle strategy explanations and hint generation
-- Solution validation with detailed feedback
+- Multi-model OpenAI support (gpt-4o, gpt-4.1-nano-2025-04-14, o1-mini-2025-04-16, etc.)
+- Automatic fallback between models for reliability
+- Focused on explaining WHY puzzle patterns are correct
+- Pattern analysis for alien communication decoding
 
 ## User Preferences
 
