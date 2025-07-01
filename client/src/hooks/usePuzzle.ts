@@ -8,13 +8,13 @@ export function usePuzzle(taskId?: string) {
 
   // Load a specific puzzle task
   const { data: task, isLoading: taskLoading, error: taskError } = useQuery({
-    queryKey: ['/api/puzzle/task', taskId],
+    queryKey: [`/api/puzzle/task/${taskId}`],
     enabled: !!taskId,
   });
 
   // Get AI analysis of the puzzle
   const { data: analysis, isLoading: analysisLoading } = useQuery({
-    queryKey: ['/api/puzzle/analyze', taskId],
+    queryKey: [`/api/puzzle/analyze/${taskId}`],
     enabled: !!taskId,
   });
 
@@ -78,7 +78,7 @@ export function usePuzzleList(filters?: {
   const url = `/api/puzzle/list${queryString ? `?${queryString}` : ''}`;
 
   const { data: puzzleList, isLoading, error } = useQuery({
-    queryKey: ['/api/puzzle/list', filters],
+    queryKey: [url],
   });
 
   return {
