@@ -22,18 +22,36 @@ function GridDisplay({
   showEmojis?: boolean,
   className?: string 
 }) {
+  // Calculate optimal cell size based on grid dimensions
+  const rows = grid.length;
+  const cols = grid[0]?.length || 0;
+  const maxDimension = Math.max(rows, cols);
+  
+  // Scale cell size based on grid size (like ARC Prize)
+  let cellSize = 'w-8 h-8'; // Default for small grids
+  if (maxDimension <= 3) cellSize = 'w-12 h-12';
+  else if (maxDimension <= 5) cellSize = 'w-8 h-8';
+  else if (maxDimension <= 10) cellSize = 'w-6 h-6';
+  else cellSize = 'w-4 h-4';
+  
   return (
     <div className={`space-y-2 ${className}`}>
-      <h4 className="text-sm font-medium text-gray-700">{title}</h4>
-      <div className="inline-block border border-gray-300 rounded">
+      <div className="flex items-center gap-2">
+        <h4 className="text-sm font-medium text-gray-700">{title}</h4>
+        <Badge variant="outline" className="text-xs">
+          {rows}×{cols}
+        </Badge>
+      </div>
+      <div className="inline-block border-2 border-gray-300 rounded-md shadow-sm">
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="flex">
             {row.map((cell, colIndex) => (
               <div
                 key={colIndex}
-                className="w-6 h-6 border border-gray-200 flex items-center justify-center text-xs font-mono"
+                className={`${cellSize} border border-gray-200 flex items-center justify-center font-mono`}
                 style={{ 
-                  backgroundColor: showEmojis ? 'white' : getBackgroundColor(cell)
+                  backgroundColor: showEmojis ? 'white' : getBackgroundColor(cell),
+                  fontSize: maxDimension <= 5 ? '14px' : maxDimension <= 10 ? '12px' : '10px'
                 }}
               >
                 {showEmojis ? getSpaceEmoji(cell) : cell}
@@ -42,9 +60,6 @@ function GridDisplay({
           </div>
         ))}
       </div>
-      <p className="text-xs text-gray-500">
-        {grid.length} × {grid[0]?.length || 0} grid
-      </p>
     </div>
   );
 }
@@ -186,24 +201,29 @@ export default function PuzzleExaminer() {
           </div>
         </div>
 
-        {/* Compact Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          {/* Training Examples - Compact */}
-          <Card>
+        {/* Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {/* Training Examples */}
+          <Card className="lg:col-span-2 xl:col-span-1">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Training Examples</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2">
+                Training Examples
+                <Badge variant="outline">{task.train.length}</Badge>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {task.train.map((example, index) => (
-                <div key={index} className="border-b border-gray-100 pb-3 last:border-b-0">
-                  <h4 className="text-xs font-medium mb-2 text-gray-600">Example {index + 1}</h4>
-                  <div className="flex items-center gap-3">
+                <div key={index} className="border border-gray-200 rounded-lg p-3">
+                  <h4 className="text-sm font-medium mb-3 text-gray-600">Example {index + 1}</h4>
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
                     <GridDisplay 
                       grid={example.input} 
                       title="Input"
                       showEmojis={showEmojis}
                     />
-                    <div className="text-lg text-gray-400">→</div>
+                    <div className="flex items-center justify-center py-2">
+                      <div className="text-xl text-gray-400">→</div>
+                    </div>
                     <GridDisplay 
                       grid={example.output} 
                       title="Output"
@@ -218,24 +238,24 @@ export default function PuzzleExaminer() {
           {/* Test Case */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Test & Answer</CardTitle>
+              <CardTitle className="text-lg">Test Case</CardTitle>
             </CardHeader>
             <CardContent>
               {task.test.map((testCase, index) => (
-                <div key={index} className="space-y-3">
+                <div key={index} className="space-y-4">
                   <GridDisplay 
                     grid={testCase.input} 
                     title="Test Input"
                     showEmojis={showEmojis}
                   />
-                  <div className="text-center">
-                    <div className="text-lg text-green-500">↓</div>
+                  <div className="text-center py-2">
+                    <div className="text-xl text-green-600">↓ Expected Output</div>
                   </div>
                   <GridDisplay 
                     grid={testCase.output} 
                     title="Correct Answer"
                     showEmojis={showEmojis}
-                    className="bg-green-50 p-2 rounded border-2 border-green-200"
+                    className="bg-green-50 p-3 rounded-lg border-2 border-green-300"
                   />
                 </div>
               ))}
