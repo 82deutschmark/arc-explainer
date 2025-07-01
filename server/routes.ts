@@ -188,6 +188,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // OpenAI model management endpoints
+  app.get("/api/openai/models", async (req, res) => {
+    try {
+      const { openaiService } = await import('./services/openai');
+      const models = openaiService.getAvailableModels();
+      res.json({ models });
+    } catch (error) {
+      console.error('Error fetching OpenAI models:', error);
+      res.status(500).json({ 
+        message: 'Failed to fetch available models',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.post("/api/openai/model", async (req, res) => {
+    try {
+      const { model } = req.body;
+      if (!model) {
+        return res.status(400).json({ message: 'Model name is required' });
+      }
+
+      const { openaiService } = await import('./services/openai');
+      openaiService.setDefaultModel(model);
+      
+      res.json({ 
+        success: true, 
+        message: `Default model set to ${model}` 
+      });
+    } catch (error) {
+      console.error('Error setting OpenAI model:', error);
+      res.status(400).json({ 
+        message: 'Failed to set model',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.get("/api/openai/test", async (req, res) => {
+    try {
+      const { openaiService } = await import('./services/openai');
+      const result = await openaiService.testConnection();
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(500).json(result);
+      }
+    } catch (error) {
+      console.error('Error testing OpenAI connection:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
