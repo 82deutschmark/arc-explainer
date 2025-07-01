@@ -13,15 +13,20 @@ import type { PuzzleMetadata } from '@shared/types';
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
-  const [difficulty, setDifficulty] = useState<string>('');
+  const [difficulty, setDifficulty] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('true');
   
   // Create filters object for the hook
-  const filters = React.useMemo(() => ({
-    maxGridSize: maxGridSize ? parseInt(maxGridSize) : undefined,
-    difficulty: (difficulty as 'easy' | 'medium' | 'hard') || undefined,
-    gridSizeConsistent: gridSizeConsistent === 'true' ? true : gridSizeConsistent === 'false' ? false : undefined,
-  }), [maxGridSize, difficulty, gridSizeConsistent]);
+  const filters = React.useMemo(() => {
+    const result: any = {};
+    if (maxGridSize) result.maxGridSize = parseInt(maxGridSize);
+    if (difficulty && difficulty !== 'any' && ['easy', 'medium', 'hard'].includes(difficulty)) {
+      result.difficulty = difficulty;
+    }
+    if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
+    if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
+    return result;
+  }, [maxGridSize, difficulty, gridSizeConsistent]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
   const filteredPuzzles = puzzles || [];
@@ -95,7 +100,7 @@ export default function PuzzleBrowser() {
                     <SelectValue placeholder="Any difficulty" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="easy">Easy</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
                     <SelectItem value="hard">Hard</SelectItem>
@@ -110,7 +115,7 @@ export default function PuzzleBrowser() {
                     <SelectValue placeholder="Select consistency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="true">Consistent (Same size)</SelectItem>
                     <SelectItem value="false">Variable (Different sizes)</SelectItem>
                   </SelectContent>
