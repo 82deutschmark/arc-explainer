@@ -235,9 +235,19 @@ export default function PuzzleBrowser() {
                           <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
                             {puzzle.id}
                           </code>
-                          <Badge className={getDifficultyColor(puzzle.difficulty)}>
-                            {puzzle.difficulty}
+                          <Badge className={getGridSizeColor(puzzle.maxGridSize)}>
+                            {puzzle.maxGridSize}×{puzzle.maxGridSize} max
                           </Badge>
+                          {puzzle.hasExplanation && (
+                            <Badge variant="outline" className="bg-green-50 text-green-700">
+                              ✓ Explained
+                            </Badge>
+                          )}
+                          {!puzzle.hasExplanation && (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                              📝 Needs Analysis
+                            </Badge>
+                          )}
                         </div>
                         
                         <div className="space-y-1 text-sm text-gray-600">
