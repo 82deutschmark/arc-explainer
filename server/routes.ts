@@ -32,11 +32,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/task/:taskId", async (req, res) => {
     try {
       const { taskId } = req.params;
-      const task = sampleTasks[taskId as keyof typeof sampleTasks];
+      const task = await puzzleLoader.loadPuzzle(taskId);
       
       if (!task) {
+        // Try to download the puzzle if it doesn't exist locally
+        const downloaded = await puzzleLoader.downloadPuzzle(taskId);
+        if (downloaded) {
+          const newTask = await puzzleLoader.loadPuzzle(taskId);
+          if (newTask) {
+            return res.json(newTask);
+          }
+        }
+        
         return res.status(404).json({ 
-          message: `Puzzle with ID ${taskId} not found. Available puzzles: ${Object.keys(sampleTasks).join(', ')}`
+          message: `Puzzle with ID ${taskId} not found. Try one of the available puzzles or check if the ID is correct.`
         });
       }
       
@@ -54,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/analyze/:taskId", async (req, res) => {
     try {
       const { taskId } = req.params;
-      const task = sampleTasks[taskId as keyof typeof sampleTasks];
+      const task = await puzzleLoader.loadPuzzle(taskId);
       
       if (!task) {
         return res.status(404).json({ 
@@ -73,6 +82,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error analyzing puzzle:', error);
       res.status(500).json({ 
         message: 'Failed to analyze puzzle',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Download a puzzle from the ARC-AGI repository
+  app.post("/api/puzzle/download/:taskId", async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      const success = await puzzleLoader.downloadPuzzle(taskId);
+      
+      if (success) {
+        const metadata = puzzleLoader.getPuzzleMetadata(taskId);
+        res.json({ 
+          success: true, 
+          message: `Successfully downloaded puzzle ${taskId}`,
+          metadata 
+        });
+      } else {
+        res.status(404).json({ 
+          success: false,
+          message: `Puzzle ${taskId} not found in the ARC-AGI repository`
+        });
+      }
+    } catch (error) {
+      console.error('Error downloading puzzle:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to download puzzle',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }

@@ -1,0 +1,229 @@
+import React, { useState } from 'react';
+import { Link } from 'wouter';
+import { usePuzzleList } from '@/hooks/usePuzzle';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, Grid3X3, Download, Eye } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import type { PuzzleMetadata } from '@shared/types';
+
+export default function PuzzleBrowser() {
+  const [maxGridSize, setMaxGridSize] = useState<string>('10');
+  const [difficulty, setDifficulty] = useState<string>('');
+  const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('true');
+  
+  // Create filters object for the hook
+  const filters = React.useMemo(() => ({
+    maxGridSize: maxGridSize ? parseInt(maxGridSize) : undefined,
+    difficulty: (difficulty as 'easy' | 'medium' | 'hard') || undefined,
+    gridSizeConsistent: gridSizeConsistent === 'true' ? true : gridSizeConsistent === 'false' ? false : undefined,
+  }), [maxGridSize, difficulty, gridSizeConsistent]);
+
+  const { puzzles, isLoading, error } = usePuzzleList(filters);
+  const filteredPuzzles = puzzles || [];
+
+  const getDifficultyColor = (diff: string) => {
+    switch (diff) {
+      case 'easy': return 'bg-green-100 text-green-800 hover:bg-green-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+      case 'hard': return 'bg-red-100 text-red-800 hover:bg-red-200';
+      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <Alert className="border-red-500 bg-red-50">
+            <AlertDescription>
+              Failed to load puzzles. Please check your connection and try again.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <header className="text-center space-y-2">
+          <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer</h1>
+          <p className="text-lg text-gray-600">
+            Examine alien communication patterns and learn logical reasoning
+          </p>
+          <p className="text-sm text-gray-500">
+            Focusing on puzzles with smaller grids that are easier for humans to understand
+          </p>
+        </header>
+
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Grid3X3 className="h-5 w-5" />
+              Filter Puzzles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="maxGridSize">Maximum Grid Size</Label>
+                <Select value={maxGridSize} onValueChange={setMaxGridSize}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select max size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5×5 (Very Small)</SelectItem>
+                    <SelectItem value="10">10×10 (Small)</SelectItem>
+                    <SelectItem value="15">15×15 (Medium)</SelectItem>
+                    <SelectItem value="20">20×20 (Large)</SelectItem>
+                    <SelectItem value="30">30×30 (Very Large)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="difficulty">Difficulty</Label>
+                <Select value={difficulty} onValueChange={setDifficulty}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any difficulty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="easy">Easy</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="hard">Hard</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="gridConsistent">Grid Size Consistency</Label>
+                <Select value={gridSizeConsistent} onValueChange={setGridSizeConsistent}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select consistency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="true">Consistent (Same size)</SelectItem>
+                    <SelectItem value="false">Variable (Different sizes)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Results */}
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Available Puzzles 
+              {!isLoading && (
+                <Badge variant="outline" className="ml-2">
+                  {filteredPuzzles.length} found
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+                <p>Loading puzzles...</p>
+              </div>
+            ) : filteredPuzzles.length === 0 ? (
+              <div className="text-center py-8">
+                <Grid3X3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No puzzles match your current filters.</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Try adjusting your filters or downloading more puzzles.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredPuzzles.map((puzzle: PuzzleMetadata) => (
+                  <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                            {puzzle.id}
+                          </code>
+                          <Badge className={getDifficultyColor(puzzle.difficulty)}>
+                            {puzzle.difficulty}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <div className="flex justify-between">
+                            <span>Max Size:</span>
+                            <span className="font-medium">{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Input:</span>
+                            <span className="font-medium">{puzzle.inputSize[0]}×{puzzle.inputSize[1]}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Output:</span>
+                            <span className="font-medium">{puzzle.outputSize[0]}×{puzzle.outputSize[1]}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Consistent:</span>
+                            <span className={`font-medium ${puzzle.gridSizeConsistent ? 'text-green-600' : 'text-orange-600'}`}>
+                              {puzzle.gridSizeConsistent ? 'Yes' : 'No'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button asChild size="sm" className="flex-1">
+                            <Link href={`/puzzle/${puzzle.id}`}>
+                              <Eye className="h-4 w-4 mr-1" />
+                              Examine
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Instructions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>How to Use</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
+              rather than trying to solve them yourself (which is very difficult for humans).
+            </p>
+            <p>
+              <strong>Focus:</strong> We're focusing on smaller puzzles (10×10 or smaller) as they're easier 
+              to understand and analyze.
+            </p>
+            <p>
+              <strong>Alien Communication:</strong> Each number (0-9) represents a different element in an 
+              alien communication system, displayed using space-themed emojis.
+            </p>
+            <p>
+              <strong>AI Analysis:</strong> Click "Examine" on any puzzle to see the correct answers and 
+              get AI-powered explanations of the logical patterns.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

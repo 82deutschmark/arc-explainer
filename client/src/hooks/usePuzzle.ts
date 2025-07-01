@@ -20,7 +20,7 @@ export function usePuzzle(taskId?: string) {
 
   useEffect(() => {
     if (task) {
-      setCurrentTask(task);
+      setCurrentTask(task as ARCTask);
     }
   }, [task]);
 
@@ -62,13 +62,27 @@ export function usePuzzle(taskId?: string) {
   };
 }
 
-export function usePuzzleList() {
+export function usePuzzleList(filters?: {
+  maxGridSize?: number;
+  minGridSize?: number;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  gridSizeConsistent?: boolean;
+}) {
+  const queryParams = new URLSearchParams();
+  if (filters?.maxGridSize) queryParams.set('maxGridSize', filters.maxGridSize.toString());
+  if (filters?.minGridSize) queryParams.set('minGridSize', filters.minGridSize.toString());
+  if (filters?.difficulty) queryParams.set('difficulty', filters.difficulty);
+  if (filters?.gridSizeConsistent !== undefined) queryParams.set('gridSizeConsistent', filters.gridSizeConsistent.toString());
+
+  const queryString = queryParams.toString();
+  const url = `/api/puzzle/list${queryString ? `?${queryString}` : ''}`;
+
   const { data: puzzleList, isLoading, error } = useQuery({
-    queryKey: ['/api/puzzle/list'],
+    queryKey: ['/api/puzzle/list', filters],
   });
 
   return {
-    puzzles: puzzleList || [],
+    puzzles: Array.isArray(puzzleList) ? puzzleList : [],
     isLoading,
     error,
   };

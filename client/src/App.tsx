@@ -5,11 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import PuzzleSolver from "@/pages/PuzzleSolver";
+import PuzzleBrowser from "@/pages/PuzzleBrowser";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={() => <PuzzleSolver />} />
+      <Route path="/" component={PuzzleBrowser} />
       <Route path="/puzzle/:taskId" component={PuzzleSolver} />
       <Route component={NotFound} />
     </Switch>
