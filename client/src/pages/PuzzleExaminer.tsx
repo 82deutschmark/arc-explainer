@@ -97,6 +97,13 @@ export default function PuzzleExaminer() {
     taskError,
   } = usePuzzle(taskId);
 
+  // Models that don't support temperature parameter  
+  const modelsWithoutTemperature = new Set([
+    'o3-mini-2025-01-31',
+    'o4-mini-2025-04-16', 
+    'o1-mini-2025-04-16'
+  ]);
+
   // Available OpenAI models with token costs per million tokens
   const models = [
     { 
@@ -104,49 +111,56 @@ export default function PuzzleExaminer() {
       name: 'GPT-4.1 Nano', 
       color: 'bg-blue-500', 
       premium: false,
-      cost: { input: '$0.10', output: '$0.40' }
+      cost: { input: '$0.10', output: '$0.40' },
+      supportsTemperature: true
     },
     { 
       key: 'gpt-4.1-mini-2025-04-14', 
       name: 'GPT-4.1 Mini', 
       color: 'bg-purple-500', 
       premium: false,
-      cost: { input: '$0.40', output: '$1.60' }
+      cost: { input: '$0.40', output: '$1.60' },
+      supportsTemperature: true
     },
     { 
       key: 'gpt-4o-mini-2024-07-18', 
       name: 'GPT-4o Mini', 
       color: 'bg-orange-500', 
       premium: false,
-      cost: { input: '$0.15', output: '$0.60' }
+      cost: { input: '$0.15', output: '$0.60' },
+      supportsTemperature: true
     },
     { 
       key: 'o3-mini-2025-01-31', 
       name: 'o3-mini', 
       color: 'bg-red-500', 
       premium: true,
-      cost: { input: '$1.10', output: '$4.40' }
+      cost: { input: '$1.10', output: '$4.40' },
+      supportsTemperature: false
     },
     { 
       key: 'o4-mini-2025-04-16', 
       name: 'o4-mini', 
       color: 'bg-pink-500', 
       premium: true,
-      cost: { input: '$1.10', output: '$4.40' }
+      cost: { input: '$1.10', output: '$4.40' },
+      supportsTemperature: false
     },
     { 
       key: 'o1-mini-2025-04-16', 
       name: 'o1-mini', 
       color: 'bg-green-500', 
       premium: true,
-      cost: { input: '$1.10', output: '$4.40' }
+      cost: { input: '$1.10', output: '$4.40' },
+      supportsTemperature: false
     },
     { 
       key: 'gpt-4.1-2025-04-14', 
       name: 'GPT-4.1', 
       color: 'bg-yellow-500', 
       premium: true,
-      cost: { input: '$2.00', output: '$8.00' }
+      cost: { input: '$2.00', output: '$8.00' },
+      supportsTemperature: true
     }
   ];
 

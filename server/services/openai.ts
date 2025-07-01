@@ -12,10 +12,17 @@ const MODELS = {
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14"
 } as const;
 
+// Models that do NOT support temperature parameter
+const MODELS_WITHOUT_TEMPERATURE = new Set([
+  "o3-mini-2025-01-31",
+  "o4-mini-2025-04-16", 
+  "o1-mini-2025-04-16"
+]);
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export class OpenAIService {
-  async analyzePuzzleWithModel(task: ARCTask, modelKey: keyof typeof MODELS) {
+  async analyzePuzzleWithModel(task: ARCTask, modelKey: keyof typeof MODELS, temperature: number = 0.75) {
     const modelName = MODELS[modelKey];
 
     const trainingExamples = task.train
@@ -61,12 +68,18 @@ Respond in this JSON format:
 }`;
 
     try {
-      const response = await openai.chat.completions.create({
+      const requestOptions: any = {
         model: modelName,
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-        temperature: 0.3,
-      });
+      };
+
+      // Only add temperature for models that support it
+      if (!MODELS_WITHOUT_TEMPERATURE.has(modelKey)) {
+        requestOptions.temperature = temperature;
+      }
+
+      const response = await openai.chat.completions.create(requestOptions);
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
       return {

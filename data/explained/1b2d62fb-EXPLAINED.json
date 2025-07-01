@@ -1,0 +1,522 @@
+{
+  "taskId": "1b2d62fb",
+  "originalTask": {
+    "test": [
+      {
+        "input": [
+          [
+            9,
+            9,
+            0,
+            1,
+            0,
+            9,
+            0
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            9,
+            9,
+            0,
+            1,
+            0,
+            9,
+            0
+          ],
+          [
+            9,
+            9,
+            9,
+            1,
+            9,
+            0,
+            9
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            0,
+            9,
+            9
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            8
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ]
+        ]
+      }
+    ],
+    "train": [
+      {
+        "input": [
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            0,
+            0,
+            9,
+            1,
+            9,
+            9,
+            0
+          ],
+          [
+            9,
+            0,
+            9,
+            1,
+            9,
+            9,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            9,
+            9
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            8
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ],
+          [
+            9,
+            0,
+            9,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            9,
+            9
+          ]
+        ],
+        "output": [
+          [
+            0,
+            8,
+            8
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            9,
+            0,
+            0,
+            1,
+            9,
+            0,
+            9
+          ],
+          [
+            9,
+            0,
+            0,
+            1,
+            0,
+            9,
+            0
+          ],
+          [
+            9,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ],
+          [
+            0,
+            9,
+            9,
+            1,
+            0,
+            9,
+            9
+          ],
+          [
+            0,
+            0,
+            9,
+            1,
+            0,
+            9,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            8,
+            0
+          ],
+          [
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            8,
+            8
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            0,
+            9
+          ],
+          [
+            9,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ],
+          [
+            9,
+            9,
+            9,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            0,
+            9,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            9,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            8
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            8
+          ],
+          [
+            0,
+            8,
+            8
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            9,
+            9,
+            1,
+            9,
+            0,
+            9
+          ],
+          [
+            9,
+            0,
+            9,
+            1,
+            9,
+            9,
+            9
+          ],
+          [
+            9,
+            9,
+            9,
+            1,
+            0,
+            0,
+            9
+          ],
+          [
+            9,
+            0,
+            0,
+            1,
+            9,
+            0,
+            0
+          ],
+          [
+            9,
+            9,
+            9,
+            1,
+            0,
+            0,
+            9
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            8
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  "explanations": {
+    "gpt-4.1-nano-2025-04-14": {
+      "model": "gpt-4.1-nano-2025-04-14",
+      "patternDescription": "The aliens look at the middle part of the map, especially the column with the '1' in the center, and then change the surrounding emojis based on whether they see certain signals (like '9' or '0') nearby. They turn some emojis into '♥' (friendship) when they see specific patterns of '0' and '9' around the center, and turn others into '👽' or '👤' depending on the arrangement. Essentially, they are marking areas with symbols of peace or neutrality based on the signals around the '1'.",
+      "solvingStrategy": "First, think of the emojis as numbers: 0 is no, 1 is yes, 9 is warning, etc. Look at the small square area around the middle '1' in the map. Check the emojis directly around the center. If you see certain patterns of '0' and '9' nearby, you change the emojis in that small square to '♥' for friendship or '👽'/'👤' for other meanings. The aliens are 'reading' the signals around the center and then marking the area with symbols that show peace or other messages. So, to solve it, identify the center, examine the surrounding emojis, and then replace them based on the pattern of signals you find.",
+      "hints": [
+        "Focus on the small 3x3 area around the '1' in the middle.",
+        "Look for patterns of '0' (no) and '9' (warning) around the center.",
+        "The aliens turn certain signals into '♥' (peace) when they see specific arrangements of '0' and '9'."
+      ],
+      "alienMeaning": "The aliens are communicating messages of peace, neutrality, or warnings based on the signals around their central point. They might be indicating safe zones, danger, or friendly areas by transforming the signals into symbols like '♥' or '👽'.",
+      "confidence": "85%"
+    },
+    "gpt-4.1-mini-2025-04-14": {
+      "model": "gpt-4.1-mini-2025-04-14",
+      "patternDescription": "The aliens take a 5x7 grid of numbers (each number an emoji) and transform each row into a smaller 3-number output. The key is that the middle column (the 4th number in each 7-number row) is always '1' (✅), which acts like a fixed anchor or 'yes' signal. The output’s 3 numbers correspond to three specific positions in the input row, and the output places '8' (♥, peace/friendship/good) exactly where the input row has '0' (⬛, nothing/negative) in those positions, but only if those positions are near or related to the '1' column. Otherwise, the output is '0' (⬛). Essentially, the aliens highlight peaceful/positive spots (♥) in the input where there is emptiness (⬛) adjacent to the 'yes' column (✅), ignoring warnings (⚠️) and other symbols. This creates a kind of 'peace map' around the central 'yes' column in each row.",
+      "solvingStrategy": "1. Look at each input row as a sequence of 7 emojis (numbers). 2. Identify the middle column (4th position), which is always '1' (✅). 3. Focus on three specific positions around this middle column (positions 1, 2, and 3 or similar depending on the example). 4. For each of these three positions, if the input emoji is '0' (⬛), output '8' (♥) in that position in the output row; if not, output '0' (⬛). 5. Repeat for every row to build the output 5x3 grid. 6. If stuck, switch to thinking of the emojis as numbers to spot the pattern of zeros near the '1' column and map zeros to eights in output.",
+      "hints": [
+        "The middle column in every input row is always '1' (✅) and acts as a fixed reference point.",
+        "The output rows are smaller (3 elements) and correspond to specific positions near the middle '1' in the input rows.",
+        "Zeros (⬛) in the input near the '1' column become hearts (♥) in the output, signaling peaceful or positive spots."
+      ],
+      "alienMeaning": "The aliens are communicating a map of peaceful or friendly zones (♥) around a central agreement or positive signal (✅), ignoring warnings (⚠️) and other distractions. They want us to focus on where emptiness (⬛) near their 'yes' signals can be transformed into friendship or peace. This might be an invitation to find harmony or safe spots in their communication or environment.",
+      "confidence": "85%"
+    },
+    "gpt-4o-mini-2024-07-18": {
+      "model": "gpt-4o-mini-2024-07-18",
+      "patternDescription": "The output seems to represent a transformation of the input grid based on the positions of the number 1 (✅). The output replaces certain numbers with 0 (⬛) or 8 (♥) based on their proximity to the number 1.",
+      "solvingStrategy": "1. Look for the number 1 (✅) in the input grid. 2. For each row, check how many numbers are surrounding the 1. 3. Replace the numbers in the output grid according to the following rules: If a number is next to a 1, it can be replaced with 8 (♥), otherwise, it becomes 0 (⬛). 4. If there are multiple 1s in a row, the same logic applies to each 1 individually. 5. Remember to think of the puzzle as numbers, not emojis, to apply these rules correctly.",
+      "hints": [
+        "The number 1 (✅) is the key to determining the output.",
+        "Numbers adjacent to 1 become 8 (♥) in the output.",
+        "All other numbers become 0 (⬛) unless specified otherwise."
+      ],
+      "alienMeaning": "The aliens might be trying to communicate a message of peace and friendship (♥) in areas where they have a positive presence (✅), while indicating that other areas are neutral or empty (⬛).",
+      "confidence": "85%"
+    },
+    "gpt-4.1-2025-04-14": {
+      "model": "gpt-4.1-2025-04-14",
+      "patternDescription": "The aliens are highlighting ♥ (peace/friendship/good) in the output grid at positions where, in the input, a column of four consecutive cells contains the sequence [⚠️, ⚠️, 0, ✅] (i.e., [9, 9, 0, 1]) vertically. The ♥ appears in the output at the cell just below the 1 (✅) in that vertical sequence.",
+      "solvingStrategy": "1. Convert the emoji puzzle to numbers using the mapping. 2. For each column, scan for vertical sequences of four cells: [9, 9, 0, 1] (⚠️, ⚠️, ⬛, ✅). 3. When you find such a sequence, place a ♥ (8) in the output grid at the cell immediately below the 1 (✅) in that sequence (i.e., the next cell in the column, if it exists). 4. All other positions in the output grid are ⬛ (0).",
+      "hints": [
+        "Look for vertical patterns, not horizontal.",
+        "The sequence [⚠️, ⚠️, ⬛, ✅] (9, 9, 0, 1) is key.",
+        "♥ (8) only appears below this sequence, never elsewhere."
+      ],
+      "alienMeaning": "The aliens may be saying that after a warning-warning-nothing-yes sequence, peace/friendship/good will follow. It could be a message about hope or positive outcomes after a period of warnings and emptiness, or a signal to look for peace after certain signs.",
+      "confidence": "97%"
+    }
+  },
+  "exportedAt": "2025-07-01T21:32:48.861Z",
+  "models": [
+    "gpt-4.1-nano-2025-04-14",
+    "gpt-4.1-mini-2025-04-14",
+    "gpt-4o-mini-2024-07-18",
+    "gpt-4.1-2025-04-14"
+  ]
+}

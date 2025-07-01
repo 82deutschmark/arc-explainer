@@ -192,6 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", async (req, res) => {
     try {
       const { taskId, model } = req.params;
+      const { temperature = 0.75 } = req.body;
       
       const task = await puzzleLoader.loadPuzzle(taskId);
       if (!task) {
@@ -199,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { openaiService } = await import('./services/openai');
-      const result = await openaiService.analyzePuzzleWithModel(task, model as any);
+      const result = await openaiService.analyzePuzzleWithModel(task, model as any, temperature);
       
       res.json(result);
     } catch (error) {
