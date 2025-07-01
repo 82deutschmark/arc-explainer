@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Eye, EyeOff } from 'lucide-react';
-import { getSpaceEmoji, getEmojiDescription } from '@/lib/spaceEmoji';
+import { getSpaceEmoji, getEmojiDescription } from '@/lib/spaceEmojis';
 
 interface HintSystemProps {
   hints: string[];
