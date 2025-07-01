@@ -1,5 +1,5 @@
 import type { ARCTask } from "@shared/types";
-import { analyzePuzzlePattern, validateSolution } from "./openai";
+import { openaiService } from "./openai";
 
 export class PuzzleAnalyzer {
   async analyzePuzzle(task: ARCTask) {
@@ -12,7 +12,8 @@ export class PuzzleAnalyzer {
       };
     }
 
-    const analysis = await analyzePuzzlePattern(task.train);
+    // Use the first available model for basic analysis
+    const analysis = await openaiService.analyzePuzzleWithModel(task, 'gpt-4o-mini-2024-07-18');
     
     return {
       ...analysis,

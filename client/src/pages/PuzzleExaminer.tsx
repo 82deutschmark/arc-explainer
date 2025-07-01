@@ -95,23 +95,18 @@ export default function PuzzleExaminer() {
     taskError,
   } = usePuzzle(taskId);
 
-  // Available OpenAI models
+  // Available OpenAI models - EXACT models requested
   const models = [
-    { key: 'gpt-4o', name: 'GPT-4o' },
-    { key: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-    { key: 'gpt-4o-nano', name: 'GPT-4.1 Nano' },
-    { key: 'o1-mini-2025', name: 'o1-mini 2025' },
-    { key: 'gpt-4o-mini-2025', name: 'GPT-4.1 Mini' },
-    { key: 'gpt-4o-mini-legacy', name: 'GPT-4o Mini Legacy' }
+    { key: 'gpt-4.1-nano-2025-04-14', name: 'GPT-4.1 Nano' },
+    { key: 'o1-mini-2025-04-16', name: 'o1-mini 2025' },
+    { key: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini' },
+    { key: 'gpt-4o-mini-2024-07-18', name: 'GPT-4o Mini' }
   ];
 
   // Test specific model
   const testModelMutation = useMutation({
     mutationFn: async (modelKey: string) => {
-      // First set the model
-      await apiRequest('POST', '/api/openai/model', { model: modelKey });
-      // Then get analysis
-      const response = await apiRequest('GET', `/api/puzzle/analyze/${taskId}`);
+      const response = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, {});
       return response.json();
     },
     onSuccess: (data, modelKey) => {
@@ -336,7 +331,7 @@ export default function PuzzleExaminer() {
                     )}
                     
                     {result.hints && result.hints.length > 0 && (
-                      <div>
+                      <div className="mb-3">
                         <h4 className="text-sm font-medium mb-1">Key Insights</h4>
                         <ul className="text-sm text-gray-700 space-y-1">
                           {result.hints.map((hint: string, index: number) => (
@@ -346,6 +341,13 @@ export default function PuzzleExaminer() {
                             </li>
                           ))}
                         </ul>
+                      </div>
+                    )}
+                    
+                    {result.alienMeaning && (
+                      <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                        <h4 className="text-sm font-medium mb-1 text-purple-800">🛸 Alien Message</h4>
+                        <p className="text-sm text-purple-700">{result.alienMeaning}</p>
                       </div>
                     )}
                   </div>
