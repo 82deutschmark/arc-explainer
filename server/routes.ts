@@ -27,12 +27,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Download puzzles from GitHub
   app.post("/api/puzzle/github/download", async (req, res) => {
     try {
-      const { count = 30 } = req.body;
-      const downloaded = await githubService.downloadSmallPuzzles(count);
+      const { count } = req.body;
+      const downloaded = count ? 
+        await githubService.downloadSmallPuzzles(count) : 
+        await githubService.downloadAllPuzzles();
+      
+      const message = count ? 
+        `Downloaded ${downloaded} puzzles from GitHub` :
+        `Downloaded all ${downloaded} puzzles from GitHub repository`;
+        
       res.json({ 
         success: true,
         downloaded,
-        message: `Downloaded ${downloaded} puzzles from GitHub`
+        message
       });
     } catch (error) {
       console.error('Error downloading puzzles:', error);

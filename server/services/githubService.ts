@@ -67,7 +67,7 @@ export class GitHubService {
     return successCount;
   }
 
-  async downloadSmallPuzzles(maxCount: number = 50): Promise<number> {
+  async downloadSmallPuzzles(maxCount?: number): Promise<number> {
     console.log('Fetching available puzzles from GitHub...');
     const availablePuzzles = await this.fetchAvailablePuzzles();
     
@@ -78,11 +78,15 @@ export class GitHubService {
 
     console.log(`Found ${availablePuzzles.length} puzzles in repository`);
     
-    // Download first batch to analyze
-    const puzzlesToDownload = availablePuzzles.slice(0, maxCount);
+    // Download all puzzles or limited batch
+    const puzzlesToDownload = maxCount ? availablePuzzles.slice(0, maxCount) : availablePuzzles;
     console.log(`Downloading ${puzzlesToDownload.length} puzzles...`);
     
     return await this.downloadMultiplePuzzles(puzzlesToDownload);
+  }
+
+  async downloadAllPuzzles(): Promise<number> {
+    return await this.downloadSmallPuzzles(); // No limit
   }
 
   getLocalPuzzles(): string[] {
