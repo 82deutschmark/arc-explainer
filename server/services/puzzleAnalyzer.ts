@@ -47,13 +47,7 @@ export class PuzzleAnalyzer {
     return true;
   }
 
-  async validateUserSolution(
-    input: number[][],
-    userOutput: number[][],
-    correctOutput: number[][]
-  ) {
-    return await validateSolution(input, userOutput, correctOutput);
-  }
+  // Validation functionality removed - focusing on analysis only
 }
 
 export const puzzleAnalyzer = new PuzzleAnalyzer();
