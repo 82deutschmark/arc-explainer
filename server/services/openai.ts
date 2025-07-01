@@ -1,28 +1,32 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 
-// the deprecated OpenAI model is "gpt-4o" which was released May 13, 2024.  USER EXPLICITLY DEMANDS ONLY THE MODELS THEY APPROVE.  
+// the deprecated OpenAI model is "gpt-4o" which was released May 13, 2024.  USER EXPLICITLY DEMANDS ONLY THE MODELS THEY APPROVE.
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
-  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14", 
+  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14",
   "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
   "o3-mini-2025-01-31": "o3-mini-2025-01-31",
   "o4-mini-2025-04-16": "o4-mini-2025-04-16",
   "o1-mini-2025-04-16": "o1-mini-2025-04-16",
-  "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14"
+  "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
 } as const;
 
 // Models that do NOT support temperature parameter
 const MODELS_WITHOUT_TEMPERATURE = new Set([
   "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16", 
-  "o1-mini-2025-04-16"
+  "o4-mini-2025-04-16",
+  "o1-mini-2025-04-16",
 ]);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export class OpenAIService {
-  async analyzePuzzleWithModel(task: ARCTask, modelKey: keyof typeof MODELS, temperature: number = 0.75) {
+  async analyzePuzzleWithModel(
+    task: ARCTask,
+    modelKey: keyof typeof MODELS,
+    temperature: number = 0.75,
+  ) {
     const modelName = MODELS[modelKey];
 
     const trainingExamples = task.train
@@ -124,21 +128,14 @@ Your job:
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)
 
-BE VERY CAUTIOUS AND CONSERVATIVE in your analysis. The patterns may have exceptions or alternative valid interpretations. Hedge your explanations appropriately and mention possible limitations.
-
 Respond in this JSON format:
 {
-  "patternDescription": "Simple explanation of what pattern you found - BE CAUTIOUS, mention if this might not work for all cases",
-  "solvingStrategy": "Step-by-step how to solve it, for dummies. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that! INCLUDE WARNINGS about potential exceptions",
-  "hints": ["Key insight 1 (mention limitations)", "Key insight 2 (be cautious)", "Key insight 3 (hedge appropriately)"],
-  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols - express uncertainty where appropriate",
-  "patternConfidence": 0.75,
-  "strategyConfidence": 0.80,
-  "hintsConfidence": 0.70,
-  "alienMeaningConfidence": 0.60
-}
-
-IMPORTANT: All confidence values must be numbers between 0.0 and 1.0 (not percentages, not strings). Be conservative - most patterns should have confidence below 0.8 unless extremely obvious.`;
+  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "solvingStrategy": "Step-by-step how to solve it, for dummies.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
+  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+}`;
 
     try {
       const requestOptions: any = {
