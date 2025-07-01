@@ -1,12 +1,14 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+// the deprecated OpenAI model is "gpt-4o" which was released May 13, 2024.  USER EXPLICITLY DEMANDS ONLY THE MODELS THEY APPROVE.  
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
-  "o1-mini-2025-04-16": "o1-mini-2025-04-16",
-  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14",
+  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14", 
   "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
+  "o3-mini-2025-01-31": "o3-mini-2025-01-31",
+  "o1-mini-2025-04-16": "o1-mini-2025-04-16",
+  "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14"
 } as const;
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

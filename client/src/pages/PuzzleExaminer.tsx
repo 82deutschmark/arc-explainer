@@ -99,10 +99,12 @@ export default function PuzzleExaminer() {
 
   // Available OpenAI models - EXACT models requested
   const models = [
-    { key: 'gpt-4.1-nano-2025-04-14', name: 'GPT-4.1 Nano', color: 'bg-blue-500' },
-    { key: 'o1-mini-2025-04-16', name: 'o1-mini 2025', color: 'bg-green-500' },
-    { key: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini', color: 'bg-purple-500' },
-    { key: 'gpt-4o-mini-2024-07-18', name: 'GPT-4o Mini', color: 'bg-orange-500' }
+    { key: 'gpt-4.1-nano-2025-04-14', name: 'GPT-4.1 Nano', color: 'bg-blue-500', premium: false },
+    { key: 'gpt-4.1-mini-2025-04-14', name: 'GPT-4.1 Mini', color: 'bg-purple-500', premium: false },
+    { key: 'gpt-4o-mini-2024-07-18', name: 'GPT-4o Mini', color: 'bg-orange-500', premium: false },
+    { key: 'o3-mini-2025-01-31', name: 'o3-mini', color: 'bg-red-500', premium: true },
+    { key: 'o1-mini-2025-04-16', name: 'o1-mini', color: 'bg-green-500', premium: true },
+    { key: 'gpt-4.1-2025-04-14', name: 'GPT-4.1', color: 'bg-yellow-500', premium: true }
   ];
 
   // Save explained puzzle mutation
@@ -160,10 +162,10 @@ export default function PuzzleExaminer() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/puzzle-browser">
+          <Link href="/">
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Browser
+              Back to Home
             </Button>
           </Link>
           <div>
@@ -269,17 +271,22 @@ export default function PuzzleExaminer() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
             {models.map((model) => (
               <Button
                 key={model.key}
                 variant="outline"
-                className={`h-auto p-4 flex flex-col items-center gap-2 ${
+                className={`h-auto p-4 flex flex-col items-center gap-2 relative ${
                   analysisResults[model.key] ? 'ring-2 ring-green-500' : ''
-                }`}
+                } ${model.premium ? 'border-amber-300 bg-amber-50' : ''}`}
                 onClick={() => testModelMutation.mutate(model.key)}
                 disabled={testModelMutation.isPending}
               >
+                {model.premium && (
+                  <div className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs px-1 rounded-full">
+                    💰
+                  </div>
+                )}
                 {testModelMutation.isPending && testModelMutation.variables === model.key ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -287,9 +294,20 @@ export default function PuzzleExaminer() {
                     analysisResults[model.key] ? 'bg-green-500' : model.color
                   }`} />
                 )}
-                <span className="text-sm font-medium">{model.name}</span>
+                <span className="text-sm font-medium text-center">{model.name}</span>
+                {model.premium && (
+                  <span className="text-xs text-amber-700">Higher cost</span>
+                )}
               </Button>
             ))}
+          </div>
+          
+          {/* Cost Warning */}
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-800">
+              💰 Premium models (o3-mini, o1-mini, GPT-4.1) cost more per request. 
+              Regular models work well for most analyses.
+            </p>
           </div>
 
           {/* Analysis Results */}
