@@ -16,8 +16,8 @@ import type { PuzzleMetadata } from '@shared/types';
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
-  const [difficulty, setDifficulty] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('true');
+  const [showUnexplainedOnly, setShowUnexplainedOnly] = useState<boolean>(true);
   const { toast } = useToast();
 
   // Get GitHub repository info
@@ -53,24 +53,19 @@ export default function PuzzleBrowser() {
   const filters = React.useMemo(() => {
     const result: any = {};
     if (maxGridSize) result.maxGridSize = parseInt(maxGridSize);
-    if (difficulty && difficulty !== 'any' && ['easy', 'medium', 'hard'].includes(difficulty)) {
-      result.difficulty = difficulty;
-    }
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
+    if (showUnexplainedOnly) result.prioritizeUnexplained = true;
     return result;
-  }, [maxGridSize, difficulty, gridSizeConsistent]);
+  }, [maxGridSize, gridSizeConsistent, showUnexplainedOnly]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
   const filteredPuzzles = puzzles || [];
 
-  const getDifficultyColor = (diff: string) => {
-    switch (diff) {
-      case 'easy': return 'bg-green-100 text-green-800 hover:bg-green-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      case 'hard': return 'bg-red-100 text-red-800 hover:bg-red-200';
-      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
-    }
+  const getGridSizeColor = (size: number) => {
+    if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
+    if (size <= 10) return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+    return 'bg-red-100 text-red-800 hover:bg-red-200';
   };
 
   if (error) {
@@ -127,16 +122,14 @@ export default function PuzzleBrowser() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="difficulty">Difficulty</Label>
-                <Select value={difficulty} onValueChange={setDifficulty}>
+                <Label htmlFor="unexplained">Show Unexplained Only</Label>
+                <Select value={showUnexplainedOnly.toString()} onValueChange={(value) => setShowUnexplainedOnly(value === 'true')}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Any difficulty" />
+                    <SelectValue placeholder="Filter by explanation status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="easy">Easy</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="hard">Hard</SelectItem>
+                    <SelectItem value="true">Unexplained Only</SelectItem>
+                    <SelectItem value="false">All Puzzles</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

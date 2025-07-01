@@ -3,11 +3,14 @@ import path from 'path';
 import type { ARCTask, PuzzleMetadata } from '@shared/types';
 import { githubService } from './githubService';
 
-interface PuzzleInfo extends PuzzleMetadata {
+interface PuzzleInfo {
+  id: string;
+  gridSizeConsistent: boolean;
+  patternType: string;
   maxGridSize: number;
   inputSize: [number, number];
   outputSize: [number, number];
-  gridSizeConsistent: boolean;
+  hasExplanation: boolean;
 }
 
 export class PuzzleLoader {
@@ -95,22 +98,26 @@ export class PuzzleLoader {
       }
     }
 
-    // Determine difficulty based on grid size and complexity
-    let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
-    if (maxGridSize <= 5) {
-      difficulty = 'easy';
-    } else if (maxGridSize >= 15) {
-      difficulty = 'hard';
+    // Check if this puzzle has been explained already
+    const explainedDir = path.join(process.cwd(), 'data', 'explained');
+    let hasExplanation = false;
+    try {
+      if (fs.existsSync(explainedDir)) {
+        const explainedFile = path.join(explainedDir, `${taskId}-EXPLAINED.json`);
+        hasExplanation = fs.existsSync(explainedFile);
+      }
+    } catch (error) {
+      // Ignore errors checking explanation files
     }
 
     return {
       id: taskId,
-      difficulty,
       gridSizeConsistent,
-      patternType: 'transformation', // Could be enhanced with pattern detection
+      patternType: 'transformation',
       maxGridSize,
       inputSize,
       outputSize,
+      hasExplanation,
     };
   }
 
@@ -138,8 +145,8 @@ export class PuzzleLoader {
   getPuzzleList(filters?: {
     maxGridSize?: number;
     minGridSize?: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
     gridSizeConsistent?: boolean;
+    prioritizeUnexplained?: boolean;
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
 
@@ -150,19 +157,22 @@ export class PuzzleLoader {
       if (filters.minGridSize !== undefined) {
         puzzles = puzzles.filter(p => p.maxGridSize >= filters.minGridSize!);
       }
-      if (filters.difficulty) {
-        puzzles = puzzles.filter(p => p.difficulty === filters.difficulty);
-      }
       if (filters.gridSizeConsistent !== undefined) {
         puzzles = puzzles.filter(p => p.gridSizeConsistent === filters.gridSizeConsistent);
       }
     }
 
-    // Sort by grid size (smaller first) and then by ID
+    // Sort: prioritize unexplained puzzles, then by grid size (smaller first), then by ID
     return puzzles.sort((a, b) => {
+      // First sort: unexplained puzzles come first
+      if (a.hasExplanation !== b.hasExplanation) {
+        return a.hasExplanation ? 1 : -1;
+      }
+      // Second sort: smaller grids first
       if (a.maxGridSize !== b.maxGridSize) {
         return a.maxGridSize - b.maxGridSize;
       }
+      // Third sort: alphabetical by ID
       return a.id.localeCompare(b.id);
     });
   }
