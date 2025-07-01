@@ -3,8 +3,46 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { puzzleAnalyzer } from "./services/puzzleAnalyzer";
 import { puzzleLoader } from "./services/puzzleLoader";
+import { githubService } from "./services/githubService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Get available puzzles from GitHub repository
+  app.get("/api/puzzle/github/available", async (req, res) => {
+    try {
+      const availablePuzzles = await githubService.fetchAvailablePuzzles();
+      res.json({ 
+        count: availablePuzzles.length,
+        puzzles: availablePuzzles.slice(0, 100) // First 100 for performance
+      });
+    } catch (error) {
+      console.error('Error fetching GitHub puzzles:', error);
+      res.status(500).json({ 
+        message: 'Failed to fetch puzzles from GitHub',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Download puzzles from GitHub
+  app.post("/api/puzzle/github/download", async (req, res) => {
+    try {
+      const { count = 30 } = req.body;
+      const downloaded = await githubService.downloadSmallPuzzles(count);
+      res.json({ 
+        success: true,
+        downloaded,
+        message: `Downloaded ${downloaded} puzzles from GitHub`
+      });
+    } catch (error) {
+      console.error('Error downloading puzzles:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to download puzzles',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
   
   // Get list of available puzzles with filtering
   app.get("/api/puzzle/list", async (req, res) => {

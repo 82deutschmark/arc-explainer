@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { ARCTask, PuzzleMetadata } from '@shared/types';
+import { githubService } from './githubService';
 
 interface PuzzleInfo extends PuzzleMetadata {
   maxGridSize: number;
@@ -13,9 +14,27 @@ export class PuzzleLoader {
   private puzzleCache: Map<string, ARCTask> = new Map();
   private puzzleMetadata: Map<string, PuzzleInfo> = new Map();
   private dataDir = path.join(process.cwd(), 'data', 'training');
+  private initialized = false;
 
   constructor() {
+    this.initializeData();
+  }
+
+  private async initializeData() {
+    if (this.initialized) return;
+    
+    // Download puzzles if we don't have many locally
+    const localPuzzles = githubService.getLocalPuzzles();
+    console.log(`Found ${localPuzzles.length} local puzzles`);
+    
+    if (localPuzzles.length < 10) {
+      console.log('Downloading puzzles from GitHub...');
+      const downloaded = await githubService.downloadSmallPuzzles(30);
+      console.log(`Downloaded ${downloaded} puzzles`);
+    }
+    
     this.loadPuzzleMetadata();
+    this.initialized = true;
   }
 
   private loadPuzzleMetadata() {
@@ -153,33 +172,12 @@ export class PuzzleLoader {
   }
 
   async downloadPuzzle(taskId: string): Promise<boolean> {
-    try {
-      const url = `https://raw.githubusercontent.com/fchollet/ARC-AGI/master/data/training/${taskId}.json`;
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        return false;
-      }
-
-      const data = await response.text();
-      const filePath = path.join(this.dataDir, `${taskId}.json`);
-      
-      fs.writeFileSync(filePath, data);
-      
-      // Parse and cache the puzzle
-      const puzzle = JSON.parse(data) as ARCTask;
-      this.puzzleCache.set(taskId, puzzle);
-      
-      // Update metadata
-      const metadata = this.analyzePuzzleMetadata(taskId, puzzle);
-      this.puzzleMetadata.set(taskId, metadata);
-      
-      console.log(`Downloaded puzzle ${taskId}`);
-      return true;
-    } catch (error) {
-      console.error(`Error downloading puzzle ${taskId}:`, error);
-      return false;
+    const success = await githubService.downloadPuzzle(taskId);
+    if (success) {
+      // Reload metadata after download
+      this.loadPuzzleMetadata();
     }
+    return success;
   }
 
   getAvailablePuzzleIds(): string[] {
