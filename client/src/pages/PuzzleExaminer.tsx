@@ -409,12 +409,36 @@ export default function PuzzleExaminer() {
                 const model = models.find(m => m.key === modelKey);
                 return (
                   <div key={modelKey} className="border rounded-lg p-4 space-y-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />
                       <h5 className="font-medium">{model?.name || modelKey}</h5>
-                      {result.confidence && (
+                      {/* Display multiple confidence scores */}
+                      {result.patternConfidence && (
+                        <Badge variant="outline" className="text-xs">
+                          Pattern: {Math.round(result.patternConfidence * 100)}%
+                        </Badge>
+                      )}
+                      {result.strategyConfidence && (
+                        <Badge variant="outline" className="text-xs">
+                          Strategy: {Math.round(result.strategyConfidence * 100)}%
+                        </Badge>
+                      )}
+                      {result.hintsConfidence && (
+                        <Badge variant="outline" className="text-xs">
+                          Hints: {Math.round(result.hintsConfidence * 100)}%
+                        </Badge>
+                      )}
+                      {result.alienMeaningConfidence && (
+                        <Badge variant="outline" className="text-xs">
+                          Alien: {Math.round(result.alienMeaningConfidence * 100)}%
+                        </Badge>
+                      )}
+                      {/* Fallback for old confidence format */}
+                      {result.confidence && !result.patternConfidence && (
                         <Badge variant="outline">
-                          {Math.round(result.confidence * 100)}% confident
+                          {typeof result.confidence === 'string' 
+                            ? result.confidence 
+                            : Math.round(result.confidence * 100) + '%'} confident
                         </Badge>
                       )}
                     </div>
