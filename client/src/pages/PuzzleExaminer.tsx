@@ -3,6 +3,8 @@ import { useParams } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import { Loader2, Eye, Hash, ArrowLeft, Brain } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -90,6 +92,7 @@ export default function PuzzleExaminer() {
   const { taskId } = useParams();
   const [showEmojis, setShowEmojis] = useState(true);
   const [analysisResults, setAnalysisResults] = useState<Record<string, any>>({});
+  const [temperature, setTemperature] = useState<number>(0.75);
 
   const {
     task,
@@ -175,7 +178,7 @@ export default function PuzzleExaminer() {
   // Test specific model
   const testModelMutation = useMutation({
     mutationFn: async (modelKey: string) => {
-      const response = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, {});
+      const response = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, { temperature });
       return response.json();
     },
     onSuccess: (data, modelKey) => {
@@ -359,11 +362,37 @@ export default function PuzzleExaminer() {
                 <div className="text-xs text-gray-600 w-full">
                   <div>In: {model.cost.input}/M tokens</div>
                   <div>Out: {model.cost.output}/M tokens</div>
+                  {!model.supportsTemperature && (
+                    <div className="text-amber-600 font-medium">⚙️ No temperature control</div>
+                  )}
                 </div>
               </Button>
             ))}
           </div>
           
+          {/* Temperature Control */}
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="flex items-center gap-4">
+              <Label htmlFor="temperature" className="text-sm font-medium">
+                Temperature: {temperature}
+              </Label>
+              <div className="flex-1 max-w-xs">
+                <Slider
+                  id="temperature"
+                  min={0.1}
+                  max={1.0}
+                  step={0.05}
+                  value={[temperature]}
+                  onValueChange={(value) => setTemperature(value[0])}
+                  className="w-full"
+                />
+              </div>
+              <span className="text-xs text-gray-600">
+                Controls creativity (some models don't support this)
+              </span>
+            </div>
+          </div>
+
           {/* Cost Information */}
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
