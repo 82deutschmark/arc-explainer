@@ -1,0 +1,17 @@
+# Railway configuration for ARC Explainer
+# Author: Cascade AI
+
+# Use Nixpacks (Node.js) for building
+[build]
+builder = "nixpacks"
+buildCommand = "npm install --omit=dev && npm run build"
+
+# Deployment settings
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "always"
+
+# Environment variables
+[deploy.environment]
+NODE_ENV = "production"
+NODE_VERSION = "20.13.1"

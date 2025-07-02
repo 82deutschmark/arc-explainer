@@ -86,14 +86,11 @@ export function serveStatic(app: Express) {
     );
   }
 
-  // Serve static files from the Vite build output
-  app.use(express.static(distPath, {
-    index: false, // Don't serve index.html for directory paths
-    maxAge: '1y', // Enable long-term caching for production
-  }));
+  // Serve static files including index.html
+  app.use(express.static(distPath));
 
-  // Handle client-side routing - return index.html for all other requests
-  app.get('*', (_req, res) => {
+  // Fallback: return index.html for client-side routed paths
+  app.use('*', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
