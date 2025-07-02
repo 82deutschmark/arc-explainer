@@ -9,8 +9,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Use a dynamic import for the cartographer plugin to avoid top-level await
-export default defineConfig(async () => {
-  const plugins = [
+export default defineConfig(async (): Promise<import('vite').UserConfig> => {
+  const plugins: import('vite').PluginOption[] = [
     react(),
     runtimeErrorOverlay(),
   ];
@@ -18,10 +18,14 @@ export default defineConfig(async () => {
   // Only include cartographer in development and when running in Replit
   if (process.env.NODE_ENV !== "production" && process.env.REPL_ID) {
     const { cartographer } = await import("@replit/vite-plugin-cartographer");
-    plugins.push(cartographer());
+    const cartographerPlugin = cartographer();
+    if (cartographerPlugin) {
+      plugins.push(cartographerPlugin);
+    }
   }
 
   return {
+    base: './', // Use relative paths for production
     plugins,
     resolve: {
       alias: {
@@ -34,6 +38,19 @@ export default defineConfig(async () => {
     build: {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
+      sourcemap: true, // Enable source maps for debugging
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split vendor code into separate chunk
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
+    },
+    preview: {
+      port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+      strictPort: true,
     },
     server: {
       fs: {
