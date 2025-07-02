@@ -9,21 +9,9 @@ buildCommand = "npm install && npm run build"
 # Deployment configuration
 [deploy]
 startCommand = "npm start"
-healthcheckPath = "/"
-healthcheckTimeout = 120  # seconds
 restartPolicyType = "always"
-restartPolicyMaxRetries = 5
 
 # Environment variables
 [deploy.environment]
 NODE_ENV = "production"
 NODE_VERSION = "20"  # Match the Node.js version used in development
-
-# Required database configuration
-[deploy.environment.DATABASE_URL]
-generator = "postgresql"
-
-# Optional: Uncomment and set to your database name if needed
-# [deploy.environment.POSTGRES_DB]
-# generator = "postgresql"
-# name = "arc_explainer"
