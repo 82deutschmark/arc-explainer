@@ -2,9 +2,17 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Fix for ES modules and bundled code - get the actual current directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Log environment variables status for debugging
 console.log('Environment variables loaded:', process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'OPENAI_API_KEY is NOT set');
+console.log('Current working directory:', process.cwd());
+console.log('__dirname:', __dirname);
 
 const app = express();
 app.use(express.json());
@@ -51,24 +59,42 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
+  // In production, serve static files manually to avoid path resolution issues
+  if (app.get("env") === "production") {
+    // For Railway deployment, the static files should be in the dist/public directory
+    // We need to resolve this relative to the current working directory, not __dirname
+    const staticPath = path.join(process.cwd(), 'dist', 'public');
+    console.log('Serving static files from:', staticPath);
+    
+    // Serve static files with a fallback to index.html for SPA routing
+    app.use(express.static(staticPath));
+    
+    // Handle client-side routing - serve index.html for all non-API routes
+    app.get('*', (req: Request, res: Response) => {
+      if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(staticPath, 'index.html'), (err) => {
+          if (err) {
+            console.error('Error serving index.html:', err);
+            res.status(500).send('Error loading application');
+          }
+        });
+      } else {
+        res.status(404).json({ message: 'API route not found' });
+      }
+    });
   } else {
-    serveStatic(app);
+    // Development mode - use Vite
+    await setupVite(app, server);
   }
 
   // Use PORT environment variable if available, otherwise default to 5000 for local development
   const port = process.env.PORT || 5000;
-  // Use 127.0.0.1 for Windows compatibility in development
-  const host = process.env.NODE_ENV === 'development' ? '127.0.0.1' : (process.env.HOST || '0.0.0.0');
+  // Railway sets HOST automatically, so use that or default to 0.0.0.0 for production
+  const host = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
   
   server.listen({
     port: Number(port),
     host,
-    reusePort: process.env.NODE_ENV === 'production', // Only reuse port in production
   }, () => {
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
     log(`Server running in ${app.get('env')} mode at ${protocol}://${host}:${port}`);

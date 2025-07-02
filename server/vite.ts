@@ -77,8 +77,18 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
+// Get directory name in a way that works in both ESM and CommonJS
+const getDirName = () => {
+  if (typeof __dirname !== 'undefined') {
+    return __dirname; // CommonJS
+  }
+  const __filename = new URL(import.meta.url).pathname;
+  return path.dirname(__filename); // ESM
+};
+
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "..", "dist", "public");
+  const serverDir = getDirName();
+  const distPath = path.resolve(serverDir, "..", "dist", "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
