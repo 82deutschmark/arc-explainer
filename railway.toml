@@ -11,11 +11,11 @@ buildCommand = "npm install && npm run build"
 startCommand = "NODE_ENV=production node dist/index.js"
 healthcheckPath = "/"
 healthcheckTimeout = 120  # seconds
-restartPolicyType = "on-failure"
+restartPolicyType = "always"
 restartPolicyMaxRetries = 5
 
 # Environment variable OPENAI_API_KEY IS already set in Railway dashboard
 
 # MarkB r00lz mad n00bz. 
-# Cascade Claude 3.7 Sonnet Thinking
+
 
