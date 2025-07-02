@@ -4,7 +4,7 @@
 # Build configuration
 [build]
 builder = "nixpacks"
-buildCommand = "npm install && npm run build"
+buildCommand = "rm -rf node_modules && npm cache clean --force && npm install --no-optional && npm run build"
 
 # Deployment configuration
 [deploy]
@@ -14,4 +14,21 @@ restartPolicyType = "always"
 # Environment variables
 [deploy.environment]
 NODE_ENV = "production"
-NODE_VERSION = "20"  # Match the Node.js version used in development
+NODE_VERSION = "20.13.1"  # Exact Node.js version for consistency
+
+# Nixpacks configuration
+[build.nixpacks]
+  [build.nixpacks.install]
+    # Install dependencies first
+    cmds = [
+      "npm config set update-notifier false",
+      "npm install --no-optional"
+    ]
+
+  [build.nixpacks.build]
+    # Build the application
+    cmds = ["npm run build"]
+
+  [build.nixpacks.start]
+    # Start the application
+    cmd = "npm start"
