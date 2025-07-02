@@ -1,0 +1,9 @@
+# railway.toml
+# Project deployment configuration for Railway
+# Author: Cascade AI
+
+[build]
+command = "npm run build"
+
+[deploy]
+command = "node dist/index.js"
