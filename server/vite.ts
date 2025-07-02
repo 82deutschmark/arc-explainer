@@ -3,10 +3,14 @@ import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
-import viteConfig from "../vite.config";
+// Import the Vite config as a dynamic import to avoid issues with ESM top-level await
+const importViteConfig = async () => {
+  const config = await import('../vite.config');
+  return config.default;
+};
 import { nanoid } from "nanoid";
 
-const viteLogger = createLogger();
+const viteLogger = createLogger('info'); // Specify log level to fix argument error
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -20,26 +24,29 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
-    allowedHosts: true,
-  };
-
+  // Get the Vite config dynamically
+  const viteConfig = await importViteConfig();
   // Resolve async or function-based Vite config
-  const baseConfig = typeof viteConfig === 'function' ? await viteConfig() : viteConfig;
+  const baseConfig = typeof viteConfig === 'function' ? await viteConfig({ command: 'serve', mode: 'development' }) : viteConfig;
 
   const vite = await createViteServer({
     ...baseConfig,
     configFile: false,
     customLogger: {
       ...viteLogger,
-      error: (msg, options) => {
+      error: (msg: string, options?: any) => {
         viteLogger.error(msg, options);
         process.exit(1);
       },
     },
-    server: serverOptions,
+    server: {
+      middlewareMode: true,
+      hmr: {
+        server,
+        protocol: 'ws',
+        host: 'localhost',
+      },
+    },
     appType: "custom",
   });
 

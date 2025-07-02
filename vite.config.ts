@@ -39,14 +39,6 @@ export default defineConfig(async (): Promise<import('vite').UserConfig> => {
       outDir: path.resolve(__dirname, "dist/public"),
       emptyOutDir: true,
       sourcemap: true, // Enable source maps for debugging
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // Split vendor code into separate chunk
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-          },
-        },
-      },
     },
     preview: {
       port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
