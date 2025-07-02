@@ -426,11 +426,50 @@
       ],
       "alienMeaning": "The aliens might be communicating a message about focusing on what matters and ignoring empty noise. By extracting the 'signal' (the meaningful emojis) and compressing it, they could be saying 'we see through the emptiness to what is important'. Since the symbols involved are mostly ✅ (agreement/positive), and no ☄️ (danger), they likely mean no harm and want to show us how to find meaning in chaos.",
       "confidence": "98"
+    },
+    "o3-mini-2025-01-31": {
+      "model": "o3-mini-2025-01-31",
+      "patternDescription": "It appears the aliens first draw a bigger picture (a 5‐row by 7‐column emoji grid) and then “compress” it into a simpler 3×3 pattern. In every example the aliens seem to be splitting the original grid into nine zones (three rows and three columns) and choosing the most telling signal (often the nonzero emoji) from each zone. In other words, they are filtering out the extra background (⬛) and focusing on the key signals (like ♥, 👽, 🪐, or ✅) to form a smaller, icon‐like pattern.",
+      "solvingStrategy": "Step 1: Think of the 5×7 input not as numbers but as emojis (for instance, 0 becomes ⬛ and 1 becomes ✅ in our test case). Step 2: Imagine drawing two horizontal and two vertical lines to split the big grid into 9 roughly equal parts. Step 3: In each of these 9 parts, look for the element that stands out – often if there’s any non‐zero (or non ⬛) emoji, that’s the one you pick; if not, you use ⬛. Step 4: Place each chosen emoji into the corresponding cell of a new 3×3 grid. This “down‐sampling” by local filtering is the secret trick the aliens are using.",
+      "hints": [
+        "Visualize the grid as broken into 9 blocks – one top left, one top center, one top right, and so on.",
+        "Remember that the aliens’ numbers are actually emojis – for example, 0 is ⬛ (negative) and 1 is ✅ (positive).",
+        "In each block, pick the emoji that is most prominent (often the one that isn’t ⬛) to form the simplified message."
+      ],
+      "alienMeaning": "Based on this grid‐compression and filtering, the aliens might be trying to communicate a symbolic icon – a kind of stamp or signature. In our test case, the pattern [[⬛,✅,✅],[✅,⬛,⬛],[⬛,✅,✅]] could be read as a minimal ‘yes’ message or even a peaceful greeting. It might be their way of saying, “We agree or welcome you” – though it may also be a test to see if we can decode their abstract signs. Either way, it doesn’t look overtly hostile, but more like a cleverly encoded invitation or statement of identity.",
+      "confidence": "65"
+    },
+    "gpt-4.1-nano-2025-04-14": {
+      "model": "gpt-4.1-nano-2025-04-14",
+      "patternDescription": "The aliens are taking the outer edge of the pattern, focusing on the border elements, and creating a smaller, central version by keeping the border intact while shifting or removing some inner parts. Essentially, they are shrinking the pattern but maintaining the shape of the outer boundary, like cropping out the middle and leaving only the border.",
+      "solvingStrategy": "First, imagine each emoji as a number (like 0-9). Look at the original grid and identify just the outer border of the pattern — the emojis on the edges. Then, create a smaller version of that border shape by keeping the same pattern of emojis on the edges, but making the middle part more compact or removing inner emojis. Think of it as zooming in on the border or cropping the pattern to just the outer shape. This helps you understand that the pattern's main idea is about preserving the outer shape while simplifying or reducing the inner details.",
+      "hints": [
+        "Focus on the outer boundary of the pattern",
+        "The pattern keeps the border but reduces inner parts",
+        "Think of shrinking or cropping the shape while keeping the edges same"
+      ],
+      "alienMeaning": "The aliens might be trying to tell us that they see us as a boundary or border—a structure that encloses or surrounds something. By simplifying to just the border, they could be indicating a desire to recognize the limits or edges of our world or message. It might suggest they’re observing our outer shell or surface — perhaps warning us to pay attention to our boundaries or borders, or that they see us as a contained shape they want to understand better.",
+      "confidence": 85
+    },
+    "gpt-4o-mini-2024-07-18": {
+      "model": "gpt-4o-mini-2024-07-18",
+      "patternDescription": "The solution involves a combination of grid operations and logical operations, specifically focusing on identifying clusters of positive signals (✅) and organizing them into a smaller representation while maintaining their spatial relationships.",
+      "solvingStrategy": "1. Convert the emoji grid into numbers: Replace ✅ with 1 and ⬛ with 0. 2. Identify clusters of 1s (positive signals) in the grid. 3. Focus on the rows and columns where these clusters exist. 4. Extract the relevant 1s and their positions to create a smaller grid that preserves their relationships. 5. Convert back to emojis. The final output is a compressed version of the original grid that captures the important signals.",
+      "hints": [
+        "Look for where the positive signals (✅) are grouped together.",
+        "Focus on how the clusters are arranged in rows and columns.",
+        "The solution grid is smaller but reflects the pattern of the original grid."
+      ],
+      "alienMeaning": "The aliens might be expressing a need for connection and communication, symbolized by the clusters of positive signals. They could be indicating that they want to establish a relationship or understanding with humans, but the presence of empty spaces (⬛) might suggest they feel isolated or misunderstood.",
+      "confidence": 85
     }
   },
-  "exportedAt": "2025-07-02T04:25:41.938Z",
+  "exportedAt": "2025-07-02T04:30:37.169Z",
   "models": [
     "gpt-4.1-mini-2025-04-14",
-    "gpt-4.1-2025-04-14"
+    "gpt-4.1-2025-04-14",
+    "o3-mini-2025-01-31",
+    "gpt-4.1-nano-2025-04-14",
+    "gpt-4o-mini-2024-07-18"
   ]
 }
