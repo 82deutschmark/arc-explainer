@@ -4,7 +4,7 @@
 # Use Nixpacks (Node.js) for building
 [build]
 builder = "nixpacks"
-buildCommand = "npm ci && npm run build"
+buildCommand = "npm install && npm run build"
 
 # Deployment settings
 [deploy]
