@@ -1,0 +1,21 @@
+# Railway Configuration File for ARC Explainer
+# Author: Cascade using Claude 3.7 Sonnet Thinking 
+
+# Build configuration
+[build]
+builder = "nixpacks"
+buildCommand = "npm install && npm run build"
+
+# Deployment configuration
+[deploy]
+startCommand = "NODE_ENV=production node dist/index.js"
+healthcheckPath = "/"
+healthcheckTimeout = 120  # seconds
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 5
+
+# Environment variable OPENAI_API_KEY IS already set in Railway dashboard
+
+# MarkB r00lz mad n00bz. 
+# Cascade Claude 3.7 Sonnet Thinking
+
