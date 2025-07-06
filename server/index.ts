@@ -48,21 +48,19 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+// Initialize the server
+const initServer = async () => {
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
     res.status(status).json({ message });
     throw err;
   });
 
   // In production, serve static files manually to avoid path resolution issues
   if (app.get("env") === "production") {
-    // For Railway deployment, the static files should be in the dist/public directory
-    // We need to resolve this relative to the current working directory, not __dirname
     const staticPath = path.join(process.cwd(), 'dist', 'public');
     console.log('Serving static files from:', staticPath);
     
@@ -87,16 +85,19 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   }
 
-  // Use PORT environment variable if available, otherwise default to 5000 for local development
-  const port = process.env.PORT || 5000;
-  // Railway sets HOST automatically, so use that or default to 0.0.0.0 for production
-  const host = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
-  
-  server.listen({
-    port: Number(port),
-    host,
-  }, () => {
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    log(`Server running in ${app.get('env')} mode at ${protocol}://${host}:${port}`);
-  });
-})();
+  if (process.env.VERCEL !== '1') {
+    // Local development
+    const port = process.env.PORT || 5000;
+    const host = 'localhost';
+    
+    server.listen(port, () => {
+      log(`Server running in development mode at http://${host}:${port}`);
+    });
+  }
+};
+
+// Initialize the server
+initServer().catch(console.error);
+
+// Export the Express API for Vercel Serverless Functions
+export default app;
