@@ -162,30 +162,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Validate user solution
-  app.post("/api/puzzle/validate", async (req, res) => {
-    try {
-      const { input, userOutput, correctOutput } = req.body;
-      
-      if (!input || !userOutput || !correctOutput) {
-        return res.status(400).json({ 
-          message: 'Missing required fields: input, userOutput, and correctOutput are required'
-        });
-      }
-
-      const validation = await puzzleAnalyzer.validateUserSolution(
-        input,
-        userOutput,
-        correctOutput
-      );
-      
-      res.json(validation);
-    } catch (error) {
-      console.error('Error validating solution:', error);
-      res.status(500).json({ 
-        message: 'Failed to validate solution',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
+  app.post("/api/puzzle/validate", (req, res) => {
+    // Validation functionality was removed - return 501 Not Implemented
+    return res.status(501).json({ 
+      success: false,
+      message: 'Solution validation is not available in this version. Please update your client.'
+    });
   });
 
   // Test specific model with puzzle analysis
