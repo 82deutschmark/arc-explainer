@@ -1,19 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": null,
-  "functions": {
-    "dist/index.js": {
-      "runtime": "nodejs18.x"
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "buildCommand": "npm run build"
+      }
     }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "dist/index.js" },
-    { "source": "/(.*)", "destination": "dist/public/$1" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "dist/index.js" },
+    { "src": "/api/(.*)", "dest": "/dist/index.js" },
+    { "src": "/(.*)", "dest": "/dist/public/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/dist/public/index.html" }
   ]
