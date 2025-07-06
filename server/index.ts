@@ -61,7 +61,33 @@ const initServer = async () => {
 
   // In production, serve static files manually to avoid path resolution issues
   if (app.get("env") === "production") {
-    const staticPath = path.join(process.cwd(), 'dist', 'public');
+    // Try different paths to accommodate various deployment environments
+    // This helps with Railway, Vercel, and other cloud platforms
+    const possiblePaths = [
+      path.join(process.cwd(), 'dist', 'public'),
+      path.join(process.cwd(), 'public'),
+      path.join(__dirname, '..', 'public')
+    ];
+    
+    let staticPath = '';
+    // Find the first path that exists
+    for (const p of possiblePaths) {
+      try {
+        const { statSync } = await import('fs');
+        statSync(p);
+        staticPath = p;
+        console.log('Found static files at:', staticPath);
+        break;
+      } catch (e) {
+        console.log('Path not found:', p);
+      }
+    }
+    
+    if (!staticPath) {
+      console.error('No static path found! Using default path.');
+      staticPath = path.join(process.cwd(), 'dist', 'public');
+    }
+    
     console.log('Serving static files from:', staticPath);
     
     // Serve static files with a fallback to index.html for SPA routing
