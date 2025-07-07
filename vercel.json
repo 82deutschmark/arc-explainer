@@ -10,8 +10,8 @@
     }
   ],
   "routes": [
+    { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/dist/index.js" },
-    { "src": "/(.*)", "dest": "/dist/public/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/dist/public/index.html" }
   ]
