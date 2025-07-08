@@ -43,6 +43,39 @@ This tool treats ARC-AGI puzzles as alien communication patterns that humans can
    - Browse puzzles by difficulty and grid size
    - Select a puzzle to examine with AI models
 
+## 🚨 Deployment Troubleshooting
+
+### Common Issues & Solutions
+
+#### 404 Errors on Vercel/Railway
+If you see a 404 error when deploying to Vercel or Railway, check your `vercel.json` routing configuration. The most common issue is having a catch-all route that interferes with static file serving.
+
+**Incorrect (causes 404s):**
+```json
+{
+  "routes": [
+    { "src": "/(.*)", "dest": "/dist/public/$1" },
+    { "handle": "filesystem" }
+  ]
+}
+```
+
+**Correct (works with SPAs):**
+```json
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/dist/index.js" },
+    { "src": "/(.*)", "dest": "/dist/public/index.html" }
+  ]
+}
+```
+
+Key points:
+1. The `filesystem` handler must come first to serve static files
+2. API routes should be explicitly defined before the SPA fallback
+3. The SPA fallback should be the last route and point to `index.html`
+
 ## 🧩 How It Works
 
 ### 1. Puzzle Loading
