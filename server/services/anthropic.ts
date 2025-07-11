@@ -126,7 +126,7 @@ Your job:
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)
 
-Respond in this JSON format:
+YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
 {
   "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
@@ -154,7 +154,43 @@ Respond in this JSON format:
       const content = response.content[0];
       const textContent = content.type === 'text' ? content.text : '{}';
       
-      const result = JSON.parse(textContent);
+      // Try to extract JSON from the response, even if there's extra text
+      let result;
+      try {
+        // First try to parse as pure JSON
+        result = JSON.parse(textContent);
+      } catch (parseError) {
+        // If that fails, try to find JSON within the text
+        const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            result = JSON.parse(jsonMatch[0]);
+          } catch (secondParseError) {
+            // If JSON extraction fails, create a fallback response
+            result = {
+              patternDescription: "Unable to parse model response",
+              solvingStrategy: "The AI model returned an invalid response format.",
+              hints: ["Try using a different model", "Check the model configuration", "The response was not in valid JSON format"],
+              alienMeaning: "The aliens seem to be having communication difficulties.",
+              confidence: 0,
+              alienMeaningConfidence: 0,
+              rawResponse: textContent.substring(0, 500) + "..." // Include first 500 chars for debugging
+            };
+          }
+        } else {
+          // No JSON found at all
+          result = {
+            patternDescription: "No valid JSON response found",
+            solvingStrategy: "The AI model did not return a structured response.",
+            hints: ["The model may need different prompting", "Try adjusting the temperature", "Consider using a different model"],
+            alienMeaning: "The aliens are speaking in an unknown format.",
+            confidence: 0,
+            alienMeaningConfidence: 0,
+            rawResponse: textContent.substring(0, 500) + "..." // Include first 500 chars for debugging
+          };
+        }
+      }
+      
       return {
         model: modelKey,
         ...result,

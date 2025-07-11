@@ -57,9 +57,10 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-2">
-          <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer</h1>
+          <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer - Colorblindness Aid</h1>
           <p className="text-lg text-gray-600 space-y-2">
-            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite—most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a nine-color grid and wondered what cosmic joke you’re missing, you’re not alone.
+            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite—most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a nine-color grid and wondered what cosmic joke you’re missing, you’re not alone. I built this app to explain to me WHY these answers are correct. 
+            These are the tasks directly cloned from v1 training set of the ARC-AGI prize. 
           </p>
 
           <p className="text-sm text-gray-500 space-y-2">
@@ -67,11 +68,17 @@ export default function PuzzleBrowser() {
           </p>
 
           <p className="text-sm text-gray-500 space-y-2">
-            That’s why this app replaces colors with emoji (and numbers behind the scenes).  The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious—can practice the kind of reasoning future mission controllers will need.
+            That’s why this app replaces colors with emojis (and behind the scenes, it is all numbers 0-9).  The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious—can practice the kind of reasoning future mission controllers will need.
           </p>
 
-          <p className="text-xs text-gray-400 italic">
-            TL;DR: These puzzles are hard, emojis are fun, and accessibility matters.  Let’s figure them out together.
+          <p className="text-xs text-black-400 font-bold">
+            TL;DR: These puzzles are hard for a lot of humans (especially the neurodivergent), emojis are fun, and accessibility matters.
+          </p>
+          <p className="text-xs text-blue-600 underline">
+            Want a more game-like spin on ARC puzzles?&nbsp;
+            <a href="https://sfmc.markbarney.net" target="_blank" rel="noopener noreferrer" className="underline">
+              Check out my experiment here
+            </a>.
           </p>
         </header>
 
