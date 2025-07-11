@@ -1,19 +1,19 @@
-# ARC-AGI Puzzle Examination Tool 🛸
+# ARC-AGI Puzzle Explorer - Colorblindness Aid 🛸
 
-An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus - Artificial General Intelligence) puzzles through the lens of alien communication patterns. Rather than solving puzzles, this tool helps humans (especially children) understand abstract reasoning by translating complex grid patterns into space-themed emoji representations and providing AI-powered explanations of WHY solutions work.
+An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus - Artificial General Intelligence) puzzles with accessibility in mind. If you've ever stared at a nine-color grid and wondered what cosmic joke you're missing, you're not alone. This tool helps humans (especially those with colorblindness and neurodivergent thinkers) understand abstract reasoning by translating complex grid patterns into emoji representations and providing AI-powered explanations of WHY solutions work.
 
 ## 🌟 Project Overview
 
-This tool treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the official fchollet/ARC-AGI repository, focuses on smaller grids (≤10x10 for better comprehension), and provides multiple AI model analyses to explain the underlying logic in simple terms.
+This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite—many people find these puzzles extremely challenging. The app treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the v1 training set of the ARC-AGI prize, focuses on smaller grids (≤10x10 for better comprehension), and provides AI-powered analyses to explain the underlying logic in simple terms.
 
 ### Key Features
 
-- **Real Puzzle Data**: Direct integration with fchollet/ARC-AGI GitHub repository (400+ puzzles)
-- **Space-Themed Translation**: Numbers converted to space emojis (🌌 ⭐ 🌙 etc.) for engaging visualization
-- **AI Model Testing**: 7 different OpenAI models with transparent pricing information
-- **Pattern Analysis**: AI explanations focused on WHY solutions are correct, not HOW to solve
-- **Auto-Save System**: Analyzed puzzles automatically saved as JSON files for future reference
-- **Child-Friendly**: Simple language explanations suitable for young learners
+- **Accessibility Focus**: Designed for colorblind users and anyone who struggles with the standard puzzle representation
+- **Emoji Translation**: Numbers (0-9) converted to emojis for better visualization and accessibility
+- **Real Puzzle Data**: Uses puzzles from the v1 training set of the ARC-AGI prize
+- **AI-Powered Explanations**: Focuses on WHY solutions are correct, not just HOW to solve them
+- **Filter Options**: Ability to filter by grid size and other parameters
+- **Neurodivergent-Friendly**: Designed to be accessible to diverse thinking styles
 
 ## 🚀 Quick Start
 
@@ -79,18 +79,18 @@ Key points:
 ## 🧩 How It Works
 
 ### 1. Puzzle Loading
-- Uses real ARC-AGI puzzles from arc-explainer\data\training
-- ???? 
-- ????
+- Uses real ARC-AGI puzzles from the v1 training set
+- Processes grid data for consistent viewing
+- Prioritizes smaller grids (≤10x10) for better comprehension
 
 
-### 4. Pattern Explanation
-Each AI model provides:
-- **Pattern Description**: What the alien communication rule appears to be
+### 2. Pattern Explanation
+AI analysis provides:
+- **Pattern Description**: What transformation rule is being used
 - **Solving Strategy**: How the pattern transforms input to output
-- **Simple Explanations**: Child-friendly language describing the logic
+- **Simple Explanations**: Accessible language describing the logic
 - **Confidence Score**: AI's certainty about the analysis
-- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions. 
+- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic and symbols used 
 
 ### 5. Auto-Save System
 - First analysis triggers automatic save to `data/explained/{taskId}-EXPLAINED.json`
@@ -129,16 +129,16 @@ Each AI model provides:
 ## 🎯 Core Features
 
 ### Puzzle Browser
-- Filter by sizes (No idea if this works)
-- Filter by grid size (No idea if this works)
-- Real-time GitHub API integration  (Pretty sure we arent using this but might be nice for later?)
-- Grid consistency analysis (No idea if this works)
+- Filter by maximum grid size
+- Filter by grid size consistency
+- Option to prioritize unexplained puzzles
+- Visual indicators for grid complexity
 
 ### Puzzle Examiner
-- grid display with space emojis
+- Grid display with emojis instead of colors for accessibility
 - Side-by-side training examples and test cases
-- Multiple AI model testing with one-click analysis
-- cost information and premium model warnings
+- AI-powered analysis of puzzle solutions
+- Explanations focused on why solutions are correct
 
 ### Auto-Export System
 - Automatic JSON file creation after first analysis
@@ -153,15 +153,14 @@ Each AI model provides:
 ### Frontend (React + TypeScript)
 - **Vite**: Fast development and building
 - **TailwindCSS + shadcn/ui**: Modern, accessible UI components
-- **React Query**: Server state management and caching
+- **React Query / TanStack Query**: Server state management and caching
 - **Wouter**: Lightweight client-side routing
 
 ### Backend (Express + TypeScript)
 - **Express.js**: RESTful API server
-- **OpenAI API**: Multiple model integration with fallback handling
-- **Claude API**: Multiple model integration with fallback handling
-- **GitHub API**: Real-time puzzle fetching (Not using)
-- **Drizzle ORM**: Type-safe database operations (PostgreSQL)
+- **OpenAI API**: AI model integration for puzzle explanations
+- **Local Puzzle Storage**: Efficient loading of puzzle data
+- **Custom Analysis Logic**: Processing of puzzle patterns
 
 ### Data Pipeline
 - **Real-time GitHub fetching**: Direct API calls to fchollet/ARC-AGI (deprecated but nice feature)
@@ -217,11 +216,11 @@ npm run db:migrate   # Apply migrations
 
 ## 🎨 Design Philosophy
 
-### Learner-Centered Approach
-- Space themes make abstract patterns engaging
-- Simple language explanations suitable for young learners
-- Visual emoji representations easier to understand than numbers
-- Focus on WHY patterns work, not memorizing solutions
+### Accessibility-Centered Approach
+- Emoji representations make abstract patterns accessible for colorblind users
+- Simple language explanations suitable for diverse thinkers
+- Focus on understanding WHY patterns work, not just memorizing solutions
+- Designed to be accessible to neurodivergent users
 
 ### Educational Focus
 - Treats puzzles as alien communication to decode
