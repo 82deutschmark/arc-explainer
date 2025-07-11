@@ -107,15 +107,17 @@ export default function PuzzleExaminer() {
     'o1-mini-2024-09-12'
   ]);
 
-  // Available OpenAI models with token costs per million tokens
+  // Available models with token costs per million tokens
   const models = [
+    // OpenAI Models
     { 
       key: 'gpt-4.1-nano-2025-04-14', 
       name: 'GPT-4.1 Nano', 
       color: 'bg-blue-500', 
       premium: false,
       cost: { input: '$0.10', output: '$0.40' },
-      supportsTemperature: true
+      supportsTemperature: true,
+      provider: 'OpenAI'
     },
     { 
       key: 'gpt-4.1-mini-2025-04-14', 
@@ -123,7 +125,8 @@ export default function PuzzleExaminer() {
       color: 'bg-purple-500', 
       premium: false,
       cost: { input: '$0.40', output: '$1.60' },
-      supportsTemperature: true
+      supportsTemperature: true,
+      provider: 'OpenAI'
     },
     { 
       key: 'gpt-4o-mini-2024-07-18', 
@@ -131,7 +134,8 @@ export default function PuzzleExaminer() {
       color: 'bg-orange-500', 
       premium: false,
       cost: { input: '$0.15', output: '$0.60' },
-      supportsTemperature: true
+      supportsTemperature: true,
+      provider: 'OpenAI'
     },
     { 
       key: 'o3-mini-2025-01-31', 
@@ -139,7 +143,8 @@ export default function PuzzleExaminer() {
       color: 'bg-red-500', 
       premium: true,
       cost: { input: '$1.10', output: '$4.40' },
-      supportsTemperature: false
+      supportsTemperature: false,
+      provider: 'OpenAI'
     },
     { 
       key: 'o4-mini-2025-04-16', 
@@ -147,15 +152,17 @@ export default function PuzzleExaminer() {
       color: 'bg-pink-500', 
       premium: true,
       cost: { input: '$1.10', output: '$4.40' },
-      supportsTemperature: false
+      supportsTemperature: false,
+      provider: 'OpenAI'
     },
     { 
-      key: 'o1-mini-2024-09-12', 
-      name: 'o1-mini-2024-09-12', 
+      key: 'o4-mini-deep-research-2025-06-26', 
+      name: 'o4-mini-deep-research-2025-06-26', 
       color: 'bg-green-500', 
       premium: true,
-      cost: { input: '$1.10', output: '$4.40' },
-      supportsTemperature: false
+      cost: { input: '$2', output: '$8' },
+      supportsTemperature: false,
+      provider: 'OpenAI'
     },
     { 
       key: 'gpt-4.1-2025-04-14', 
@@ -163,7 +170,55 @@ export default function PuzzleExaminer() {
       color: 'bg-yellow-500', 
       premium: true,
       cost: { input: '$2.00', output: '$8.00' },
-      supportsTemperature: true
+      supportsTemperature: true,
+      provider: 'OpenAI'
+    },
+    
+    // Anthropic Models
+    { 
+      key: 'claude-sonnet-4-20250514', 
+      name: 'Claude Sonnet 4', 
+      color: 'bg-indigo-500', 
+      premium: true,
+      cost: { input: '$3.00', output: '$15.00' },
+      supportsTemperature: true,
+      provider: 'Anthropic'
+    },
+    { 
+      key: 'claude-3-7-sonnet-20250219', 
+      name: 'Claude 3.7 Sonnet', 
+      color: 'bg-indigo-400', 
+      premium: false,
+      cost: { input: '$3.00', output: '$15.00' },
+      supportsTemperature: true,
+      provider: 'Anthropic'
+    },
+    { 
+      key: 'claude-3-5-sonnet-20241022', 
+      name: 'Claude 3.5 Sonnet', 
+      color: 'bg-violet-500', 
+      premium: false,
+      cost: { input: '$3.00', output: '$15.00' },
+      supportsTemperature: true,
+      provider: 'Anthropic'
+    },
+    { 
+      key: 'claude-3-5-haiku-20241022', 
+      name: 'Claude 3.5 Haiku', 
+      color: 'bg-violet-400', 
+      premium: false,
+      cost: { input: '$0.80', output: '$4.00' },
+      supportsTemperature: true,
+      provider: 'Anthropic'
+    },
+    { 
+      key: 'claude-3-haiku-20240307', 
+      name: 'Claude 3 Haiku', 
+      color: 'bg-purple-400', 
+      premium: false,
+      cost: { input: '$0.25', output: '$1.25' },
+      supportsTemperature: true,
+      provider: 'Anthropic'
     }
   ];
 
@@ -430,7 +485,9 @@ export default function PuzzleExaminer() {
                       )}
                       {result.alienMeaningConfidence && (
                         <Badge variant="outline" className="text-xs">
-                          Alien: {Math.round(result.alienMeaningConfidence * 100)}%
+                          Alien: {typeof result.alienMeaningConfidence === 'string' 
+                            ? result.alienMeaningConfidence 
+                            : Math.round(result.alienMeaningConfidence * 100) + '%'}
                         </Badge>
                       )}
                       {/* Fallback for old confidence format */}

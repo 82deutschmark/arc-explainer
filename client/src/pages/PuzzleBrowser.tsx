@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Download, Eye, Github, RefreshCw } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -16,39 +16,10 @@ import type { PuzzleMetadata } from '@shared/types';
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
-  const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('true');
+  const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [showUnexplainedOnly, setShowUnexplainedOnly] = useState<boolean>(true);
   const { toast } = useToast();
 
-  // Get GitHub repository info
-  const { data: githubInfo } = useQuery({
-    queryKey: ['/api/puzzle/github/available'],
-  });
-
-  // Download more puzzles
-  const downloadMutation = useMutation({
-    mutationFn: async (count?: number) => {
-      const body = count ? { count } : {};
-      const response = await apiRequest('POST', '/api/puzzle/github/download', body);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "Success",
-        description: data.message,
-      });
-      // Refetch puzzle list
-      window.location.reload();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to download puzzles from GitHub",
-        variant: "destructive",
-      });
-    }
-  });
-  
   // Create filters object for the hook
   const filters = React.useMemo(() => {
     const result: any = {};
@@ -151,51 +122,6 @@ export default function PuzzleBrowser() {
           </CardContent>
         </Card>
 
-        {/* GitHub Repository Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Github className="h-5 w-5" />
-              ARC-AGI Repository
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm">
-                  {githubInfo && (githubInfo as any).count ? `${(githubInfo as any).count} puzzles available in repository` : 'Loading repository info...'}
-                </p>
-                <p className="text-xs text-gray-500">
-                  Puzzles are downloaded locally for analysis and filtering
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => downloadMutation.mutate(undefined)}
-                  disabled={downloadMutation.isPending}
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {downloadMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  ) : (
-                    <Download className="h-4 w-4 mr-1" />
-                  )}
-                  Download All Puzzles
-                </Button>
-                <Button 
-                  onClick={() => downloadMutation.mutate(50)}
-                  disabled={downloadMutation.isPending}
-                  size="sm"
-                  variant="outline"
-                >
-                  Download 50 More
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Results */}
         <Card>
           <CardHeader>
@@ -208,7 +134,7 @@ export default function PuzzleBrowser() {
               )}
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Downloaded puzzles available for examination
+              Puzzles available for examination
             </p>
           </CardHeader>
           <CardContent>
@@ -222,7 +148,7 @@ export default function PuzzleBrowser() {
                 <Grid3X3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">No puzzles match your current filters.</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  Try adjusting your filters or downloading more puzzles.
+                  Try adjusting your filters.
                 </p>
               </div>
             ) : (

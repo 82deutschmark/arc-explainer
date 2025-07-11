@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import type { ARCTask, PuzzleMetadata } from '@shared/types';
-import { githubService } from './githubService';
 
 interface PuzzleInfo {
   id: string;
@@ -26,16 +25,7 @@ export class PuzzleLoader {
   private async initializeData() {
     if (this.initialized) return;
     
-    // Download puzzles if we don't have many locally
-    const localPuzzles = githubService.getLocalPuzzles();
-    console.log(`Found ${localPuzzles.length} local puzzles`);
-    
-    if (localPuzzles.length < 10) {
-      console.log('Downloading puzzles from GitHub...');
-      const downloaded = await githubService.downloadSmallPuzzles(30);
-      console.log(`Downloaded ${downloaded} puzzles`);
-    }
-    
+    console.log('Loading local puzzles...');
     this.loadPuzzleMetadata();
     this.initialized = true;
   }
@@ -160,21 +150,13 @@ export class PuzzleLoader {
       if (filters.gridSizeConsistent !== undefined) {
         puzzles = puzzles.filter(p => p.gridSizeConsistent === filters.gridSizeConsistent);
       }
+      if (filters.prioritizeUnexplained) {
+        puzzles = puzzles.filter(p => !p.hasExplanation);
+      }
     }
 
-    // Sort: prioritize unexplained puzzles, then by grid size (smaller first), then by ID
-    return puzzles.sort((a, b) => {
-      // First sort: unexplained puzzles come first
-      if (a.hasExplanation !== b.hasExplanation) {
-        return a.hasExplanation ? 1 : -1;
-      }
-      // Second sort: smaller grids first
-      if (a.maxGridSize !== b.maxGridSize) {
-        return a.maxGridSize - b.maxGridSize;
-      }
-      // Third sort: alphabetical by ID
-      return a.id.localeCompare(b.id);
-    });
+    // Simple sort by ID (frontend handles more complex sorting)
+    return puzzles.sort((a, b) => a.id.localeCompare(b.id));
   }
 
   getPuzzleMetadata(taskId: string): PuzzleInfo | null {
@@ -182,12 +164,8 @@ export class PuzzleLoader {
   }
 
   async downloadPuzzle(taskId: string): Promise<boolean> {
-    const success = await githubService.downloadPuzzle(taskId);
-    if (success) {
-      // Reload metadata after download
-      this.loadPuzzleMetadata();
-    }
-    return success;
+    // No-op for local puzzles
+    return true;
   }
 
   getAvailablePuzzleIds(): string[] {

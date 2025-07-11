@@ -1,5 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { puzzleAnalyzer } from "./services/puzzleAnalyzer";
 import { puzzleLoader } from "./services/puzzleLoader";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -34,7 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!task) {
         return res.status(404).json({ 
-          message: `Puzzle with ID ${taskId} not found. The puzzles are stored locally, so no download is possible.`
+          message: `Puzzle with ID ${taskId} not found. Try one of the available puzzles or check if the ID is correct.`
         });
       }
       
@@ -43,6 +45,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error fetching puzzle task:', error);
       res.status(500).json({ 
         message: 'Failed to fetch puzzle task',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get AI analysis of a puzzle
+  app.get("/api/puzzle/analyze/:taskId", async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      const task = await puzzleLoader.loadPuzzle(taskId);
+      
+      if (!task) {
+        return res.status(404).json({ 
+          message: `Puzzle with ID ${taskId} not found`
+        });
+      }
+
+      const analysis = await puzzleAnalyzer.analyzePuzzle(task);
+      
+      if (analysis.error) {
+        return res.status(400).json({ message: analysis.error });
+      }
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error('Error analyzing puzzle:', error);
+      res.status(500).json({ 
+        message: 'Failed to analyze puzzle',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -68,8 +98,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Puzzle not found' });
       }
 
-      const { openaiService } = await import('./services/openai');
-      const result = await openaiService.analyzePuzzleWithModel(task, model as any, temperature);
+      let result;
+      
+      // Determine which service to use based on model name
+      if (model.startsWith('claude-')) {
+        // Use Anthropic service for Claude models
+        const { anthropicService } = await import('./services/anthropic');
+        result = await anthropicService.analyzePuzzleWithModel(task, model as any, temperature);
+      } else {
+        // Use OpenAI service for all other models
+        const { openaiService } = await import('./services/openai');
+        result = await openaiService.analyzePuzzleWithModel(task, model as any, temperature);
+      }
       
       res.json(result);
     } catch (error) {

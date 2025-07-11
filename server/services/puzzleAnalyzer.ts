@@ -13,7 +13,7 @@ export class PuzzleAnalyzer {
     }
 
     // Use the first available model for basic analysis
-    const analysis = await openaiService.analyzePuzzleWithModel(task, 'gpt-4o-mini-2024-07-18');
+    const analysis = await openaiService.analyzePuzzleWithModel(task, 'o1-mini-2024-09-12');
     
     return {
       ...analysis,

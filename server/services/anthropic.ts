@@ -1,27 +1,25 @@
-import OpenAI from "openai";
+import Anthropic from '@anthropic-ai/sdk';
 import { ARCTask } from "../../shared/types";
 
-// the deprecated OpenAI model is "gpt-4o" which was released May 13, 2024.  USER EXPLICITLY DEMANDS ONLY THE MODELS THEY APPROVE.
+// Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
-  "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
-  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14",
-  "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-  "o3-mini-2025-01-31": "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16": "o4-mini-2025-04-16",
-  "o1-mini-2024-09-12": "o1-mini-2025-09-12",
-  "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
+  "claude-opus-4-20250514": "claude-opus-4-20250514",
+  "claude-sonnet-4-20250514": "claude-sonnet-4-20250514", 
+  "claude-3-7-sonnet-20250219": "claude-3-7-sonnet-20250219",
+  "claude-3-5-sonnet-20241022": "claude-3-5-sonnet-20241022",
+  "claude-3-5-haiku-20241022": "claude-3-5-haiku-20241022",
+  "claude-3-opus-20240229": "claude-3-opus-20240229",
+  "claude-3-haiku-20240307": "claude-3-haiku-20240307",
 } as const;
 
-// Models that do NOT support temperature parameter
-const MODELS_WITHOUT_TEMPERATURE = new Set([
-  "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16",
-  "o1-mini-2024-09-12",
+// Models that do NOT support temperature parameter (based on Anthropic documentation)
+const MODELS_WITHOUT_TEMPERATURE = new Set<string>([
+  // Most Anthropic models support temperature, but we'll keep this for potential future models
 ]);
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export class OpenAIService {
+export class AnthropicService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
@@ -136,25 +134,29 @@ Respond in this JSON format:
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
   "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
 }`;
 
     try {
       const requestOptions: any = {
         model: modelName,
+        max_tokens: 2000,
         messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
       };
 
       // Only add temperature for models that support it
-      if (!MODELS_WITHOUT_TEMPERATURE.has(modelKey)) {
+      if (!MODELS_WITHOUT_TEMPERATURE.has(modelName)) {
         requestOptions.temperature = temperature;
       }
 
-      const response = await openai.chat.completions.create(requestOptions);
-
-      const result = JSON.parse(response.choices[0].message.content || "{}");
+      const response = await anthropic.messages.create(requestOptions);
+      
+      // Extract text content from Anthropic's response format
+      const content = response.content[0];
+      const textContent = content.type === 'text' ? content.text : '{}';
+      
+      const result = JSON.parse(textContent);
       return {
         model: modelKey,
         ...result,
@@ -168,4 +170,4 @@ Respond in this JSON format:
   }
 }
 
-export const openaiService = new OpenAIService();
+export const anthropicService = new AnthropicService(); 
