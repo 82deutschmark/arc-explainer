@@ -40,7 +40,7 @@ This tool treats ARC-AGI puzzles as alien communication patterns that humans can
 
 4. **Access the Tool**
    - Open http://localhost:5000
-   - Browse puzzles by difficulty and grid size
+   - Browse puzzles 
    - Select a puzzle to examine with AI models
 
 ## 🚨 Deployment Troubleshooting
@@ -79,125 +79,10 @@ Key points:
 ## 🧩 How It Works
 
 ### 1. Puzzle Loading
-- Fetches real ARC-AGI puzzles from GitHub API
-- Downloads and caches puzzle files locally
-- Analyzes grid sizes and patterns for filtering
+- Uses real ARC-AGI puzzles from arc-explainer\data\training
+- ???? 
+- ????
 
-This is the prompt that is sent to the AI model:
-
-const prompt = `You are helping idiot humans understand alien communication patterns. Look at this puzzle where we already know the correct answer.
-
-TRAINING EXAMPLES (what the aliens taught us):
-${trainingExamples}
-
-TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):
-Input: ${JSON.stringify(task.test[0].input)}
-Correct Answer: ${JSON.stringify(task.test[0].output)}
-
-Your job:
-1. Speculate about WHY this solution is correct by understanding these critical concepts:
-# ARC-AGI Transformation Types
-
-## Geometric Transformations
-- Rotation (90°, 180°, 270°)
-- Reflection (horizontal, vertical, diagonal)
-- Translation (moving objects)
-- Scaling (resize objects)
-
-## Pattern Operations
-- Pattern completion
-- Pattern extension
-- Pattern repetition
-- Sequence prediction
-
-## Logical Operations
-- AND operations
-- OR operations
-- XOR operations
-- NOT operations
-- Conditional logic
-
-## Grid Operations
-- Grid splitting (horizontal, vertical, quadrant)
-- Grid merging
-- Grid overlay
-- Grid subtraction
-
-## Object Manipulation
-- Object counting
-- Object sorting
-- Object grouping
-- Object filtering
-
-## Spatial Relationships
-- Inside/outside relationships
-- Adjacent/touching relationships
-- Containment relationships
-- Proximity relationships
-
-## Color Operations
-- Color mapping
-- Color replacement
-- Color pattern matching
-- Color logic operations
-
-## Shape Operations
-- Shape detection
-- Shape transformation
-- Shape combination
-- Shape decomposition
-
-## Rule Inference
-- Single rule application
-- Multiple rule application
-- Rule interaction
-- Rule generalization
-
-## Abstract Reasoning
-- Symbol interpretation
-- Semantic relationships
-- Conceptual mapping
-- Abstract pattern recognition
-
-
-2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  
-3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved. 
-
-
-4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
-
-0: ⬛ (no/nothing/negative)
-1: ✅ (yes/positive/agreement)
-2: 👽 (alien/them/we)
-3: 👤 (human/us/you)
-4: 🪐 (their planet/home)
-5: 🌍 (human planet/Earth)
-6: 🛸 (their ships/travel)
-7: ☄️ (danger/bad/problem)
-8: ♥ (peace/friendship/good)
-9: ⚠️ (warning/attention/important)
-
-Respond in this JSON format:
-{
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
-  "solvingStrategy": "Step-by-step how to solve it, for dummies.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
-}`;
-
-### 3. AI Model Analysis
-Seven OpenAI models analyze puzzles with different capabilities and costs:
-
-| Model | Input Cost | Output Cost | Type |
-|-------|------------|-------------|------|
-| GPT-4.1 Nano | $0.10/M | $0.40/M | Standard |
-| GPT-4o Mini | $0.15/M | $0.60/M | Standard |
-| GPT-4.1 Mini | $0.40/M | $1.60/M | Standard |
-| o1-mini | $1.10/M | $4.40/M | Premium 💰 |
-| o3-mini | $1.10/M | $4.40/M | Premium 💰 |
-| o4-mini | $1.10/M | $4.40/M | Premium 💰 |
-| GPT-4.1 | $2.00/M | $8.00/M | Premium 💰 |
 
 ### 4. Pattern Explanation
 Each AI model provides:
@@ -205,6 +90,7 @@ Each AI model provides:
 - **Solving Strategy**: How the pattern transforms input to output
 - **Simple Explanations**: Child-friendly language describing the logic
 - **Confidence Score**: AI's certainty about the analysis
+- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions. 
 
 ### 5. Auto-Save System
 - First analysis triggers automatic save to `data/explained/{taskId}-EXPLAINED.json`
@@ -223,11 +109,11 @@ Each AI model provides:
 │   └── index.html
 ├── server/                 # Express backend
 │   ├── services/           # Core services
-│   │   ├── githubService.ts    # Puzzle downloading from GitHub
+│   │   ├── githubService.ts    # Puzzle downloading from GitHub NOT USED!!!
 │   │   ├── openai.ts          # AI model integration
 │   │   ├── puzzleAnalyzer.ts  # Grid analysis utilities
-│   │   ├── puzzleExporter.ts  # JSON export functionality
-│   │   └── puzzleLoader.ts    # Puzzle loading and caching
+│   │   ├── puzzleExporter.ts  # JSON export functionality for explained puzzles
+│   │   └── puzzleLoader.ts    # Puzzle loading and caching   Possibly poorly architected or designed 
 │   ├── index.ts           # Express server setup
 │   ├── routes.ts          # API endpoints
 │   └── storage.ts         # Data storage interface
@@ -243,16 +129,16 @@ Each AI model provides:
 ## 🎯 Core Features
 
 ### Puzzle Browser
-- Filter by difficulty (easy/medium/hard)
-- Filter by grid size (≤10x10 recommended)
-- Real-time GitHub API integration
-- Grid consistency analysis
+- Filter by sizes (No idea if this works)
+- Filter by grid size (No idea if this works)
+- Real-time GitHub API integration  (Pretty sure we arent using this but might be nice for later?)
+- Grid consistency analysis (No idea if this works)
 
 ### Puzzle Examiner
-- Interactive grid display with space emojis
+- grid display with space emojis
 - Side-by-side training examples and test cases
 - Multiple AI model testing with one-click analysis
-- Real-time cost information and premium model warnings
+- cost information and premium model warnings
 
 ### Auto-Export System
 - Automatic JSON file creation after first analysis
@@ -273,13 +159,14 @@ Each AI model provides:
 ### Backend (Express + TypeScript)
 - **Express.js**: RESTful API server
 - **OpenAI API**: Multiple model integration with fallback handling
-- **GitHub API**: Real-time puzzle fetching
+- **Claude API**: Multiple model integration with fallback handling
+- **GitHub API**: Real-time puzzle fetching (Not using)
 - **Drizzle ORM**: Type-safe database operations (PostgreSQL)
 
 ### Data Pipeline
-- **Real-time GitHub fetching**: Direct API calls to fchollet/ARC-AGI
+- **Real-time GitHub fetching**: Direct API calls to fchollet/ARC-AGI (deprecated but nice feature)
 - **Local caching**: File system storage for downloaded puzzles
-- **Metadata extraction**: Grid size, difficulty, pattern analysis
+- **Metadata extraction**: Grid size, difficulty, pattern analysis  (No idea if this works)
 - **Export automation**: JSON file generation with comprehensive data
 
 ## 🌍 Environment Configuration
@@ -300,13 +187,12 @@ NODE_ENV=development           # Environment mode
 ### Examining a Puzzle
 1. Visit the home page
 2. Click "Browse Puzzles"
-3. Filter by grid size (≤10x10 recommended)
 4. Select a puzzle to examine
 5. Click AI model buttons to analyze patterns
 
 
 ### Accessing Saved Analyses
-- Analyzed puzzles automatically save to `data/explained/`
+- Analyzed puzzles automatically save to `data/explained/`  (where does this go without a database?)
 - Files named: `{puzzleId}-EXPLAINED.json`
 - Contains all model explanations for comparison
 
@@ -331,7 +217,7 @@ npm run db:migrate   # Apply migrations
 
 ## 🎨 Design Philosophy
 
-### Child-Centered Approach
+### Learner-Centered Approach
 - Space themes make abstract patterns engaging
 - Simple language explanations suitable for young learners
 - Visual emoji representations easier to understand than numbers
@@ -359,4 +245,4 @@ Built for educational exploration of abstract reasoning patterns through the len
 
 ---
 
-*"Every puzzle is a message from another world, waiting to be understood."* 🛸
+ 🛸
