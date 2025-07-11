@@ -199,81 +199,64 @@
     ]
   },
   "explanations": {
-    "o3-mini-2025-01-31": {
-      "model": "o3-mini-2025-01-31",
-      "patternDescription": "It appears that the aliens split each picture into two halves using a special divider (the 🌍 symbol corresponds to the number 5) so that the left block (made of ✅ and ⬛) and the right block form two related images. Then a geometric transformation – perhaps a rotation or a reflection – is applied to one half before the two are compared or overlaid. The final grid is created by marking with the alien symbol (👽, which is 2) those positions where the transformed image and the other half agree (or in some cases where an extra signal is detected). This explanation fits the examples, though it might not capture every nuance for all cases.",
-      "solvingStrategy": "Step 1: Notice that the 7 columns always have a central column with a 5 (🌍); this column acts as the divider between two halves. Step 2: Interpret the first 3 columns as the left image (using ✅ for 1 and ⬛ for 0) and the last 3 columns as the right image. Step 3: Consider that one of these images is transformed – maybe rotated by 90°, reflected horizontally, or otherwise manipulated – so that positions from one half can be compared with positions in the other half. Step 4: For every cell in the resulting 3x3 grid, if the transformed left (or right) cell and the other half’s corresponding cell together indicate a signal (a 1 count that sums to 2), then mark that cell with a 2 (👽). Cells that don’t meet the condition remain 0 (⬛). (WARNING: This is a speculative strategy and there might be extra exceptions or nuances not immediately visible.)",
+    "claude-sonnet-4-20250514": {
+      "model": "claude-sonnet-4-20250514",
+      "patternDescription": "This is a logical XOR operation between the left and right sides of the grid, separated by the Earth symbol (🌍). The aliens are comparing patterns on both sides and marking positions where they differ.",
+      "solvingStrategy": "First, think of this as numbers instead of emojis to see the pattern clearly. Split each row at the Earth symbol (5/🌍) into left and right parts. For each position, compare the left side value with the right side value. If they're different, put a 2 (👽) in that position in the output. If they're the same, put a 0 (⬛). The Earth symbol acts as a divider and gets ignored.",
       "hints": [
-        "Key insight 1: The central column (🌍) is always used as a divider; focus on the left and right 3-column blocks.",
-        "Key insight 2: One block seems to be geometrically transformed (rotated or reflected) before comparing the two halves.",
-        "Key insight 3: The output 3x3 grid only shows alien signals (👽, or 2) in specific spots where the transformed parts match, but this logic may have subtle exceptions."
+        "The Earth symbol (🌍) always divides the input into two parts to compare",
+        "Look for positions where left side and right side have different values",
+        "When values differ, the aliens mark it with their symbol (👽)"
       ],
-      "alienMeaning": "Based on this rule‐mixing grid overlay and geometric transformation, the aliens might be trying to communicate that their presence – symbolized by 👽 – emerges only when their view aligns with or mirrors part of your world. It could be a coded message like ‘we are hidden until our mirror image is seen,’ or ‘our signal appears when Earth’s image is correctly transformed.’",
-      "patternConfidence": 0.75,
-      "strategyConfidence": 0.8,
-      "hintsConfidence": 0.7,
-      "alienMeaningConfidence": 0.6
+      "alienMeaning": "The aliens appear to be teaching us about differences and comparisons. They're showing us how to identify where two patterns don't match, possibly as a way to detect discrepancies or changes. This seems like a neutral, educational communication - they're teaching us their logical thinking process rather than expressing hostility. They may be testing our ability to spot differences, which could be important for future communication.",
+      "confidence": "85",
+      "alienMeaningConfidence": "70"
+    },
+    "claude-3-5-haiku-20241022": {
+      "model": "claude-3-5-haiku-20241022",
+      "patternDescription": "Grid-based conditional object extraction with specific positional rules",
+      "solvingStrategy": "1. Look at the input grid carefully. Notice the constant '5' (🌍) in the middle column across all rows. 2. Count the number of '1's (✅) in each row and column. 3. Use those counts to determine the placement of '2's (👽) in the output grid. 4. Specifically, place '2's where the row or column has an odd number of '1's.",
+      "hints": [
+        "The '5' (🌍) is always in the same column and seems to be a 'reference point'",
+        "Count the '1's (✅) in each row and column carefully",
+        "The output seems to depend on the distribution of '1's in the input"
+      ],
+      "alienMeaning": "The aliens appear to be demonstrating a complex communication protocol where the presence and distribution of 'positive' signals (✅) triggers specific response markers (👽). This could be a test of our pattern recognition and logical reasoning capabilities, suggesting they are evaluating our ability to decode nuanced, context-dependent communication.",
+      "confidence": 85,
+      "alienMeaningConfidence": 70
     },
     "gpt-4.1-nano-2025-04-14": {
       "model": "gpt-4.1-nano-2025-04-14",
-      "patternDescription": "The pattern seems to involve counting or identifying specific recurring elements within the grid, possibly focusing on the position of certain 'key' symbols like ones (✅) around a central highlight (the 5, which may signify importance or a reference point). This may not apply to all puzzles, especially if the arrangement or symbols change significantly. Essentially, it looks like we're detecting how many items of a certain type are near the center or specific parts—but we must be cautious that not all patterns follow this logic.",
-      "solvingStrategy": 0.8,
-      "hints": 0.7,
-      "alienMeaning": 0.6,
-      "patternConfidence": 0.75
+      "patternDescription": "The aliens seem to focus on counting the number of positive signals (✅) in the first two rows and then translating that count into the result. They are using a pattern where the sum of certain symbols determines the output, especially in the middle of the grid.",
+      "solvingStrategy": "First, think of the emojis as numbers: ✅=1, 👽=2, and so on. Look at the first two rows and count how many ✅ (yes) symbols are there. In the first example, the count is 2. In the second, it's 4. In the third, it's 2. The aliens then use this count to fill the middle row of the answer with that number of ✅ symbols at the start and end (left and right sides), filling the rest with nothing (⬛). For the specific test case, count the ✅ symbols in the first two rows, then place that number of ✅ in the first and third row's edges, leaving the middle row empty.",
+      "hints": [
+        "Count the number of positive signals (✅) in the first two rows.",
+        "The result shows the count of ✅ at the edges of the grid.",
+        "The middle row often remains empty or has a pattern based on earlier counts."
+      ],
+      "alienMeaning": "The aliens might be trying to communicate how many positive signals (✅) they see or agree on. They could be sharing a message of agreement or confirming a certain count. It doesn't seem hostile; rather, they might be trying to show us a simple count or agreement related to our signals.",
+      "confidence": 85,
+      "alienMeaningConfidence": 80
     },
     "gpt-4o-mini-2024-07-18": {
       "model": "gpt-4o-mini-2024-07-18",
-      "patternDescription": "The output seems to reflect a summarization or aggregation of certain elements in the input grid. Specifically, for each row in the output, it appears to count and categorize some kind of presence (or grouping) of 'yes' (✅) and aligns it with perhaps presence of 'no' (⬛), while ignoring the 'planet Earth' (🌍) marker in the calculation. This interpretation may not hold for all sets since patterns can be complex.",
-      "solvingStrategy": "1. Analyze the input grid as a mix of 'yes' and 'no' values using their numerical equivalents (1 and 0). 2. For each row in the output: count the occurrences of 'yes' (1 or ✅) in that specific row of the input. 3. Each output row seems to adjust based on the column's total counts and perhaps excludes certain numbers like '5' (🌍). 4. Be cautious, as what worked for this particular case may not apply universally without checking other scenarios closely.",
+      "patternDescription": "The transformation used in this puzzle seems to involve object counting and grid operations. Specifically, it looks like the aliens are counting the number of positive signals (✅) in each row and column, and creating a new grid based on that count.",
+      "solvingStrategy": "1. Look at each number (or emoji) in the input grid and remember that ✅ represents 1 and ⬛ represents 0. 2. Count the number of ✅ emojis in each row and column of the input grid. 3. Create a new grid where each position contains the count of ✅ emojis from the original grid. 4. For example, if a row has 2 ✅ emojis, that row in the output will have 2 in the corresponding position. 5. Finally, translate those counts back into emojis: 2 becomes 👽.",
       "hints": [
-        "The counting method might work generally, but there could be exceptions in other scenarios.",
-        "Focus on 'yes' (1) and 'no' (0) interactions; combinations could change the results unexpectedly.",
-        "Remember that the importance of certain markers (like 🌍) might change based on context, possibly altering interpretations."
+        "Key insight 1: The output grid is based on counting the number of positive signals in the input.",
+        "Key insight 2: Each position in the output corresponds to the count of ✅ from the original grid.",
+        "Key insight 3: If a position in the output is 0 (⬛), it means there were no ✅ in that corresponding position in the input."
       ],
-      "alienMeaning": "The aliens might be trying to convey a message about grouping and the importance of unity (represented by 'yes' ✅) over division ('no' ⬛). Alternatively, they could be hinting at a warning or importance of certain actions that should not be counted (like 🌍). However, this interpretation is speculative and more research may be necessary.",
-      "patternConfidence": 0.75,
-      "strategyConfidence": 0.8,
-      "hintsConfidence": 0.7,
-      "alienMeaningConfidence": 0.6
-    },
-    "gpt-4.1-2025-04-14": {
-      "model": "gpt-4.1-2025-04-14",
-      "patternDescription": "It looks like the aliens want us to find places in the input grids where a specific pattern of emojis (numbers) appears across each row, and then count occurrences of a particular combination. In particular, for each row, we seem to check the positions before and after the 🌍 (Earth/5) symbol, and count how many times ✅ (1) appears in those positions. We then map the count to 👽 (2) in the output grid at the corresponding spots. However, there may be exceptions or additional rules, so this approach might not always work.",
-      "solvingStrategy": "1. Convert all emojis to numbers for easier manipulation. 2. For each row in the input, find the position of 🌍 (5). 3. Look at the cells immediately before and after the 🌍 (if they exist). 4. Count how many ✅ (1) symbols are directly adjacent to 🌍 in each row. 5. In the output grid, place that count (as 👽 if it's 2, or ⬛ if it's 0) in the corresponding position, possibly only in certain columns. 6. Repeat for each row. WARNING: There could be exceptions where the pattern doesn't hold, or other symbols might matter in other cases.",
-      "hints": [
-        "The symbol 🌍 (Earth/5) is always present and seems to divide the row into left and right parts; perhaps it's a focal point.",
-        "Count how many ✅ (1) are immediately next to 🌍 in each row, but be cautious: there may be cases with different arrangements.",
-        "Be careful: this rule might not cover all possible puzzles—there could be additional factors, especially if other symbols appear."
-      ],
-      "alienMeaning": "The aliens might be asking us to notice their presence (👽) wherever there is strong agreement (✅) near something important to humans (🌍, Earth). Perhaps they're saying that when we come together around Earth—when there's unity on both sides—then the aliens are present. Alternatively, it could be a way of marking where alliances or interactions happen. But it's also possible there's a more abstract logic or communication about proximity and cooperation.",
-      "patternConfidence": 0.75,
-      "strategyConfidence": 0.8,
-      "hintsConfidence": 0.7,
-      "alienMeaningConfidence": 0.6
-    },
-    "gpt-4.1-mini-2025-04-14": {
-      "model": "gpt-4.1-mini-2025-04-14",
-      "patternDescription": "The output grid appears to highlight locations corresponding to where 'positive/agreement' markers (the number 1, shown as ✅) appear in the input grid's first and third rows, counted and marked as 'aliens' (2 = 👽). Specifically, it seems the output counts occurrences of '1's in the outer rows and converts these counts into '2's in the output at matching positions, leaving middle row outputs mostly zeros. This might be a form of pattern extraction focused on the edges or 'boundary signals'. However, this explanation may not hold for all variations of input and output pairs, as the middle row behavior varies and some inputs may involve more complex transformations or logical operations beyond counting ones.",
-      "solvingStrategy": "Step 1: Look at the input grid and identify the positions of the number 1 (✅) especially in the first and third (top and bottom) rows. Step 2: Count these '1's and map them onto the output grid as '2's (👽) in the same positions. Step 3: Treat the middle row output as generally zeros unless other rules are explicitly given. Step 4: Think of the puzzle as numbers to spot this pattern rather than emojis at first. Step 5: Be careful, as this might not apply if there are more complex overlays, rotations, or other operations involved. Some puzzles might use reflections or logic gates that change the direct count-to-2 mapping.",
-      "hints": [
-        "Focus on outer rows (top and bottom) for presence of '1's and their translation to '2's in output; middle row may behave differently.",
-        "Remember that counting and mapping is a simplistic explanation—the actual alien logic might combine counting with spatial or logical filters.",
-        "Be cautious that presence of the constant '5' (🌍) in the input might mark a fixed column or anchor point, possibly guiding transformations."
-      ],
-      "alienMeaning": "The aliens might be signaling the importance of 'boundary agreement' or 'edge conditions' — marking where 'yes' signals appear on the borders to indicate key positions. Possibly they emphasize 'we' (👽) as distinct from 'you' or 'humans' (👤) by marking these with '2' where confirmations (✅) exist. This might symbolize an initial contact protocol highlighting aligned positions or consensus at the edges, but this interpretation is tentative and may miss deeper logical or geometric rules.",
-      "patternConfidence": 0.75,
-      "strategyConfidence": 0.8,
-      "hintsConfidence": 0.7,
-      "alienMeaningConfidence": 0.6
+      "alienMeaning": "The aliens might be trying to communicate something about counting their successes or agreements with us. They might want to emphasize the importance of recognizing positive signals (like ✅) in our communication.",
+      "confidence": 85,
+      "alienMeaningConfidence": 70
     }
   },
-  "exportedAt": "2025-07-01T22:08:22.503Z",
+  "exportedAt": "2025-07-11T21:44:00.610Z",
   "models": [
-    "o3-mini-2025-01-31",
+    "claude-sonnet-4-20250514",
+    "claude-3-5-haiku-20241022",
     "gpt-4.1-nano-2025-04-14",
-    "gpt-4o-mini-2024-07-18",
-    "gpt-4.1-2025-04-14",
-    "gpt-4.1-mini-2025-04-14"
+    "gpt-4o-mini-2024-07-18"
   ]
 }
