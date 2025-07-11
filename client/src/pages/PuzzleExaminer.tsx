@@ -104,7 +104,7 @@ export default function PuzzleExaminer() {
   const modelsWithoutTemperature = new Set([
     'o3-mini-2025-01-31',
     'o4-mini-2025-04-16', 
-    'o1-mini-2025-04-16'
+    'o1-mini-2024-09-12'
   ]);
 
   // Available OpenAI models with token costs per million tokens
@@ -150,8 +150,8 @@ export default function PuzzleExaminer() {
       supportsTemperature: false
     },
     { 
-      key: 'o1-mini-2025-04-16', 
-      name: 'o1-mini', 
+      key: 'o1-mini-2024-09-12', 
+      name: 'o1-mini-2024-09-12', 
       color: 'bg-green-500', 
       premium: true,
       cost: { input: '$1.10', output: '$4.40' },

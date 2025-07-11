@@ -1,3 +1,8 @@
+// Unsure as to the purpose of this file, this app is not about solving puzzles, it is about explaining why the correct answer is correct.
+// Needs assessment
+
+
+
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
 import { PuzzleViewer } from '@/components/PuzzleViewer';
