@@ -58,11 +58,20 @@ export default function PuzzleBrowser() {
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-2">
           <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer</h1>
-          <p className="text-lg text-gray-600">
-            Examine alien communication patterns and learn logical reasoning
+          <p className="text-lg text-gray-600 space-y-2">
+            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite—most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a nine-color grid and wondered what cosmic joke you’re missing, you’re not alone.
           </p>
-          <p className="text-sm text-gray-500">
-            Focusing on puzzles with smaller grids that are easier for humans to understand
+
+          <p className="text-sm text-gray-500 space-y-2">
+            My dad is one of the smartest people I know, yet color-blindness turns half the grid into a monochrome blur for him.  My nephew dreams of running mission control for rocket ships in twenty years, but he’ll need abstract-reasoning muscles long before he memorizes which square is red and which is green.  I don’t want either of them—or you—to bounce off these puzzles just because the color palette got in the way.
+          </p>
+
+          <p className="text-sm text-gray-500 space-y-2">
+            That’s why this app replaces colors with emoji (and numbers behind the scenes).  The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious—can practice the kind of reasoning future mission controllers will need.
+          </p>
+
+          <p className="text-xs text-gray-400 italic">
+            TL;DR: These puzzles are hard, emojis are fun, and accessibility matters.  Let’s figure them out together.
           </p>
         </header>
 

@@ -3,12 +3,10 @@ import { ARCTask } from "../../shared/types";
 
 // Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
-  "claude-opus-4-20250514": "claude-opus-4-20250514",
-  "claude-sonnet-4-20250514": "claude-sonnet-4-20250514", 
+  "claude-sonnet-4-20250514": "claude-sonnet-4-20250514",
   "claude-3-7-sonnet-20250219": "claude-3-7-sonnet-20250219",
   "claude-3-5-sonnet-20241022": "claude-3-5-sonnet-20241022",
   "claude-3-5-haiku-20241022": "claude-3-5-haiku-20241022",
-  "claude-3-opus-20240229": "claude-3-opus-20240229",
   "claude-3-haiku-20240307": "claude-3-haiku-20240307",
 } as const;
 
