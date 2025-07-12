@@ -7,12 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
+import { useHasExplanation } from '@/hooks/useExplanation';
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');

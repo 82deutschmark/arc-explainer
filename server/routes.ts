@@ -2,8 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { puzzleLoader } from "./services/puzzleLoader";
+import { dbService } from "./services/dbService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize database connection if DATABASE_URL is available
+  const dbInitialized = await dbService.init();
+  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
   
   // Get list of available puzzles with filtering
   app.get("/api/puzzle/list", async (req, res) => {
@@ -107,18 +111,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Puzzle not found' });
       }
 
+      // Save to file system for backward compatibility
       const { puzzleExporter } = await import('./services/puzzleExporter');
       const filepath = await puzzleExporter.saveExplainedPuzzle(taskId, task, explanations);
+      
+      // Save to database if available (most recent explanation model only)
+      let explanationId = null;
+      const latestModelName = Object.keys(explanations).pop();
+      if (latestModelName) {
+        explanationId = await dbService.saveExplanation(taskId, {
+          ...explanations[latestModelName],
+          modelUsed: latestModelName
+        });
+      }
       
       res.json({ 
         success: true, 
         message: `Explained puzzle saved as ${taskId}-EXPLAINED.json`,
-        filepath
+        filepath,
+        explanationId
       });
     } catch (error) {
       console.error(`Error saving explained puzzle ${req.params.taskId}:`, error);
       res.status(500).json({ 
         message: 'Failed to save explained puzzle',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Check if a puzzle has an explanation
+  app.get("/api/puzzle/:puzzleId/has-explanation", async (req, res) => {
+    try {
+      const { puzzleId } = req.params;
+      const hasExplanation = await dbService.hasExplanation(puzzleId);
+      res.json({ hasExplanation });
+    } catch (error) {
+      console.error(`Error checking explanation for ${req.params.puzzleId}:`, error);
+      res.status(500).json({ 
+        message: 'Failed to check for explanation',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get explanation with feedback stats
+  app.get("/api/puzzle/:puzzleId/explanation", async (req, res) => {
+    try {
+      const { puzzleId } = req.params;
+      const explanation = await dbService.getExplanationForPuzzle(puzzleId);
+      
+      if (!explanation) {
+        return res.status(404).json({ message: 'No explanation found for this puzzle' });
+      }
+      
+      res.json(explanation);
+    } catch (error) {
+      console.error(`Error getting explanation for ${req.params.puzzleId}:`, error);
+      res.status(500).json({ 
+        message: 'Failed to get explanation',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Submit feedback for an explanation
+  app.post("/api/feedback", async (req, res) => {
+    try {
+      const { explanationId, voteType, comment } = req.body;
+      
+      if (!explanationId || !voteType) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+      
+      if (voteType !== 'helpful' && voteType !== 'not_helpful') {
+        return res.status(400).json({ message: 'Invalid vote type' });
+      }
+      
+      const feedbackId = await dbService.addFeedback(
+        parseInt(explanationId), 
+        voteType, 
+        comment
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'Feedback recorded successfully',
+        feedbackId
+      });
+    } catch (error) {
+      console.error('Error adding feedback:', error);
+      res.status(500).json({ 
+        message: 'Failed to add feedback',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
     }

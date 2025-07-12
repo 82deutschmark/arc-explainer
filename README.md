@@ -29,8 +29,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
    # Required for AI analysis
    OPENAI_API_KEY=your_openai_api_key_here
    
-   # Optional database (falls back to memory storage)
-   DATABASE_URL=your_postgresql_url_here
+   # Optional database connection for Railway PostgreSQL
+   DATABASE_URL=your_postgresql_connection_string_here
    ```
 
 3. **Run the Application**
@@ -90,11 +90,25 @@ AI analysis provides:
 - **Solving Strategy**: How the pattern transforms input to output
 - **Simple Explanations**: Accessible language describing the logic
 - **Confidence Score**: AI's certainty about the analysis
-- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic and symbols used 
+- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic and symbols used
+
+### 3. User Feedback System
+- Users can vote on whether explanations are helpful or not
+- Optional comments can be left to explain reasoning
+- Feedback is stored in the database for future improvement
+- Aggregate statistics (helpful/not helpful counts) are displayed with explanations
+
+### 4. Database Storage
+- Explanations and user feedback stored in Railway PostgreSQL database
+- Falls back to memory-only mode if no database connection available
+- Type-safe interfaces ensure data consistency
+- Structured logging for better debugging and monitoring
 
 ### 5. Auto-Save System
-- First analysis triggers automatic save to `data/explained/{taskId}-EXPLAINED.json`
-- Includes original puzzle data, all model explanations, and timestamps
+- First analysis triggers automatic save to database and local file
+- Explanations saved to database for user feedback collection
+- Local file backup in `data/explained/{taskId}-EXPLAINED.json`
+- Includes original puzzle data, model explanations, and timestamps
 - Creates permanent record for future study and comparison
 
 ## 📁 Project Structure
@@ -109,11 +123,13 @@ AI analysis provides:
 │   └── index.html
 ├── server/                 # Express backend
 │   ├── services/           # Core services
-│   │   ├── githubService.ts    # Puzzle downloading from GitHub NOT USED!!!
-│   │   ├── openai.ts          # AI model integration
-│   │   ├── puzzleAnalyzer.ts  # Grid analysis utilities
-│   │   ├── puzzleExporter.ts  # JSON export functionality for explained puzzles
-│   │   └── puzzleLoader.ts    # Puzzle loading and caching   Possibly poorly architected or designed 
+│   │   ├── dbService.ts        # Railway PostgreSQL database integration
+│   │   ├── openai.ts           # AI model integration
+│   │   ├── puzzleAnalyzer.ts   # Grid analysis utilities
+│   │   ├── puzzleExporter.ts   # JSON export functionality for explained puzzles
+│   │   └── puzzleLoader.ts     # Puzzle loading and caching
+│   ├── utils/              # Utility modules
+│   │   └── logger.ts          # Structured logging utility
 │   ├── index.ts           # Express server setup
 │   ├── routes.ts          # API endpoints
 │   └── storage.ts         # Data storage interface
@@ -155,12 +171,15 @@ AI analysis provides:
 - **TailwindCSS + shadcn/ui**: Modern, accessible UI components
 - **React Query / TanStack Query**: Server state management and caching
 - **Wouter**: Lightweight client-side routing
+- **Custom React hooks**: Explanation data fetching and feedback submission
 
 ### Backend (Express + TypeScript)
 - **Express.js**: RESTful API server
 - **OpenAI API**: AI model integration for puzzle explanations
+- **Railway PostgreSQL**: Database storage for explanations and feedback
 - **Local Puzzle Storage**: Efficient loading of puzzle data
 - **Custom Analysis Logic**: Processing of puzzle patterns
+- **Structured Logger**: Consistent error handling and debugging
 
 ### Data Pipeline
 - **Real-time GitHub fetching**: Direct API calls to fchollet/ARC-AGI (deprecated but nice feature)
@@ -191,8 +210,9 @@ NODE_ENV=development           # Environment mode
 
 
 ### Accessing Saved Analyses
-- Analyzed puzzles automatically save to `data/explained/`  (where does this go without a database?)
-- Files named: `{puzzleId}-EXPLAINED.json`
+- Analyzed puzzles automatically save to both database and local files
+- Database storage enables user feedback and community verification
+- Local files saved to `data/explained/{puzzleId}-EXPLAINED.json`
 - Contains all model explanations for comparison
 
 ## 🔧 Development
@@ -210,8 +230,38 @@ npm run build        # Creates dist/ folder with compiled app
 ### Database Setup (Optional)
 ```bash
 # PostgreSQL database (optional - uses memory storage by default)
-npm run db:generate  # Generate migrations
-npm run db:migrate   # Apply migrations
+# Set DATABASE_URL environment variable to enable database storage
+
+# Database tables are automatically created on application startup
+# Two main tables: explanations and feedback
+```
+
+#### Database Schema
+
+**Explanations Table**
+```sql
+CREATE TABLE IF NOT EXISTS explanations (
+  id SERIAL PRIMARY KEY,
+  puzzle_id TEXT NOT NULL,
+  pattern_description TEXT,
+  solving_strategy TEXT,
+  hints TEXT[],
+  alien_meaning TEXT,
+  confidence INTEGER,
+  model_name TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**Feedback Table**
+```sql
+CREATE TABLE IF NOT EXISTS feedback (
+  id SERIAL PRIMARY KEY,
+  explanation_id INTEGER REFERENCES explanations(id),
+  vote_type TEXT CHECK (vote_type IN ('helpful', 'not_helpful')),
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ## 🎨 Design Philosophy
