@@ -22,6 +22,8 @@ export const puzzleController = {
   async list(req: Request, res: Response) {
     const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, source } = req.query;
     
+    console.log('DEBUG: Puzzle list request with query params:', req.query);
+    
     const filters: any = {};
     if (maxGridSize) filters.maxGridSize = parseInt(maxGridSize as string);
     if (minGridSize) filters.minGridSize = parseInt(minGridSize as string);
@@ -30,7 +32,11 @@ export const puzzleController = {
     if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
     if (source && ['ARC1', 'ARC2'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC2';
     
+    console.log('DEBUG: Using filters:', filters);
+    
     const puzzles = await puzzleService.getPuzzleList(filters);
+    console.log(`DEBUG: Found ${puzzles.length} puzzles, first few:`, puzzles.slice(0, 3));
+    
     res.json(formatResponse.success(puzzles));
   },
 

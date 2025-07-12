@@ -28,7 +28,16 @@ export const puzzleService = {
    * @returns Array of puzzle metadata
    */
   async getPuzzleList(filters: PuzzleFilters = {}): Promise<PuzzleMetadata[]> {
+    console.log('puzzleService.getPuzzleList called with filters:', filters);
     const puzzleList = await puzzleLoader.getPuzzleList(filters);
+    console.log(`puzzleService: puzzleLoader returned ${puzzleList.length} puzzles`);
+    
+    if (puzzleList.length === 0) {
+      console.warn('WARNING: puzzleLoader returned zero puzzles!');
+    } else {
+      console.log('Sample puzzle metadata:', puzzleList[0]);
+    }
+    
     return puzzleList.map(puzzle => ({
       id: puzzle.id,
       gridSizeConsistent: puzzle.gridSizeConsistent,

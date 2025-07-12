@@ -6,21 +6,31 @@ import type { ARCTask, PuzzleAnalysis, SolutionValidation } from '@shared/types'
 export function usePuzzle(taskId?: string) {
   const [currentTask, setCurrentTask] = useState<ARCTask | null>(null);
 
+  // Define response type for API calls
+  interface APIResponse<T> {
+    success: boolean;
+    data: T;
+  }
+
   // Load a specific puzzle task
-  const { data: task, isLoading: taskLoading, error: taskError } = useQuery({
+  const { data: taskResponse, isLoading: taskLoading, error: taskError } = useQuery<APIResponse<ARCTask>>({
     queryKey: [`/api/puzzle/task/${taskId}`],
     enabled: !!taskId,
   });
 
   // Get AI analysis of the puzzle
-  const { data: analysis, isLoading: analysisLoading } = useQuery({
+  const { data: analysisResponse, isLoading: analysisLoading } = useQuery<APIResponse<PuzzleAnalysis>>({
     queryKey: [`/api/puzzle/analyze/${taskId}`],
     enabled: !!taskId,
   });
+  
+  // Extract data from response format
+  const task = taskResponse?.success ? taskResponse.data : undefined;
+  const analysis = analysisResponse?.success ? analysisResponse.data : undefined;
 
   useEffect(() => {
     if (task) {
-      setCurrentTask(task as ARCTask);
+      setCurrentTask(task);
     }
   }, [task]);
 
@@ -49,16 +59,15 @@ export function usePuzzle(taskId?: string) {
   };
 
   return {
-    task: currentTask,
-    analysis: analysis as PuzzleAnalysis | undefined,
-    validation: solutionMutation.data as SolutionValidation | undefined,
+    currentTask,
+    task,
+    analysis,
     isLoadingTask: taskLoading,
     isLoadingAnalysis: analysisLoading,
-    isValidating: solutionMutation.isPending,
     taskError,
-    validationError: solutionMutation.error,
     submitSolution,
-    resetValidation: () => solutionMutation.reset(),
+    solutionResult: solutionMutation.data as SolutionValidation | undefined,
+    isSolutionSubmitting: solutionMutation.isPending,
   };
 }
 
@@ -67,22 +76,40 @@ export function usePuzzleList(filters?: {
   minGridSize?: number;
   difficulty?: 'easy' | 'medium' | 'hard';
   gridSizeConsistent?: boolean;
+  prioritizeUnexplained?: boolean;
+  source?: 'ARC1' | 'ARC2';
 }) {
   const queryParams = new URLSearchParams();
   if (filters?.maxGridSize) queryParams.set('maxGridSize', filters.maxGridSize.toString());
   if (filters?.minGridSize) queryParams.set('minGridSize', filters.minGridSize.toString());
   if (filters?.difficulty) queryParams.set('difficulty', filters.difficulty);
   if (filters?.gridSizeConsistent !== undefined) queryParams.set('gridSizeConsistent', filters.gridSizeConsistent.toString());
+  if (filters?.prioritizeUnexplained) queryParams.set('prioritizeUnexplained', 'true');
+  if (filters?.source) queryParams.set('source', filters.source);
 
   const queryString = queryParams.toString();
   const url = `/api/puzzle/list${queryString ? `?${queryString}` : ''}`;
 
-  const { data: puzzleList, isLoading, error } = useQuery({
+  // Define proper type for the API response
+  interface APIResponse {
+    success: boolean;
+    data: any[];
+  }
+  
+  const { data: responseData, isLoading, error } = useQuery<APIResponse>({
     queryKey: [url],
   });
 
+  // Extract puzzles from the response format { success: boolean, data: [...] }
+  const puzzles = responseData?.success && Array.isArray(responseData.data)
+    ? responseData.data
+    : [];
+
+  // Debug log to help troubleshoot
+  console.log('usePuzzleList response:', responseData, 'extracted puzzles:', puzzles.length);
+
   return {
-    puzzles: Array.isArray(puzzleList) ? puzzleList : [],
+    puzzles,
     isLoading,
     error,
   };
