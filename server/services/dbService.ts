@@ -276,11 +276,45 @@ const hasExplanation = async (puzzleId: string): Promise<boolean> => {
   }
 };
 
+/**
+ * Get all explanations for a puzzle  Gemini 2.5 Pro 
+ * 
+ * @param puzzleId The ID of the puzzle
+ * @returns An array of explanation data with feedback stats or null if not found
+ */
+const getExplanationsForPuzzle = async (puzzleId: string) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve explanations.', 'database');
+    return null;
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT e.*,
+        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful') as helpful_votes,
+        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') as not_helpful_votes
+       FROM explanations e
+       WHERE e.puzzle_id = $1
+       ORDER BY e.created_at DESC`,
+      [puzzleId]
+    );
+
+    return result.rows.length > 0 ? result.rows : [];
+  } catch (error) {
+    logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
   saveExplanation,
   addFeedback,
   getExplanationForPuzzle,
+  getExplanationsForPuzzle, // Add new function here
   hasExplanation,
 };

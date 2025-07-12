@@ -47,55 +47,49 @@ export function useHasExplanation(puzzleId: string | null) {
 }
 
 /**
- * Fetch the full explanation data for a puzzle, including feedback stats
+ * Fetch all explanations for a given puzzle.
  */
-export function useExplanation(puzzleId: string | null) {
-  return useQuery({
-    queryKey: ['explanation', puzzleId],
+export function useExplanations(puzzleId: string | null) {
+  return useQuery<ExplanationData[], Error>({
+    queryKey: ['explanations', puzzleId],
     queryFn: async () => {
-      if (!puzzleId) return null;
-      const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
-      const data = await response.json();
-      return data as ExplanationData;
+      if (!puzzleId) return [];
+      try {
+        const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanations`);
+        if (!response.ok) {
+          // If the endpoint doesn't exist or there's an error, return empty.
+          if (response.status === 404) {
+            return [];
+          }
+          throw new Error(`Failed to fetch explanations: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error("Error fetching explanations:", error);
+        return []; // Return empty array on error
+      }
     },
     enabled: !!puzzleId,
-    retry: false, // Don't retry if the explanation doesn't exist
   });
 }
 
 /**
- * Combined hook that provides both the explanation status and data
+ * Combined hook that provides explanation data for a puzzle.
  */
 export function usePuzzleWithExplanation(puzzleId: string | null) {
-  const { 
-    data: statusData, 
-    isLoading: statusLoading,
-    error: statusError
-  } = useHasExplanation(puzzleId);
-  
-  const { 
-    data: explanation, 
-    isLoading: explanationLoading,
-    error: explanationError,
-    refetch: refetchExplanation
-  } = useExplanation(puzzleId);
-  
-  // Safely access the hasExplanation property with type checking
-  const hasExplanation = statusData ? (statusData as ExplanationStatus).hasExplanation : false;
-  
+  const {
+    data: explanations,
+    isLoading,
+    error,
+    refetch
+  } = useExplanations(puzzleId);
+
   return {
-    // Basic data
-    puzzleId,
-    hasExplanation,
-    explanation,
-    
-    // Loading states
-    isLoading: statusLoading || (hasExplanation && explanationLoading),
-    
-    // Errors
-    error: statusError || explanationError,
-    
-    // Actions
-    refetchExplanation
+    explanations: explanations || [],
+    isLoading,
+    error,
+    refetchExplanations: refetch,
+    hasExplanation: (explanations?.length || 0) > 0,
   };
 }

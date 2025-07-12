@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
@@ -356,7 +356,7 @@ function AnalysisResultCard({ modelKey, result, model, explanationId }: Analysis
         <div className="mt-3 pt-3 border-t border-gray-200">
           <h6 className="text-sm font-medium mb-2">Help us improve!</h6>
           <ExplanationFeedback 
-            explanationId={result.explanationId || explanationId || 0} 
+            explanationId={result.id || result.explanationId || explanationId || 0} 
             onFeedbackSubmitted={() => console.log(`Feedback submitted for model: ${modelKey}`)}
           />
         </div>
@@ -384,13 +384,37 @@ export default function PuzzleExaminer() {
   }
 
   const { task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { explanation } = usePuzzleWithExplanation(taskId);
+  const { explanations, hasExplanation, refetchExplanations } = usePuzzleWithExplanation(taskId);
+
+  useEffect(() => {
+    if (hasExplanation && explanations.length > 0) {
+      const initialResults: Record<string, AnalysisResult> = {};
+      explanations.forEach(exp => {
+        // Use a unique key for each explanation, e.g., model name or a generated ID
+        const key = exp.modelName || `explanation-${exp.id}`;
+        initialResults[key] = {
+          id: exp.id,
+          modelKey: exp.modelName,
+          patternDescription: exp.patternDescription,
+          solvingStrategy: exp.solvingStrategy,
+          hints: exp.hints,
+          alienMeaning: exp.alienMeaning,
+          confidence: exp.confidence,
+          explanationId: exp.id,
+        };
+      });
+      setAnalysisResults(initialResults);
+    }
+  }, [explanations, hasExplanation]);
 
   // Save explained puzzle mutation
   const saveExplainedMutation = useMutation({
     mutationFn: async (explanations: Record<string, AnalysisResult>) => {
       const response = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations });
       return response.json();
+    },
+    onSuccess: () => {
+      refetchExplanations(); // Refetch explanations after saving
     }
   });
 
@@ -609,12 +633,12 @@ export default function PuzzleExaminer() {
             <div className="space-y-4">
               <h4 className="font-semibold">Model Explanations</h4>
               {Object.entries(analysisResults).map(([modelKey, result]) => (
-                <AnalysisResultCard
-                  key={modelKey}
-                  modelKey={modelKey}
-                  result={result}
+                <AnalysisResultCard 
+                  key={modelKey} 
+                  modelKey={modelKey} 
+                  result={result} 
                   model={MODELS.find(m => m.key === modelKey)}
-                  explanationId={explanation?.id}
+                  explanationId={result.id || result.explanationId} 
                 />
               ))}
             </div>

@@ -187,6 +187,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (voteType !== 'helpful' && voteType !== 'not_helpful') {
         return res.status(400).json({ message: 'Invalid vote type' });
       }
+
+      // Add backend validation for comment length
+      const MINIMUM_COMMENT_LENGTH = 20;
+      if (!comment || comment.trim().length < MINIMUM_COMMENT_LENGTH) {
+        return res.status(400).json({ 
+          message: `A meaningful comment of at least ${MINIMUM_COMMENT_LENGTH} characters is required.` 
+        });
+      }
       
       const feedbackId = await dbService.addFeedback(
         parseInt(explanationId), 
