@@ -25,7 +25,7 @@ export default defineConfig(async (): Promise<import('vite').UserConfig> => {
   }
 
   return {
-    base: './', // Use relative paths for production
+    base: '/', // Use root-relative paths for production to avoid nested path issues
     plugins,
     resolve: {
       alias: {

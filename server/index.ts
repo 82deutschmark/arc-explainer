@@ -3,6 +3,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -83,13 +84,25 @@ const initServer = async () => {
         // but it's a safe fallback.
         return res.status(404).json({ message: "API route not found" });
       }
+      
+      // Log the request and file path for debugging
+      console.log(`Serving index.html for path: ${req.path}`);
+      
       const indexPath = path.join(staticPath, "index.html");
-      res.sendFile(indexPath, (err) => {
-        if (err) {
-          console.error("Error serving index.html:", err);
-          res.status(500).send("Could not load the application. Please check server logs.");
-        }
-      });
+      
+      // Check if the file exists
+      if (fs.existsSync(indexPath)) {
+        console.log(`index.html found at: ${indexPath}`);
+        
+        // Use absolute path for sendFile to avoid path resolution issues
+        return res.sendFile(path.resolve(indexPath));
+      } else {
+        console.error(`index.html NOT found at: ${indexPath}`);
+        return res.status(500).send(
+          "Server configuration issue: index.html not found. " +
+          "Make sure the client app is built and the path to index.html is correct."
+        );
+      }
     });
   } else {
     // Development mode - use Vite
