@@ -1,0 +1,22 @@
+# .dockerignore
+# Exclude files and directories that should not be copied into the Docker image
+# This prevents the build output in dist/ from being overwritten by a subsequent COPY step
+# Author: Cascade
+
+# Node dependencies
+node_modules
+
+# Git metadata
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+
+# Local build output (generated inside the container during build)
+dist
+
+# Logs and OS files
+*.log
+.DS_Store
