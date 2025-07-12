@@ -54,6 +54,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 - **Type-safe shared models**: All puzzle, explanation, and feedback interfaces live in `client/src/types`, giving end-to-end type safety.
 - **Unified logger utility**: Consistent, color-coded logs across services make debugging easier.
 - **Better Dev Experience**: Vite HMR on http://localhost:5173 for the React client while the Express API runs on http://localhost:5000.
+- **Multi-model explanation storage**: All AI model explanations (one per model) are now saved individually in the database and returned to the client, rather than only the latest model.
+- **Flexible feedback endpoint**: The `/api/feedback` route now accepts `explanationId` in either the request body or URL params, with enhanced validation middleware that logs request details and provides clearer error messages.
 
 ---
 
