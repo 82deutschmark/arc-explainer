@@ -50,15 +50,11 @@ app.use((req, res, next) => {
 
 // Initialize the server
 const initServer = async () => {
+  // Register API routes FIRST
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
-    throw err;
-  });
-
+  // In production, set up static file serving and the SPA fallback.
+  // This must come AFTER API routes are registered.
   if (app.get("env") === "production") {
     // When the server runs from dist/index.js, __dirname is the 'dist' directory.
     // The client assets are in 'dist/public'.
@@ -90,19 +86,18 @@ const initServer = async () => {
     await setupVite(app, server);
   }
 
-  if (process.env.VERCEL !== '1') {
-    // Local development
-    const port = process.env.PORT || 5000;
-    const host = 'localhost';
-    
-    server.listen(port, () => {
-      log(`Server running in development mode at http://${host}:${port}`);
-    });
-  }
+  // Start the server unless it's a Vercel-like environment (which is not our case)
+  // For Railway, we need to listen on the port provided.
+  const port = process.env.PORT || 5000;
+  const host = '0.0.0.0'; // Listen on all available interfaces in production
+  
+  server.listen(port, () => {
+    log(`Server running in ${app.get("env")} mode at http://${host}:${port}`);
+  });
 };
 
 // Initialize the server
 initServer().catch(console.error);
 
-// Export the Express API for Vercel Serverless Functions
+// Export the app. While this is often for serverless, it doesn't harm our Railway deployment.
 export default app;
