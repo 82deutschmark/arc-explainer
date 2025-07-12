@@ -70,7 +70,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Determine the path to the index.html file
     // In production, this is typically in a 'dist' or 'build' directory
-    const indexPath = path.resolve(process.cwd(), "./client/dist/index.html");
+    // Build output places index.html in 'dist/public' at project root
+    const indexPath = path.resolve(process.cwd(), "dist/public/index.html");
     
     // Check if the file exists
     if (fs.existsSync(indexPath)) {
