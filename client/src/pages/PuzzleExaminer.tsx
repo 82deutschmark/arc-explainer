@@ -27,6 +27,8 @@ interface ModelConfig {
 }
 
 interface AnalysisResult {
+  id?: number;
+  modelKey?: string;
   patternDescription?: string;
   solvingStrategy?: string;
   alienMeaning?: string;
@@ -36,6 +38,7 @@ interface AnalysisResult {
   hintsConfidence?: number;
   alienMeaningConfidence?: number | string;
   confidence?: number | string;
+  explanationId?: number; // Link to the saved explanation in the database
 }
 
 // Constants moved outside component for performance
@@ -286,9 +289,10 @@ interface AnalysisResultProps {
   modelKey: string;
   result: AnalysisResult;
   model?: ModelConfig;
+  explanationId?: number;
 }
 
-function AnalysisResultCard({ modelKey, result, model }: AnalysisResultProps) {
+function AnalysisResultCard({ modelKey, result, model, explanationId }: AnalysisResultProps) {
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
@@ -346,6 +350,17 @@ function AnalysisResultCard({ modelKey, result, model }: AnalysisResultProps) {
           </ul>
         </div>
       )}
+      
+      {/* Add feedback widget for each explanation - only if we have a valid ID */}
+      {(result.explanationId || explanationId) && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <h6 className="text-sm font-medium mb-2">Help us improve!</h6>
+          <ExplanationFeedback 
+            explanationId={result.explanationId || explanationId || 0} 
+            onFeedbackSubmitted={() => console.log(`Feedback submitted for model: ${modelKey}`)}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -389,7 +404,13 @@ export default function PuzzleExaminer() {
       return response.json();
     },
     onSuccess: (data: AnalysisResult, modelKey: string) => {
-      const newResults = { ...analysisResults, [modelKey]: data };
+      // Add the model key to the result data
+      const resultWithModel = { 
+        ...data, 
+        modelKey,
+        explanationId: data.id || 0 // Use the ID from the response data
+      };
+      const newResults = { ...analysisResults, [modelKey]: resultWithModel };
       setAnalysisResults(newResults);
       
       // Auto-save when we have explanations
@@ -593,23 +614,13 @@ export default function PuzzleExaminer() {
                   modelKey={modelKey}
                   result={result}
                   model={MODELS.find(m => m.key === modelKey)}
+                  explanationId={explanation?.id}
                 />
               ))}
             </div>
           )}
           
-          {/* Feedback Component */}
-          {Object.keys(analysisResults).length > 0 && explanation?.id && (
-            <div className="mt-6 pt-4 border-t border-gray-200 bg-gray-50 p-4 rounded-lg">
-              <h5 className="font-medium mb-2">Help us improve these explanations!</h5>
-              <ExplanationFeedback 
-                explanationId={explanation.id}
-                onFeedbackSubmitted={() => {
-                  console.log('Feedback submitted!');
-                }}
-              />
-            </div>
-          )}
+          {/* No global feedback component - each explanation has its own feedback widget */}
         </CardContent>
       </Card>
     </div>

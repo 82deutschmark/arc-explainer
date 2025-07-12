@@ -82,10 +82,10 @@ export function ExplanationFeedback({ explanationId, onFeedbackSubmitted }: Expl
 
   return (
     <div className="border-t pt-4 mt-4">
-      <h3 className="text-sm font-medium mb-2">Was this explanation helpful?</h3>
+      <h3 className="text-sm font-medium mb-2">Was this explanation helpful? Or just a hallucination?</h3>
       <p className="text-xs text-muted-foreground mb-2">
         Your detailed feedback helps us improve our AI explanations. 
-        <strong>Please include what was right or wrong about the explanation</strong>.
+        <strong> Please include what was right or wrong about the explanation!!</strong>.
       </p>
       
       <div className="flex gap-2 mb-3">
