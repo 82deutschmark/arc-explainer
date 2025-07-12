@@ -214,17 +214,24 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT e.*,
-        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful') as helpful_votes,
-        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') as not_helpful_votes,
-        (SELECT json_agg(json_build_object('id', f.id, 'vote_type', f.vote_type, 'comment', f.comment, 'created_at', f.created_at))
-         FROM (
-           SELECT * FROM feedback 
-           WHERE explanation_id = e.id AND comment IS NOT NULL
-           ORDER BY created_at DESC
-           LIMIT 5
-         ) AS f
-        ) as recent_comments
+      `SELECT 
+         e.id,
+         e.puzzle_id               AS "puzzleId",
+         e.pattern_description     AS "patternDescription",
+         e.solving_strategy        AS "solvingStrategy",
+         e.hints                   AS "hints",
+         e.alien_meaning           AS "alienMeaning",
+         e.confidence              AS "confidence",
+         e.model_name              AS "modelName",
+         e.created_at              AS "createdAt",
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
+         (SELECT json_agg(json_build_object('id', f.id, 'vote_type', f.vote_type, 'comment', f.comment, 'created_at', f.created_at))
+          FROM feedback f
+          WHERE f.explanation_id = e.id AND f.comment IS NOT NULL
+          ORDER BY f.created_at DESC
+          LIMIT 5)
+         AS "recent_comments"
        FROM explanations e
        WHERE e.puzzle_id = $1
        ORDER BY e.created_at DESC
@@ -291,9 +298,18 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT e.*,
-        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful') as helpful_votes,
-        (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') as not_helpful_votes
+      `SELECT 
+         e.id,
+         e.puzzle_id               AS "puzzleId",
+         e.pattern_description     AS "patternDescription",
+         e.solving_strategy        AS "solvingStrategy",
+         e.hints                   AS "hints",
+         e.alien_meaning           AS "alienMeaning",
+         e.confidence              AS "confidence",
+         e.model_name              AS "modelName",
+         e.created_at              AS "createdAt",
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
        FROM explanations e
        WHERE e.puzzle_id = $1
        ORDER BY e.created_at DESC`,

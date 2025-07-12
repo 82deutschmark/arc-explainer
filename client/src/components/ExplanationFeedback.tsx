@@ -44,7 +44,7 @@ export function ExplanationFeedback({ explanationId, onFeedbackSubmitted }: Expl
         throw new Error('Please provide detailed feedback (at least 20 characters)');
       }
       
-      return apiRequest('/api/feedback', 'POST', {
+      return apiRequest('POST', '/api/feedback', {
         explanationId,
         voteType: vote,
         comment: comment.trim()
