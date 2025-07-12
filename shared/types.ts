@@ -17,6 +17,7 @@ export interface PuzzleMetadata {
   outputSize: [number, number];
   hasExplanation?: boolean;
   description?: string;
+  source?: 'ARC1' | 'ARC2';
 }
 
 export interface PuzzleAnalysis {

@@ -8,6 +8,7 @@
  */
 
 import { puzzleLoader } from './puzzleLoader';
+import { PuzzleMetadata, ARCTask } from '@shared/types';
 import { AppError } from '../middleware/errorHandler';
 
 interface PuzzleFilters {
@@ -17,15 +18,27 @@ interface PuzzleFilters {
   gridSizeConsistent?: boolean;
 }
 
+// Remove local interface and use the imported one from shared types
+
 export const puzzleService = {
   /**
-   * Get a filtered list of available puzzles
+   * Get list of puzzles with optional filtering
    * 
-   * @param filters - Optional filters to apply to the puzzle list
-   * @returns Array of puzzles matching the filters
+   * @param filters - Optional filters for puzzles
+   * @returns Array of puzzle metadata
    */
-  async getPuzzleList(filters: PuzzleFilters = {}) {
-    return puzzleLoader.getPuzzleList(filters);
+  async getPuzzleList(filters: PuzzleFilters = {}): Promise<PuzzleMetadata[]> {
+    const puzzleList = await puzzleLoader.getPuzzleList(filters);
+    return puzzleList.map(puzzle => ({
+      id: puzzle.id,
+      gridSizeConsistent: puzzle.gridSizeConsistent,
+      patternType: puzzle.patternType,
+      maxGridSize: puzzle.maxGridSize,
+      inputSize: puzzle.inputSize,
+      outputSize: puzzle.outputSize,
+      hasExplanation: puzzle.hasExplanation,
+      source: puzzle.source
+    }));
   },
 
   /**

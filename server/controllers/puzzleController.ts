@@ -20,13 +20,15 @@ export const puzzleController = {
    * @param res - Express response object
    */
   async list(req: Request, res: Response) {
-    const { maxGridSize, minGridSize, difficulty, gridSizeConsistent } = req.query;
+    const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, source } = req.query;
     
     const filters: any = {};
     if (maxGridSize) filters.maxGridSize = parseInt(maxGridSize as string);
     if (minGridSize) filters.minGridSize = parseInt(minGridSize as string);
     if (difficulty) filters.difficulty = difficulty as string;
     if (gridSizeConsistent) filters.gridSizeConsistent = gridSizeConsistent === 'true';
+    if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
+    if (source && ['ARC1', 'ARC2'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC2';
     
     const puzzles = await puzzleService.getPuzzleList(filters);
     res.json(formatResponse.success(puzzles));

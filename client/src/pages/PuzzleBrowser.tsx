@@ -19,6 +19,7 @@ export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [showUnexplainedOnly, setShowUnexplainedOnly] = useState<boolean>(true);
+  const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', or 'ARC2'
   const { toast } = useToast();
 
   // Create filters object for the hook
@@ -28,8 +29,9 @@ export default function PuzzleBrowser() {
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     if (showUnexplainedOnly) result.prioritizeUnexplained = true;
+    if (arcVersion === 'ARC1' || arcVersion === 'ARC2') result.source = arcVersion;
     return result;
-  }, [maxGridSize, gridSizeConsistent, showUnexplainedOnly]);
+  }, [maxGridSize, gridSizeConsistent, showUnexplainedOnly, arcVersion]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
   const filteredPuzzles = puzzles || [];
@@ -126,12 +128,26 @@ export default function PuzzleBrowser() {
                 <Label htmlFor="gridConsistent">Grid Size Consistency</Label>
                 <Select value={gridSizeConsistent} onValueChange={setGridSizeConsistent}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select consistency" />
+                    <SelectValue placeholder="Any consistency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="true">Consistent (Same size)</SelectItem>
-                    <SelectItem value="false">Variable (Different sizes)</SelectItem>
+                    <SelectItem value="any">Any consistency</SelectItem>
+                    <SelectItem value="true">Consistent size only</SelectItem>
+                    <SelectItem value="false">Variable size only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="arcVersion">ARC Version</Label>
+                <Select value={arcVersion} onValueChange={setArcVersion}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any ARC version" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any ARC version</SelectItem>
+                    <SelectItem value="ARC1">ARC1 only</SelectItem>
+                    <SelectItem value="ARC2">ARC2 only</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -178,9 +194,18 @@ export default function PuzzleBrowser() {
                           <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
                             {puzzle.id}
                           </code>
-                          <Badge className={getGridSizeColor(puzzle.maxGridSize)}>
-                            {puzzle.maxGridSize}×{puzzle.maxGridSize} max
-                          </Badge>
+                          <div className="text-xs flex items-center gap-1">
+                            <Grid3X3 className="h-3 w-3" /> {puzzle.maxGridSize}x{puzzle.maxGridSize}
+                            {puzzle.gridSizeConsistent ? 
+                              <Badge variant="outline" className="text-xs">Consistent</Badge> : 
+                              <Badge variant="outline" className="text-xs bg-amber-50">Variable</Badge>
+                            }
+                            {puzzle.source && (
+                              <Badge variant="outline" className={`text-xs ${puzzle.source === 'ARC1' ? 'bg-blue-50' : 'bg-purple-50'}`}>
+                                {puzzle.source}
+                              </Badge>
+                            )}
+                          </div>
                           {puzzle.hasExplanation && (
                             <Badge variant="outline" className="bg-green-50 text-green-700">
                               ✓ Explained

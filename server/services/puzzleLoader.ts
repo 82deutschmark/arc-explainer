@@ -10,12 +10,14 @@ interface PuzzleInfo {
   inputSize: [number, number];
   outputSize: [number, number];
   hasExplanation: boolean;
+  source: 'ARC1' | 'ARC2';
 }
 
 export class PuzzleLoader {
   private puzzleCache: Map<string, ARCTask> = new Map();
   private puzzleMetadata: Map<string, PuzzleInfo> = new Map();
-  private dataDir = path.join(process.cwd(), 'data', 'training');
+  private dataDir1 = path.join(process.cwd(), 'data', 'training');
+  private dataDir2 = path.join(process.cwd(), 'data', 'training2');
   private initialized = false;
 
   constructor() {
@@ -32,35 +34,66 @@ export class PuzzleLoader {
 
   private loadPuzzleMetadata() {
     try {
-      if (!fs.existsSync(this.dataDir)) {
+      // Create directories if they don't exist
+      if (!fs.existsSync(this.dataDir1)) {
         console.log('Training data directory not found, creating...');
-        fs.mkdirSync(this.dataDir, { recursive: true });
-        return;
+        fs.mkdirSync(this.dataDir1, { recursive: true });
+      }
+      if (!fs.existsSync(this.dataDir2)) {
+        console.log('Training2 data directory not found, creating...');
+        fs.mkdirSync(this.dataDir2, { recursive: true });
       }
 
-      const files = fs.readdirSync(this.dataDir).filter(file => file.endsWith('.json'));
-      console.log(`Found ${files.length} puzzle files`);
+      // Load puzzles from first training directory (ARC1)
+      let totalPuzzles = 0;
+      if (fs.existsSync(this.dataDir1)) {
+        const files = fs.readdirSync(this.dataDir1).filter(file => file.endsWith('.json'));
+        console.log(`Found ${files.length} puzzle files in ARC1 directory`);
+        totalPuzzles += files.length;
 
-      for (const file of files) {
-        try {
-          const taskId = file.replace('.json', '');
-          const filePath = path.join(this.dataDir, file);
-          const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
-          
-          // Analyze the puzzle to get metadata
-          const metadata = this.analyzePuzzleMetadata(taskId, data);
-          this.puzzleMetadata.set(taskId, metadata);
-          
-        } catch (error) {
-          console.error(`Error loading puzzle ${file}:`, error);
+        for (const file of files) {
+          try {
+            const taskId = file.replace('.json', '');
+            const filePath = path.join(this.dataDir1, file);
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
+            
+            // Analyze the puzzle to get metadata
+            const metadata = this.analyzePuzzleMetadata(taskId, data, 'ARC1');
+            this.puzzleMetadata.set(taskId, metadata);
+          } catch (error) {
+            console.error(`Error loading puzzle ${file} from ARC1:`, error);
+          }
         }
       }
+
+      // Load puzzles from second training directory (ARC2)
+      if (fs.existsSync(this.dataDir2)) {
+        const files = fs.readdirSync(this.dataDir2).filter(file => file.endsWith('.json'));
+        console.log(`Found ${files.length} puzzle files in ARC2 directory`);
+        totalPuzzles += files.length;
+
+        for (const file of files) {
+          try {
+            const taskId = file.replace('.json', '');
+            const filePath = path.join(this.dataDir2, file);
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
+            
+            // Analyze the puzzle to get metadata
+            const metadata = this.analyzePuzzleMetadata(taskId, data, 'ARC2');
+            this.puzzleMetadata.set(taskId, metadata);
+          } catch (error) {
+            console.error(`Error loading puzzle ${file} from ARC2:`, error);
+          }
+        }
+      }
+      
+      console.log(`Total puzzles loaded: ${totalPuzzles}`);
     } catch (error) {
       console.error('Error loading puzzle metadata:', error);
     }
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC2'): PuzzleInfo {
     let maxGridSize = 0;
     let inputSize: [number, number] = [0, 0];
     let outputSize: [number, number] = [0, 0];
@@ -103,29 +136,40 @@ export class PuzzleLoader {
     return {
       id: taskId,
       gridSizeConsistent,
-      patternType: 'transformation',
+      patternType: 'unknown', // This would require more analysis
       maxGridSize,
       inputSize,
       outputSize,
       hasExplanation,
+      source
     };
   }
 
   async loadPuzzle(taskId: string): Promise<ARCTask | null> {
-    // Check cache first
-    if (this.puzzleCache.has(taskId)) {
-      return this.puzzleCache.get(taskId)!;
-    }
-
     try {
-      const filePath = path.join(this.dataDir, `${taskId}.json`);
-      if (!fs.existsSync(filePath)) {
-        return null;
+      // Return from cache if available
+      if (this.puzzleCache.has(taskId)) {
+        return this.puzzleCache.get(taskId) || null;
       }
 
-      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
-      this.puzzleCache.set(taskId, data);
-      return data;
+      // Try to load from ARC1 directory first
+      let filePath = path.join(this.dataDir1, `${taskId}.json`);
+      if (fs.existsSync(filePath)) {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        this.puzzleCache.set(taskId, data);
+        return data;
+      }
+
+      // If not found in ARC1, try ARC2 directory
+      filePath = path.join(this.dataDir2, `${taskId}.json`);
+      if (fs.existsSync(filePath)) {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        this.puzzleCache.set(taskId, data);
+        return data;
+      }
+
+      // Not found in either directory
+      return null;
     } catch (error) {
       console.error(`Error loading puzzle ${taskId}:`, error);
       return null;
@@ -137,6 +181,7 @@ export class PuzzleLoader {
     minGridSize?: number;
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
+    source?: 'ARC1' | 'ARC2';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
 
@@ -152,6 +197,9 @@ export class PuzzleLoader {
       }
       if (filters.prioritizeUnexplained) {
         puzzles = puzzles.filter(p => !p.hasExplanation);
+      }
+      if (filters.source) {
+        puzzles = puzzles.filter(p => p.source === filters.source);
       }
     }
 
