@@ -59,52 +59,31 @@ const initServer = async () => {
     throw err;
   });
 
-  // In production, serve static files manually to avoid path resolution issues
   if (app.get("env") === "production") {
-    // Try different paths to accommodate various deployment environments
-    // This helps with Railway, Vercel, and other cloud platforms
-    const possiblePaths = [
-      path.join(process.cwd(), 'dist', 'public'),
-      path.join(process.cwd(), 'public'),
-      path.join(__dirname, '..', 'public')
-    ];
-    
-    let staticPath = '';
-    // Find the first path that exists
-    for (const p of possiblePaths) {
-      try {
-        const { statSync } = await import('fs');
-        statSync(p);
-        staticPath = p;
-        console.log('Found static files at:', staticPath);
-        break;
-      } catch (e) {
-        console.log('Path not found:', p);
-      }
-    }
-    
-    if (!staticPath) {
-      console.error('No static path found! Using default path.');
-      staticPath = path.join(process.cwd(), 'dist', 'public');
-    }
-    
-    console.log('Serving static files from:', staticPath);
-    
-    // Serve static files with a fallback to index.html for SPA routing
+    // When the server runs from dist/index.js, __dirname is the 'dist' directory.
+    // The client assets are in 'dist/public'.
+    const staticPath = path.join(__dirname, "public");
+
+    console.log(`Production mode: serving static files from ${staticPath}`);
+
+    // Serve static files (e.g., assets, css, js)
     app.use(express.static(staticPath));
-    
-    // Handle client-side routing - serve index.html for all non-API routes
-    app.get('*', (req: Request, res: Response) => {
-      if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(staticPath, 'index.html'), (err) => {
-          if (err) {
-            console.error('Error serving index.html:', err);
-            res.status(500).send('Error loading application');
-          }
-        });
-      } else {
-        res.status(404).json({ message: 'API route not found' });
+
+    // For any other request that doesn't match an API route or a static file,
+    // send the client's index.html file. This is the SPA fallback.
+    app.get("*", (req, res) => {
+      if (req.path.startsWith("/api")) {
+        // This case should ideally not be hit if API routes are registered before this,
+        // but it's a safe fallback.
+        return res.status(404).json({ message: "API route not found" });
       }
+      const indexPath = path.join(staticPath, "index.html");
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error("Error serving index.html:", err);
+          res.status(500).send("Could not load the application. Please check server logs.");
+        }
+      });
     });
   } else {
     // Development mode - use Vite
