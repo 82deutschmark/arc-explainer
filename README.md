@@ -43,6 +43,20 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
    - Browse puzzles 
    - Select a puzzle to examine with AI models
 
+## 🆕 Recent Updates (2025-07)
+
+- **Database-first architecture**: Explanations and user feedback are now stored in PostgreSQL (or in-memory fallback) and always re-fetched after any analysis or save, ensuring the UI is perfectly in sync with the database.
+- **Modular React refactor**: The formerly 550-line `PuzzleExaminer.tsx` has been split into smaller, domain-focused components (`AnalysisResultCard`, `ExplanationFeedback`, etc.) and hooks (`useAnalysisResults`, `useExplanation`). This dramatically improves maintainability and testability.
+- **Robust feedback workflow**:
+  - New validation middleware guarantees `explanationId`, `voteType` (`helpful` | `not_helpful`), and a meaningful `comment` (≥ 20 chars) are present.
+  - Controller and DB service expect top-level fields, eliminating the previous 400 “Missing required field: explanationId” error.
+  - Detailed server-side logging helps diagnose payload issues quickly.
+- **Type-safe shared models**: All puzzle, explanation, and feedback interfaces live in `client/src/types`, giving end-to-end type safety.
+- **Unified logger utility**: Consistent, color-coded logs across services make debugging easier.
+- **Better Dev Experience**: Vite HMR on http://localhost:5173 for the React client while the Express API runs on http://localhost:5000.
+
+---
+
 ## 🚨 Deployment Troubleshooting
 
 ### Common Issues & Solutions
