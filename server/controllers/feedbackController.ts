@@ -19,8 +19,8 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async create(req: Request, res: Response) {
-    const { explanationId } = req.params;
-    const { voteType, comment } = req.body;
+    const { explanationId, voteType, comment } = req.body;
+
     
     // Validate feedback data
     feedbackService.validateFeedback(explanationId, voteType, comment);

@@ -79,9 +79,29 @@ export interface ModelButtonProps {
 /**
  * Props for the AnalysisResultCard component
  */
+/**
+ * Data structure for an explanation object fetched from the database
+ */
+export interface ExplanationData {
+  id: number;
+  puzzleId: string;
+  modelName: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  alienMeaning: string;
+  confidence: number;
+  helpfulVotes: number | null; // Can be null from DB
+  notHelpfulVotes: number | null; // Can be null from DB
+  createdAt: string;
+  explanationId?: number; // Add this back as it's used in components
+}
+
+/**
+ * Props for the AnalysisResultCard component
+ */
 export interface AnalysisResultCardProps {
   modelKey: string;
-  result: AnalysisResult;
+  result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
-  explanationId?: number;
 }

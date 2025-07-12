@@ -5,6 +5,14 @@
  * Author: Cascade
  */
 
+/**
+ * AnalysisResultCard.tsx
+ * 
+ * @author Cascade
+ * @description A modular component responsible for displaying the analysis results for a single AI model.
+ * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
+ * This component is designed to be a self-contained card, making it easy to reuse and maintain.
+ */
 import React from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +20,7 @@ import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { ExplanationFeedback } from '@/components/ExplanationFeedback';
 import { formatConfidence } from '@/constants/models';
 
-export function AnalysisResultCard({ modelKey, result, model, explanationId }: AnalysisResultCardProps) {
+export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   
   // Handle empty or error states - fix for the "0" display issue
@@ -46,61 +54,43 @@ export function AnalysisResultCard({ modelKey, result, model, explanationId }: A
         </div>
       )}
       
-      {result.patternDescription && (
-        <div>
-          <div className="flex items-center gap-2">
-            <h6 className="text-sm font-medium text-gray-700">Why the solution is correct:</h6>
-            {result.confidence && !result.patternConfidence && (
-              <Badge variant="outline" className="text-xs">
-                Confidence: {formatConfidence(result.confidence)}
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm">{result.patternDescription}</p>
+      {!isEmptyResult && (
+        <div className="space-y-3">
+          {result.patternDescription && (
+            <div>
+              <h5 className="font-semibold">Pattern Description</h5>
+              <p className="text-gray-600">{result.patternDescription}</p>
+            </div>
+          )}
+          {result.solvingStrategy && (
+            <div>
+              <h5 className="font-semibold">Solving Strategy</h5>
+              <p className="text-gray-600">{result.solvingStrategy}</p>
+            </div>
+          )}
+          {result.hints && result.hints.length > 0 && (
+            <div>
+              <h5 className="font-semibold">Hints</h5>
+              <ul className="list-disc list-inside text-gray-600">
+                {result.hints.map((hint, i) => <li key={i}>{hint}</li>)}
+              </ul>
+            </div>
+          )}
+          {result.alienMeaning && (
+            <div>
+              <h5 className="font-semibold">What might the alien mean?</h5>
+              <p className="text-gray-600">{result.alienMeaning}</p>
+            </div>
+          )}
         </div>
       )}
       
-      {result.solvingStrategy && (
-        <div>
-          <h6 className="text-sm font-medium text-gray-700">Simple explanation:</h6>
-          <p className="text-sm">{result.solvingStrategy}</p>
-        </div>
-      )}
-      
-      {result.alienMeaning && (
-        <div className="bg-purple-50 p-3 rounded border border-purple-200">
-          <div className="flex items-center gap-2">
-            <h6 className="text-sm font-medium text-purple-800">🛸 What the aliens might mean:</h6>
-            {result.alienMeaningConfidence && (
-              <Badge variant="outline" className="text-xs bg-purple-50">
-                Confidence: {formatConfidence(result.alienMeaningConfidence)}
-              </Badge>
-            )}
-          </div>
-          <p className="text-sm text-purple-700">{result.alienMeaning}</p>
-        </div>
-      )}
-      
-      {result.hints && result.hints.length > 0 && (
-        <div>
-          <h6 className="text-sm font-medium text-gray-700">Key insights:</h6>
-          <ul className="text-sm space-y-1">
-            {result.hints.map((hint, index) => (
-              <li key={index} className="flex gap-2">
-                <span className="text-blue-500">•</span>
-                <span>{hint}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      
-      {/* Add feedback widget for each explanation - only if we have a valid ID */}
-      {(result.explanationId || explanationId) && (
+      {/* Only show feedback widget when we have a VALID ID from the database */}
+      {result.id > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-200">
           <h6 className="text-sm font-medium mb-2">Help us improve!</h6>
           <ExplanationFeedback 
-            explanationId={result.id || result.explanationId || explanationId || 0} 
+            explanationId={result.id} 
             onFeedbackSubmitted={() => console.log(`Feedback submitted for model: ${modelKey}`)}
           />
         </div>

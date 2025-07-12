@@ -1,12 +1,18 @@
 /**
- * PuzzleExaminer Component
- * Main component for examining and analyzing ARC puzzles
- * Refactored for better modularity, maintainability, and component separation
- * Author: Cascade  Claude 3.7 Sonnet Thinking
+ * PuzzleExaminer.tsx
+ * 
+ * @author Cascade
+ * @description This is the main page component for examining a single ARC puzzle.
+ * It orchestrates the fetching of puzzle data and existing explanations from the database.
+ * It uses the useAnalysisResults hook to handle new analysis requests and renders the results
+ * using modular child components like PuzzleGrid and AnalysisResultCard.
+ * The component is designed around a database-first architecture, ensuring that the UI
+ * always reflects the stored state, making puzzle pages static and shareable.
  */
 
 import React, { useState } from 'react';
 import { useParams, Link } from 'wouter';
+import { AnalysisResult } from '@/types/puzzle';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,18 +51,14 @@ export default function PuzzleExaminer() {
 
   // Use the custom hook for analysis results management
   const {
-    analysisResults,
     temperature,
     setTemperature,
     analyzeWithModel,
     isAnalyzing,
-    isSaving,
-    saveSuccess
-  } = useAnalysisResults({
-    taskId,
-    explanations,
-    hasExplanation,
-    refetchExplanations
+    analyzerError,
+  } = useAnalysisResults({ 
+    taskId: taskId || '', 
+    refetchExplanations 
   });
 
   // Loading state
@@ -192,15 +194,10 @@ export default function PuzzleExaminer() {
             <p className="text-sm text-gray-600">
               Test how different AI models explain why this solution is correct and what the aliens might mean
             </p>
-            {isSaving && (
+            {isAnalyzing && (
               <div className="flex items-center gap-2 text-sm text-blue-600">
                 <Loader2 className="h-3 w-3 animate-spin" />
-                Saving explained puzzle...
-              </div>
-            )}
-            {saveSuccess && (
-              <div className="text-sm text-green-600">
-                ✓ Saved as {taskId}-EXPLAINED.json
+                Analyzing...
               </div>
             )}
           </div>
@@ -213,7 +210,7 @@ export default function PuzzleExaminer() {
                 key={model.key}
                 model={model}
                 isAnalyzing={isAnalyzing}
-                hasResult={!!analysisResults[model.key]}
+                hasResult={!!explanations.find(explanation => explanation.modelName === model.key)}
                 onAnalyze={handleAnalyzeWithModel}
                 disabled={isAnalyzing}
               />
@@ -252,18 +249,18 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* Analysis Results */}
-          {Object.keys(analysisResults).length > 0 && (
-            <div className="space-y-4">
-              <h4 className="font-semibold">Model Explanations</h4>
-              {Object.entries(analysisResults).map(([modelKey, result]) => (
-                <AnalysisResultCard 
-                  key={modelKey} 
-                  modelKey={modelKey} 
-                  result={result} 
-                  model={MODELS.find(m => m.key === modelKey)}
-                  explanationId={result.id || result.explanationId} 
-                />
-              ))}
+          {explanations.length > 0 && (
+            <div className="mt-6">
+              <h4 className="text-lg font-semibold mb-3">Analysis Results</h4>
+              <div className="space-y-4">
+                {explanations.map((explanation) => (
+                  <AnalysisResultCard
+                    key={explanation.id}
+                    modelKey={explanation.modelName}
+                    result={explanation} // Pass the explanation object directly
+                  />
+                ))}
+              </div>
             </div>
           )}
         </CardContent>

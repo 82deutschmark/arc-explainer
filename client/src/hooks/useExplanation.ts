@@ -8,28 +8,25 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { ExplanationData } from '@/types/puzzle'; // Import the global type
 
 interface ExplanationStatus {
   hasExplanation: boolean;
 }
 
-interface ExplanationData {
+// This is the raw data structure from the backend API, using snake_case
+interface RawExplanationData {
   id: number;
   puzzleId: string;
+  modelName: string;
   patternDescription: string;
   solvingStrategy: string;
   hints: string[];
   alienMeaning: string;
   confidence: number;
-  modelName: string;
+  helpful_votes: number | null;
+  not_helpful_votes: number | null;
   createdAt: string;
-  helpful_votes?: number;
-  not_helpful_votes?: number;
-  feedbackStats?: {
-    helpfulCount: number;
-    notHelpfulCount: number;
-    commentCount: number;
-  };
 }
 
 /**
@@ -41,8 +38,8 @@ export function useHasExplanation(puzzleId: string | null) {
     queryFn: async () => {
       if (!puzzleId) return { hasExplanation: false };
       const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/has-explanation`);
-      const data = await response.json();
-      return data as ExplanationStatus;
+      const json = await response.json();
+      return json.data as ExplanationStatus;
     },
     enabled: !!puzzleId,
   });
@@ -59,14 +56,21 @@ export function useExplanations(puzzleId: string | null) {
       try {
         const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanations`);
         if (!response.ok) {
-          // If the endpoint doesn't exist or there's an error, return empty.
           if (response.status === 404) {
             return [];
           }
           throw new Error(`Failed to fetch explanations: ${response.statusText}`);
         }
-        const data = await response.json();
-        return Array.isArray(data) ? data : [];
+        const json = await response.json();
+        const rawData: RawExplanationData[] = Array.isArray(json.data) ? json.data : [];
+
+        // Transform snake_case from the API to camelCase for our app
+        return rawData.map(raw => ({
+          ...raw,
+          helpfulVotes: raw.helpful_votes,
+          notHelpfulVotes: raw.not_helpful_votes,
+          explanationId: raw.id, // Ensure explanationId is mapped
+        }));
       } catch (error) {
         console.error("Error fetching explanations:", error);
         return []; // Return empty array on error

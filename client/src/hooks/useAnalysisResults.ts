@@ -1,4 +1,15 @@
 /**
+ * useAnalysisResults.ts
+ * 
+ * @author Cascade
+ * @description This hook manages the logic for analyzing a puzzle with a selected AI model.
+ * It follows a database-first approach: when a user requests an analysis,
+ * the hook calls the backend to get the explanation, immediately saves it to the database,
+ * and then triggers a refetch of all explanations for the puzzle.
+ * This ensures the UI is always in sync with the database, which acts as the single source of truth.
+ */
+
+/**
  * useAnalysisResults Hook
  * Custom hook for managing AI model analysis results
  * Handles state management and API interaction for puzzle analysis
@@ -12,132 +23,63 @@ import { apiRequest } from '@/lib/queryClient';
 
 interface UseAnalysisResultsProps {
   taskId: string;
-  explanations: any[];
-  hasExplanation: boolean;
-  refetchExplanations: () => void;
+  refetchExplanations: (options?: any) => void;
 }
 
 export function useAnalysisResults({
   taskId,
-  explanations,
-  hasExplanation,
   refetchExplanations
 }: UseAnalysisResultsProps) {
-  const [analysisResults, setAnalysisResults] = useState<Record<string, AnalysisResult>>({});
   const [temperature, setTemperature] = useState(0.7);
 
-  // Initialize analysis results from existing explanations
-  useEffect(() => {
-    if (hasExplanation && explanations.length > 0) {
-      const initialResults: Record<string, AnalysisResult> = {};
-      explanations.forEach(exp => {
-        // Use a unique key for each explanation, e.g., model name or a generated ID
-        const key = exp.modelName || `explanation-${exp.id}`;
-        initialResults[key] = {
-          id: exp.id,
-          modelKey: exp.modelName,
-          patternDescription: exp.patternDescription,
-          solvingStrategy: exp.solvingStrategy,
-          hints: exp.hints,
-          alienMeaning: exp.alienMeaning,
-          confidence: exp.confidence,
-          explanationId: exp.id,
-          helpfulVotes: exp.helpful_votes,
-          notHelpfulVotes: exp.not_helpful_votes,
-        };
-      });
-      setAnalysisResults(initialResults);
-    }
-  }, [explanations, hasExplanation]);
-
-  // Save explained puzzle mutation
-  const saveExplainedMutation = useMutation({
-    mutationFn: async (explanations: Record<string, AnalysisResult>) => {
-      const response = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations });
-      const json = await response.json();
-      return json.data;
-    },
-    onSuccess: (saveResponse) => {
-      // Backend returns: { success: true, explanationId: number }
-      if (saveResponse && saveResponse.explanationId) {
-        setAnalysisResults(prev => {
-          const updated = { ...prev };
-          
-          // Update the most recently added explanation with the real ID
-          const modelKeys = Object.keys(updated);
-          const lastModelKey = modelKeys[modelKeys.length - 1];
-          
-          if (lastModelKey && updated[lastModelKey]) {
-            updated[lastModelKey] = {
-              ...updated[lastModelKey],
-              explanationId: saveResponse.explanationId,
-              id: saveResponse.explanationId
-            };
-            console.log(`Updated explanation ID for ${lastModelKey} to ${saveResponse.explanationId}`);
-          }
-          
-          return updated;
-        });
-      } else {
-        console.warn('Save response did not contain an explanationId', saveResponse);
-      }
-      
-      refetchExplanations(); // Refetch explanations after saving
-    }
-  });
-
-  // Test specific model
-  const testModelMutation = useMutation({
+  // Mutation to analyze the puzzle and save the explanation in one step
+  const analyzeAndSaveMutation = useMutation({
     mutationFn: async (payload: { modelKey: string; temperature?: number }) => {
       const { modelKey, temperature: temp } = payload;
-      const requestPayload = temp !== undefined ? { temperature: temp } : {};
       
-      const response = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, requestPayload);
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+      // 1. Analyze the puzzle
+      const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, { temperature: temp });
+      if (!analysisResponse.ok) {
+        throw new Error(`Analysis request failed: ${analysisResponse.statusText}`);
       }
-      const json = await response.json();
-      return json.data;
-    },
-    onSuccess: (data: AnalysisResult, variables: { modelKey: string }) => {
-      const { modelKey } = variables;
-      
-      // Add the model key to the result data
-      const resultWithModel = { 
-        ...data, 
-        modelKey,
-        explanationId: data.id || 0 // Use the ID from the response data
+      const analysisData = (await analysisResponse.json()).data;
+
+      // 2. Save the new explanation to the database
+      const explanationToSave = {
+        [modelKey]: { ...analysisData, modelKey }
       };
       
-      const newResults = { ...analysisResults, [modelKey]: resultWithModel };
-      setAnalysisResults(newResults);
-      
-      // Auto-save when we have explanations
-      if (Object.keys(newResults).length >= 1) {
-        saveExplainedMutation.mutate(newResults);
+      const saveResponse = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations: explanationToSave });
+      if (!saveResponse.ok) {
+        throw new Error(`Save request failed: ${saveResponse.statusText}`);
       }
+      return (await saveResponse.json()).data;
+    },
+    onSuccess: () => {
+      // 3. On success, refetch all explanations from the database
+      console.log('Analysis and save successful. Refetching explanations...');
+      refetchExplanations();
+    },
+    onError: (error) => {
+      console.error('Failed to analyze and save explanation:', error);
+      // Optionally, show a toast notification to the user here
     }
   });
 
-  // Handle analyzing with a specific model
+  // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
     const payload = {
       modelKey,
       ...(supportsTemperature ? { temperature } : {})
     };
-    
-    testModelMutation.mutate(payload);
+    analyzeAndSaveMutation.mutate(payload);
   };
 
   return {
-    analysisResults,
     temperature,
     setTemperature,
     analyzeWithModel,
-    isAnalyzing: testModelMutation.isPending,
-    analyzerError: testModelMutation.error,
-    isSaving: saveExplainedMutation.isPending,
-    saveSuccess: saveExplainedMutation.isSuccess,
-    saveError: saveExplainedMutation.error
+    isAnalyzing: analyzeAndSaveMutation.isPending,
+    analyzerError: analyzeAndSaveMutation.error,
   };
 }

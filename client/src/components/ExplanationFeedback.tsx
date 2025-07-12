@@ -44,11 +44,24 @@ export function ExplanationFeedback({ explanationId, onFeedbackSubmitted }: Expl
         throw new Error('Please provide detailed feedback (at least 20 characters)');
       }
       
-      return apiRequest('POST', '/api/feedback', {
-        explanationId,
+      // Debug logging  
+      console.log('Raw explanationId:', explanationId, 'Type:', typeof explanationId);
+      
+      // Ensure explanationId is explicitly sent as a number
+      const numericExplanationId = parseInt(String(explanationId), 10);
+      console.log('Parsed explanationId:', numericExplanationId);
+      
+      // Create payload with numeric explanationId
+      const payload = {
+        explanationId: numericExplanationId,
         voteType: vote,
         comment: comment.trim()
-      });
+      };
+      
+      console.log('Sending payload:', JSON.stringify(payload));
+      
+      // Direct approach with simpler payload
+      return apiRequest('POST', '/api/feedback', payload);
     },
     onSuccess: () => {
       setSubmitted(true);

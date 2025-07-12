@@ -70,22 +70,26 @@ export const explanationService = {
     const { puzzleExporter } = await import('./puzzleExporter');
     const filepath = await puzzleExporter.saveExplainedPuzzle(puzzleId, task, explanations);
     
-    // Save to database if available (most recent explanation model only)
-    let explanationId = null;
-    const latestModelName = Object.keys(explanations).pop();
-    
-    if (latestModelName) {
-      explanationId = await dbService.saveExplanation(puzzleId, {
-        ...explanations[latestModelName],
-        modelUsed: latestModelName
-      });
+    // Save each explanation to the database
+    const savedExplanationIds: number[] = [];
+    for (const modelKey in explanations) {
+      if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
+        const explanationData = explanations[modelKey];
+        const explanationId = await dbService.saveExplanation(puzzleId, {
+          ...explanationData,
+          modelName: modelKey, // Ensure modelKey is passed as modelName
+        });
+        if (explanationId) {
+          savedExplanationIds.push(explanationId);
+        }
+      }
     }
-    
+
     return { 
       success: true, 
-      message: `Explained puzzle saved as ${puzzleId}-EXPLAINED.json`,
+      message: `Saved ${savedExplanationIds.length} explanations. Puzzle saved as ${puzzleId}-EXPLAINED.json`,
       filepath,
-      explanationId
+      explanationIds: savedExplanationIds
     };
   }
 };
