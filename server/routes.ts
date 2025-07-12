@@ -3,12 +3,15 @@
  * 
  * Main routes configuration file for the API.
  * Registers all application routes and middleware.
+ * Includes a catch-all route to handle client-side routing.
  * 
  * @author Cascade
  */
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
+import fs from "fs";
 
 // Import controllers
 import { puzzleController } from "./controllers/puzzleController";
@@ -54,8 +57,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Error handling middleware (must be last)
+  // Error handling middleware (comes before the catch-all route)
   app.use(errorHandler);
+
+  // Catch-all route handler for client-side routes
+  // Serves the React app for all non-API routes
+  app.get("*", (req, res) => {
+    // Skip API routes - they should be handled by their specific handlers
+    if (req.path.startsWith("/api/")) {
+      return res.status(404).json({ message: "API endpoint not found" });
+    }
+    
+    // Determine the path to the index.html file
+    // In production, this is typically in a 'dist' or 'build' directory
+    const indexPath = path.resolve(process.cwd(), "./client/dist/index.html");
+    
+    // Check if the file exists
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    } else {
+      // Fall back to serving a simple message if the file doesn't exist
+      // This might happen in development mode
+      return res.status(500).send(
+        "Server configuration issue: index.html not found. " + 
+        "Make sure the client app is built and the path to index.html is correct."
+      );
+    }
+  });
 
   return createServer(app);
 }
