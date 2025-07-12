@@ -175,6 +175,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all explanations for a puzzle  Gemini 2.5 Pro 
+  app.get("/api/puzzle/:puzzleId/explanations", async (req, res) => {
+    try {
+      const { puzzleId } = req.params;
+      const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+      
+      if (!explanations) {
+        // dbService returns null on connection error, empty array if none found
+        return res.status(500).json({ message: 'Could not retrieve explanations due to a server error.' });
+      }
+      
+      res.json(explanations);
+    } catch (error) {
+      console.error(`Error getting explanations for ${req.params.puzzleId}:`, error);
+      res.status(500).json({ 
+        message: 'Failed to get explanations',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Submit feedback for an explanation
   app.post("/api/feedback", async (req, res) => {
     try {

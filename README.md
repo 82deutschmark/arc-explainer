@@ -78,38 +78,30 @@ Key points:
 
 ## 🧩 How It Works
 
+The application is built around a core loop of examining puzzles, generating AI explanations, and collecting user feedback to improve the quality of the analysis.
+
 ### 1. Puzzle Loading
-- Uses real ARC-AGI puzzles from the v1 training set
-- Processes grid data for consistent viewing
-- Prioritizes smaller grids (≤10x10) for better comprehension
+- Puzzles are loaded from the official ARC-AGI v1 training set, located in the `data/training` directory.
+- The backend processes the raw JSON files, focusing on smaller grids (≤10x10) to make them easier for users to understand.
 
+### 2. AI-Powered Explanation
+- When a user requests an analysis, the backend sends the puzzle data to a selected AI model (e.g., GPT-4).
+- The AI returns a structured explanation that includes:
+  - **Pattern Description**: A high-level summary of the core logic.
+  - **Solving Strategy**: Step-by-step instructions on how to apply the logic.
+  - **Hints**: Key insights to help understand the puzzle.
+  - **Alien Meaning**: A creative interpretation of the puzzle's symbolic meaning.
+  - **Confidence Score**: The AI's self-reported confidence in its analysis.
 
-### 2. Pattern Explanation
-AI analysis provides:
-- **Pattern Description**: What transformation rule is being used
-- **Solving Strategy**: How the pattern transforms input to output
-- **Simple Explanations**: Accessible language describing the logic
-- **Confidence Score**: AI's certainty about the analysis
-- **Alien Meaning**: What the aliens might be trying to communicate, based on the logic and symbols used
+### 3. Explanation Storage & Retrieval
+- The first time an explanation is generated for a puzzle, it's automatically saved to the database (if connected) and as a local JSON file in `data/explained`.
+- When a user examines a puzzle, the frontend fetches all previously saved explanations from the backend via the `/api/puzzle/:puzzleId/explanations` endpoint.
 
-### 3. User Feedback System
-- Users can vote on whether explanations are helpful or not
-- Optional comments can be left to explain reasoning
-- Feedback is stored in the database for future improvement
-- Aggregate statistics (helpful/not helpful counts) are displayed with explanations
-
-### 4. Database Storage
-- Explanations and user feedback stored in Railway PostgreSQL database
-- Falls back to memory-only mode if no database connection available
-- Type-safe interfaces ensure data consistency
-- Structured logging for better debugging and monitoring
-
-### 5. Auto-Save System
-- First analysis triggers automatic save to database and local file
-- Explanations saved to database for user feedback collection
-- Local file backup in `data/explained/{taskId}-EXPLAINED.json`
-- Includes original puzzle data, model explanations, and timestamps
-- Creates permanent record for future study and comparison
+### 4. User Feedback System
+- Users can vote on whether an explanation is helpful or not helpful.
+- A comment of at least 20 characters is required for each vote to encourage meaningful feedback.
+- Feedback is submitted to the `/api/feedback` endpoint and stored in the database.
+- The UI displays aggregate vote counts (👍/👎) for each explanation, providing immediate social proof.
 
 ## 📁 Project Structure
 
@@ -180,6 +172,13 @@ AI analysis provides:
 - **Local Puzzle Storage**: Efficient loading of puzzle data
 - **Custom Analysis Logic**: Processing of puzzle patterns
 - **Structured Logger**: Consistent error handling and debugging
+
+### API Endpoints
+- `GET /api/puzzles`: Fetches a list of all available puzzles.
+- `GET /api/puzzle/:puzzleId`: Retrieves a specific puzzle by its ID.
+- `POST /api/puzzle/:puzzleId/explain`: Submits a puzzle for AI analysis and returns an explanation.
+- `GET /api/puzzle/:puzzleId/explanations`: Fetches all saved explanations for a specific puzzle.
+- `POST /api/feedback`: Submits user feedback (vote and comment) for an explanation.
 
 ### Data Pipeline
 - **Real-time GitHub fetching**: Direct API calls to fchollet/ARC-AGI (deprecated but nice feature)
@@ -258,10 +257,10 @@ CREATE TABLE IF NOT EXISTS explanations (
 CREATE TABLE IF NOT EXISTS feedback (
   id SERIAL PRIMARY KEY,
   explanation_id INTEGER REFERENCES explanations(id),
-  vote_type TEXT CHECK (vote_type IN ('helpful', 'not_helpful')),
+  vote_type VARCHAR CHECK (vote_type IN ('helpful', 'not_helpful')),
   comment TEXT,
   created_at TIMESTAMP DEFAULT NOW()
-);
+)
 ```
 
 ## 🎨 Design Philosophy

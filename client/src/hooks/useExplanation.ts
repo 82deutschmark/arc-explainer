@@ -23,6 +23,8 @@ interface ExplanationData {
   confidence: number;
   modelName: string;
   createdAt: string;
+  helpful_votes?: number;
+  not_helpful_votes?: number;
   feedbackStats?: {
     helpfulCount: number;
     notHelpfulCount: number;

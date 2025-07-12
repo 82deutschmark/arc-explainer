@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { getSpaceEmoji } from '@/lib/spaceEmojis';
@@ -39,6 +39,8 @@ interface AnalysisResult {
   alienMeaningConfidence?: number | string;
   confidence?: number | string;
   explanationId?: number; // Link to the saved explanation in the database
+  helpfulVotes?: number;
+  notHelpfulVotes?: number;
 }
 
 // Constants moved outside component for performance
@@ -293,13 +295,24 @@ interface AnalysisResultProps {
 }
 
 function AnalysisResultCard({ modelKey, result, model, explanationId }: AnalysisResultProps) {
+  const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   return (
     <div className="border rounded-lg p-4 space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
         <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />
         <h5 className="font-medium">{model?.name || modelKey}</h5>
-        
-        {/* No grouped confidence badges here */}
+        {hasFeedback && (
+          <div className="flex items-center gap-2 text-xs">
+            <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
+              <ThumbsUp className="h-3 w-3 text-green-600" />
+              {result.helpfulVotes ?? 0}
+            </Badge>
+            <Badge variant="outline" className="flex items-center gap-1 bg-red-50 border-red-200">
+              <ThumbsDown className="h-3 w-3 text-red-600" />
+              {result.notHelpfulVotes ?? 0}
+            </Badge>
+          </div>
+        )}
       </div>
       
       {result.patternDescription && (
@@ -401,6 +414,8 @@ export default function PuzzleExaminer() {
           alienMeaning: exp.alienMeaning,
           confidence: exp.confidence,
           explanationId: exp.id,
+          helpfulVotes: exp.helpful_votes,
+          notHelpfulVotes: exp.not_helpful_votes,
         };
       });
       setAnalysisResults(initialResults);
