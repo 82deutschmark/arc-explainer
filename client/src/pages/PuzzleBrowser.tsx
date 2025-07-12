@@ -239,7 +239,7 @@ export default function PuzzleBrowser() {
           <CardContent className="space-y-3 text-sm">
             <p>
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
-              rather than trying to solve them yourself (which is very difficult for humans).
+              rather than trying to solve them yourself (which is very difficult for some humans).
             </p>
             <p>
               <strong>Focus:</strong> We're focusing on smaller puzzles (10×10 or smaller) as they're easier 
