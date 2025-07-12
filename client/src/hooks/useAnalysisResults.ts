@@ -54,27 +54,32 @@ export function useAnalysisResults({
   const saveExplainedMutation = useMutation({
     mutationFn: async (explanations: Record<string, AnalysisResult>) => {
       const response = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations });
-      return response.json();
+      const json = await response.json();
+      return json.data;
     },
     onSuccess: (saveResponse) => {
-      // Update local state with real IDs from the database
-      if (saveResponse && saveResponse.explanations) {
+      // Backend returns: { success: true, explanationId: number }
+      if (saveResponse && saveResponse.explanationId) {
         setAnalysisResults(prev => {
           const updated = { ...prev };
           
-          // Map through returned explanations and update IDs in local state
-          Object.entries(saveResponse.explanations).forEach(([modelKey, savedData]: [string, any]) => {
-            if (updated[modelKey] && savedData && savedData.id) {
-              updated[modelKey] = {
-                ...updated[modelKey],
-                explanationId: savedData.id,
-                id: savedData.id
-              };
-            }
-          });
+          // Update the most recently added explanation with the real ID
+          const modelKeys = Object.keys(updated);
+          const lastModelKey = modelKeys[modelKeys.length - 1];
+          
+          if (lastModelKey && updated[lastModelKey]) {
+            updated[lastModelKey] = {
+              ...updated[lastModelKey],
+              explanationId: saveResponse.explanationId,
+              id: saveResponse.explanationId
+            };
+            console.log(`Updated explanation ID for ${lastModelKey} to ${saveResponse.explanationId}`);
+          }
           
           return updated;
         });
+      } else {
+        console.warn('Save response did not contain an explanationId', saveResponse);
       }
       
       refetchExplanations(); // Refetch explanations after saving
@@ -88,13 +93,11 @@ export function useAnalysisResults({
       const requestPayload = temp !== undefined ? { temperature: temp } : {};
       
       const response = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, requestPayload);
-      
-      // Check if the response is valid before parsing JSON
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
-      
-      return response.json();
+      const json = await response.json();
+      return json.data;
     },
     onSuccess: (data: AnalysisResult, variables: { modelKey: string }) => {
       const { modelKey } = variables;
