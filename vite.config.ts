@@ -26,6 +26,9 @@ export default defineConfig(async (): Promise<import('vite').UserConfig> => {
 
   return {
     base: '/', // Use root-relative paths for production to avoid nested path issues
+    css: {
+      postcss: './postcss.config.js', // Explicitly specify PostCSS config
+    },
     plugins,
     resolve: {
       alias: {

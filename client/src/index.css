@@ -1,6 +1,10 @@
+/* Tailwind Directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Force Tailwind Processing */
+.tailwind-force-process { @apply bg-background text-foreground; }
 
 :root {
   --background: hsl(0, 0%, 100%);
