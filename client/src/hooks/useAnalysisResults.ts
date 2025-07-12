@@ -56,7 +56,27 @@ export function useAnalysisResults({
       const response = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (saveResponse) => {
+      // Update local state with real IDs from the database
+      if (saveResponse && saveResponse.explanations) {
+        setAnalysisResults(prev => {
+          const updated = { ...prev };
+          
+          // Map through returned explanations and update IDs in local state
+          Object.entries(saveResponse.explanations).forEach(([modelKey, savedData]: [string, any]) => {
+            if (updated[modelKey] && savedData && savedData.id) {
+              updated[modelKey] = {
+                ...updated[modelKey],
+                explanationId: savedData.id,
+                id: savedData.id
+              };
+            }
+          });
+          
+          return updated;
+        });
+      }
+      
       refetchExplanations(); // Refetch explanations after saving
     }
   });

@@ -197,14 +197,14 @@
       "success": true,
       "data": {
         "model": "gpt-4.1-nano-2025-04-14",
-        "patternDescription": "The aliens are repeating the pairs of symbols in a specific way—first repeating each pair twice, then adding the reverse pairs, creating a pattern that alternates between the original pairs and their reversed versions.",
-        "solvingStrategy": "First, think of each pair of emojis as a number (for example, 👤=3, 👽=2). The pattern shows that each pair gets repeated several times. To understand the pattern, imagine writing out the original pairs and then repeating them. Then, add the reversed pairs (swap the order of the emojis in each pair). The pattern alternates between these original and reversed versions, creating a symmetrical sequence. To see this with emojis, switch to thinking of numbers: repeat each pair, then its reverse, and keep doing that to match the pattern.",
+        "patternDescription": "The aliens are repeating each pair of emojis in a specific pattern, swapping their order to create a new sequence that alternates between the original pairs and their reversed versions.",
+        "solvingStrategy": "First, think of the emojis as numbers: for example, 👤 (3), 👽 (2), ☄️ (7), and ♥ (8). Notice that the answer pattern takes each pair, repeats it three times, then creates a new pair by swapping the order, and repeats this process. So, the pattern involves copying each pair, then reversing their order in the next step, then repeating this back and forth. The key is to recognize that each step is a repeated pattern and that the sequence alternates between the original pairs and their swapped versions.",
         "hints": [
-          "The pattern involves repeating each pair and then reversing it.",
-          "Think of the pairs as numbers and imagine writing them out twice, then in reverse order.",
-          "The pattern alternates between original and reversed pairs, creating symmetry."
+          "Look at how each pair repeats multiple times and then swaps positions.",
+          "Think of the pairs as a sequence of two objects that are being flipped and repeated.",
+          "The pattern alternates between the original order and the reversed order of the pairs."
         ],
-        "alienMeaning": "The aliens might be trying to show us a message about balance, symmetry, or repeating cycles—perhaps indicating they see us as a pair or are trying to communicate harmony. There’s no clear hostility; it seems more like sharing a pattern or a code.",
+        "alienMeaning": "The aliens might be trying to communicate that understanding or trust comes from seeing things from different perspectives — they are showing us that swapping or reversing views can reveal patterns. It’s like they are emphasizing the importance of perspective and repetition to understand their message. They do not seem hostile; instead, they might be inviting us to look at things differently.",
         "confidence": 85,
         "alienMeaningConfidence": 80
       },
@@ -212,7 +212,7 @@
       "explanationId": 0
     }
   },
-  "exportedAt": "2025-07-12T18:37:44.821Z",
+  "exportedAt": "2025-07-12T18:41:54.822Z",
   "models": [
     "gpt-4.1-nano-2025-04-14"
   ]
