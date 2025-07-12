@@ -63,7 +63,17 @@ const initServer = async () => {
     console.log(`Production mode: serving static files from ${staticPath}`);
 
     // Serve static files (e.g., assets, css, js)
-    app.use(express.static(staticPath));
+    // Use explicit index: false to prevent express from serving index.html directly
+    // when the URL path is to a directory
+    app.use(express.static(staticPath, {
+      index: false,  // Don't automatically serve index.html for directory requests
+      setHeaders: (res, path) => {
+        // Add cache headers for static assets
+        if (path.endsWith('.css') || path.endsWith('.js')) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000');
+        }
+      }
+    }));
 
     // For any other request that doesn't match an API route or a static file,
     // send the client's index.html file. This is the SPA fallback.
