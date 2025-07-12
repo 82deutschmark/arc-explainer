@@ -56,9 +56,9 @@ const initServer = async () => {
   // In production, set up static file serving and the SPA fallback.
   // This must come AFTER API routes are registered.
   if (app.get("env") === "production") {
-    // When the server runs from dist/index.js, __dirname is the 'dist' directory.
-    // The client assets are in 'dist/public'.
-    const staticPath = path.join(__dirname, "public");
+    // In the Railway environment, process.cwd() is the root of the project.
+    // The client assets are built to 'dist/public'.
+    const staticPath = path.join(process.cwd(), "dist", "public");
 
     console.log(`Production mode: serving static files from ${staticPath}`);
 

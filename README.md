@@ -64,6 +64,27 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 ### Common Issues & Solutions
 
+#### **Issue: Direct URL Navigation (e.g., `/puzzle/some-id`) Fails on Deployed Site**
+
+- **Symptom**: The site works when you navigate from the homepage, but accessing a deep link directly results in a 404 or server error.
+- **Cause**: This is a common issue for Single-Page Applications (SPAs). The web server needs to be configured to serve the main `index.html` file for all non-API routes. Without this, the server tries to find a file at the specific URL and fails.
+- **Solution**: The Express server (`server/index.ts`) was updated to include a "catch-all" route. This route intercepts all incoming requests that are not for the API (`/api/*`) and serves the main `index.html` from the client's build output (`dist/public`). This allows the client-side router (Wouter) to take over and display the correct page.
+
+  ```typescript
+  // In server/index.ts (production block)
+
+  // Serve static files (e.g., assets, css, js)
+  app.use(express.static(staticPath));
+
+  // For any other request, send the client's index.html file.
+  app.get("*", (req, res) => {
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(staticPath, "index.html"));
+    }
+  });
+  ```
+- **Key Takeaway**: Ensure that your server's routing is configured to handle SPA navigation by providing a fallback to your main HTML file.
+
 #### 404 Errors on Vercel/Railway
 If you see a 404 error when deploying to Vercel or Railway, check your `vercel.json` routing configuration. The most common issue is having a catch-all route that interferes with static file serving.
 
