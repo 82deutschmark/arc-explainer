@@ -57,34 +57,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Error handling middleware (comes before the catch-all route)
+  // Error handling middleware
   app.use(errorHandler);
-
-  // Catch-all route handler for client-side routes
-  // Serves the React app for all non-API routes
-  app.get("*", (req, res) => {
-    // Skip API routes - they should be handled by their specific handlers
-    if (req.path.startsWith("/api/")) {
-      return res.status(404).json({ message: "API endpoint not found" });
-    }
-    
-    // Determine the path to the index.html file
-    // In production, this is typically in a 'dist' or 'build' directory
-    // Build output places index.html in 'dist/public' at project root
-    const indexPath = path.resolve(process.cwd(), "dist/public/index.html");
-    
-    // Check if the file exists
-    if (fs.existsSync(indexPath)) {
-      return res.sendFile(indexPath);
-    } else {
-      // Fall back to serving a simple message if the file doesn't exist
-      // This might happen in development mode
-      return res.status(500).send(
-        "Server configuration issue: index.html not found. " + 
-        "Make sure the client app is built and the path to index.html is correct."
-      );
-    }
-  });
+  
+  // NOTE: The catch-all route for serving the SPA is in server/index.ts
+  // It's important that it comes AFTER the API routes and static file middleware
 
   return createServer(app);
 }
