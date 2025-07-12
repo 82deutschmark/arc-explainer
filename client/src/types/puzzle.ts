@@ -14,7 +14,7 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic';
+  provider: 'OpenAI' | 'Anthropic' | 'xAI';
 }
 
 /**

@@ -128,6 +128,52 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.25', output: '$1.25' },
     supportsTemperature: true,
     provider: 'Anthropic'
+  },
+  // xAI Grok Models
+  {
+    key: 'grok-beta',
+    name: 'Grok Beta',
+    color: 'bg-gray-700',
+    premium: false,
+    cost: { input: '$0.25', output: '$0.50' },
+    supportsTemperature: true,
+    provider: 'xAI'
+  },
+  {
+    key: 'grok-3',
+    name: 'Grok 3',
+    color: 'bg-gray-600',
+    premium: true,
+    cost: { input: '$0.40', output: '$0.80' },
+    supportsTemperature: true,
+    provider: 'xAI'
+  },
+  {
+    key: 'grok-3-mini',
+    name: 'Grok 3 Mini',
+    color: 'bg-gray-500',
+    premium: false,
+    cost: { input: '$0.15', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'xAI'
+  },
+  {
+    key: 'grok-4',
+    name: 'Grok 4',
+    color: 'bg-gray-800',
+    premium: true,
+    cost: { input: '$1.00', output: '$2.00' },
+    supportsTemperature: false,
+    provider: 'xAI'
+  },
+  {
+    key: 'grok-4-mini',
+    name: 'Grok 4 Mini',
+    color: 'bg-gray-700',
+    premium: true,
+    cost: { input: '$0.50', output: '$1.00' },
+    supportsTemperature: false,
+    provider: 'xAI'
   }
 ];
 

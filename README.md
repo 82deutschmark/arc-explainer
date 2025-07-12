@@ -26,11 +26,12 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 2. **Set Environment Variables**
    ```bash
-   # Required for AI analysis
-   OPENAI_API_KEY=your_openai_api_key_here
-   
-   # Optional database connection for Railway PostgreSQL
-   DATABASE_URL=your_postgresql_connection_string_here
+    # Required API keys for AI analysis (at least one required)
+    OPENAI_API_KEY=your_openai_api_key_here
+    GROK_API_KEY=your_grok_api_key_here   # Required for xAI Grok models
+    
+    # Optional database connection for Railway PostgreSQL
+    DATABASE_URL=your_postgresql_connection_string_here
    ```
 
 3. **Run the Application**
@@ -101,7 +102,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 - The backend processes the raw JSON files, focusing on smaller grids (≤10x10) to make them easier for users to understand.
 
 ### 2. AI-Powered Explanation
-- When a user requests an analysis, the backend sends the puzzle data to a selected AI model (e.g., GPT-4).
+- When a user requests an analysis, the backend sends the puzzle data to a selected AI model (e.g., GPT-4, Claude, or Grok).
 - The AI returns a structured explanation that includes:
   - **Pattern Description**: A high-level summary of the core logic.
   - **Solving Strategy**: Step-by-step instructions on how to apply the logic.
@@ -183,7 +184,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 
 ### Backend (Express + TypeScript)
 - **Express.js**: RESTful API server
-- **OpenAI API**: AI model integration for puzzle explanations
+- **Multiple AI Providers**: OpenAI, Anthropic Claude, and xAI Grok integration for puzzle explanations
 - **Railway PostgreSQL**: Database storage for explanations and feedback
 - **Local Puzzle Storage**: Efficient loading of puzzle data
 - **Custom Analysis Logic**: Processing of puzzle patterns
@@ -206,7 +207,9 @@ The application is built around a core loop of examining puzzles, generating AI 
 
 ### Required Environment Variables
 ```bash
-OPENAI_API_KEY=sk-...          # OpenAI API access
+# At least one of the following API keys is required
+OPENAI_API_KEY=sk-...          # OpenAI API access for GPT models
+GROK_API_KEY=sk-...            # xAI API access for Grok models
 ```
 
 ### Optional Environment Variables
