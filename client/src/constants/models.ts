@@ -131,11 +131,11 @@ export const MODELS: ModelConfig[] = [
   },
   // xAI Grok Models
   {
-    key: 'grok-beta',
-    name: 'Grok Beta',
-    color: 'bg-gray-700',
-    premium: false,
-    cost: { input: '$0.25', output: '$0.50' },
+    key: 'grok-4-0709',
+    name: 'Grok 4 (July 2025)',
+    color: 'bg-gray-900',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'xAI'
   },
@@ -144,7 +144,7 @@ export const MODELS: ModelConfig[] = [
     name: 'Grok 3',
     color: 'bg-gray-600',
     premium: true,
-    cost: { input: '$0.40', output: '$0.80' },
+    cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'xAI'
   },
@@ -153,26 +153,26 @@ export const MODELS: ModelConfig[] = [
     name: 'Grok 3 Mini',
     color: 'bg-gray-500',
     premium: false,
-    cost: { input: '$0.15', output: '$0.30' },
+    cost: { input: '$0.30', output: '$0.50' },
     supportsTemperature: true,
     provider: 'xAI'
   },
   {
-    key: 'grok-4',
-    name: 'Grok 4',
-    color: 'bg-gray-800',
+    key: 'grok-3-fast',
+    name: 'Grok 3 Fast',
+    color: 'bg-gray-700',
     premium: true,
-    cost: { input: '$1.00', output: '$2.00' },
-    supportsTemperature: false,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
     provider: 'xAI'
   },
   {
-    key: 'grok-4-mini',
-    name: 'Grok 4 Mini',
-    color: 'bg-gray-700',
-    premium: true,
-    cost: { input: '$0.50', output: '$1.00' },
-    supportsTemperature: false,
+    key: 'grok-3-mini-fast',
+    name: 'Grok 3 Mini Fast',
+    color: 'bg-gray-600',
+    premium: false,
+    cost: { input: '$0.60', output: '$4.00' },
+    supportsTemperature: true,
     provider: 'xAI'
   }
 ];

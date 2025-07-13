@@ -40,17 +40,16 @@ import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 
 const MODELS = {
-  "grok-beta": "grok-beta",
+  "grok-4-0709": "grok-4-0709",
   "grok-3": "grok-3", 
   "grok-3-mini": "grok-3-mini",
-  "grok-4": "grok-4",
-  "grok-4-mini": "grok-4-mini",
+  "grok-3-fast": "grok-3-fast",
+  "grok-3-mini-fast": "grok-3-mini-fast",
 } as const;
 
 // Grok 4 and other reasoning models don't support certain parameters
 const REASONING_MODELS = new Set([
-  "grok-4",
-  "grok-4-mini",
+  "grok-4-0709",
 ]);
 
 // Initialize xAI client with OpenAI SDK compatibility
@@ -234,7 +233,7 @@ Respond in this JSON format:
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: true,
-      supportsVision: modelKey === "grok-beta" || modelKey === "grok-4", // Based on docs
+      supportsVision: modelKey === "grok-4-0709", // Only the latest Grok 4 supports vision
     };
   }
 }
