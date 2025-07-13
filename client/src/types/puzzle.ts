@@ -91,7 +91,6 @@ export interface ExplanationData {
   hints: string[];
   alienMeaning: string;
   confidence: number | string;
-  patternConfidence?: number | string;
   alienMeaningConfidence?: number | string;
   helpfulVotes: number | null; // Can be null from DB
   notHelpfulVotes: number | null; // Can be null from DB

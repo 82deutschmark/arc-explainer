@@ -18,6 +18,7 @@ interface PuzzleExplanation {
   hints: string[];
   alienMeaning: string;
   confidence: number;
+  alienMeaningConfidence?: number;
   modelName: string;
 }
 
@@ -80,9 +81,21 @@ const createTablesIfNotExist = async () => {
         hints TEXT[],
         alien_meaning TEXT,
         confidence INTEGER,
+        alien_meaning_confidence INTEGER,
         model_name TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
+      
+      -- Add alien_meaning_confidence column if it doesn't exist
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'alien_meaning_confidence') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN alien_meaning_confidence INTEGER;
+        END IF;
+      END $$;
     `);
     logger.info('Explanations table created or already exists', 'database');
     
@@ -130,14 +143,15 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       hints,
       alienMeaning,
       confidence,
+      alienMeaningConfidence,
       modelName
     } = explanation;
     
     const result = await client.query(
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
-        confidence, alien_meaning, model_name)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+        confidence, alien_meaning_confidence, alien_meaning, model_name)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING id`,
       [
         puzzleId,
@@ -145,6 +159,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         solvingStrategy || '',
         hints || [],
         confidence || 0,
+        alienMeaningConfidence || null,
         alienMeaning || '',
         modelName || 'unknown'
       ]
@@ -222,6 +237,7 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.hints                   AS "hints",
          e.alien_meaning           AS "alienMeaning",
          e.confidence              AS "confidence",
+         e.alien_meaning_confidence AS "alienMeaningConfidence",
          e.model_name              AS "modelName",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
@@ -306,6 +322,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.hints                   AS "hints",
          e.alien_meaning           AS "alienMeaning",
          e.confidence              AS "confidence",
+         e.alien_meaning_confidence AS "alienMeaningConfidence",
          e.model_name              AS "modelName",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",

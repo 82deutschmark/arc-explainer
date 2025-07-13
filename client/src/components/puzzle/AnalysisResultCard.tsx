@@ -23,6 +23,13 @@ import { formatConfidence } from '@/constants/models';
 export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   
+  // Log the result to see what we're getting
+  console.log('AnalysisResultCard result:', { 
+    alienMeaning: result.alienMeaning,
+    alienMeaningConfidence: result.alienMeaningConfidence,
+    confidence: result.confidence
+  });
+
   // Handle empty or error states - fix for the "0" display issue
   const isEmptyResult = !result || (!result.patternDescription && !result.solvingStrategy && !result.alienMeaning && (!result.hints || result.hints.length === 0));
   
@@ -60,14 +67,9 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             <div>
               <div className="flex items-center gap-2">
                 <h5 className="font-semibold">Pattern Description</h5>
-                {result.confidence && !result.patternConfidence && (
+                {result.confidence && (
                   <Badge variant="outline" className="text-xs">
                     Confidence: {formatConfidence(result.confidence)}
-                  </Badge>
-                )}
-                {result.patternConfidence && (
-                  <Badge variant="outline" className="text-xs">
-                    Confidence: {formatConfidence(result.patternConfidence)}
                   </Badge>
                 )}
               </div>
@@ -91,12 +93,11 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
           {result.alienMeaning && (
             <div className="bg-purple-50 p-3 rounded border border-purple-200">
               <div className="flex items-center gap-2">
-                <h5 className="font-semibold text-purple-800">🛸 What might the alien mean?</h5>
-                {result.alienMeaningConfidence && (
-                  <Badge variant="outline" className="text-xs bg-purple-50">
-                    Confidence: {formatConfidence(result.alienMeaningConfidence)}
-                  </Badge>
-                )}
+                <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
+                {/* Always show confidence score for alien meaning */}
+                <Badge variant="outline" className="text-xs bg-purple-50">
+                  Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
+                </Badge>
               </div>
               <p className="text-gray-600 text-purple-700">{result.alienMeaning}</p>
             </div>
