@@ -607,23 +607,23 @@
     ]
   },
   "explanations": {
-    "o4-mini-2025-04-16": {
-      "model": "o4-mini-2025-04-16",
-      "patternDescription": "The 3 × 3 picture is copied three times in a straight line, giving either a tall 3 × 9 column or a wide 9 × 3 row.  If the little picture already contains two identical rows the line is made top-to-bottom (vertical); otherwise it is made left-to-right (horizontal).  All other squares of the 9 × 9 board are left empty (⬛).",
-      "solvingStrategy": "1. Change the emojis back to ordinary numbers so comparing is easier.  \n2. Compare the three rows of the 3 × 3 input:\n   • When you find that any two rows are exactly the same, decide on a VERTICAL strip; you will stack the picture three times under one another.\n   • If no two rows match, decide on a HORIZONTAL strip; you will put the picture three times side-by-side.\n3. Tiling:  copy the whole 3 × 3 block three times in the chosen direction.  This gives either 9 rows ×3 columns (vertical case) or 3 rows ×9 columns (horizontal case).\n4. Position the strip inside the 9 × 9 board.  Place it in the first 3-row/3-column slot you reach when you read the big board in the natural order (top→bottom, left→right).  This reproduces the exact locations used in every example.\n5. Finally, fill every other cell with 0 (⬛).  The result is the published answer.",
+    "claude-3-haiku-20240307": {
+      "model": "claude-3-haiku-20240307",
+      "patternDescription": "This puzzle involves a combination of grid operations and pattern repetition. The key is to recognize that the input grid can be split into a 3x3 grid, and the solution involves repeating a specific pattern within each of those 9 sub-grids.",
+      "solvingStrategy": "To solve this, first imagine the input grid as a 3x3 grid of 3x3 sub-grids. In each of those 9 sub-grids, you need to identify the pattern and repeat it. The pattern is: the top-left corner emoji, repeated across the first row, then the second row, then the third row. So if the top-left corner emoji is 🛸, you would repeat 🛸 3 times in the first row, 3 times in the second row, and 3 times in the third row. Do this for each of the 9 sub-grids, and you'll get the correct solution.",
       "hints": [
-        "Turn the emojis back into plain numbers first – it is much easier to see which rows match.",
-        "Check whether two of the three little rows are identical; that single fact already tells you whether the final strip is vertical or horizontal.",
-        "After the strip has been built, everything else in the 9 × 9 canvas must stay ⬛."
+        "Look for a repeating pattern within each 3x3 sub-grid",
+        "The pattern is the top-left corner emoji repeated across the rows",
+        "Treat the input grid as a 3x3 grid of 3x3 sub-grids"
       ],
-      "alienMeaning": "The aliens appear to be showing how one short message can be *broadcast* in a single direction, almost like sending the same radio pulse over and over while keeping silence everywhere else.  Using 🛸 (their ship emoji, 6) and 🪐 (their-home emoji, 4) together with the human symbol 👤 (3) might be a playful way of saying: «We can line up our ships and planets in whichever direction we choose.»  It feels more like a demonstration of ability than a threat – a friendly ‘look what we can do’.",
-      "confidence": 55,
-      "alienMeaningConfidence": 35,
-      "modelKey": "o4-mini-2025-04-16"
+      "alienMeaning": "Based on the pattern of repetition and the use of the 🛸 emoji (their ships/travel), the aliens may be trying to communicate something about their method of transportation or their ability to move between locations. However, the use of the ⬛ (negative/nothing) emoji in the empty spaces could suggest a sense of isolation or separation. Overall, the message seems neutral, neither overtly hostile nor friendly - the aliens may simply be trying to convey information about their capabilities and movements.",
+      "confidence": 85,
+      "alienMeaningConfidence": 70,
+      "modelKey": "claude-3-haiku-20240307"
     }
   },
-  "exportedAt": "2025-07-12T21:23:59.557Z",
+  "exportedAt": "2025-07-13T04:34:06.217Z",
   "models": [
-    "o4-mini-2025-04-16"
+    "claude-3-haiku-20240307"
   ]
 }

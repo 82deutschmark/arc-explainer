@@ -90,7 +90,9 @@ export interface ExplanationData {
   solvingStrategy: string;
   hints: string[];
   alienMeaning: string;
-  confidence: number;
+  confidence: number | string;
+  patternConfidence?: number | string;
+  alienMeaningConfidence?: number | string;
   helpfulVotes: number | null; // Can be null from DB
   notHelpfulVotes: number | null; // Can be null from DB
   createdAt: string;
