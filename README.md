@@ -36,8 +36,32 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 3. **Run the Application**
    ```bash
-   npm run dev
+   npm run dev    # For local development
+   npm run build  # Build for production
+   npm start      # Run production build
    ```
+
+## 🚀 Deployment Notes
+
+### Railway Deployment
+This app is configured to deploy on Railway using a custom Dockerfile approach:
+
+1. The `railway.json` file configures Railway to use the Dockerfile builder
+2. The custom Dockerfile properly handles building both the client and server
+3. Static files are served from `dist/public` by the Express server
+4. Client-side routing works for direct URL navigation (SPA routing)
+
+### Troubleshooting Deployment
+
+**CSS Not Loading:**
+If CSS isn't loading in the deployed app, check that:
+1. Tailwind CSS is being processed during build (not raw directives in output)
+2. The Dockerfile includes all necessary config files (tailwind.config.ts, postcss.config.js)
+3. Static files are being served correctly from the Express server
+4. Client-side routing correctly serves the index.html file
+
+**API Routes Not Working:**
+API routes should be prefixed with `/api/` and registered before the static file middleware and SPA catch-all route in the Express server.
 
 4. **Access the Tool**
    - Open http://localhost:5000
