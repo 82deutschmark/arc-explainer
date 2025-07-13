@@ -136,7 +136,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-gray-900',
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'xAI'
   },
   {
@@ -154,15 +154,6 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-gray-500',
     premium: false,
     cost: { input: '$0.30', output: '$0.50' },
-    supportsTemperature: true,
-    provider: 'xAI'
-  },
-  {
-    key: 'grok-3-fast',
-    name: 'Grok 3 Fast',
-    color: 'bg-gray-700',
-    premium: true,
-    cost: { input: '$5.00', output: '$25.00' },
     supportsTemperature: true,
     provider: 'xAI'
   },
