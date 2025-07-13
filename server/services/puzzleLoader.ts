@@ -1,3 +1,12 @@
+/**
+ * PuzzleLoader.ts - Service to load ARC puzzle data from local directories
+ * 
+ * This module handles loading puzzle data from multiple sources with priority:
+ * ARC2-Eval (evaluation2) -> ARC2 (training2) -> ARC1 (training)
+ * 
+ * @author Cascade
+ */
+
 import fs from 'fs';
 import path from 'path';
 import type { ARCTask, PuzzleMetadata } from '@shared/types';
@@ -10,7 +19,7 @@ interface PuzzleInfo {
   inputSize: [number, number];
   outputSize: [number, number];
   hasExplanation: boolean;
-  source: 'ARC1' | 'ARC2';
+  source: 'ARC1' | 'ARC2' | 'ARC2-Eval';
 }
 
 export class PuzzleLoader {
@@ -18,6 +27,7 @@ export class PuzzleLoader {
   private puzzleMetadata: Map<string, PuzzleInfo> = new Map();
   private dataDir1 = path.join(process.cwd(), 'data', 'training');
   private dataDir2 = path.join(process.cwd(), 'data', 'training2');
+  private dataDir3 = path.join(process.cwd(), 'data', 'evaluation2');
   private initialized = false;
 
   constructor() {
@@ -47,9 +57,61 @@ export class PuzzleLoader {
         console.log('Training2 data directory not found, creating...');
         fs.mkdirSync(this.dataDir2, { recursive: true });
       }
+      if (!fs.existsSync(this.dataDir3)) {
+        console.log('Evaluation2 data directory not found, creating...');
+        fs.mkdirSync(this.dataDir3, { recursive: true });
+      }
 
-      // Load puzzles from first training directory (ARC1)
+      // Load puzzles from evaluation directory first (ARC2-Eval) - highest priority
       let totalPuzzles = 0;
+      if (fs.existsSync(this.dataDir3)) {
+        const files = fs.readdirSync(this.dataDir3).filter(file => file.endsWith('.json'));
+        console.log(`Found ${files.length} puzzle files in ARC2-Eval directory`);
+        totalPuzzles += files.length;
+
+        for (const file of files) {
+          try {
+            const taskId = file.replace('.json', '');
+            const filePath = path.join(this.dataDir3, file);
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
+            
+            // Analyze the puzzle to get metadata
+            const metadata = this.analyzePuzzleMetadata(taskId, data, 'ARC2-Eval');
+            this.puzzleMetadata.set(taskId, metadata);
+          } catch (error) {
+            console.error(`Error loading puzzle ${file} from ARC2-Eval:`, error);
+          }
+        }
+      }
+      
+      // Load puzzles from second training directory (ARC2) - second priority
+      if (fs.existsSync(this.dataDir2)) {
+        const files = fs.readdirSync(this.dataDir2).filter(file => file.endsWith('.json'));
+        console.log(`Found ${files.length} puzzle files in ARC2 directory`);
+        totalPuzzles += files.length;
+
+        for (const file of files) {
+          try {
+            const taskId = file.replace('.json', '');
+            const filePath = path.join(this.dataDir2, file);
+            
+            // Skip if already loaded from ARC2-Eval
+            if (this.puzzleMetadata.has(taskId)) {
+              continue;
+            }
+            
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
+            
+            // Analyze the puzzle to get metadata
+            const metadata = this.analyzePuzzleMetadata(taskId, data, 'ARC2');
+            this.puzzleMetadata.set(taskId, metadata);
+          } catch (error) {
+            console.error(`Error loading puzzle ${file} from ARC2:`, error);
+          }
+        }
+      }
+
+      // Load puzzles from first training directory (ARC1) - lowest priority
       if (fs.existsSync(this.dataDir1)) {
         const files = fs.readdirSync(this.dataDir1).filter(file => file.endsWith('.json'));
         console.log(`Found ${files.length} puzzle files in ARC1 directory`);
@@ -58,6 +120,12 @@ export class PuzzleLoader {
         for (const file of files) {
           try {
             const taskId = file.replace('.json', '');
+            
+            // Skip if already loaded from ARC2-Eval or ARC2
+            if (this.puzzleMetadata.has(taskId)) {
+              continue;
+            }
+            
             const filePath = path.join(this.dataDir1, file);
             const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
             
@@ -69,27 +137,6 @@ export class PuzzleLoader {
           }
         }
       }
-
-      // Load puzzles from second training directory (ARC2)
-      if (fs.existsSync(this.dataDir2)) {
-        const files = fs.readdirSync(this.dataDir2).filter(file => file.endsWith('.json'));
-        console.log(`Found ${files.length} puzzle files in ARC2 directory`);
-        totalPuzzles += files.length;
-
-        for (const file of files) {
-          try {
-            const taskId = file.replace('.json', '');
-            const filePath = path.join(this.dataDir2, file);
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
-            
-            // Analyze the puzzle to get metadata
-            const metadata = this.analyzePuzzleMetadata(taskId, data, 'ARC2');
-            this.puzzleMetadata.set(taskId, metadata);
-          } catch (error) {
-            console.error(`Error loading puzzle ${file} from ARC2:`, error);
-          }
-        }
-      }
       
       console.log(`Total puzzles loaded: ${totalPuzzles}`);
     } catch (error) {
@@ -97,7 +144,7 @@ export class PuzzleLoader {
     }
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC2'): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC2' | 'ARC2-Eval'): PuzzleInfo {
     let maxGridSize = 0;
     let inputSize: [number, number] = [0, 0];
     let outputSize: [number, number] = [0, 0];
@@ -156,16 +203,24 @@ export class PuzzleLoader {
         return this.puzzleCache.get(taskId) || null;
       }
 
-      // Try to load from ARC1 directory first
-      let filePath = path.join(this.dataDir1, `${taskId}.json`);
+      // Try to load from ARC2-Eval directory first (highest priority)
+      let filePath = path.join(this.dataDir3, `${taskId}.json`);
       if (fs.existsSync(filePath)) {
         const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         this.puzzleCache.set(taskId, data);
         return data;
       }
 
-      // If not found in ARC1, try ARC2 directory
+      // If not found in ARC2-Eval, try ARC2 directory
       filePath = path.join(this.dataDir2, `${taskId}.json`);
+      if (fs.existsSync(filePath)) {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        this.puzzleCache.set(taskId, data);
+        return data;
+      }
+      
+      // If not found in ARC2, try ARC1 directory
+      filePath = path.join(this.dataDir1, `${taskId}.json`);
       if (fs.existsSync(filePath)) {
         const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
         this.puzzleCache.set(taskId, data);
@@ -185,7 +240,7 @@ export class PuzzleLoader {
     minGridSize?: number;
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
-    source?: 'ARC1' | 'ARC2';
+    source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
 

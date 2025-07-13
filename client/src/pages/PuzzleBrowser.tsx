@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'wouter';
+import React, { useState, useCallback } from 'react';
+import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,10 @@ export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [showUnexplainedOnly, setShowUnexplainedOnly] = useState<boolean>(true);
-  const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', or 'ARC2'
+  const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   // Create filters object for the hook
@@ -29,7 +32,7 @@ export default function PuzzleBrowser() {
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     if (showUnexplainedOnly) result.prioritizeUnexplained = true;
-    if (arcVersion === 'ARC1' || arcVersion === 'ARC2') result.source = arcVersion;
+    if (arcVersion === 'ARC1' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval') result.source = arcVersion;
     return result;
   }, [maxGridSize, gridSizeConsistent, showUnexplainedOnly, arcVersion]);
 
@@ -41,6 +44,32 @@ export default function PuzzleBrowser() {
     if (size <= 10) return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
     return 'bg-red-100 text-red-800 hover:bg-red-200';
   };
+
+  // Handle puzzle search by ID
+  const handleSearch = useCallback(() => {
+    if (!searchQuery.trim()) {
+      setSearchError('Please enter a puzzle ID');
+      return;
+    }
+
+    // Check if the puzzle ID exists in the available puzzles
+    const puzzleId = searchQuery.trim();
+    const puzzleExists = filteredPuzzles.some(p => p.id === puzzleId) ||
+                         puzzles?.some(p => p.id === puzzleId);
+    
+    if (puzzleExists) {
+      // Navigate to the puzzle page
+      setLocation(`/puzzle/${puzzleId}`);
+    } else {
+      // Try to directly navigate to the puzzle
+      // The server will handle if it exists or not
+      setLocation(`/puzzle/${puzzleId}`);
+      
+      // Note: We're removing the API check because we'll let the puzzle page handle
+      // showing an error if the puzzle doesn't exist. This avoids needing to add
+      // a new API endpoint just for this feature.
+    }
+  }, [searchQuery, filteredPuzzles, puzzles, setLocation]);
 
   if (error) {
     return (
@@ -94,6 +123,41 @@ export default function PuzzleBrowser() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+                <div className="w-full md:flex-1 space-y-2">
+                  <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
+                  <div className="relative">
+                    <Input
+                      id="puzzleSearch"
+                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSearchError(null);
+                      }}
+                      className="pr-24"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                    />
+                  </div>
+                  {searchError && (
+                    <p className="text-sm text-red-500">{searchError}</p>
+                  )}
+                </div>
+                <Button 
+                  onClick={handleSearch}
+                  className="min-w-[120px]"
+                >
+                  Search
+                </Button>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="maxGridSize">Maximum Grid Size</Label>
@@ -148,6 +212,7 @@ export default function PuzzleBrowser() {
                     <SelectItem value="any">Any ARC version</SelectItem>
                     <SelectItem value="ARC1">ARC1 only</SelectItem>
                     <SelectItem value="ARC2">ARC2 only</SelectItem>
+                    <SelectItem value="ARC2-Eval">ARC2-Eval only</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -201,7 +266,11 @@ export default function PuzzleBrowser() {
                               <Badge variant="outline" className="text-xs bg-amber-50">Variable</Badge>
                             }
                             {puzzle.source && (
-                              <Badge variant="outline" className={`text-xs ${puzzle.source === 'ARC1' ? 'bg-blue-50' : 'bg-purple-50'}`}>
+                              <Badge variant="outline" className={`text-xs 
+                                ${puzzle.source === 'ARC1' ? 'bg-blue-50' : 
+                                  puzzle.source === 'ARC2' ? 'bg-purple-50' : 
+                                  'bg-green-50 font-bold'}`
+                              }>
                                 {puzzle.source}
                               </Badge>
                             )}
