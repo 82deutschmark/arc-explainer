@@ -15,6 +15,10 @@ export interface ModelConfig {
   cost: { input: string; output: string };
   supportsTemperature: boolean;
   provider: 'OpenAI' | 'Anthropic' | 'xAI';
+  responseTime?: {
+    speed: 'fast' | 'moderate' | 'slow';
+    estimate?: string;
+  };
 }
 
 /**

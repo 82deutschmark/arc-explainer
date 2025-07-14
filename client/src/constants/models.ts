@@ -26,7 +26,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.10', output: '$0.40' },
     supportsTemperature: true,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'fast', estimate: '<30 sec' }
   },
   { 
     key: 'gpt-4.1-mini-2025-04-14', 
@@ -35,7 +36,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.40', output: '$1.60' },
     supportsTemperature: true,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
   },
   { 
     key: 'gpt-4o-mini-2024-07-18', 
@@ -44,7 +46,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.15', output: '$0.60' },
     supportsTemperature: true,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
   },
   { 
     key: 'o3-mini-2025-01-31', 
@@ -53,7 +56,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$1.10', output: '$4.40' },
     supportsTemperature: false,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
   { 
     key: 'o4-mini-2025-04-16', 
@@ -62,7 +66,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$1.10', output: '$4.40' },
     supportsTemperature: false,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' }
   },
   { 
     key: 'o3-2025-04-16', 
@@ -71,7 +76,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$2', output: '$8' },
     supportsTemperature: false,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' }
   },
   { 
     key: 'gpt-4.1-2025-04-14', 
@@ -80,7 +86,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$2.00', output: '$8.00' },
     supportsTemperature: true,
-    provider: 'OpenAI'
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
   
   // Anthropic Models
@@ -91,7 +98,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
-    provider: 'Anthropic'
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' }
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -100,7 +108,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
-    provider: 'Anthropic'
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
   { 
     key: 'claude-3-5-sonnet-20241022', 
@@ -109,7 +118,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
-    provider: 'Anthropic'
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
   { 
     key: 'claude-3-5-haiku-20241022', 
@@ -118,7 +128,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.80', output: '$4.00' },
     supportsTemperature: true,
-    provider: 'Anthropic'
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -127,7 +138,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.25', output: '$1.25' },
     supportsTemperature: true,
-    provider: 'Anthropic'
+    provider: 'Anthropic',
+    responseTime: { speed: 'fast', estimate: '<60 sec' }
   },
   // xAI Grok Models
   {
@@ -137,7 +149,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: false,
-    provider: 'xAI'
+    provider: 'xAI',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' }
   },
   {
     key: 'grok-3',
@@ -146,7 +159,8 @@ export const MODELS: ModelConfig[] = [
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
-    provider: 'xAI'
+    provider: 'xAI',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' }
   },
   {
     key: 'grok-3-mini',
@@ -155,7 +169,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.30', output: '$0.50' },
     supportsTemperature: true,
-    provider: 'xAI'
+    provider: 'xAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
   {
     key: 'grok-3-mini-fast',
@@ -164,7 +179,8 @@ export const MODELS: ModelConfig[] = [
     premium: false,
     cost: { input: '$0.60', output: '$4.00' },
     supportsTemperature: true,
-    provider: 'xAI'
+    provider: 'xAI',
+    responseTime: { speed: 'fast', estimate: '30-60 sec' }
   }
 ];
 

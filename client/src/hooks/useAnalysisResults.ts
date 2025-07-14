@@ -31,6 +31,7 @@ export function useAnalysisResults({
   refetchExplanations
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.7);
+  const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
 
   // Mutation to analyze the puzzle and save the explanation in one step
   const analyzeAndSaveMutation = useMutation({
@@ -68,17 +69,29 @@ export function useAnalysisResults({
 
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
+    // Store which model we're currently analyzing
+    setCurrentModelKey(modelKey);
+    
     const payload = {
       modelKey,
       ...(supportsTemperature ? { temperature } : {})
     };
+    
     analyzeAndSaveMutation.mutate(payload);
   };
+
+  // Reset current model when analysis completes or errors
+  useEffect(() => {
+    if (!analyzeAndSaveMutation.isPending && currentModelKey) {
+      setCurrentModelKey(null);
+    }
+  }, [analyzeAndSaveMutation.isPending]);
 
   return {
     temperature,
     setTemperature,
     analyzeWithModel,
+    currentModelKey,
     isAnalyzing: analyzeAndSaveMutation.isPending,
     analyzerError: analyzeAndSaveMutation.error,
   };

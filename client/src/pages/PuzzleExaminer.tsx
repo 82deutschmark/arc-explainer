@@ -56,10 +56,14 @@ export default function PuzzleExaminer() {
     analyzeWithModel,
     isAnalyzing,
     analyzerError,
+    currentModelKey,
   } = useAnalysisResults({ 
     taskId: taskId || '', 
     refetchExplanations 
   });
+  
+  // Find the current model's details if we're analyzing
+  const currentModel = currentModelKey ? MODELS.find(model => model.key === currentModelKey) : null;
 
   // Loading state
   if (isLoadingTask) {
@@ -194,10 +198,21 @@ export default function PuzzleExaminer() {
             <p className="text-sm text-gray-600">
               Test how different AI models explain why this solution is correct and what the aliens might mean
             </p>
-            {isAnalyzing && (
-              <div className="flex items-center gap-2 text-sm text-blue-600">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Analyzing...
+            {isAnalyzing && currentModel && (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 text-sm text-blue-600">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Analyzing with {currentModel.name}...
+                </div>
+                {currentModel.responseTime && (
+                  <div className={`text-xs mt-1 ${currentModel.responseTime.speed === 'slow' ? 'text-red-600' : 
+                              currentModel.responseTime.speed === 'moderate' ? 'text-amber-600' : 
+                              'text-green-600'}`}>
+                    {currentModel.responseTime.speed === 'slow' ? '⏳' : 
+                     currentModel.responseTime.speed === 'moderate' ? '⌛' : '⚡'} 
+                    Expected response time: {currentModel.responseTime.estimate}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -252,15 +267,42 @@ export default function PuzzleExaminer() {
           {explanations.length > 0 && (
             <div className="mt-6">
               <h4 className="text-lg font-semibold mb-3">Analysis Results</h4>
-              <div className="space-y-4">
-                {explanations.map((explanation) => (
-                  <AnalysisResultCard
-                    key={explanation.id}
-                    modelKey={explanation.modelName}
-                    result={explanation} // Pass the explanation object directly
-                  />
-                ))}
-              </div>
+              
+              {/* Database Explanations Section */}
+              {explanations.filter(exp => exp.id !== undefined).length > 0 && (
+                <div className="mb-6">
+                  <h5 className="text-md font-medium text-blue-800 mb-2">Database Explanations</h5>
+                  <div className="space-y-4">
+                    {explanations
+                      .filter(explanation => explanation.id !== undefined)
+                      .map((explanation) => (
+                        <AnalysisResultCard
+                          key={explanation.id}
+                          modelKey={explanation.modelName}
+                          result={explanation}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* AI Generated Explanations Section */}
+              {explanations.filter(exp => exp.id === undefined).length > 0 && (
+                <div>
+                  <h5 className="text-md font-medium text-green-800 mb-2">AI Generated Explanations</h5>
+                  <div className="space-y-4">
+                    {explanations
+                      .filter(explanation => explanation.id === undefined)
+                      .map((explanation, index) => (
+                        <AnalysisResultCard
+                          key={`generated-${index}`}
+                          modelKey={explanation.modelName}
+                          result={explanation}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

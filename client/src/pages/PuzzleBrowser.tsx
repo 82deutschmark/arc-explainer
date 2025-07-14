@@ -15,6 +15,12 @@ import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
 import { useHasExplanation } from '@/hooks/useExplanation';
 
+// Extended type to include feedback counts from our enhanced API
+interface EnhancedPuzzleMetadata extends PuzzleMetadata {
+  explanationId?: number;
+  feedbackCount?: number;
+}
+
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
@@ -37,7 +43,8 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, showUnexplainedOnly, arcVersion]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
-  const filteredPuzzles = puzzles || [];
+  // Cast to enhanced metadata type to access the feedbackCount property
+  const filteredPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
@@ -276,9 +283,19 @@ export default function PuzzleBrowser() {
                             )}
                           </div>
                           {puzzle.hasExplanation && (
-                            <Badge variant="outline" className="bg-green-50 text-green-700">
-                              ✓ Explained
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              <Badge variant="outline" className="bg-green-50 text-green-700">
+                                ✓ Explained
+                              </Badge>
+                              {/* @ts-ignore - feedbackCount is added by our enhanced API */}
+                              {puzzle.feedbackCount > 0 && (
+                                <Badge variant="outline" className="bg-purple-50 text-purple-700 flex items-center gap-1">
+                                  <MessageCircle className="h-3 w-3" />
+                                  {/* @ts-ignore - feedbackCount is added by our enhanced API */}
+                                  {puzzle.feedbackCount} {puzzle.feedbackCount === 1 ? 'comment' : 'comments'}
+                                </Badge>
+                              )}
+                            </div>
                           )}
                           {!puzzle.hasExplanation && (
                             <Badge variant="outline" className="bg-blue-50 text-blue-700">
