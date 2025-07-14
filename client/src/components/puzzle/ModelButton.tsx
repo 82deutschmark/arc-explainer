@@ -29,11 +29,17 @@ export function ModelButton({ model, isAnalyzing, hasResult, onAnalyze, disabled
         {isAnalyzing ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <div className={`w-4 h-4 rounded-full flex-shrink-0 ${
-            hasResult ? 'bg-green-500' : model.color
-          }`} />
+          <div className={`w-4 h-4 rounded-full flex-shrink-0 ${model.color}`} />
         )}
-        <span className="text-sm font-medium">{model.name}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-medium">{model.name}</span>
+          {hasResult && (
+            <div 
+              className="w-2 h-2 bg-green-500 rounded-full"
+              title="Analysis available in database"
+            />
+          )}
+        </div>
       </div>
       
       <div className="text-xs text-gray-600 w-full">

@@ -60,9 +60,11 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 // A mapping from the model keys in your app to the model names expected by the Gemini API
 const MODEL_NAME_MAP: { [key: string]: string } = {
-  "gemini-2.5-pro": "gemini-1.5-pro-latest",
-  "gemini-2.5-flash": "gemini-1.5-flash-latest",
-  // Add other mappings as needed, falling back to the key itself if not specified
+  "gemini-2.5-pro": "models/gemini-2.5-pro",
+  "gemini-2.5-flash": "models/gemini-2.5-flash",
+  "gemini-2.5-flash-lite": "models/gemini-2.5-flash-lite-preview-06-17",
+  "gemini-2.0-flash": "models/gemini-2.0-flash",
+  "gemini-2.0-flash-lite": "models/gemini-2.0-flash-lite",
 };
 
 export class GeminiService {
@@ -71,7 +73,7 @@ export class GeminiService {
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
   ) {
-    const modelName = MODELS[modelKey];
+    const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
     const trainingExamples = task.train
       .map(
@@ -187,25 +189,13 @@ Respond in this JSON format:
 IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any other text, explanations, or markdown code fences. The entire response must start with '{' and end with '}'`
 
     try {
-      const requestOptions: any = {
+      const result = await genAI.models.generateContent({
         model: modelName,
-        contents: {
-          role: "user", 
-          parts: [{ text: prompt }]
-        },
-        generationConfig: {
-          responseMimeType: "application/json",
-        }
-      };
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+      });
 
-      // Add temperature for models that support it
-      // Most Gemini models support temperature, but thinking models may behave differently
-      requestOptions.generationConfig.temperature = temperature;
+      const rawText: string = result.text ?? "";
 
-      const result: any = await genAI.models.generateContent(requestOptions);
-
-            // Gemini may wrap JSON in Markdown. Forcefully extract the JSON object.
-      const rawText: string = result?.text ?? "";
       const firstBrace = rawText.indexOf('{');
       const lastBrace = rawText.lastIndexOf('}');
       
