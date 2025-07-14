@@ -10,6 +10,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 - **Accessibility Focus**: Designed for colorblind users and anyone who struggles with the standard puzzle representation
 - **Emoji Translation**: Numbers (0-9) converted to emojis for better visualization and accessibility
+- **Color Translation**: Numbers (0-9) converted to colors in standard ARC style
 - **Real Puzzle Data**: Uses puzzles from the v1 training set of the ARC-AGI prize
 - **AI-Powered Explanations**: Focuses on WHY solutions are correct, not just HOW to solve them
 - **Filter Options**: Ability to filter by grid size and other parameters
@@ -29,6 +30,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
     # Required API keys for AI analysis (at least one required)
     OPENAI_API_KEY=your_openai_api_key_here
     GROK_API_KEY=your_grok_api_key_here   # Required for xAI Grok models
+    GEMINI_API_KEY=your_gemini_api_key_here   # Required for Google Gemini models
     
     # Optional database connection for Railway PostgreSQL
     DATABASE_URL=your_postgresql_connection_string_here
@@ -147,7 +149,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 - The backend processes the raw JSON files, focusing on smaller grids (≤10x10) to make them easier for users to understand.
 
 ### 2. AI-Powered Explanation
-- When a user requests an analysis, the backend sends the puzzle data to a selected AI model (e.g., GPT-4, Claude, or Grok).
+- When a user requests an analysis, the backend sends the puzzle data to a selected AI model (e.g., GPT-4, Claude, Gemini, or Grok).
 - The AI returns a structured explanation that includes:
   - **Pattern Description**: A high-level summary of the core logic.
   - **Solving Strategy**: Step-by-step instructions on how to apply the logic.
@@ -229,7 +231,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 
 ### Backend (Express + TypeScript)
 - **Express.js**: RESTful API server
-- **Multiple AI Providers**: OpenAI, Anthropic Claude, and xAI Grok integration for puzzle explanations
+- **Multiple AI Providers**: OpenAI, Anthropic Claude, Google Gemini, and xAI Grok integration for puzzle explanations
 - **Railway PostgreSQL**: Database storage for explanations and feedback
 - **Local Puzzle Storage**: Efficient loading of puzzle data
 - **Custom Analysis Logic**: Processing of puzzle patterns
@@ -255,6 +257,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 # At least one of the following API keys is required
 OPENAI_API_KEY=sk-...          # OpenAI API access for GPT models
 GROK_API_KEY=sk-...            # xAI API access for Grok models
+GEMINI_API_KEY=sk-...         # Google API access for Gemini models
 ```
 
 ### Optional Environment Variables

@@ -2,7 +2,7 @@
  * aiServiceFactory.ts
  * 
  * Factory pattern implementation to get the appropriate AI service based on model name.
- * Supports OpenAI, Anthropic (Claude), and xAI Grok providers.
+ * Supports OpenAI, Anthropic (Claude), xAI Grok, and Google Gemini providers.
  * This replaces dynamic imports in route handlers with a more efficient approach that
  * loads services once at startup.
  * 
@@ -13,6 +13,7 @@ class AIServiceFactory {
   private anthropicService: any;
   private openaiService: any;
   private grokService: any;
+  private geminiService: any;
 
   /**
    * Initialize the factory by loading all AI services once at startup
@@ -22,10 +23,12 @@ class AIServiceFactory {
     const { anthropicService } = await import('./anthropic');
     const { openaiService } = await import('./openai');
     const { grokService } = await import('./grok');
+    const { geminiService } = await import('./gemini');
     
     this.anthropicService = anthropicService;
     this.openaiService = openaiService;
     this.grokService = grokService;
+    this.geminiService = geminiService;
   }
 
   /**
@@ -48,6 +51,12 @@ class AIServiceFactory {
     if (model.startsWith('grok-')) {
       console.log('   -> Grok service');
       return this.grokService;
+    }
+    
+    // Google Gemini models
+    if (model.startsWith('gemini-')) {
+      console.log('   -> Gemini service');
+      return this.geminiService;
     }
     
     // Default to OpenAI

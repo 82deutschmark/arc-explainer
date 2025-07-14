@@ -1027,23 +1027,23 @@
     ]
   },
   "explanations": {
-    "o3-2025-04-16": {
-      "model": "o3-2025-04-16",
-      "patternDescription": "A small 2 × 2 patch tells us which diagonal lines to extend.  Every little square that shows the alien sign (👽 = the number 2) marks a diagonal that has to be painted.  We then ‘paint’ that diagonal across the whole board with the other colour that was present in the patch, making the line three squares thick.  If there is an alien on only one diagonal we get one thick slanted stripe; if aliens sit on both diagonals we get two stripes that cross and form an X.  While painting we overwrite the 👽 squares with the good colour.",
-      "solvingStrategy": "1. Find the only 2 × 2 area that contains two different symbols.  One of them is always the alien (👽).  The other is the colour we are going to paint with.\n2. Look at the two tiny diagonals inside that 2 × 2 square:\n   • top-left → bottom-right (main diagonal)\n   • top-right → bottom-left (anti-diagonal)\n   If either of those two little diagonals contains 👽, we must paint that whole big diagonal on the full grid.\n3. For every diagonal that must be painted, work row by row:\n   • Work out the column that lies on the diagonal (either row-minus-col is constant, or row-plus-col is constant – use whichever matches the alien in the seed).\n   • Colour that square and the next two squares that lie *inside* the grid on the same side of the diagonal, so the line is three squares wide.\n4. Stop when you fall off the grid edges.  Any square that was 👽 gets painted over.  All other squares stay black (⬛).",
+    "gemini-2.0-flash-lite": {
+      "model": "gemini-2.0-flash-lite",
+      "patternDescription": "This puzzle uses a combination of **pattern extension** and **spatial relationships**. It looks like the aliens are trying to show how things 'grow' or 'spread' from specific points.",
+      "solvingStrategy": "1. **Look for the aliens!** Find where the 👽 (aliens) are in the input.  2. **Follow the ♥ (peace)**.  The correct answer shows ♥ spreading out from where the 👽 were in the input. Imagine the ♥ 'growing' outwards from the 👽 positions. If there were an emoji in the input, it's included in the output. 3. **Think like a grid!**  The input and output are like giant squares (grids). The aliens want us to see how the ♥ spread across the grid.",
       "hints": [
-        "The only squares that are not black in the input form a 2 × 2 ‘key’.",
-        "👽 squares say WHICH diagonal(s) to draw; the other colour says WHAT colour to use.",
-        "The line is always exactly three cells thick."
+        "The aliens start at a certain location and then interact with their environment.",
+        "Look for the alien symbols in the input.",
+        "The output emphasizes the spread of ♥ (peace) from the aliens' original positions."
       ],
-      "alienMeaning": "The aliens appear to be demonstrating that goodwill (♥) can replace or cover alien presence (👽) along any path it encounters.  When the alien sign shows up on both diagonals, two friendly paths of hearts are drawn, forming a big, friendly X.  It feels more like an offer of cooperation than a threat.",
-      "confidence": "65",
-      "alienMeaningConfidence": "40",
-      "modelKey": "o3-2025-04-16"
+      "alienMeaning": "The aliens are possibly showing us how their 'peace' or 'good' intentions (represented by ♥) spread. The aliens are not angry or hostile; they are expressing love and kindness. The placement of the aliens, then the peace, shows a progression of good-will towards us. The use of 'peace' emojis shows a message of love and friendship, implying that they want us to be friends! ",
+      "confidence": "95",
+      "alienMeaningConfidence": "80",
+      "modelKey": "gemini-2.0-flash-lite"
     }
   },
-  "exportedAt": "2025-07-14T03:24:06.263Z",
+  "exportedAt": "2025-07-14T19:14:33.331Z",
   "models": [
-    "o3-2025-04-16"
+    "gemini-2.0-flash-lite"
   ]
 }

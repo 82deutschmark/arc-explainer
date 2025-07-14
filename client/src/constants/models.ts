@@ -2,6 +2,8 @@
  * Models configuration constants for the ARC Explainer
  * Contains all available AI models and their properties
  * Author: Cascade
+ * 
+ * Includes support for OpenAI, Anthropic, xAI Grok, and Google Gemini models
  */
 
 import { ModelConfig } from '../types/puzzle';
@@ -181,6 +183,57 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'xAI',
     responseTime: { speed: 'fast', estimate: '30-60 sec' }
+  },
+  // Google Gemini Models
+  {
+    key: 'gemini-2.5-pro',
+    name: 'Gemini 2.5 Pro',
+    color: 'bg-teal-600',
+    premium: true,
+    cost: { input: '$2.50', output: '$8.00' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' }
+  },
+  {
+    key: 'gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash',
+    color: 'bg-teal-500',
+    premium: false,
+    cost: { input: '$0.70', output: '$2.10' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
+  },
+  {
+    key: 'gemini-2.5-flash-lite',
+    name: 'Gemini 2.5 Flash-Lite',
+    color: 'bg-teal-400',
+    premium: false,
+    cost: { input: '$0.35', output: '$1.05' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' }
+  },
+  {
+    key: 'gemini-2.0-flash',
+    name: 'Gemini 2.0 Flash',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.20', output: '$0.60' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' }
+  },
+  {
+    key: 'gemini-2.0-flash-lite',
+    name: 'Gemini 2.0 Flash-Lite',
+    color: 'bg-teal-200',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' }
   }
 ];
 
