@@ -209,23 +209,24 @@
     ]
   },
   "explanations": {
-    "o3-2025-04-16": {
-      "model": "o3-2025-04-16",
-      "patternDescription": "It’s just a simple color (emoji) swap: everywhere you see a ♥ is changed into a 🌍, and everywhere you see a 🌍 is changed into a ♥.  All the other symbols stay exactly where they are.",
-      "solvingStrategy": "1. If it helps, temporarily think of the emojis as the numbers they stand for (🌍=5 and ♥=8).\n2. Scan the whole grid and mark every 5 and every 8.\n3. Replace every 5 with an 8.\n4. Replace every 8 with a 5.\n5. Copy every other value (0,1,2,3,4,6,7,9) straight across without touching them.\n6. The resulting grid is the answer.",
+    "claude-3-5-haiku-20241022": {
+      "model": "claude-3-5-haiku-20241022",
+      "patternDescription": "Column-wise maximum value preservation with replacement",
+      "solvingStrategy": "For each column, find the maximum value and replace lower values with that maximum. Go column by column, from left to right. If you get stuck, convert emojis back to numbers to analyze more clearly.",
       "hints": [
-        "Only two kinds of emoji ever change.",
-        "Count how many Earths and Hearts you have in the input and see how they flip‐flop in the output.",
-        "Nothing moves; only the symbols themselves are swapped one-for-one."
+        "Look at each column separately",
+        "Identify the highest value in each column",
+        "Replace lower values with that highest value",
+        "Keep the rightmost column's original values"
       ],
-      "alienMeaning": "The two symbols involved are ♥ (friendship/peace/love) and 🌍 (our planet).  The aliens might be saying, “We can trade, interchange or equate love with your planet,” perhaps hinting at a relationship where Earth and goodwill can be exchanged.  It feels friendly rather than hostile.",
-      "confidence": 95,
-      "alienMeaningConfidence": 55,
-      "modelKey": "o3-2025-04-16"
+      "alienMeaning": "The aliens seem to be demonstrating a principle of 'elevation' or 'bringing everything up to the highest standard'. This could symbolize a universal communication protocol where lower-status elements are raised to match the highest-status element in a group. It might suggest a peaceful, harmonizing intent where differences are smoothed out to create unity.",
+      "confidence": 85,
+      "alienMeaningConfidence": 70,
+      "modelKey": "claude-3-5-haiku-20241022"
     }
   },
-  "exportedAt": "2025-07-14T19:18:53.515Z",
+  "exportedAt": "2025-07-14T19:19:16.392Z",
   "models": [
-    "o3-2025-04-16"
+    "claude-3-5-haiku-20241022"
   ]
 }
