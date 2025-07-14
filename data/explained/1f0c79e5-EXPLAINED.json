@@ -1027,23 +1027,23 @@
     ]
   },
   "explanations": {
-    "grok-3-mini": {
-      "model": "grok-3-mini",
-      "patternDescription": "The transformation extends a small pattern into a larger, filled triangular or stepped shape, based on the position of key symbols in the grid.",
-      "solvingStrategy": "To solve this, first switch to thinking of the puzzle as numbers instead of emojis, because the patterns are easier to spot that way. In the input grid, you have numbers like 8 and 2 (which are ♥ and 👽 as emojis). Look at where the 8 is placed—it's like a starting point. Now, compare it to the training examples: they all take a key number (like 8 here) and expand it into a bigger shape, filling in a diagonal or stepped pattern across the grid. Step 1: Find the key number that's not 0 or 2. Step 2: Use its position to build a triangle that grows downward or diagonally, filling with that number. Step 3: Ignore the empty parts (0s) and just focus on creating the shape based on how the training grids changed. Once you get it, you can switch back to emojis to visualize it as a growing pattern of hearts.",
+    "o3-2025-04-16": {
+      "model": "o3-2025-04-16",
+      "patternDescription": "A small 2 × 2 patch tells us which diagonal lines to extend.  Every little square that shows the alien sign (👽 = the number 2) marks a diagonal that has to be painted.  We then ‘paint’ that diagonal across the whole board with the other colour that was present in the patch, making the line three squares thick.  If there is an alien on only one diagonal we get one thick slanted stripe; if aliens sit on both diagonals we get two stripes that cross and form an X.  While painting we overwrite the 👽 squares with the good colour.",
+      "solvingStrategy": "1. Find the only 2 × 2 area that contains two different symbols.  One of them is always the alien (👽).  The other is the colour we are going to paint with.\n2. Look at the two tiny diagonals inside that 2 × 2 square:\n   • top-left → bottom-right (main diagonal)\n   • top-right → bottom-left (anti-diagonal)\n   If either of those two little diagonals contains 👽, we must paint that whole big diagonal on the full grid.\n3. For every diagonal that must be painted, work row by row:\n   • Work out the column that lies on the diagonal (either row-minus-col is constant, or row-plus-col is constant – use whichever matches the alien in the seed).\n   • Colour that square and the next two squares that lie *inside* the grid on the same side of the diagonal, so the line is three squares wide.\n4. Stop when you fall off the grid edges.  Any square that was 👽 gets painted over.  All other squares stay black (⬛).",
       "hints": [
-        "The key number (like 8) is what gets spread out into the new shape.",
-        "Look for the position of 2 as a hint for where the expansion starts.",
-        "Training examples show that small clusters turn into larger, filled triangles, so try extending diagonally from the input."
+        "The only squares that are not black in the input form a 2 × 2 ‘key’.",
+        "👽 squares say WHICH diagonal(s) to draw; the other colour says WHAT colour to use.",
+        "The line is always exactly three cells thick."
       ],
-      "alienMeaning": "The aliens might be trying to show that their presence (👽) is leading to an expansion of peace and friendship (♥), perhaps suggesting they're offering to spread good intentions across our worlds. This could mean they're not angry, but instead want to build alliances—though if they're forcing this pattern, it might hint at a subtle takeover, so we should stay cautious.",
-      "confidence": "80",
-      "alienMeaningConfidence": "55",
-      "modelKey": "grok-3-mini"
+      "alienMeaning": "The aliens appear to be demonstrating that goodwill (♥) can replace or cover alien presence (👽) along any path it encounters.  When the alien sign shows up on both diagonals, two friendly paths of hearts are drawn, forming a big, friendly X.  It feels more like an offer of cooperation than a threat.",
+      "confidence": "65",
+      "alienMeaningConfidence": "40",
+      "modelKey": "o3-2025-04-16"
     }
   },
-  "exportedAt": "2025-07-14T03:19:35.315Z",
+  "exportedAt": "2025-07-14T03:24:06.263Z",
   "models": [
-    "grok-3-mini"
+    "o3-2025-04-16"
   ]
 }
