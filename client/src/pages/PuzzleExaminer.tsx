@@ -225,7 +225,7 @@ export default function PuzzleExaminer() {
                 key={model.key}
                 model={model}
                 isAnalyzing={isAnalyzing}
-                hasResult={!!explanations.find(explanation => explanation.modelName === model.key)}
+                explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
                 onAnalyze={handleAnalyzeWithModel}
                 disabled={isAnalyzing}
               />

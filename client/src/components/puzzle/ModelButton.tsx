@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/button';
 import { ModelButtonProps } from '@/types/puzzle';
 import { Loader2 } from 'lucide-react';
 
-export function ModelButton({ model, isAnalyzing, hasResult, onAnalyze, disabled }: ModelButtonProps) {
+export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, disabled }: ModelButtonProps) {
   return (
     <Button
       variant="outline"
       className={`h-auto p-3 flex flex-col items-center gap-2 relative text-left ${
-        hasResult ? 'ring-2 ring-green-500' : ''
+        explanationCount > 0 ? 'ring-2 ring-green-500' : ''
       } ${model.premium ? 'border-amber-300 bg-amber-50' : ''}`}
       onClick={() => onAnalyze(model.key)}
       disabled={disabled}
@@ -33,11 +33,13 @@ export function ModelButton({ model, isAnalyzing, hasResult, onAnalyze, disabled
         )}
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-medium">{model.name}</span>
-          {hasResult && (
+          {explanationCount > 0 && (
             <div 
-              className="w-2 h-2 bg-green-500 rounded-full"
-              title="Analysis available in database"
-            />
+              className="text-xs px-1.5 py-0.5 bg-green-500 text-white rounded-full font-medium"
+              title={`${explanationCount} ${explanationCount === 1 ? 'analysis' : 'analyses'} available in database`}
+            >
+              {explanationCount}
+            </div>
           )}
         </div>
       </div>
