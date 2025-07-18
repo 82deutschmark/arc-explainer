@@ -117,15 +117,19 @@ export default function PuzzleBrowser() {
             can practice the kind of reasoning future mission controllers will need.
           </p>
 
-          <p className="text-xs text-black-400 font-bold">
-            TL;DR: These puzzles are hard for a lot of humans (especially the neurodivergent), emojis are fun, 
-            and accessibility matters.
+          <p className="text-xs text-black-600">
+            <span className="text-sm font-semibold text-gray-800">
+              TL;DR: These puzzles are hard for a lot of humans (especially the neurodivergent), emojis are fun, 
+              and accessibility matters.
+            </span>
           </p>
           <p className="text-xs text-blue-600 underline">
-            Want a more game-like spin on ARC puzzles?&nbsp;
-            <a href="https://sfmc.markbarney.net" target="_blank" rel="noopener noreferrer" className="underline">
-              Check out my experiment here
-            </a>.
+            <div className="mt-2 p-2 bg-green-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
+              <span className="text-sm text-red-800">Want a more game-like spin on ARC puzzles?&nbsp;</span>
+              <a href="https://sfmc.markbarney.net" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">
+                Check out my experiment here →
+              </a>
+            </div>
           </p>
         </header>
 
