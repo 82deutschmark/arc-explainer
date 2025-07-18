@@ -18,6 +18,7 @@ interface PuzzleFilters {
   difficulty?: string;
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
+  prioritizeExplained?: boolean;
   source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
 }
 

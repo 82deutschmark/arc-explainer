@@ -1,3 +1,44 @@
+# ARC Explainer: Puzzle Filtering Improvements - January 2025
+Technical assistance provided by: Claude 4 Sonnet (Cascade)
+
+## Problem Summary
+The puzzle browser had two filtering issues:
+1. "ARC2-Eval Only" filter was not working - it wasn't actually filtering out training puzzles
+2. There was no option to show only explained puzzles (puzzles that already have AI explanations)
+
+## Issues Fixed
+
+### 1. ARC2-Eval Filter Not Working
+- **Root Cause**: The puzzle controller only allowed 'ARC1' and 'ARC2' as valid source filters, excluding 'ARC2-Eval'
+- **Solution**: Updated `puzzleController.ts` to include 'ARC2-Eval' in the valid source filters array
+- **Files Modified**: `server/controllers/puzzleController.ts`
+
+### 2. Missing "Show Explained Only" Option
+- **Root Cause**: Frontend only had "Show Unexplained Only" option but no way to filter for puzzles that already have explanations
+- **Solution**: 
+  - Added `prioritizeExplained` filter option to backend services
+  - Updated frontend to use a three-option explanation status filter: "All Puzzles", "Unexplained Only", "Explained Only"
+  - Replaced the old boolean "Show Unexplained Only" toggle with a proper dropdown
+- **Files Modified**: 
+  - `server/services/puzzleLoader.ts` - Added prioritizeExplained filter
+  - `server/services/puzzleService.ts` - Updated PuzzleFilters interface
+  - `server/controllers/puzzleController.ts` - Added prioritizeExplained parameter handling
+  - `client/src/pages/PuzzleBrowser.tsx` - Updated UI and state management
+
+## Technical Details
+
+### Backend Changes
+- Added `prioritizeExplained?: boolean` to PuzzleFilters interface
+- Updated puzzle filtering logic to support filtering for explained puzzles
+- Fixed source filter validation to include 'ARC2-Eval' option
+
+### Frontend Changes  
+- Replaced `showUnexplainedOnly` boolean state with `explanationFilter` string state
+- Updated filter dropdown to show three clear options
+- Improved filter logic to handle both unexplained and explained puzzle filtering
+
+---
+
 # ARC Explainer: Routing & Styling Fix Changelog - July 12, 2025
 Technical assistance provided by: Claude 3.7 Sonnet Thinking (Cascade), o3, Gemini 2.5 Pro, Claude 4 Sonnet
 

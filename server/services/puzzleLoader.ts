@@ -240,6 +240,7 @@ export class PuzzleLoader {
     minGridSize?: number;
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
+    prioritizeExplained?: boolean;
     source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
@@ -256,6 +257,9 @@ export class PuzzleLoader {
       }
       if (filters.prioritizeUnexplained) {
         puzzles = puzzles.filter(p => !p.hasExplanation);
+      }
+      if (filters.prioritizeExplained) {
+        puzzles = puzzles.filter(p => p.hasExplanation);
       }
       if (filters.source) {
         puzzles = puzzles.filter(p => p.source === filters.source);

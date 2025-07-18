@@ -20,7 +20,7 @@ export const puzzleController = {
    * @param res - Express response object
    */
   async list(req: Request, res: Response) {
-    const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, source } = req.query;
+    const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, prioritizeExplained, source } = req.query;
     
     console.log('DEBUG: Puzzle list request with query params:', req.query);
     
@@ -30,7 +30,8 @@ export const puzzleController = {
     if (difficulty) filters.difficulty = difficulty as string;
     if (gridSizeConsistent) filters.gridSizeConsistent = gridSizeConsistent === 'true';
     if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
-    if (source && ['ARC1', 'ARC2'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC2';
+    if (prioritizeExplained) filters.prioritizeExplained = prioritizeExplained === 'true';
+    if (source && ['ARC1', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC2' | 'ARC2-Eval';
     
     console.log('DEBUG: Using filters:', filters);
     
