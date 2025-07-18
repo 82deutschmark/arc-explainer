@@ -99,9 +99,16 @@ export default function PuzzleBrowser() {
         <header className="text-center space-y-2">
           <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer - Colorblindness Aid</h1>
           <p className="text-lg text-gray-600 space-y-2">
-            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite 
-            most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a grid and wondered what cosmic joke you’re missing, you’re not alone. I built this app to explain to me WHY these answers are correct. 
-            These are the tasks directly cloned from the v1 and v2 sets of the ARC-AGI prize. 
+            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite... 
+            most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a grid and wondered what cosmic joke 
+            you’re missing, you’re not alone. <p>I built this app to explain to me WHY these answers are correct. 
+            These are the tasks directly cloned from the v1 and v2 sets of the ARC-AGI prize. The ARC-AGI puzzles are often described
+             as "easy for humans," but let's be honest... they're not easy for most of us. 
+             These tasks require sophisticated logical reasoning that many people find genuinely challenging.
+            This app takes a different approach: instead of asking AI to solve these puzzles, 
+            we ask it to explain why correct answers are correct. 
+            The results are revealing, if AI models can't even articulate the reasoning behind known solutions, 
+            how can they have any hope of solving novel problems?</p>
           </p>
 
           <p className="text-sm text-gray-500 space-y-2">
@@ -114,7 +121,7 @@ export default function PuzzleBrowser() {
             That’s why this app replaces colors with emojis 
             (behind the scenes, it is still all numbers 0-9 and you can switch back to colors and numbers if you want).  
             The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious 
-            can practice the kind of reasoning future mission controllers will need.
+            can explore the kind of reasoning that eludes AI.
           </p>
 
           <p className="text-xs text-black-600">
@@ -125,7 +132,9 @@ export default function PuzzleBrowser() {
           </p>
           <p className="text-xs text-blue-600 underline">
             <div className="mt-2 p-2 bg-green-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
-              <span className="text-sm text-red-800">Want a more game-like spin on ARC puzzles?&nbsp;</span>
+              <span className="text-sm text-red-800">I also made this game based on ARC puzzles to help humans develop their
+                 fluid intelligence.</span><p>
+                 </p>
               <a href="https://sfmc.markbarney.net" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">
                 Check out my experiment here →
               </a>
