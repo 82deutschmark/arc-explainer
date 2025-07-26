@@ -2,6 +2,7 @@
  * AnalysisResultCard Component
  * Displays the results of a puzzle analysis from an AI model
  * Includes proper error handling for empty or incomplete results
+ * Now supports displaying reasoning logs from AI models that provide step-by-step reasoning
  * Author: Cascade
  */
 
@@ -13,21 +14,27 @@
  * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
  * This component is designed to be a self-contained card, making it easy to reuse and maintain.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Brain, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationFeedback } from '@/components/ExplanationFeedback';
 import { formatConfidence } from '@/constants/models';
 
 export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
+  const [showReasoning, setShowReasoning] = useState(false);
   
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
     alienMeaning: result.alienMeaning,
     alienMeaningConfidence: result.alienMeaningConfidence,
-    confidence: result.confidence
+    confidence: result.confidence,
+    // Reasoning log debugging
+    hasReasoningLog: result.hasReasoningLog,
+    reasoningLogLength: result.reasoningLog ? result.reasoningLog.length : 0,
+    reasoningLogPreview: result.reasoningLog ? result.reasoningLog.substring(0, 100) + '...' : 'None',
+    modelName: result.modelName || 'Unknown'
   });
 
   // Handle empty or error states - fix for the "0" display issue
@@ -100,6 +107,41 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
                 </Badge>
               </div>
               <p className="text-gray-600 text-purple-700">{result.alienMeaning}</p>
+            </div>
+          )}
+          
+          {/* Reasoning Log Section */}
+          {result.hasReasoningLog && result.reasoningLog && (
+            <div className="bg-blue-50 border border-blue-200 rounded">
+              <button
+                onClick={() => setShowReasoning(!showReasoning)}
+                className="w-full flex items-center justify-between p-3 text-left hover:bg-blue-100 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-blue-600" />
+                  <h5 className="font-semibold text-blue-800">AI Reasoning Process</h5>
+                  <Badge variant="outline" className="text-xs bg-blue-50">
+                    Step-by-step analysis
+                  </Badge>
+                </div>
+                {showReasoning ? (
+                  <ChevronUp className="h-4 w-4 text-blue-600" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-blue-600" />
+                )}
+              </button>
+              {showReasoning && (
+                <div className="px-3 pb-3">
+                  <div className="bg-white p-3 rounded border border-blue-100">
+                    <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+                      {result.reasoningLog}
+                    </pre>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">
+                    💡 This shows how the AI model analyzed the puzzle step-by-step to reach its conclusion.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

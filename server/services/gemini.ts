@@ -1,6 +1,8 @@
 /**
  * Google Gemini Service Integration for ARC-AGI Puzzle Analysis
- * @author Claude (Anthropic)
+ * Supports reasoning log capture through structured prompting with <thinking> tags
+ * Since Gemini doesn't provide built-in reasoning logs, we prompt it to show its reasoning
+ * @author Cascade
  * 
  * This service provides integration with Google's Gemini models for analyzing ARC-AGI puzzles.
  * It leverages Gemini's advanced reasoning capabilities to explain puzzle solutions in the
@@ -55,6 +57,15 @@ const THINKING_MODELS = new Set([
   "gemini-2.5-flash",
 ]);
 
+// All Gemini models can be prompted to show reasoning through structured prompting
+const MODELS_WITH_REASONING = new Set([
+  "gemini-2.5-pro",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+]);
+
 // Initialize Google GenAI client
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
@@ -72,6 +83,7 @@ export class GeminiService {
     task: ARCTask,
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
+    captureReasoning: boolean = true,
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
@@ -82,9 +94,23 @@ export class GeminiService {
       )
       .join("\n\n");
 
-    const prompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
+    // Modify prompt to include reasoning capture if requested
+    const basePrompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
      as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct.  
-     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.
+     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`;
+    
+    const reasoningPrompt = captureReasoning ? 
+      `${basePrompt}
+
+IMPORTANT: Before providing your final JSON response, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+
+<thinking>
+[Your detailed step-by-step analysis will go here]
+</thinking>
+
+Then provide your final structured JSON response.` : basePrompt;
+    
+    const prompt = `${reasoningPrompt}
 
 TRAINING EXAMPLES (what the aliens taught us):
 ${trainingExamples}
@@ -176,7 +202,7 @@ Your job:
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)
 
-Respond in this JSON format:
+${captureReasoning ? 'After your <thinking> section, respond' : 'Respond'} in this JSON format:
 {
   "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
@@ -186,7 +212,7 @@ Respond in this JSON format:
   "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
 }
 
-IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any other text, explanations, or markdown code fences. The entire response must start with '{' and end with '}'`
+${captureReasoning ? 'IMPORTANT: Include your <thinking> section first, then provide the JSON response. The JSON must be valid and complete.' : 'IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any other text, explanations, or markdown code fences. The entire response must start with \'{\' and end with \'}\'.'}`
 
     try {
       const result = await genAI.models.generateContent({
@@ -195,13 +221,31 @@ IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any
       });
 
       const rawText: string = result.text ?? "";
+      
+      // Extract reasoning log if requested and available
+      let reasoningLog = null;
+      let hasReasoningLog = false;
+      let cleanedContent = rawText;
+      
+      if (captureReasoning && MODELS_WITH_REASONING.has(modelKey)) {
+        const thinkingMatch = rawText.match(/<thinking>([\s\S]*?)<\/thinking>/);
+        if (thinkingMatch) {
+          reasoningLog = thinkingMatch[1].trim();
+          hasReasoningLog = true;
+          // Remove thinking tags from content for JSON parsing
+          cleanedContent = rawText.replace(/<thinking>[\s\S]*?<\/thinking>/, '').trim();
+          console.log(`[Gemini] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
+        } else {
+          console.log(`[Gemini] No reasoning log found for model ${modelKey}`);
+        }
+      }
 
-      const firstBrace = rawText.indexOf('{');
-      const lastBrace = rawText.lastIndexOf('}');
+      const firstBrace = cleanedContent.indexOf('{');
+      const lastBrace = cleanedContent.lastIndexOf('}');
       
       let cleanText = "";
       if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-        cleanText = rawText.substring(firstBrace, lastBrace + 1);
+        cleanText = cleanedContent.substring(firstBrace, lastBrace + 1);
       }
 
       let jsonResult: any;
@@ -214,6 +258,8 @@ IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any
 
       return {
         model: modelKey,
+        reasoningLog,
+        hasReasoningLog,
         ...jsonResult,
       };
     } catch (error) {
