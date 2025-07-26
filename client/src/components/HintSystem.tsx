@@ -1,4 +1,5 @@
 // File has unknown purpose, may have been created by a previous dev with a different intent
+// TODO: Remove this file if it is not used
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

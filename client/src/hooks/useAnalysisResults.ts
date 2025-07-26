@@ -17,9 +17,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { AnalysisResult } from '@/types/puzzle';
+import { AnalysisResult, ModelConfig } from '@/types/puzzle';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { MODELS } from '@/constants/models';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -32,11 +33,19 @@ export function useAnalysisResults({
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.7);
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
+  const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
+  const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
+  const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
 
   // Mutation to analyze the puzzle and save the explanation in one step
   const analyzeAndSaveMutation = useMutation({
     mutationFn: async (payload: { modelKey: string; temperature?: number }) => {
       const { modelKey, temperature: temp } = payload;
+      
+      // Record start time for tracking
+      const startTime = Date.now();
+      setAnalysisStartTime(prev => ({ ...prev, [modelKey]: startTime }));
+      setProcessingModels(prev => new Set(prev).add(modelKey));
       
       // 1. Analyze the puzzle
       const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, { temperature: temp });
@@ -45,9 +54,28 @@ export function useAnalysisResults({
       }
       const analysisData = (await analysisResponse.json()).data;
 
+      // Calculate actual processing time
+      const endTime = Date.now();
+      const actualTime = Math.round((endTime - startTime) / 1000); // Convert to seconds
+      
+      // Store actual processing time and remove from processing set
+      setAnalysisTimes(prev => ({
+        ...prev,
+        [modelKey]: actualTime
+      }));
+      setProcessingModels(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(modelKey);
+        return newSet;
+      });
+
       // 2. Save the new explanation to the database
       const explanationToSave = {
-        [modelKey]: { ...analysisData, modelKey }
+        [modelKey]: { 
+          ...analysisData, 
+          modelKey,
+          actualProcessingTime: actualTime // Include timing data with explanation
+        }
       };
       
       const saveResponse = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations: explanationToSave });
@@ -67,10 +95,26 @@ export function useAnalysisResults({
     }
   });
 
+  // Helper function to get provider from model key
+  const getProviderFromKey = (modelKey: string): string => {
+    const model = MODELS.find(m => m.key === modelKey);
+    return model?.provider || 'Unknown';
+  };
+
+  // Check if any model from the same provider is currently processing
+  const isProviderProcessing = (modelKey: string): boolean => {
+    const targetProvider = getProviderFromKey(modelKey);
+    return Array.from(processingModels).some(key => 
+      getProviderFromKey(key) === targetProvider
+    );
+  };
+
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
-    // Store which model we're currently analyzing
-    setCurrentModelKey(modelKey);
+    // Check if this provider is already processing
+    if (isProviderProcessing(modelKey)) {
+      throw new Error(`A ${getProviderFromKey(modelKey)} model is already processing. Please wait for it to complete.`);
+    }
     
     const payload = {
       modelKey,
@@ -92,7 +136,11 @@ export function useAnalysisResults({
     setTemperature,
     analyzeWithModel,
     currentModelKey,
+    processingModels,
     isAnalyzing: analyzeAndSaveMutation.isPending,
     analyzerError: analyzeAndSaveMutation.error,
+    analysisStartTime,
+    analysisTimes,
+    isProviderProcessing,
   };
 }
