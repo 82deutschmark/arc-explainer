@@ -3,7 +3,7 @@
  * Contains all available AI models and their properties
  * Author: Cascade
  * 
- * Includes support for OpenAI, Anthropic, xAI Grok, and Google Gemini models
+ * Includes support for OpenAI, Anthropic, xAI Grok, Google Gemini, and DeepSeek models
  */
 
 import { ModelConfig } from '../types/puzzle';
@@ -247,6 +247,30 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
+  },
+  
+  // DeepSeek Models
+  {
+    key: 'deepseek-chat',
+    name: 'DeepSeek Chat',
+    color: 'bg-cyan-600',
+    premium: false,
+    cost: { input: '$0.14', output: '$0.28' },
+    supportsTemperature: true,
+    provider: 'DeepSeek',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    supportsReasoning: true
+  },
+  {
+    key: 'deepseek-reasoner',
+    name: 'DeepSeek Reasoner',
+    color: 'bg-cyan-800',
+    premium: true,
+    cost: { input: '$0.55', output: '$2.19' },
+    supportsTemperature: false,
+    provider: 'DeepSeek',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
     supportsReasoning: true
   }
 ];
