@@ -19,6 +19,7 @@ export interface ModelConfig {
     speed: 'fast' | 'moderate' | 'slow';
     estimate?: string;
   };
+  supportsReasoning?: boolean; // Whether model supports reasoning log capture
 }
 
 /**
@@ -39,6 +40,8 @@ export interface AnalysisResult {
   explanationId?: number; // Link to the saved explanation in the database
   helpfulVotes?: number;
   notHelpfulVotes?: number;
+  reasoningLog?: string | null; // Step-by-step reasoning from AI models
+  hasReasoningLog?: boolean; // Whether reasoning log is available
 }
 
 /**
@@ -100,6 +103,8 @@ export interface ExplanationData {
   notHelpfulVotes: number | null; // Can be null from DB
   createdAt: string;
   explanationId?: number; // Add this back as it's used in components
+  reasoningLog?: string | null; // Step-by-step reasoning from AI models
+  hasReasoningLog?: boolean; // Whether reasoning log is available
 }
 
 /**
