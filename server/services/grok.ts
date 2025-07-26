@@ -1,6 +1,8 @@
 /**
  * xAI Grok Service Integration for ARC-AGI Puzzle Analysis
- * @author Claude (Anthropic)
+ * Supports reasoning log capture for Grok reasoning models (grok-4-0709)
+ * These models provide reasoning logs similar to OpenAI reasoning models
+ * @author Cascade
  * 
  * This service provides integration with xAI's Grok models for analyzing ARC-AGI puzzles.
  * It leverages Grok's advanced reasoning capabilities to explain puzzle solutions in the
@@ -52,6 +54,11 @@ const REASONING_MODELS = new Set([
   "grok-4-0709",
 ]);
 
+// Models that support reasoning logs (Grok reasoning models)
+const MODELS_WITH_REASONING = new Set([
+  "grok-4-0709",
+]);
+
 // Initialize xAI client with OpenAI SDK compatibility
 const xai = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -63,6 +70,7 @@ export class GrokService {
     task: ARCTask,
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
+    captureReasoning: boolean = true,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -192,8 +200,44 @@ Respond in this JSON format:
       const response = await xai.chat.completions.create(requestOptions);
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
+      
+      // Extract reasoning log if available and requested
+      let reasoningLog = null;
+      let hasReasoningLog = false;
+      
+      if (captureReasoning && MODELS_WITH_REASONING.has(modelKey)) {
+        // Type assertion for reasoning field that may not be in xAI types yet
+        const message = response.choices[0].message as any;
+        
+        // Debug: Log all available fields in the message
+        console.log(`[Grok] Debug - Available message fields for ${modelKey}:`, Object.keys(message));
+        console.log(`[Grok] Debug - Full message object:`, JSON.stringify(message, null, 2));
+        
+        const reasoning = message.reasoning;
+        if (reasoning) {
+          reasoningLog = reasoning;
+          hasReasoningLog = true;
+          console.log(`[Grok] Captured reasoning log for model ${modelKey} (${reasoning.length} characters)`);
+        } else {
+          console.log(`[Grok] No reasoning field found for model ${modelKey}`);
+          
+          // Check for alternative reasoning field names
+          const alternativeFields = ['thought_process', 'analysis', 'thinking', 'rationale', 'explanation'];
+          for (const field of alternativeFields) {
+            if (message[field]) {
+              console.log(`[Grok] Found alternative reasoning field '${field}' with ${message[field].length} characters`);
+              reasoningLog = message[field];
+              hasReasoningLog = true;
+              break;
+            }
+          }
+        }
+      }
+      
       return {
         model: modelKey,
+        reasoningLog,
+        hasReasoningLog,
         ...result,
       };
     } catch (error) {

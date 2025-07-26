@@ -1,3 +1,11 @@
+/**
+ * Anthropic Claude service for analyzing ARC puzzles using Claude models
+ * Supports reasoning log capture through structured prompting with <reasoning> tags
+ * Since Anthropic doesn't provide built-in reasoning logs, we prompt Claude to show its reasoning
+ * 
+ * @author Cascade
+ */
+
 import Anthropic from '@anthropic-ai/sdk';
 import { ARCTask } from "../../shared/types";
 
@@ -22,6 +30,7 @@ export class AnthropicService {
     task: ARCTask,
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
+    captureReasoning: boolean = true,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -32,9 +41,23 @@ export class AnthropicService {
       )
       .join("\n\n");
 
-    const prompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
+    // Modify prompt to include reasoning capture if requested
+    const basePrompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
      as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct.  
-     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.
+     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`;
+    
+    const reasoningPrompt = captureReasoning ? 
+      `${basePrompt}
+
+IMPORTANT: Before providing your final answer, please show your step-by-step reasoning process inside <reasoning> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+
+<reasoning>
+[Your detailed step-by-step analysis will go here]
+</reasoning>
+
+Then provide your final structured response.` : basePrompt;
+    
+    const prompt = `${reasoningPrompt}
 
 TRAINING EXAMPLES (what the aliens taught us):
 ${trainingExamples}
@@ -43,77 +66,17 @@ TEST CASE (the aliens' question and our correct answer, but we don't understand 
 Input: ${JSON.stringify(task.test[0].input)}
 Correct Answer: ${JSON.stringify(task.test[0].output)}
 
-Your job:
-1. Speculate about WHY this solution is correct by understanding these critical concepts:
-# ARC-AGI Transformation Types
+YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
+{
+  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
+  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
+  "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
+}
 
-## Geometric Transformations
-- Rotation (90°, 180°, 270°)
-- Reflection (horizontal, vertical, diagonal)
-- Translation (moving objects)
-- Scaling (resize objects)
-
-## Pattern Operations
-- Pattern completion
-- Pattern extension
-- Pattern repetition
-- Sequence prediction
-
-## Logical Operations
-- AND operations
-- OR operations
-- XOR operations
-- NOT operations
-- Conditional logic
-
-## Grid Operations
-- Grid splitting (horizontal, vertical, quadrant)
-- Grid merging
-- Grid overlay
-- Grid subtraction
-
-## Object Manipulation
-- Object counting
-- Object sorting
-- Object grouping
-- Object filtering
-
-## Spatial Relationships
-- Inside/outside relationships
-- Adjacent/touching relationships
-- Containment relationships
-- Proximity relationships
-
-## Color Operations
-- Color mapping
-- Color replacement
-- Color pattern matching
-- Color logic operations
-
-## Shape Operations
-- Shape detection
-- Shape transformation
-- Shape combination
-- Shape decomposition
-
-## Rule Inference
-- Single rule application
-- Multiple rule application
-- Rule interaction
-- Rule generalization
-
-## Abstract Reasoning
-- Symbol interpretation
-- Semantic relationships
-- Conceptual mapping
-- Abstract pattern recognition
-
-
-2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  
-3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved. 
-
-
-4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
+The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
 
 0: ⬛ (no/nothing/negative)
 1: ✅ (yes/positive/agreement)
@@ -126,7 +89,7 @@ Your job:
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)
 
-YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
+${captureReasoning ? 'After your <reasoning> section, respond' : 'Respond'} in this JSON format:
 {
   "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
@@ -154,14 +117,32 @@ YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
       const content = response.content[0];
       const textContent = content.type === 'text' ? content.text : '{}';
       
+      // Extract reasoning log if requested and available
+      let reasoningLog = null;
+      let hasReasoningLog = false;
+      let cleanedContent = textContent;
+      
+      if (captureReasoning) {
+        const reasoningMatch = textContent.match(/<reasoning>([\s\S]*?)<\/reasoning>/);
+        if (reasoningMatch) {
+          reasoningLog = reasoningMatch[1].trim();
+          hasReasoningLog = true;
+          // Remove reasoning tags from content for JSON parsing
+          cleanedContent = textContent.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
+          console.log(`[Anthropic] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
+        } else {
+          console.log(`[Anthropic] No reasoning log found for model ${modelKey}`);
+        }
+      }
+      
       // Try to extract JSON from the response, even if there's extra text
       let result;
       try {
         // First try to parse as pure JSON
-        result = JSON.parse(textContent);
+        result = JSON.parse(cleanedContent);
       } catch (parseError) {
         // If that fails, try to find JSON within the text
-        const jsonMatch = textContent.match(/\{[\s\S]*\}/);
+        const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           try {
             result = JSON.parse(jsonMatch[0]);
@@ -174,7 +155,7 @@ YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
               alienMeaning: "The aliens seem to be having communication difficulties.",
               confidence: 0,
               alienMeaningConfidence: 0,
-              rawResponse: textContent.substring(0, 500) + "..." // Include first 500 chars for debugging
+              rawResponse: cleanedContent.substring(0, 500) + "..." // Include first 500 chars for debugging
             };
           }
         } else {
@@ -193,6 +174,8 @@ YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
       
       return {
         model: modelKey,
+        reasoningLog,
+        hasReasoningLog,
         ...result,
       };
     } catch (error) {

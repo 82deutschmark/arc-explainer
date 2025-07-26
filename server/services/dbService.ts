@@ -1,8 +1,8 @@
 /**
  * Database service for Railway PostgreSQL integration
- * @author Cascade
- * 
  * Handles database operations for storing puzzle explanations and user feedback
+ * Now supports reasoning log storage for AI models that provide step-by-step reasoning
+ * @author Cascade
  */
 
 import { Pool } from 'pg';
@@ -20,6 +20,8 @@ interface PuzzleExplanation {
   confidence: number;
   alienMeaningConfidence?: number;
   modelName: string;
+  reasoningLog?: string | null;
+  hasReasoningLog?: boolean;
 }
 
 /**
@@ -83,6 +85,8 @@ const createTablesIfNotExist = async () => {
         confidence INTEGER,
         alien_meaning_confidence INTEGER,
         model_name TEXT,
+        reasoning_log TEXT,
+        has_reasoning_log BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
       
@@ -144,14 +148,17 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       alienMeaning,
       confidence,
       alienMeaningConfidence,
-      modelName
+      modelName,
+      reasoningLog,
+      hasReasoningLog
     } = explanation;
     
     const result = await client.query(
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
-        confidence, alien_meaning_confidence, alien_meaning, model_name)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        confidence, alien_meaning_confidence, alien_meaning, model_name,
+        reasoning_log, has_reasoning_log)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING id`,
       [
         puzzleId,
@@ -161,7 +168,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         confidence || 0,
         alienMeaningConfidence || null,
         alienMeaning || '',
-        modelName || 'unknown'
+        modelName || 'unknown',
+        reasoningLog || null,
+        hasReasoningLog || false
       ]
     );
     
@@ -239,6 +248,8 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.confidence              AS "confidence",
          e.alien_meaning_confidence AS "alienMeaningConfidence",
          e.model_name              AS "modelName",
+         e.reasoning_log           AS "reasoningLog",
+         e.has_reasoning_log       AS "hasReasoningLog",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
@@ -324,6 +335,8 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.confidence              AS "confidence",
          e.alien_meaning_confidence AS "alienMeaningConfidence",
          e.model_name              AS "modelName",
+         e.reasoning_log           AS "reasoningLog",
+         e.has_reasoning_log       AS "hasReasoningLog",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
