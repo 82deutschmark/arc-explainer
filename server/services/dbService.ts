@@ -355,12 +355,55 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
   }
 };
 
+/**
+ * Get a specific explanation by ID
+ * 
+ * @param explanationId The ID of the explanation to retrieve
+ * @returns The explanation data or null if not found
+ */
+const getExplanationById = async (explanationId: number) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve explanation.', 'database');
+    return null;
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT 
+         e.id,
+         e.puzzle_id               AS "puzzleId",
+         e.pattern_description     AS "patternDescription",
+         e.solving_strategy        AS "solvingStrategy",
+         e.hints                   AS "hints",
+         e.alien_meaning           AS "alienMeaning",
+         e.confidence              AS "confidence",
+         e.alien_meaning_confidence AS "alienMeaningConfidence",
+         e.model_name              AS "modelName",
+         e.reasoning_log           AS "reasoningLog",
+         e.has_reasoning_log       AS "hasReasoningLog",
+         e.created_at              AS "createdAt"
+       FROM explanations e
+       WHERE e.id = $1`,
+      [explanationId]
+    );
+
+    return result.rows.length > 0 ? result.rows[0] : null;
+  } catch (error) {
+    logger.error(`Error getting explanation by ID ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
   saveExplanation,
   addFeedback,
   getExplanationForPuzzle,
-  getExplanationsForPuzzle, // Add new function here
+  getExplanationsForPuzzle,
+  getExplanationById,
   hasExplanation,
 };
