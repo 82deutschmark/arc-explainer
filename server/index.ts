@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename);
 
 // Log environment variables status for debugging
 console.log('Environment variables loaded:', process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'OPENAI_API_KEY is NOT set');
+console.log('DeepSeek API key status:', process.env.DEEPSEEK_API_KEY ? 'DEEPSEEK_API_KEY is set' : 'DEEPSEEK_API_KEY is NOT set');
 console.log('Current working directory:', process.cwd());
 console.log('__dirname:', __dirname);
 
