@@ -1,3 +1,11 @@
+/**
+ * OpenAI service for analyzing ARC puzzles using OpenAI models
+ * Supports reasoning log capture for OpenAI reasoning models (o3-mini, o4-mini, o3-2025-04-16)
+ * These models automatically provide reasoning logs in response.choices[0].message.reasoning
+ * 
+ * @author Cascade
+ */
+
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 
@@ -18,6 +26,13 @@ const MODELS_WITHOUT_TEMPERATURE = new Set([
   "o3-2025-04-16",
 ]);
 
+// Models that support reasoning logs (OpenAI reasoning models)
+const MODELS_WITH_REASONING = new Set([
+  "o3-mini-2025-01-31",
+  "o4-mini-2025-04-16", 
+  "o3-2025-04-16",
+]);
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export class OpenAIService {
@@ -25,6 +40,7 @@ export class OpenAIService {
     task: ARCTask,
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
+    captureReasoning: boolean = true,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -140,22 +156,80 @@ Respond in this JSON format:
 }`;
 
     try {
-      const requestOptions: any = {
-        model: modelName,
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
-      };
+      let response: any;
+      let reasoningLog = null;
+      let hasReasoningLog = false;
+      let result: any;
 
-      // Only add temperature for models that support it
-      if (!MODELS_WITHOUT_TEMPERATURE.has(modelKey)) {
-        requestOptions.temperature = temperature;
+      // Use Responses API for reasoning models, ChatCompletions for others
+      if (MODELS_WITH_REASONING.has(modelKey)) {
+        console.log(`[OpenAI] Using Responses API for reasoning model ${modelKey}`);
+        
+        const responsesOptions: any = {
+          model: modelName,
+          input: [{ role: "user", content: prompt }],
+          reasoning: {
+            effort: "medium",
+            summary: "detailed"
+          }
+        };
+
+        // Note: Responses API doesn't support temperature or text.format
+        // JSON output is requested via prompt instructions instead
+
+        response = await openai.responses.create(responsesOptions);
+
+        // Extract JSON result from Responses API output_text
+        const rawJson = (response as any).output_text || "";
+        
+        try {
+          result = rawJson ? JSON.parse(rawJson) : {};
+        } catch (e) {
+          console.warn("[OpenAI] Failed to parse JSON output:", rawJson.substring(0, 200), e);
+          result = {};
+        }
+
+        // Extract reasoning logs when available
+        if (captureReasoning) {
+          const reasoningParts: string[] = [];
+          for (const outputItem of (response as any).output ?? []) {
+            if (outputItem.type === "reasoning" && Array.isArray(outputItem.summary)) {
+              reasoningParts.push(outputItem.summary.map((s: any) => s.text).join("\n"));
+            }
+          }
+
+          if (reasoningParts.length) {
+            reasoningLog = reasoningParts.join("\n\n");
+            hasReasoningLog = true;
+            console.log(`[OpenAI] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
+          } else {
+            console.log(`[OpenAI] No reasoning log available for model ${modelKey}`);
+          }
+        }
+      } else {
+        console.log(`[OpenAI] Using ChatCompletions API for standard model ${modelKey}`);
+        
+        const chatOptions: any = {
+          model: modelName,
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" },
+        };
+
+        // Only add temperature for models that support it
+        if (!MODELS_WITHOUT_TEMPERATURE.has(modelKey)) {
+          chatOptions.temperature = temperature;
+        }
+
+        response = await openai.chat.completions.create(chatOptions);
+        result = JSON.parse(response.choices[0].message.content || "{}");
+        
+        console.log(`[OpenAI] Standard model ${modelKey} - no reasoning logs available`);
       }
-
-      const response = await openai.chat.completions.create(requestOptions);
-
-      const result = JSON.parse(response.choices[0].message.content || "{}");
+      
       return {
         model: modelKey,
+        reasoningLog,
+        hasReasoningLog,
         ...result,
       };
     } catch (error) {

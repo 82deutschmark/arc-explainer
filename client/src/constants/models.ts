@@ -59,7 +59,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$1.10', output: '$4.40' },
     supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' }
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
   },
   { 
     key: 'o4-mini-2025-04-16', 
@@ -69,7 +70,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$1.10', output: '$4.40' },
     supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'moderate', estimate: '1-3 min' }
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    supportsReasoning: true
   },
   { 
     key: 'o3-2025-04-16', 
@@ -79,7 +81,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$2', output: '$8' },
     supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' }
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    supportsReasoning: true
   },
   { 
     key: 'gpt-4.1-2025-04-14', 
@@ -101,7 +104,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '1-3 min' }
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    supportsReasoning: true
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -111,7 +115,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' }
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
   },
   { 
     key: 'claude-3-5-sonnet-20241022', 
@@ -121,7 +126,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' }
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
   },
   { 
     key: 'claude-3-5-haiku-20241022', 
@@ -131,7 +137,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.80', output: '$4.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -141,7 +148,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.25', output: '$1.25' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'fast', estimate: '<60 sec' }
+    responseTime: { speed: 'fast', estimate: '<60 sec' },
+    supportsReasoning: true
   },
   // xAI Grok Models
   {
@@ -152,7 +160,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: false,
     provider: 'xAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' }
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    supportsReasoning: true
   },
   {
     key: 'grok-3',
@@ -193,7 +202,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$2.50', output: '$8.00' },
     supportsTemperature: true,
     provider: 'Gemini',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' }
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
   },
   {
     key: 'gemini-2.5-flash',
@@ -203,7 +213,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.70', output: '$2.10' },
     supportsTemperature: true,
     provider: 'Gemini',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' }
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true
   },
   {
     key: 'gemini-2.5-flash-lite',
@@ -213,7 +224,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.35', output: '$1.05' },
     supportsTemperature: true,
     provider: 'Gemini',
-    responseTime: { speed: 'fast', estimate: '<30 sec' }
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
   },
   {
     key: 'gemini-2.0-flash',
@@ -223,7 +235,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.20', output: '$0.60' },
     supportsTemperature: true,
     provider: 'Gemini',
-    responseTime: { speed: 'fast', estimate: '<30 sec' }
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
   },
   {
     key: 'gemini-2.0-flash-lite',
@@ -233,7 +246,8 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.10', output: '$0.30' },
     supportsTemperature: true,
     provider: 'Gemini',
-    responseTime: { speed: 'fast', estimate: '<30 sec' }
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
   }
 ];
 

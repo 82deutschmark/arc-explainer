@@ -3,6 +3,7 @@
  * 
  * Controller for puzzle-related routes.
  * Handles HTTP requests and responses for puzzle operations.
+ * Now supports reasoning log capture from AI models that provide step-by-step reasoning.
  * 
  * @author Cascade
  */
@@ -61,11 +62,18 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75 } = req.body;
+    const { temperature = 0.75, captureReasoning = true } = req.body;
+    
+    console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, captureReasoning: ${captureReasoning}`);
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature);
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning);
+    
+    // Log reasoning capture status
+    if (result.hasReasoningLog) {
+      console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
+    }
     
     res.json(formatResponse.success(result));
   },
