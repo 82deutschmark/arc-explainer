@@ -9,6 +9,7 @@
 
 import { dbService } from './dbService';
 import { AppError } from '../middleware/errorHandler';
+import { explanationService } from './explanationService';
 
 export const feedbackService = {
   /**
@@ -26,15 +27,37 @@ export const feedbackService = {
       parseInt(explanationId) : explanationId;
     
     try {
+      // First, record the feedback
       const feedbackId = await dbService.addFeedback(
         numericExplanationId,
-        voteType,
+        voteType as 'helpful' | 'not_helpful',
         comment
       );
       
+      // If feedback is "not helpful", trigger retry analysis
+      if (voteType === 'not_helpful') {
+        try {
+          // Get the original explanation to extract puzzle details
+          const originalExplanation = await dbService.getExplanationById(numericExplanationId);
+          if (originalExplanation) {
+            // Trigger retry analysis with user feedback as guidance
+            await explanationService.retryAnalysis(
+              originalExplanation.puzzleId,
+              originalExplanation.modelName,
+              comment // User feedback as guidance for improvement
+            );
+          }
+        } catch (retryError) {
+          // Log retry failure but don't fail the feedback submission
+          console.warn('Failed to trigger retry analysis:', retryError);
+        }
+      }
+      
       return {
         success: true,
-        message: 'Feedback recorded successfully',
+        message: voteType === 'not_helpful' 
+          ? 'Feedback recorded. Generating improved explanation...' 
+          : 'Feedback recorded successfully',
         feedbackId
       };
     } catch (error) {

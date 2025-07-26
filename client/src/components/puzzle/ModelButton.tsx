@@ -8,6 +8,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ModelButtonProps } from '@/types/puzzle';
 import { Loader2 } from 'lucide-react';
+import { ModelProgressIndicator } from './ModelProgressIndicator';
 
 export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, disabled }: ModelButtonProps) {
   return (
@@ -44,22 +45,18 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
         </div>
       </div>
       
-      <div className="text-xs text-gray-600 w-full">
+      <div className="text-xs text-gray-600 w-full space-y-1">
         <div>In: {model.cost.input}/M tokens</div>
         <div>Out: {model.cost.output}/M tokens</div>
-        {model.responseTime && (
-          <div className={`${model.responseTime.speed === 'slow' ? 'text-red-600' : 
-                        model.responseTime.speed === 'moderate' ? 'text-amber-600' : 
-                        'text-green-600'} font-medium`}>
-            {model.responseTime.speed === 'slow' ? '⏳' : 
-             model.responseTime.speed === 'moderate' ? '⌛' : '⚡'} 
-            {model.responseTime.estimate}
-          </div>
-        )}
         {!model.supportsTemperature && (
           <div className="text-amber-600 font-medium">⚙️ No temperature control</div>
         )}
       </div>
+      
+      <ModelProgressIndicator 
+        model={model} 
+        isAnalyzing={isAnalyzing} 
+      />
     </Button>
   );
 }

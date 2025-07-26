@@ -54,12 +54,14 @@ export default function PuzzleExaminer() {
     temperature,
     setTemperature,
     analyzeWithModel,
+    currentModelKey,
+    processingModels,
     isAnalyzing,
     analyzerError,
-    currentModelKey,
-  } = useAnalysisResults({ 
-    taskId: taskId || '', 
-    refetchExplanations 
+    isProviderProcessing,
+  } = useAnalysisResults({
+    taskId,
+    refetchExplanations,
   });
   
   // Find the current model's details if we're analyzing
@@ -220,16 +222,21 @@ export default function PuzzleExaminer() {
         <CardContent>
           {/* Model Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
-            {MODELS.map((model) => (
-              <ModelButton
-                key={model.key}
-                model={model}
-                isAnalyzing={isAnalyzing}
-                explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
-                onAnalyze={handleAnalyzeWithModel}
-                disabled={isAnalyzing}
-              />
-            ))}
+            {MODELS.map((model) => {
+              const isThisProviderProcessing = isProviderProcessing(model.key);
+              const isThisModelProcessing = processingModels.has(model.key);
+              
+              return (
+                <ModelButton
+                  key={model.key}
+                  model={model}
+                  isAnalyzing={isThisModelProcessing}
+                  explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
+                  onAnalyze={handleAnalyzeWithModel}
+                  disabled={isThisProviderProcessing}
+                />
+              );
+            })}
           </div>
           
           {/* Temperature Control */}

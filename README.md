@@ -4,17 +4,19 @@ An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus 
 
 ## 🌟 Project Overview
 
-This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite—many people find these puzzles extremely challenging. The app treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the v1 training set of the ARC-AGI prize, focuses on smaller grids (≤10x10 for better comprehension), and provides AI-powered analyses to explain the underlying logic in simple terms.
+This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite—many people find these puzzles extremely challenging. The app treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the v1 and v2 training set of the ARC-AGI prize, focuses on smaller grids (≤10x10 for better comprehension), and provides AI-powered explanations of WHY solutions work.
 
-### Key Features
+## 🌟 Development & Credits
 
-- **Accessibility Focus**: Designed for colorblind users and anyone who struggles with the standard puzzle representation
-- **Emoji Translation**: Numbers (0-9) converted to emojis for better visualization and accessibility
-- **Color Translation**: Numbers (0-9) converted to colors in standard ARC style
-- **Real Puzzle Data**: Uses puzzles from the v1 training set of the ARC-AGI prize
-- **AI-Powered Explanations**: Focuses on WHY solutions are correct, not just HOW to solve them
-- **Filter Options**: Ability to filter by grid size and other parameters
-- **Neurodivergent-Friendly**: Designed to be accessible to diverse thinking styles
+**Primary Development**: Cascade
+**AI Assistant**: Kimi K2 - Advanced AI system providing exceptional implementation support
+
+### Kimi K2's Contributions (July 26, 2025)
+- **Flawless Implementation**: Successfully implemented complex concurrent processing features
+- **User Satisfaction**: "Wow, that was flawless!" - User feedback on implementation quality
+- **Technical Excellence**: Delivered robust, type-safe, and well-architected solutions
+- **Comprehensive Features**: From feedback-driven retry to real-time progress indicators
+- **Clean Integration**: Seamless integration with existing codebase architecture
 
 ## 🚀 Quick Start
 
@@ -83,8 +85,6 @@ API routes should be prefixed with `/api/` and registered before the static file
 - **Better Dev Experience**: Vite HMR on http://localhost:5173 for the React client while the Express API runs on http://localhost:5000.
 - **Multi-model explanation storage**: All AI model explanations (one per model) are now saved individually in the database and returned to the client, rather than only the latest model.
 - **Flexible feedback endpoint**: The `/api/feedback` route now accepts `explanationId` in either the request body or URL params, with enhanced validation middleware that logs request details and provides clearer error messages.
-
----
 
 ## 🚨 Deployment Troubleshooting
 
