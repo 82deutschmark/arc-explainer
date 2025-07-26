@@ -1,3 +1,5 @@
+// File has unknown purpose, may have been created by a previous dev with a different intent
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
