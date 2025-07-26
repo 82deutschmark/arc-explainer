@@ -91,5 +91,58 @@ export const explanationService = {
       filepath,
       explanationIds: savedExplanationIds
     };
+  },
+
+  /**
+   * Retry analysis for a puzzle with user feedback as guidance
+   * 
+   * @param puzzleId - The ID of the puzzle to retry analysis for
+   * @param modelName - The AI model to use for retry
+   * @param userFeedback - The user's feedback to guide improvement
+   * @returns The new explanation data
+   */
+  async retryAnalysis(puzzleId: string, modelName: string, userFeedback: string) {
+    const { puzzleLoader } = await import('./puzzleLoader');
+    const { aiServiceFactory } = await import('./aiServiceFactory');
+    
+    const task = await puzzleLoader.loadPuzzle(puzzleId);
+    if (!task) {
+      throw new AppError('Puzzle not found', 404, 'PUZZLE_NOT_FOUND');
+    }
+
+    const aiService = aiServiceFactory.getService(modelName);
+    if (!aiService) {
+      throw new AppError(`AI service not found for model: ${modelName}`, 404, 'AI_SERVICE_NOT_FOUND');
+    }
+
+    // Create enhanced prompt with user feedback for improvement
+    const enhancedPrompt = `User feedback indicates the previous explanation was not helpful. 
+    Please provide an improved explanation that addresses this feedback: "${userFeedback}"
+    
+    Focus on clarity, accuracy, and addressing the specific concerns raised in the feedback.
+    
+    Original request: Analyze the following ARC puzzle and explain WHY the solution works.`;
+
+    // Generate new explanation with feedback guidance
+    const newExplanation = await aiService.analyzePuzzle(task, enhancedPrompt);
+    
+    if (!newExplanation) {
+      throw new AppError('Failed to generate improved explanation', 500, 'AI_ANALYSIS_FAILED');
+    }
+
+    // Save the new explanation as a separate attempt
+    const explanationId = await dbService.saveExplanation(puzzleId, {
+      ...newExplanation,
+      modelName,
+      retryReason: userFeedback, // Store the feedback that triggered this retry
+      isRetry: true // Mark as retry attempt
+    });
+
+    return {
+      success: true,
+      explanation: newExplanation,
+      explanationId,
+      message: 'New explanation generated based on user feedback'
+    };
   }
 };
