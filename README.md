@@ -6,6 +6,26 @@ An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus 
 
 This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite—many people find these puzzles extremely challenging. The app treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the v1 and v2 training set of the ARC-AGI prize, focuses on smaller grids (≤10x10 for better comprehension), and provides AI-powered explanations of WHY solutions work.
 
+## 🚀 Major Features That Will Excite Users
+
+• **DeepSeek Integration** - Brand new AI provider with advanced reasoning models (completely free to use)
+
+• **Universal Reasoning Capture** - See step-by-step AI thinking from all models that provide reasoning logs
+
+• **Concurrent Provider Processing** - Run multiple AI models simultaneously across different providers
+
+• **Real-Time Timing Display** - Live progress bars and exact processing times for each analysis
+
+• **Accurate Progress Indicators** - Model-specific progress bars based on real response time estimates
+
+• **Production-Ready Architecture** - Robust database schema and TypeScript interfaces for reasoning storage
+
+• **Enhanced Frontend Components** - Polished UI displaying reasoning logs and processing status
+
+• **100% Free APIs** - All AI analysis completely free - no usage costs or API fees! (Donated by me!)
+
+• **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
+
 ## 🌟 Development & Credits
 
 **Primary Development**: Cascade
