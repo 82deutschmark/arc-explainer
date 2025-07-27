@@ -213,22 +213,30 @@ Respond in this JSON format:
         console.log(`[Grok] Debug - Available message fields for ${modelKey}:`, Object.keys(message));
         console.log(`[Grok] Debug - Full message object:`, JSON.stringify(message, null, 2));
         
-        const reasoning = message.reasoning;
+        // Grok uses reasoning_content field for reasoning logs (not reasoning)
+        const reasoning = message.reasoning_content;
         if (reasoning) {
           reasoningLog = reasoning;
           hasReasoningLog = true;
-          console.log(`[Grok] Captured reasoning log for model ${modelKey} (${reasoning.length} characters)`);
+          console.log(`[Grok] Successfully captured reasoning log for model ${modelKey} (${reasoning.length} characters)`);
         } else {
-          console.log(`[Grok] No reasoning field found for model ${modelKey}`);
+          console.log(`[Grok] No reasoning_content field found for model ${modelKey}`);
           
-          // Check for alternative reasoning field names
-          const alternativeFields = ['thought_process', 'analysis', 'thinking', 'rationale', 'explanation'];
-          for (const field of alternativeFields) {
-            if (message[field]) {
-              console.log(`[Grok] Found alternative reasoning field '${field}' with ${message[field].length} characters`);
-              reasoningLog = message[field];
-              hasReasoningLog = true;
-              break;
+          // Also check legacy reasoning field for backward compatibility
+          if (message.reasoning) {
+            reasoningLog = message.reasoning;
+            hasReasoningLog = true;
+            console.log(`[Grok] Found legacy reasoning field for model ${modelKey} (${message.reasoning.length} characters)`);
+          } else {
+            // Check for alternative reasoning field names
+            const alternativeFields = ['thought_process', 'analysis', 'thinking', 'rationale', 'explanation'];
+            for (const field of alternativeFields) {
+              if (message[field]) {
+                console.log(`[Grok] Found alternative reasoning field '${field}' with ${message[field].length} characters`);
+                reasoningLog = message[field];
+                hasReasoningLog = true;
+                break;
+              }
             }
           }
         }
