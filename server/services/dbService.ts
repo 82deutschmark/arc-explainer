@@ -2,6 +2,7 @@
  * Database service for Railway PostgreSQL integration
  * Handles database operations for storing puzzle explanations and user feedback
  * Now supports reasoning log storage for AI models that provide step-by-step reasoning
+ * Also tracks and stores API processing time metrics for model performance analysis
  * @author Cascade
  */
 
@@ -22,6 +23,7 @@ interface PuzzleExplanation {
   modelName: string;
   reasoningLog?: string | null;
   hasReasoningLog?: boolean;
+  apiProcessingTimeMs?: number;
 }
 
 /**
@@ -87,6 +89,7 @@ const createTablesIfNotExist = async () => {
         model_name TEXT,
         reasoning_log TEXT,
         has_reasoning_log BOOLEAN DEFAULT FALSE,
+        api_processing_time_ms INTEGER,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
       
@@ -98,6 +101,14 @@ const createTablesIfNotExist = async () => {
                      AND column_name = 'alien_meaning_confidence') 
         THEN
           ALTER TABLE explanations ADD COLUMN alien_meaning_confidence INTEGER;
+        END IF;
+        
+        -- Add api_processing_time_ms column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'api_processing_time_ms') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN api_processing_time_ms INTEGER;
         END IF;
       END $$;
     `);
@@ -150,15 +161,16 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       alienMeaningConfidence,
       modelName,
       reasoningLog,
-      hasReasoningLog
+      hasReasoningLog,
+      apiProcessingTimeMs
     } = explanation;
     
     const result = await client.query(
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
-        reasoning_log, has_reasoning_log)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        reasoning_log, has_reasoning_log, api_processing_time_ms)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING id`,
       [
         puzzleId,
@@ -170,7 +182,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         alienMeaning || '',
         modelName || 'unknown',
         reasoningLog || null,
-        hasReasoningLog || false
+        hasReasoningLog || false,
+        apiProcessingTimeMs || null
       ]
     );
     
@@ -250,6 +263,7 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.model_name              AS "modelName",
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
+         e.api_processing_time_ms  AS "apiProcessingTimeMs",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
@@ -337,6 +351,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.model_name              AS "modelName",
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
+         e.api_processing_time_ms  AS "apiProcessingTimeMs",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
@@ -382,6 +397,7 @@ const getExplanationById = async (explanationId: number) => {
          e.model_name              AS "modelName",
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
+         e.api_processing_time_ms  AS "apiProcessingTimeMs",
          e.created_at              AS "createdAt"
        FROM explanations e
        WHERE e.id = $1`,

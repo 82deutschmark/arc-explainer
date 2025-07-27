@@ -31,16 +31,30 @@ export function ModelProgressIndicator({
     if (!model.responseTime?.estimate) return 30; // Default 30 seconds
     
     const estimate = model.responseTime.estimate;
+    
     if (estimate.includes('min')) {
-      // Handle "5-10 min" format
-      const minutes = parseInt(estimate.split('-')[1] || '5');
-      return minutes * 60;
+      // Handle time ranges like "5-10 min" or "<5 min"
+      if (estimate.includes('-')) {
+        // For ranges like "5-10 min", take the average
+        const parts = estimate.split('-');
+        const minMinutes = parseInt(parts[0].replace(/[^\d]/g, '') || '1');
+        const maxMinutes = parseInt(parts[1].replace(/[^\d]/g, '') || '5');
+        // Use average of min and max as a better estimate
+        return Math.round((minMinutes + maxMinutes) / 2) * 60;
+      } else {
+        // Handle "<5 min" or just "5 min"
+        const minutes = parseInt(estimate.replace(/[^\d]/g, '') || '3');
+        return minutes * 60;
+      }
     } else if (estimate.includes('sec')) {
-      // Handle "<30 sec" format
-      const seconds = parseInt(estimate.replace(/[^\d]/g, ''));
+      // Handle "<30 sec" or "30 sec" format
+      const seconds = parseInt(estimate.replace(/[^\d]/g, '') || '30');
       return seconds;
     }
-    return 30; // Default fallback
+    
+    // If we can't parse it, use a reasonable default based on model speed
+    return model.responseTime?.speed === 'fast' ? 20 : 
+           model.responseTime?.speed === 'moderate' ? 60 : 180; // 20s, 1m, or 3m
   };
 
   const estimatedDuration = getEstimatedDuration();

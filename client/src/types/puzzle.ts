@@ -105,6 +105,7 @@ export interface ExplanationData {
   explanationId?: number; // Add this back as it's used in components
   reasoningLog?: string | null; // Step-by-step reasoning from AI models
   hasReasoningLog?: boolean; // Whether reasoning log is available
+  apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
 }
 
 /**
