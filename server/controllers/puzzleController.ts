@@ -4,6 +4,7 @@
  * Controller for puzzle-related routes.
  * Handles HTTP requests and responses for puzzle operations.
  * Now supports reasoning log capture from AI models that provide step-by-step reasoning.
+ * Tracks and records API processing time metrics for model performance analysis.
  * 
  * @author Cascade
  */
@@ -66,9 +67,20 @@ export const puzzleController = {
     
     console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, captureReasoning: ${captureReasoning}`);
     
+    // Track server processing time
+    const apiStartTime = Date.now();
+    
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
     const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning);
+    
+    // Calculate API processing time
+    const apiProcessingTimeMs = Date.now() - apiStartTime;
+    
+    // Add timing to result
+    result.apiProcessingTimeMs = apiProcessingTimeMs;
+    
+    console.log(`[Controller] API processing time for ${model}: ${apiProcessingTimeMs}ms`);
     
     // Log reasoning capture status
     if (result.hasReasoningLog) {

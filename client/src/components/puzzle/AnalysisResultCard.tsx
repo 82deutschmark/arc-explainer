@@ -3,6 +3,7 @@
  * Displays the results of a puzzle analysis from an AI model
  * Includes proper error handling for empty or incomplete results
  * Now supports displaying reasoning logs from AI models that provide step-by-step reasoning
+ * Now displays API processing time metrics for model performance analysis
  * Author: Cascade
  */
 
@@ -20,6 +21,25 @@ import { Badge } from '@/components/ui/badge';
 import { ThumbsUp, ThumbsDown, Brain, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationFeedback } from '@/components/ExplanationFeedback';
 import { formatConfidence } from '@/constants/models';
+
+// Format processing time from milliseconds to minutes:seconds format
+const formatProcessingTime = (milliseconds: number): string => {
+  // For very small times, just show milliseconds
+  if (milliseconds < 1000) {
+    return `${milliseconds}ms`;
+  }
+  
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  
+  // Format: 1m 23s or just 45s if under a minute
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  } else {
+    return `${seconds}s`;
+  }
+};
 
 export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
@@ -45,6 +65,13 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
       <div className="flex items-center gap-2 flex-wrap">
         <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />
         <h5 className="font-medium">{model?.name || modelKey}</h5>
+        {result.apiProcessingTimeMs && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+            <span className="text-xs text-blue-600">
+              {formatProcessingTime(result.apiProcessingTimeMs)}
+            </span>
+          </Badge>
+        )}
         {hasFeedback && (
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
