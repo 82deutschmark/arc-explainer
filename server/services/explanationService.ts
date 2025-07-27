@@ -115,16 +115,30 @@ export const explanationService = {
       throw new AppError(`AI service not found for model: ${modelName}`, 404, 'AI_SERVICE_NOT_FOUND');
     }
 
-    // Create enhanced prompt with user feedback for improvement
-    const enhancedPrompt = `User feedback indicates the previous explanation was not helpful. 
-    Please provide an improved explanation that addresses this feedback: "${userFeedback}"
-    
-    Focus on clarity, accuracy, and addressing the specific concerns raised in the feedback.
-    
-    Original request: Analyze the following ARC puzzle and explain WHY the solution works.`;
+    console.log(`[RetryAnalysis] Using ${modelName} with user feedback: "${userFeedback.substring(0, 50)}${userFeedback.length > 50 ? '...' : ''}"`)
+
+    // The user feedback needs to be incorporated into the analysis
+    // But we can't modify the service interfaces directly
+    // Create a modified task with the feedback as a "hint" property
+    // This will be accessible to the AI service without changing its interface
+    const enhancedTask = {
+      ...task,
+      // Add a special hint property that services can check for
+      hint: `User feedback on previous explanation: "${userFeedback}"
+Please focus on clarity, accuracy, and addressing this specific feedback in your new explanation.`
+    };
 
     // Generate new explanation with feedback guidance
-    const newExplanation = await aiService.analyzePuzzle(task, enhancedPrompt);
+    // Let the service use its default temperature setting
+    const newExplanation = await aiService.analyzePuzzleWithModel(
+      enhancedTask, 
+      modelName as any,  // Cast to any to handle different model key types
+      undefined, // Let service use default temperature 
+      true // Always capture reasoning if available
+    ).catch((error: Error) => {
+      console.error(`[RetryAnalysis] Error analyzing with ${modelName}:`, error);
+      return null;
+    });
     
     if (!newExplanation) {
       throw new AppError('Failed to generate improved explanation', 500, 'AI_ANALYSIS_FAILED');
