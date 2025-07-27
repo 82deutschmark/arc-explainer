@@ -24,7 +24,7 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
-  const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained'
+  const [explanationFilter, setExplanationFilter] = useState<string>('all'); // 'all', 'unexplained', 'explained'
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -37,15 +37,28 @@ export default function PuzzleBrowser() {
     if (maxGridSize) result.maxGridSize = parseInt(maxGridSize);
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
-    if (explanationFilter === 'unexplained') result.prioritizeUnexplained = true;
-    if (explanationFilter === 'explained') result.prioritizeExplained = true;
+    // Don't use prioritize flags anymore, as we'll filter the results ourselves
     if (arcVersion === 'ARC1' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval') result.source = arcVersion;
     return result;
-  }, [maxGridSize, gridSizeConsistent, explanationFilter, arcVersion]);
+  }, [maxGridSize, gridSizeConsistent, arcVersion]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
+  
+  // Apply explanation filtering after getting puzzles from the hook
   // Cast to enhanced metadata type to access the feedbackCount property
-  const filteredPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
+  const filteredPuzzles = React.useMemo(() => {
+    const allPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
+    
+    // Apply explanation filter
+    if (explanationFilter === 'unexplained') {
+      return allPuzzles.filter(puzzle => !puzzle.hasExplanation);
+    } else if (explanationFilter === 'explained') {
+      return allPuzzles.filter(puzzle => puzzle.hasExplanation);
+    }
+    
+    // Default: return all puzzles
+    return allPuzzles;
+  }, [puzzles, explanationFilter]);
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
