@@ -14,7 +14,7 @@ const MODELS = {
   "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14",
   "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
   "o3-mini-2025-01-31": "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16": "o3-2025-04-16",
+  "o4-mini-2025-04-16": "o4-mini-2025-04-16",
   "o3-2025-04-16": "o3-2025-04-16",
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
 } as const;
@@ -189,21 +189,34 @@ Respond in this JSON format:
           result = {};
         }
 
-        // Extract reasoning logs when available
+        // Extract reasoning logs from Responses API output array
         if (captureReasoning) {
           const reasoningParts: string[] = [];
+          
+          // The Responses API returns reasoning in the output array with type: "reasoning"
           for (const outputItem of (response as any).output ?? []) {
-            if (outputItem.type === "reasoning" && Array.isArray(outputItem.summary)) {
-              reasoningParts.push(outputItem.summary.map((s: any) => s.text).join("\n"));
+            if (outputItem.type === "reasoning") {
+              // Handle both summary array and direct text formats
+              if (Array.isArray(outputItem.summary)) {
+                reasoningParts.push(outputItem.summary.map((s: any) => s.text).join("\n"));
+              } else if (typeof outputItem.summary === 'string') {
+                reasoningParts.push(outputItem.summary);
+              } else if (outputItem.reasoning) {
+                // Some formats might have direct reasoning text
+                reasoningParts.push(outputItem.reasoning);
+              }
             }
           }
 
           if (reasoningParts.length) {
             reasoningLog = reasoningParts.join("\n\n");
             hasReasoningLog = true;
-            console.log(`[OpenAI] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
+            console.log(`[OpenAI] Successfully captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
           } else {
-            console.log(`[OpenAI] No reasoning log available for model ${modelKey}`);
+            console.log(`[OpenAI] No reasoning log found in Responses API output for model ${modelKey}`);
+            
+            // Debug: log the full response structure for troubleshooting
+            console.log(`[OpenAI] Debug - Response structure:`, JSON.stringify((response as any).output?.slice(0, 3), null, 2));
           }
         }
       } else {
