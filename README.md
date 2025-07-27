@@ -18,6 +18,15 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 - **Comprehensive Features**: From feedback-driven retry to real-time progress indicators
 - **Clean Integration**: Seamless integration with existing codebase architecture
 
+### Cascade's Contributions (July 26, 2025)
+- **API Processing Time Tracking**: Successfully implemented comprehensive backend timing measurement
+- **Database Schema Updates**: Added `api_processing_time_ms` column with migration support
+- **UI Enhancement**: Processing times now displayed in user-friendly format (e.g., "1m 23s", "45s")
+- **Model Card Improvements**: Estimated response times now visible on model buttons
+- **Bug Fixes**: Fixed estimated time parsing issues causing incorrect 51-minute displays
+- **Type Safety**: Added proper TypeScript interfaces for timing data
+- **User Experience**: Both estimated and actual processing times provided for transparency
+
 ## 🚀 Quick Start
 
 1. **Clone and Install**
@@ -75,6 +84,9 @@ API routes should be prefixed with `/api/` and registered before the static file
 ## 🆕 Recent Updates (2025-07)
 
 - **Database-first architecture**: Explanations and user feedback are now stored in PostgreSQL (or in-memory fallback) and always re-fetched after any analysis or save, ensuring the UI is perfectly in sync with the database.
+- **API Processing Time Tracking**: Complete backend measurement and display of AI model processing times
+- **Enhanced Model Cards**: Estimated response times now displayed alongside cost information
+- **Real-time Timing**: Both estimated and actual processing times shown during analysis
 - **Modular React refactor**: The formerly 550-line `PuzzleExaminer.tsx` has been split into smaller, domain-focused components (`AnalysisResultCard`, `ExplanationFeedback`, etc.) and hooks (`useAnalysisResults`, `useExplanation`). This dramatically improves maintainability and testability.
 - **Robust feedback workflow**:
   - New validation middleware guarantees `explanationId`, `voteType` (`helpful` | `not_helpful`), and a meaningful `comment` (≥ 20 chars) are present.
@@ -315,6 +327,7 @@ CREATE TABLE IF NOT EXISTS explanations (
   alien_meaning TEXT,
   confidence INTEGER,
   model_name TEXT,
+  api_processing_time_ms INTEGER, -- Processing time in milliseconds
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```

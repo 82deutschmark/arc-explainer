@@ -48,6 +48,14 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
       <div className="text-xs text-gray-600 w-full space-y-1">
         <div>In: {model.cost.input}/M tokens</div>
         <div>Out: {model.cost.output}/M tokens</div>
+        {model.responseTime?.estimate && (
+          <div className="flex items-center gap-1">
+            <span className="text-xs">⏱️ Est:</span>
+            <span className={`text-xs ${model.responseTime.speed === 'fast' ? 'text-green-600' : model.responseTime.speed === 'moderate' ? 'text-amber-600' : 'text-red-600'}`}>
+              {model.responseTime.estimate}
+            </span>
+          </div>
+        )}
         {!model.supportsTemperature && (
           <div className="text-amber-600 font-medium">⚙️ No temperature control</div>
         )}
