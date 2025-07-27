@@ -37,5 +37,21 @@ July 26, 2025
 - User feedback system
 - Accessibility features
 
+### Version 1.0.2 - API Processing Time Tracking (Claude 3.7 Sonnet Thinking Implementation)
+
+#### **Performance Monitoring & Timing Features**
+- **Backend API Processing Time Tracking**: Precise measurement of server-side processing time for AI model analysis calls
+- **Database Storage**: Processing time data is stored in the `api_processing_time_ms` column in the explanations table
+- **UI Display**: Processing time shown in user-friendly format (e.g., "1m 23s", "45s") alongside each model explanation
+- **Model Card Enhancements**: Estimated response times now displayed on model buttons for user expectations
+- **Progress Indicator Fixes**: Fixed bug in estimated time parsing that caused incorrect 51-minute displays for some models
+- **Comprehensive Timing**: Both estimated and actual processing times provided to users
+
+#### **Technical Implementation**
+- **Backend**: Modified `puzzleController.ts` to measure and record API processing time
+- **Database**: Added `api_processing_time_ms` column with migration support
+- **Frontend**: Updated `AnalysisResultCard.tsx` to display processing times
+- **Type Safety**: Added `apiProcessingTimeMs` to TypeScript interfaces
+
 ### Version 1.0.1 - Added DeepSeek and Reasoning capture to the puzzle examiner.
 
