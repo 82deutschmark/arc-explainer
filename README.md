@@ -229,8 +229,11 @@ The application is built around a core loop of examining puzzles, generating AI 
 │   ├── types.ts           # TypeScript interfaces
 │   └── schema.ts          # Database schemas
 ├── data/                  # Puzzle data
-│   ├── training/          # Downloaded ARC-AGI puzzles
-│   └── explained/         # AI-analyzed puzzle exports
+│   ├── training/          # ARC-AGI 1 training set puzzles
+│   ├── evaluation/        # ARC-AGI 1 evaluation set puzzles
+│   ├── training2/         # ARC-AGI 2 training set puzzles
+│   ├── evaluation2/       # ARC-AGI 2 evaluation set puzzles
+│   └── explained/         # AI-analyzed puzzle exports (Also in the DB)
 └── package.json
 ```
 
