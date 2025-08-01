@@ -212,7 +212,11 @@ The application is built around a core loop of examining puzzles, generating AI 
 ├── server/                 # Express backend
 │   ├── services/           # Core services
 │   │   ├── dbService.ts        # Railway PostgreSQL database integration
-│   │   ├── openai.ts           # AI model integration
+│   │   ├── openai.ts           # OpenAI model integration
+│   │   ├── deepseek.ts         # DeepSeek model integration
+│   │   ├── grok.ts             # xAI Grok model integration
+│   │   ├── gemini.ts           # Google Gemini model integration
+│   │   ├── anthropic.ts        # Anthropic model integration
 │   │   ├── puzzleAnalyzer.ts   # Grid analysis utilities
 │   │   ├── puzzleExporter.ts   # JSON export functionality for explained puzzles
 │   │   └── puzzleLoader.ts     # Puzzle loading and caching
