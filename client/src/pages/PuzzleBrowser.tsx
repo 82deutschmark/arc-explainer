@@ -252,9 +252,10 @@ export default function PuzzleBrowser() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="any">Any ARC version</SelectItem>
-                    <SelectItem value="ARC1">ARC1 only</SelectItem>
-                    <SelectItem value="ARC2">ARC2 only</SelectItem>
-                    <SelectItem value="ARC2-Eval">ARC2-Eval only</SelectItem>
+                    <SelectItem value="ARC1">ARC1 Training</SelectItem>
+                    <SelectItem value="ARC1-Eval">ARC1 Evaluation</SelectItem>
+                    <SelectItem value="ARC2">ARC2 Training</SelectItem>
+                    <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -77,7 +77,7 @@ export function usePuzzleList(filters?: {
   difficulty?: 'easy' | 'medium' | 'hard';
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
-  source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
 }) {
   const queryParams = new URLSearchParams();
   if (filters?.maxGridSize) queryParams.set('maxGridSize', filters.maxGridSize.toString());

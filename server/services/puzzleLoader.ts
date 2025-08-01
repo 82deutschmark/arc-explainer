@@ -19,13 +19,13 @@ interface PuzzleInfo {
   inputSize: [number, number];
   outputSize: [number, number];
   hasExplanation: boolean;
-  source: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
 }
 
 interface DataSource {
   name: string;
   directory: string;
-  source: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
   priority: number;
 }
 
@@ -52,7 +52,7 @@ export class PuzzleLoader {
     {
       name: 'ARC1-Eval',
       directory: path.join(process.cwd(), 'data', 'evaluation'),
-      source: 'ARC1',
+      source: 'ARC1-Eval',
       priority: 3
     },
     {
@@ -145,7 +145,7 @@ export class PuzzleLoader {
     return files.length;
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC2' | 'ARC2-Eval'): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval'): PuzzleInfo {
     const { maxGridSize, gridSizeConsistent, inputSize, outputSize } = this.getGridDimensions(task);
     const hasExplanation = this.checkHasExplanation(taskId);
 
@@ -235,7 +235,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
     
@@ -253,7 +253,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
   }): PuzzleInfo[] {
     if (filters.maxGridSize !== undefined) {
       puzzles = puzzles.filter(p => p.maxGridSize <= filters.maxGridSize!);
