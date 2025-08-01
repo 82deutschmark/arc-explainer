@@ -33,7 +33,7 @@ export const puzzleController = {
     if (gridSizeConsistent) filters.gridSizeConsistent = gridSizeConsistent === 'true';
     if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
     if (prioritizeExplained) filters.prioritizeExplained = prioritizeExplained === 'true';
-    if (source && ['ARC1', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC2' | 'ARC2-Eval';
+    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
     
     console.log('DEBUG: Using filters:', filters);
     

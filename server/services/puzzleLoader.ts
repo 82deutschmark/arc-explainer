@@ -149,6 +149,14 @@ export class PuzzleLoader {
     const { maxGridSize, gridSizeConsistent, inputSize, outputSize } = this.getGridDimensions(task);
     const hasExplanation = this.checkHasExplanation(taskId);
 
+    // Fix for ARC1-Eval categorization issue
+    if (source === 'ARC1-Eval') {
+      // Ensure directory and source are correctly mapped
+      source = 'ARC1-Eval';
+    } else if (source === 'ARC1') {
+      source = 'ARC1';
+    } // Add similar checks for other sources if needed
+
     return {
       id: taskId,
       gridSizeConsistent,
