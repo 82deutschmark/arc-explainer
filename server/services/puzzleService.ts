@@ -19,7 +19,7 @@ interface PuzzleFilters {
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
   prioritizeExplained?: boolean;
-  source?: 'ARC1' | 'ARC2' | 'ARC2-Eval';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
 }
 
 // Additional interface for enhanced puzzle metadata with feedback info

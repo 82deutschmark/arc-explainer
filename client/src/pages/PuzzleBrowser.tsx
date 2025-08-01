@@ -309,12 +309,14 @@ export default function PuzzleBrowser() {
                               <Badge variant="outline" className="text-xs bg-amber-50">Variable</Badge>
                             }
                             {puzzle.source && (
-                              <Badge variant="outline" className={`text-xs 
-                                ${puzzle.source === 'ARC1' ? 'bg-blue-50' : 
-                                  puzzle.source === 'ARC2' ? 'bg-purple-50' : 
-                                  'bg-green-50 font-bold'}`
-                              }>
-                                {puzzle.source}
+                              <Badge variant="outline" className={`text-xs ${
+                                puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
+                                puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
+                                puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
+                                puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
+                                'bg-gray-50 text-gray-700'
+                              }`}>
+                                {puzzle.source.replace('-Eval', ' Eval')}
                               </Badge>
                             )}
                           </div>
