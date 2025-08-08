@@ -9,7 +9,7 @@ import { GridCellProps, SIZE_CLASSES } from '@/types/puzzle';
 import { CELL_COLORS } from '@/constants/models';
 import { getSpaceEmoji } from '@/lib/spaceEmojis';
 
-export function GridCell({ value, showEmojis, size = "normal" }: GridCellProps) {
+export function GridCell({ value, showEmojis, size = "normal", emojiSet }: GridCellProps) {
   return (
     <div
       className={`${SIZE_CLASSES[size]} border border-gray-300 flex items-center justify-center font-mono`}
@@ -18,7 +18,7 @@ export function GridCell({ value, showEmojis, size = "normal" }: GridCellProps) 
         color: showEmojis ? '#000' : '#FFF'
       }}
     >
-      {showEmojis ? getSpaceEmoji(value) : value}
+      {showEmojis ? getSpaceEmoji(value, emojiSet) : value}
     </div>
   );
 }
