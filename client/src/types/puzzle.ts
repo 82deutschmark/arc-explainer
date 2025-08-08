@@ -4,6 +4,8 @@
  * Author: Cascade
  */
 
+import type { EmojiSet } from '@/lib/spaceEmojis';
+
 /**
  * Configuration for AI models that can analyze puzzles
  */
@@ -60,6 +62,7 @@ export interface GridCellProps {
   value: number;
   showEmojis: boolean;
   size?: keyof typeof SIZE_CLASSES;
+  emojiSet?: EmojiSet;
 }
 
 /**
@@ -70,6 +73,7 @@ export interface PuzzleGridProps {
   title: string;
   showEmojis: boolean;
   highlight?: boolean;
+  emojiSet?: EmojiSet;
 }
 
 /**
