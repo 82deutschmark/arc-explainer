@@ -2,7 +2,7 @@
  * ARC-AGI Emoji Palettes and Helpers
  * Provides multiple ARC-aligned emoji palettes (each length-10, mapping 0-9)
  * and utility functions to translate ARC colour digits to emojis.
- * Author: Cascade
+ * Author: Cascade (GPT-5 High Reasoning)
  *
  * How it's used in the project:
  * - UI components like `components/puzzle/GridCell.tsx` call `getSpaceEmoji(value, set)`
