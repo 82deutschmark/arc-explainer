@@ -32,6 +32,7 @@ export function useAnalysisResults({
   refetchExplanations
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.7);
+  const [promptId, setPromptId] = useState('alienCommunication'); // Default to alien communication prompt
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
@@ -48,7 +49,10 @@ export function useAnalysisResults({
       setProcessingModels(prev => new Set(prev).add(modelKey));
       
       // 1. Analyze the puzzle
-      const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, { temperature: temp });
+      const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, { 
+        temperature: temp,
+        promptId
+      });
       if (!analysisResponse.ok) {
         throw new Error(`Analysis request failed: ${analysisResponse.statusText}`);
       }
@@ -134,6 +138,8 @@ export function useAnalysisResults({
   return {
     temperature,
     setTemperature,
+    promptId,
+    setPromptId,
     analyzeWithModel,
     currentModelKey,
     processingModels,

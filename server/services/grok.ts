@@ -2,7 +2,7 @@
  * xAI Grok Service Integration for ARC-AGI Puzzle Analysis
  * Supports reasoning log capture for Grok reasoning models (grok-4-0709)
  * These models provide reasoning logs similar to OpenAI reasoning models
- * @author Cascade
+ * @author Cascade / Gemini Pro 2.5
  * 
  * This service provides integration with xAI's Grok models for analyzing ARC-AGI puzzles.
  * It leverages Grok's advanced reasoning capabilities to explain puzzle solutions in the
@@ -39,7 +39,7 @@
  */
 
 import OpenAI from "openai";
-import { ARCTask } from "../../shared/types";
+import { ARCTask, PROMPT_TEMPLATES } from "../../shared/types";
 
 const MODELS = {
   "grok-4-0709": "grok-4-0709",
@@ -71,8 +71,12 @@ export class GrokService {
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
     captureReasoning: boolean = true,
+    promptId: string = 'alien-communication',
   ) {
     const modelName = MODELS[modelKey];
+
+    // Get selected prompt template
+    const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alien-communication'];
 
     const trainingExamples = task.train
       .map(
@@ -81,14 +85,28 @@ export class GrokService {
       )
       .join("\n\n");
 
-    const prompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
-     as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct.  
-     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.
+    // Build emoji map section if needed
+    const emojiMapSection = selectedTemplate.emojiMapIncluded ? `
 
-TRAINING EXAMPLES (what the aliens taught us):
+${selectedTemplate.emojiMapIncluded ? '4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:' : ''}
+
+0: ⬛ (no/nothing/negative)
+1: ✅ (yes/positive/agreement)
+2: 👽 (alien/them/we)
+3: 👤 (human/us/you)
+4: 🪐 (their planet/home)
+5: 🌍 (human planet/Earth)
+6: 🛸 (their ships/travel)
+7: ☄️ (danger/bad/problem)
+8: ♥ (peace/friendship/good)
+9: ⚠️ (warning/attention/important)` : '';
+
+    const prompt = `${selectedTemplate.content}
+
+TRAINING EXAMPLES${selectedTemplate.emojiMapIncluded ? ' (what the aliens taught us)' : ' (input-output pairs for analysis)'}:
 ${trainingExamples}
 
-TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):
+TEST CASE${selectedTemplate.emojiMapIncluded ? ' (the aliens\' question and our correct answer, but we don\'t understand why the answer is correct)' : ' (input and correct answer for analysis)'}:
 Input: ${JSON.stringify(task.test[0].input)}
 Correct Answer: ${JSON.stringify(task.test[0].output)}
 
@@ -158,32 +176,22 @@ Your job:
 - Abstract pattern recognition
 
 
-2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  
-3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved. 
-
-
-4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
-
-0: ⬛ (no/nothing/negative)
-1: ✅ (yes/positive/agreement)
-2: 👽 (alien/them/we)
-3: 👤 (human/us/you)
-4: 🪐 (their planet/home)
-5: 🌍 (human planet/Earth)
-6: 🛸 (their ships/travel)
-7: ☄️ (danger/bad/problem)
-8: ♥ (peace/friendship/good)
-9: ⚠️ (warning/attention/important)
+${selectedTemplate.emojiMapIncluded ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
 
 Respond in this JSON format:
-{
+${JSON.stringify(selectedTemplate.emojiMapIncluded ? {
   "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
   "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
   "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
-}`;
+} : {
+  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "solvingStrategy": "Step-by-step how to solve it, for novices",
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+}, null, 2)}`;
 
     try {
       const requestOptions: any = {

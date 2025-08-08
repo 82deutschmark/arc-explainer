@@ -4,6 +4,16 @@ July 26, 2025
 
 ### Version 1.1.0 - Enhanced AI Analysis & User Experience (2025-07-26)
 
+#### **Dynamic Prompt Picker System** (Cascade / Gemini Pro 2.5 Implementation)
+- **Dynamic Prompt Selection**: Users can now choose from multiple prompt templates to guide AI analysis, allowing for different explanation styles and depths.
+- **Full Provider Integration**: The prompt picker is fully integrated with all supported AI providers: Anthropic, OpenAI, Gemini, Grok, and DeepSeek.
+- **Centralized Prompt Management**: All prompt templates are managed in a central `PROMPT_TEMPLATES` map in `shared/types.ts` for consistency and easy updates.
+- **Backend API Support**:
+  - `GET /api/prompts`: New endpoint to provide a catalogue of available prompts to the frontend.
+  - `POST /api/puzzle/analyze`: Updated to accept a `promptId` to select the desired prompt for analysis.
+- **Frontend UI**: A new prompt picker component has been added to the user interface, allowing for seamless selection before puzzle analysis.
+
+
 #### **Feedback-Driven Retry Mechanism** (Kimi K2 Implementation)
 - **Enhanced Feedback Service**: When users mark explanations as "not helpful" and provide feedback, the system now automatically triggers a retry analysis
 - **Non-destructive Retry**: New explanations are saved as separate entries, never overwriting originals
