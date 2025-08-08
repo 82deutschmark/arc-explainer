@@ -28,7 +28,7 @@ export const SPACE_EMOJIS = {
   // Technology & Equipment - Set 2 (communication)
   tech_set2: ['⬛', '📡', '🛰️', '📱', '⌨️', '📶', '📋', '💻', '🎚️', '🎧'],
 
-  // Navigation & Alerts (directional and compass) - Avoid using!!
+  // Navigation & Alerts (directional and compass)
   nav_alerts: ['⬛', '⬆️', '⬇️', '⬅️', '➡️', '↗️', '↖️', '↘️', '↙️', '🧭'],
 
   // Status & Alerts (warning and safety systems)

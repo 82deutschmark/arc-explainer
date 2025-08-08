@@ -148,10 +148,9 @@ export default function PuzzleExaminer() {
                 <SelectGroup>
                   <SelectLabel>Emoji Palettes</SelectLabel>
                   {Object.entries(EMOJI_SET_INFO)
-                    .filter(([key]) => key !== 'nav_alerts')
                     .map(([key, info]) => (
                       <SelectItem key={key} value={key}>
-                        {info.name} {info.theme ? `· ${info.theme}` : ''}
+                        {info.name}
                       </SelectItem>
                     ))}
                 </SelectGroup>
