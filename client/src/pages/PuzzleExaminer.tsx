@@ -27,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ModelButton } from '@/components/puzzle/ModelButton';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { PromptPicker } from '@/components/PromptPicker';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { MODELS } from '@/constants/models';
 
@@ -53,6 +54,8 @@ export default function PuzzleExaminer() {
   const {
     temperature,
     setTemperature,
+    promptId,
+    setPromptId,
     analyzeWithModel,
     currentModelKey,
     processingModels,
@@ -220,6 +223,13 @@ export default function PuzzleExaminer() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Prompt Picker */}
+          <PromptPicker
+            selectedPromptId={promptId}
+            onPromptChange={setPromptId}
+            disabled={isAnalyzing}
+          />
+          
           {/* Model Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {MODELS.map((model) => {

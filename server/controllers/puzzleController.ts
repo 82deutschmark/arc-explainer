@@ -63,16 +63,16 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75, captureReasoning = true } = req.body;
+    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication" } = req.body;
     
-    console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, captureReasoning: ${captureReasoning}`);
+    console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, promptId: ${promptId}, captureReasoning: ${captureReasoning}`);
     
     // Track server processing time
     const apiStartTime = Date.now();
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning);
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId);
     
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;

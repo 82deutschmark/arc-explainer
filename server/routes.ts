@@ -17,6 +17,7 @@ import fs from "fs";
 import { puzzleController } from "./controllers/puzzleController";
 import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
+import { promptController } from "./controllers/promptController";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -40,6 +41,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/task/:taskId", asyncHandler(puzzleController.getById));
   app.post("/api/puzzle/analyze/:taskId/:model", asyncHandler(puzzleController.analyze));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
+  
+  // Prompt template routes
+  app.get("/api/prompts", asyncHandler(promptController.getAll));
   
   // Explanation routes
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));

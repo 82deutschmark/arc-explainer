@@ -3,11 +3,19 @@
  * Supports reasoning log capture through structured prompting with <reasoning> tags
  * Since Anthropic doesn't provide built-in reasoning logs, we prompt Claude to show its reasoning
  * 
- * @author Cascade
+ * NEW: Now supports dynamic prompt template selection via promptId parameter.
+ * Uses PROMPT_TEMPLATES from shared/types to allow different explanation approaches:
+ * - alienCommunication: Frames puzzles as alien communication (includes emoji map)
+ * - standardExplanation: Direct puzzle explanations without thematic framing
+ * - educationalApproach: Teaching-focused explanations for learning
+ * 
+ * The emoji map and JSON response format adapt automatically based on template selection.
+ * 
+ * @author Cascade / Gemini Pro 2.5
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import { ARCTask } from "../../shared/types";
+import { ARCTask, PROMPT_TEMPLATES } from "../../shared/types";
 
 // Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
@@ -31,6 +39,7 @@ export class AnthropicService {
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
     captureReasoning: boolean = true,
+    promptId: string = "alien-communication",
   ) {
     const modelName = MODELS[modelKey];
 
@@ -41,10 +50,12 @@ export class AnthropicService {
       )
       .join("\n\n");
 
-    // Modify prompt to include reasoning capture if requested
-    const basePrompt = `You are the tutor for our app which frames the puzzles from the ARC-AGI prize
-     as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct.  
-     Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`;
+    // Get the selected prompt template or default to alienCommunication
+    const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alien-communication'];
+    console.log(`[Anthropic] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    
+    // Use the template's content as the base prompt
+    const basePrompt = selectedTemplate.content;
     
     const reasoningPrompt = captureReasoning ? 
       `${basePrompt}
@@ -57,24 +68,8 @@ IMPORTANT: Before providing your final answer, please show your step-by-step rea
 
 Then provide your final structured response.` : basePrompt;
     
-    const prompt = `${reasoningPrompt}
-
-TRAINING EXAMPLES (what the aliens taught us):
-${trainingExamples}
-
-TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):
-Input: ${JSON.stringify(task.test[0].input)}
-Correct Answer: ${JSON.stringify(task.test[0].output)}
-
-YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
-{
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
-  "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
-  "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
-}
+    // Build emoji map section conditionally
+    const emojiMapSection = selectedTemplate.emojiMapIncluded ? `
 
 The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
 
@@ -87,17 +82,37 @@ The aliens gave us this emoji map of the numbers 0-9. Recognize that the user se
 6: 🛸 (their ships/travel)
 7: ☄️ (danger/bad/problem)
 8: ♥ (peace/friendship/good)
-9: ⚠️ (warning/attention/important)
+9: ⚠️ (warning/attention/important)` : '';
+    
+    // Build JSON format based on whether alien communication is enabled
+    const jsonFormat = selectedTemplate.emojiMapIncluded ? {
+      "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+      "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+      "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
+      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
+      "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
+    } : {
+      "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+      "solvingStrategy": "Step-by-step how to solve it, for novices",
+      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+    };
+    
+    const prompt = `${reasoningPrompt}
+
+TRAINING EXAMPLES${selectedTemplate.emojiMapIncluded ? ' (what the aliens taught us)' : ''}:
+${trainingExamples}
+
+TEST CASE${selectedTemplate.emojiMapIncluded ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
+Input: ${JSON.stringify(task.test[0].input)}
+Correct Answer: ${JSON.stringify(task.test[0].output)}
+
+YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
+${JSON.stringify(jsonFormat, null, 2)}${emojiMapSection}
 
 ${captureReasoning ? 'After your <reasoning> section, respond' : 'Respond'} in this JSON format:
-{
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
-  "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
-  "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
-}`;
+${JSON.stringify(jsonFormat, null, 2)}`;
 
     try {
       const requestOptions: any = {

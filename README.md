@@ -26,6 +26,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
 
+
+
 ## 🌟 Development & Credits
 
 **Primary Development**: Cascade
@@ -37,6 +39,13 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 - **Technical Excellence**: Delivered robust, type-safe, and well-architected solutions
 - **Comprehensive Features**: From feedback-driven retry to real-time progress indicators
 - **Clean Integration**: Seamless integration with existing codebase architecture
+
+### Cascade / Gemini Pro 2.5's Contributions (August 3, 2025)
+- **Dynamic Prompt Picker System**: Implemented a system allowing users to select from multiple prompt templates to guide AI analysis.
+  - **Full Provider Integration**: Ensured the prompt picker is fully functional across all five AI providers (Anthropic, OpenAI, Gemini, Grok, and DeepSeek).
+  - **Centralized Prompt Management**: Standardized prompt templates in `shared/types.ts` for consistency and maintainability.
+  - **Backend API Updates**: Created a new `GET /api/prompts` endpoint and updated the `POST /api/puzzle/analyze` endpoint to support prompt selection.
+  - **Code Standardization**: Updated author comments and ensured consistent default prompt IDs across all AI services.
 
 ### Cascade's Contributions (July 26, 2025)
 - **API Processing Time Tracking**: Successfully implemented comprehensive backend timing measurement
@@ -116,6 +125,11 @@ API routes should be prefixed with `/api/` and registered before the static file
 - **Unified logger utility**: Consistent, color-coded logs across services make debugging easier.
 - **Better Dev Experience**: Vite HMR on http://localhost:5173 for the React client while the Express API runs on http://localhost:5000.
 - **Multi-model explanation storage**: All AI model explanations (one per model) are now saved individually in the database and returned to the client, rather than only the latest model.
+
+  - Backend `GET /api/prompts` endpoint serves available prompt templates
+  - Frontend-backend integration passes `promptId` to AI services for dynamic prompt injection
+  - Conditional emoji map and JSON response format based on selected template
+  - All AI services (Anthropic, OpenAI, etc.) updated to support prompt template selection
 - **Flexible feedback endpoint**: The `/api/feedback` route now accepts `explanationId` in either the request body or URL params, with enhanced validation middleware that logs request details and provides clearer error messages.
 
 ## 🚨 Deployment Troubleshooting
