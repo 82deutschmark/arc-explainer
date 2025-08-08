@@ -1,3 +1,13 @@
+/**
+ * Root PuzzleGrid Component  
+ * Renders puzzle grids with emoji display (uses legacy default emoji set only)
+ * Author: Cascade (GPT-5 High Reasoning)
+ *
+ * How it's used in the project:
+ * - Displays ARC puzzle grids with fixed emoji mapping
+ * - This is the legacy component - main emoji set selection is in puzzle/PuzzleGrid.tsx
+ */
+
 import React from 'react';
 import { getSpaceEmoji, getEmojiDescription } from '@/lib/spaceEmojis';
 import { cn } from '@/lib/utils';
