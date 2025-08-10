@@ -17,6 +17,7 @@ const MODELS = {
   "o4-mini-2025-04-16": "o4-mini-2025-04-16",
   "o3-2025-04-16": "o3-2025-04-16",
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
+  "gpt-5-2025-08-07": "gpt-5",
 } as const;
 
 // Models that do NOT support temperature parameter
@@ -31,6 +32,7 @@ const MODELS_WITH_REASONING = new Set([
   "o3-mini-2025-01-31",
   "o4-mini-2025-04-16", 
   "o3-2025-04-16",
+  "gpt-5-2025-08-07",
 ]);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
