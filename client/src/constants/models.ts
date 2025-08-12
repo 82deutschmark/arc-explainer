@@ -94,6 +94,17 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-2 min' }
   },
+  { 
+    key: 'gpt-5-2025-08-07', 
+    name: 'GPT-5', 
+    color: 'bg-emerald-500', 
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
+  },
   
   // Anthropic Models
   { 

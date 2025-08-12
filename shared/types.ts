@@ -70,22 +70,22 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   alienCommunication: {
     id: "alienCommunication",
     name: "Alien Communication",
-    description: "Frames puzzles as alien communication challenges with emoji mappings",
-    content: `You are the tutor for our app which frames the puzzles from the ARC-AGI prize as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`,
+    description: "Our app frames the puzzles from the ARC-AGI prize as alien communication puzzles.",
+    content: `Our app frames the puzzles from the ARC-AGI prize as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
     emojiMapIncluded: true
   },
   standardExplanation: {
     id: "standardExplanation", 
     name: "Standard Explanation",
-    description: "Provides straightforward puzzle explanations without thematic framing",
-    content: `You are an expert in ARC-AGI puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`,
+    description: "You are an expert in ARC-AGI puzzles. Your job is to explain in very simple terms why the correct answer is correct.",
+    content: `You are an expert in ARC-AGI puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it. Most puzzles use two transformations, but some use more or less.`,
     emojiMapIncluded: false
   },
   educationalApproach: {
     id: "educationalApproach",
     name: "Educational Approach", 
-    description: "Focuses on teaching problem-solving strategies and pattern recognition",
-    content: `You are a teacher helping students understand complex pattern recognition problems. Your job is to explain in very simple terms why the correct answer is correct, focusing on educational value. Look at this puzzle where we already know the correct answer and determine the logic used to solve it.`,
+    description: "Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value.",
+    content: `Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
     emojiMapIncluded: false
   }
 };

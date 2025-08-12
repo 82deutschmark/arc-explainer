@@ -40,6 +40,7 @@ export class AnthropicService {
     temperature: number = 0.75,
     captureReasoning: boolean = true,
     promptId: string = "alien-communication",
+    customPrompt?: string,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -50,12 +51,18 @@ export class AnthropicService {
       )
       .join("\n\n");
 
-    // Get the selected prompt template or default to alienCommunication
-    const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alien-communication'];
-    console.log(`[Anthropic] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    // Use custom prompt if provided, otherwise use selected template
+    let basePrompt: string;
+    let selectedTemplate: any = null;
     
-    // Use the template's content as the base prompt
-    const basePrompt = selectedTemplate.content;
+    if (customPrompt) {
+      basePrompt = customPrompt;
+      console.log(`[Anthropic] Using custom prompt (${customPrompt.length} characters)`);
+    } else {
+      selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alienCommunication'];
+      basePrompt = selectedTemplate.content;
+      console.log(`[Anthropic] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    }
     
     const reasoningPrompt = captureReasoning ? 
       `${basePrompt}
@@ -68,8 +75,8 @@ IMPORTANT: Before providing your final answer, please show your step-by-step rea
 
 Then provide your final structured response.` : basePrompt;
     
-    // Build emoji map section conditionally
-    const emojiMapSection = selectedTemplate.emojiMapIncluded ? `
+    // Build emoji map section conditionally (only for template-based prompts with emoji support)
+    const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
 
 The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
 
@@ -84,16 +91,16 @@ The aliens gave us this emoji map of the numbers 0-9. Recognize that the user se
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)` : '';
     
-    // Build JSON format based on whether alien communication is enabled
-    const jsonFormat = selectedTemplate.emojiMapIncluded ? {
-      "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+    // Build JSON format based on whether alien communication is enabled (defaults to standard format for custom prompts)
+    const jsonFormat = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
+      "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
       "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
       "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
       "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
       "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
       "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
     } : {
-      "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+      "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
       "solvingStrategy": "Step-by-step how to solve it, for novices",
       "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
       "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"

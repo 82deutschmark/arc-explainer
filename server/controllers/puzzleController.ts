@@ -57,22 +57,28 @@ export const puzzleController = {
 
   /**
    * Analyze a puzzle with a specific AI model
+   * Supports both predefined prompt templates (via promptId) and custom user prompts (via customPrompt)
    * 
    * @param req - Express request object
    * @param res - Express response object
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication" } = req.body;
+    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication", customPrompt } = req.body;
     
-    console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, promptId: ${promptId}, captureReasoning: ${captureReasoning}`);
+    // Log the request with custom prompt handling
+    if (customPrompt) {
+      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model} using custom prompt (${customPrompt.length} chars), captureReasoning: ${captureReasoning}`);
+    } else {
+      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, promptId: ${promptId}, captureReasoning: ${captureReasoning}`);
+    }
     
     // Track server processing time
     const apiStartTime = Date.now();
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId);
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt);
     
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
