@@ -124,7 +124,7 @@ ${JSON.stringify(jsonFormat, null, 2)}`;
     try {
       const requestOptions: any = {
         model: modelName,
-        max_tokens: 2000,
+        max_tokens: 9000,
         messages: [{ role: "user", content: prompt }],
       };
 

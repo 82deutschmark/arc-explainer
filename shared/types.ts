@@ -87,5 +87,12 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     description: "Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value.",
     content: `Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
     emojiMapIncluded: false
+  },
+  custom: {
+    id: "custom",
+    name: "Custom Prompt",
+    description: "Use a custom prompt to override built-in templates per analysis run.",
+    content: "",
+    emojiMapIncluded: false
   }
 };

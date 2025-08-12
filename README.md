@@ -1,3 +1,10 @@
+<!--
+  README.md
+  What: Project overview and documentation for ARC-AGI Puzzle Explorer.
+  How: Explains features, setup, usage, architecture, and API. Updated to include Custom Prompt support.
+  Author: Cascade
+-->
+
 # ARC-AGI Puzzle Explorer - Colorblindness Aid 🛸
 
 An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus - Artificial General Intelligence) puzzles with accessibility in mind. If you've ever stared at a nine-color grid and wondered what cosmic joke you're missing, you're not alone. This tool helps humans (especially those with colorblindness and neurodivergent thinkers) understand abstract reasoning by translating complex grid patterns into emoji representations and providing AI-powered explanations of WHY solutions work.
@@ -27,6 +34,9 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 • **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
 
 
+• **Custom Prompts for Researchers** - Enter your own analysis prompt to override templates per run
+
+
 
 ## 🌟 Development & Credits
 
@@ -46,6 +56,15 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
   - **Centralized Prompt Management**: Standardized prompt templates in `shared/types.ts` for consistency and maintainability.
   - **Backend API Updates**: Created a new `GET /api/prompts` endpoint and updated the `POST /api/puzzle/analyze` endpoint to support prompt selection.
   - **Code Standardization**: Updated author comments and ensured consistent default prompt IDs across all AI services.
+
+### Claude 4 Sonnet Thinking's Contributions (August 12, 2025)
+- **Custom Prompt Support (Code Author)**: Implemented end-to-end support for user-defined prompts that override templates during analysis.
+- **Safe Template Handling**: Fixed null-access bugs when using custom prompts across all AI services (null-safe checks on `selectedTemplate`).
+- **UI Enhancements**: Added a "Custom Prompt" option and textarea in `PromptPicker`, with character count and guidance.
+- **Types & Validation**: Extended types and backend validation to accept `customPrompt` without breaking existing templates.
+
+### Documentation Credits
+- Documentation for this release written by **GPT-5 (low reasoning)** .
 
 ### Cascade's Contributions (July 26, 2025)
 - **API Processing Time Tracking**: Successfully implemented comprehensive backend timing measurement
@@ -131,6 +150,49 @@ API routes should be prefixed with `/api/` and registered before the static file
   - Conditional emoji map and JSON response format based on selected template
   - All AI services (Anthropic, OpenAI, etc.) updated to support prompt template selection
 - **Flexible feedback endpoint**: The `/api/feedback` route now accepts `explanationId` in either the request body or URL params, with enhanced validation middleware that logs request details and provides clearer error messages.
+
+## 🧪 Custom Prompt Support (New)
+
+Researchers can override built-in templates with their own prompt.
+
+- **Where in UI**: In `Puzzle Examiner`, under `PromptPicker`, choose "Custom Prompt" and paste your prompt into the textarea. A character counter helps manage size.
+- **How it works**: When a custom prompt is provided, it replaces the template content. Training examples and test case data are still appended automatically by the backend.
+- **Emoji maps**: Emoji-map sections are only included for specific templates. Custom prompts do not auto-insert emoji maps; include your own if needed.
+- **Backwards compatible**: If no custom prompt is used, the selected template behaves exactly as before.
+
+### API changes
+
+- `GET /api/prompts` — returns available prompt templates for the UI.
+- `POST /api/puzzle/analyze/:puzzleId/:modelKey` — now accepts optional `customPrompt` in the JSON body. When present (and `promptId` is `"custom"`), it overrides the selected template.
+
+### Provider support
+
+Custom prompts are supported consistently across providers: OpenAI, Grok (xAI), Gemini, DeepSeek, and Anthropic.
+
+### Researcher guide: crafting effective custom prompts
+
+- **Be explicit about goals**: State that explanations must focus on WHY the known training solutions are correct and how to generalize to test cases.
+- **Constrain the output**: Request structured sections (Pattern Description, Strategy, Hints, Alien Meaning, Confidence) to keep results comparable across providers.
+- **Reference the data model**: Mention that the backend will append training examples and test cases; instruct the model to analyze them carefully.
+- **Keep prompts concise**: Long prompts reduce available context for puzzle data; prioritize clarity over verbosity.
+- **Ask for error checking**: Instruct the model to self-verify consistency between reasoning and final answer.
+
+### What the backend auto-appends
+
+- Training examples and test cases in a compact textual format.
+- Standard response-format guidance when using templates. With a custom prompt, you control formatting; include structure requirements if you need them.
+
+### Known limitations
+
+- Emoji mapping is not auto-inserted for custom prompts; add your own legend if you rely on emoji semantics.
+- Extremely long prompts may be truncated by provider context limits.
+- Provider differences (reasoning logs, temperature support) still apply.
+
+### Troubleshooting custom prompts
+
+- **Empty or low-quality outputs**: Reduce verbosity and request explicit section headings.
+- **Inconsistent reasoning**: Ask for a short self-check step prior to the final answer.
+- **Provider timeouts**: Try a smaller prompt, a faster model, or rerun — concurrency rules allow cross-provider parallelism.
 
 ## 🚨 Deployment Troubleshooting
 
@@ -293,7 +355,8 @@ The application is built around a core loop of examining puzzles, generating AI 
 ### API Endpoints
 - `GET /api/puzzles`: Fetches a list of all available puzzles.
 - `GET /api/puzzle/:puzzleId`: Retrieves a specific puzzle by its ID.
-- `POST /api/puzzle/:puzzleId/explain`: Submits a puzzle for AI analysis and returns an explanation.
+- `GET /api/prompts`: Returns available prompt templates for the frontend prompt picker.
+- `POST /api/puzzle/analyze/:puzzleId/:modelKey`: Submits a puzzle for AI analysis. Body supports `temperature`, `promptId`, and optional `customPrompt`.
 - `GET /api/puzzle/:puzzleId/explanations`: Fetches all saved explanations for a specific puzzle.
 - `POST /api/feedback`: Submits user feedback (vote and comment) for an explanation.
 
