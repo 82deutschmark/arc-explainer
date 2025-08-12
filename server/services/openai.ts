@@ -17,6 +17,7 @@ const MODELS = {
   "o4-mini-2025-04-16": "o4-mini-2025-04-16",
   "o3-2025-04-16": "o3-2025-04-16",
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
+  "gpt-5-2025-08-07": "gpt-5",
 } as const;
 
 // Models that do NOT support temperature parameter
@@ -31,6 +32,7 @@ const MODELS_WITH_REASONING = new Set([
   "o3-mini-2025-01-31",
   "o4-mini-2025-04-16", 
   "o3-2025-04-16",
+  "gpt-5-2025-08-07",
 ]);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -42,6 +44,7 @@ export class OpenAIService {
     temperature: number = 0.75,
     captureReasoning: boolean = true,
     promptId: string = "alienCommunication",
+    customPrompt?: string,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -52,12 +55,21 @@ export class OpenAIService {
       )
       .join("\n\n");
 
-    // Get the selected prompt template or default to alienCommunication
-    const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.alienCommunication;
-    console.log(`[OpenAI] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    // Use custom prompt if provided, otherwise use selected template
+    let basePrompt: string;
+    let selectedTemplate: any = null;
     
-    // Build emoji map section conditionally
-    const emojiMapSection = selectedTemplate.emojiMapIncluded ? `
+    if (customPrompt) {
+      basePrompt = customPrompt;
+      console.log(`[OpenAI] Using custom prompt (${customPrompt.length} characters)`);
+    } else {
+      selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.alienCommunication;
+      basePrompt = selectedTemplate.content;
+      console.log(`[OpenAI] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    }
+    
+    // Build emoji map section conditionally (only for template-based prompts with emoji support)
+    const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
 
 4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
 
@@ -72,12 +84,12 @@ export class OpenAIService {
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)` : '';
     
-    const prompt = `${selectedTemplate.content}
+    const prompt = `${basePrompt}
 
-TRAINING EXAMPLES${selectedTemplate.emojiMapIncluded ? ' (what the aliens taught us)' : ''}:
+TRAINING EXAMPLES${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? ' (what the aliens taught us)' : ''}:
 ${trainingExamples}
 
-TEST CASE${selectedTemplate.emojiMapIncluded ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
+TEST CASE${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
 Input: ${JSON.stringify(task.test[0].input)}
 Correct Answer: ${JSON.stringify(task.test[0].output)}
 
@@ -147,18 +159,18 @@ Your job:
 - Abstract pattern recognition
 
 
-${selectedTemplate.emojiMapIncluded ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
 
-${selectedTemplate.emojiMapIncluded ? 'Respond' : 'Please respond'} in this JSON format:
-${JSON.stringify(selectedTemplate.emojiMapIncluded ? {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? 'Respond' : 'Please respond'} in this JSON format:
+${JSON.stringify((selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
+  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
   "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
   "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
 } : {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"

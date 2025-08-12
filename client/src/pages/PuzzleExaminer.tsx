@@ -20,6 +20,9 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, Hash, ArrowLeft, Brain } from 'lucide-react';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
+import type { EmojiSet } from '@/lib/spaceEmojis';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
@@ -34,6 +37,7 @@ import { MODELS } from '@/constants/models';
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
   const [showEmojis, setShowEmojis] = useState(true);
+  const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
 
   // Early return if no taskId
   if (!taskId) {
@@ -56,6 +60,8 @@ export default function PuzzleExaminer() {
     setTemperature,
     promptId,
     setPromptId,
+    customPrompt,
+    setCustomPrompt,
     analyzeWithModel,
     currentModelKey,
     processingModels,
@@ -120,7 +126,7 @@ export default function PuzzleExaminer() {
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -129,6 +135,30 @@ export default function PuzzleExaminer() {
             {showEmojis ? <Eye className="h-4 w-4 mr-2" /> : <Hash className="h-4 w-4 mr-2" />}
             {showEmojis ? 'Alien Symbols' : 'Show Numbers'}
           </Button>
+
+          {/* Emoji Set Picker */}
+          <div className="w-56">
+            <Select
+              value={emojiSet}
+              onValueChange={(val) => setEmojiSet(val as EmojiSet)}
+              disabled={!showEmojis}
+            >
+              <SelectTrigger className="h-8" title={EMOJI_SET_INFO[emojiSet]?.description}>
+                <SelectValue placeholder="Select emoji palette" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Emoji Palettes</SelectLabel>
+                  {Object.entries(EMOJI_SET_INFO)
+                    .map(([key, info]) => (
+                      <SelectItem key={key} value={key}>
+                        {info.name}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -155,12 +185,14 @@ export default function PuzzleExaminer() {
                         grid={example.input}
                         title="Input"  
                         showEmojis={showEmojis}
+                        emojiSet={emojiSet}
                       />
                       <div className="text-3xl text-gray-400">→</div>
                       <PuzzleGrid 
                         grid={example.output}
                         title="Output"
                         showEmojis={showEmojis}
+                        emojiSet={emojiSet}
                       />
                     </div>
                   </div>
@@ -177,12 +209,14 @@ export default function PuzzleExaminer() {
                     grid={testCase.input}
                     title="Test Question"
                     showEmojis={showEmojis}
+                    emojiSet={emojiSet}
                   />
                   <div className="text-3xl text-green-600">→</div>
                   <PuzzleGrid 
                     grid={testCase.output}
                     title="Correct Answer"
                     showEmojis={showEmojis}
+                    emojiSet={emojiSet}
                     highlight={true}
                   />
                 </div>
@@ -227,6 +261,8 @@ export default function PuzzleExaminer() {
           <PromptPicker
             selectedPromptId={promptId}
             onPromptChange={setPromptId}
+            customPrompt={customPrompt}
+            onCustomPromptChange={setCustomPrompt}
             disabled={isAnalyzing}
           />
           
