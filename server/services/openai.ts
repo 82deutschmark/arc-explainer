@@ -44,6 +44,7 @@ export class OpenAIService {
     temperature: number = 0.75,
     captureReasoning: boolean = true,
     promptId: string = "alienCommunication",
+    customPrompt?: string,
   ) {
     const modelName = MODELS[modelKey];
 
@@ -54,12 +55,21 @@ export class OpenAIService {
       )
       .join("\n\n");
 
-    // Get the selected prompt template or default to alienCommunication
-    const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.alienCommunication;
-    console.log(`[OpenAI] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    // Use custom prompt if provided, otherwise use selected template
+    let basePrompt: string;
+    let selectedTemplate: any = null;
     
-    // Build emoji map section conditionally
-    const emojiMapSection = selectedTemplate.emojiMapIncluded ? `
+    if (customPrompt) {
+      basePrompt = customPrompt;
+      console.log(`[OpenAI] Using custom prompt (${customPrompt.length} characters)`);
+    } else {
+      selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.alienCommunication;
+      basePrompt = selectedTemplate.content;
+      console.log(`[OpenAI] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+    }
+    
+    // Build emoji map section conditionally (only for template-based prompts with emoji support)
+    const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
 
 4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
 
@@ -74,12 +84,12 @@ export class OpenAIService {
 8: ♥ (peace/friendship/good)
 9: ⚠️ (warning/attention/important)` : '';
     
-    const prompt = `${selectedTemplate.content}
+    const prompt = `${basePrompt}
 
-TRAINING EXAMPLES${selectedTemplate.emojiMapIncluded ? ' (what the aliens taught us)' : ''}:
+TRAINING EXAMPLES${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? ' (what the aliens taught us)' : ''}:
 ${trainingExamples}
 
-TEST CASE${selectedTemplate.emojiMapIncluded ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
+TEST CASE${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
 Input: ${JSON.stringify(task.test[0].input)}
 Correct Answer: ${JSON.stringify(task.test[0].output)}
 
