@@ -159,10 +159,10 @@ Your job:
 - Abstract pattern recognition
 
 
-${selectedTemplate.emojiMapIncluded ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
 
-${selectedTemplate.emojiMapIncluded ? 'Respond' : 'Please respond'} in this JSON format:
-${JSON.stringify(selectedTemplate.emojiMapIncluded ? {
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? 'Respond' : 'Please respond'} in this JSON format:
+${JSON.stringify((selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
   "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
