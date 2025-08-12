@@ -29,10 +29,12 @@ interface PromptTemplate {
 interface PromptPickerProps {
   selectedPromptId: string;
   onPromptChange: (promptId: string) => void;
+  customPrompt?: string;
+  onCustomPromptChange?: (customPrompt: string) => void;
   disabled?: boolean;
 }
 
-export function PromptPicker({ selectedPromptId, onPromptChange, disabled = false }: PromptPickerProps) {
+export function PromptPicker({ selectedPromptId, onPromptChange, customPrompt, onCustomPromptChange, disabled = false }: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
