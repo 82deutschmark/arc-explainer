@@ -112,7 +112,7 @@ export class GeminiService {
     // Build emoji map section if needed (only for template-based prompts with emoji support)
     const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
 
-${selectedTemplate.emojiMapIncluded ? '4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:' : ''}
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:' : ''}
 
 0: ⬛ (no/nothing/negative)
 1: ✅ (yes/positive/agreement)
@@ -212,10 +212,10 @@ Your job:
 - Abstract pattern recognition
 
 
-${selectedTemplate.emojiMapIncluded ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
+${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
 
-${captureReasoning ? 'After your <thinking> section, respond' : selectedTemplate.emojiMapIncluded ? 'Respond' : 'Please respond'} in this JSON format:
-${JSON.stringify(selectedTemplate.emojiMapIncluded ? {
+${captureReasoning ? 'After your <thinking> section, respond' : (selectedTemplate && selectedTemplate.emojiMapIncluded) ? 'Respond' : 'Please respond'} in this JSON format:
+${JSON.stringify((selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
   "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
