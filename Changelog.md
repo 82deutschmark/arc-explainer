@@ -1,3 +1,38 @@
+<!--
+  CHANGELOG.md
+  What: Release notes for ARC-AGI Puzzle Explorer.
+  How: Documents features, fixes, and credits. This entry covers Custom Prompt support.
+  Author (docs): GPT-5 (low reasoning)
+-->
+
+August 12, 2025
+
+## Version 1.2.0 — Custom Prompts & Stability (2025-08-12)
+
+### Features
+- __Custom Prompt Support (Code by Claude 4 Sonnet Thinking)__: Researchers can override built‑in templates per analysis run.
+- __Provider Coverage__: Works across OpenAI, Grok (xAI), Gemini, DeepSeek, and Anthropic.
+
+### Backend
+- Extended `POST /api/puzzle/analyze/:puzzleId/:modelKey` to accept optional `customPrompt` alongside `temperature` and `promptId`.
+- Preserves backward compatibility: when `customPrompt` is omitted, templates work as before.
+- Training examples and test cases are always appended server‑side.
+
+### Frontend
+- `PromptPicker` adds a "Custom Prompt" option with textarea, guidance, and char counter.
+- `useAnalysisResults` passes `customPrompt` when `promptId` is `"custom"`.
+
+### Bug fixes
+- Prevented null access on `selectedTemplate.emojiMapIncluded` across all AI services when using custom prompts.
+
+### Docs
+- README updated with a Researcher Guide, API changes, provider notes, limitations, and troubleshooting.
+- Credits: Code authored by __Claude 4 Sonnet Thinking__. Documentation by __GPT-5 (low reasoning)__.
+
+### Notes
+- Emoji maps are included only via templates; custom prompts must include their own legend if needed.
+- Provider constraints (e.g., temperature or reasoning log availability) still apply.
+
 July 26, 2025
 
 ## Changelog
