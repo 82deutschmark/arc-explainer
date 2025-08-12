@@ -180,14 +180,14 @@ ${selectedTemplate.emojiMapIncluded ? '2. Explain it in simple terms an idiot co
 
 Respond in this JSON format:
 ${JSON.stringify(selectedTemplate.emojiMapIncluded ? {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
   "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
   "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
 } : {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformation you found",
+  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
   "solvingStrategy": "Step-by-step how to solve it, for novices",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
   "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
