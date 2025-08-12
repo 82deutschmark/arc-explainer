@@ -60,6 +60,8 @@ export default function PuzzleExaminer() {
     setTemperature,
     promptId,
     setPromptId,
+    customPrompt,
+    setCustomPrompt,
     analyzeWithModel,
     currentModelKey,
     processingModels,
@@ -259,6 +261,8 @@ export default function PuzzleExaminer() {
           <PromptPicker
             selectedPromptId={promptId}
             onPromptChange={setPromptId}
+            customPrompt={customPrompt}
+            onCustomPromptChange={setCustomPrompt}
             disabled={isAnalyzing}
           />
           

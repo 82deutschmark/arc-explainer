@@ -14,7 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, HelpCircle } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2, HelpCircle, Edit3 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -140,13 +141,63 @@ export function PromptPicker({ selectedPromptId, onPromptChange, customPrompt, o
               </div>
             </div>
           ))}
+          
+          {/* Custom Prompt Option for Researchers */}
+          <div className="flex items-start space-x-2 border-t pt-3">
+            <RadioGroupItem 
+              value="custom" 
+              id="custom"
+              className="mt-1"
+              disabled={disabled}
+            />
+            <div className="flex-1">
+              <Label
+                htmlFor="custom"
+                className={`flex items-center gap-2 cursor-pointer ${disabled ? 'opacity-50' : ''}`}
+              >
+                <Edit3 className="h-4 w-4" />
+                <span className="font-medium">Custom Prompt</span>
+                <Badge variant="outline" className="text-xs">
+                  For Researchers
+                </Badge>
+              </Label>
+              <p className="text-sm text-gray-600 mt-1">
+                Write your own custom prompt for specialized analysis approaches.
+              </p>
+              
+              {/* Custom Prompt Textarea */}
+              {selectedPromptId === "custom" && onCustomPromptChange && (
+                <div className="mt-3">
+                  <Textarea
+                    value={customPrompt || ""}
+                    onChange={(e) => onCustomPromptChange(e.target.value)}
+                    placeholder="Enter your custom prompt here... (e.g., You are an expert in pattern recognition. Analyze this ARC-AGI puzzle and explain the transformations involved.)"
+                    className="min-h-[120px] resize-none"
+                    disabled={disabled}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Custom prompts allow for specialized analysis approaches. The system will automatically append training examples and test case data.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </RadioGroup>
         
         {selectedPromptId && (
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Selected:</strong> {prompts.find(p => p.id === selectedPromptId)?.name}
+              <strong>Selected:</strong> {
+                selectedPromptId === "custom" 
+                  ? "Custom Prompt" 
+                  : prompts.find(p => p.id === selectedPromptId)?.name
+              }
             </p>
+            {selectedPromptId === "custom" && customPrompt && (
+              <p className="text-xs text-blue-600 mt-1">
+                Custom prompt: {customPrompt.length} characters
+              </p>
+            )}
           </div>
         )}
       </CardContent>
