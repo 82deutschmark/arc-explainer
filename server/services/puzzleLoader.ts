@@ -272,12 +272,7 @@ export class PuzzleLoader {
     if (filters.gridSizeConsistent !== undefined) {
       puzzles = puzzles.filter(p => p.gridSizeConsistent === filters.gridSizeConsistent);
     }
-    if (filters.prioritizeUnexplained) {
-      puzzles = puzzles.filter(p => !p.hasExplanation);
-    }
-    if (filters.prioritizeExplained) {
-      puzzles = puzzles.filter(p => p.hasExplanation);
-    }
+
     if (filters.source) {
       puzzles = puzzles.filter(p => p.source === filters.source);
     }
