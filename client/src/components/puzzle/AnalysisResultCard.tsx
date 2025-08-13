@@ -44,6 +44,7 @@ const formatProcessingTime = (milliseconds: number): string => {
 export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
+  const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
@@ -125,15 +126,30 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             </div>
           )}
           {result.alienMeaning && (
-            <div className="bg-purple-50 p-3 rounded border border-purple-200">
-              <div className="flex items-center gap-2">
-                <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
-                {/* Always show confidence score for alien meaning */}
-                <Badge variant="outline" className="text-xs bg-purple-50">
-                  Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
-                </Badge>
-              </div>
-              <p className="text-gray-600 text-purple-700">{result.alienMeaning}</p>
+            <div className="bg-purple-50 border border-purple-200 rounded">
+              <button
+                onClick={() => setShowAlienMeaning(!showAlienMeaning)}
+                className="w-full flex items-center justify-between p-3 text-left hover:bg-purple-100 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
+                  <Badge variant="outline" className="text-xs bg-purple-50">
+                    Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
+                  </Badge>
+                </div>
+                {showAlienMeaning ? (
+                  <ChevronUp className="h-4 w-4 text-purple-600" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-purple-600" />
+                )}
+              </button>
+              {showAlienMeaning && (
+                <div className="px-3 pb-3">
+                  <div className="bg-white p-3 rounded border border-purple-100">
+                    <p className="text-gray-600 text-purple-700">{result.alienMeaning}</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
