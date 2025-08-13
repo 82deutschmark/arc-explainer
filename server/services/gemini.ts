@@ -40,8 +40,9 @@
  * especially for users with colorblindness or neurodivergent thinking patterns.
  */
 
-import { GoogleGenAI } from "@google/genai";
-import { ARCTask, PROMPT_TEMPLATES } from "../../shared/types";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ARCTask } from "../../shared/types";
+import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 
 const MODELS = {
   "gemini-2.5-pro": "gemini-2.5-pro",
@@ -67,7 +68,7 @@ const MODELS_WITH_REASONING = new Set([
 ]);
 
 // Initialize Google GenAI client
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 // A mapping from the model keys in your app to the model names expected by the Gemini API
 const MODEL_NAME_MAP: { [key: string]: string } = {
@@ -84,23 +85,13 @@ export class GeminiService {
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
     captureReasoning: boolean = true,
-    promptId: string = 'alien-communication',
+    promptId: string = getDefaultPromptId(),
     customPrompt?: string,
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
-    // Use custom prompt if provided, otherwise use selected template
-    let basePrompt: string;
-    let selectedTemplate: any = null;
-    
-    if (customPrompt) {
-      basePrompt = customPrompt;
-      console.log(`[Gemini] Using custom prompt (${customPrompt.length} characters)`);
-    } else {
-      selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alienCommunication'];
-      basePrompt = selectedTemplate.content;
-      console.log(`[Gemini] Using prompt template: ${selectedTemplate.name} (${promptId})`);
-    }
+    // Build prompt using shared prompt builder
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
     
     const trainingExamples = task.train
       .map(
