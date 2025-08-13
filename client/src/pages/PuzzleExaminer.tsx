@@ -36,7 +36,7 @@ import { MODELS } from '@/constants/models';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
-  const [showEmojis, setShowEmojis] = useState(true);
+  const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
 
   // Early return if no taskId
@@ -131,9 +131,20 @@ export default function PuzzleExaminer() {
             variant={showEmojis ? "default" : "outline"}
             size="sm"
             onClick={() => setShowEmojis(!showEmojis)}
+            className={`transition-all duration-300 ${
+              showEmojis 
+                ? 'animate-slow-pulse bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/25 border-2 border-purple-400/50' 
+                : 'animate-slow-pulse border-2 border-amber-400/50 hover:border-amber-500 hover:bg-amber-50 hover:text-amber-800 shadow-lg shadow-amber-500/25'
+            }`}
           >
-            {showEmojis ? <Eye className="h-4 w-4 mr-2" /> : <Hash className="h-4 w-4 mr-2" />}
-            {showEmojis ? 'Alien Symbols' : 'Show Numbers'}
+            {showEmojis ? (
+              <Hash className="h-4 w-4 mr-2 animate-slow-bounce text-white" />
+            ) : (
+              <Eye className="h-4 w-4 mr-2 animate-slow-bounce text-amber-600" />
+            )}
+            <span className={showEmojis ? 'text-white font-semibold' : 'text-amber-700 font-semibold'}>
+              {showEmojis ? '🔢 Show Numbers' : '🛸 Show Emojis'}
+            </span>
           </Button>
 
           {/* Emoji Set Picker */}

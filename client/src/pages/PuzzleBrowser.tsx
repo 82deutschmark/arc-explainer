@@ -14,6 +14,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
 import { useHasExplanation } from '@/hooks/useExplanation';
+import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 
 // Extended type to include feedback counts from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
@@ -24,7 +25,7 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
-  const [explanationFilter, setExplanationFilter] = useState<string>('all'); // 'all', 'unexplained', 'explained'
+  const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained as requested
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -109,50 +110,14 @@ export default function PuzzleBrowser() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center space-y-2">
-          <h1 className="text-4xl font-bold">ARC-AGI Puzzle Explorer - Colorblindness Aid</h1>
-          <p className="text-lg text-gray-600 space-y-2">
-            I started this project after stumbling onto the ARC-AGI “easy for humans” tagline and immediately feeling the opposite... 
-            most of these puzzles made me feel <em>really</em> dumb.  If you’ve ever stared at a grid and wondered what cosmic joke 
-            you’re missing, you’re not alone. <p>I built this app to explain to me WHY these answers are correct. 
-            These are the tasks directly cloned from the v1 and v2 sets of the ARC-AGI prize. The ARC-AGI puzzles are often described
-             as "easy for humans," but let's be honest... they're not easy for most of us. 
-             These tasks require sophisticated logical reasoning that many people find genuinely challenging.
-            This app takes a different approach: instead of asking AI to solve these puzzles, 
-            we ask it to explain why correct answers are correct. 
-            The results are revealing, if AI models can't even articulate the reasoning behind known solutions, 
-            how can they have any hope of solving novel problems?</p>
+        <header className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-gray-900">ARC-AGI Puzzle Explorer</h1>
+          <p className="text-lg text-gray-600">
+            Colorblindness Aid & AI Reasoning Analysis
           </p>
-
-          <p className="text-sm text-gray-500 space-y-2">
-            My dad is one of the smartest people I know, yet color-blindness turns half the grid into a monochrome blur for him.  
-            My nephew dreams of running mission control for rocket ships in twenty years, but genetics means he inheirted my dad's colorblindness!
-            He’ll need the fluid intelligence skills that can be built by solving these puzzles, and I don’t want him to bounce off these puzzles just because the color palette got in the way.
-          </p>
-
-          <p className="text-sm text-gray-500 space-y-2">
-            That’s why this app replaces colors with emojis 
-            (behind the scenes, it is still all numbers 0-9 and you can switch back to colors and numbers if you want).  
-            The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious 
-            can explore the kind of reasoning that eludes AI.
-          </p>
-
-          <p className="text-xs text-black-600">
-            <span className="text-sm font-semibold text-gray-800">
-              TL;DR: These puzzles are hard for a lot of humans (especially the neurodivergent), emojis are fun, 
-              and accessibility matters.
-            </span>
-          </p>
-          <p className="text-xs text-blue-600 underline">
-            <div className="mt-2 p-2 bg-green-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
-              <span className="text-sm text-red-800">I also made this game based on ARC puzzles to help humans develop their
-                 fluid intelligence.</span><p>
-                 </p>
-              <a href="https://sfmc.markbarney.net" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">
-                Check out my experiment here →
-              </a>
-            </div>
-          </p>
+          
+          {/* Collapsible Mission Statement */}
+          <CollapsibleMission />
         </header>
 
         {/* Filters */}

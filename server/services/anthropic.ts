@@ -14,8 +14,9 @@
  * @author Cascade / Gemini Pro 2.5
  */
 
-import Anthropic from '@anthropic-ai/sdk';
-import { ARCTask, PROMPT_TEMPLATES } from "../../shared/types";
+import Anthropic from "@anthropic-ai/sdk";
+import { ARCTask } from "../../shared/types";
+import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 
 // Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
@@ -39,32 +40,16 @@ export class AnthropicService {
     modelKey: keyof typeof MODELS,
     temperature: number = 0.75,
     captureReasoning: boolean = true,
-    promptId: string = "alien-communication",
+    promptId: string = getDefaultPromptId(),
     customPrompt?: string,
   ) {
     const modelName = MODELS[modelKey];
 
-    const trainingExamples = task.train
-      .map(
-        (example, i) =>
-          `Example ${i + 1}:\nInput: ${JSON.stringify(example.input)}\nOutput: ${JSON.stringify(example.output)}`,
-      )
-      .join("\n\n");
-
-    // Use custom prompt if provided, otherwise use selected template
-    let basePrompt: string;
-    let selectedTemplate: any = null;
+    // Build prompt using shared prompt builder
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
     
-    if (customPrompt) {
-      basePrompt = customPrompt;
-      console.log(`[Anthropic] Using custom prompt (${customPrompt.length} characters)`);
-    } else {
-      selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES['alienCommunication'];
-      basePrompt = selectedTemplate.content;
-      console.log(`[Anthropic] Using prompt template: ${selectedTemplate.name} (${promptId})`);
-    }
-    
-    const reasoningPrompt = captureReasoning ? 
+    // Add reasoning prompt wrapper for Anthropic if captureReasoning is enabled
+    const prompt = captureReasoning ? 
       `${basePrompt}
 
 IMPORTANT: Before providing your final answer, please show your step-by-step reasoning process inside <reasoning> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
@@ -74,57 +59,11 @@ IMPORTANT: Before providing your final answer, please show your step-by-step rea
 </reasoning>
 
 Then provide your final structured response.` : basePrompt;
-    
-    // Build emoji map section conditionally (only for template-based prompts with emoji support)
-    const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
-
-The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
-
-0: ⬛ (no/nothing/negative)
-1: ✅ (yes/positive/agreement)
-2: 👽 (alien/them/we)
-3: 👤 (human/us/you)
-4: 🪐 (their planet/home)
-5: 🌍 (human planet/Earth)
-6: 🛸 (their ships/travel)
-7: ☄️ (danger/bad/problem)
-8: ♥ (peace/friendship/good)
-9: ⚠️ (warning/attention/important)` : '';
-    
-    // Build JSON format based on whether alien communication is enabled (defaults to standard format for custom prompts)
-    const jsonFormat = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
-      "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
-      "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
-      "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
-    } : {
-      "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
-      "solvingStrategy": "Step-by-step how to solve it, for novices",
-      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
-    };
-    
-    const prompt = `${reasoningPrompt}
-
-TRAINING EXAMPLES${selectedTemplate.emojiMapIncluded ? ' (what the aliens taught us)' : ''}:
-${trainingExamples}
-
-TEST CASE${selectedTemplate.emojiMapIncluded ? " (the aliens' question and our correct answer, but we don't understand why the answer is correct)" : ' (input and correct answer for analysis)'}:
-Input: ${JSON.stringify(task.test[0].input)}
-Correct Answer: ${JSON.stringify(task.test[0].output)}
-
-YOU MAY ONLY RESPOND IN THIS EXACT JSON FORMAT:
-${JSON.stringify(jsonFormat, null, 2)}${emojiMapSection}
-
-${captureReasoning ? 'After your <reasoning> section, respond' : 'Respond'} in this JSON format:
-${JSON.stringify(jsonFormat, null, 2)}`;
 
     try {
       const requestOptions: any = {
         model: modelName,
-        max_tokens: 2000,
+        max_tokens: 8000,
         messages: [{ role: "user", content: prompt }],
       };
 
