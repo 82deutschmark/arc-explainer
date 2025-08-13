@@ -63,7 +63,7 @@ Then provide your final structured response.` : basePrompt;
     try {
       const requestOptions: any = {
         model: modelName,
-        max_tokens: 8000,
+        max_tokens: 4000,
         messages: [{ role: "user", content: prompt }],
       };
 
