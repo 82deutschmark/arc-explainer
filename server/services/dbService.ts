@@ -325,6 +325,68 @@ const hasExplanation = async (puzzleId: string): Promise<boolean> => {
 };
 
 /**
+ * Get explanation status for multiple puzzles in a single query - optimizes performance
+ * 
+ * @param puzzleIds Array of puzzle IDs to check
+ * @returns Map of puzzle ID to explanation data (hasExplanation, explanationId, feedbackCount)
+ */
+const getBulkExplanationStatus = async (puzzleIds: string[]) => {
+  if (!pool || puzzleIds.length === 0) {
+    logger.info('No database connection or empty puzzle list. Cannot retrieve bulk explanation status.', 'database');
+    return new Map();
+  }
+
+  const client = await pool.connect();
+  try {
+    // Create a map to store results
+    const resultMap = new Map();
+    
+    // Initialize all puzzles as having no explanation
+    puzzleIds.forEach(id => {
+      resultMap.set(id, {
+        hasExplanation: false,
+        explanationId: undefined,
+        feedbackCount: 0
+      });
+    });
+
+    // Get explanation data for puzzles that have explanations
+    const result = await client.query(
+      `SELECT 
+         e.puzzle_id,
+         e.id as explanation_id,
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful') +
+         (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS feedback_count
+       FROM explanations e
+       WHERE e.puzzle_id = ANY($1)
+       AND e.id IN (
+         SELECT MAX(id) FROM explanations 
+         WHERE puzzle_id = ANY($1) 
+         GROUP BY puzzle_id
+       )`,
+      [puzzleIds]
+    );
+
+    // Update the map with actual explanation data
+    result.rows.forEach(row => {
+      resultMap.set(row.puzzle_id, {
+        hasExplanation: true,
+        explanationId: row.explanation_id,
+        feedbackCount: parseInt(row.feedback_count) || 0
+      });
+    });
+
+    logger.info(`Retrieved bulk explanation status for ${puzzleIds.length} puzzles, ${result.rows.length} have explanations`, 'database');
+    return resultMap;
+  } catch (error) {
+    logger.error(`Error getting bulk explanation status: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return new Map();
+  } finally {
+    client.release();
+  }
+};
+
+/**
  * Get all explanations for a puzzle  Gemini 2.5 Pro 
  * 
  * @param puzzleId The ID of the puzzle
@@ -422,4 +484,5 @@ export const dbService = {
   getExplanationsForPuzzle,
   getExplanationById,
   hasExplanation,
+  getBulkExplanationStatus,
 };

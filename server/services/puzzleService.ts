@@ -66,29 +66,35 @@ export const puzzleService = {
     }));
     
     try {
-      // Get explanation data for all puzzles in a single batch operation if possible
-      for (const puzzle of enhancedPuzzles) {
-        const explanations = await dbService.getExplanationsForPuzzle(puzzle.id);
-        
-        if (explanations && explanations.length > 0) {
-          // Get the most recent explanation
-          const latestExplanation = explanations[0];
-          
-          // Update puzzle metadata with explanation info
-          puzzle.hasExplanation = true;
-          puzzle.explanationId = latestExplanation.id;
-          
-          // Calculate total feedback count
-          const helpfulVotes = parseInt(latestExplanation.helpful_votes) || 0;
-          const notHelpfulVotes = parseInt(latestExplanation.not_helpful_votes) || 0;
-          puzzle.feedbackCount = helpfulVotes + notHelpfulVotes;
+      // Use bulk query to get explanation status for all puzzles at once - optimizes performance
+      const puzzleIds = enhancedPuzzles.map(p => p.id);
+      const explanationStatusMap = await dbService.getBulkExplanationStatus(puzzleIds);
+      
+      // Update each puzzle with its explanation status
+      enhancedPuzzles.forEach(puzzle => {
+        const status = explanationStatusMap.get(puzzle.id);
+        if (status) {
+          puzzle.hasExplanation = status.hasExplanation;
+          puzzle.explanationId = status.explanationId;
+          puzzle.feedbackCount = status.feedbackCount;
         }
-      }
+      });
+      
+      console.log(`Enhanced ${enhancedPuzzles.length} puzzles with explanation data in single bulk query`);
     } catch (error) {
-      console.error('Error fetching explanation data:', error);
+      console.error('Error fetching bulk explanation data:', error);
       // Continue with partial data if there's an error
     }
     
+    // Sort puzzles based on the 'prioritizeUnexplained' filter
+    if (filters.prioritizeUnexplained) {
+      enhancedPuzzles.sort((a, b) => {
+        if (a.hasExplanation && !b.hasExplanation) return 1;
+        if (!a.hasExplanation && b.hasExplanation) return -1;
+        return 0;
+      });
+    }
+
     return enhancedPuzzles;
   },
 
