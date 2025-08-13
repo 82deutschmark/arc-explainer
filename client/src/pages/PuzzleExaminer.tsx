@@ -246,7 +246,7 @@ export default function PuzzleExaminer() {
           </CardTitle>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Test how different AI models explain why this solution is correct and what the aliens might mean
+              Test how different AI models try to explain why this solution is correct
             </p>
             {isAnalyzing && currentModel && (
               <div className="flex flex-col">
