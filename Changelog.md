@@ -5,7 +5,59 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 13, 2025
+
+## Version 1.3.1 — UI/UX and Performance Enhancements (2025-08-13)
+
+### Features & Enhancements
+- **Collapsible Mission Statement (Code by Cascade)**: Replaced the large block of text on the landing page with a collapsible mission statement, creating a cleaner and more focused UI.
+- **Default to Unexplained Puzzles (Code by Cascade)**: The puzzle browser now defaults to showing unexplained puzzles first, helping users focus on puzzles that need attention.
+
+### Performance Optimizations
+- **N+1 Query Fix (Code by Cascade)**: Implemented a bulk database query (`getBulkExplanationStatus`) to fetch explanation statuses for all puzzles at once, drastically reducing puzzle list load times.
+
+### Bug Fixes
+- **Puzzle Filter Logic (Code by Cascade)**: Corrected the server-side sorting logic to ensure that prioritizing unexplained puzzles works as intended. The logic is now handled in `puzzleService` after data enrichment.
+- **Puzzle Examiner Toggle (Code by Cascade)**:
+    - Slowed down the animation for the color/emoji toggle for a smoother user experience.
+    - Fixed the toggle's text to accurately reflect its state.
+    - Set the default view to colors (Standard Explanation).
+
+### Credits
+- All changes in this version were implemented by **Cascade**.
+
+---
+
 August 12, 2025
+
+## Version 1.3.0 — Prompt Architecture Refactor (2025-08-12)
+
+### Major Architectural Changes
+- __Centralized Prompt Builder (Code by Claude 4 Sonnet Thinking)__: Created `server/services/promptBuilder.ts` as single source of truth for all prompt construction and emoji mapping logic.
+- __Modular Emoji System__: Emoji mapping now only applies to the "Alien Communication" prompt template. All other prompts use raw numeric grids by default.
+- __Service Unification__: Refactored all 5 backend AI services (OpenAI, Anthropic, Gemini, Grok, DeepSeek) to use shared prompt builder, eliminating code duplication.
+
+### Breaking Changes
+- __Default Behavior Change__: Changed default `promptId` from `"alienCommunication"` to `"standardExplanation"` across all services, ensuring numeric grids are sent by default.
+- __Emoji Mapping Scope__: Emoji mapping is now exclusively for the "Alien Communication" template, preventing unintended emoji usage in custom prompts and other templates.
+
+### Backend Improvements
+- Removed 200+ lines of duplicated prompt construction code across AI services.
+- Consolidated emoji mapping logic into shared utility functions.
+- Improved type safety with consistent prompt template handling.
+- Fixed Gemini API integration issues with proper `generateContent` usage.
+
+### Architecture Benefits
+- __Single Source of Truth__: All prompt logic centralized in one module for easier maintenance.
+- __Consistency__: Uniform prompt behavior across all AI providers.
+- __Maintainability__: Future prompt changes only require updates in one location.
+- __Reliability__: Eliminated risk of inconsistent emoji mapping behavior.
+
+### Credits
+- Architecture and implementation: __Claude 4 Sonnet Thinking__
+- All code changes follow established patterns and maintain backward compatibility.
+
+---
 
 ## Version 1.2.0 — Custom Prompts & Stability (2025-08-12)
 

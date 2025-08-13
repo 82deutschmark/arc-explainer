@@ -223,12 +223,10 @@ ${JSON.stringify((selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
 ${captureReasoning ? 'IMPORTANT: Include your <thinking> section first, then provide the JSON response. The JSON must be valid and complete.' : 'IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any other text, explanations, or markdown code fences. The entire response must start with \'{\' and end with \'}\'.'}`
 
     try {
-      const result = await genAI.models.generateContent({
-        model: modelName,
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-      });
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
 
-      const rawText: string = result.text ?? "";
+      const rawText: string = result.response.text() ?? "";
       
       // Extract reasoning log if requested and available
       let reasoningLog = null;

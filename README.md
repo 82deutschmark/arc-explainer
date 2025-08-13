@@ -194,6 +194,54 @@ Custom prompts are supported consistently across providers: OpenAI, Grok (xAI), 
 - **Inconsistent reasoning**: Ask for a short self-check step prior to the final answer.
 - **Provider timeouts**: Try a smaller prompt, a faster model, or rerun — concurrency rules allow cross-provider parallelism.
 
+## 🏗️ Prompt Architecture Refactor (v1.3.0)
+
+### Major Architectural Improvement
+
+The entire prompt handling system has been completely redesigned for maintainability, consistency, and correctness. This represents one of the largest architectural improvements to the codebase.
+
+### Key Changes
+
+**1. Centralized Prompt Builder**
+- All prompt construction logic now lives in `server/services/promptBuilder.ts`
+- Single source of truth for prompt templates, emoji mapping, and grid formatting
+- Eliminates 200+ lines of duplicated code across AI services
+
+**2. Corrected Default Behavior**
+- **BREAKING**: Default `promptId` changed from `"alienCommunication"` to `"standardExplanation"`
+- Numeric grids are now sent by default (as intended for ARC puzzles)
+- Emoji mapping only applies when explicitly using "Alien Communication" template
+
+**3. Modular Emoji System**
+- Emoji mapping is now exclusively for the "Alien Communication" prompt
+- Custom prompts and other templates use raw numeric grids
+- Prevents unintended emoji usage that could confuse AI models
+
+**4. Service Unification**
+- All 5 backend AI services (OpenAI, Anthropic, Gemini, Grok, DeepSeek) refactored
+- Consistent prompt handling across all providers
+- Unified error handling and response processing
+
+### Architecture Benefits
+
+- **Maintainability**: Future prompt changes require updates in only one location
+- **Consistency**: Identical prompt behavior across all AI providers
+- **Reliability**: Eliminates inconsistent emoji mapping bugs
+- **Type Safety**: Improved TypeScript interfaces and error handling
+- **Performance**: Reduced code duplication and improved build times
+
+### For Developers
+
+The prompt system now follows these principles:
+- **Single Source of Truth**: `promptBuilder.ts` handles all prompt logic
+- **Explicit Intent**: Emoji mapping only when explicitly requested
+- **Provider Agnostic**: Identical behavior across all AI services
+- **Type Safe**: Full TypeScript coverage for prompt templates and responses
+
+### Migration Notes
+
+Existing functionality remains backward compatible. The only user-visible change is that numeric grids are now used by default instead of emojis, which is the correct behavior for ARC puzzle analysis.
+
 ## 🚨 Deployment Troubleshooting
 
 ### Common Issues & Solutions
