@@ -149,6 +149,72 @@ export class OpenAIService {
       throw new Error(`Model ${modelKey} failed: ${errorMessage}`);
     }
   }
+
+  /**
+   * Generate a preview of the exact prompt that will be sent to OpenAI
+   * Shows the provider-specific message format and structure
+   */
+  async generatePromptPreview(
+    task: ARCTask,
+    modelKey: keyof typeof MODELS,
+    temperature: number = 0.75,
+    captureReasoning: boolean = true,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+  ) {
+    const modelName = MODELS[modelKey];
+
+    // Build prompt using shared prompt builder
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+
+    // Determine message format based on model type
+    let messageFormat: any;
+    let providerSpecificNotes: string[] = [];
+
+    if (MODELS_WITH_REASONING.has(modelKey)) {
+      // Responses API format for reasoning models
+      messageFormat = {
+        model: modelName,
+        input: [{ role: "user", content: prompt }],
+        reasoning: {
+          effort: "medium",
+          summary: "detailed"
+        }
+      };
+      providerSpecificNotes.push("Uses OpenAI Responses API for reasoning capture");
+      providerSpecificNotes.push("Temperature and JSON format not supported in Responses API");
+    } else {
+      // Standard ChatCompletions API format
+      messageFormat = {
+        model: modelName,
+        messages: [{ role: "user", content: prompt }],
+        temperature: temperature,
+        response_format: { type: "json_object" }
+      };
+      providerSpecificNotes.push("Uses OpenAI ChatCompletions API");
+      providerSpecificNotes.push("JSON response format enforced");
+    }
+
+    return {
+      provider: "OpenAI",
+      modelName,
+      promptText: prompt,
+      messageFormat,
+      templateInfo: {
+        id: selectedTemplate?.id || "custom",
+        name: selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+      },
+      promptStats: {
+        characterCount: prompt.length,
+        wordCount: prompt.split(/\s+/).length,
+        lineCount: prompt.split('\n').length
+      },
+      providerSpecificNotes,
+      captureReasoning,
+      temperature: MODELS_WITH_REASONING.has(modelKey) ? "Not supported" : temperature
+    };
+  }
 }
 
 export const openaiService = new OpenAIService();

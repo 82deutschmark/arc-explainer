@@ -364,8 +364,8 @@ export default function PuzzleBrowser() {
               alien communication system, displayed using space-themed emojis.
             </p>
             <p>
-              <strong>AI Analysis:</strong> Click "Examine" on any puzzle to see the correct answers and 
-              get AI-powered explanations of the logical patterns.
+              <strong>AI Analysis:</strong> Click "Examine" on any puzzle to see the correct answers (from the .json file) and
+              have the AI try (and often fail!) to explain the logic behind the puzzle.
             </p>
           </CardContent>
         </Card>

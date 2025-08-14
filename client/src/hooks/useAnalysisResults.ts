@@ -32,7 +32,7 @@ export function useAnalysisResults({
   refetchExplanations
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.7);
-  const [promptId, setPromptId] = useState('alienCommunication'); // Default to alien communication prompt
+  const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());

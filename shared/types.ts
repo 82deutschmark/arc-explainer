@@ -77,15 +77,15 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   standardExplanation: {
     id: "standardExplanation", 
     name: "Standard Explanation",
-    description: "You are an expert in ARC-AGI puzzles. Your job is to explain in very simple terms why the correct answer is correct.",
-    content: `You are an expert in ARC-AGI puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it. Most puzzles use two transformations, but some use more or less.`,
+    description: "Explain the transformation rules observed in the {train} examples and applied to the {test} case. Your job is to explain in very simple terms what transformations were used.",
+    content: `Explain the transformation rules observed in the {train} examples and applied to the {test} case. Your job is to explain in very simple terms what transformations were used.`,
     emojiMapIncluded: false
   },
   educationalApproach: {
     id: "educationalApproach",
     name: "Educational Approach", 
-    description: "Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value.",
-    content: `Help students understand complex pattern recognition problems. Explain in very simple terms why the correct answer is correct, focusing on educational value. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
+    description: "Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.",
+    content: `Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.`,
     emojiMapIncluded: false
   },
   custom: {
