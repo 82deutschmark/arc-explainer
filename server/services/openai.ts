@@ -119,9 +119,17 @@ export class OpenAIService {
       } else {
         console.log(`[OpenAI] Using ChatCompletions API for standard model ${modelKey}`);
         
+        // Cascade using GPT-5 (medium reasoning): OpenAI requires the word "json" to be present
+        // in one of the messages when using response_format: json_object. Add a system hint if needed.
+        const needsJsonHint = !/json/i.test(prompt);
+        const messages: any[] = [{ role: "user", content: prompt }];
+        if (needsJsonHint) {
+          messages.push({ role: "system", content: "Please return a JSON object as specified in the instructions (json)." });
+        }
+
         const chatOptions: any = {
           model: modelName,
-          messages: [{ role: "user", content: prompt }],
+          messages,
           response_format: { type: "json_object" },
         };
 
@@ -185,9 +193,14 @@ export class OpenAIService {
       providerSpecificNotes.push("Temperature and JSON format not supported in Responses API");
     } else {
       // Standard ChatCompletions API format
+      const needsJsonHint = !/json/i.test(prompt);
+      const messages: any[] = [{ role: "user", content: prompt }];
+      if (needsJsonHint) {
+        messages.push({ role: "system", content: "Please return a JSON object as specified in the instructions (json)." });
+      }
       messageFormat = {
         model: modelName,
-        messages: [{ role: "user", content: prompt }],
+        messages,
         temperature: temperature,
         response_format: { type: "json_object" }
       };
