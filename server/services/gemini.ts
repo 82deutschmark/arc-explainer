@@ -43,6 +43,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
+import type { PromptOptions } from "./promptBuilder"; // Cascade using GPT-5 (medium reasoning): thread emojiSetKey/omitAnswer options
 
 const MODELS = {
   "gemini-2.5-pro": "gemini-2.5-pro",
@@ -87,11 +88,13 @@ export class GeminiService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions, // Cascade: optional prompt options forwarded to builder
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    // Cascade: pass PromptOptions so backend can select emoji palette and omit answer if requested
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
     const trainingExamples = task.train
       .map(
@@ -376,11 +379,13 @@ ${captureReasoning ? 'IMPORTANT: Include your <thinking> section first, then pro
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions, // Cascade: ensure preview uses same options as analysis
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    // Cascade: forward PromptOptions to keep preview in sync with analysis
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
     // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
     const prompt = captureReasoning ? 
