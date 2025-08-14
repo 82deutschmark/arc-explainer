@@ -183,6 +183,77 @@ export class GrokService {
       supportsVision: modelKey === "grok-4-0709", // Only the latest Grok 4 supports vision
     };
   }
+
+  /**
+   * Generate a preview of the exact prompt that will be sent to Grok
+   * Shows the provider-specific message format and structure
+   * 
+   * @author Claude 4 Sonnet
+   */
+  async generatePromptPreview(
+    task: ARCTask,
+    modelKey: keyof typeof MODELS,
+    temperature: number = 0.75,
+    captureReasoning: boolean = true,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+  ) {
+    const modelName = MODELS[modelKey];
+
+    // Build prompt using shared prompt builder
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+
+    // Grok uses OpenAI-compatible messages format
+    const messageFormat: any = {
+      model: modelName,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" }
+    };
+
+    const providerSpecificNotes = [
+      "Uses xAI API with OpenAI SDK compatibility",
+      "Base URL: https://api.x.ai/v1",
+      "JSON response format enforced",
+      "128k context window for all models"
+    ];
+
+    // Grok 4 reasoning models don't support temperature
+    if (!REASONING_MODELS.has(modelKey)) {
+      messageFormat.temperature = temperature;
+      providerSpecificNotes.push("Temperature parameter supported");
+    } else {
+      providerSpecificNotes.push("Temperature parameter NOT supported (reasoning model)");
+    }
+
+    if (MODELS_WITH_REASONING.has(modelKey)) {
+      providerSpecificNotes.push("Supports reasoning log capture via reasoning_content field");
+    }
+
+    if (modelKey === "grok-4-0709") {
+      providerSpecificNotes.push("Vision capabilities supported");
+    }
+
+    return {
+      provider: "xAI Grok",
+      modelName,
+      promptText: prompt,
+      messageFormat,
+      templateInfo: {
+        id: selectedTemplate?.id || "custom",
+        name: selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+      },
+      promptStats: {
+        characterCount: prompt.length,
+        wordCount: prompt.split(/\s+/).length,
+        lineCount: prompt.split('\n').length
+      },
+      providerSpecificNotes,
+      captureReasoning,
+      temperature: REASONING_MODELS.has(modelKey) ? "Not supported" : temperature,
+      isReasoningModel: REASONING_MODELS.has(modelKey)
+    };
+  }
 }
 
 export const grokService = new GrokService();

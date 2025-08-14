@@ -42,6 +42,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", asyncHandler(puzzleController.analyze));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
   
+  // Prompt preview route - shows exact prompt that will be sent to specific provider
+  app.post("/api/prompt/preview/:provider/:taskId", asyncHandler(puzzleController.previewPrompt));
+  
   // Prompt template routes
   app.get("/api/prompts", asyncHandler(promptController.getAll));
   
