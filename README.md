@@ -164,10 +164,17 @@ Researchers can override built-in templates with their own prompt.
 
 - `GET /api/prompts` — returns available prompt templates for the UI.
 - `POST /api/puzzle/analyze/:puzzleId/:modelKey` — now accepts optional `customPrompt` in the JSON body. When present (and `promptId` is `"custom"`), it overrides the selected template.
+ - `POST /api/prompt/preview/:provider/:puzzleId` — returns the provider-specific prompt string exactly as it will be sent.
 
 ### Provider support
 
 Custom prompts are supported consistently across providers: OpenAI, Grok (xAI), Gemini, DeepSeek, and Anthropic.
+
+### Default behavior clarifications
+
+- **UI vs Backend Defaults**:
+  - UI default selection is now `"Custom Prompt"` to encourage research workflows.
+  - Backend default template remains `"standardExplanation"` if no `promptId` is supplied by the client. Selecting a template or using Custom Prompt in the UI ensures the backend uses your choice.
 
 ### Researcher guide: crafting effective custom prompts
 
@@ -193,6 +200,21 @@ Custom prompts are supported consistently across providers: OpenAI, Grok (xAI), 
 - **Empty or low-quality outputs**: Reduce verbosity and request explicit section headings.
 - **Inconsistent reasoning**: Ask for a short self-check step prior to the final answer.
 - **Provider timeouts**: Try a smaller prompt, a faster model, or rerun — concurrency rules allow cross-provider parallelism.
+
+## 🔎 Prompt Preview & Solver Mode (New)
+
+- **Default UI Selection**: The `PromptPicker` now defaults to "Custom Prompt" with an empty textarea. This is a UI default for research convenience. Backend defaults remain unchanged (see Architecture notes below).
+- **Provider-Specific Prompt Preview**:
+  - A "Preview Prompt" action in `Puzzle Examiner` opens a modal showing the exact string that will be sent to the selected provider.
+  - For Custom Prompt runs, you can edit the text directly in the modal and send the analysis immediately.
+  - The preview is built by the backend using the provider-specific assembly logic to ensure it matches the final request payload.
+- **Solver Mode Template**:
+  - New `"Solver"` prompt template that omits the correct answer from the training examples and asks the AI to predict the answer and explain its reasoning.
+  - Uses the same JSON response structure as explanation mode, so the frontend displays results without special handling.
+- **Custom Prompt Purity**: Fixed a bug where template instructions were being appended to custom prompts. Now only your text plus raw puzzle data are sent (no template wrapping).
+
+### API additions
+- `POST /api/prompt/preview/:provider/:puzzleId` — Returns the exact assembled prompt string for the given provider and inputs (including `promptId`/`customPrompt`). Useful for auditing the final prompt before sending.
 
 ## 🏗️ Prompt Architecture Refactor (v1.3.0)
 
