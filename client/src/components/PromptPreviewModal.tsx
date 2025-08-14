@@ -5,6 +5,8 @@
  * Shows the exact prompt text and message format that will be sent to AI providers.
  * Allows users to see exactly what will be sent before running analysis.
  * 
+ * Updated by Cascade using GPT-5 (medium reasoning): Added forwarding of emojiSetKey and omitAnswer
+ * into preview requests to keep provider-specific prompt previews in sync with analysis options.
  * @author Claude 4 Sonnet
  */
 
@@ -48,6 +50,10 @@ interface PromptPreviewModalProps {
   customPrompt?: string;
   disabled?: boolean;
   onAnalyze?: (provider: string, model: string, editedPrompt?: string) => void;
+  // Cascade using GPT-5 (medium reasoning): optional prompt options forwarded to backend preview
+  // emojiSetKey selects the emoji palette, omitAnswer hides the correct answer in test case
+  emojiSetKey?: string;
+  omitAnswer?: boolean;
 }
 
 // Import the actual models from constants
@@ -89,7 +95,9 @@ export function PromptPreviewModal({
   selectedPromptId,
   customPrompt,
   disabled = false,
-  onAnalyze
+  onAnalyze,
+  emojiSetKey,
+  omitAnswer,
 }: PromptPreviewModalProps) {
   const [selectedProvider, setSelectedProvider] = useState('openai');
   const [selectedModel, setSelectedModel] = useState('gpt-4o');
@@ -115,12 +123,15 @@ export function PromptPreviewModal({
     setError(null);
 
     try {
+      // Cascade: include emojiSetKey and omitAnswer so preview matches analysis options
       const response = await apiRequest('POST', `/api/prompt/preview/${selectedProvider}/${puzzleId}`, {
         promptId: selectedPromptId,
         customPrompt: isEditing ? editedPrompt : customPrompt,
         temperature: 0.75,
         captureReasoning: true,
-        modelKey: selectedModel
+        modelKey: selectedModel,
+        ...(emojiSetKey ? { emojiSetKey } : {}),
+        ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
       });
 
       if (!response.ok) {

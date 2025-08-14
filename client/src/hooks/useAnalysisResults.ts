@@ -25,11 +25,18 @@ import { MODELS } from '@/constants/models';
 interface UseAnalysisResultsProps {
   taskId: string;
   refetchExplanations: (options?: any) => void;
+  // New optional analysis options passed from UI state
+  // emojiSetKey selects which emoji palette server-side prompt builder uses
+  // omitAnswer tells prompt builder to omit the "Correct Answer" portion in the test case section
+  emojiSetKey?: string;
+  omitAnswer?: boolean;
 }
 
 export function useAnalysisResults({
   taskId,
-  refetchExplanations
+  refetchExplanations,
+  emojiSetKey,
+  omitAnswer,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.7);
   const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
@@ -52,7 +59,10 @@ export function useAnalysisResults({
       // 1. Analyze the puzzle
       const requestBody: any = { 
         temperature: temp,
-        promptId
+        promptId,
+        // New analysis options forwarded end-to-end
+        ...(emojiSetKey ? { emojiSetKey } : {}),
+        ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
       };
       
       // Include custom prompt if "custom" is selected and customPrompt is provided

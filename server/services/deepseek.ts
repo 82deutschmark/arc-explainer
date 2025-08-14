@@ -38,6 +38,7 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
+import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
 
 const MODELS = {
   "deepseek-chat": "deepseek-chat",
@@ -63,12 +64,13 @@ export class DeepSeekService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Use custom prompt if provided, otherwise use selected template
-    // Build prompt using shared prompt builder (refactored by Claude 4 Sonnet Thinking)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     try {
       const requestOptions: any = {
@@ -156,11 +158,12 @@ export class DeepSeekService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     // DeepSeek uses OpenAI-compatible messages format
     const messageFormat: any = {

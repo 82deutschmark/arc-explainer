@@ -41,6 +41,7 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
+import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
 
 const MODELS = {
   "grok-4-0709": "grok-4-0709",
@@ -74,11 +75,12 @@ export class GrokService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder (refactored by Claude 4 Sonnet Thinking)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     try {
       const requestOptions: any = {
@@ -188,7 +190,7 @@ export class GrokService {
    * Generate a preview of the exact prompt that will be sent to Grok
    * Shows the provider-specific message format and structure
    * 
-   * @author Claude 4 Sonnet
+   * author Claude 4 Sonnet
    */
   async generatePromptPreview(
     task: ARCTask,
@@ -197,11 +199,12 @@ export class GrokService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     // Grok uses OpenAI-compatible messages format
     const messageFormat: any = {
