@@ -31,6 +31,7 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ModelButton } from '@/components/puzzle/ModelButton';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPicker } from '@/components/PromptPicker';
+import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { MODELS } from '@/constants/models';
 
@@ -38,6 +39,7 @@ export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   // Early return if no taskId
   if (!taskId) {
@@ -246,7 +248,7 @@ export default function PuzzleExaminer() {
           </CardTitle>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              Test how different AI models explain why this solution is correct and what the aliens might mean
+              Test how different AI models try to explain why this solution is correct
             </p>
             {isAnalyzing && currentModel && (
               <div className="flex flex-col">
@@ -275,6 +277,40 @@ export default function PuzzleExaminer() {
             customPrompt={customPrompt}
             onCustomPromptChange={setCustomPrompt}
             disabled={isAnalyzing}
+          />
+
+          {/* Prompt Preview */}
+          <div className="mb-4 flex justify-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsPreviewModalOpen(true)}
+              disabled={isAnalyzing}
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Preview Prompt
+            </Button>
+          </div>
+          
+          <PromptPreviewModal
+            isOpen={isPreviewModalOpen}
+            onClose={() => setIsPreviewModalOpen(false)}
+            puzzleId={taskId}
+            selectedPromptId={promptId}
+            customPrompt={customPrompt}
+            disabled={isAnalyzing}
+            onAnalyze={(provider, model, editedPrompt) => {
+              // Find the model key and analyze with the edited prompt if provided
+              const modelData = MODELS.find(m => m.key === model);
+              if (modelData && editedPrompt) {
+                // Update custom prompt and analyze
+                setCustomPrompt(editedPrompt);
+                analyzeWithModel(modelData.key);
+              } else if (modelData) {
+                analyzeWithModel(modelData.key);
+              }
+            }}
           />
           
           {/* Model Buttons */}

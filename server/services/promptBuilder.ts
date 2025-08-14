@@ -193,18 +193,52 @@ export function buildAnalysisPrompt(
   prompt: string;
   selectedTemplate: PromptTemplate | null;
 } {
-  // Use custom prompt if provided, otherwise use selected template
-  let basePrompt: string;
-  let selectedTemplate: PromptTemplate | null = null;
+  // DEBUG: Log all parameters
+  console.log(`[PromptBuilder] DEBUG - promptId: "${promptId}", customPrompt length: ${customPrompt?.length || 0}`);
   
-  if (customPrompt) {
-    basePrompt = customPrompt;
-    console.log(`[PromptBuilder] Using custom prompt (${customPrompt.length} characters)`);
-  } else {
-    selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
-    basePrompt = selectedTemplate.content;
-    console.log(`[PromptBuilder] Using prompt template: ${selectedTemplate.name} (${promptId})`);
+  // Handle custom prompt - ONLY custom text + raw puzzle data, NO template wrapping
+  if (promptId === "custom" || (customPrompt && customPrompt.trim())) {
+    console.log(`[PromptBuilder] ✅ CUSTOM PROMPT DETECTED - RAW MODE ACTIVATED`);
+    console.log(`[PromptBuilder] promptId === "custom": ${promptId === "custom"}`);
+    console.log(`[PromptBuilder] customPrompt exists: ${!!(customPrompt && customPrompt.trim())}`);
+    
+    // If no custom prompt text provided, return just the puzzle data
+    const customText = customPrompt && customPrompt.trim() ? customPrompt : "";
+    
+    // For custom prompts, use raw numeric grids (no emojis, no formatting)
+    const trainingExamples = formatTrainingExamples(task, false);
+    const testCase = formatTestCase(task, false);
+    
+    // Simple, clean format for custom prompts - ONLY custom text + raw puzzle data
+    const prompt = customText ? 
+      `${customText}
+
+TRAINING EXAMPLES:
+${trainingExamples}
+
+TEST CASE:
+Input: ${testCase.input}
+Correct Answer: ${testCase.output}` :
+      `TRAINING EXAMPLES:
+${trainingExamples}
+
+TEST CASE:
+Input: ${testCase.input}
+Correct Answer: ${testCase.output}`;
+
+    console.log(`[PromptBuilder] ✅ RETURNING CUSTOM PROMPT (${prompt.length} chars) - NO TEMPLATE INSTRUCTIONS`);
+    return {
+      prompt,
+      selectedTemplate: null // No template for custom prompts
+    };
   }
+  
+  console.log(`[PromptBuilder] ❌ CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE`);
+
+  // Use template-based prompt (existing logic)
+  const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
+  const basePrompt = selectedTemplate.content;
+  console.log(`[PromptBuilder] Using prompt template: ${selectedTemplate.name} (${promptId})`);
   
   // Determine if we should use emojis (only for alienCommunication template)
   const useEmojis = selectedTemplate?.emojiMapIncluded || false;
