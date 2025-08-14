@@ -5,6 +5,29 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 14, 2025
+
+## Version 1.3.2 — Prompt Default, Preview, and Solver Mode (2025-08-14)
+
+### Features
+- **Default Prompt Selection (UI)**: `PromptPicker` now defaults to "Custom Prompt" with an empty textarea. Researchers can enter a prompt or switch to a template before analyzing.
+- **Provider-Specific Prompt Preview**:
+  - Backend: `POST /api/prompt/preview/:provider/:puzzleId` returns the exact assembled prompt string for the selected provider and inputs.
+  - Frontend: A preview modal in `client/src/pages/PuzzleExaminer.tsx` shows the precise prompt that will be sent. When using Custom Prompt, the modal supports in-place editing and sending.
+- **New "Solver" Prompt Template**: Sends puzzle data without the correct answer and asks the AI to predict the answer and explain its reasoning. Uses the same JSON response schema as explanation mode for seamless display.
+
+### Fixes
+- **Custom Prompt Purity**: Resolved an issue where template instructions were appended to custom prompts. Custom runs now send only the user's text plus raw puzzle data (no template wrapping).
+
+### Touched Files
+- `client/src/components/PromptPreviewModal.tsx`
+- `client/src/pages/PuzzleExaminer.tsx`
+- `server/services/promptBuilder.ts`
+- `shared/types.ts`
+
+### Credits
+- Implementation: **Cascade**
+
 August 13, 2025
 
 ## Version 1.3.1 — UI/UX and Performance Enhancements (2025-08-13)

@@ -167,17 +167,6 @@ export function PromptPreviewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={disabled}
-          className="flex items-center gap-2"
-        >
-          <Eye className="h-4 w-4" />
-          Preview Prompt
-        </Button>
-      </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Provider-Specific Prompt Preview</DialogTitle>

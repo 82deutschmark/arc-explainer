@@ -167,19 +167,38 @@ function getJsonResponseFormat(selectedTemplate: PromptTemplate | null): object 
   
   if (isAlienCommunication) {
     return {
-      "patternDescription": "What the aliens are trying to communicate to us through this puzzle",
-      "solvingStrategy": "Step-by-step how to solve it, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+      "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
+      "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
       "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
+      "alienMeaning": "The aliens' message",
+      "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about the aliens' message"
     };
   } else {
     return {
-      "patternDescription": "Clear description of the pattern or transformation rule",
-      "solvingStrategy": "Step-by-step how to solve it, for novices to understand",
+      "patternDescription": "Clear description of the patterns or transformation rules",
+      "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps",
       "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
+      "confidence": "A confidence score between 0 and 100, how sure you are about your explanation and the transformation rules being applied"
     };
   }
+}
+
+/**
+ * Get JSON response format for solver mode (predicting answers)
+ * Uses same format as explanation mode for frontend compatibility
+ */
+function getSolverResponseFormat(): object {
+  return {
+    "patternDescription": "Clear description of the transformation patterns identified from training examples",
+    "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
+    "hints": [
+      "Key insight 1 about the pattern",
+      "Key insight 2 about the transformation", 
+      "Key insight 3 about applying the pattern"
+    ],
+    "confidence": "A confidence score between 0 and 100, how sure you are about your predicted answer"
+  };
 }
 
 /**
@@ -243,6 +262,9 @@ Correct Answer: ${testCase.output}`;
   // Determine if we should use emojis (only for alienCommunication template)
   const useEmojis = selectedTemplate?.emojiMapIncluded || false;
   
+  // Check if this is solver mode (no correct answer provided)
+  const isSolverMode = promptId === "solver";
+  
   // Format data based on emoji requirements
   const trainingExamples = formatTrainingExamples(task, useEmojis);
   const testCase = formatTestCase(task, useEmojis);
@@ -254,18 +276,43 @@ Correct Answer: ${testCase.output}`;
     ? "TRAINING EXAMPLES (what the aliens taught us):"
     : "TRAINING EXAMPLES:";
     
-  const testLabel = useEmojis 
-    ? "TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):"
-    : "TEST CASE (input and correct answer for analysis):";
-    
-  const analysisInstructions = useEmojis
-    ? "2. Explain it in simple terms an idiot could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
-    : "2. Explain it in simple terms for novices to understand.";
-    
+  // Different test labels for solver vs explanation mode
+  const testLabel = isSolverMode 
+    ? "TEST CASE (predict the correct answer):"
+    : useEmojis 
+      ? "TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):"
+      : "TEST CASE (input and correct answer for analysis):";
+      
+  // Different instructions for solver vs explanation mode
+  const analysisInstructions = isSolverMode
+    ? "1. Analyze the transformation pattern from the training examples.\n2. Apply that pattern to predict the correct answer for the test input.\n3. Explain your reasoning step by step."
+    : useEmojis
+      ? "2. Explain it in simple terms an idiot could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
+      : "2. Explain it in simple terms for novices to understand.";
+      
   const responsePrefix = useEmojis ? "Respond" : "Please respond";
   
-  // Build complete prompt
-  const prompt = `${basePrompt}
+  // Build complete prompt - different format for solver mode
+  let prompt: string;
+  
+  if (isSolverMode) {
+    // Solver mode: NO correct answer provided, ask AI to predict
+    prompt = `${basePrompt}
+
+${trainingLabel}
+${trainingExamples}
+
+${testLabel}
+Input: ${testCase.input}
+
+Your task:
+${analysisInstructions}
+
+${responsePrefix} in this JSON format:
+${JSON.stringify(getSolverResponseFormat(), null, 2)}`;
+  } else {
+    // Explanation mode: correct answer provided, ask AI to explain
+    prompt = `${basePrompt}
 
 ${trainingLabel}
 ${trainingExamples}
@@ -282,6 +329,7 @@ ${analysisInstructions}${emojiMapSection}
 
 ${responsePrefix} in this JSON format:
 ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
+  }
 
   return {
     prompt,
