@@ -146,6 +146,71 @@ Then provide your final structured response.` : basePrompt;
       throw new Error(`Model ${modelKey} failed: ${errorMessage}`);
     }
   }
+
+  /**
+   * Generate a preview of the exact prompt that will be sent to Anthropic
+   * Shows the provider-specific message format and structure
+   */
+  async generatePromptPreview(
+    task: ARCTask,
+    modelKey: keyof typeof MODELS,
+    temperature: number = 0.75,
+    captureReasoning: boolean = true,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+  ) {
+    const modelName = MODELS[modelKey];
+
+    // Build prompt using shared prompt builder
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    
+    // Add reasoning prompt wrapper for Anthropic if captureReasoning is enabled
+    const prompt = captureReasoning ? 
+      `${basePrompt}
+
+IMPORTANT: Before providing your final answer, please show your step-by-step reasoning process inside <reasoning> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+
+<reasoning>
+[Your detailed step-by-step analysis will go here]
+</reasoning>
+
+Then provide your final structured response.` : basePrompt;
+
+    // Anthropic uses messages array format
+    const messageFormat = {
+      model: modelName,
+      max_tokens: 4000,
+      messages: [{ role: "user", content: prompt }],
+      temperature: temperature
+    };
+
+    const providerSpecificNotes = [
+      "Uses Anthropic Messages API",
+      "Supports reasoning capture via <reasoning> tags",
+      "Temperature parameter supported",
+      "Max tokens set to 4000"
+    ];
+
+    return {
+      provider: "Anthropic",
+      modelName,
+      promptText: prompt,
+      messageFormat,
+      templateInfo: {
+        id: selectedTemplate?.id || "custom",
+        name: selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+      },
+      promptStats: {
+        characterCount: prompt.length,
+        wordCount: prompt.split(/\s+/).length,
+        lineCount: prompt.split('\n').length
+      },
+      providerSpecificNotes,
+      captureReasoning,
+      temperature
+    };
+  }
 }
 
 export const anthropicService = new AnthropicService(); 

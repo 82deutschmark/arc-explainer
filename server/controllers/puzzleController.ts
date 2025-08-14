@@ -106,5 +106,48 @@ export const puzzleController = {
     const { puzzleId } = req.params;
     const hasExplanation = await puzzleService.hasPuzzleExplanation(puzzleId);
     res.json(formatResponse.success({ hasExplanation }));
+  },
+
+  /**
+   * Preview the exact prompt that will be sent to a specific provider
+   * Shows provider-specific formatting and message structure
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async previewPrompt(req: Request, res: Response) {
+    try {
+      const { provider, taskId } = req.params;
+      const { promptId = "standardExplanation", customPrompt, temperature = 0.75, captureReasoning = true } = req.body;
+
+      console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
+
+      // Get the puzzle data
+      const puzzle = await puzzleService.getPuzzleById(taskId);
+      if (!puzzle) {
+        return res.status(404).json(formatResponse.error('Puzzle not found', 'The specified puzzle could not be found'));
+      }
+
+      // Get the AI service for the provider
+      const aiService = aiServiceFactory.getService(provider);
+      if (!aiService) {
+        return res.status(400).json(formatResponse.error('Invalid provider', 'The specified AI provider is not supported'));
+      }
+
+      // Generate provider-specific prompt preview
+      const previewData = await aiService.generatePromptPreview(
+        puzzle, 
+        provider, 
+        temperature, 
+        captureReasoning, 
+        promptId, 
+        customPrompt
+      );
+
+      res.json(formatResponse.success(previewData));
+    } catch (error) {
+      console.error('[Controller] Error generating prompt preview:', error);
+      res.status(500).json(formatResponse.error('Failed to generate prompt preview', 'An error occurred while generating the prompt preview'));
+    }
   }
 };
