@@ -17,6 +17,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
+import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
 
 // Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
@@ -42,11 +43,12 @@ export class AnthropicService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
     // Add reasoning prompt wrapper for Anthropic if captureReasoning is enabled
     const prompt = captureReasoning ? 
@@ -158,11 +160,12 @@ Then provide your final structured response.` : basePrompt;
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
     // Add reasoning prompt wrapper for Anthropic if captureReasoning is enabled
     const prompt = captureReasoning ? 

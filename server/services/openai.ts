@@ -9,6 +9,7 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
+import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
 
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
@@ -46,11 +47,12 @@ export class OpenAIService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     try {
       let response: any;
@@ -161,11 +163,12 @@ export class OpenAIService {
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
+    options?: PromptOptions,
   ) {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt);
+    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     // Determine message format based on model type
     let messageFormat: any;

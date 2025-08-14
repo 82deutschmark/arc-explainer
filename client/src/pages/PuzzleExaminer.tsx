@@ -18,6 +18,7 @@ import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, Hash, ArrowLeft, Brain } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -40,6 +41,7 @@ export default function PuzzleExaminer() {
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [omitAnswer, setOmitAnswer] = useState(false); // Cascade: researcher option to hide correct answer in prompt
 
   // Early return if no taskId
   if (!taskId) {
@@ -73,6 +75,9 @@ export default function PuzzleExaminer() {
   } = useAnalysisResults({
     taskId,
     refetchExplanations,
+    // Cascade using GPT-5 (medium reasoning): forward researcher options to backend
+    emojiSetKey: emojiSet,
+    omitAnswer,
   });
   
   // Find the current model's details if we're analyzing
@@ -171,6 +176,19 @@ export default function PuzzleExaminer() {
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Omit Answer Toggle (affects prompt building only) */}
+          <div className="flex items-center gap-2 px-3 py-1.5 border rounded-lg">
+            <Switch
+              checked={omitAnswer}
+              onCheckedChange={setOmitAnswer}
+              disabled={isAnalyzing}
+              id="omit-answer-toggle"
+            />
+            <label htmlFor="omit-answer-toggle" className="text-sm select-none">
+              Omit correct answer in prompt
+            </label>
           </div>
         </div>
       </div>
@@ -300,6 +318,9 @@ export default function PuzzleExaminer() {
             selectedPromptId={promptId}
             customPrompt={customPrompt}
             disabled={isAnalyzing}
+            // Cascade: ensure preview uses the same prompt options
+            emojiSetKey={emojiSet}
+            omitAnswer={omitAnswer}
             onAnalyze={(provider, model, editedPrompt) => {
               // Find the model key and analyze with the edited prompt if provided
               const modelData = MODELS.find(m => m.key === model);
