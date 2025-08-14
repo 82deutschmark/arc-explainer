@@ -88,6 +88,13 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     content: `Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.`,
     emojiMapIncluded: false
   },
+  solver: {
+    id: "solver",
+    name: "Solver Mode",
+    description: "Ask the AI to predict the correct answer based on training examples (no correct answer provided).",
+    content: `Given these training examples, what do you predict the correct answer to the test case should be? Explain your reasoning step by step, identifying the transformation pattern and applying it to solve the test case.`,
+    emojiMapIncluded: false
+  },
   custom: {
     id: "custom",
     name: "Custom Prompt",
