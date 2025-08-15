@@ -12,6 +12,17 @@ from typing import Dict, List, Any, Optional, Tuple
 from openai import OpenAI
 from PIL import Image
 import numpy as np
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables from .env file in project root
+project_root = Path(__file__).parent.parent
+env_path = project_root / '.env'
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    # Fallback to default .env location
+    load_dotenv()
 
 # Import the visualizer functions
 from arc_visualizer import grid_to_image, ARC_COLORS

@@ -8,3 +8,5 @@ vite.config.ts.*
 /data/explained
 /data/explained
 /solver/img_tmp
+*.pyc
+/solver/__pycache__
