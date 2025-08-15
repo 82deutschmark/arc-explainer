@@ -5,6 +5,36 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 15, 2025
+
+## Version 1.3.3 — Saturn Visual Solver & Railway Fixes (2025-08-15)
+
+### Features
+- __Saturn Visual Solver (Code by Cascade)__: New page that streams phased visual analysis with intermediate images and a model selector. Includes a visible banner crediting the Saturn ARC project with a GitHub link.
+- __Frontend Hook__: `client/src/hooks/useSaturnProgress.ts` accumulates streamed images and progress events for live UI updates.
+
+### Deployment Fixes (Railway Docker)
+- __Python Runtime__: Dockerfile now installs Python 3 (`apk add python3 py3-pip`).
+- __PEP 668 Compliance__: Uses `pip --break-system-packages` during build to allow installing `requirements.txt` on Alpine.
+- __Include Solver Code__: Added `COPY solver/ ./solver/` so `server/python/saturn_wrapper.py` can import `arc_visual_solver`.
+- __Python Binary Detection__: `server/services/pythonBridge.ts` auto-selects `python` on Windows and `python3` on Linux; still respects `PYTHON_BIN` env override.
+
+### Bug Fixes
+- Fixed local Windows error “Python was not found” by defaulting to `python` on `win32`.
+- Fixed Railway build failure “externally-managed-environment” by adding `--break-system-packages`.
+- Fixed runtime error “No module named 'arc_visual_solver'” by copying the `solver/` directory and ensuring `sys.path` includes it in `saturn_wrapper.py`.
+
+### Touched Files
+- `Dockerfile`
+- `server/services/pythonBridge.ts`
+- `server/python/saturn_wrapper.py`
+- `client/src/pages/SaturnVisualSolver.tsx`
+- `client/src/hooks/useSaturnProgress.ts`
+- `client/src/pages/PuzzleExaminer.tsx`
+
+### Credits
+- Implementation: **Cascade** with GPT-5 medium reasoning and Claude 4 Sonnet Thinking
+
 August 14, 2025
 
 ## Version 1.3.2 — Prompt Default, Preview, and Solver Mode (2025-08-14)
