@@ -18,6 +18,7 @@ import { puzzleController } from "./controllers/puzzleController";
 import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
+import { saturnController } from "./controllers/saturnController";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -55,6 +56,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Feedback routes
   app.post("/api/feedback", validation.feedback, asyncHandler(feedbackController.create));
+
+  // Saturn analysis routes
+  app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
+  app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
   
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {

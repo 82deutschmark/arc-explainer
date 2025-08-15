@@ -5,6 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { attach as attachWs } from './services/wsService';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +55,9 @@ app.use((req, res, next) => {
 const initServer = async () => {
   // Register API routes FIRST
   const server = await registerRoutes(app);
+
+  // Attach WebSocket hub for Saturn progress streaming
+  attachWs(server);
 
   // In production, set up static file serving and the SPA fallback.
   // This must come AFTER API routes are registered.
