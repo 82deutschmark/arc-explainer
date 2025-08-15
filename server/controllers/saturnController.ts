@@ -27,9 +27,12 @@ export const saturnController = {
     // Generate a session id for tracking progress
     const sessionId = randomUUID();
 
-    // Options may include model, temperature, cellSize, etc.
+    // Options may include provider, model, temperature, cellSize, etc.
     const options = {
-      model: (req.body?.model as string) || 'saturn-sim',
+      // Provider defaults to OpenAI; Python wrapper validates support
+      provider: (req.body?.provider as string) || 'openai',
+      // Default to a real model to avoid simulated modes; Python wrapper will validate
+      model: (req.body?.model as string) || 'gpt-5',
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 0.2,
       cellSize: typeof req.body?.cellSize === 'number' ? req.body.cellSize : 24,
       maxSteps: typeof req.body?.maxSteps === 'number' ? req.body.maxSteps : 8,

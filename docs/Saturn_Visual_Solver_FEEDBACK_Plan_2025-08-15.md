@@ -1,5 +1,5 @@
 <!--
-Title: Saturn Visual Solver Testing Plan (2025-08-15)
+Title: Saturn Visual Solver FEEDBACK Plan (2025-08-15)
 Purpose: Defines a concrete, verifiable plan and checklist to validate and harden the Saturn visual solver across image handling, logging, persistence, and UI. Explains how this plan is used by the project to guide fixes and acceptance testing.
 Author: Cascade (model: Cascade)
 How this is used: Engineers follow this checklist to make and verify changes across `server/python/saturn_wrapper.py`, `server/services/pythonBridge.ts`, `server/services/saturnVisualService.ts`, `server/services/dbService.ts`, and frontend components/pages (e.g., `client/src/pages/SaturnVisualSolver.tsx`, `client/src/hooks/useSaturnProgress.ts`, and Saturn UI components). This document is the single source of truth for the work scope and done criteria.
@@ -45,6 +45,9 @@ How this is used: Engineers follow this checklist to make and verify changes acr
   - Centralize the provider switch and validation of accepted image input formats.
 - Introduce configuration in `.env` to select target provider/model; respect existing environment variables.
 - Add robust error messages and capture failures in NDJSON logs via `saturn_wrapper.py`.
+
+Status (2025-08-15):
+- Implemented provider enforcement in `server/python/saturn_wrapper.py` (OpenAI-only) with base64 PNG requirement. Wrapper infers provider from UI model labels (e.g., "GPT-5" -> provider `openai`, model `gpt-5`) and emits a clear `error` event for unsupported providers. No changes were made to `solver/arc_visual_solver.py` per direction; enforcement happens at the wrapper boundary before solver init.
 
 
 ### B) End-to-end verbose logging capture

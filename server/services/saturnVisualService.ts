@@ -29,6 +29,8 @@ import { dbService } from './dbService';
 import { puzzleLoader } from './puzzleLoader';
 
 interface SaturnOptions {
+  /** Provider id (e.g., 'openai'). Python wrapper validates support. */
+  provider?: string;
   model: string;
   temperature: number;
   cellSize: number;

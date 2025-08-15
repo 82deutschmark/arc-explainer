@@ -19,6 +19,8 @@
  * - 2025-08-15: Buffer non-JSON stdout and all stderr lines into a verbose log.
  *   Attach `saturnLog` to the `final` event. Also collect a capped `eventTrace`
  *   array of NDJSON events to optionally persist as `saturn_events`.
+ * - 2025-08-15: Add provider pass-through in `options` (default handled upstream).
+ *   Python wrapper will validate provider and enforce base64 PNG image delivery.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -28,6 +30,8 @@ import * as readline from 'node:readline';
 export type SaturnBridgeOptions = {
   taskPath: string;
   options: {
+    /** Provider to use; Python wrapper enforces supported providers (OpenAI only). */
+    provider?: string;
     model: string;
     temperature?: number;
     cellSize?: number;
@@ -121,18 +125,24 @@ export class PythonBridge {
         const trimmed = line.trim();
         if (!trimmed) return;
         try {
-          const evt = JSON.parse(trimmed) as SaturnBridgeEvent;
+          const evt = JSON.parse(trimmed) as any;
           pushEvent(evt);
-          // Attach buffers on final
-          if ((evt as any).type === 'final') {
+          // Attach verbose log on final. Prefer Python-provided result.verboseLog if present,
+          // otherwise fall back to our buffered stdout/stderr.
+          if (evt.type === 'final') {
+            const verboseFromPy: string | undefined = evt?.result?.verboseLog;
+            // Always include any buffered logs (stderr and non-JSON stdout),
+            // even when Python provided a captured stdout log, to avoid losing stderr.
+            const buffered = logBuffer.join('\n');
+            const saturnLog = [verboseFromPy || '', buffered].filter(Boolean).join('\n');
             const augmented = {
-              ...(evt as any),
-              saturnLog: logBuffer.join('\n'),
+              ...evt,
+              saturnLog,
               eventTrace,
             } as any;
             onEvent(augmented as SaturnBridgeEvent);
           } else {
-            onEvent(evt);
+            onEvent(evt as SaturnBridgeEvent);
           }
         } catch (err) {
           // Forward as log so caller can surface or ignore
