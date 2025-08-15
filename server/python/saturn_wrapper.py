@@ -17,6 +17,7 @@ import time
 import io
 import contextlib
 import base64
+import threading
 from typing import Any, Dict, List
 
 # Ensure we can import the solver package
@@ -34,9 +35,11 @@ except Exception as e:
 
 
 def emit(obj: Dict[str, Any]):
-    """Emit a single NDJSON event to stdout and flush."""
-    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
-    sys.stdout.flush()
+    """Emit a single NDJSON event and flush.
+    Important: write to sys.__stdout__ to avoid recursion when stdout is redirected.
+    """
+    sys.__stdout__.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    sys.__stdout__.flush()
 
 
 def b64(path: str) -> str:
@@ -45,6 +48,37 @@ def b64(path: str) -> str:
             return base64.b64encode(f.read()).decode('utf-8')
     except Exception:
         return ''
+
+
+# Cascade: StreamEmitter tees Python prints to both an in-memory buffer and
+# NDJSON 'log' events so the UI can display real-time console output.
+class StreamEmitter(io.TextIOBase):
+    def __init__(self, sink: io.StringIO, level: str = 'info') -> None:
+        self._sink = sink
+        self._buf = ''
+        self._level = level
+
+    def write(self, s: Any) -> int:
+        try:
+            text = s if isinstance(s, str) else str(s)
+        except Exception:
+            text = str(s)
+        # Always store full output for final verbose log
+        self._sink.write(text)
+        self._buf += text
+        # Emit each complete line as a log event
+        count = 0
+        while '\n' in self._buf:
+            line, self._buf = self._buf.split('\n', 1)
+            line_stripped = line.strip()
+            if line_stripped:
+                emit({ 'type': 'log', 'level': ('error' if self._level == 'error' else 'info'), 'message': line_stripped })
+            count += 1
+        return len(text)
+
+    def flush(self) -> None:
+        # No-op; flush handled by emit and outer streams
+        pass
 
 
 def run():
@@ -67,6 +101,8 @@ def run():
         model: str = opts.get('model') or 'gpt-5'
         temperature = opts.get('temperature')
         cell_size = opts.get('cellSize') or 30
+        # Cascade: total steps hint used only for UI progress context on image events
+        max_steps = int(opts.get('maxSteps') or 8)
 
         # Normalize common UI model labels to backend ids
         # Note: We do not touch the solver; we keep normalization here in the wrapper.
@@ -96,9 +132,11 @@ def run():
             })
             return 1
 
-        # Construct solver. ARCVisualSolver will also validate, but we fail early here.
+        # Construct solver. ARCVisualSolver.__init__ takes no kwargs; provider/model are
+        # enforced/normalized in this wrapper and used implicitly by the solver internals.
+        # Do NOT pass unsupported kwargs like 'provider' to avoid init errors.
         try:
-            solver = ARCVisualSolver(provider=provider, model=model, temperature=temperature, cell_size=cell_size)
+            solver = ARCVisualSolver()
         except Exception as init_err:
             emit({
                 'type': 'error',
@@ -108,9 +146,60 @@ def run():
 
         os.makedirs(solver.temp_dir, exist_ok=True)
 
+        # Cascade: Start a lightweight watcher thread that streams newly created PNGs
+        # from the solver's temp directory as incremental progress events. This avoids
+        # touching the solver internals while enabling the UI to display images as
+        # they are generated. The watcher deduplicates by filename, caps the number
+        # of images, and stops when the solve completes.
+        stop_event = threading.Event()
+
+        def _watch_and_emit_images():
+            seen: set[str] = set()
+            cap = 50  # safety cap to avoid excessive events
+            while not stop_event.is_set():
+                try:
+                    # Sort for stable ordering when multiple files appear between polls
+                    for name in sorted(os.listdir(solver.temp_dir)):
+                        if not name.lower().endswith('.png'):
+                            continue
+                        if name in seen:
+                            continue
+                        full = os.path.join(solver.temp_dir, name)
+                        data = b64(full)
+                        if data:
+                            emit({
+                                'type': 'progress',
+                                'phase': 'image',
+                                'step': 0,  # unknown without modifying solver; UI uses this only as a hint
+                                'totalSteps': max_steps,
+                                'message': f'Image generated: {name}',
+                                'images': [{ 'path': full, 'base64': data }],
+                            })
+                            seen.add(name)
+                            if len(seen) >= cap:
+                                stop_event.set()
+                                break
+                except Exception:
+                    # Swallow watcher errors to avoid interrupting the solve
+                    pass
+                time.sleep(0.25)
+
+        watcher = threading.Thread(target=_watch_and_emit_images, daemon=True)
+        watcher.start()
+
         verbose_output = io.StringIO()
-        with contextlib.redirect_stdout(verbose_output):
-            success, prediction, num_phases = solver.solve(task_path)
+        # Cascade: redirect both stdout and stderr through StreamEmitter so
+        # prints are emitted live as NDJSON 'log' events and also captured.
+        with contextlib.redirect_stdout(StreamEmitter(verbose_output, 'info')):
+            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'error')):
+                success, prediction, num_phases = solver.solve(task_path)
+
+        # Ensure watcher stops after solve finishes
+        stop_event.set()
+        try:
+            watcher.join(timeout=1.0)
+        except Exception:
+            pass
 
         verbose_log = verbose_output.getvalue()
 

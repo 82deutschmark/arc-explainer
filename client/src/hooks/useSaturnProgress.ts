@@ -35,11 +35,15 @@ export interface SaturnProgressState {
   result?: any;
   images?: { path: string; base64?: string }[]; // last batch from server
   galleryImages?: { path: string; base64?: string }[]; // accumulated across run
+  // Cascade: accumulate log lines for a live console panel. The backend forwards
+  // Python stdout/stderr as ws events with phase === 'log'. We also append
+  // terminal status messages on error/completion for visibility.
+  logLines?: string[];
 }
 
 export function useSaturnProgress(taskId: string | undefined) {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [state, setState] = useState<SaturnProgressState>({ status: 'idle', galleryImages: [] });
+  const [state, setState] = useState<SaturnProgressState>({ status: 'idle', galleryImages: [], logLines: [] });
   const wsRef = useRef<WebSocket | null>(null);
 
   // Helper to close any existing socket
@@ -54,7 +58,7 @@ export function useSaturnProgress(taskId: string | undefined) {
   const start = useCallback(async (options?: SaturnOptions) => {
     if (!taskId) return;
     // Reset state for new run
-    setState({ status: 'running', phase: 'initializing', step: 0, totalSteps: options?.maxSteps, galleryImages: [] });
+    setState({ status: 'running', phase: 'initializing', step: 0, totalSteps: options?.maxSteps, galleryImages: [], logLines: [] });
     closeSocket();
 
     // Map friendly UI labels to backend model ids and include provider for clarity.
@@ -115,7 +119,17 @@ export function useSaturnProgress(taskId: string | undefined) {
               }
             }
           }
-          return { ...prev, ...data, galleryImages: nextGallery };
+          // Build next log buffer
+          let nextLogs = prev.logLines ? [...prev.logLines] : [];
+          const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
+          const phase = data.phase;
+          const status = data.status;
+          if (msg && (phase === 'log' || status === 'error' || status === 'completed' || phase === 'runtime' || phase === 'persistence' || phase === 'handler')) {
+            nextLogs.push(msg);
+            // Cap to avoid unbounded growth
+            if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+          }
+          return { ...prev, ...data, galleryImages: nextGallery, logLines: nextLogs };
         });
       } catch {}
     };
