@@ -16,7 +16,7 @@ COPY client/package*.json ./client/
 
 # Copy Python requirements for Saturn and install them
 COPY requirements.txt ./
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Install dependencies
 RUN npm ci
