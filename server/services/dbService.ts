@@ -24,6 +24,8 @@ interface PuzzleExplanation {
   reasoningLog?: string | null;
   hasReasoningLog?: boolean;
   apiProcessingTimeMs?: number;
+  // Saturn-specific: optional list of image paths (stored as JSON in saturn_images TEXT)
+  saturnImages?: string[];
 }
 
 /**
@@ -90,6 +92,7 @@ const createTablesIfNotExist = async () => {
         reasoning_log TEXT,
         has_reasoning_log BOOLEAN DEFAULT FALSE,
         api_processing_time_ms INTEGER,
+        saturn_images TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
       
@@ -109,6 +112,14 @@ const createTablesIfNotExist = async () => {
                      AND column_name = 'api_processing_time_ms') 
         THEN
           ALTER TABLE explanations ADD COLUMN api_processing_time_ms INTEGER;
+        END IF;
+
+        -- Add saturn_images column if it doesn't exist (stores JSON string of image paths)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'saturn_images') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN saturn_images TEXT;
         END IF;
       END $$;
     `);
@@ -162,15 +173,16 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       modelName,
       reasoningLog,
       hasReasoningLog,
-      apiProcessingTimeMs
+      apiProcessingTimeMs,
+      saturnImages
     } = explanation;
     
     const result = await client.query(
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
-        reasoning_log, has_reasoning_log, api_processing_time_ms)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        reasoning_log, has_reasoning_log, api_processing_time_ms, saturn_images)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING id`,
       [
         puzzleId,
@@ -183,7 +195,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         modelName || 'unknown',
         reasoningLog || null,
         hasReasoningLog || false,
-        apiProcessingTimeMs || null
+        apiProcessingTimeMs || null,
+        saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null
       ]
     );
     
@@ -264,6 +277,7 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
          e.api_processing_time_ms  AS "apiProcessingTimeMs",
+         e.saturn_images           AS "saturnImages",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
@@ -414,6 +428,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
          e.api_processing_time_ms  AS "apiProcessingTimeMs",
+         e.saturn_images           AS "saturnImages",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
@@ -460,6 +475,7 @@ const getExplanationById = async (explanationId: number) => {
          e.reasoning_log           AS "reasoningLog",
          e.has_reasoning_log       AS "hasReasoningLog",
          e.api_processing_time_ms  AS "apiProcessingTimeMs",
+         e.saturn_images           AS "saturnImages",
          e.created_at              AS "createdAt"
        FROM explanations e
        WHERE e.id = $1`,

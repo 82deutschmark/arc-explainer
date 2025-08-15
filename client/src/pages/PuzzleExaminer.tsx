@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -134,6 +134,13 @@ export default function PuzzleExaminer() {
         </div>
         
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Cascade: Quick entry to Saturn Visual Solver for this task */}
+          <Link href={`/puzzle/saturn/${taskId}`}>
+            <Button size="sm" className="flex items-center gap-2">
+              <Rocket className="h-4 w-4" />
+              Open Saturn Visual Solver
+            </Button>
+          </Link>
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -192,6 +199,22 @@ export default function PuzzleExaminer() {
           </div>
         </div>
       </div>
+
+      {/* Cascade: UI attribution banner for Saturn ARC with GitHub link */}
+      <Alert className="mt-3 bg-amber-50 border-amber-200">
+        <AlertDescription>
+          The Saturn Visual Solver is powered by the open-source Saturn ARC project by Zoe Carver.{' '}
+          <a
+            href="https://github.com/zoecarver/saturn-arc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline font-medium text-amber-800 hover:text-amber-900"
+          >
+            View on GitHub
+          </a>
+          .
+        </AlertDescription>
+      </Alert>
 
       {/* Complete Puzzle Pattern */}
       <Card>
