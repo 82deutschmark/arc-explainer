@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
+import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PuzzleBrowser} />
       <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
+      <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
       <Route component={NotFound} />
     </Switch>
   );
