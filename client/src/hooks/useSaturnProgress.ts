@@ -57,13 +57,37 @@ export function useSaturnProgress(taskId: string | undefined) {
     setState({ status: 'running', phase: 'initializing', step: 0, totalSteps: options?.maxSteps, galleryImages: [] });
     closeSocket();
 
-    const res = await apiRequest('POST', `/api/saturn/analyze/${taskId}`, options ?? {
-      model: 'GPT-5',
-      temperature: 0.2,
-      cellSize: 24,
-      maxSteps: 8,
-      captureReasoning: false,
-    });
+    // Map friendly UI labels to backend model ids and include provider for clarity.
+    // Wrapper still validates and enforces OpenAI-only (base64 PNG), but we send
+    // provider explicitly to surface clear errors on unsupported selections.
+    const uiModel = options?.model ?? 'GPT-5';
+    let provider: string | undefined;
+    let modelId: string | undefined;
+    const m = (uiModel || '').toString().toLowerCase();
+    if (m === 'gpt-5' || uiModel === 'GPT-5') {
+      provider = 'openai';
+      modelId = 'gpt-5';
+    } else if (m.includes('claude')) {
+      provider = 'anthropic';
+      modelId = uiModel; // wrapper will error (unsupported provider)
+    } else if (m.includes('grok')) {
+      provider = 'xai';
+      modelId = uiModel; // wrapper will error (unsupported provider)
+    } else {
+      provider = undefined; // let wrapper infer
+      modelId = uiModel;
+    }
+
+    const wireOptions = {
+      provider,
+      model: modelId,
+      temperature: options?.temperature ?? 0.2,
+      cellSize: options?.cellSize ?? 24,
+      maxSteps: options?.maxSteps ?? 8,
+      captureReasoning: !!options?.captureReasoning,
+    };
+
+    const res = await apiRequest('POST', `/api/saturn/analyze/${taskId}`, wireOptions);
     const json = await res.json();
     const sid = json?.data?.sessionId as string;
     setSessionId(sid);

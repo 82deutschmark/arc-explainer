@@ -12,6 +12,7 @@ August 15, 2025
 ### Features
 - __Saturn Visual Solver (Code by Cascade)__: New page that streams phased visual analysis with intermediate images and a model selector. Includes a visible banner crediting the Saturn ARC project with a GitHub link.
 - __Frontend Hook__: `client/src/hooks/useSaturnProgress.ts` accumulates streamed images and progress events for live UI updates.
+- __Provider-Aware Image Delivery (Code by Cascade)__: `solver/arc_visual_solver.py` now enforces provider-specific image delivery; OpenAI path uses base64 PNG data URLs. No silent fallback; unsupported providers raise a clear error.
 
 ### Deployment Fixes (Railway Docker)
 - __Python Runtime__: Dockerfile now installs Python 3 (`apk add python3 py3-pip`).
@@ -28,9 +29,16 @@ August 15, 2025
 - `Dockerfile`
 - `server/services/pythonBridge.ts`
 - `server/python/saturn_wrapper.py`
+- `server/controllers/saturnController.ts`
+- `server/services/saturnVisualService.ts`
 - `client/src/pages/SaturnVisualSolver.tsx`
 - `client/src/hooks/useSaturnProgress.ts`
 - `client/src/pages/PuzzleExaminer.tsx`
+- `solver/arc_visual_solver.py`
+
+### Backend Notes (Saturn)
+- Python wrapper now accepts `options.provider`/`options.model` and constructs the solver accordingly. Unsupported providers emit an `error` event and abort.
+- Images sent to the model are always base64-encoded PNG data URLs.
 
 ### Credits
 - Implementation: **Cascade** with GPT-5 medium reasoning and Claude 4 Sonnet Thinking
