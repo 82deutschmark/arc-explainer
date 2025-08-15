@@ -186,7 +186,7 @@ export class OpenAIService {
         model: modelName,
         input: [{ role: "user", content: prompt }],
         reasoning: {
-          effort: "medium",
+          effort: "high",
           summary: "detailed"
         }
       };
