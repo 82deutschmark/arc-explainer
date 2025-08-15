@@ -37,7 +37,7 @@ August 15, 2025
 
 August 14, 2025
 
-## Version 1.3.2 — Prompt Default, Preview, and Solver Mode (2025-08-14)
+## Version 1.3.2 — Prompt Default, Preview, and Solver Template (2025-08-14)
 
 ### Features
 - **Default Prompt Selection (UI)**: `PromptPicker` now defaults to "Custom Prompt" with an empty textarea. Researchers can enter a prompt or switch to a template before analyzing.

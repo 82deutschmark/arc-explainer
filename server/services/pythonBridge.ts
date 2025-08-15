@@ -13,7 +13,12 @@
  *   { type: 'final', success, prediction?, result, timingMs, images?: [...] }
  *   { type: 'error', message }
  *
- * Author: Cascade (model: Cascade GPT-5 medium reasoning)
+ * Author: Cascade (model: Cascade)
+ *
+ * Change log (Cascade):
+ * - 2025-08-15: Buffer non-JSON stdout and all stderr lines into a verbose log.
+ *   Attach `saturnLog` to the `final` event. Also collect a capped `eventTrace`
+ *   array of NDJSON events to optionally persist as `saturn_events`.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -102,6 +107,14 @@ export class PythonBridge {
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
 
+      // Buffers for verbose log and optional event trace
+      const logBuffer: string[] = [];
+      const eventTrace: any[] = [];
+      const pushEvent = (evt: any) => {
+        // Cap the trace to avoid unbounded memory
+        if (eventTrace.length < 500) eventTrace.push(evt);
+      };
+
       // Stream stdout as NDJSON
       const rl = readline.createInterface({ input: child.stdout });
       rl.on('line', (line) => {
@@ -109,9 +122,21 @@ export class PythonBridge {
         if (!trimmed) return;
         try {
           const evt = JSON.parse(trimmed) as SaturnBridgeEvent;
-          onEvent(evt);
+          pushEvent(evt);
+          // Attach buffers on final
+          if ((evt as any).type === 'final') {
+            const augmented = {
+              ...(evt as any),
+              saturnLog: logBuffer.join('\n'),
+              eventTrace,
+            } as any;
+            onEvent(augmented as SaturnBridgeEvent);
+          } else {
+            onEvent(evt);
+          }
         } catch (err) {
           // Forward as log so caller can surface or ignore
+          logBuffer.push(trimmed);
           onEvent({ type: 'log', level: 'info', message: trimmed });
         }
       });
@@ -119,6 +144,7 @@ export class PythonBridge {
       // Forward stderr as logs
       const rlErr = readline.createInterface({ input: child.stderr });
       rlErr.on('line', (line) => {
+        logBuffer.push(`[stderr] ${line}`);
         onEvent({ type: 'log', level: 'error', message: line });
       });
 

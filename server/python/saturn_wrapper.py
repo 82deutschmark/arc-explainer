@@ -8,7 +8,7 @@ Wrapper around ARCVisualSolver that:
 - Emits NDJSON events to stdout for start/progress/log/final/error
 - Base64-encodes generated images so the frontend can render without static hosting
 
-Author: Cascade (model: Cascade)
+Author: Cascade (model: Cascade GPT-5 medium reasoning)
 """
 import sys
 import os
