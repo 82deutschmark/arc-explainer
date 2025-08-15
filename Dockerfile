@@ -25,6 +25,7 @@ RUN npm ci
 COPY client/ ./client/
 COPY server/ ./server/
 COPY shared/ ./shared/
+COPY solver/ ./solver/
 COPY data/ ./data/
 COPY tsconfig.json ./
 COPY vite.config.ts ./
