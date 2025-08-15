@@ -54,8 +54,13 @@ export type SaturnBridgeEvent =
 
 export class PythonBridge {
   private resolvePythonBin(): string {
-    // Allow override via env; default to 'python' on Windows
-    return process.env.PYTHON_BIN || 'python';
+    // Allow override via env
+    if (process.env.PYTHON_BIN) {
+      return process.env.PYTHON_BIN;
+    }
+    
+    // Auto-detect: Windows uses 'python', Linux containers use 'python3'
+    return process.platform === 'win32' ? 'python' : 'python3';
   }
 
   private resolveWrapperPath(): string {

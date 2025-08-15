@@ -1,0 +1,8 @@
+# requirements.txt
+# Python dependencies needed by the Saturn Visual Solver pipeline executed via server/python/saturn_wrapper.py
+# Includes the OpenAI SDK plus imaging libs used by solver/arc_visual_solver.py and visualizers.
+# Author: Cascade (model: Cascade)
+
+openai>=1.0.0
+pillow>=9.0.0
+numpy>=1.20.0
