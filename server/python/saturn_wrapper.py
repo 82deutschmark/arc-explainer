@@ -126,13 +126,13 @@ def run():
                     # Default to openai if ambiguous
                     provider = 'openai'
 
-        # Enforce supported providers here (no silent fallback)
-        if provider != 'openai':
-            emit({
-                'type': 'error',
-                'message': f"Unsupported provider for Saturn Visual Solver: {provider}. Only 'openai' is supported for image delivery (base64 PNG)."
-            })
-            return 1
+        # Provider pass-through: do not block non-OpenAI providers here.
+        # Note: The current ARCVisualSolver implementation is OpenAI-backed.
+        # Other providers may still function if upstream components adapt,
+        # but we intentionally avoid blocking at the wrapper level to match
+        # previous behavior requested by the application.
+        # (Cascade) 2025-08-15: removed OpenAI-only guard.
+        emit({ 'type': 'log', 'level': 'info', 'message': f"Provider selected: {provider}; model: {model}" })
 
         # Construct solver. ARCVisualSolver.__init__ takes no kwargs; provider/model are
         # enforced/normalized in this wrapper and used implicitly by the solver internals.
