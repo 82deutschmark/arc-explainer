@@ -198,6 +198,7 @@ class SaturnVisualService {
                 saturnImages: Array.from(new Set(imagePaths)),
                 saturnLog,
                 saturnEvents: saturnEventsText,
+                saturnSuccess: typeof (evt as any).success === 'boolean' ? (evt as any).success : null,
               } as const;
 
               let explanationId: number | null = null;

@@ -30,6 +30,8 @@ interface PuzzleExplanation {
   saturnLog?: string | null;
   // Saturn-specific: optional compressed NDJSON/JSON event trace
   saturnEvents?: string | null;
+  // Saturn-specific: boolean indicating if puzzle was solved correctly
+  saturnSuccess?: boolean | null;
 }
 
 /**
@@ -144,6 +146,14 @@ const createTablesIfNotExist = async () => {
         THEN
           ALTER TABLE explanations ADD COLUMN saturn_events TEXT;
         END IF;
+
+        -- Add saturn_success column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'saturn_success')
+        THEN
+          ALTER TABLE explanations ADD COLUMN saturn_success BOOLEAN;
+        END IF;
       END $$;
     `);
     logger.info('Explanations table created or already exists', 'database');
@@ -205,8 +215,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
         reasoning_log, has_reasoning_log, api_processing_time_ms, saturn_images,
-        saturn_log, saturn_events)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        saturn_log, saturn_events, saturn_success)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
        RETURNING id`,
       [
         puzzleId,
@@ -222,7 +232,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         apiProcessingTimeMs || null,
         saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null,
         explanation.saturnLog || null,
-        explanation.saturnEvents || null
+        explanation.saturnEvents || null,
+        explanation.saturnSuccess ?? null
       ]
     );
     
