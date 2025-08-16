@@ -31,7 +31,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **100% Free APIs** - All AI analysis completely free - no usage costs or API fees! (Donated by me!)
 
-• **Saturn Visual Solver (New)** - Visual, phased solver that streams intermediate images while reasoning. Includes a model selector (GPT‑5, Claude 4, Grok 4) and visible Saturn ARC attribution banners with a GitHub link on `SaturnVisualSolver` and `PuzzleExaminer` pages.
+• **Saturn Visual Solver** - Visual, phased solver that streams intermediate images while reasoning. Includes a model selector (GPT‑5, Claude 4, Grok 4) and visible Saturn ARC attribution banners with a GitHub link on `SaturnVisualSolver` and `PuzzleExaminer` pages. Features complete success/failure status tracking with specialized UI displaying solver results distinctly from confidence-based AI analysis.
 
 • **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
 
