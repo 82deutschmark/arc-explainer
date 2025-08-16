@@ -20,7 +20,7 @@
  *   Attach `saturnLog` to the `final` event. Also collect a capped `eventTrace`
  *   array of NDJSON events to optionally persist as `saturn_events`.
  * - 2025-08-15: Add provider pass-through in `options` (default handled upstream).
- *   Python wrapper will validate provider and enforce base64 PNG image delivery.
+ *   Python wrapper logs provider selection and always base64-encodes images.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -30,7 +30,7 @@ import * as readline from 'node:readline';
 export type SaturnBridgeOptions = {
   taskPath: string;
   options: {
-    /** Provider to use; Python wrapper enforces supported providers (OpenAI only). */
+    /** Provider to use; Python wrapper now passes through providers without blocking. */
     provider?: string;
     model: string;
     temperature?: number;
@@ -124,9 +124,18 @@ export class PythonBridge {
       rl.on('line', (line) => {
         const trimmed = line.trim();
         if (!trimmed) return;
+        
+        // [SATURN-DEBUG] Log all stdout lines for debugging
+        console.log(`[SATURN-DEBUG] Python stdout: ${trimmed.substring(0, 200)}${trimmed.length > 200 ? '...' : ''}`);
+        
+        // Always capture ALL stdout in logBuffer first
+        logBuffer.push(trimmed);
+        
         try {
           const evt = JSON.parse(trimmed) as any;
           pushEvent(evt);
+          console.log(`[SATURN-DEBUG] Valid JSON event type: ${evt.type}`);
+          
           // Attach verbose log on final. Prefer Python-provided result.verboseLog if present,
           // otherwise fall back to our buffered stdout/stderr.
           if (evt.type === 'final') {
@@ -135,6 +144,7 @@ export class PythonBridge {
             // even when Python provided a captured stdout log, to avoid losing stderr.
             const buffered = logBuffer.join('\n');
             const saturnLog = [verboseFromPy || '', buffered].filter(Boolean).join('\n');
+            console.log(`[SATURN-DEBUG] Final saturnLog length: ${saturnLog.length} chars`);
             const augmented = {
               ...evt,
               saturnLog,
@@ -145,8 +155,8 @@ export class PythonBridge {
             onEvent(evt as SaturnBridgeEvent);
           }
         } catch (err) {
-          // Forward as log so caller can surface or ignore
-          logBuffer.push(trimmed);
+          // Non-JSON output (likely AI model responses) - forward as log event
+          console.log(`[SATURN-DEBUG] Non-JSON stdout (AI response): ${trimmed.substring(0, 100)}...`);
           onEvent({ type: 'log', level: 'info', message: trimmed });
         }
       });

@@ -10,6 +10,10 @@ ADD COLUMN IF NOT EXISTS reasoning_log TEXT;
 ALTER TABLE explanations 
 ADD COLUMN IF NOT EXISTS has_reasoning_log BOOLEAN DEFAULT FALSE;
 
+-- Add saturn_log column to store Saturn Visual Solver verbose output
+ALTER TABLE explanations 
+ADD COLUMN IF NOT EXISTS saturn_log TEXT;
+
 -- Update existing records to set has_reasoning_log to false
 UPDATE explanations 
 SET has_reasoning_log = FALSE 
