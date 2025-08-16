@@ -38,6 +38,8 @@ interface SaturnOptions {
   cellSize: number;
   maxSteps: number;
   captureReasoning: boolean;
+  /** Reasoning effort level for GPT-5 models ('medium' or 'high') */
+  reasoningEffort?: string;
 }
 
 // Resolve the on-disk path to the ARC task JSON. We don't inject any content;

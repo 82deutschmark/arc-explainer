@@ -105,6 +105,8 @@ def run():
         cell_size = opts.get('cellSize') or 30
         # Cascade: total steps hint used only for UI progress context on image events
         max_steps = int(opts.get('maxSteps') or 8)
+        # Cascade: pass through reasoning effort from main project
+        reasoning_effort = opts.get('reasoningEffort') or 'medium'
 
         # Normalize common UI model labels to backend ids
         # Note: We do not touch the solver; we keep normalization here in the wrapper.
@@ -134,6 +136,9 @@ def run():
         # (Cascade) 2025-08-15: removed OpenAI-only guard.
         emit({ 'type': 'log', 'level': 'info', 'message': f"Provider selected: {provider}; model: {model}" })
 
+        # Set environment variables for the solver to pick up
+        os.environ['REASONING_EFFORT'] = reasoning_effort
+        
         # Construct solver. ARCVisualSolver.__init__ takes no kwargs; provider/model are
         # enforced/normalized in this wrapper and used implicitly by the solver internals.
         # Do NOT pass unsupported kwargs like 'provider' to avoid init errors.
