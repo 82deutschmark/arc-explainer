@@ -31,12 +31,11 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **100% Free APIs** - All AI analysis completely free - no usage costs or API fees! (Donated by me!)
 
+• **Saturn Visual Solver (New)** - Visual, phased solver that streams intermediate images while reasoning. Includes a model selector (GPT‑5, Claude 4, Grok 4) and visible Saturn ARC attribution banners with a GitHub link on `SaturnVisualSolver` and `PuzzleExaminer` pages.
+
 • **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
 
-
 • **Custom Prompts for Researchers** - Enter your own analysis prompt to override templates per run
-
-
 
 ## 🌟 Development & Credits
 
@@ -111,6 +110,12 @@ This app is configured to deploy on Railway using a custom Dockerfile approach:
 2. The custom Dockerfile properly handles building both the client and server
 3. Static files are served from `dist/public` by the Express server
 4. Client-side routing works for direct URL navigation (SPA routing)
+
+5. Python runtime and Saturn requirements (New):
+   - Installs Python 3 and pip on Alpine: `apk add --no-cache python3 py3-pip`
+   - Installs `requirements.txt` with `pip install --break-system-packages -r requirements.txt` to satisfy Alpine PEP 668
+   - Copies solver sources so `arc_visual_solver` can be imported: `COPY solver/ ./solver/`
+   - Node auto-selects `python3` inside Linux containers; override with `PYTHON_BIN` if needed
 
 ### Troubleshooting Deployment
 
@@ -450,7 +455,13 @@ GEMINI_API_KEY=sk-...         # Google API access for Gemini models
 ```bash
 DATABASE_URL=postgresql://...   # PostgreSQL database (fallback to memory)
 NODE_ENV=development           # Environment mode
+PYTHON_BIN=python3             # Optional override; auto-detects 'python' on Windows and 'python3' on Linux
 ```
+
+Saturn Python binary detection:
+- By default, the backend selects `python` on Windows and `python3` on Linux containers. See `server/services/pythonBridge.ts`.
+- You can force a specific binary with `PYTHON_BIN` (useful for custom environments or virtualenv shims).
+- Saturn Visual Solver requires a valid OpenAI key (`OPENAI_API_KEY`) for image reasoning.
 
 ## 📊 Usage Examples
 
@@ -466,6 +477,30 @@ NODE_ENV=development           # Environment mode
 - Database storage enables user feedback and community verification
 - Local files saved to `data/explained/{puzzleId}-EXPLAINED.json`
 - Contains all model explanations for comparison
+
+## 🪐 Saturn Visual Solver (New)
+
+Visual, phased solver that streams intermediate images and progress events.
+
+- __Where__: Page `SaturnVisualSolver` at route `/puzzle/saturn/:taskId`.
+- __Open from UI__: From `Puzzle Examiner`, use the "Open in Visual Solver" navigation button (added next to analysis controls). You can also navigate directly with the URL.
+- __Model selector__: Choose among GPT‑5, Claude 4, and Grok 4 in the top-right model picker.
+- __Streaming__: The backend wrapper (`server/python/saturn_wrapper.py`) emits NDJSON events; the frontend hook (`client/src/hooks/useSaturnProgress.ts`) renders a live gallery of base64 images via `SaturnImageGallery`.
+- __Attribution__: A banner credits the open-source Saturn ARC project with a GitHub link, shown on both `SaturnVisualSolver` and `PuzzleExaminer`.
+
+### Prerequisites
+- `OPENAI_API_KEY` must be set. The visual solver uses image inputs and OpenAI's multimodal reasoning.
+- Python 3 with Pillow and NumPy installed via `requirements.txt` (done automatically in Docker; for local dev run `pip install -r requirements.txt`).
+
+### How to run
+1. Start the app (`npm run dev`) and open a puzzle.
+2. Click "Open in Visual Solver" or visit `/puzzle/saturn/<taskId>`.
+3. Pick a model and click "Start Analysis".
+4. Watch the Live Progress panel and the streamed image gallery update in real time.
+
+### Notes
+- On Windows, the backend uses `python`; on Linux (Railway), `python3`. Set `PYTHON_BIN` to override.
+- The solver generates temporary images in `solver/img_tmp/`; these are streamed to the UI as base64 (no static hosting required).
 
 ## 🔧 Development
 

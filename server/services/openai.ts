@@ -123,7 +123,13 @@ export class OpenAIService {
         
         const chatOptions: any = {
           model: modelName,
-          messages: [{ role: "user", content: prompt }],
+          // Cascade: Add a system message that explicitly mentions "json" to satisfy
+          // OpenAI's requirement when using response_format: { type: "json_object" }
+          // This prevents 400 errors like: "'messages' must contain the word 'json' ..."
+          messages: [
+            { role: "system", content: "You must return a single valid JSON object only. Do not include any text outside the JSON." },
+            { role: "user", content: prompt }
+          ],
           response_format: { type: "json_object" },
         };
 
@@ -180,7 +186,7 @@ export class OpenAIService {
         model: modelName,
         input: [{ role: "user", content: prompt }],
         reasoning: {
-          effort: "medium",
+          effort: "high",
           summary: "detailed"
         }
       };
@@ -190,7 +196,11 @@ export class OpenAIService {
       // Standard ChatCompletions API format
       messageFormat = {
         model: modelName,
-        messages: [{ role: "user", content: prompt }],
+        // Cascade: Reflect the system message so the preview matches what we send.
+        messages: [
+          { role: "system", content: "You must return a single valid JSON object only. Do not include any text outside the JSON." },
+          { role: "user", content: prompt }
+        ],
         temperature: temperature,
         response_format: { type: "json_object" }
       };
