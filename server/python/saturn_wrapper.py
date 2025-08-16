@@ -126,13 +126,13 @@ def run():
                     # Default to openai if ambiguous
                     provider = 'openai'
 
-        # Enforce supported providers here (no silent fallback)
-        if provider != 'openai':
-            emit({
-                'type': 'error',
-                'message': f"Unsupported provider for Saturn Visual Solver: {provider}. Only 'openai' is supported for image delivery (base64 PNG)."
-            })
-            return 1
+        # Provider pass-through: do not block non-OpenAI providers here.
+        # Note: The current ARCVisualSolver implementation is OpenAI-backed.
+        # Other providers may still function if upstream components adapt,
+        # but we intentionally avoid blocking at the wrapper level to match
+        # previous behavior requested by the application.
+        # (Cascade) 2025-08-15: removed OpenAI-only guard.
+        emit({ 'type': 'log', 'level': 'info', 'message': f"Provider selected: {provider}; model: {model}" })
 
         # Construct solver. ARCVisualSolver.__init__ takes no kwargs; provider/model are
         # enforced/normalized in this wrapper and used implicitly by the solver internals.
@@ -196,6 +196,8 @@ def run():
         verbose_output = io.StringIO()
         # Cascade: redirect both stdout and stderr through StreamEmitter so
         # prints are emitted live as NDJSON 'log' events and also captured.
+        print(f"[SATURN-DEBUG] Starting solve for task: {task_id} with provider: {provider}, model: {model}")
+        
         with contextlib.redirect_stdout(StreamEmitter(verbose_output, 'info')):
             with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'error')):
                 success, prediction, num_phases = solver.solve(task_path)
@@ -208,6 +210,8 @@ def run():
             pass
 
         verbose_log = verbose_output.getvalue()
+        print(f"[SATURN-DEBUG] Captured verbose log length: {len(verbose_log)} chars")
+        print(f"[SATURN-DEBUG] Verbose log preview: {verbose_log[:300]}...")
 
         # Optionally save prediction image
         pred_img_path = None
@@ -219,16 +223,24 @@ def run():
 
         timing_ms = int((time.time() - start_ts) * 1000)
 
+        # Prepare comprehensive result data
+        conversation_log = json.dumps(solver.conversation_history, indent=2) if solver.conversation_history else '[]'
+        
+        print(f"[SATURN-DEBUG] Final emit - success: {success}, prediction: {bool(prediction)}, phases: {num_phases}")
+        print(f"[SATURN-DEBUG] Conversation history length: {len(conversation_log)} chars")
+        
         emit({
             'type': 'final',
             'success': bool(success),
             'prediction': prediction if prediction else None,
             'result': {
-                'patternDescription': 'Saturn visual analysis completed.',
-                'reasoningLog': json.dumps(solver.conversation_history),
+                'patternDescription': f'Saturn visual analysis completed using {provider}/{model}.',
+                'reasoningLog': conversation_log,
                 'verboseLog': verbose_log,
-                'hasReasoningLog': True,
+                'hasReasoningLog': bool(solver.conversation_history),
                 'phasesUsed': num_phases,
+                'provider': provider,
+                'model': model,
             },
             'timingMs': timing_ms,
             'images': ([{'path': pred_img_path, 'base64': b64(pred_img_path)}] if pred_img_path else [])

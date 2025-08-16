@@ -40,6 +40,13 @@ async function runMigration() {
         ADD COLUMN IF NOT EXISTS has_reasoning_log BOOLEAN DEFAULT FALSE
       `);
       
+      // Add saturn_log column
+      console.log('📝 Adding saturn_log column...');
+      await client.query(`
+        ALTER TABLE explanations 
+        ADD COLUMN IF NOT EXISTS saturn_log TEXT
+      `);
+      
       // Update existing records
       console.log('🔄 Updating existing records...');
       const updateResult = await client.query(`
@@ -62,7 +69,7 @@ async function runMigration() {
         SELECT column_name, data_type, is_nullable, column_default
         FROM information_schema.columns 
         WHERE table_name = 'explanations' 
-        AND column_name IN ('reasoning_log', 'has_reasoning_log')
+        AND column_name IN ('reasoning_log', 'has_reasoning_log', 'saturn_log')
         ORDER BY column_name
       `);
       
