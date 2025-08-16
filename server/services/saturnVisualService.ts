@@ -19,6 +19,8 @@
  *   `saturnLog` (verbose stdout/stderr) and optional `saturnEvents` when
  *   available from `pythonBridge` final event augmentation. Treat save
  *   failures as hard errors.
+ * - 2025-08-15: Increase overall Saturn run timeout to 30 minutes to
+ *   accommodate longer analyses without premature termination.
  */
 
 import fs from 'fs';
@@ -105,8 +107,8 @@ class SaturnVisualService {
     });
 
     // Start the Python subprocess and stream events as they arrive
-    // Add 20-minute timeout to prevent hanging processes
-    const timeoutMs = 20 * 60 * 1000; // 20 minutes
+    // Add 30-minute timeout to prevent hanging processes
+    const timeoutMs = 30 * 60 * 1000; // 30 minutes
     let timeoutHandle: NodeJS.Timeout | null = null;
     let isCompleted = false;
     
@@ -117,7 +119,7 @@ class SaturnVisualService {
           broadcast(sessionId, {
             status: 'error',
             phase: 'timeout',
-            message: 'Saturn analysis timed out after 20 minutes. Process terminated.',
+            message: 'Saturn analysis timed out after 30 minutes. Process terminated.',
           });
           setTimeout(() => clearSession(sessionId), 5000);
           reject(new Error('Saturn analysis timeout'));
