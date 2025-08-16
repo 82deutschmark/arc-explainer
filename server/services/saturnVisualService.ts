@@ -105,7 +105,27 @@ class SaturnVisualService {
     });
 
     // Start the Python subprocess and stream events as they arrive
-    await pythonBridge.runSaturnAnalysis(
+    // Add 20-minute timeout to prevent hanging processes
+    const timeoutMs = 20 * 60 * 1000; // 20 minutes
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    let isCompleted = false;
+    
+    const timeoutPromise = new Promise<void>((_, reject) => {
+      timeoutHandle = setTimeout(() => {
+        if (!isCompleted) {
+          console.log(`[SATURN-DEBUG] Timeout after ${timeoutMs}ms for session ${sessionId}`);
+          broadcast(sessionId, {
+            status: 'error',
+            phase: 'timeout',
+            message: 'Saturn analysis timed out after 20 minutes. Process terminated.',
+          });
+          setTimeout(() => clearSession(sessionId), 5000);
+          reject(new Error('Saturn analysis timeout'));
+        }
+      }, timeoutMs);
+    });
+    
+    const analysisPromise = pythonBridge.runSaturnAnalysis(
       { taskPath, options },
       async (evt) => {
         try {
@@ -210,11 +230,19 @@ class SaturnVisualService {
                 },
               });
 
+              // Mark as completed and cleanup timeout
+              isCompleted = true;
+              if (timeoutHandle) clearTimeout(timeoutHandle);
+              
               // Cleanup in-memory session cache later
               setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
               break;
             }
             case 'error': {
+              // Mark as completed and cleanup timeout on error
+              isCompleted = true;
+              if (timeoutHandle) clearTimeout(timeoutHandle);
+              
               broadcast(sessionId, {
                 status: 'error',
                 phase: 'runtime',
@@ -233,6 +261,15 @@ class SaturnVisualService {
         }
       }
     );
+    
+    try {
+      await Promise.race([analysisPromise, timeoutPromise]);
+    } catch (error) {
+      console.error(`[SATURN-DEBUG] Analysis error or timeout for session ${sessionId}:`, error);
+      // Ensure cleanup happens even on timeout/error
+      isCompleted = true;
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+    }
   }
 }
 

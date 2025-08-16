@@ -104,9 +104,20 @@ export function useSaturnProgress(taskId: string | undefined) {
 
     sock.onmessage = (evt) => {
       try {
+        console.log('[SATURN-DEBUG] WebSocket raw message:', evt.data.substring(0, 500));
         const payload = JSON.parse(evt.data);
         const data = payload?.data;
-        if (!data) return;
+        console.log('[SATURN-DEBUG] WebSocket parsed payload:', {
+          type: payload?.type,
+          status: data?.status,
+          phase: data?.phase,
+          message: data?.message?.substring(0, 100),
+          imagesCount: Array.isArray(data?.images) ? data.images.length : 0
+        });
+        if (!data) {
+          console.log('[SATURN-DEBUG] WebSocket message has no data field');
+          return;
+        }
         setState((prev) => {
           let nextGallery = prev.galleryImages ?? [];
           const incoming = Array.isArray(data.images) ? data.images : [];
@@ -129,9 +140,18 @@ export function useSaturnProgress(taskId: string | undefined) {
             // Cap to avoid unbounded growth
             if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
           }
-          return { ...prev, ...data, galleryImages: nextGallery, logLines: nextLogs };
+          const newState = { ...prev, ...data, galleryImages: nextGallery, logLines: nextLogs };
+          console.log('[SATURN-DEBUG] WebSocket state update:', {
+            status: newState.status,
+            phase: newState.phase,
+            galleryCount: newState.galleryImages?.length || 0,
+            logCount: newState.logLines?.length || 0
+          });
+          return newState;
         });
-      } catch {}
+      } catch (error) {
+        console.error('[SATURN-DEBUG] WebSocket parse error:', error, 'Raw data:', evt.data);
+      }
     };
 
     sock.onclose = () => {
