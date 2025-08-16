@@ -7,4 +7,5 @@ vite.config.ts.*
 .env
 /data/explained
 /data/explained
+*.pyc
 
