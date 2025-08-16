@@ -13,6 +13,7 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
+import type { PromptOptions } from '../services/promptBuilder';
 
 export const puzzleController = {
   /**
@@ -64,7 +65,7 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication", customPrompt } = req.body;
+    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication", customPrompt, emojiSetKey, omitAnswer } = req.body;
     
     // Log the request with custom prompt handling
     if (customPrompt) {
@@ -78,7 +79,13 @@ export const puzzleController = {
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt);
+    
+    // Build options object for prompt builder
+    const options: PromptOptions = {};
+    if (emojiSetKey) options.emojiSetKey = emojiSetKey;
+    if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
+    
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options);
     
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
@@ -118,7 +125,7 @@ export const puzzleController = {
   async previewPrompt(req: Request, res: Response) {
     try {
       const { provider, taskId } = req.params;
-      const { promptId = "standardExplanation", customPrompt, temperature = 0.75, captureReasoning = true } = req.body;
+      const { promptId = "standardExplanation", customPrompt, temperature = 0.75, captureReasoning = true, emojiSetKey, omitAnswer } = req.body;
 
       console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
 
@@ -134,6 +141,11 @@ export const puzzleController = {
         return res.status(400).json(formatResponse.error('Invalid provider', 'The specified AI provider is not supported'));
       }
 
+      // Build options object for prompt builder
+      const options: PromptOptions = {};
+      if (emojiSetKey) options.emojiSetKey = emojiSetKey;
+      if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
+
       // Generate provider-specific prompt preview
       const previewData = await aiService.generatePromptPreview(
         puzzle, 
@@ -141,7 +153,8 @@ export const puzzleController = {
         temperature, 
         captureReasoning, 
         promptId, 
-        customPrompt
+        customPrompt,
+        options
       );
 
       res.json(formatResponse.success(previewData));
