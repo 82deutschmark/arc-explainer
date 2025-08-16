@@ -8,13 +8,16 @@ Wrapper around ARCVisualSolver that:
 - Emits NDJSON events to stdout for start/progress/log/final/error
 - Base64-encodes generated images so the frontend can render without static hosting
 
-Author: Cascade (model: Cascade)
+Author: Cascade (model: Cascade GPT-5 medium reasoning)
 """
 import sys
 import os
 import json
 import time
+import io
+import contextlib
 import base64
+import threading
 from typing import Any, Dict, List
 
 # Ensure we can import the solver package
@@ -32,9 +35,11 @@ except Exception as e:
 
 
 def emit(obj: Dict[str, Any]):
-    """Emit a single NDJSON event to stdout and flush."""
-    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
-    sys.stdout.flush()
+    """Emit a single NDJSON event and flush.
+    Important: write to sys.__stdout__ to avoid recursion when stdout is redirected.
+    """
+    sys.__stdout__.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    sys.__stdout__.flush()
 
 
 def b64(path: str) -> str:
@@ -45,132 +50,170 @@ def b64(path: str) -> str:
         return ''
 
 
+# Cascade: StreamEmitter tees Python prints to both an in-memory buffer and
+# NDJSON 'log' events so the UI can display real-time console output.
+class StreamEmitter(io.TextIOBase):
+    def __init__(self, sink: io.StringIO, level: str = 'info') -> None:
+        self._sink = sink
+        self._buf = ''
+        self._level = level
+
+    def write(self, s: Any) -> int:
+        try:
+            text = s if isinstance(s, str) else str(s)
+        except Exception:
+            text = str(s)
+        # Always store full output for final verbose log
+        self._sink.write(text)
+        self._buf += text
+        # Emit each complete line as a log event
+        count = 0
+        while '\n' in self._buf:
+            line, self._buf = self._buf.split('\n', 1)
+            line_stripped = line.strip()
+            if line_stripped:
+                emit({ 'type': 'log', 'level': ('error' if self._level == 'error' else 'info'), 'message': line_stripped })
+            count += 1
+        return len(text)
+
+    def flush(self) -> None:
+        # No-op; flush handled by emit and outer streams
+        pass
+
+
 def run():
     try:
         payload_raw = sys.stdin.read()
         cfg = json.loads(payload_raw)
         task_path: str = cfg.get('taskPath')
-        options: Dict[str, Any] = cfg.get('options', {})
         if not task_path or not os.path.exists(task_path):
             emit({"type": "error", "message": f"Task file not found: {task_path}"})
             return 1
 
         start_ts = time.time()
+        # Cascade: derive a simple task id for per-run image isolation
+        task_id = os.path.splitext(os.path.basename(task_path))[0]
 
-        solver = ARCVisualSolver()
-        # Ensure temp image directory exists
+        # Announce start (minimal metadata)
+        emit({'type': 'start', 'metadata': {'taskPath': task_path}})
+
+        # Extract options; default provider is openai (explicit, no silent fallback)
+        opts: Dict[str, Any] = cfg.get('options') or {}
+        provider: str = (opts.get('provider') or 'openai').lower()
+        model: str = opts.get('model') or 'gpt-5'
+        temperature = opts.get('temperature')
+        cell_size = opts.get('cellSize') or 30
+        # Cascade: total steps hint used only for UI progress context on image events
+        max_steps = int(opts.get('maxSteps') or 8)
+
+        # Normalize common UI model labels to backend ids
+        # Note: We do not touch the solver; we keep normalization here in the wrapper.
+        if isinstance(model, str):
+            m_lower = model.strip().lower()
+            if m_lower == 'gpt-5' or m_lower == 'gpt5' or model == 'GPT-5':
+                model = 'gpt-5'
+
+            # If provider wasn't explicitly provided, infer from the model label.
+            # This avoids passing an OpenAI provider with an Anthropic/Xai model name.
+            if not opts.get('provider'):
+                if 'claude' in m_lower or 'anthropic' in m_lower:
+                    provider = 'anthropic'
+                elif 'grok' in m_lower or 'xai' in m_lower:
+                    provider = 'xai'
+                elif 'gpt' in m_lower or 'openai' in m_lower:
+                    provider = 'openai'
+                else:
+                    # Default to openai if ambiguous
+                    provider = 'openai'
+
+        # Enforce supported providers here (no silent fallback)
+        if provider != 'openai':
+            emit({
+                'type': 'error',
+                'message': f"Unsupported provider for Saturn Visual Solver: {provider}. Only 'openai' is supported for image delivery (base64 PNG)."
+            })
+            return 1
+
+        # Construct solver. ARCVisualSolver.__init__ takes no kwargs; provider/model are
+        # enforced/normalized in this wrapper and used implicitly by the solver internals.
+        # Do NOT pass unsupported kwargs like 'provider' to avoid init errors.
+        try:
+            solver = ARCVisualSolver()
+        except Exception as init_err:
+            emit({
+                'type': 'error',
+                'message': f"Failed to initialize Saturn solver: {init_err}"
+            })
+            return 1
+
+        # Cascade: Isolate images per run by creating a unique subdirectory.
+        # This prevents the watcher from emitting PNGs from previous runs.
+        run_dir = os.path.join(solver.temp_dir, f"{task_id}_{int(time.time()*1000)}")
+        solver.temp_dir = run_dir
         os.makedirs(solver.temp_dir, exist_ok=True)
 
-        # Load the task once
-        task = solver.load_task(task_path)
+        # Cascade: Start a lightweight watcher thread that streams newly created PNGs
+        # from the solver's temp directory as incremental progress events. This avoids
+        # touching the solver internals while enabling the UI to display images as
+        # they are generated. The watcher deduplicates by filename, caps the number
+        # of images, and stops when the solve completes.
+        stop_event = threading.Event()
 
-        # Compute total steps based on dataset
-        train_len = len(task.get('train', []))
-        extra_train = max(0, train_len - 2)
-        total_steps = 1 + (1 if train_len > 1 else 0) + (1 if train_len > 1 else 0) + extra_train + 1
+        def _watch_and_emit_images():
+            seen: set[str] = set()
+            cap = 50  # safety cap to avoid excessive events
+            while not stop_event.is_set():
+                try:
+                    # Sort for stable ordering when multiple files appear between polls
+                    for name in sorted(os.listdir(solver.temp_dir)):
+                        if not name.lower().endswith('.png'):
+                            continue
+                        if name in seen:
+                            continue
+                        full = os.path.join(solver.temp_dir, name)
+                        data = b64(full)
+                        if data:
+                            emit({
+                                'type': 'progress',
+                                'phase': 'image',
+                                'step': 0,  # unknown without modifying solver; UI uses this only as a hint
+                                'totalSteps': max_steps,
+                                'message': f'Image generated: {name}',
+                                'images': [{ 'path': full, 'base64': data }],
+                            })
+                            seen.add(name)
+                            if len(seen) >= cap:
+                                stop_event.set()
+                                break
+                except Exception:
+                    # Swallow watcher errors to avoid interrupting the solve
+                    pass
+                time.sleep(0.25)
 
-        emit({
-            'type': 'start',
-            'metadata': {
-                'trainCount': train_len,
-                'testCount': len(task.get('test', [])),
-                'model': options.get('model', 'saturn')
-            }
-        })
+        watcher = threading.Thread(target=_watch_and_emit_images, daemon=True)
+        watcher.start()
 
-        step = 0
-        # Phase 1: First training example I/O
-        step += 1
-        train0_in = solver.create_grid_image(task['train'][0]['input'], label='train1_input')
-        train0_out = solver.create_grid_image(task['train'][0]['output'], label='train1_output')
-        emit({
-            'type': 'progress',
-            'phase': 'train_example_1',
-            'step': step,
-            'totalSteps': total_steps,
-            'message': 'Analyzing first training IO pair',
-            'images': [
-                {'path': train0_in, 'base64': b64(train0_in)},
-                {'path': train0_out, 'base64': b64(train0_out)}
-            ]
-        })
-        prompt_1 = (
-            "You are looking at a visual puzzle. I'll show you examples of inputs and their corresponding outputs.\n\n"
-            "Remember transformations are deterministic and reproducible.\n\n"
-            "Here's the first training example:"
-        )
-        solver.call_ai_with_image(prompt_1, [train0_in, train0_out])
+        verbose_output = io.StringIO()
+        # Cascade: redirect both stdout and stderr through StreamEmitter so
+        # prints are emitted live as NDJSON 'log' events and also captured.
+        with contextlib.redirect_stdout(StreamEmitter(verbose_output, 'info')):
+            with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'error')):
+                success, prediction, num_phases = solver.solve(task_path)
 
-        # Phase 2 and 3 if training[1] exists
-        if train_len > 1:
-            # Phase 2: predict second training output
-            step += 1
-            train1_in = solver.create_grid_image(task['train'][1]['input'], label='train2_input')
-            emit({
-                'type': 'progress',
-                'phase': 'train_example_2_predict',
-                'step': step,
-                'totalSteps': total_steps,
-                'message': 'Predicting second training output',
-                'images': [ {'path': train1_in, 'base64': b64(train1_in)} ]
-            })
-            solver.call_ai_with_image("Predict output for second training input based on learned pattern.", [train1_in])
+        # Ensure watcher stops after solve finishes
+        stop_event.set()
+        try:
+            watcher.join(timeout=1.0)
+        except Exception:
+            pass
 
-            # Phase 3: reveal second training output
-            step += 1
-            train1_out = solver.create_grid_image(task['train'][1]['output'], label='train2_output')
-            emit({
-                'type': 'progress',
-                'phase': 'train_example_2_reveal',
-                'step': step,
-                'totalSteps': total_steps,
-                'message': 'Revealing second training output and refining approach',
-                'images': [ {'path': train1_out, 'base64': b64(train1_out)} ]
-            })
-            solver.call_ai_with_image("Here is the correct output for the second training example; refine your approach.", [train1_out])
+        verbose_log = verbose_output.getvalue()
 
-        # Additional training examples
-        for i in range(2, train_len):
-            step += 1
-            img_in = solver.create_grid_image(task['train'][i]['input'], label=f'train{i+1}_input')
-            img_out = solver.create_grid_image(task['train'][i]['output'], label=f'train{i+1}_output')
-            emit({
-                'type': 'progress',
-                'phase': f'train_example_{i+1}',
-                'step': step,
-                'totalSteps': total_steps,
-                'message': f'Processing training example {i+1}',
-                'images': [
-                    {'path': img_in, 'base64': b64(img_in)},
-                    {'path': img_out, 'base64': b64(img_out)}
-                ]
-            })
-            solver.call_ai_with_image(f"Training example {i+1} input/output for analysis.", [img_in, img_out])
-
-        # Phase 4: test input -> predict output
-        step += 1
-        test_in = solver.create_grid_image(task['test'][0]['input'], label='test_input')
-        emit({
-            'type': 'progress',
-            'phase': 'test_predict',
-            'step': step,
-            'totalSteps': total_steps,
-            'message': 'Generating prediction for test input',
-            'images': [ {'path': test_in, 'base64': b64(test_in)} ]
-        })
-        resp_test = solver.call_ai_with_image("Generate the output grid for this test input.", [test_in])
-
-        predicted = solver.parse_grid_from_response(resp_test)
-        success = False
-        actual_out = None
-        if 'output' in task['test'][0] and task['test'][0]['output']:
-            actual_out = task['test'][0]['output']
-            success = (predicted == actual_out)
-
+        # Optionally save prediction image
         pred_img_path = None
-        if predicted:
+        if prediction:
             try:
-                pred_img_path = solver.create_grid_image(predicted, label='final_prediction')
+                pred_img_path = solver.create_grid_image(prediction, label='final_prediction')
             except Exception:
                 pred_img_path = None
 
@@ -179,15 +222,13 @@ def run():
         emit({
             'type': 'final',
             'success': bool(success),
-            'prediction': predicted if predicted else None,
+            'prediction': prediction if prediction else None,
             'result': {
                 'patternDescription': 'Saturn visual analysis completed.',
-                'solvingStrategy': 'Phased visual reasoning with iterative refinement.',
-                'hints': ['Focus on consistent transformations', 'Check object semantics'],
-                'alienMeaning': '',
-                'confidence': 50 if not success else 90,
                 'reasoningLog': json.dumps(solver.conversation_history),
-                'hasReasoningLog': True
+                'verboseLog': verbose_log,
+                'hasReasoningLog': True,
+                'phasesUsed': num_phases,
             },
             'timingMs': timing_ms,
             'images': ([{'path': pred_img_path, 'base64': b64(pred_img_path)}] if pred_img_path else [])

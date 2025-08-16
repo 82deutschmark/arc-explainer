@@ -13,6 +13,12 @@
  * orchestrates the run, broadcasts progress, and saves final results.
  *
  * Author: Cascade (model: Cascade)
+ *
+ * Change log (Cascade):
+ * - 2025-08-15: Enforce DB connectivity as a hard requirement. Persist
+ *   `saturnLog` (verbose stdout/stderr) and optional `saturnEvents` when
+ *   available from `pythonBridge` final event augmentation. Treat save
+ *   failures as hard errors.
  */
 
 import fs from 'fs';
@@ -23,6 +29,8 @@ import { dbService } from './dbService';
 import { puzzleLoader } from './puzzleLoader';
 
 interface SaturnOptions {
+  /** Provider id (e.g., 'openai'). Python wrapper validates support. */
+  provider?: string;
   model: string;
   temperature: number;
   cellSize: number;
@@ -48,6 +56,16 @@ function resolveTaskPath(taskId: string): string | null {
 
 class SaturnVisualService {
   async run(taskId: string, sessionId: string, options: SaturnOptions) {
+    // Enforce DB as a hard requirement (no memory-only mode for Saturn).
+    if (!dbService.isConnected()) {
+      broadcast(sessionId, {
+        status: 'error',
+        phase: 'init',
+        message: 'Database not connected. Saturn runs require DB persistence.',
+      });
+      return;
+    }
+
     // Validate the task exists for client metadata (counts only)
     const task = await puzzleLoader.loadPuzzle(taskId);
     if (!task) {
@@ -137,6 +155,11 @@ class SaturnVisualService {
 
               // Prepare the explanation object for DB persistence
               const reasoningLog: string | null = (evt as any).result?.reasoningLog ?? null;
+              const saturnLog: string | null = (evt as any).saturnLog ?? null;
+              // Attach optional event trace if provided by pythonBridge, store as TEXT
+              const saturnEventsText: string | null = (evt as any).eventTrace
+                ? (() => { try { return JSON.stringify((evt as any).eventTrace); } catch { return null; } })()
+                : null;
               const explanation = {
                 patternDescription: (evt as any).result?.patternDescription || '',
                 solvingStrategy: (evt as any).result?.solvingStrategy || '',
@@ -149,6 +172,8 @@ class SaturnVisualService {
                 hasReasoningLog: !!reasoningLog,
                 apiProcessingTimeMs: (evt as any).timingMs,
                 saturnImages: Array.from(new Set(imagePaths)),
+                saturnLog,
+                saturnEvents: saturnEventsText,
               } as const;
 
               let explanationId: number | null = null;
@@ -160,6 +185,16 @@ class SaturnVisualService {
                   phase: 'persistence',
                   message: `Failed to save Saturn results: ${saveErr instanceof Error ? saveErr.message : String(saveErr)}`,
                 });
+              }
+
+              if (explanationId == null) {
+                broadcast(sessionId, {
+                  status: 'error',
+                  phase: 'persistence',
+                  message: 'Database returned null explanation ID; aborting run.',
+                });
+                setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
+                break;
               }
 
               broadcast(sessionId, {

@@ -6,9 +6,21 @@ Converts grid data from stdin to PNG images for visual analysis
 
 import sys
 import re
+import os
 from typing import List
 from PIL import Image
 import numpy as np
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables from .env file in project root
+project_root = Path(__file__).parent.parent
+env_path = project_root / '.env'
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    # Fallback to default .env location
+    load_dotenv()
 
 # ARC color palette (0-9 mapped to colors)
 ARC_COLORS = {

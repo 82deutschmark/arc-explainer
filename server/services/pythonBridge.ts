@@ -13,7 +13,14 @@
  *   { type: 'final', success, prediction?, result, timingMs, images?: [...] }
  *   { type: 'error', message }
  *
- * Author: Cascade (model: Cascade GPT-5 medium reasoning)
+ * Author: Cascade (model: Cascade)
+ *
+ * Change log (Cascade):
+ * - 2025-08-15: Buffer non-JSON stdout and all stderr lines into a verbose log.
+ *   Attach `saturnLog` to the `final` event. Also collect a capped `eventTrace`
+ *   array of NDJSON events to optionally persist as `saturn_events`.
+ * - 2025-08-15: Add provider pass-through in `options` (default handled upstream).
+ *   Python wrapper will validate provider and enforce base64 PNG image delivery.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -23,6 +30,8 @@ import * as readline from 'node:readline';
 export type SaturnBridgeOptions = {
   taskPath: string;
   options: {
+    /** Provider to use; Python wrapper enforces supported providers (OpenAI only). */
+    provider?: string;
     model: string;
     temperature?: number;
     cellSize?: number;
@@ -102,16 +111,42 @@ export class PythonBridge {
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
 
+      // Buffers for verbose log and optional event trace
+      const logBuffer: string[] = [];
+      const eventTrace: any[] = [];
+      const pushEvent = (evt: any) => {
+        // Cap the trace to avoid unbounded memory
+        if (eventTrace.length < 500) eventTrace.push(evt);
+      };
+
       // Stream stdout as NDJSON
       const rl = readline.createInterface({ input: child.stdout });
       rl.on('line', (line) => {
         const trimmed = line.trim();
         if (!trimmed) return;
         try {
-          const evt = JSON.parse(trimmed) as SaturnBridgeEvent;
-          onEvent(evt);
+          const evt = JSON.parse(trimmed) as any;
+          pushEvent(evt);
+          // Attach verbose log on final. Prefer Python-provided result.verboseLog if present,
+          // otherwise fall back to our buffered stdout/stderr.
+          if (evt.type === 'final') {
+            const verboseFromPy: string | undefined = evt?.result?.verboseLog;
+            // Always include any buffered logs (stderr and non-JSON stdout),
+            // even when Python provided a captured stdout log, to avoid losing stderr.
+            const buffered = logBuffer.join('\n');
+            const saturnLog = [verboseFromPy || '', buffered].filter(Boolean).join('\n');
+            const augmented = {
+              ...evt,
+              saturnLog,
+              eventTrace,
+            } as any;
+            onEvent(augmented as SaturnBridgeEvent);
+          } else {
+            onEvent(evt as SaturnBridgeEvent);
+          }
         } catch (err) {
           // Forward as log so caller can surface or ignore
+          logBuffer.push(trimmed);
           onEvent({ type: 'log', level: 'info', message: trimmed });
         }
       });
@@ -119,6 +154,7 @@ export class PythonBridge {
       // Forward stderr as logs
       const rlErr = readline.createInterface({ input: child.stderr });
       rlErr.on('line', (line) => {
+        logBuffer.push(`[stderr] ${line}`);
         onEvent({ type: 'log', level: 'error', message: line });
       });
 
