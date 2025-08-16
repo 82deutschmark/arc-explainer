@@ -162,5 +162,17 @@ export const puzzleController = {
       console.error('[Controller] Error generating prompt preview:', error);
       res.status(500).json(formatResponse.error('Failed to generate prompt preview', 'An error occurred while generating the prompt preview'));
     }
+  },
+
+  // Debug endpoint to force puzzle loader reinitialization
+  async reinitialize(req: Request, res: Response) {
+    try {
+      const { puzzleLoader } = await import('../services/puzzleLoader');
+      puzzleLoader.forceReinitialize();
+      res.json(formatResponse.success({ message: 'Puzzle loader reinitialized successfully' }));
+    } catch (error) {
+      console.error('[Controller] Error reinitializing puzzle loader:', error);
+      res.status(500).json(formatResponse.error('Failed to reinitialize puzzle loader', 'An error occurred while reinitializing the puzzle loader'));
+    }
   }
 };
