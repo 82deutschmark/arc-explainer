@@ -67,6 +67,14 @@ export class PuzzleLoader {
     this.initializeData();
   }
 
+  // Force reinitialization - useful for development and testing
+  public forceReinitialize() {
+    this.initialized = false;
+    this.puzzleCache.clear();
+    this.puzzleMetadata.clear();
+    this.initializeData();
+  }
+
   private async initializeData() {
     if (this.initialized) {
       console.log('PuzzleLoader already initialized, skipping initialization');
