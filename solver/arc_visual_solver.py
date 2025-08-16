@@ -105,11 +105,13 @@ class ARCVisualSolver:
         messages = self.conversation_history + [{"role": "user", "content": content}]
         
         # Create the API call with tools always enabled
+        # Use reasoning effort from environment or default to high
+        reasoning_effort = os.getenv('REASONING_EFFORT', 'high')
         call_params = {
             "model": "gpt-5",
             "reasoning": {
-                "effort": "high"
-                # "max_tokens": 10 * 1000
+                "effort": reasoning_effort,
+                "summary": "detailed"
             },
             "input": messages,  # Use 'input' instead of 'messages' for responses API
             "tools": [VISUALIZATION_TOOL],
