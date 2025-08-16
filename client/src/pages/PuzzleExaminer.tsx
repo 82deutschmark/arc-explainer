@@ -134,13 +134,6 @@ export default function PuzzleExaminer() {
         </div>
         
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Cascade: Quick entry to Saturn Visual Solver for this task */}
-          <Link href={`/puzzle/saturn/${taskId}`}>
-            <Button size="sm" className="flex items-center gap-2">
-              <Rocket className="h-4 w-4" />
-              Open Saturn Visual Solver
-            </Button>
-          </Link>
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -160,61 +153,9 @@ export default function PuzzleExaminer() {
               {showEmojis ? '🔢 Show Numbers' : '🛸 Show Emojis'}
             </span>
           </Button>
-
-          {/* Emoji Set Picker */}
-          <div className="w-56">
-            <Select
-              value={emojiSet}
-              onValueChange={(val) => setEmojiSet(val as EmojiSet)}
-              disabled={!showEmojis}
-            >
-              <SelectTrigger className="h-8" title={EMOJI_SET_INFO[emojiSet]?.description}>
-                <SelectValue placeholder="Select emoji palette" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Emoji Palettes</SelectLabel>
-                  {Object.entries(EMOJI_SET_INFO)
-                    .map(([key, info]) => (
-                      <SelectItem key={key} value={key}>
-                        {info.name}
-                      </SelectItem>
-                    ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Omit Answer Toggle (affects prompt building only) */}
-          <div className="flex items-center gap-2 px-3 py-1.5 border rounded-lg">
-            <Switch
-              checked={omitAnswer}
-              onCheckedChange={setOmitAnswer}
-              disabled={isAnalyzing}
-              id="omit-answer-toggle"
-            />
-            <label htmlFor="omit-answer-toggle" className="text-sm select-none">
-              Omit correct answer in prompt
-            </label>
-          </div>
         </div>
       </div>
 
-      {/* Cascade: UI attribution banner for Saturn ARC with GitHub link */}
-      <Alert className="mt-3 bg-amber-50 border-amber-200">
-        <AlertDescription>
-          The Saturn Visual Solver is powered by the open-source Saturn ARC project by Zoe Carver.{' '}
-          <a
-            href="https://github.com/zoecarver/saturn-arc"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-medium text-amber-800 hover:text-amber-900"
-          >
-            View on GitHub
-          </a>
-          .
-        </AlertDescription>
-      </Alert>
 
       {/* Complete Puzzle Pattern */}
       <Card>
@@ -319,6 +260,83 @@ export default function PuzzleExaminer() {
             onCustomPromptChange={setCustomPrompt}
             disabled={isAnalyzing}
           />
+
+          {/* Advanced Options */}
+          <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <h5 className="text-sm font-semibold mb-3 text-gray-700">Advanced Options</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              
+              {/* Saturn Visual Solver */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Visual Solver</label>
+                <Link href={`/puzzle/saturn/${taskId}`}>
+                  <Button size="sm" className="w-full flex items-center gap-2">
+                    <Rocket className="h-4 w-4" />
+                    Open Saturn Visual Solver
+                  </Button>
+                </Link>
+                <p className="text-xs text-gray-500">Uses iterative visual analysis to solve puzzles</p>
+              </div>
+
+              {/* Emoji Set Picker */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Emoji Palette (if enabled)</label>
+                <Select
+                  value={emojiSet}
+                  onValueChange={(val) => setEmojiSet(val as EmojiSet)}
+                  disabled={!showEmojis || isAnalyzing}
+                >
+                  <SelectTrigger className="w-full" title={EMOJI_SET_INFO[emojiSet]?.description}>
+                    <SelectValue placeholder="Select emoji palette" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Emoji Palettes</SelectLabel>
+                      {Object.entries(EMOJI_SET_INFO)
+                        .map(([key, info]) => (
+                          <SelectItem key={key} value={key}>
+                            {info.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">Changes how patterns are represented in prompts</p>
+              </div>
+
+              {/* Omit Answer Toggle */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Research Option</label>
+                <div className="flex items-center gap-2 p-2 border rounded">
+                  <Switch
+                    checked={omitAnswer}
+                    onCheckedChange={setOmitAnswer}
+                    disabled={isAnalyzing}
+                    id="omit-answer-toggle-advanced"
+                  />
+                  <label htmlFor="omit-answer-toggle-advanced" className="text-sm select-none">
+                    Omit correct answer in prompt
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500">Hides the solution from AI models for testing</p>
+              </div>
+            </div>
+            
+            {/* Saturn Attribution */}
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <p className="text-xs text-gray-600">
+                💡 Saturn Visual Solver is powered by the open-source{' '}
+                <a
+                  href="https://github.com/zoecarver/saturn-arc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium text-blue-600 hover:text-blue-800"
+                >
+                  Saturn ARC project by Zoe Carver
+                </a>
+              </p>
+            </div>
+          </div>
 
           {/* Prompt Preview */}
           <div className="mb-4 flex justify-center">
