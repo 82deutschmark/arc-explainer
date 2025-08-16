@@ -91,6 +91,8 @@ def run():
             return 1
 
         start_ts = time.time()
+        # Cascade: derive a simple task id for per-run image isolation
+        task_id = os.path.splitext(os.path.basename(task_path))[0]
 
         # Announce start (minimal metadata)
         emit({'type': 'start', 'metadata': {'taskPath': task_path}})
@@ -144,6 +146,10 @@ def run():
             })
             return 1
 
+        # Cascade: Isolate images per run by creating a unique subdirectory.
+        # This prevents the watcher from emitting PNGs from previous runs.
+        run_dir = os.path.join(solver.temp_dir, f"{task_id}_{int(time.time()*1000)}")
+        solver.temp_dir = run_dir
         os.makedirs(solver.temp_dir, exist_ok=True)
 
         # Cascade: Start a lightweight watcher thread that streams newly created PNGs
