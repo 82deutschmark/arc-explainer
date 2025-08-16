@@ -20,7 +20,7 @@
  *   Attach `saturnLog` to the `final` event. Also collect a capped `eventTrace`
  *   array of NDJSON events to optionally persist as `saturn_events`.
  * - 2025-08-15: Add provider pass-through in `options` (default handled upstream).
- *   Python wrapper will validate provider and enforce base64 PNG image delivery.
+ *   Python wrapper logs provider selection and always base64-encodes images.
  */
 
 import { spawn, SpawnOptions } from 'child_process';
@@ -30,7 +30,7 @@ import * as readline from 'node:readline';
 export type SaturnBridgeOptions = {
   taskPath: string;
   options: {
-    /** Provider to use; Python wrapper enforces supported providers (OpenAI only). */
+    /** Provider to use; Python wrapper now passes through providers without blocking. */
     provider?: string;
     model: string;
     temperature?: number;
