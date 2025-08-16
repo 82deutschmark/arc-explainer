@@ -110,6 +110,8 @@ export interface ExplanationData {
   reasoningLog?: string | null; // Step-by-step reasoning from AI models
   hasReasoningLog?: boolean; // Whether reasoning log is available
   apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
+  // Saturn-specific fields
+  saturnSuccess?: boolean | null; // Whether Saturn solver successfully solved the puzzle
 }
 
 /**
