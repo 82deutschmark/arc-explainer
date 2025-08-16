@@ -7,6 +7,5 @@ vite.config.ts.*
 .env
 /data/explained
 /data/explained
-/solver/img_tmp
 *.pyc
-/solver/__pycache__
+
