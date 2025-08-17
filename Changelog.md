@@ -7,6 +7,28 @@
 
 August 17, 2025
 
+## Version 1.3.6 — Modular Emoji Palette System (2025-08-17)
+
+### Features
+- __Modular Emoji Palette Architecture (Code by Claude 4 Sonnet)__: Complete redesign of emoji palette system to be server-driven and dynamically configurable.
+  - **Single Source of Truth**: Emoji palettes now served from `server/services/promptBuilder.ts` via new `/api/emoji-sets` endpoint
+  - **Dynamic UI Population**: Header emoji selector fetches available palettes from server instead of hardcoded client data
+  - **Enhanced Separation of Concerns**: Clear distinction between visual display (`showEmojis`) and AI prompt format (`sendAsEmojis`)
+  - **Advanced Options Integration**: "Send as emojis" toggle properly controls what format gets sent to AI models
+  - **Flexible Type System**: Updated TypeScript interfaces to support both legacy and new server-provided emoji sets
+
+### Technical Implementation
+- **New API Endpoint**: `GET /api/emoji-sets` serves formatted emoji data with names, descriptions, and emoji arrays
+- **Server Functions**: Added `getEmojiSetsForAPI()` with automatic name/description generation for all emoji sets
+- **Type Safety**: Updated `PuzzleGridProps`, `GridCellProps`, and emoji utility functions to handle dynamic emoji set keys
+- **Backward Compatibility**: Existing emoji sets continue to work while supporting new server-provided sets
+
+### Architecture Benefits
+- **Maintainability**: New emoji sets can be added to server and automatically appear in UI
+- **Consistency**: Server-side `promptBuilder.ts` is now authoritative source for both visual display and AI prompts
+- **Scalability**: Easy to extend with new emoji palettes without client code changes
+- **User Experience**: Clean separation between visual preferences and AI prompt format selection
+
 ## Version 1.3.5 — Puzzle Overview Page Fix (2025-08-17)
 
 ### Bug Fixes

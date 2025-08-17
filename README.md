@@ -37,6 +37,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **Custom Prompts for Researchers** - Enter your own analysis prompt to override templates per run
 
+• **Modular Emoji Palette System** - Server-driven emoji palette selection with dynamic API integration. Choose from multiple themed emoji sets for visual display, with separate control over AI prompt format.
+
 • **Database Overview Dashboard** - Browse all puzzles with comprehensive filtering, search, and sorting capabilities. View explanation status, model analysis history, confidence ratings, and processing times across the entire puzzle database
 
 ## 🌟 Development & Credits
@@ -57,6 +59,12 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
   - **Centralized Prompt Management**: Standardized prompt templates in `shared/types.ts` for consistency and maintainability.
   - **Backend API Updates**: Created a new `GET /api/prompts` endpoint and updated the `POST /api/puzzle/analyze` endpoint to support prompt selection.
   - **Code Standardization**: Updated author comments and ensured consistent default prompt IDs across all AI services.
+
+### Claude 4 Sonnet Thinking's Contributions (August 17, 2025)
+- **Modular Emoji Palette System (Code Author)**: Complete redesign of emoji palette system to be server-driven and dynamically configurable.
+- **API Integration**: Created `/api/emoji-sets` endpoint and server-side functions to serve emoji data from `promptBuilder.ts`.
+- **Advanced Options Reorganization**: Implemented clean separation between visual display controls and AI prompt format controls.
+- **Type System Enhancement**: Updated TypeScript interfaces to support both legacy and dynamic emoji set keys with backward compatibility.
 
 ### Claude 4 Sonnet Thinking's Contributions (August 12, 2025)
 - **Custom Prompt Support (Code Author)**: Implemented end-to-end support for user-defined prompts that override templates during analysis.
@@ -403,6 +411,14 @@ The application is built around a core loop of examining puzzles, generating AI 
 - Side-by-side training examples and test cases
 - AI-powered analysis of puzzle solutions
 - Explanations focused on why solutions are correct
+- Modular emoji palette system with server-driven options
+
+### Emoji Palette System
+- **Visual Display Control**: Header toggle and palette selector for UI appearance
+- **AI Prompt Control**: Advanced Options "Send as emojis" toggle for AI model format
+- **Dynamic Palettes**: Server-driven emoji sets from `promptBuilder.ts`
+- **Themed Collections**: Celestial, tech, navigation, status, and alien communication sets
+- **Separation of Concerns**: Visual preferences independent from AI prompt format
 
 ### Auto-Export System
 - Automatic JSON file creation after first analysis
@@ -433,6 +449,7 @@ The application is built around a core loop of examining puzzles, generating AI 
 - `GET /api/puzzles`: Fetches a list of all available puzzles.
 - `GET /api/puzzle/:puzzleId`: Retrieves a specific puzzle by its ID.
 - `GET /api/prompts`: Returns available prompt templates for the frontend prompt picker.
+- `GET /api/emoji-sets`: Returns available emoji palettes with metadata from server-side `promptBuilder.ts`.
 - `POST /api/puzzle/analyze/:puzzleId/:modelKey`: Submits a puzzle for AI analysis. Body supports `temperature`, `promptId`, and optional `customPrompt`.
 - `GET /api/puzzle/:puzzleId/explanations`: Fetches all saved explanations for a specific puzzle.
 - `POST /api/feedback`: Submits user feedback (vote and comment) for an explanation.

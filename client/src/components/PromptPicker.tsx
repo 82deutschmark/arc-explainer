@@ -20,7 +20,6 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Loader2, HelpCircle, Edit3 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/queryClient';
-import { EMOJI_SET_INFO } from '@/lib/spaceEmojis';
 
 interface PromptTemplate {
   id: string;

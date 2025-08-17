@@ -11,6 +11,7 @@
 import { Request, Response } from 'express';
 import { PROMPT_TEMPLATES } from '../../shared/types';
 import { formatResponse } from '../utils/responseFormatter';
+import { getEmojiSetsForAPI } from '../services/promptBuilder';
 
 export const promptController = {
   /**
@@ -28,5 +29,22 @@ export const promptController = {
     console.log(`[PromptController] Found ${promptList.length} prompt templates`);
     
     res.json(formatResponse.success(promptList));
+  },
+
+  /**
+   * Get all available emoji sets with metadata
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getEmojiSets(req: Request, res: Response) {
+    console.log('[PromptController] Fetching all available emoji sets');
+    
+    const emojiSets = getEmojiSetsForAPI();
+    const setCount = Object.keys(emojiSets).length;
+    
+    console.log(`[PromptController] Found ${setCount} emoji sets`);
+    
+    res.json(formatResponse.success(emojiSets));
   }
 };
