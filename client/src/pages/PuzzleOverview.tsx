@@ -89,8 +89,9 @@ export default function PuzzleOverview() {
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
     queryKey: ['puzzleOverview', queryParams],
     queryFn: async () => {
-      const response = await apiRequest(`/api/puzzle/overview?${queryParams}`);
-      return response.data;
+      const response = await apiRequest('GET', `/api/puzzle/overview?${queryParams}`);
+      const json = await response.json();
+      return json.data;
     },
     keepPreviousData: true,
   });
