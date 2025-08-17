@@ -21,10 +21,12 @@ import {
   Brain,
   CheckCircle2,
   Clock,
-  BarChart3
+  BarChart3,
+  MessageSquare
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
+import { MODELS } from '@/constants/models';
 
 interface PuzzleOverviewData {
   id: string;
@@ -47,6 +49,7 @@ interface PuzzleOverviewData {
   }>;
   totalExplanations: number;
   latestExplanation?: any;
+  feedbackCount?: number;
 }
 
 interface PuzzleOverviewResponse {
@@ -60,6 +63,7 @@ const ITEMS_PER_PAGE = 20;
 export default function PuzzleOverview() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasExplanationFilter, setHasExplanationFilter] = useState<string>('all');
+  const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
   const [modelFilter, setModelFilter] = useState<string>('');
   const [confidenceMin, setConfidenceMin] = useState<string>('');
   const [confidenceMax, setConfidenceMax] = useState<string>('');
@@ -73,6 +77,7 @@ export default function PuzzleOverview() {
     
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
     if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
+    if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
     if (modelFilter) params.set('modelName', modelFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
@@ -83,7 +88,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, modelFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -214,15 +219,37 @@ export default function PuzzleOverview() {
                 </Select>
               </div>
 
+              {/* Feedback Filter */}
+              <div className="space-y-2">
+                <Label htmlFor="hasFeedback">Feedback Status</Label>
+                <Select value={hasFeedbackFilter} onValueChange={setHasFeedbackFilter}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Puzzles</SelectItem>
+                    <SelectItem value="true">Has Feedback</SelectItem>
+                    <SelectItem value="false">No Feedback</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Model Filter */}
               <div className="space-y-2">
                 <Label htmlFor="model">AI Model</Label>
-                <Input
-                  id="model"
-                  placeholder="e.g., gpt-4, claude-3..."
-                  value={modelFilter}
-                  onChange={(e) => setModelFilter(e.target.value)}
-                />
+                <Select value={modelFilter} onValueChange={setModelFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All models" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Models</SelectItem>
+                    {MODELS.map((model) => (
+                      <SelectItem key={model.key} value={model.key}>
+                        {model.name} ({model.provider})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Confidence Range */}
@@ -356,11 +383,21 @@ export default function PuzzleOverview() {
 
                             {puzzle.hasExplanation ? (
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                  <span className="font-medium text-green-700">
-                                    {puzzle.totalExplanations} explanation{puzzle.totalExplanations !== 1 ? 's' : ''}
-                                  </span>
+                                <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                    <span className="font-medium text-green-700">
+                                      {puzzle.totalExplanations} explanation{puzzle.totalExplanations !== 1 ? 's' : ''}
+                                    </span>
+                                  </div>
+                                  {puzzle.feedbackCount !== undefined && (
+                                    <div className="flex items-center gap-1">
+                                      <MessageSquare className={`h-4 w-4 ${puzzle.feedbackCount > 0 ? 'text-blue-600' : 'text-gray-400'}`} />
+                                      <span className={`text-sm font-medium ${puzzle.feedbackCount > 0 ? 'text-blue-700' : 'text-gray-500'}`}>
+                                        {puzzle.feedbackCount || 0} feedback
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
                                 
                                 {puzzle.latestExplanation && (
