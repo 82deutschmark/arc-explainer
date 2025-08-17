@@ -177,6 +177,7 @@ export const puzzleController = {
       const { 
         search, 
         hasExplanation, 
+        hasFeedback,
         modelName, 
         confidenceMin, 
         confidenceMax,
@@ -300,6 +301,13 @@ export const puzzleController = {
           results = results.filter(puzzle => puzzle.hasExplanation);
         } else if (hasExplanation === 'false') {
           results = results.filter(puzzle => !puzzle.hasExplanation);
+        }
+
+        // Apply hasFeedback filter
+        if (hasFeedback === 'true') {
+          results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
+        } else if (hasFeedback === 'false') {
+          results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
         }
 
         // Apply sorting

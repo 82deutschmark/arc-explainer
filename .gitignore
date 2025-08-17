@@ -9,3 +9,4 @@ vite.config.ts.*
 /data/explained
 *.pyc
 
+/data/explained
