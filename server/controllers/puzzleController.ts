@@ -13,6 +13,7 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
+import { dbService } from '../services/dbService';
 import type { PromptOptions } from '../services/promptBuilder';
 
 export const puzzleController = {
@@ -161,6 +162,202 @@ export const puzzleController = {
     } catch (error) {
       console.error('[Controller] Error generating prompt preview:', error);
       res.status(500).json(formatResponse.error('Failed to generate prompt preview', 'An error occurred while generating the prompt preview'));
+    }
+  },
+
+  /**
+   * Get all puzzles with their explanation details for overview page
+   * Supports search and filtering by various parameters
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async overview(req: Request, res: Response) {
+    try {
+      const { 
+        search, 
+        hasExplanation, 
+        modelName, 
+        confidenceMin, 
+        confidenceMax,
+        limit = 50,
+        offset = 0,
+        sortBy = 'createdAt',
+        sortOrder = 'desc'
+      } = req.query;
+
+      console.log('[Controller] Puzzle overview request with filters:', req.query);
+
+      // Get all puzzles from the puzzle service
+      const allPuzzles = await puzzleService.getPuzzleList({});
+      
+      // If no database connection, return basic puzzle list
+      if (!dbService.isConnected()) {
+        const basicResults = allPuzzles.map(puzzle => ({
+          ...puzzle,
+          explanations: [],
+          totalExplanations: 0,
+          latestExplanation: null,
+          hasExplanation: false
+        }));
+        
+        return res.json(formatResponse.success({
+          puzzles: basicResults.slice(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string)),
+          total: basicResults.length,
+          hasMore: basicResults.length > parseInt(offset as string) + parseInt(limit as string)
+        }));
+      }
+
+      // Build a map of puzzle IDs for faster lookup
+      const puzzleMap = new Map();
+      allPuzzles.forEach(puzzle => {
+        puzzleMap.set(puzzle.id, {
+          ...puzzle,
+          explanations: [],
+          totalExplanations: 0,
+          latestExplanation: null,
+          hasExplanation: false
+        });
+      });
+
+      // Get all explanations from database
+      const client = await (dbService as any).pool?.connect();
+      if (!client) {
+        throw new Error('Database connection not available');
+      }
+
+      try {
+        let whereConditions = [];
+        let queryParams = [];
+        let paramCount = 0;
+
+        // Build dynamic WHERE clause based on filters
+        if (search) {
+          paramCount++;
+          whereConditions.push(`e.puzzle_id ILIKE $${paramCount}`);
+          queryParams.push(`%${search}%`);
+        }
+
+        if (modelName) {
+          paramCount++;
+          whereConditions.push(`e.model_name = $${paramCount}`);
+          queryParams.push(modelName);
+        }
+
+        if (confidenceMin) {
+          paramCount++;
+          whereConditions.push(`e.confidence >= $${paramCount}`);
+          queryParams.push(parseInt(confidenceMin as string));
+        }
+
+        if (confidenceMax) {
+          paramCount++;
+          whereConditions.push(`e.confidence <= $${paramCount}`);
+          queryParams.push(parseInt(confidenceMax as string));
+        }
+
+        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
+        // Query to get explanations with aggregated data
+        const explanationsQuery = `
+          SELECT 
+            e.puzzle_id,
+            COUNT(*) as explanation_count,
+            MAX(e.created_at) as latest_created_at,
+            json_agg(
+              json_build_object(
+                'id', e.id,
+                'patternDescription', e.pattern_description,
+                'solvingStrategy', e.solving_strategy,
+                'alienMeaning', e.alien_meaning,
+                'confidence', e.confidence,
+                'alienMeaningConfidence', e.alien_meaning_confidence,
+                'modelName', e.model_name,
+                'hasReasoningLog', e.has_reasoning_log,
+                'apiProcessingTimeMs', e.api_processing_time_ms,
+                'saturnSuccess', e.saturn_success,
+                'createdAt', e.created_at
+              ) ORDER BY e.created_at DESC
+            ) as explanations
+          FROM explanations e
+          ${whereClause}
+          GROUP BY e.puzzle_id
+        `;
+
+        const explanationsResult = await client.query(explanationsQuery, queryParams);
+
+        // Merge explanation data with puzzle data
+        explanationsResult.rows.forEach((row: any) => {
+          const puzzle = puzzleMap.get(row.puzzle_id);
+          if (puzzle) {
+            puzzle.explanations = row.explanations || [];
+            puzzle.totalExplanations = parseInt(row.explanation_count);
+            puzzle.latestExplanation = puzzle.explanations[0] || null;
+            puzzle.hasExplanation = true;
+          }
+        });
+
+        // Convert map back to array
+        let results = Array.from(puzzleMap.values());
+
+        // Apply hasExplanation filter
+        if (hasExplanation === 'true') {
+          results = results.filter(puzzle => puzzle.hasExplanation);
+        } else if (hasExplanation === 'false') {
+          results = results.filter(puzzle => !puzzle.hasExplanation);
+        }
+
+        // Apply sorting
+        results.sort((a, b) => {
+          let aValue, bValue;
+          
+          switch (sortBy) {
+            case 'puzzleId':
+              aValue = a.id;
+              bValue = b.id;
+              break;
+            case 'explanationCount':
+              aValue = a.totalExplanations;
+              bValue = b.totalExplanations;
+              break;
+            case 'latestConfidence':
+              aValue = a.latestExplanation?.confidence || 0;
+              bValue = b.latestExplanation?.confidence || 0;
+              break;
+            case 'createdAt':
+            default:
+              aValue = a.latestExplanation?.createdAt || '1970-01-01';
+              bValue = b.latestExplanation?.createdAt || '1970-01-01';
+              break;
+          }
+          
+          if (sortOrder === 'desc') {
+            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+          } else {
+            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          }
+        });
+
+        // Apply pagination
+        const total = results.length;
+        const paginatedResults = results.slice(
+          parseInt(offset as string), 
+          parseInt(offset as string) + parseInt(limit as string)
+        );
+
+        res.json(formatResponse.success({
+          puzzles: paginatedResults,
+          total: total,
+          hasMore: total > parseInt(offset as string) + parseInt(limit as string)
+        }));
+
+      } finally {
+        client.release();
+      }
+
+    } catch (error) {
+      console.error('[Controller] Error in puzzle overview:', error);
+      res.status(500).json(formatResponse.error('Failed to get puzzle overview', 'An error occurred while fetching puzzle overview data'));
     }
   },
 
