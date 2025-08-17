@@ -38,8 +38,9 @@ import { MODELS } from '@/constants/models';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
-  const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested
+  const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested - controls UI display
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
+  const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(false); // Cascade: researcher option to hide correct answer in prompt
 
@@ -75,8 +76,8 @@ export default function PuzzleExaminer() {
   } = useAnalysisResults({
     taskId,
     refetchExplanations,
-    // Cascade using GPT-5 (medium reasoning): forward researcher options to backend
-    emojiSetKey: emojiSet,
+    // Forward researcher options to backend
+    emojiSetKey: sendAsEmojis ? emojiSet : undefined, // Only send emoji set if "Send as emojis" is enabled
     omitAnswer,
   });
   
@@ -153,6 +154,30 @@ export default function PuzzleExaminer() {
               {showEmojis ? '🔢 Show Numbers' : '🛸 Show Emojis'}
             </span>
           </Button>
+          
+          {/* Emoji Palette Selector */}
+          {showEmojis && (
+            <Select
+              value={emojiSet}
+              onValueChange={(val) => setEmojiSet(val as EmojiSet)}
+              disabled={isAnalyzing}
+            >
+              <SelectTrigger className="w-40" title={EMOJI_SET_INFO[emojiSet]?.description}>
+                <SelectValue placeholder="Emoji palette" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Emoji Palettes</SelectLabel>
+                  {Object.entries(EMOJI_SET_INFO)
+                    .map(([key, info]) => (
+                      <SelectItem key={key} value={key}>
+                        {info.name}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
 
@@ -259,84 +284,11 @@ export default function PuzzleExaminer() {
             customPrompt={customPrompt}
             onCustomPromptChange={setCustomPrompt}
             disabled={isAnalyzing}
+            sendAsEmojis={sendAsEmojis}
+            onSendAsEmojisChange={setSendAsEmojis}
+            omitAnswer={omitAnswer}
+            onOmitAnswerChange={setOmitAnswer}
           />
-
-          {/* Advanced Options */}
-          <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h5 className="text-sm font-semibold mb-3 text-gray-700">Advanced Options</h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              
-              {/* Saturn Visual Solver */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Visual Solver</label>
-                <Link href={`/puzzle/saturn/${taskId}`}>
-                  <Button size="sm" className="w-full flex items-center gap-2">
-                    <Rocket className="h-4 w-4" />
-                    Open Saturn Visual Solver
-                  </Button>
-                </Link>
-                <p className="text-xs text-gray-500">Uses iterative visual analysis to solve puzzles</p>
-              </div>
-
-              {/* Emoji Set Picker */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Emoji Palette (if enabled)</label>
-                <Select
-                  value={emojiSet}
-                  onValueChange={(val) => setEmojiSet(val as EmojiSet)}
-                  disabled={!showEmojis || isAnalyzing}
-                >
-                  <SelectTrigger className="w-full" title={EMOJI_SET_INFO[emojiSet]?.description}>
-                    <SelectValue placeholder="Select emoji palette" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Emoji Palettes</SelectLabel>
-                      {Object.entries(EMOJI_SET_INFO)
-                        .map(([key, info]) => (
-                          <SelectItem key={key} value={key}>
-                            {info.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-gray-500">Changes how patterns are represented in prompts</p>
-              </div>
-
-              {/* Omit Answer Toggle */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Research Option</label>
-                <div className="flex items-center gap-2 p-2 border rounded">
-                  <Switch
-                    checked={omitAnswer}
-                    onCheckedChange={setOmitAnswer}
-                    disabled={isAnalyzing}
-                    id="omit-answer-toggle-advanced"
-                  />
-                  <label htmlFor="omit-answer-toggle-advanced" className="text-sm select-none">
-                    Omit correct answer in prompt
-                  </label>
-                </div>
-                <p className="text-xs text-gray-500">Hides the solution from AI models for testing</p>
-              </div>
-            </div>
-            
-            {/* Saturn Attribution */}
-            <div className="mt-4 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-600">
-                💡 Saturn Visual Solver is powered by the open-source{' '}
-                <a
-                  href="https://github.com/zoecarver/saturn-arc"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-medium text-blue-600 hover:text-blue-800"
-                >
-                  Saturn ARC project by Zoe Carver
-                </a>
-              </p>
-            </div>
-          </div>
 
           {/* Prompt Preview */}
           <div className="mb-4 flex justify-center">
@@ -393,6 +345,40 @@ export default function PuzzleExaminer() {
               );
             })}
           </div>
+
+          {/* Saturn Visual Solver */}
+          <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
+                <Rocket className="h-4 w-4" />
+                Alternative Visual Solver
+              </h5>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href={`/puzzle/saturn/${taskId}`}>
+                <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
+                  <Rocket className="h-4 w-4" />
+                  Open Saturn Visual Solver
+                </Button>
+              </Link>
+              <div className="flex-1">
+                <p className="text-sm text-indigo-700 mb-1">
+                  Uses iterative visual analysis to solve puzzles step-by-step
+                </p>
+                <p className="text-xs text-indigo-600">
+                  💡 Powered by the open-source{' '}
+                  <a
+                    href="https://github.com/zoecarver/saturn-arc"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-medium hover:text-indigo-800"
+                  >
+                    Saturn ARC project by Zoe Carver
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
           
           {/* Temperature Control */}
           <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
@@ -417,13 +403,6 @@ export default function PuzzleExaminer() {
             </div>
           </div>
 
-          {/* Cost Information */}
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              💡 Costs shown per million tokens. Most puzzle analyses use ~1K-5K tokens.
-              Premium models (💰) provide advanced reasoning but cost more.
-            </p>
-          </div>
 
           {/* Analysis Results */}
           {explanations.length > 0 && (
