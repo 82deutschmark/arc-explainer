@@ -13,7 +13,7 @@ import { ModelConfig } from '../types/puzzle';
  */
 export const CELL_COLORS = [
   '#000000', '#0074D9', '#FF4136', '#2ECC40', '#FFDC00',
-  '#AAAAAA', '#F012BE', '#FF851B', '#7FDBFF', '#870C25'
+  '#808080', '#F012BE', '#FF851B', '#7FDBFF', '#870C25'
 ] as const;
 
 /**

@@ -525,32 +525,60 @@ npm run build        # Creates dist/ folder with compiled app
 
 #### Database Schema
 
-**Explanations Table**
-```sql
-CREATE TABLE IF NOT EXISTS explanations (
-  id SERIAL PRIMARY KEY,
-  puzzle_id TEXT NOT NULL,
-  pattern_description TEXT,
-  solving_strategy TEXT,
-  hints TEXT[],
-  alien_meaning TEXT,
-  confidence INTEGER,
-  model_name TEXT,
-  api_processing_time_ms INTEGER, -- Processing time in milliseconds
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                                    DATABASE SCHEMA                                     │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐  │
+│  │                              EXPLANATIONS TABLE                                 │  │
+│  ├─────────────────────────────────────────────────────────────────────────────────┤  │
+│  │ id                      SERIAL PRIMARY KEY                                     │  │
+│  │ puzzle_id               TEXT NOT NULL                                          │  │
+│  │ pattern_description     TEXT                                                   │  │
+│  │ solving_strategy        TEXT                                                   │  │
+│  │ hints                   TEXT[]                                                 │  │
+│  │ alien_meaning           TEXT                                                   │  │
+│  │ confidence              INTEGER                                                │  │
+│  │ alien_meaning_confidence INTEGER                                               │  │
+│  │ model_name              TEXT                                                   │  │
+│  │ reasoning_log           TEXT                                                   │  │
+│  │ has_reasoning_log       BOOLEAN DEFAULT FALSE                                 │  │
+│  │ api_processing_time_ms  INTEGER                                               │  │
+│  │ saturn_images           TEXT (JSON string of image paths)                     │  │
+│  │ saturn_log              TEXT (verbose stdout/stderr logs)                     │  │
+│  │ saturn_events           TEXT (compressed NDJSON/JSON event trace)            │  │
+│  │ saturn_success          BOOLEAN (whether puzzle was solved correctly)        │  │
+│  │ created_at              TIMESTAMPTZ DEFAULT NOW()                             │  │
+│  └─────────────────────────────────────────────────────────────────────────────────┘  │
+│                                         │                                              │
+│                                         │ 1:N                                         │
+│                                         ▼                                              │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐  │
+│  │                               FEEDBACK TABLE                                   │  │
+│  ├─────────────────────────────────────────────────────────────────────────────────┤  │
+│  │ id               SERIAL PRIMARY KEY                                            │  │
+│  │ explanation_id   INTEGER REFERENCES explanations(id)                          │  │
+│  │ vote_type        VARCHAR CHECK (vote_type IN ('helpful', 'not_helpful'))      │  │
+│  │ comment          TEXT                                                          │  │
+│  │ created_at       TIMESTAMP DEFAULT NOW()                                      │  │
+│  └─────────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                         │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Feedback Table**
-```sql
-CREATE TABLE IF NOT EXISTS feedback (
-  id SERIAL PRIMARY KEY,
-  explanation_id INTEGER REFERENCES explanations(id),
-  vote_type VARCHAR CHECK (vote_type IN ('helpful', 'not_helpful')),
-  comment TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-)
-```
+**Key Relationships:**
+- **One-to-Many**: Each explanation can have multiple feedback entries
+- **Foreign Key**: `feedback.explanation_id` → `explanations.id`
+
+**Special Features:**
+- **AI Model Support**: Stores reasoning logs, processing times, and model names
+- **Saturn Integration**: Special columns for Saturn solver (images, logs, events, success status)
+- **Constraint**: Vote type is limited to 'helpful' or 'not_helpful'
+- **Arrays**: Hints are stored as PostgreSQL TEXT array
+- **JSON Storage**: Saturn images stored as JSON string
+
+**Connection**: Uses PostgreSQL with connection pooling via Railway's `DATABASE_URL`
 
 ## 🎨 Design Philosophy
 
