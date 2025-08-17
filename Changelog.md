@@ -7,6 +7,24 @@
 
 August 17, 2025
 
+## Version 1.3.6 — Enhanced Database Overview & UX Improvements (2025-08-17)
+
+### New Features
+- __Feedback Visibility & Filtering (Code by Claude)__: Users can now see which puzzles have received community feedback and filter by feedback status.
+  - **Feedback Indicators**: Visual feedback counters with blue icons for puzzles with feedback, gray for those without
+  - **Feedback Filter**: New dropdown with "All Puzzles", "Has Feedback", "No Feedback" options
+  - **Backend Integration**: Complete filtering logic for `hasFeedback` parameter in overview API
+- __Smart Model Selection (Code by Claude)__: Replaced manual model name input with intelligent dropdown sourced from official model registry.
+  - **Source of Truth**: Dropdown populated from `constants/models.ts` ensuring accuracy
+  - **Provider Grouping**: Shows model names with provider info (e.g., "GPT-4.1 Mini (OpenAI)")
+  - **No More Guessing**: Eliminates user confusion about correct model naming
+- __Prompt Template Fix (Code by User)__: Corrected solver mode instructions for clearer AI guidance
+
+### Enhanced User Experience
+- **Comprehensive Filtering**: Overview page now supports explanation status, feedback status, and model filtering simultaneously
+- **Visual Feedback Indicators**: Clear visual cues show puzzle engagement levels at a glance
+- **Improved Navigation**: Better filtering makes finding specific puzzle types much easier
+
 ## Version 1.3.5 — Puzzle Overview Page Fix (2025-08-17)
 
 ### Bug Fixes
