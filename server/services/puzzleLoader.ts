@@ -133,12 +133,8 @@ export class PuzzleLoader {
       try {
         const taskId = file.replace('.json', '');
         
-        // Create a unique key that includes the source to avoid conflicts
-        // This ensures all puzzles from all sources are loaded
-        const uniqueKey = `${taskId}-${dataSource.source}`;
-        
-        // Skip if this exact puzzle from this exact source is already loaded
-        if (this.puzzleMetadata.has(uniqueKey)) {
+        // Skip if this puzzle is already loaded
+        if (this.puzzleMetadata.has(taskId)) {
           continue;
         }
         
@@ -147,7 +143,7 @@ export class PuzzleLoader {
         
         // Analyze the puzzle to get metadata
         const metadata = this.analyzePuzzleMetadata(taskId, data, dataSource.source);
-        this.puzzleMetadata.set(uniqueKey, metadata);
+        this.puzzleMetadata.set(taskId, metadata);
         loadedCount++;
       } catch (error) {
         console.error(`Error loading puzzle ${file} from ${dataSource.name}:`, error);
@@ -293,16 +289,7 @@ export class PuzzleLoader {
   }
 
   getPuzzleMetadata(taskId: string): PuzzleInfo | null {
-    // Try to find metadata for this taskId from any source
-    // If multiple sources have the same taskId, return the highest priority one
-    for (const dataSource of this.dataSources.sort((a, b) => a.priority - b.priority)) {
-      const uniqueKey = `${taskId}-${dataSource.source}`;
-      const metadata = this.puzzleMetadata.get(uniqueKey);
-      if (metadata) {
-        return metadata;
-      }
-    }
-    return null;
+    return this.puzzleMetadata.get(taskId) || null;
   }
 
   async downloadPuzzle(taskId: string): Promise<boolean> {
@@ -311,15 +298,7 @@ export class PuzzleLoader {
   }
 
   getAvailablePuzzleIds(): string[] {
-    // Extract just the taskId part from the uniqueKey format "taskId-source"
-    const taskIds = new Set<string>();
-    for (const uniqueKey of this.puzzleMetadata.keys()) {
-      // uniqueKey format: "8charTaskId-ARC1" or "8charTaskId-ARC1-Eval" or "8charTaskId-ARC2" or "8charTaskId-ARC2-Eval"
-      // Since taskIds are always 8 chars, we can extract them safely
-      const taskId = uniqueKey.substring(0, 8);
-      taskIds.add(taskId);
-    }
-    return Array.from(taskIds).sort();
+    return Array.from(this.puzzleMetadata.keys()).sort();
   }
 }
 
