@@ -5,6 +5,23 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 17, 2025
+
+## Version 1.3.5 — Puzzle Overview Page Fix (2025-08-17)
+
+### Bug Fixes
+- __PuzzleOverview API Integration Fix (Code by Claude)__: Fixed critical bug preventing the `/overview` page from loading puzzle data.
+  - **Root Cause**: Incorrect `apiRequest()` function call missing HTTP method parameter in `PuzzleOverview.tsx:92`
+  - **Solution**: Added missing 'GET' method parameter: `apiRequest('GET', url)` instead of `apiRequest(url)`
+  - **Secondary Fix**: Corrected response parsing by adding `await response.json()` before accessing `.data` property
+- **Result**: Puzzle overview page now successfully loads and displays all puzzles with explanation status, filtering, and pagination
+
+### Investigation Process
+- Verified frontend component structure and routing configuration
+- Confirmed backend API endpoint `/api/puzzle/overview` exists and functions correctly
+- Identified `apiRequest()` function signature mismatch through systematic debugging
+- Server logs showed successful 200 responses, confirming issue was client-side
+
 August 16, 2025
 
 ## Version 1.3.4 — Saturn Success/Failure Status Integration (2025-08-16)
