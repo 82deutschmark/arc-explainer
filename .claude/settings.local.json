@@ -5,7 +5,8 @@
       "Bash(npm run dev:*)",
       "Bash(taskkill:*)",
       "Bash(kill:*)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

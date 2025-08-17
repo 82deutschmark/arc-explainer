@@ -52,7 +52,7 @@ const SERVER_SPACE_EMOJI_SETS: Record<string, string[]> = {
   status_emojis: ['⬛', '😂', '😶', '😐', '🙄', '😴', '😵', '🤗', '🤔', '😣'],
   ai_emojis: ['⬛', '🤖', '💡', '🧠', '🔗', '⚙️', '🔧', '🔄', '⚡', '🚫'],
   vague_symbols: ['⬛', '♊', '💕', '💢', '🆎', '🆒', '🈚', '🛃', '💠', '☣'],
-  arc_colors: ['⬛', '🟦', '🟥', '🟩', '🟨', '⬜', '🟪', '🟧', '🟫', '🀄'],
+  arc_colors: ['⬛', '🟦', '🟥', '🟩', '🟨', '⬜', '🟪', '🟧', '🟫', '🔲'],
   mahjong: ['⬛', '🀇', '🀈', '🀉', '🀊', '🀋', '🀌', '🀍', '🀎', '🀏'],
 };
 
@@ -378,4 +378,71 @@ export function promptUsesEmojis(promptId: string, customPrompt?: string): boole
   
   const template = PROMPT_TEMPLATES[promptId];
   return template?.emojiMapIncluded || false;
+}
+
+/**
+ * Get emoji sets formatted for API consumption
+ * Returns both the emoji arrays and metadata for UI display
+ */
+export function getEmojiSetsForAPI(): Record<string, { name: string; description: string; emojis: string[] }> {
+  const sets: Record<string, { name: string; description: string; emojis: string[] }> = {};
+  
+  // Generate metadata for each emoji set
+  Object.entries(SERVER_SPACE_EMOJI_SETS).forEach(([key, emojis]) => {
+    sets[key] = {
+      name: formatEmojiSetName(key),
+      description: formatEmojiSetDescription(key),
+      emojis
+    };
+  });
+  
+  return sets;
+}
+
+/**
+ * Format emoji set key into display name
+ */
+function formatEmojiSetName(key: string): string {
+  const nameMap: Record<string, string> = {
+    legacy_default: 'Legacy Default',
+    alien_language: 'Alien Language',
+    celestial_set1: 'Planetary Bodies',
+    celestial_set2: 'Stellar Objects',
+    tech_set1: 'Power & Fuel Systems',
+    tech_set2: 'Communication Systems',
+    nav_alerts: 'Navigation Vectors',
+    status_alerts: 'Alert Systems',
+    weather_climate: 'Atmospheric Data',
+    status_emojis: 'Human Crew and Coworkers',
+    ai_emojis: 'AI and Computer Systems',
+    vague_symbols: 'Vague Symbols',
+    arc_colors: 'ARC Colors',
+    mahjong: 'Mahjong Tiles'
+  };
+  
+  return nameMap[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+/**
+ * Format emoji set key into description
+ */
+function formatEmojiSetDescription(key: string): string {
+  const descriptionMap: Record<string, string> = {
+    legacy_default: 'Original ARC-Explainer emoji mapping',
+    alien_language: 'Alien communication symbols',
+    celestial_set1: 'Earth variants and lunar phases',
+    celestial_set2: 'Stars, cosmic phenomena, and distant planets',
+    tech_set1: 'Power & Fuel systems',
+    tech_set2: 'Communication arrays and signal relays',
+    nav_alerts: 'Directional indicators and compass systems',
+    status_alerts: 'Warnings, confirmations, and safety indicators',
+    weather_climate: 'Weather patterns and climate conditions',
+    status_emojis: 'Human crew and coworkers',
+    ai_emojis: 'AI and computer systems',
+    vague_symbols: 'Vague symbols for complex patterns',
+    arc_colors: 'Standard ARC color mapping',
+    mahjong: 'Traditional mahjong tile symbols'
+  };
+  
+  return descriptionMap[key] || `Emoji set: ${key}`;
 }

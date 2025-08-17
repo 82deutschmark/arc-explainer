@@ -10,7 +10,7 @@
  * always reflects the stored state, making puzzle pages static and shareable.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { AnalysisResult } from '@/types/puzzle';
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -22,10 +22,10 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
-import type { EmojiSet } from '@/lib/spaceEmojis';
+import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { apiRequest } from '@/lib/queryClient';
 
 // Import our refactored components and hooks
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -39,10 +39,39 @@ import { MODELS } from '@/constants/models';
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested - controls UI display
-  const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
+  const [emojiSet, setEmojiSet] = useState<string>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(false); // Cascade: researcher option to hide correct answer in prompt
+  
+  // Emoji sets from API
+  const [emojiSets, setEmojiSets] = useState<Record<string, { name: string; description: string; emojis: string[] }>>({});
+  const [loadingEmojiSets, setLoadingEmojiSets] = useState(true);
+
+  // Fetch emoji sets from API
+  useEffect(() => {
+    const fetchEmojiSets = async () => {
+      try {
+        setLoadingEmojiSets(true);
+        const response = await apiRequest('GET', '/api/emoji-sets');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch emoji sets: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setEmojiSets(data.data || {});
+      } catch (err) {
+        console.error('Error fetching emoji sets:', err);
+        // Fallback to empty object - user can still use the app
+        setEmojiSets({});
+      } finally {
+        setLoadingEmojiSets(false);
+      }
+    };
+
+    fetchEmojiSets();
+  }, []);
 
   // Early return if no taskId
   if (!taskId) {
@@ -156,19 +185,19 @@ export default function PuzzleExaminer() {
           </Button>
           
           {/* Emoji Palette Selector */}
-          {showEmojis && (
+          {showEmojis && !loadingEmojiSets && (
             <Select
               value={emojiSet}
-              onValueChange={(val) => setEmojiSet(val as EmojiSet)}
+              onValueChange={(val) => setEmojiSet(val)}
               disabled={isAnalyzing}
             >
-              <SelectTrigger className="w-40" title={EMOJI_SET_INFO[emojiSet]?.description}>
+              <SelectTrigger className="w-40" title={emojiSets[emojiSet]?.description}>
                 <SelectValue placeholder="Emoji palette" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Emoji Palettes</SelectLabel>
-                  {Object.entries(EMOJI_SET_INFO)
+                  {Object.entries(emojiSets)
                     .map(([key, info]) => (
                       <SelectItem key={key} value={key}>
                         {info.name}

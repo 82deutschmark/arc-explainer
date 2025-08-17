@@ -4,7 +4,7 @@
  * Author: Cascade
  */
 
-import type { EmojiSet } from '@/lib/spaceEmojis';
+// Removed strict EmojiSet import to allow dynamic emoji sets from API
 
 /**
  * Configuration for AI models that can analyze puzzles
@@ -62,7 +62,7 @@ export interface GridCellProps {
   value: number;
   showEmojis: boolean;
   size?: keyof typeof SIZE_CLASSES;
-  emojiSet?: EmojiSet;
+  emojiSet?: string; // Changed to string to support dynamic emoji sets from API
 }
 
 /**
@@ -73,7 +73,7 @@ export interface PuzzleGridProps {
   title: string;
   showEmojis: boolean;
   highlight?: boolean;
-  emojiSet?: EmojiSet;
+  emojiSet?: string; // Changed to string to support dynamic emoji sets from API
 }
 
 /**

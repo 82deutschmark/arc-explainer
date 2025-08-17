@@ -122,9 +122,10 @@ export const DEFAULT_EMOJI_SET: EmojiSet = 'legacy_default';
 
 /**
  * Returns the emoji for a given ARC colour digit (0-9) from the specified set.
+ * Now supports both strict EmojiSet keys and dynamic string keys.
  */
-export function getSpaceEmoji(value: number, set: EmojiSet = DEFAULT_EMOJI_SET): string {
-  const arr = SPACE_EMOJIS[set];
+export function getSpaceEmoji(value: number, set: EmojiSet | string = DEFAULT_EMOJI_SET): string {
+  const arr = SPACE_EMOJIS[set as EmojiSet];
   return arr?.[value] ?? '❓';
 }
 
@@ -150,9 +151,12 @@ export function getEmojiDescription(value: number): string {
 
 /**
  * Builds a reverse lookup map (emoji -> digit) for a given set.
+ * Now supports both strict EmojiSet keys and dynamic string keys.
  */
-export function getEmojiToNumberMap(set: EmojiSet): Record<string, number> {
-  const entries = SPACE_EMOJIS[set].map((emoji, index) => [emoji, index as number]);
+export function getEmojiToNumberMap(set: EmojiSet | string): Record<string, number> {
+  const arr = SPACE_EMOJIS[set as EmojiSet];
+  if (!arr) return {};
+  const entries = arr.map((emoji, index) => [emoji, index as number]);
   return Object.fromEntries(entries);
 }
 
