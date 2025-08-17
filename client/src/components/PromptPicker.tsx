@@ -15,9 +15,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, HelpCircle, Edit3 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/queryClient';
+import { EMOJI_SET_INFO } from '@/lib/spaceEmojis';
 
 interface PromptTemplate {
   id: string;
@@ -33,9 +36,24 @@ interface PromptPickerProps {
   customPrompt?: string;
   onCustomPromptChange?: (customPrompt: string) => void;
   disabled?: boolean;
+  // Advanced options props
+  sendAsEmojis?: boolean;
+  onSendAsEmojisChange?: (sendAsEmojis: boolean) => void;
+  omitAnswer?: boolean;
+  onOmitAnswerChange?: (omitAnswer: boolean) => void;
 }
 
-export function PromptPicker({ selectedPromptId, onPromptChange, customPrompt, onCustomPromptChange, disabled = false }: PromptPickerProps) {
+export function PromptPicker({ 
+  selectedPromptId, 
+  onPromptChange, 
+  customPrompt, 
+  onCustomPromptChange, 
+  disabled = false,
+  sendAsEmojis,
+  onSendAsEmojisChange,
+  omitAnswer,
+  onOmitAnswerChange
+}: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -138,51 +156,67 @@ export function PromptPicker({ selectedPromptId, onPromptChange, customPrompt, o
                 <p className="text-sm text-gray-600 mt-1">
                   {prompt.description}
                 </p>
+                
+                {/* Custom Prompt Textarea */}
+                {prompt.id === "custom" && selectedPromptId === "custom" && onCustomPromptChange && (
+                  <div className="mt-3">
+                    <Textarea
+                      value={customPrompt || ""}
+                      onChange={(e) => onCustomPromptChange(e.target.value)}
+                      placeholder="Enter your custom prompt here... (e.g., You are an expert in pattern recognition. Analyze this ARC-AGI puzzle and explain the transformations involved.)"
+                      className="min-h-[120px] resize-none"
+                      disabled={disabled}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Custom prompts allow for specialized analysis approaches. The system will automatically append training examples and test case data.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
-          
-          {/* Custom Prompt Option for Researchers */}
-          <div className="flex items-start space-x-2 border-t pt-3">
-            <RadioGroupItem 
-              value="custom" 
-              id="custom"
-              className="mt-1"
-              disabled={disabled}
-            />
-            <div className="flex-1">
-              <Label
-                htmlFor="custom"
-                className={`flex items-center gap-2 cursor-pointer ${disabled ? 'opacity-50' : ''}`}
-              >
-                <Edit3 className="h-4 w-4" />
-                <span className="font-medium">Custom Prompt</span>
-                <Badge variant="outline" className="text-xs">
-                  For Researchers
-                </Badge>
-              </Label>
-              <p className="text-sm text-gray-600 mt-1">
-                Write your own custom prompt for specialized analysis approaches.
-              </p>
-              
-              {/* Custom Prompt Textarea */}
-              {selectedPromptId === "custom" && onCustomPromptChange && (
-                <div className="mt-3">
-                  <Textarea
-                    value={customPrompt || ""}
-                    onChange={(e) => onCustomPromptChange(e.target.value)}
-                    placeholder="Enter your custom prompt here... (e.g., You are an expert in pattern recognition. Analyze this ARC-AGI puzzle and explain the transformations involved.)"
-                    className="min-h-[120px] resize-none"
-                    disabled={disabled}
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Custom prompts allow for specialized analysis approaches. The system will automatically append training examples and test case data.
-                  </p>
-                </div>
-              )}
+        </RadioGroup>
+        
+        {/* Advanced Options integrated into Explanation Style */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <h6 className="text-sm font-semibold mb-3 text-gray-700">Advanced Options</h6>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Send as Emojis Toggle */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Prompt Format</label>
+              <div className="flex items-center gap-2 p-2 border rounded">
+                <Switch
+                  checked={sendAsEmojis || false}
+                  onCheckedChange={onSendAsEmojisChange}
+                  disabled={disabled}
+                  id="send-as-emojis-toggle"
+                />
+                <label htmlFor="send-as-emojis-toggle" className="text-sm select-none">
+                  Send as emojis
+                </label>
+              </div>
+              <p className="text-xs text-gray-500">Send emoji symbols instead of numbers to AI models</p>
+            </div>
+
+            {/* Omit Answer Toggle */}
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Research Option</label>
+              <div className="flex items-center gap-2 p-2 border rounded">
+                <Switch
+                  checked={omitAnswer || false}
+                  onCheckedChange={onOmitAnswerChange}
+                  disabled={disabled}
+                  id="omit-answer-toggle"
+                />
+                <label htmlFor="omit-answer-toggle" className="text-sm select-none">
+                  Omit correct answer in prompt
+                </label>
+              </div>
+              <p className="text-xs text-gray-500">Hides the solution from AI models for testing</p>
             </div>
           </div>
-        </RadioGroup>
+        </div>
         
         {selectedPromptId && (
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
