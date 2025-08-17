@@ -14,8 +14,8 @@ function Router() {
     <Switch>
       <Route path="/" component={PuzzleBrowser} />
       <Route path="/overview" component={PuzzleOverview} />
-      <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
       <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
+      <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
       <Route component={NotFound} />
     </Switch>
   );
