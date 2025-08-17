@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -111,10 +111,20 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-gray-900">ARC-AGI Puzzle Explorer</h1>
-          <p className="text-lg text-gray-600">
-            Colorblindness Aid & AI Reasoning Analysis
-          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold text-gray-900">ARC-AGI Puzzle Explorer</h1>
+              <p className="text-lg text-gray-600">
+                Colorblindness Aid & AI Reasoning Analysis
+              </p>
+            </div>
+            <Link href="/overview">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                Database Overview
+              </Button>
+            </Link>
+          </div>
           
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
