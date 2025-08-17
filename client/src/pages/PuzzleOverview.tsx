@@ -64,7 +64,7 @@ export default function PuzzleOverview() {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasExplanationFilter, setHasExplanationFilter] = useState<string>('all');
   const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
-  const [modelFilter, setModelFilter] = useState<string>('');
+  const [modelFilter, setModelFilter] = useState<string>('all');
   const [confidenceMin, setConfidenceMin] = useState<string>('');
   const [confidenceMax, setConfidenceMax] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -78,7 +78,7 @@ export default function PuzzleOverview() {
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
     if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
     if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
-    if (modelFilter) params.set('modelName', modelFilter);
+    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
     if (sortBy) params.set('sortBy', sortBy);
@@ -242,7 +242,7 @@ export default function PuzzleOverview() {
                     <SelectValue placeholder="All models" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Models</SelectItem>
+                    <SelectItem value="all">All Models</SelectItem>
                     {MODELS.map((model) => (
                       <SelectItem key={model.key} value={model.key}>
                         {model.name} ({model.provider})
