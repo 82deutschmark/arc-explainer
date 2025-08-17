@@ -307,9 +307,9 @@ Correct Answer: ${testCase.output}`;
       
   // Different instructions for solver vs explanation mode
   const analysisInstructions = isSolverMode
-    ? "1. Analyze the transformation pattern from the training examples.\n2. Apply that pattern to predict the correct answer for the test input.\n3. Explain your reasoning step by step."
+    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case.\n3. Explain your reasoning step by step."
     : useEmojis
-      ? "2. Explain it in simple terms an idiot could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
+      ? "2. Explain it in simple terms anyone could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
       : "2. Explain it in simple terms for novices to understand.";
       
   const responsePrefix = useEmojis ? "Respond" : "Please respond";
