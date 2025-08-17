@@ -39,6 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
+  app.get("/api/puzzle/overview", asyncHandler(puzzleController.overview));
   app.get("/api/puzzle/task/:taskId", asyncHandler(puzzleController.getById));
   app.post("/api/puzzle/analyze/:taskId/:model", asyncHandler(puzzleController.analyze));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
