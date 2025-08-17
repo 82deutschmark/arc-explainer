@@ -43,6 +43,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", asyncHandler(puzzleController.analyze));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
   
+  // Debug route to force puzzle loader reinitialization
+  app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
+  
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", asyncHandler(puzzleController.previewPrompt));
   

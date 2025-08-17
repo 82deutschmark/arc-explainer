@@ -39,7 +39,7 @@ export default function PuzzleBrowser() {
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     // Don't use prioritize flags anymore, as we'll filter the results ourselves
-    if (arcVersion === 'ARC1' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval') result.source = arcVersion;
+    if (arcVersion === 'ARC1' || arcVersion === 'ARC1-Eval' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval') result.source = arcVersion;
     return result;
   }, [maxGridSize, gridSizeConsistent, arcVersion]);
 
