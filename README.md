@@ -37,6 +37,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **Custom Prompts for Researchers** - Enter your own analysis prompt to override templates per run
 
+• **Database Overview Dashboard** - Browse all puzzles with comprehensive filtering, search, and sorting capabilities. View explanation status, model analysis history, confidence ratings, and processing times across the entire puzzle database
+
 ## 🌟 Development & Credits
 
 **Primary Development**: Cascade

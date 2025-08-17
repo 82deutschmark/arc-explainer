@@ -470,6 +470,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.saturn_images           AS "saturnImages",
          e.saturn_log              AS "saturnLog",
          e.saturn_events           AS "saturnEvents",
+         e.saturn_success          AS "saturnSuccess",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
@@ -479,7 +480,13 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
       [puzzleId]
     );
 
-    return result.rows.length > 0 ? result.rows : [];
+    // Parse JSON fields for Saturn data
+    const processedRows = result.rows.map(row => ({
+      ...row,
+      saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
+    }));
+    
+    return processedRows.length > 0 ? processedRows : [];
   } catch (error) {
     logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     throw error;
@@ -519,13 +526,22 @@ const getExplanationById = async (explanationId: number) => {
          e.saturn_images           AS "saturnImages",
          e.saturn_log              AS "saturnLog",
          e.saturn_events           AS "saturnEvents",
+         e.saturn_success          AS "saturnSuccess",
          e.created_at              AS "createdAt"
        FROM explanations e
        WHERE e.id = $1`,
       [explanationId]
     );
 
-    return result.rows.length > 0 ? result.rows[0] : null;
+    if (result.rows.length > 0) {
+      const row = result.rows[0];
+      // Parse JSON fields for Saturn data
+      return {
+        ...row,
+        saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
+      };
+    }
+    return null;
   } catch (error) {
     logger.error(`Error getting explanation by ID ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     throw error;

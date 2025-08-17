@@ -112,6 +112,9 @@ export interface ExplanationData {
   apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
   // Saturn-specific fields
   saturnSuccess?: boolean | null; // Whether Saturn solver successfully solved the puzzle
+  saturnImages?: string[]; // Array of image paths generated during Saturn analysis
+  saturnLog?: string | null; // Verbose stdout/stderr logs from Saturn solver
+  saturnEvents?: string | null; // Compressed NDJSON/JSON event trace
 }
 
 /**
