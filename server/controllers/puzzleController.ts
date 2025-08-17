@@ -220,85 +220,80 @@ export const puzzleController = {
         });
       });
 
-      // Get all explanations from database
-      const client = await (dbService as any).pool?.connect();
-      if (!client) {
-        throw new Error('Database connection not available');
+      // For now, let's use a simpler approach and get explanations for each puzzle
+      // This is less efficient but will work with the existing dbService methods
+      
+      // Get puzzle IDs to check for explanations
+      const puzzleIds = allPuzzles.map(p => p.id);
+      
+      // Apply search filter early if provided
+      let filteredPuzzleIds = puzzleIds;
+      if (search) {
+        filteredPuzzleIds = puzzleIds.filter(id => 
+          id.toLowerCase().includes(search.toLowerCase())
+        );
       }
 
-      try {
-        let whereConditions = [];
-        let queryParams = [];
-        let paramCount = 0;
+      // Get bulk explanation status for all filtered puzzles
+      const explanationStatusMap = await dbService.getBulkExplanationStatus(filteredPuzzleIds);
 
-        // Build dynamic WHERE clause based on filters
-        if (search) {
-          paramCount++;
-          whereConditions.push(`e.puzzle_id ILIKE $${paramCount}`);
-          queryParams.push(`%${search}%`);
+      // Build results by merging puzzle data with explanation status
+      explanationStatusMap.forEach((status, puzzleId) => {
+        const puzzle = puzzleMap.get(puzzleId);
+        if (puzzle) {
+          puzzle.hasExplanation = status.hasExplanation;
+          puzzle.totalExplanations = status.hasExplanation ? 1 : 0; // For now, assume 1 explanation per puzzle
+          puzzle.explanationId = status.explanationId;
+          puzzle.feedbackCount = status.feedbackCount;
         }
+      });
 
-        if (modelName) {
-          paramCount++;
-          whereConditions.push(`e.model_name = $${paramCount}`);
-          queryParams.push(modelName);
-        }
+      // For puzzles with explanations, get detailed explanation data if needed
+      for (const [puzzleId, status] of explanationStatusMap) {
+        if (status.hasExplanation && status.explanationId) {
+          try {
+            const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+            if (explanations && explanations.length > 0) {
+              const puzzle = puzzleMap.get(puzzleId);
+              if (puzzle) {
+                // Filter explanations by model if specified
+                let filteredExplanations = explanations;
+                if (modelName) {
+                  filteredExplanations = explanations.filter(exp => exp.modelName === modelName);
+                }
 
-        if (confidenceMin) {
-          paramCount++;
-          whereConditions.push(`e.confidence >= $${paramCount}`);
-          queryParams.push(parseInt(confidenceMin as string));
-        }
+                // Filter by confidence if specified
+                if (confidenceMin || confidenceMax) {
+                  filteredExplanations = filteredExplanations.filter(exp => {
+                    const confidence = exp.confidence || 0;
+                    if (confidenceMin && confidence < parseInt(confidenceMin as string)) return false;
+                    if (confidenceMax && confidence > parseInt(confidenceMax as string)) return false;
+                    return true;
+                  });
+                }
 
-        if (confidenceMax) {
-          paramCount++;
-          whereConditions.push(`e.confidence <= $${paramCount}`);
-          queryParams.push(parseInt(confidenceMax as string));
-        }
-
-        const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-
-        // Query to get explanations with aggregated data
-        const explanationsQuery = `
-          SELECT 
-            e.puzzle_id,
-            COUNT(*) as explanation_count,
-            MAX(e.created_at) as latest_created_at,
-            json_agg(
-              json_build_object(
-                'id', e.id,
-                'patternDescription', e.pattern_description,
-                'solvingStrategy', e.solving_strategy,
-                'alienMeaning', e.alien_meaning,
-                'confidence', e.confidence,
-                'alienMeaningConfidence', e.alien_meaning_confidence,
-                'modelName', e.model_name,
-                'hasReasoningLog', e.has_reasoning_log,
-                'apiProcessingTimeMs', e.api_processing_time_ms,
-                'saturnSuccess', e.saturn_success,
-                'createdAt', e.created_at
-              ) ORDER BY e.created_at DESC
-            ) as explanations
-          FROM explanations e
-          ${whereClause}
-          GROUP BY e.puzzle_id
-        `;
-
-        const explanationsResult = await client.query(explanationsQuery, queryParams);
-
-        // Merge explanation data with puzzle data
-        explanationsResult.rows.forEach((row: any) => {
-          const puzzle = puzzleMap.get(row.puzzle_id);
-          if (puzzle) {
-            puzzle.explanations = row.explanations || [];
-            puzzle.totalExplanations = parseInt(row.explanation_count);
-            puzzle.latestExplanation = puzzle.explanations[0] || null;
-            puzzle.hasExplanation = true;
+                if (filteredExplanations.length > 0) {
+                  puzzle.explanations = filteredExplanations;
+                  puzzle.totalExplanations = filteredExplanations.length;
+                  puzzle.latestExplanation = filteredExplanations[0];
+                  puzzle.hasExplanation = true;
+                } else {
+                  // No explanations match the filters
+                  puzzle.explanations = [];
+                  puzzle.totalExplanations = 0;
+                  puzzle.latestExplanation = null;
+                  puzzle.hasExplanation = false;
+                }
+              }
+            }
+          } catch (error) {
+            console.error(`Error getting explanations for puzzle ${puzzleId}:`, error);
           }
-        });
+        }
+      }
 
-        // Convert map back to array
-        let results = Array.from(puzzleMap.values());
+      // Convert map back to array
+      let results = Array.from(puzzleMap.values());
 
         // Apply hasExplanation filter
         if (hasExplanation === 'true') {
@@ -350,10 +345,6 @@ export const puzzleController = {
           total: total,
           hasMore: total > parseInt(offset as string) + parseInt(limit as string)
         }));
-
-      } finally {
-        client.release();
-      }
 
     } catch (error) {
       console.error('[Controller] Error in puzzle overview:', error);

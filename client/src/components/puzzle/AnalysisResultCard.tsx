@@ -190,7 +190,7 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
               {showAlienMeaning && (
                 <div className="px-3 pb-3">
                   <div className="bg-white p-3 rounded border border-purple-100">
-                    <p className="text-gray-600 text-purple-700">{result.alienMeaning}</p>
+                    <p className="text-purple-700">{result.alienMeaning}</p>
                   </div>
                 </div>
               )}
