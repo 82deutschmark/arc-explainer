@@ -1,66 +1,130 @@
-# Claude Code Memory - ARC Explainer Project
+# CLAUDE.md
 
-## Database Schema
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-The project uses PostgreSQL with two main tables:
+## Common Commands
 
-### EXPLANATIONS Table
-- **Primary Key**: `id` (SERIAL)
-- **Core Fields**:
-  - `puzzle_id` (TEXT NOT NULL) - Links to puzzle
-  - `pattern_description`, `solving_strategy`, `alien_meaning` (TEXT)
-  - `hints` (TEXT[]) - PostgreSQL array
-  - `confidence`, `alien_meaning_confidence` (INTEGER)
-  - `model_name` (TEXT) - AI model used
-  
-- **AI Features**:
-  - `reasoning_log` (TEXT) - Step-by-step AI reasoning
-  - `has_reasoning_log` (BOOLEAN) - Quick check flag
-  - `api_processing_time_ms` (INTEGER) - Performance tracking
-  
-- **Saturn Solver Integration**:
-  - `saturn_images` (TEXT) - JSON string of image paths
-  - `saturn_log` (TEXT) - Verbose stdout/stderr logs
-  - `saturn_events` (TEXT) - Compressed NDJSON/JSON event trace
-  - `saturn_success` (BOOLEAN) - Whether puzzle was solved correctly
-  
-- **Metadata**: `created_at` (TIMESTAMPTZ)
+### Development
+- `npm run dev` - Start development server (both frontend on :5173 and backend on :5000)
+- `npm run build` - Build for production (client to dist/public, server to dist/)
+- `npm run start` - Run production build
+- `npm run check` - TypeScript type checking
+- `npm run windows-dev` - Windows-specific development command
+- `npm run windows-start` - Windows-specific production command
 
-### FEEDBACK Table
-- **Primary Key**: `id` (SERIAL)
-- **Foreign Key**: `explanation_id` → `explanations(id)` (1:N relationship)
-- **Fields**:
-  - `vote_type` (VARCHAR) - CHECK constraint: 'helpful' | 'not_helpful'
-  - `comment` (TEXT)
-  - `created_at` (TIMESTAMP)
+### Database Management
+- `npm run db:push` - Push database schema changes using Drizzle
+- Database tables auto-create on startup if using PostgreSQL
 
-## Key Architecture Notes
+### Testing and Validation
+- No specific test commands configured - check project for testing framework setup
 
-### Puzzle Data Loading Issue (FIXED)
-- **Problem**: PuzzleLoader was creating artificial composite keys like `"taskId-ARC1"` 
-- **Reality**: Each puzzle has a unique ID across all ARC categories (ARC1, ARC1-Eval, ARC2, ARC2-Eval)
-- **Fix**: Use taskId directly as the key, not composite keys
-- **Files Modified**: `server/services/puzzleLoader.ts`
+## Architecture Overview
 
-### Data Sources Priority
-1. ARC2-Eval (evaluation2) - Priority 1
-2. ARC2 (training2) - Priority 2  
-3. ARC1-Eval (evaluation) - Priority 3
-4. ARC1 (training) - Priority 4
+### Monorepo Structure
+```
+├── client/          # React frontend (Vite + TypeScript)
+├── server/          # Express backend (TypeScript)
+├── shared/          # Shared types and schemas
+├── data/            # ARC-AGI puzzle datasets
+├── solver/          # Saturn Visual Solver (Python)
+└── dist/            # Production build output
+```
 
-### Project Structure
-- **Frontend**: React + TypeScript (Vite)
-- **Backend**: Express + TypeScript
-- **Database**: PostgreSQL (Railway) with fallback to memory
-- **AI Providers**: OpenAI, Anthropic, Gemini, Grok, DeepSeek
-- **Special Features**: Saturn Visual Solver with Python integration
+### Frontend Architecture (React + TypeScript)
+- **Build Tool**: Vite with TypeScript
+- **Routing**: Wouter (lightweight client-side routing)
+- **State Management**: TanStack Query for server state
+- **UI Components**: shadcn/ui + TailwindCSS
+- **Key Pages**: PuzzleBrowser, PuzzleExaminer, SaturnVisualSolver, PuzzleOverview
 
-### Common Commands
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- Database tables auto-create on startup
+### Backend Architecture (Express + TypeScript)
+- **Server**: Express.js with ESM modules
+- **Database**: PostgreSQL via Drizzle ORM (with in-memory fallback)
+- **AI Services**: Multi-provider support (OpenAI, Anthropic, Gemini, Grok, DeepSeek)
+- **WebSockets**: Saturn solver progress streaming
+- **Python Integration**: Saturn Visual Solver subprocess execution
+
+### Database Schema (PostgreSQL)
+Two main tables with Drizzle ORM:
+
+**EXPLANATIONS Table**:
+- Core fields: puzzle_id, pattern_description, solving_strategy, hints[], confidence
+- AI features: reasoning_log, api_processing_time_ms, model_name
+- Saturn integration: saturn_images, saturn_log, saturn_events, saturn_success
+
+**FEEDBACK Table**:
+- Foreign key to explanations (1:N relationship)
+- vote_type constraint: 'helpful' | 'not_helpful'
+- Required comment field for feedback
+
+### AI Provider Integration
+Centralized prompt building system (`server/services/promptBuilder.ts`):
+- Template-based prompts with dynamic selection
+- Custom prompt support for research workflows
+- Consistent behavior across all 5 AI providers
+- Emoji mapping only for "Alien Communication" template
+
+### Saturn Visual Solver Integration
+- Python-based visual reasoning solver
+- Streams progress via WebSockets and NDJSON events
+- Requires OPENAI_API_KEY for image analysis
+- Image gallery with real-time updates
+
+## Key Technical Patterns
+
+### ESM Module Setup
+- Uses ES modules throughout (type: "module" in package.json)
+- Import paths require .ts extensions in development
+- Proper __dirname handling for bundled code
+
+### TypeScript Configuration
+- Shared types in `shared/types.ts` for frontend/backend consistency
+- Path aliases: `@/*` for client, `@shared/*` for shared types
+- Strict TypeScript settings with incremental builds
+
+### Development vs Production
+- **Development**: Vite dev server on :5173, Express API on :5000
+- **Production**: Express serves static files from dist/public with SPA fallback
+- Docker deployment with Python runtime for Saturn solver
+
+### Data Loading Priority
+ARC-AGI datasets loaded in priority order:
+1. ARC2-Eval (evaluation2)
+2. ARC2 (training2)  
+3. ARC1-Eval (evaluation)
+4. ARC1 (training)
 
 ### Environment Variables
-- `DATABASE_URL` - PostgreSQL connection (optional)
-- `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY` - AI providers
-- `PYTHON_BIN` - Python binary override for Saturn solver
+Required for AI analysis (at least one):
+- `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`
+
+Optional:
+- `DATABASE_URL` - PostgreSQL connection (fallback to memory storage)
+- `PYTHON_BIN` - Override Python binary (auto-detects: 'python' on Windows, 'python3' on Linux)
+
+## Important Implementation Notes
+
+### Puzzle Data Management
+- Each puzzle has unique ID across all ARC categories
+- No composite keys needed (taskId is sufficient)
+- Puzzle metadata includes source tracking (ARC1, ARC1-Eval, ARC2, ARC2-Eval)
+
+### SPA Routing in Production
+Express serves index.html for all non-API routes to support client-side routing:
+```typescript
+app.get("*", (req, res) => {
+  if (!req.path.startsWith("/api")) {
+    res.sendFile(path.join(staticPath, "index.html"));
+  }
+});
+```
+
+### Prompt System Architecture
+- Single source of truth in `promptBuilder.ts`
+- Provider-agnostic prompt handling
+- Template selection with custom prompt override capability
+- Numeric grids by default, emoji mapping only for specific templates
+
+### WebSocket Integration
+Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
