@@ -191,7 +191,7 @@ function getJsonResponseFormat(selectedTemplate: PromptTemplate | null): object 
     };
   } else {
     return {
-      "patternDescription": "Clear description of the patterns or transformation rules",
+      "patternDescription": "Clear description of the rules learned from the training examples",
       "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps",
       "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
       "confidence": "A confidence score between 0 and 100, how sure you are about your explanation and the transformation rules being applied"
@@ -205,12 +205,12 @@ function getJsonResponseFormat(selectedTemplate: PromptTemplate | null): object 
  */
 function getSolverResponseFormat(): object {
   return {
-    "patternDescription": "Clear description of the transformation patterns identified from training examples",
+    "patternDescription": "Clear description of what was learned from training examples",
     "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
     "hints": [
-      "Key insight 1 about the pattern",
-      "Key insight 2 about the transformation", 
-      "Key insight 3 about applying the pattern"
+      "Key reasoning insight 1",
+      "Key reasoning insight 2", 
+      "Key reasoning insight 3"
     ],
     "confidence": "A confidence score between 0 and 100, how sure you are about your predicted answer"
   };
@@ -298,7 +298,7 @@ Correct Answer: ${testCase.output}`;
     
   // Different test labels for solver vs explanation mode
   const testLabel = isSolverMode 
-    ? "TEST CASE (predict the correct answer):"
+    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case and output it in the same format as the `Input` grid at the top of your reply.\n3. Explain your reasoning step by step in simple terms anyone could understand.\n4. Explain why you are sure or unsure about your answer."
     : omitAnswer
       ? (useEmojis
           ? "TEST CASE (the aliens' question; correct answer withheld):"
@@ -309,7 +309,7 @@ Correct Answer: ${testCase.output}`;
       
   // Different instructions for solver vs explanation mode
   const analysisInstructions = isSolverMode
-    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case.\n3. Explain your reasoning step by step."
+    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case and output it in the same format as the `Input` grid at the top of your reply.\n3. Explain your reasoning step by step.\n4. Explain why you are sure or unsure about your answer."
     : useEmojis
       ? "2. Explain it in simple terms anyone could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
       : "2. Explain it in simple terms for novices to understand.";
