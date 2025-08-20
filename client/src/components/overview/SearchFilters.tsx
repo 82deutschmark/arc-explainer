@@ -89,7 +89,7 @@ export function SearchFilters({
           <div className="space-y-2">
             <Label htmlFor="hasExplanation">Explanation Status</Label>
             <Select value={hasExplanationFilter} onValueChange={setHasExplanationFilter}>
-              <SelectTrigger>
+              <SelectTrigger id="hasExplanation">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -104,7 +104,7 @@ export function SearchFilters({
           <div className="space-y-2">
             <Label htmlFor="hasFeedback">Feedback Status</Label>
             <Select value={hasFeedbackFilter} onValueChange={setHasFeedbackFilter}>
-              <SelectTrigger>
+              <SelectTrigger id="hasFeedback">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -119,7 +119,7 @@ export function SearchFilters({
           <div className="space-y-2">
             <Label htmlFor="model">AI Model</Label>
             <Select value={modelFilter} onValueChange={setModelFilter}>
-              <SelectTrigger>
+              <SelectTrigger id="model">
                 <SelectValue placeholder="All models" />
               </SelectTrigger>
               <SelectContent>
@@ -135,9 +135,10 @@ export function SearchFilters({
 
           {/* Confidence Range */}
           <div className="space-y-2">
-            <Label>Confidence Range</Label>
+            <Label htmlFor="confidenceMin">Confidence Range</Label>
             <div className="flex gap-2">
               <Input
+                id="confidenceMin"
                 placeholder="Min"
                 type="number"
                 min="0"
@@ -146,6 +147,7 @@ export function SearchFilters({
                 onChange={(e) => setConfidenceMin(e.target.value)}
               />
               <Input
+                id="confidenceMax"
                 placeholder="Max"
                 type="number"
                 min="0"
