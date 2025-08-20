@@ -33,6 +33,10 @@ interface PuzzleExplanation {
   saturnEvents?: string | null;
   // Saturn-specific: boolean indicating if puzzle was solved correctly
   saturnSuccess?: boolean | null;
+  // Solver mode validation fields
+  predictedOutputGrid?: number[][] | null;
+  isPredictionCorrect?: boolean | null;
+  predictionAccuracyScore?: number | null;
 }
 
 /**
@@ -148,6 +152,30 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN saturn_events TEXT;
         END IF;
 
+        -- Add predicted_output_grid column if it doesn't exist (for solver mode validation)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'predicted_output_grid')
+        THEN
+          ALTER TABLE explanations ADD COLUMN predicted_output_grid TEXT;
+        END IF;
+
+        -- Add is_prediction_correct column if it doesn't exist (for solver mode validation)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'is_prediction_correct')
+        THEN
+          ALTER TABLE explanations ADD COLUMN is_prediction_correct BOOLEAN;
+        END IF;
+
+        -- Add prediction_accuracy_score column if it doesn't exist (for solver mode validation)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'prediction_accuracy_score')
+        THEN
+          ALTER TABLE explanations ADD COLUMN prediction_accuracy_score FLOAT;
+        END IF;
+
         -- Add saturn_success column if it doesn't exist
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                      WHERE table_name = 'explanations'
@@ -216,8 +244,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
         reasoning_log, has_reasoning_log, api_processing_time_ms, saturn_images,
-        saturn_log, saturn_events, saturn_success)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        saturn_log, saturn_events, saturn_success,
+        predicted_output_grid, is_prediction_correct, prediction_accuracy_score)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
        RETURNING id`,
       [
         puzzleId,
@@ -234,7 +263,10 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null,
         explanation.saturnLog || null,
         explanation.saturnEvents || null,
-        explanation.saturnSuccess ?? null
+        explanation.saturnSuccess ?? null,
+        explanation.predictedOutputGrid ? JSON.stringify(explanation.predictedOutputGrid) : null,
+        explanation.isPredictionCorrect ?? null,
+        explanation.predictionAccuracyScore ?? null
       ]
     );
     
@@ -804,6 +836,64 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
   }
 };
 
+/**
+ * Get solver mode accuracy statistics for leaderboards
+ * 
+ * @returns Object containing accuracy stats by model
+ */
+const getAccuracyStats = async () => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve accuracy stats.', 'database');
+    return { accuracyByModel: [], totalSolverAttempts: 0 };
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(`
+      SELECT 
+        model_name,
+        COUNT(*) as total_attempts,
+        COUNT(CASE WHEN is_prediction_correct = true THEN 1 END) as correct_predictions,
+        AVG(CASE WHEN prediction_accuracy_score IS NOT NULL THEN prediction_accuracy_score ELSE 0 END) as avg_accuracy_score,
+        AVG(CASE WHEN confidence IS NOT NULL THEN confidence ELSE 50 END) as avg_confidence,
+        COUNT(CASE WHEN predicted_output_grid IS NOT NULL THEN 1 END) as successful_extractions
+      FROM explanations 
+      WHERE is_prediction_correct IS NOT NULL
+      GROUP BY model_name
+      ORDER BY avg_accuracy_score DESC, correct_predictions DESC
+    `);
+
+    const totalResult = await client.query(`
+      SELECT COUNT(*) as total_solver_attempts
+      FROM explanations 
+      WHERE is_prediction_correct IS NOT NULL
+    `);
+
+    const accuracyByModel = result.rows.map(row => ({
+      modelName: row.model_name,
+      totalAttempts: parseInt(row.total_attempts),
+      correctPredictions: parseInt(row.correct_predictions),
+      accuracyPercentage: row.total_attempts > 0 ? Math.round((row.correct_predictions / row.total_attempts) * 100) : 0,
+      avgAccuracyScore: parseFloat(row.avg_accuracy_score) || 0,
+      avgConfidence: Math.round(parseFloat(row.avg_confidence) || 50),
+      successfulExtractions: parseInt(row.successful_extractions),
+      extractionSuccessRate: row.total_attempts > 0 ? Math.round((row.successful_extractions / row.total_attempts) * 100) : 0
+    }));
+
+    logger.info(`Retrieved accuracy stats for ${accuracyByModel.length} models`, 'database');
+    
+    return {
+      accuracyByModel,
+      totalSolverAttempts: parseInt(totalResult.rows[0].total_solver_attempts) || 0
+    };
+  } catch (error) {
+    logger.error(`Error retrieving accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return { accuracyByModel: [], totalSolverAttempts: 0 };
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
@@ -819,6 +909,8 @@ export const dbService = {
   getFeedbackForPuzzle,
   getAllFeedback,
   getFeedbackSummaryStats,
+  // Solver mode accuracy stats
+  getAccuracyStats,
   // Helpers
   isConnected: () => !!pool,
 };
