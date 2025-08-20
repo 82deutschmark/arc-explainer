@@ -93,14 +93,46 @@ export class OpenAIService {
           throw apiError;
         }
 
+        // Debug: Log the full response structure to understand format
+        console.log(`[OpenAI] Full ResponsesAPI response structure:`, JSON.stringify(response, null, 2));
+        
         // Extract JSON result from Responses API output_text
         const rawJson = (response as any).output_text || "";
+        console.log(`[OpenAI] Raw JSON from output_text (${rawJson.length} chars):`, rawJson.substring(0, 500));
+        
+        // Also check if content is in output array
+        if ((response as any).output && Array.isArray((response as any).output)) {
+          console.log(`[OpenAI] Output array length: ${(response as any).output.length}`);
+          (response as any).output.forEach((item: any, index: number) => {
+            console.log(`[OpenAI] Output item ${index}:`, { type: item.type, hasContent: !!item.content, hasText: !!item.text });
+          });
+        }
         
         try {
           result = rawJson ? JSON.parse(rawJson) : {};
+          console.log(`[OpenAI] Successfully parsed JSON result:`, Object.keys(result || {}).join(', '));
         } catch (e) {
           console.warn("[OpenAI] Failed to parse JSON output:", rawJson.substring(0, 200), e);
-          result = {};
+          
+          // Try to extract JSON from output array if output_text failed
+          if ((response as any).output && Array.isArray((response as any).output)) {
+            for (const outputItem of (response as any).output) {
+              if (outputItem.type === "message" && outputItem.content) {
+                console.log(`[OpenAI] Trying to parse JSON from message content:`, outputItem.content.substring(0, 200));
+                try {
+                  result = JSON.parse(outputItem.content);
+                  console.log(`[OpenAI] Successfully parsed JSON from message content`);
+                  break;
+                } catch (msgError) {
+                  console.warn(`[OpenAI] Failed to parse JSON from message content:`, msgError);
+                }
+              }
+            }
+          }
+          
+          if (!result || Object.keys(result).length === 0) {
+            result = {};
+          }
         }
 
         // Extract reasoning logs from Responses API output array
