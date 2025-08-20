@@ -12,9 +12,18 @@ import { ModelConfig } from '../types/puzzle';
  * Colors for grid cells representing different values
  */
 export const CELL_COLORS = [
-  '#000000', '#0074D9', '#FF4136', '#2ECC40', '#FFDC00',
-  '#808080', '#F012BE', '#FF851B', '#7FDBFF', '#870C25'
+  '#000000', // Black
+  '#0074D9', // Blue
+  '#FF4136', // Red
+  '#2ECC40', // Green
+  '#FFDC00', // Yellow
+  '#808080', // Grey
+  '#F012BE', // Magenta
+  '#FF851B', // Orange
+  '#7FDBFF', // Light Blue
+  '#800000'  // Maroon (exactly 128,0,0)
 ] as const;
+
 
 /**
  * Available AI models for puzzle analysis
