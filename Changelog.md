@@ -7,6 +7,44 @@
 
 August 20, 2025
 
+## Version 1.4.0 — Saturn Visual Solver Complete Redesign (2025-08-20)
+
+### Major UI/UX Overhaul
+- __Complete Saturn Visual Solver Redesign (Code by Claude Code)__: Completely redesigned the Saturn Visual Solver page for better clarity and user experience
+  - **Streamlined Single-Column Layout**: Replaced complex two-column grid with clean, focused single-column design
+  - **Enhanced Status Overview**: Added detailed phase explanations, progress indicators with color coding, and real-time timing information
+  - **Collapsible Puzzle Details**: Made puzzle overview collapsible to reduce visual clutter while maintaining accessibility
+  - **Improved Progress Explanations**: Added comprehensive phase descriptions explaining what Saturn is doing during each step
+  - **Real-Time Timing Display**: Shows elapsed time and estimated remaining time with automatic updates
+
+### Backend Performance & Reliability
+- __Extended Timeout Management (Code by Claude Code)__: Enhanced Saturn analysis timeout handling for long-running tasks
+  - **Configurable Timeout**: Increased default timeout from 30 to 60 minutes with SATURN_TIMEOUT_MINUTES environment variable support
+  - **Warning System**: Added 75% timeout warnings to notify users of approaching time limits
+  - **Proper Cleanup**: Improved timeout and warning handle cleanup to prevent memory leaks
+  - **Better Error Messages**: Enhanced timeout messages with configuration guidance
+
+### Real-Time Reasoning Display
+- __Live Reasoning Log Streaming (Code by Claude Code)__: Added comprehensive reasoning log display and streaming capabilities
+  - **WebSocket Reasoning Streams**: Modified backend to stream reasoning logs in real-time via WebSocket
+  - **Dual-Panel Layout**: Split output into "System Output" and "Reasoning Analysis" for better organization
+  - **Reasoning History**: Track and display all reasoning steps throughout the analysis process
+  - **Current Step Highlighting**: Prominently display the current reasoning step with visual emphasis
+
+### Enhanced Console Output
+- __Structured Log Display (Code by Claude Code)__: Completely revamped console output with intelligent categorization and formatting
+  - **Log Level Detection**: Automatic categorization (ERROR, WARN, INFO, DEBUG, SATURN, SUCCESS) with color coding
+  - **Timestamp Integration**: Added real-time timestamps for all log entries
+  - **Visual Indicators**: Color-coded log levels with appropriate background highlighting
+  - **Message Cleaning**: Intelligent removal of redundant prefixes for cleaner display
+  - **Progress Indicators**: Enhanced running status indicators with better visual feedback
+
+### Technical Improvements
+- **State Management**: Enhanced Saturn progress hook with reasoning log tracking and history management
+- **Memory Management**: Implemented proper cleanup for timeout handlers and WebSocket connections
+- **Type Safety**: Added proper TypeScript interfaces for reasoning log streaming
+- **Performance**: Optimized log rendering and real-time updates for better responsiveness
+
 ## Version 1.3.9 — Enhanced Solver Mode Validation & UI Refactoring (2025-08-20)
 
 ### Major Improvements

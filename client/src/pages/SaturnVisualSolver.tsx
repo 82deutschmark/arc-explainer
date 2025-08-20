@@ -29,7 +29,14 @@ export default function SaturnVisualSolver() {
   const { state, start, sessionId } = useSaturnProgress(taskId);
   const [model, setModel] = React.useState<SaturnModelKey>('GPT-5');
   const [showPuzzleDetails, setShowPuzzleDetails] = React.useState(false);
+  const [startTime, setStartTime] = React.useState<Date | null>(null);
   const logRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Derived state variables (moved before useEffect hooks)
+  const isRunning = state.status === 'running';
+  const isDone = state.status === 'completed';
+  const hasError = state.status === 'error';
+  const hasWarning = state.phase === 'warning' || state.phase === 'timeout';
 
   // Auto-scroll log to bottom when new lines arrive
   React.useEffect(() => {
@@ -38,6 +45,26 @@ export default function SaturnVisualSolver() {
       el.scrollTop = el.scrollHeight;
     }
   }, [state.logLines]);
+
+  // Track start time when analysis begins
+  React.useEffect(() => {
+    if (state.status === 'running' && !startTime) {
+      setStartTime(new Date());
+    } else if (state.status !== 'running') {
+      setStartTime(null);
+    }
+  }, [state.status, startTime]);
+
+  // Force re-render every second to update timing display
+  const [, setTick] = React.useState(0);
+  React.useEffect(() => {
+    if (isRunning) {
+      const interval = setInterval(() => {
+        setTick(tick => tick + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isRunning]);
 
   if (!taskId) {
     return (
@@ -75,33 +102,187 @@ export default function SaturnVisualSolver() {
   }
 
   const onStart = () => start({ model, temperature: 0.2, cellSize: 24, maxSteps: 8, captureReasoning: true });
-  const isRunning = state.status === 'running';
-  const isDone = state.status === 'completed';
-  const hasError = state.status === 'error';
 
-  // Helper to get phase explanation
-  const getPhaseExplanation = (phase: string | undefined) => {
+  // Helper to get detailed phase explanation
+  const getPhaseExplanation = (phase: string | undefined, step?: number, totalSteps?: number) => {
+    const stepInfo = (step !== undefined && totalSteps !== undefined) ? 
+      ` (Step ${step}/${totalSteps})` : '';
+    
     switch (phase) {
       case 'init':
       case 'initializing':
-        return 'Setting up the analysis environment and loading puzzle data';
+        return {
+          title: 'Initializing Analysis',
+          description: 'Setting up the Saturn visual reasoning environment, loading puzzle data, and preparing AI models for pattern analysis.',
+          details: 'This phase involves validating the puzzle format, initializing the Python solver environment, and setting up connections to the AI reasoning engine.'
+        };
       case 'analyzing':
-        return 'Examining training examples to identify patterns';
+        return {
+          title: 'Analyzing Training Examples' + stepInfo,
+          description: 'Examining each training example to identify visual patterns, transformations, and logical rules.',
+          details: 'Saturn is processing input-output pairs to understand the underlying pattern. This involves identifying color changes, shape transformations, spatial relationships, and mathematical operations.'
+        };
       case 'reasoning':
-        return 'Applying visual reasoning and pattern matching';
+        return {
+          title: 'Visual Reasoning' + stepInfo,
+          description: 'Applying discovered patterns to understand the puzzle\'s core logic and transformation rules.',
+          details: 'The AI is now forming hypotheses about the puzzle mechanics, testing different pattern interpretations, and building a mental model of how inputs transform to outputs.'
+        };
       case 'generating':
-        return 'Creating solution predictions and visualizations';
+        return {
+          title: 'Generating Solution' + stepInfo,
+          description: 'Creating solution predictions and generating step-by-step visualizations of the reasoning process.',
+          details: 'Saturn is applying the discovered pattern to the test case, generating intermediate visualization steps, and producing the final predicted output.'
+        };
+      case 'validating':
+        return {
+          title: 'Validating Results' + stepInfo,
+          description: 'Checking the generated solution against pattern consistency and logical constraints.',
+          details: 'The system is verifying that the proposed solution follows the identified pattern rules and makes logical sense within the puzzle context.'
+        };
+      case 'warning':
+        return {
+          title: 'Long-Running Analysis',
+          description: 'Complex puzzle requiring extended processing time - approaching timeout threshold.',
+          details: 'This puzzle is more challenging than usual and requires additional computational time. The analysis will continue but may timeout if it exceeds the configured limit.'
+        };
+      case 'timeout':
+        return {
+          title: 'Analysis Timeout',
+          description: 'The analysis exceeded the maximum allowed time and was terminated.',
+          details: 'Consider increasing the SATURN_TIMEOUT_MINUTES environment variable or simplifying the puzzle complexity. Some ARC puzzles require significant computational resources.'
+        };
       case 'done':
-        return 'Analysis complete';
+        return {
+          title: 'Analysis Complete',
+          description: 'Saturn has finished processing and generated a solution with reasoning explanation.',
+          details: 'The visual reasoning process is complete. Review the generated images, reasoning logs, and final solution below.'
+        };
       case 'error':
-        return 'An error occurred during processing';
+        return {
+          title: 'Processing Error',
+          description: 'An error occurred during the analysis process.',
+          details: 'Check the system output for error details. Common issues include missing API keys, invalid puzzle format, or system resource constraints.'
+        };
+      case 'log':
+        return {
+          title: 'Processing',
+          description: 'Receiving real-time updates from the analysis engine.',
+          details: 'Saturn is actively working on the puzzle and sending progress updates.'
+        };
       default:
-        return phase || 'Waiting to start';
+        return {
+          title: phase || 'Waiting',
+          description: phase ? `Current phase: ${phase}` : 'Waiting for analysis to begin.',
+          details: 'Click "Start Analysis" to begin the Saturn visual reasoning process.'
+        };
     }
   };
 
   const progressPercent = typeof state.progress === 'number' ? 
     Math.min(100, Math.max(0, state.progress * 100)) : 0;
+  
+  const phaseInfo = getPhaseExplanation(state.phase, state.step, state.totalSteps);
+  
+  // Calculate timing information
+  const getTimingInfo = () => {
+    if (!startTime || !isRunning) return null;
+    
+    const now = new Date();
+    const elapsedMs = now.getTime() - startTime.getTime();
+    const elapsedMinutes = Math.floor(elapsedMs / 60000);
+    const elapsedSeconds = Math.floor((elapsedMs % 60000) / 1000);
+    
+    let estimated = null;
+    if (state.progress && state.progress > 0.1) {
+      const totalEstimatedMs = elapsedMs / state.progress;
+      const remainingMs = totalEstimatedMs - elapsedMs;
+      if (remainingMs > 0) {
+        const remainingMinutes = Math.floor(remainingMs / 60000);
+        const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
+        estimated = `${remainingMinutes}m ${remainingSeconds}s remaining`;
+      }
+    }
+    
+    return {
+      elapsed: `${elapsedMinutes}m ${elapsedSeconds}s`,
+      estimated
+    };
+  };
+  
+  const timingInfo = getTimingInfo();
+  
+  // Helper to format and categorize log lines
+  const formatLogLine = (line: string, index: number) => {
+    if (!line) {
+      return {
+        timestamp: '--:--:--',
+        level: '',
+        message: '',
+        className: '',
+        levelClassName: ''
+      };
+    }
+    
+    // Generate timestamp based on index (approximate)
+    const now = new Date();
+    const timestamp = new Date(now.getTime() - (state.logLines!.length - index - 1) * 1000);
+    const timeStr = timestamp.toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
+    
+    // Detect log level and categorize
+    let level = 'INFO';
+    let levelClassName = 'bg-blue-100 text-blue-800';
+    let className = '';
+    
+    const lowerLine = line.toLowerCase();
+    
+    if (lowerLine.includes('error') || lowerLine.includes('failed') || lowerLine.includes('exception')) {
+      level = 'ERROR';
+      levelClassName = 'bg-red-100 text-red-800';
+      className = 'border-l-2 border-red-300 bg-red-50';
+    } else if (lowerLine.includes('warning') || lowerLine.includes('warn') || lowerLine.includes('timeout')) {
+      level = 'WARN';
+      levelClassName = 'bg-yellow-100 text-yellow-800';
+      className = 'border-l-2 border-yellow-300 bg-yellow-50';
+    } else if (lowerLine.includes('debug') || lowerLine.includes('trace')) {
+      level = 'DEBUG';
+      levelClassName = 'bg-gray-100 text-gray-600';
+      className = 'text-gray-600';
+    } else if (lowerLine.includes('saturn') || lowerLine.includes('analysis') || lowerLine.includes('processing')) {
+      level = 'SATURN';
+      levelClassName = 'bg-purple-100 text-purple-800';
+      className = 'border-l-2 border-purple-300 bg-purple-50';
+    } else if (lowerLine.includes('complete') || lowerLine.includes('success') || lowerLine.includes('finished')) {
+      level = 'SUCCESS';
+      levelClassName = 'bg-green-100 text-green-800';
+      className = 'border-l-2 border-green-300 bg-green-50';
+    }
+    
+    // Clean up the message (remove common prefixes)
+    let message = line;
+    const prefixPatterns = [
+      /^\[\w+\]\s*/,  // [INFO], [DEBUG], etc.
+      /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s*/,  // timestamps
+      /^.*?:\s*/  // any prefix ending with ":"
+    ];
+    
+    for (const pattern of prefixPatterns) {
+      message = message.replace(pattern, '');
+    }
+    
+    return {
+      timestamp: timeStr,
+      level,
+      message: message.trim(),
+      className,
+      levelClassName
+    };
+  };
 
   return (
     <div className="container mx-auto p-6 max-w-6xl space-y-6">
@@ -134,27 +315,43 @@ export default function SaturnVisualSolver() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${
+                hasError ? 'bg-red-500' :
+                hasWarning ? 'bg-orange-500 animate-pulse' :
                 isRunning ? 'bg-yellow-500 animate-pulse' : 
-                isDone ? 'bg-green-500' : 
-                hasError ? 'bg-red-500' : 'bg-gray-300'
+                isDone ? 'bg-green-500' : 'bg-gray-300'
               }`} />
-              <div>
-                <div className="font-medium">
-                  {isRunning && '🪐 Running'} 
-                  {isDone && '✓ Complete'}
+              <div className="flex-1">
+                <div className="font-medium flex items-center gap-2">
                   {hasError && '⚠ Error'}
-                  {!isRunning && !isDone && !hasError && 'Ready'}
+                  {hasWarning && !hasError && '⚠ Warning'}
+                  {isRunning && !hasError && !hasWarning && '🪐 Running'} 
+                  {isDone && '✓ Complete'}
+                  {!isRunning && !isDone && !hasError && !hasWarning && 'Ready'}
+                  <span className="text-base">{phaseInfo.title}</span>
                 </div>
-                <div className="text-sm text-gray-600">
-                  {getPhaseExplanation(state.phase)}
+                <div className="text-sm text-gray-600 mt-1">
+                  {phaseInfo.description}
                 </div>
+                {phaseInfo.details && (
+                  <div className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    {phaseInfo.details}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-right space-y-1">
               {typeof state.step === 'number' && typeof state.totalSteps === 'number' && (
                 <div className="text-sm font-medium">Step {state.step}/{state.totalSteps}</div>
               )}
               <div className="text-sm text-gray-600">{progressPercent.toFixed(0)}%</div>
+              {timingInfo && (
+                <div className="text-xs text-gray-500 space-y-1">
+                  <div>Elapsed: {timingInfo.elapsed}</div>
+                  {timingInfo.estimated && (
+                    <div className="text-blue-600">{timingInfo.estimated}</div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           
@@ -162,7 +359,9 @@ export default function SaturnVisualSolver() {
           <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                hasError ? 'bg-red-500' : isDone ? 'bg-green-500' : 'bg-blue-500'
+                hasError ? 'bg-red-500' : 
+                hasWarning ? 'bg-orange-500' :
+                isDone ? 'bg-green-500' : 'bg-blue-500'
               }`}
               style={{ width: `${progressPercent}%` }}
             />
@@ -235,32 +434,102 @@ export default function SaturnVisualSolver() {
         </Card>
       )}
 
-      {/* Live Output */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Terminal className="h-5 w-5" />
-            Live Output
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div
-            ref={logRef}
-            className="bg-gray-900 text-green-300 font-mono text-sm p-4 rounded-lg border h-64 overflow-auto"
-          >
-            {Array.isArray(state.logLines) && state.logLines.length > 0 ? (
-              state.logLines.map((line, i) => (
-                <div key={i} className="leading-relaxed">
-                  {line || ''}
+      {/* Live Output and Reasoning */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* System Output */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Terminal className="h-5 w-5" />
+              System Output
+              {state.logLines && state.logLines.length > 0 && (
+                <Badge variant="outline" className="ml-2">
+                  {state.logLines.length} lines
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div
+              ref={logRef}
+              className="bg-gray-50 border rounded-lg p-4 h-64 overflow-auto space-y-1"
+            >
+              {Array.isArray(state.logLines) && state.logLines.length > 0 ? (
+                state.logLines.map((line, i) => {
+                  const formattedLog = formatLogLine(line, i);
+                  return (
+                    <div key={i} className={`flex items-start gap-2 text-sm ${formattedLog.className}`}>
+                      <span className="text-xs text-gray-400 font-mono whitespace-nowrap">
+                        {formattedLog.timestamp}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${formattedLog.levelClassName}`}>
+                        {formattedLog.level}
+                      </span>
+                      <span className="flex-1 leading-relaxed font-mono">
+                        {formattedLog.message}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-gray-500 text-center py-8">
+                  {isRunning ? 'Waiting for system output...' : 'No output yet. Click "Start Analysis" to begin.'}
                 </div>
-              ))
-            ) : (
-              <div className="text-gray-500">Waiting for analysis to start...</div>
-            )}
-            {isRunning && <div className="inline-block w-2 h-4 bg-green-400 animate-pulse ml-1" />}
-          </div>
-        </CardContent>
-      </Card>
+              )}
+              {isRunning && (
+                <div className="flex items-center gap-2 text-green-600 animate-pulse">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-xs">Processing...</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Reasoning Analysis */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Reasoning Analysis
+              {state.reasoningHistory && state.reasoningHistory.length > 0 && (
+                <Badge variant="outline" className="ml-2">
+                  {state.reasoningHistory.length} entries
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 h-64 overflow-auto">
+              {state.reasoningLog && (
+                <div className="mb-4 p-3 bg-blue-100 rounded border-l-4 border-blue-500">
+                  <div className="text-xs text-blue-600 font-medium mb-1">Current Step Reasoning</div>
+                  <div className="text-sm text-blue-800 whitespace-pre-wrap">
+                    {state.reasoningLog}
+                  </div>
+                </div>
+              )}
+              {Array.isArray(state.reasoningHistory) && state.reasoningHistory.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="text-xs text-gray-600 font-medium">Previous Reasoning Steps</div>
+                  {state.reasoningHistory.map((reasoning, i) => (
+                    <div key={i} className="p-3 bg-white rounded border">
+                      <div className="text-xs text-gray-500 mb-1">Step {i + 1}</div>
+                      <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                        {reasoning}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">
+                  {isRunning ? 'Waiting for reasoning analysis...' : 'No reasoning data available'}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Image Gallery */}
       {Array.isArray(state.galleryImages) && state.galleryImages.length > 0 && (
