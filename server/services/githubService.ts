@@ -1,3 +1,27 @@
+/**
+ * DEPRECATED: This file can be safely deleted
+ * 
+ * Analysis Results (2025-08-20):
+ * - ✅ No imports: No files import from githubService.ts  
+ * - ✅ No usage: No references to the GitHub service in the codebase
+ * - ✅ Local data complete: All ARC-AGI puzzle data is stored locally in /data/
+ * - ✅ Stub implementation: puzzleLoader.ts already has a no-op downloadPuzzle() method
+ * 
+ * Local Data Present:
+ * - 4,000+ puzzles across ARC1 & ARC2 datasets
+ * - training/ (ARC1 training)
+ * - evaluation/ (ARC1 evaluation) 
+ * - training2/ (ARC2 training)
+ * - evaluation2/ (ARC2 evaluation)
+ * - explained/ (pre-analyzed puzzles)
+ * 
+ * This is legacy code from when puzzles needed to be downloaded from GitHub.
+ * Since all puzzle data is now stored locally and the service has zero usage,
+ * it can be safely deleted to clean up ~104 lines of unused code.
+ * 
+ * To remove: rm D:\1Projects\arc-explainer\server\services\githubService.ts
+ */
+
 import fs from 'fs';
 import path from 'path';
 

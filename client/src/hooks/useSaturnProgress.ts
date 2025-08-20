@@ -98,7 +98,12 @@ export function useSaturnProgress(taskId: string | undefined) {
 
     // Open WebSocket
     const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = `${wsProtocol}://${location.host}/api/saturn/progress?sessionId=${encodeURIComponent(sid)}`;
+    
+    // In development, frontend (Vite) runs on different port than backend
+    const isDev = import.meta.env.DEV;
+    const wsHost = isDev ? 'localhost:5000' : location.host;
+    
+    const wsUrl = `${wsProtocol}://${wsHost}/api/saturn/progress?sessionId=${encodeURIComponent(sid)}`;
     const sock = new WebSocket(wsUrl);
     wsRef.current = sock;
 
