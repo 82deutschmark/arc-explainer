@@ -39,6 +39,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **Database Overview Dashboard** - Browse all puzzles with comprehensive filtering, search, and sorting capabilities. View explanation status, model analysis history, confidence ratings, and processing times across the entire puzzle database
 
+• **Comprehensive Feedback Analytics** - Real-time feedback statistics dashboard showing total feedback count, model performance rankings, and recent activity trends. Includes "Top Performing Models" and "Worst Performing Models" sections with helpful percentage rankings, plus sortable "Most Feedback" option
+
 ## 🌟 Development & Credits
 
 **Primary Development**: Cascade
