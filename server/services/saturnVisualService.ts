@@ -109,19 +109,41 @@ class SaturnVisualService {
     });
 
     // Start the Python subprocess and stream events as they arrive
-    // Add 30-minute timeout to prevent hanging processes
-    const timeoutMs = 30 * 60 * 1000; // 30 minutes
+    // Extended timeout for long-running analyses - configurable via environment
+    const defaultTimeoutMinutes = 60; // Increased from 30 to 60 minutes
+    const configuredTimeout = process.env.SATURN_TIMEOUT_MINUTES ? 
+      parseInt(process.env.SATURN_TIMEOUT_MINUTES) : defaultTimeoutMinutes;
+    const timeoutMs = Math.max(30, configuredTimeout) * 60 * 1000; // Minimum 30 minutes
+    
     let timeoutHandle: NodeJS.Timeout | null = null;
+    let warningHandle: NodeJS.Timeout | null = null;
     let isCompleted = false;
+    
+    // Add warning at 75% of timeout duration
+    const warningTimeMs = timeoutMs * 0.75;
+    const warningPromise = new Promise<void>((resolve) => {
+      warningHandle = setTimeout(() => {
+        if (!isCompleted) {
+          const remainingMinutes = Math.ceil((timeoutMs - warningTimeMs) / (60 * 1000));
+          broadcast(sessionId, {
+            status: 'running',
+            phase: 'warning',
+            message: `Long-running analysis detected. Will timeout in ${remainingMinutes} minutes if not completed.`,
+          });
+        }
+        resolve();
+      }, warningTimeMs);
+    });
     
     const timeoutPromise = new Promise<void>((_, reject) => {
       timeoutHandle = setTimeout(() => {
         if (!isCompleted) {
-          console.log(`[SATURN-DEBUG] Timeout after ${timeoutMs}ms for session ${sessionId}`);
+          const timeoutMinutes = Math.ceil(timeoutMs / (60 * 1000));
+          console.log(`[SATURN-DEBUG] Timeout after ${timeoutMs}ms (${timeoutMinutes}min) for session ${sessionId}`);
           broadcast(sessionId, {
             status: 'error',
             phase: 'timeout',
-            message: 'Saturn analysis timed out after 30 minutes. Process terminated.',
+            message: `Saturn analysis timed out after ${timeoutMinutes} minutes. Process terminated. Consider increasing SATURN_TIMEOUT_MINUTES if needed.`,
           });
           setTimeout(() => clearSession(sessionId), 5000);
           reject(new Error('Saturn analysis timeout'));
@@ -158,6 +180,8 @@ class SaturnVisualService {
                 message: evt.message,
                 images: evt.images,
                 progress: evt.totalSteps ? evt.step / evt.totalSteps : undefined,
+                // Stream reasoning logs if available
+                reasoningLog: (evt as any).reasoningLog ?? null,
               });
               break;
             }
@@ -235,18 +259,20 @@ class SaturnVisualService {
                 },
               });
 
-              // Mark as completed and cleanup timeout
+              // Mark as completed and cleanup timers
               isCompleted = true;
               if (timeoutHandle) clearTimeout(timeoutHandle);
+              if (warningHandle) clearTimeout(warningHandle);
               
               // Cleanup in-memory session cache later
               setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
               break;
             }
             case 'error': {
-              // Mark as completed and cleanup timeout on error
+              // Mark as completed and cleanup timers on error
               isCompleted = true;
               if (timeoutHandle) clearTimeout(timeoutHandle);
+              if (warningHandle) clearTimeout(warningHandle);
               
               broadcast(sessionId, {
                 status: 'error',
@@ -274,6 +300,7 @@ class SaturnVisualService {
       // Ensure cleanup happens even on timeout/error
       isCompleted = true;
       if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (warningHandle) clearTimeout(warningHandle);
     }
   }
 }
