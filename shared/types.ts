@@ -63,6 +63,53 @@ export interface PromptTemplate {
 }
 
 /**
+ * Interface for feedback data
+ */
+export interface Feedback {
+  id: number;
+  explanationId: number;
+  voteType: 'helpful' | 'not_helpful';
+  comment: string | null;
+  createdAt: string;
+}
+
+/**
+ * Interface for detailed feedback with explanation context
+ */
+export interface DetailedFeedback extends Feedback {
+  puzzleId: string;
+  modelName: string;
+  confidence: number;
+  patternDescription: string;
+}
+
+/**
+ * Interface for feedback filtering options
+ */
+export interface FeedbackFilters {
+  puzzleId?: string;
+  modelName?: string;
+  voteType?: 'helpful' | 'not_helpful';
+  limit?: number;
+  offset?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+/**
+ * Interface for feedback summary statistics
+ */
+export interface FeedbackStats {
+  totalFeedback: number;
+  helpfulCount: number;
+  notHelpfulCount: number;
+  helpfulPercentage: number;
+  notHelpfulPercentage: number;
+  feedbackByModel: Record<string, { helpful: number; notHelpful: number }>;
+  feedbackByDay: Array<{ date: string; helpful: number; notHelpful: number }>;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different approaches to puzzle explanation
  */
