@@ -72,10 +72,13 @@ export class DeepSeekService {
     // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
     const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
+    // DeepSeek requires the word "json" in the prompt when using json_object response format
+    const deepseekPrompt = prompt + "\n\nPlease respond in valid JSON format.";
+
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "user", content: deepseekPrompt }],
         response_format: { type: "json_object" },
       };
 

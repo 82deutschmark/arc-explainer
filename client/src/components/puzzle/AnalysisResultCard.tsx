@@ -372,8 +372,7 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             explanationId={result.id} 
             onFeedbackSubmitted={() => {
               console.log(`Feedback submitted for model: ${modelKey}`);
-              // Trigger a refetch of feedback data
-              window.location.reload(); // Simple approach - in production, would use query invalidation
+              // Feedback submitted successfully - no page reload needed
             }}
           />
         </div>
