@@ -19,7 +19,8 @@ export function useFeedbackForExplanation(explanationId: number | undefined) {
     queryFn: async () => {
       if (!explanationId) return [];
       const response = await apiRequest('GET', `/api/explanation/${explanationId}/feedback`);
-      return response.data as Feedback[];
+      const json = await response.json();
+      return json.data as Feedback[];
     },
     enabled: !!explanationId,
     staleTime: 30000, // 30 seconds
@@ -35,7 +36,8 @@ export function useFeedbackForPuzzle(puzzleId: string | undefined) {
     queryFn: async () => {
       if (!puzzleId) return [];
       const response = await apiRequest('GET', `/api/puzzle/${puzzleId}/feedback`);
-      return response.data as DetailedFeedback[];
+      const json = await response.json();
+      return json.data as DetailedFeedback[];
     },
     enabled: !!puzzleId,
     staleTime: 30000, // 30 seconds
@@ -59,7 +61,8 @@ export function useFeedback(filters?: FeedbackFilters) {
       }
       
       const response = await apiRequest('GET', `/api/feedback?${params.toString()}`);
-      return response.data as DetailedFeedback[];
+      const json = await response.json();
+      return json.data as DetailedFeedback[];
     },
     staleTime: 30000, // 30 seconds
   });
@@ -73,7 +76,8 @@ export function useFeedbackStats() {
     queryKey: ['feedback', 'stats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/feedback/stats');
-      return response.data as FeedbackStats;
+      const json = await response.json();
+      return json.data as FeedbackStats;
     },
     staleTime: 60000, // 1 minute - stats change less frequently
   });

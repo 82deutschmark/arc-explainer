@@ -70,7 +70,8 @@ export function FeedbackModal({
       });
       
       const response = await apiRequest('GET', `/api/feedback?${params.toString()}`);
-      return response.data as DetailedFeedback[];
+      const json = await response.json();
+      return json.data as DetailedFeedback[];
     },
     enabled: open
   });
@@ -80,7 +81,8 @@ export function FeedbackModal({
     queryKey: ['feedback-stats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/feedback/stats');
-      return response.data as FeedbackStats;
+      const json = await response.json();
+      return json.data as FeedbackStats;
     },
     enabled: open
   });
