@@ -21,7 +21,7 @@ import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import SaturnModelSelect, { type SaturnModelKey } from '@/components/saturn/SaturnModelSelect';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
-import CompactGrid from '@/components/saturn/CompactGrid';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -101,7 +101,14 @@ export default function SaturnVisualSolver() {
     );
   }
 
-  const onStart = () => start({ model, temperature: 0.2, cellSize: 24, maxSteps: 8, captureReasoning: true });
+  const onStart = () => start({ 
+    model, 
+    temperature: 0.2, 
+    cellSize: 24, 
+    maxSteps: 8, 
+    captureReasoning: true,
+    useResponsesAPI: true // Enable Responses API for structured reasoning
+  });
 
   // Helper to get detailed phase explanation
   const getPhaseExplanation = (phase: string | undefined, step?: number, totalSteps?: number) => {
@@ -309,10 +316,10 @@ export default function SaturnVisualSolver() {
         </div>
       </div>
 
-      {/* Status Overview */}
+      {/* Compact Status Overview */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
+        <CardContent className="py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${
                 hasError ? 'bg-red-500' :
@@ -329,34 +336,28 @@ export default function SaturnVisualSolver() {
                   {!isRunning && !isDone && !hasError && !hasWarning && 'Ready'}
                   <span className="text-base">{phaseInfo.title}</span>
                 </div>
-                <div className="text-sm text-gray-600 mt-1">
+                <div className="text-sm text-gray-600">
                   {phaseInfo.description}
                 </div>
-                {phaseInfo.details && (
-                  <div className="text-xs text-gray-500 mt-2 leading-relaxed">
-                    {phaseInfo.details}
-                  </div>
-                )}
               </div>
             </div>
-            <div className="text-right space-y-1">
+            <div className="text-right">
               {typeof state.step === 'number' && typeof state.totalSteps === 'number' && (
-                <div className="text-sm font-medium">Step {state.step}/{state.totalSteps}</div>
+                <div className="text-lg font-bold text-blue-600">
+                  {state.step}/{state.totalSteps}
+                </div>
               )}
               <div className="text-sm text-gray-600">{progressPercent.toFixed(0)}%</div>
               {timingInfo && (
-                <div className="text-xs text-gray-500 space-y-1">
-                  <div>Elapsed: {timingInfo.elapsed}</div>
-                  {timingInfo.estimated && (
-                    <div className="text-blue-600">{timingInfo.estimated}</div>
-                  )}
+                <div className="text-xs text-gray-500">
+                  {timingInfo.elapsed}{timingInfo.estimated && ` • ${timingInfo.estimated}`}
                 </div>
               )}
             </div>
           </div>
           
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+          {/* Compact Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
                 hasError ? 'bg-red-500' : 
@@ -366,73 +367,9 @@ export default function SaturnVisualSolver() {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-
-          {/* Puzzle Overview Toggle */}
-          <div className="flex items-center gap-2 pt-2 border-t">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowPuzzleDetails(!showPuzzleDetails)}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              {showPuzzleDetails ? 'Hide' : 'Show'} Puzzle Details
-            </Button>
-            <span className="text-sm text-gray-600">
-              {task.train.length} training examples • {task.test?.length || 0} test cases
-            </span>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Puzzle Details (Collapsible) */}
-      {showPuzzleDetails && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Puzzle Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Training Examples */}
-            <div>
-              <h4 className="font-medium mb-3">Training Examples ({task.train.length})</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {task.train.map((ex, i) => (
-                  <div key={i} className="border rounded-lg p-3">
-                    <div className="text-xs font-medium mb-2">Example {i + 1}</div>
-                    <div className="flex items-center gap-2 justify-center">
-                      <CompactGrid grid={ex.input} title="Input" size="small" />
-                      <span className="text-gray-400">→</span>
-                      <CompactGrid grid={ex.output} title="Output" size="small" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Test Case */}
-            {Array.isArray(task.test) && task.test.length > 0 && (
-              <div>
-                <h4 className="font-medium mb-3">Test Case</h4>
-                <div className="border rounded-lg p-3 max-w-md">
-                  <div className="flex items-center gap-2 justify-center">
-                    <CompactGrid grid={task.test[0].input} title="Input" size="small" />
-                    <span className="text-gray-400">→</span>
-                    {task.test[0].output ? (
-                      <CompactGrid grid={task.test[0].output} title="Output" size="small" />
-                    ) : (
-                      <div className="text-center text-gray-500 text-sm">
-                        Solution needed
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Live Output and Reasoning */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -449,7 +386,7 @@ export default function SaturnVisualSolver() {
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div
               ref={logRef}
               className="bg-gray-50 border rounded-lg p-4 h-64 overflow-auto space-y-1"
@@ -480,6 +417,64 @@ export default function SaturnVisualSolver() {
                 <div className="flex items-center gap-2 text-green-600 animate-pulse">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-xs">Processing...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Puzzle Details Section */}
+            <div className="border-t pt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowPuzzleDetails(!showPuzzleDetails)}
+                className="mb-3"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                {showPuzzleDetails ? 'Hide' : 'Show'} Puzzle Details
+              </Button>
+              <div className="text-xs text-gray-600 mb-3">
+                {task.train.length} training examples • {task.test?.length || 0} test cases
+              </div>
+
+              {showPuzzleDetails && (
+                <div className="space-y-4">
+                  {/* Training Examples */}
+                  <div>
+                    <h4 className="font-medium mb-3 text-sm">Training Examples ({task.train.length})</h4>
+                    <div className="space-y-4">
+                      {task.train.map((ex, i) => (
+                        <div key={i} className="border rounded-lg p-4">
+                          <div className="text-sm font-medium mb-3 text-center">Example {i + 1}</div>
+                          <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
+                            <PuzzleGrid grid={ex.input} title="Input" showEmojis={false} />
+                            <div className="text-gray-400 text-2xl">→</div>
+                            <PuzzleGrid grid={ex.output} title="Output" showEmojis={false} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Test Case */}
+                  {Array.isArray(task.test) && task.test.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-3 text-sm">Test Case</h4>
+                      <div className="border rounded-lg p-4">
+                        <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
+                          <PuzzleGrid grid={task.test[0].input} title="Test Input" showEmojis={false} />
+                          <div className="text-gray-400 text-2xl">→</div>
+                          {task.test[0].output ? (
+                            <PuzzleGrid grid={task.test[0].output} title="Expected Output" showEmojis={false} />
+                          ) : (
+                            <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 rounded p-8">
+                              <div className="text-lg">?</div>
+                              <div className="text-sm">Solution needed</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

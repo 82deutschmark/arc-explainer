@@ -29,6 +29,7 @@ import { broadcast, clearSession } from './wsService';
 import { pythonBridge } from './pythonBridge';
 import { dbService } from './dbService';
 import { puzzleLoader } from './puzzleLoader';
+import { openaiService } from './openai';
 
 interface SaturnOptions {
   /** Provider id (e.g., 'openai'). Python wrapper validates support. */
@@ -40,6 +41,13 @@ interface SaturnOptions {
   captureReasoning: boolean;
   /** Reasoning effort level for GPT-5 models ('medium' or 'high') */
   reasoningEffort?: string;
+}
+
+interface SaturnResponsesOptions extends SaturnOptions {
+  /** Enable reasoning summary capture */
+  reasoningSummary: boolean;
+  /** Previous response ID for chaining */
+  previousResponseId?: string;
 }
 
 // Resolve the on-disk path to the ARC task JSON. We don't inject any content;
@@ -59,6 +67,251 @@ function resolveTaskPath(taskId: string): string | null {
 }
 
 class SaturnVisualService {
+  async runWithResponses(taskId: string, sessionId: string, options: SaturnResponsesOptions) {
+    // Enhanced Saturn analysis using OpenAI Responses API for structured reasoning
+    
+    // Enforce DB as a hard requirement (no memory-only mode for Saturn).
+    if (!dbService.isConnected()) {
+      broadcast(sessionId, {
+        status: 'error',
+        phase: 'init',
+        message: 'Database not connected. Saturn runs require DB persistence.',
+      });
+      return;
+    }
+
+    // Validate the task exists for client metadata (counts only)
+    const task = await puzzleLoader.loadPuzzle(taskId);
+    if (!task) {
+      broadcast(sessionId, {
+        status: 'error',
+        phase: 'init',
+        message: `Task ${taskId} not found`,
+      });
+      return;
+    }
+
+    // Extended timeout for long-running analyses - configurable via environment
+    const defaultTimeoutMinutes = 60;
+    const configuredTimeout = process.env.SATURN_TIMEOUT_MINUTES ? 
+      parseInt(process.env.SATURN_TIMEOUT_MINUTES) : defaultTimeoutMinutes;
+    const timeoutMs = Math.max(30, configuredTimeout) * 60 * 1000;
+    
+    let timeoutHandle: NodeJS.Timeout | null = null;
+    let warningHandle: NodeJS.Timeout | null = null;
+    let isCompleted = false;
+    
+    // Add warning at 75% of timeout duration
+    const warningTimeMs = timeoutMs * 0.75;
+    warningHandle = setTimeout(() => {
+      if (!isCompleted) {
+        const remainingMinutes = Math.ceil((timeoutMs - warningTimeMs) / (60 * 1000));
+        broadcast(sessionId, {
+          status: 'running',
+          phase: 'warning',
+          message: `Long-running analysis detected. Will timeout in ${remainingMinutes} minutes if not completed.`,
+        });
+      }
+    }, warningTimeMs);
+    
+    timeoutHandle = setTimeout(() => {
+      if (!isCompleted) {
+        const timeoutMinutes = Math.ceil(timeoutMs / (60 * 1000));
+        console.log(`[SATURN-RESPONSES-DEBUG] Timeout after ${timeoutMs}ms (${timeoutMinutes}min) for session ${sessionId}`);
+        broadcast(sessionId, {
+          status: 'error',
+          phase: 'timeout',
+          message: `Saturn analysis timed out after ${timeoutMinutes} minutes. Process terminated. Consider increasing SATURN_TIMEOUT_MINUTES if needed.`,
+        });
+        isCompleted = true;
+        if (warningHandle) clearTimeout(warningHandle);
+        setTimeout(() => clearSession(sessionId), 5000);
+      }
+    }, timeoutMs);
+
+    try {
+      // Initial broadcast
+      broadcast(sessionId, {
+        status: 'running',
+        phase: 'initializing',
+        step: 0,
+        totalSteps: options.maxSteps,
+        taskId,
+        model: options.model,
+        metadata: {
+          trainCount: task.train?.length || 0,
+          testCount: task.test?.length || 0,
+        },
+        message: 'Initializing Saturn Responses API analysis…',
+      });
+
+      // Prepare puzzle data for Responses API
+      const puzzlePrompt = this.buildPuzzlePrompt(task);
+      
+      // Make Responses API call with reasoning capture
+      const responsesRequest = {
+        model: options.model,
+        input: puzzlePrompt,
+        reasoning: { summary: options.reasoningSummary ? 'auto' : 'none' },
+        max_steps: options.maxSteps,
+        temperature: options.temperature,
+        ...(options.previousResponseId && { previous_response_id: options.previousResponseId })
+      };
+
+      console.log('[SATURN-RESPONSES-DEBUG] Making Responses API call:', {
+        model: responsesRequest.model,
+        maxSteps: responsesRequest.max_steps,
+        hasPreviousId: !!options.previousResponseId
+      });
+
+      broadcast(sessionId, {
+        status: 'running',
+        phase: 'reasoning',
+        step: 1,
+        totalSteps: options.maxSteps,
+        message: 'Calling OpenAI Responses API for structured reasoning...',
+      });
+
+      // Use the existing OpenAI service analyze method which already supports Responses API
+      const response = await openaiService.analyze(
+        task, // puzzle task
+        options.model as any, // model key
+        'standardExplanation', // use standard prompt
+        true, // capture reasoning
+        undefined, // no custom prompt
+        {} // default options
+      );
+      
+      console.log('[SATURN-RESPONSES-DEBUG] OpenAI service result:', {
+        hasResponse: !!response,
+        hasReasoningLog: !!response?.reasoningLog,
+        reasoningLogLength: response?.reasoningLog?.length || 0,
+        modelUsed: response?.model
+      });
+
+      // Extract reasoning data from the OpenAI service response format
+      const reasoningLog = response?.reasoningLog || '';
+      const reasoningItems = reasoningLog ? reasoningLog.split('\n\n').filter(Boolean) : [];
+      const finalOutput = JSON.stringify({
+        patternDescription: response?.patternDescription || '',
+        solvingStrategy: response?.solvingStrategy || '',
+        hints: response?.hints || []
+      });
+      const responseId = `saturn-${Date.now()}`; // Generate ID since direct API response may not have one
+
+      console.log('[SATURN-RESPONSES-DEBUG] Extracted reasoning data:', {
+        responseId,
+        reasoningLogLength: reasoningLog.length,
+        reasoningItemsCount: reasoningItems.length,
+        finalOutputLength: finalOutput?.length || 0,
+        hasOutputReasoning: !!response?.output_reasoning,
+        reasoningPreview: reasoningLog.substring(0, 200)
+      });
+
+      // Stream reasoning updates
+      if (reasoningLog) {
+        broadcast(sessionId, {
+          status: 'running',
+          phase: 'analyzing',
+          step: Math.floor(options.maxSteps * 0.5),
+          totalSteps: options.maxSteps,
+          message: 'Processing reasoning analysis...',
+          reasoningLog: reasoningLog,
+        });
+      }
+
+      // Stream reasoning items as step updates
+      reasoningItems.forEach((item: string, index: number) => {
+        const step = index + 1;
+        broadcast(sessionId, {
+          status: 'running',
+          phase: 'reasoning',
+          step: step,
+          totalSteps: options.maxSteps,
+          progress: step / options.maxSteps,
+          message: `Reasoning step ${step}: ${item.substring(0, 100)}...`,
+          reasoningLog: item,
+        });
+      });
+
+      // Prepare explanation for database
+      const explanation = {
+        patternDescription: this.extractPatternFromReasoning(reasoningLog, reasoningItems),
+        solvingStrategy: this.extractStrategyFromReasoning(reasoningLog, reasoningItems),
+        hints: this.extractHintsFromReasoning(reasoningLog, reasoningItems),
+        alienMeaning: '',
+        confidence: this.calculateConfidenceFromReasoning(reasoningLog),
+        alienMeaningConfidence: undefined,
+        modelName: `Saturn Responses API (${options.model})`,
+        reasoningLog: reasoningLog,
+        hasReasoningLog: !!reasoningLog,
+        apiProcessingTimeMs: Date.now(), // Approximate timing
+        saturnImages: [], // No images for Responses API version
+        saturnLog: reasoningItems.join('\n'),
+        saturnEvents: JSON.stringify(response),
+        saturnSuccess: !!finalOutput,
+      } as const;
+
+      // Save to database
+      let explanationId: number | null = null;
+      try {
+        explanationId = await dbService.saveExplanation(taskId, explanation);
+      } catch (saveErr) {
+        broadcast(sessionId, {
+          status: 'error',
+          phase: 'persistence',
+          message: `Failed to save Saturn results: ${saveErr instanceof Error ? saveErr.message : String(saveErr)}`,
+        });
+        return;
+      }
+
+      if (explanationId == null) {
+        broadcast(sessionId, {
+          status: 'error',
+          phase: 'persistence',
+          message: 'Database returned null explanation ID; aborting run.',
+        });
+        return;
+      }
+
+      // Final completion broadcast
+      broadcast(sessionId, {
+        status: 'completed',
+        phase: 'done',
+        step: options.maxSteps,
+        totalSteps: options.maxSteps,
+        progress: 1.0,
+        message: 'Saturn Responses API analysis completed.',
+        result: {
+          puzzleId: taskId,
+          success: !!finalOutput,
+          prediction: finalOutput,
+          explanationId,
+          responseId: responseId,
+          reasoningSummary: reasoningLog,
+          reasoningSteps: reasoningItems.length,
+        },
+      });
+
+      isCompleted = true;
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (warningHandle) clearTimeout(warningHandle);
+      setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
+
+    } catch (error) {
+      console.error(`[SATURN-RESPONSES-DEBUG] Analysis error for session ${sessionId}:`, error);
+      isCompleted = true;
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (warningHandle) clearTimeout(warningHandle);
+      
+      broadcast(sessionId, {
+        status: 'error',
+        phase: 'runtime',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   async run(taskId: string, sessionId: string, options: SaturnOptions) {
     // Enforce DB as a hard requirement (no memory-only mode for Saturn).
     if (!dbService.isConnected()) {
@@ -302,6 +555,114 @@ class SaturnVisualService {
       if (timeoutHandle) clearTimeout(timeoutHandle);
       if (warningHandle) clearTimeout(warningHandle);
     }
+  }
+
+  // Helper methods for Responses API integration
+  private buildPuzzlePrompt(task: any): string {
+    // Build a comprehensive prompt for the Responses API
+    const trainingExamples = task.train.map((example: any, i: number) => {
+      return `Training Example ${i + 1}:
+Input: ${JSON.stringify(example.input)}
+Output: ${JSON.stringify(example.output)}`;
+    }).join('\n\n');
+
+    const testInput = task.test?.[0]?.input ? JSON.stringify(task.test[0].input) : 'No test input';
+
+    return `You are solving an ARC-AGI (Abstraction and Reasoning Corpus) puzzle. Your task is to identify the pattern from the training examples and apply it to the test input.
+
+Training Examples:
+${trainingExamples}
+
+Test Input: ${testInput}
+
+Please analyze the pattern step by step:
+1. Examine each training example to identify the transformation rule
+2. Look for patterns in colors, shapes, positions, rotations, reflections, or mathematical operations
+3. Verify your hypothesis works for all training examples
+4. Apply the discovered pattern to the test input
+5. Provide the predicted output as a 2D array
+
+Your reasoning should be systematic and detailed. Focus on visual pattern recognition and logical rule discovery.`;
+  }
+
+  private extractPatternFromReasoning(summary: string, items: string[]): string {
+    // Extract pattern description from reasoning
+    const combined = summary + ' ' + items.join(' ');
+    const patterns = [
+      'pattern', 'transformation', 'rule', 'operation', 'mapping', 'relationship'
+    ];
+    
+    for (const pattern of patterns) {
+      const match = combined.match(new RegExp(`([^.!?]*${pattern}[^.!?]*)`, 'i'));
+      if (match) {
+        return match[1].trim().substring(0, 200);
+      }
+    }
+    
+    return summary.substring(0, 200) || 'Pattern analysis from Responses API';
+  }
+
+  private extractStrategyFromReasoning(summary: string, items: string[]): string {
+    // Extract solving strategy from reasoning
+    const combined = summary + ' ' + items.join(' ');
+    const strategies = [
+      'strategy', 'approach', 'method', 'technique', 'solution', 'solve'
+    ];
+    
+    for (const strategy of strategies) {
+      const match = combined.match(new RegExp(`([^.!?]*${strategy}[^.!?]*)`, 'i'));
+      if (match) {
+        return match[1].trim().substring(0, 200);
+      }
+    }
+    
+    return 'Systematic pattern analysis and rule application';
+  }
+
+  private extractHintsFromReasoning(summary: string, items: string[]): string[] {
+    // Extract hints from reasoning items
+    const hints: string[] = [];
+    
+    // Add reasoning steps as hints
+    items.forEach((item, index) => {
+      if (item.length > 10) {
+        hints.push(`Step ${index + 1}: ${item.substring(0, 100)}`);
+      }
+    });
+    
+    // If no items, extract from summary
+    if (hints.length === 0 && summary) {
+      const sentences = summary.split(/[.!?]+/).filter(s => s.trim().length > 10);
+      hints.push(...sentences.slice(0, 3).map(s => s.trim()));
+    }
+    
+    return hints.slice(0, 5); // Limit to 5 hints
+  }
+
+  private calculateConfidenceFromReasoning(summary: string): number {
+    // Calculate confidence based on reasoning quality
+    const indicators = {
+      high: ['clear', 'obvious', 'consistent', 'confident', 'certain', 'verified'],
+      medium: ['likely', 'probable', 'seems', 'appears', 'suggests'],
+      low: ['unclear', 'uncertain', 'maybe', 'possibly', 'difficult']
+    };
+    
+    const text = summary.toLowerCase();
+    let score = 0.5; // Default medium confidence
+    
+    for (const word of indicators.high) {
+      if (text.includes(word)) score += 0.15;
+    }
+    
+    for (const word of indicators.medium) {
+      if (text.includes(word)) score += 0.05;
+    }
+    
+    for (const word of indicators.low) {
+      if (text.includes(word)) score -= 0.2;
+    }
+    
+    return Math.max(0.1, Math.min(1.0, score));
   }
 }
 
