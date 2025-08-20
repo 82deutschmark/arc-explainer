@@ -31,14 +31,15 @@ This plan outlines the implementation of a comprehensive validation system for A
 **Primary Extensions to EXPLANATIONS Table:**
 - `predicted_output_grid` (TEXT/JSON): Store extracted grid as JSON array
 - `is_prediction_correct` (BOOLEAN): Binary correctness flag 
-- `prediction_accuracy_score` (FLOAT): Granular NEW FEATURE metric (0.0-1.0) Shown as percentage in UI!  
-**Existing Columns:** 
-- `confidenceScore` (FLOAT): NEED TO CHECK EXACTLY HOW THIS IS SAVED IN THE DB and 
+- `prediction_accuracy_score` (FLOAT): NEW FEATURE metric (0.0-1.0) shown as percentage in UI
+  
+**Existing Columns (Already Implemented):**
+- `confidence` (INTEGER): AI model's self-reported confidence score 0-100
+- Uses existing `formatConfidence()` function from `@/constants/models` for display
 
 **Schema Migration Considerations:**
-- Add columns with DEFAULT NULL for backward compatibility
-- Index on `is_prediction_correct` for efficient leaderboard queries
-- Index on `prediction_accuracy_score` for sorting and filtering
+- Add new columns with DEFAULT NULL for backward compatibility
+- Simple indexes for leaderboard queries
 
 ### Phase 2: Response Validation Engine
 
@@ -68,8 +69,12 @@ This plan outlines the implementation of a comprehensive validation system for A
 
 **Accuracy Calculation Methods:**
 - **Exact Match**: Binary correct/incorrect for perfect grid matches
-- **Confidence Scoring**: Already exists in the database and in the project.  Search the project for more info.
-- **prediction_accuracy_score**: NEW FEATURE!!! Complex calculation based on confidence and if the grid is correct. Most models are dangerously overconfident in their predictions.  We want to reward lack of confidence in incorrect answers.  0% confidence with an incorrect answer is the same as 100% confidence with a correct answer. 50% confidence with an incorrect answer is the same as 50% confidence with a correct answer. Anything under 50% confidence with a correct answer gets a much better score than an incorrect answer with a greater than 50% confidence. 95%+ confidence with an incorrect answer results in the lowest possible score for the model.
+- **prediction_accuracy_score Calculation**: Rewards honest uncertainty and penalizes overconfidence
+  - **Perfect Calibration**: 0% confidence + wrong answer = 1.0 score (same as 100% confidence + correct answer)
+  - **Honest Low Confidence**: Low confidence + wrong answer gets rewarded
+  - **Dangerous Overconfidence**: 95%+ confidence + wrong answer gets heavily penalized (lowest scores)
+  - **Reward Correct Answers**: Under 50% confidence + correct answer scores better than >50% confidence + wrong answer
+  - **Simple Formula**: Balances correctness with confidence appropriateness
 
 **Error Handling and Fallbacks:**
 - Graceful degradation when no grid found (THIS WILL COUNT AS AN INCORRECT ANSWER!)
@@ -84,10 +89,9 @@ This plan outlines the implementation of a comprehensive validation system for A
 - Maintain backward compatibility for non-solver modes
 
 **Database Service Updates (`server/services/dbService.ts`):**
-- Extend `saveExplanation` method to handle validation columns
-- Add new query methods for accuracy filtering and statistics
-- Implement efficient bulk validation queries for leaderboards (What?? )
-- Add migration scripts for schema updates
+- Extend `saveExplanation` method to handle new validation columns
+- Add basic queries for leaderboard accuracy statistics
+- Simple schema migration for new columns
 
 **Prompt Builder Integration:**
 - Leverage existing "omit correct answer" logic to access ground truth
@@ -99,9 +103,9 @@ This plan outlines the implementation of a comprehensive validation system for A
 **Analysis Result Card Updates (`client/src/components/puzzle/AnalysisResultCard.tsx`):**
 
 **Validation Status Display:**
- Add a simple "Correct" / "Incorrect" / "Not Found" badge.
-- Confidence indicators (ALREADY EXISTS!  SEARCH THE PROJECT!!!)
-- Expandable details showing predicted vs actual grids
+- Simple "Correct" / "Incorrect" / "Not Found" badge next to model name
+- Reuse existing confidence display (formatConfidence function)
+- Optional expandable details showing predicted vs actual grids
 
 **Predicted Grid Visualization:**
 - Side-by-side comparison with correct answer
