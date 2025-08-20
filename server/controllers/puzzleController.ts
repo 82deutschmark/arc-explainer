@@ -15,6 +15,7 @@ import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
 import { dbService } from '../services/dbService';
 import type { PromptOptions } from '../services/promptBuilder';
+import { validateSolverResponse } from '../services/responseValidator.js';
 
 export const puzzleController = {
   /**
@@ -99,6 +100,22 @@ export const puzzleController = {
     // Log reasoning capture status
     if (result.hasReasoningLog) {
       console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
+    }
+    
+    // Validate solver mode responses
+    if (promptId === "solver") {
+      const correctAnswer = puzzle.test[0].output;
+      const confidence = result.confidence || 50; // Default confidence if not provided
+      
+      const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
+      
+      // Add validation results to response
+      result.predictedOutputGrid = validation.predictedGrid;
+      result.isPredictionCorrect = validation.isPredictionCorrect;
+      result.predictionAccuracyScore = validation.predictionAccuracyScore;
+      result.extractionMethod = validation.extractionMethod;
+      
+      console.log(`[Controller] Solver validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
     }
     
     res.json(formatResponse.success(result));
@@ -229,7 +246,7 @@ export const puzzleController = {
       
       // Apply search filter early if provided
       let filteredPuzzleIds = puzzleIds;
-      if (search) {
+      if (search && typeof search === 'string') {
         filteredPuzzleIds = puzzleIds.filter(id => 
           id.toLowerCase().includes(search.toLowerCase())
         );
@@ -369,6 +386,22 @@ export const puzzleController = {
     } catch (error) {
       console.error('[Controller] Error reinitializing puzzle loader:', error);
       res.status(500).json(formatResponse.error('Failed to reinitialize puzzle loader', 'An error occurred while reinitializing the puzzle loader'));
+    }
+  },
+
+  /**
+   * Get solver mode accuracy statistics for leaderboards
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getAccuracyStats(req: Request, res: Response) {
+    try {
+      const accuracyStats = await dbService.getAccuracyStats();
+      res.json(formatResponse.success(accuracyStats));
+    } catch (error) {
+      console.error('[Controller] Error fetching accuracy stats:', error);
+      res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
     }
   }
 };
