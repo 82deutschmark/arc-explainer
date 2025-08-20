@@ -115,6 +115,11 @@ export interface ExplanationData {
   saturnImages?: string[]; // Array of image paths generated during Saturn analysis
   saturnLog?: string | null; // Verbose stdout/stderr logs from Saturn solver
   saturnEvents?: string | null; // Compressed NDJSON/JSON event trace
+  // Solver mode validation fields
+  predictedOutputGrid?: number[][] | null; // Grid extracted from AI response
+  isPredictionCorrect?: boolean; // Whether prediction matches correct answer
+  predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
+  extractionMethod?: string; // Method used to extract the grid
 }
 
 /**

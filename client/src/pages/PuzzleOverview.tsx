@@ -63,6 +63,20 @@ interface PuzzleOverviewResponse {
   hasMore: boolean;
 }
 
+interface AccuracyStats {
+  accuracyByModel: Array<{
+    modelName: string;
+    totalAttempts: number;
+    correctPredictions: number;
+    accuracyPercentage: number;
+    avgAccuracyScore: number;
+    avgConfidence: number;
+    successfulExtractions: number;
+    extractionSuccessRate: number;
+  }>;
+  totalSolverAttempts: number;
+}
+
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
@@ -121,6 +135,16 @@ export default function PuzzleOverview() {
     queryKey: ['feedbackStats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/feedback/stats');
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Fetch solver mode accuracy statistics
+  const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
+    queryKey: ['accuracyStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
       const json = await response.json();
       return json.data;
     },
@@ -403,6 +427,104 @@ export default function PuzzleOverview() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {/* Solver Mode Accuracy Statistics */}
+        {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-semibold">Solver Mode Accuracy</h2>
+              <Badge variant="outline" className="text-xs">
+                {accuracyStats.totalSolverAttempts} attempts
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Most Accurate Models */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-green-500" />
+                    Most Accurate Models
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {accuracyStats.accuracyByModel.slice(0, 3).map((model, index) => {
+                      const modelInfo = MODELS.find(m => m.key === model.modelName);
+                      const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                      
+                      return (
+                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-green-50 border border-green-100">
+                          <div className="flex items-center gap-2">
+                            {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
+                            <span className="text-sm font-medium truncate text-green-700">
+                              {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="text-xs bg-green-100 text-green-800">
+                              {model.accuracyPercentage}%
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.round(model.avgAccuracyScore * 100)}% score
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              ({model.totalAttempts})
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {accuracyStats.accuracyByModel.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No solver mode data available
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Least Accurate Models */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
+                    Needs Improvement
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {accuracyStats.accuracyByModel.slice(-3).reverse().map((model, index) => {
+                      const modelInfo = MODELS.find(m => m.key === model.modelName);
+                      const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                      
+                      return (
+                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium truncate text-red-700">
+                              {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge className="text-xs bg-red-100 text-red-800">
+                              {model.accuracyPercentage}%
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.round(model.avgAccuracyScore * 100)}% score
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              ({model.totalAttempts})
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
