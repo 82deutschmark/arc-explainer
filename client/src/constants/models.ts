@@ -7,22 +7,12 @@
  */
 
 import { ModelConfig } from '../types/puzzle';
+import { ARC_COLORS } from './colors';
 
 /**
- * Colors for grid cells representing different values
+ * Colors for grid cells representing different values (single source of truth)
  */
-export const CELL_COLORS = [
-  '#000000', // Black
-  '#0074D9', // Blue
-  '#FF4136', // Red
-  '#2ECC40', // Green
-  '#FFDC00', // Yellow
-  '#808080', // Grey
-  '#F012BE', // Magenta
-  '#FF851B', // Orange
-  '#7FDBFF', // Light Blue
-  '#800000'  // Maroon (exactly 128,0,0)
-] as const;
+export const CELL_COLORS = ARC_COLORS as readonly string[];
 
 
 /**
