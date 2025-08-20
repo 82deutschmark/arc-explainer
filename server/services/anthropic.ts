@@ -110,16 +110,20 @@ Then provide your final structured response.` : basePrompt;
           try {
             result = JSON.parse(jsonMatch[0]);
           } catch (secondParseError) {
-            // If JSON extraction fails, create a fallback response
+            // If JSON extraction fails, create a fallback response based on template
             result = {
               patternDescription: "Unable to parse model response",
               solvingStrategy: "The AI model returned an invalid response format.",
               hints: ["Try using a different model", "Check the model configuration", "The response was not in valid JSON format"],
-              alienMeaning: "The aliens seem to be having communication difficulties.",
               confidence: 0,
-              alienMeaningConfidence: 0,
               rawResponse: cleanedContent.substring(0, 500) + "..." // Include first 500 chars for debugging
-            };
+            } as any;
+            
+            // Add alien-specific fields only if using alien communication template
+            if (selectedTemplate?.emojiMapIncluded) {
+              result.alienMeaning = "The aliens seem to be having communication difficulties.";
+              result.alienMeaningConfidence = 0;
+            }
           }
         } else {
           // No JSON found at all
@@ -127,11 +131,15 @@ Then provide your final structured response.` : basePrompt;
             patternDescription: "No valid JSON response found",
             solvingStrategy: "The AI model did not return a structured response.",
             hints: ["The model may need different prompting", "Try adjusting the temperature", "Consider using a different model"],
-            alienMeaning: "The aliens are speaking in an unknown format.",
             confidence: 0,
-            alienMeaningConfidence: 0,
             rawResponse: textContent.substring(0, 500) + "..." // Include first 500 chars for debugging
-          };
+          } as any;
+          
+          // Add alien-specific fields only if using alien communication template
+          if (selectedTemplate?.emojiMapIncluded) {
+            result.alienMeaning = "The aliens are speaking in an unknown format.";
+            result.alienMeaningConfidence = 0;
+          }
         }
       }
       
