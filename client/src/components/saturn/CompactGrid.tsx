@@ -9,25 +9,13 @@
  */
 
 import React from 'react';
+import { ARC_COLORS } from '../../constants/colors';
 
 type CompactGridProps = {
   grid: number[][];
   title?: string;
   size?: 'tiny' | 'small';
 };
-
-const COLOR_CLASSES = [
-  'bg-zinc-800',   // 0
-  'bg-blue-500',   // 1
-  'bg-red-500',    // 2
-  'bg-green-500',  // 3
-  'bg-yellow-500', // 4
-  'bg-purple-500', // 5
-  'bg-pink-500',   // 6
-  'bg-teal-500',   // 7
-  'bg-orange-500', // 8
-  'bg-cyan-500',   // 9
-];
 
 export default function CompactGrid({ grid, title, size = 'tiny' }: CompactGridProps) {
   const cellSize = size === 'tiny' ? 'w-2 h-2' : 'w-3 h-3';
@@ -40,11 +28,15 @@ export default function CompactGrid({ grid, title, size = 'tiny' }: CompactGridP
           <div key={i} className="flex gap-0.5">
             {row.map((cell, j) => {
               const idx = Number(cell);
-              const color = Number.isFinite(idx) && idx >= 0 && idx < COLOR_CLASSES.length
-                ? COLOR_CLASSES[idx]
-                : 'bg-gray-300';
+              const color = Number.isFinite(idx) && idx >= 0 && idx < ARC_COLORS.length
+                ? ARC_COLORS[idx]
+                : 'rgb(200, 200, 200)';
               return (
-                <div key={j} className={`${cellSize} ${color} border border-gray-300`} />
+                <div
+                  key={j}
+                  className={`${cellSize} border border-gray-300`}
+                  style={{ backgroundColor: color }}
+                />
               );
             })}
           </div>

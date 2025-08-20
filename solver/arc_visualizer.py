@@ -32,7 +32,7 @@ ARC_COLORS = {
     6: (240, 18, 190),   # Magenta/Pink
     7: (255, 133, 27),   # Orange
     8: (127, 219, 255),  # Light Blue/Cyan
-    9: (135, 12, 37)     # Maroon
+    9: (128, 0, 0)       # Maroon
 }
 
 def grid_to_image(grid: List[List[int]], cell_size: int = 30) -> Image.Image:

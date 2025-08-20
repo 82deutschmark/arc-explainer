@@ -11,3 +11,4 @@ vite.config.ts.*
 
 /data/explained
 nul
+/solver/img_tmp

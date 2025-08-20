@@ -34,6 +34,9 @@ August 20, 2025
 - **Database Query Enhancement**: Added missing validation fields to database queries for proper solver mode data retrieval
 - **JSON Parsing**: Improved parsing of predicted output grids from database storage
 - **TypeScript Compliance**: All new components maintain full type safety
+- **ARC Color Palette Single Source of Truth (Code by Cascade)**: Fixed incorrect Tailwind color mapping in `client/src/components/saturn/CompactGrid.tsx` and consolidated exact ARC colors into `client/src/constants/colors.ts` (matching `client/src/constants/colors.md`). Components now use precise RGB values via inline styles for pixel-accurate rendering.
+  - **TS Constants Update (Code by Cascade)**: `client/src/constants/models.ts` now exports `CELL_COLORS` from `ARC_COLORS` to eliminate duplicate palettes in the frontend.
+  - **Python ARC Palette Alignment (Code by Cascade)**: Corrected maroon to `(128, 0, 0)` in `solver/arc_visualizer.py` and `solver/arc_stdin_visualizer.py` (black unchanged). Solver-generated images now match the canonical client palette.
 - **AI Service Prompt Compliance**: Fixed hardcoded prompt templates in Anthropic and Gemini services
   - **Controller Default Fix**: Changed hardcoded "alienCommunication" default to proper "standardExplanation"
   - **Anthropic Error Handling**: Fixed hardcoded alien fields in error responses to respect template selection
