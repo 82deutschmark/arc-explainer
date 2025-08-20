@@ -42,6 +42,11 @@ export interface PuzzleAnalysis {
   solvingStrategy: string;
   hints: string[];
   confidence: number;
+  // Solver mode validation fields
+  predictedOutputGrid?: number[][];
+  isPredictionCorrect?: boolean;
+  predictionAccuracyScore?: number;
+  extractionMethod?: string;
 }
 
 export interface SolutionValidation {

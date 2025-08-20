@@ -97,6 +97,31 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             </span>
           </Badge>
         )}
+
+        {/* Solver mode validation indicator */}
+        {result.isPredictionCorrect !== undefined && (
+          <Badge 
+            variant="outline" 
+            className={`flex items-center gap-1 ${
+              result.isPredictionCorrect 
+                ? 'bg-green-50 border-green-200 text-green-700' 
+                : result.predictedOutputGrid 
+                  ? 'bg-red-50 border-red-200 text-red-700'
+                  : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+            }`}
+          >
+            {result.isPredictionCorrect ? (
+              <CheckCircle className="h-3 w-3" />
+            ) : result.predictedOutputGrid ? (
+              <XCircle className="h-3 w-3" />
+            ) : (
+              <XCircle className="h-3 w-3" />
+            )}
+            <span className="text-xs font-medium">
+              {result.isPredictionCorrect ? 'CORRECT' : result.predictedOutputGrid ? 'INCORRECT' : 'NOT FOUND'}
+            </span>
+          </Badge>
+        )}
         
         {result.apiProcessingTimeMs && (
           <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
@@ -151,6 +176,21 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
                 {!isSaturnResult && result.confidence && (
                   <Badge variant="outline" className="text-xs">
                     Confidence: {formatConfidence(result.confidence)}
+                  </Badge>
+                )}
+                {/* Show prediction accuracy score for solver mode */}
+                {result.predictionAccuracyScore !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${
+                      result.predictionAccuracyScore >= 0.8 
+                        ? 'bg-green-50 border-green-200 text-green-700'
+                        : result.predictionAccuracyScore >= 0.5
+                          ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                          : 'bg-red-50 border-red-200 text-red-700'
+                    }`}
+                  >
+                    Accuracy: {Math.round(result.predictionAccuracyScore * 100)}%
                   </Badge>
                 )}
                 {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
