@@ -197,6 +197,7 @@ class SaturnVisualService {
           maxSteps: options.maxSteps,
           reasoningSummary: options.reasoningSummary ? 'auto' : 'none',
           maxRetries: 2,
+          maxOutputTokens: 4096,
         }
       );
       
@@ -231,6 +232,7 @@ class SaturnVisualService {
         broadcast(sessionId, {
           status: 'running',
           phase: 'analyzing',
+          messageType: 'reasoning-summary',
           step: Math.floor(options.maxSteps * 0.5),
           totalSteps: options.maxSteps,
           message: 'Processing reasoning analysis...',
@@ -246,6 +248,7 @@ class SaturnVisualService {
           broadcast(sessionId, {
             status: 'running',
             phase: 'reasoning',
+            messageType: 'reasoning-step',
             step: step,
             totalSteps: Math.max(options.maxSteps, reasoningItems.length),
             progress: step / Math.max(options.maxSteps, reasoningItems.length),
@@ -305,6 +308,7 @@ class SaturnVisualService {
       broadcast(sessionId, {
         status: 'completed',
         phase: 'done',
+        messageType: 'final-output',
         step: options.maxSteps,
         totalSteps: options.maxSteps,
         progress: 1.0,
