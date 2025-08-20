@@ -5,6 +5,21 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 19, 2025
+
+## Version 1.3.7 — Default Prompt Improvements (2025-08-19)
+
+### New Features
+- __Default Prompt Improvements (Code by Cascade)__: Enhanced the default solver and explanation prompts to be more clear and concise.
+
+### Fixes
+- __Prompt Template Fix (Code by User)__: Corrected solver mode instructions for clearer AI guidance
+
+### Enhanced User Experience
+- **Comprehensive Filtering**: Overview page now supports explanation status, feedback status, and model filtering simultaneously
+
+### Incomplete
+- __Feedback Visibility & Filtering (Code by Claude)__: Users can now see which puzzles have received community feedback and filter by feedback status.
 August 17, 2025
 
 ## Version 1.3.6 — Enhanced Database Overview & UX Improvements (2025-08-17)
