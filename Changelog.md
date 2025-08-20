@@ -5,6 +5,52 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 19, 2025 11:11pm
+
+## Version 1.3.8 — Comprehensive Feedback Analytics Dashboard (2025-08-19)
+
+### New Features
+- Added GPT-5 varieties to models
+- __Feedback Statistics Dashboard (Code by Claude Code)__: Added comprehensive feedback analytics to the Database Overview page with real-time statistics
+  - **Total Feedback Counter**: Shows current database total (125 feedback entries)
+  - **Performance Breakdown**: Helpful vs Not Helpful percentages with color-coded indicators
+  - **Top Performing Models**: Rankings of best AI models based on helpful feedback percentage
+  - **Worst Performing Models**: Identifies models needing improvement with low helpful ratings
+  - **Recent Activity Trends**: Last 30 days of feedback activity showing daily helpful/not helpful counts
+  - **Enhanced Sorting**: Added "Most Feedback" sort option to find puzzles with highest engagement
+
+### Model Performance Insights
+- **Best Performers**: Gemini 2.5 Pro (86% helpful), Grok-3 (100% helpful), GPT-5 (100% helpful)
+- **Needs Improvement**: GPT-4.1 Nano (0% helpful), Claude 3.5 Haiku (0% helpful), Gemini 2.0 Flash (0% helpful)
+
+### Technical Improvements
+- __TypeScript Error Resolution (Code by Claude Code)__: Fixed all frontend TypeScript compilation errors
+  - Replaced deprecated `keepPreviousData` with `placeholderData` in React Query
+  - Fixed Badge component size prop issues
+  - Added proper type annotations for callback functions
+  - Fixed API response parsing in feedback hooks and components
+
+### Enhanced User Experience
+- **Visual Feedback Indicators**: Color-coded performance badges (green ≥70%, yellow ≥50%, red <50%)
+- **Clickable Feedback Counts**: Direct access to detailed feedback modal from puzzle cards
+- **Model Display Names**: Proper model names with provider information in rankings
+- **Responsive Grid Layout**: Organized statistics in 4-column layout for optimal viewing
+
+August 19, 2025
+
+## Version 1.3.7 — Default Prompt Improvements (2025-08-19)
+
+### New Features
+- __Default Prompt Improvements (Code by Cascade)__: Enhanced the default solver and explanation prompts to be more clear and concise.
+
+### Fixes
+- __Prompt Template Fix (Code by User)__: Corrected solver mode instructions for clearer AI guidance
+
+### Enhanced User Experience
+- **Comprehensive Filtering**: Overview page now supports explanation status, feedback status, and model filtering simultaneously
+
+### Incomplete
+- __Feedback Visibility & Filtering (Code by Claude)__: Users can now see which puzzles have received community feedback and filter by feedback status.
 August 17, 2025
 
 ## Version 1.3.6 — Enhanced Database Overview & UX Improvements (2025-08-17)

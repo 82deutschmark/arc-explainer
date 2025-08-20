@@ -7,7 +7,12 @@
       "Bash(kill:*)",
       "WebFetch(domain:localhost)",
       "Bash(node:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run check:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)",
+      "Bash(cmd /c:*)",
+      "Bash(echo \"Exit code: $?\")"
     ],
     "deny": [],
     "ask": []

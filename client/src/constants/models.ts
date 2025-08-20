@@ -105,6 +105,40 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: true
   },
+  { 
+    key: 'gpt-5-chat-latest', 
+    name: 'GPT-5 Chat', 
+    color: 'bg-amber-500', 
+    premium: false,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
+  },
+  { 
+    key: 'gpt-5-mini-2025-08-07', 
+    name: 'GPT-5 Mini', 
+    color: 'bg-indigo-500', 
+    premium: true,
+    cost: { input: '$0.25', output: '$2.00' },
+    supportsTemperature: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true
+  },
+  { 
+    key: 'gpt-5-nano-2025-08-07', 
+    name: 'GPT-5 Nano', 
+    color: 'bg-teal-500', 
+    premium: false,
+    cost: { input: '$0.05', output: '$0.40' },
+    supportsTemperature: true,
+    provider: 'OpenAI',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true
+  },
+  
   
   // Anthropic Models
   { 
