@@ -1,36 +1,20 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Loader2, 
   Database, 
-  Search, 
-  Filter, 
-  Eye, 
   ArrowUpDown,
   ArrowUp,
-  ArrowDown,
-  ChevronLeft,
-  ChevronRight,
-  Brain,
-  CheckCircle2,
-  Clock,
-  BarChart3,
-  MessageSquare,
-  TrendingUp,
-  Star,
-  Award
+  ArrowDown
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
+import { StatisticsCards } from '@/components/overview/StatisticsCards';
+import { SearchFilters } from '@/components/overview/SearchFilters';
+import { PuzzleList } from '@/components/overview/PuzzleList';
 import type { FeedbackStats } from '@shared/types';
 
 interface PuzzleOverviewData {
@@ -259,640 +243,52 @@ export default function PuzzleOverview() {
           </div>
         </header>
 
-        {/* Feedback Statistics */}
-        {feedbackStats && !statsLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Overall Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5" />
-                  Feedback Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Feedback:</span>
-                    <Badge variant="outline" className="text-lg font-semibold">
-                      {feedbackStats.totalFeedback}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Helpful:</span>
-                    <Badge className="bg-green-100 text-green-800">
-                      {feedbackStats.helpfulCount} ({feedbackStats.helpfulPercentage}%)
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Not Helpful:</span>
-                    <Badge className="bg-red-100 text-red-800">
-                      {feedbackStats.notHelpfulCount} ({feedbackStats.notHelpfulPercentage}%)
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Statistics Cards */}
+        <StatisticsCards
+          feedbackStats={feedbackStats}
+          accuracyStats={accuracyStats}
+          modelRankings={modelRankings}
+          onViewAllFeedback={() => {
+            setSelectedPuzzleId('');
+            setFeedbackModalOpen(true);
+          }}
+          statsLoading={statsLoading}
+          accuracyLoading={accuracyLoading}
+        />
 
-            {/* Top Performing Models */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Top Models by Feedback
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {modelRankings.slice(0, 3).map((model, index) => (
-                    <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                      <div className="flex items-center gap-2">
-                        {index === 0 && <Star className="h-4 w-4 text-yellow-500" />}
-                        <span className="text-sm font-medium truncate">
-                          {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          className={`text-xs ${
-                            model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
-                            model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {model.helpfulPercentage}%
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          ({model.total})
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                  {modelRankings.length > 3 && (
-                    <div className="text-center pt-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedPuzzleId('');
-                          setFeedbackModalOpen(true);
-                        }}
-                        className="text-xs text-blue-600 hover:text-blue-800"
-                      >
-                        View all feedback →
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+        {/* Search and Filters */}
+        <SearchFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          hasExplanationFilter={hasExplanationFilter}
+          setHasExplanationFilter={setHasExplanationFilter}
+          hasFeedbackFilter={hasFeedbackFilter}
+          setHasFeedbackFilter={setHasFeedbackFilter}
+          modelFilter={modelFilter}
+          setModelFilter={setModelFilter}
+          confidenceMin={confidenceMin}
+          setConfidenceMin={setConfidenceMin}
+          confidenceMax={confidenceMax}
+          setConfidenceMax={setConfidenceMax}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSearch={handleSearch}
+          onSortChange={handleSortChange}
+          getSortIcon={getSortIcon}
+        />
 
-            {/* Recent Feedback Trends */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Recent Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {feedbackStats.feedbackByDay.slice(0, 5).map((day) => (
-                    <div key={day.date} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-600">
-                        {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-600 font-medium">+{day.helpful}</span>
-                        <span className="text-red-600 font-medium">-{day.notHelpful}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {feedbackStats.feedbackByDay.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">
-                      No recent feedback activity
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Worst Performing Models */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-                  Worst Models by Feedback
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {modelRankings.slice(-3).reverse().map((model, index) => (
-                    <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium truncate text-red-700">
-                          {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge 
-                          className={`text-xs ${
-                            model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
-                            model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {model.helpfulPercentage}%
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          ({model.total})
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                  {modelRankings.length > 3 && (
-                    <div className="text-center pt-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedPuzzleId('');
-                          setFeedbackModalOpen(true);
-                        }}
-                        className="text-xs text-red-600 hover:text-red-800"
-                      >
-                        View all feedback →
-                      </Button>
-                    </div>
-                  )}
-                  {modelRankings.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">
-                      No models with sufficient feedback data
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Solver Mode Accuracy Statistics */}
-        {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-semibold">Solver Mode Accuracy</h2>
-              <Badge variant="outline" className="text-xs">
-                {accuracyStats.totalSolverAttempts} attempts
-              </Badge>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Most Accurate Models */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-green-500" />
-                    Most Accurate Models
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {accuracyStats.accuracyByModel.slice(0, 3).map((model, index) => {
-                      const modelInfo = MODELS.find(m => m.key === model.modelName);
-                      const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                      
-                      return (
-                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-green-50 border border-green-100">
-                          <div className="flex items-center gap-2">
-                            {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
-                            <span className="text-sm font-medium truncate text-green-700">
-                              {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className="text-xs bg-green-100 text-green-800">
-                              {model.accuracyPercentage}%
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {Math.round(model.avgAccuracyScore * 100)}% score
-                            </Badge>
-                            <span className="text-xs text-gray-500">
-                              ({model.totalAttempts})
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {accuracyStats.accuracyByModel.length === 0 && (
-                      <p className="text-sm text-gray-500 text-center py-4">
-                        No solver mode data available
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Least Accurate Models */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-                    Needs Improvement
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {accuracyStats.accuracyByModel.slice(-3).reverse().map((model, index) => {
-                      const modelInfo = MODELS.find(m => m.key === model.modelName);
-                      const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                      
-                      return (
-                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium truncate text-red-700">
-                              {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge className="text-xs bg-red-100 text-red-800">
-                              {model.accuracyPercentage}%
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {Math.round(model.avgAccuracyScore * 100)}% score
-                            </Badge>
-                            <span className="text-xs text-gray-500">
-                              ({model.totalAttempts})
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {/* Filters & Search */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Search & Filter
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              {/* Search */}
-              <div className="space-y-2">
-                <Label htmlFor="search">Search Puzzle ID</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="search"
-                    placeholder="Enter puzzle ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <Button onClick={handleSearch} size="sm">
-                    <Search className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Explanation Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="hasExplanation">Explanation Status</Label>
-                <Select value={hasExplanationFilter} onValueChange={setHasExplanationFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Puzzles</SelectItem>
-                    <SelectItem value="true">Has Explanations</SelectItem>
-                    <SelectItem value="false">No Explanations</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Feedback Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="hasFeedback">Feedback Status</Label>
-                <Select value={hasFeedbackFilter} onValueChange={setHasFeedbackFilter}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Puzzles</SelectItem>
-                    <SelectItem value="true">Has Feedback</SelectItem>
-                    <SelectItem value="false">No Feedback</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Model Filter */}
-              <div className="space-y-2">
-                <Label htmlFor="model">AI Model</Label>
-                <Select value={modelFilter} onValueChange={setModelFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All models" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Models</SelectItem>
-                    {MODELS.map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        {model.name} ({model.provider})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Confidence Range */}
-              <div className="space-y-2">
-                <Label>Confidence Range</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Min"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={confidenceMin}
-                    onChange={(e) => setConfidenceMin(e.target.value)}
-                  />
-                  <Input
-                    placeholder="Max"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={confidenceMax}
-                    onChange={(e) => setConfidenceMax(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Sort Controls */}
-            <div className="flex flex-wrap gap-2 pt-4 border-t">
-              <Label className="self-center">Sort by:</Label>
-              <Button
-                variant={sortBy === 'puzzleId' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleSortChange('puzzleId')}
-                className="flex items-center gap-1"
-              >
-                Puzzle ID {getSortIcon('puzzleId')}
-              </Button>
-              <Button
-                variant={sortBy === 'createdAt' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleSortChange('createdAt')}
-                className="flex items-center gap-1"
-              >
-                Latest Analysis {getSortIcon('createdAt')}
-              </Button>
-              <Button
-                variant={sortBy === 'explanationCount' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleSortChange('explanationCount')}
-                className="flex items-center gap-1"
-              >
-                # Explanations {getSortIcon('explanationCount')}
-              </Button>
-              <Button
-                variant={sortBy === 'latestConfidence' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleSortChange('latestConfidence')}
-                className="flex items-center gap-1"
-              >
-                Confidence {getSortIcon('latestConfidence')}
-              </Button>
-              <Button
-                variant={sortBy === 'feedbackCount' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleSortChange('feedbackCount')}
-                className="flex items-center gap-1"
-              >
-                <MessageSquare className="h-3 w-3" />
-                Most Feedback {getSortIcon('feedbackCount')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Results</span>
-              {data && (
-                <Badge variant="outline">
-                  {data.total} puzzles total
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading puzzle data...</p>
-              </div>
-            ) : !data?.puzzles?.length ? (
-              <div className="text-center py-12">
-                <Database className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No puzzles match your current filters.</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Try adjusting your filters or search terms.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-4">
-                  {data.puzzles.map((puzzle: PuzzleOverviewData) => (
-                    <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <code className="text-lg font-mono bg-gray-100 px-3 py-1 rounded">
-                                {puzzle.id}
-                              </code>
-                              
-                              {puzzle.source && (
-                                <Badge variant="outline" className={`${
-                                  puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
-                                  puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700' : 
-                                  puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
-                                  puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700' :
-                                  'bg-gray-50 text-gray-700'
-                                }`}>
-                                  {puzzle.source.replace('-Eval', ' Eval')}
-                                </Badge>
-                              )}
-
-                              <Badge variant="outline" className="bg-gray-50">
-                                {puzzle.maxGridSize}×{puzzle.maxGridSize}
-                              </Badge>
-
-                              {puzzle.gridSizeConsistent ? (
-                                <Badge variant="outline" className="bg-green-50 text-green-700">
-                                  Consistent
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="bg-amber-50 text-amber-700">
-                                  Variable
-                                </Badge>
-                              )}
-                            </div>
-
-                            {puzzle.hasExplanation ? (
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-4">
-                                  <div className="flex items-center gap-2">
-                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                    <span className="font-medium text-green-700">
-                                      {puzzle.totalExplanations} explanation{puzzle.totalExplanations !== 1 ? 's' : ''}
-                                    </span>
-                                  </div>
-                                  {puzzle.feedbackCount !== undefined && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleFeedbackClick(puzzle.id)}
-                                      disabled={puzzle.feedbackCount === 0}
-                                      className={`h-auto p-1 flex items-center gap-1 hover:bg-blue-50 ${
-                                        puzzle.feedbackCount > 0 ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'
-                                      }`}
-                                    >
-                                      <MessageSquare className={`h-4 w-4 ${puzzle.feedbackCount > 0 ? 'text-blue-600' : 'text-gray-400'}`} />
-                                      <span className={`text-sm font-medium ${puzzle.feedbackCount > 0 ? 'text-blue-700' : 'text-gray-500'}`}>
-                                        {puzzle.feedbackCount || 0} feedback
-                                      </span>
-                                    </Button>
-                                  )}
-                                </div>
-                                
-                                {puzzle.latestExplanation && (
-                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                                    <div>
-                                      <span className="text-gray-500">Latest Model:</span>
-                                      <Badge variant="outline" className="ml-2">
-                                        <Brain className="h-3 w-3 mr-1" />
-                                        {puzzle.latestExplanation.modelName}
-                                      </Badge>
-                                    </div>
-                                    
-                                    <div>
-                                      <span className="text-gray-500">Confidence:</span>
-                                      <Badge className={`ml-2 ${getConfidenceColor(puzzle.latestExplanation.confidence)}`}>
-                                        <BarChart3 className="h-3 w-3 mr-1" />
-                                        {puzzle.latestExplanation.confidence}%
-                                      </Badge>
-                                    </div>
-                                    
-                                    <div>
-                                      <span className="text-gray-500">Analysis Date:</span>
-                                      <div className="flex items-center gap-1 mt-1">
-                                        <Clock className="h-3 w-3 text-gray-400" />
-                                        <span className="text-xs">{formatDate(puzzle.latestExplanation.createdAt)}</span>
-                                      </div>
-                                    </div>
-
-                                    {puzzle.latestExplanation.apiProcessingTimeMs && (
-                                      <div>
-                                        <span className="text-gray-500">Processing:</span>
-                                        <span className="ml-2 text-xs">
-                                          {puzzle.latestExplanation.apiProcessingTimeMs}ms
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {puzzle.explanations.length > 1 && (
-                                  <div className="mt-3">
-                                    <details className="text-sm">
-                                      <summary className="cursor-pointer text-blue-600 hover:text-blue-800">
-                                        View all {puzzle.explanations.length} explanations
-                                      </summary>
-                                      <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-200">
-                                        {puzzle.explanations.slice(1).map((explanation: any) => (
-                                          <div key={explanation.id} className="flex items-center justify-between text-xs">
-                                            <div className="flex items-center gap-2">
-                                              <Badge variant="outline" className="text-xs">
-                                                {explanation.modelName}
-                                              </Badge>
-                                              <Badge className={`${getConfidenceColor(explanation.confidence)} text-xs`}>
-                                                {explanation.confidence}%
-                                              </Badge>
-                                            </div>
-                                            <span className="text-gray-500">
-                                              {formatDate(explanation.createdAt)}
-                                            </span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </details>
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2 text-gray-500">
-                                <span>No explanations yet</span>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button asChild size="sm">
-                              <Link href={`/puzzle/${puzzle.id}`}>
-                                <Eye className="h-4 w-4 mr-1" />
-                                Examine
-                              </Link>
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-6 pt-6 border-t">
-                    <div className="text-sm text-gray-600">
-                      Page {currentPage} of {totalPages} ({data.total} total puzzles)
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        disabled={currentPage === 1}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                        Previous
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+        {/* Puzzle List with Pagination */}
+        <PuzzleList
+          puzzles={data?.puzzles}
+          total={data?.total || 0}
+          isLoading={isLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          onFeedbackClick={handleFeedbackClick}
+          formatDate={formatDate}
+          getConfidenceColor={getConfidenceColor}
+        />
       </div>
 
       {/* Feedback Modal */}

@@ -5,6 +5,41 @@
   Author (docs): GPT-5 (low reasoning)
 -->
 
+August 20, 2025
+
+## Version 1.3.9 — Enhanced Solver Mode Validation & UI Refactoring (2025-08-20)
+
+### Major Improvements
+- __Solver Mode Grid Detection Enhancement (Code by Claude Code)__: Significantly improved the response validation system for solver mode
+  - **Robust Pattern Matching**: Added comprehensive keyword search for "predicted output grid:", "answer:", "solution:", etc.
+  - **Bracket Counting Algorithm**: Implemented intelligent bracket counting to extract complete 2D array structures
+  - **Numeric-Only Validation**: Optimized for integer grids only (no letters) with proper type checking
+  - **Multiple Extraction Strategies**: Fallback methods ensure reliable grid detection from AI responses
+  - **Enhanced Debugging**: Comprehensive logging for validation troubleshooting
+
+### UI Architecture Overhaul
+- __PuzzleOverview.tsx Modular Refactoring (Code by Claude Code)__: Broke down 900-line monolithic component into clean, reusable modules
+  - **66% Size Reduction**: Main file reduced from 900 to 301 lines
+  - **StatisticsCards Component**: Modular feedback and accuracy statistics with loading states
+  - **SearchFilters Component**: Dedicated search and filtering controls with sort functionality
+  - **PuzzleList Component**: Reusable puzzle display with pagination and feedback integration
+  - **Maintainable Architecture**: Following project's modular component patterns
+
+### User Experience Enhancements
+- **"Trustworthiness" Badge**: Changed solver mode accuracy badge from "Accuracy" to "Trustworthiness" to better reflect calibrated scoring
+- **Fixed Button Navigation**: Resolved "View all models" buttons leading to blank pages in overview
+- **Enhanced Grid Extraction**: Now successfully detects grids like `[[2,2,2],[2,8,8],[8,8,8]]` and `[[8,8,2], [8,2,2], [8,8,8]]`
+
+### Technical Fixes
+- **Database Query Enhancement**: Added missing validation fields to database queries for proper solver mode data retrieval
+- **JSON Parsing**: Improved parsing of predicted output grids from database storage
+- **TypeScript Compliance**: All new components maintain full type safety
+- **AI Service Prompt Compliance**: Fixed hardcoded prompt templates in Anthropic and Gemini services
+  - **Controller Default Fix**: Changed hardcoded "alienCommunication" default to proper "standardExplanation"
+  - **Anthropic Error Handling**: Fixed hardcoded alien fields in error responses to respect template selection
+  - **Gemini Service Cleanup**: Removed 200+ lines of duplicated prompt logic, now properly uses prompt builder
+  - **Template Respect**: All AI services now properly respect selected prompt templates instead of forcing alien mode
+
 August 19, 2025 11:11pm
 
 ## Version 1.3.8 — Comprehensive Feedback Analytics Dashboard (2025-08-19)
