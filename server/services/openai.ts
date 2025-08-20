@@ -69,6 +69,7 @@ export class OpenAIService {
       // Use Responses API for reasoning models, ChatCompletions for others
       if (MODELS_WITH_REASONING.has(modelKey)) {
         console.log(`[OpenAI] Using Responses API for reasoning model ${modelKey}`);
+        console.log(`[OpenAI] Model mapping: ${modelKey} -> ${modelName}`);
         
         const responsesOptions: any = {
           model: modelName,
@@ -81,8 +82,16 @@ export class OpenAIService {
 
         // Note: Responses API doesn't support temperature or text.format
         // JSON output is requested via prompt instructions instead
+        console.log(`[OpenAI] Sending request to Responses API with model: ${modelName}`);
 
-        response = await openai.responses.create(responsesOptions);
+        try {
+          response = await openai.responses.create(responsesOptions);
+          console.log(`[OpenAI] Received response from Responses API for model: ${modelName}`);
+          console.log(`[OpenAI] Response type: ${typeof response}, keys: ${Object.keys(response || {}).join(', ')}`);
+        } catch (apiError) {
+          console.error(`[OpenAI] Responses API error for model ${modelName}:`, apiError);
+          throw apiError;
+        }
 
         // Extract JSON result from Responses API output_text
         const rawJson = (response as any).output_text || "";
