@@ -20,14 +20,104 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
     return { grid: null, method: 'no_text' };
   }
 
-  // Strategy 1: Look for "predicted output grid is [[...]]" pattern
+  // Debug logging
+  logger.info(`Attempting to extract grid from text: ${text.substring(0, 200)}...`, 'validator');
+
+  // Test specific patterns against known examples for debugging
+  const testCases = [
+    'Predicted Output Grid: [[8,8,2], [8,2,2], [8,8,8]]',
+    'Predicted Output Grid: [[2,2,2],[2,8,8],[8,8,8]]'
+  ];
+  
+  for (const testCase of testCases) {
+    if (text.includes('Predicted Output Grid:')) {
+      logger.info(`Testing against pattern, found similar text in response`, 'validator');
+      break;
+    }
+  }
+
+  // Strategy 1: Simple approach - extract any text that starts with [[ and ends with ]]
+  // Look for the pattern after common keywords
+  const keywordPatterns = [
+    'predicted output grid:',
+    'predicted output:',
+    'output grid:',
+    'output:',
+    'answer:',
+    'solution:',
+    'result:',
+    'final grid:',
+    'final output:'
+  ];
+  
+  const lowerText = text.toLowerCase();
+  for (const keyword of keywordPatterns) {
+    const index = lowerText.indexOf(keyword);
+    if (index !== -1) {
+      // Look for [[ after the keyword
+      const afterKeyword = text.substring(index + keyword.length);
+      const startBracket = afterKeyword.indexOf('[[');
+      if (startBracket !== -1) {
+        // Find the matching ]]
+        const afterStart = afterKeyword.substring(startBracket);
+        let bracketCount = 0;
+        let endIndex = -1;
+        
+        for (let i = 0; i < afterStart.length; i++) {
+          if (afterStart[i] === '[') bracketCount++;
+          if (afterStart[i] === ']') {
+            bracketCount--;
+            if (bracketCount === 0) {
+              endIndex = i + 1;
+              break;
+            }
+          }
+        }
+        
+        if (endIndex !== -1) {
+          const gridText = afterStart.substring(0, endIndex);
+          
+          // Quick check: ensure it contains only digits, brackets, commas, and spaces
+          if (/^[\[\]\d\s,]+$/.test(gridText)) {
+            try {
+              const cleanedText = gridText
+                .replace(/\s+/g, ' ')
+                .replace(/,\s*]/g, ']')
+                .replace(/,\s*,/g, ',')
+                .replace(/\[\s+/g, '[')
+                .replace(/\s+\]/g, ']');
+              
+              logger.info(`Attempting to parse numeric grid: ${cleanedText}`, 'validator');
+              const grid = JSON.parse(cleanedText);
+              
+              // Validate it's a proper numeric grid
+              if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
+                // Ensure all elements are integers
+                const isValidNumericGrid = grid.every(row => 
+                  Array.isArray(row) && row.every(cell => typeof cell === 'number' && Number.isInteger(cell))
+                );
+                
+                if (isValidNumericGrid) {
+                  logger.info(`Successfully extracted numeric grid via keyword search: ${JSON.stringify(grid)}`, 'validator');
+                  return { grid, method: `keyword_${keyword.replace(':', '').replace(' ', '_')}` };
+                } else {
+                  logger.info(`Invalid grid: contains non-integer values`, 'validator');
+                }
+              }
+            } catch (error) {
+              logger.info(`Failed to parse grid after keyword ${keyword}: ${gridText} - ${error}`, 'validator');
+            }
+          } else {
+            logger.info(`Skipping non-numeric grid candidate: ${gridText.substring(0, 50)}`, 'validator');
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback regex patterns optimized for numeric grids only
   const patterns = [
-    /predicted\s+output\s+grid\s+is\s*(\[\[[\d\s,\]]+\])/gi,
-    /output\s*:\s*(\[\[[\d\s,\]]+\])/gi,
-    /answer\s*:\s*(\[\[[\d\s,\]]+\])/gi,
-    /output\s+grid\s*:\s*(\[\[[\d\s,\]]+\])/gi,
-    /solution\s*:\s*(\[\[[\d\s,\]]+\])/gi,
-    /result\s*:\s*(\[\[[\d\s,\]]+\])/gi
+    /(\[\[\d+(?:\s*,\s*\d+)*\](?:\s*,\s*\[\d+(?:\s*,\s*\d+)*\])*\])/g
   ];
 
   for (let i = 0; i < patterns.length; i++) {
@@ -52,28 +142,62 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
     }
   }
 
-  // Strategy 2: Look for any 2D array in the text
-  const anyArrayPattern = /(\[\[[\d\s,\]]+\])/g;
-  const arrayMatches = text.match(anyArrayPattern);
-  
-  if (arrayMatches) {
-    for (const match of arrayMatches) {
-      try {
-        const cleanedText = match
-          .replace(/\s+/g, ' ')
-          .replace(/,\s*]/g, ']')
-          .replace(/,\s*,/g, ',');
-        
-        const grid = JSON.parse(cleanedText);
-        if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
-          return { grid, method: 'any_array' };
+  // Strategy 2: Look for any complete 2D array structure in the text
+  let bracketStart = -1;
+  for (let i = 0; i < text.length - 1; i++) {
+    if (text[i] === '[' && text[i + 1] === '[') {
+      bracketStart = i;
+      let bracketCount = 0;
+      let endIndex = -1;
+      
+      for (let j = i; j < text.length; j++) {
+        if (text[j] === '[') bracketCount++;
+        if (text[j] === ']') {
+          bracketCount--;
+          if (bracketCount === 0) {
+            endIndex = j + 1;
+            break;
+          }
         }
-      } catch (error) {
-        // Continue to next match
+      }
+      
+      if (endIndex !== -1) {
+        const gridText = text.substring(bracketStart, endIndex);
+        
+        // Quick check: only proceed if it looks like numeric data
+        if (/^\[\[[\d\s,\[\]]+\]$/.test(gridText.replace(/\s+/g, ' ').trim())) {
+          try {
+            const cleanedText = gridText
+              .replace(/\s+/g, ' ')
+              .replace(/,\s*]/g, ']')
+              .replace(/,\s*,/g, ',')
+              .replace(/\[\s+/g, '[')
+              .replace(/\s+\]/g, ']');
+            
+            logger.info(`Found potential numeric grid: ${cleanedText}`, 'validator');
+            const grid = JSON.parse(cleanedText);
+            
+            // Validate it's a proper numeric grid
+            if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
+              // Ensure all elements are numbers
+              const isValidNumericGrid = grid.every(row => 
+                Array.isArray(row) && row.every(cell => typeof cell === 'number' && Number.isInteger(cell))
+              );
+              
+              if (isValidNumericGrid) {
+                logger.info(`Successfully extracted numeric grid: ${JSON.stringify(grid)}`, 'validator');
+                return { grid, method: 'bracket_search' };
+              }
+            }
+          } catch (error) {
+            logger.info(`Failed to parse potential grid: ${gridText}`, 'validator');
+          }
+        }
       }
     }
   }
 
+  logger.warn('No grid found after all extraction strategies', 'validator');
   return { grid: null, method: 'not_found' };
 }
 
