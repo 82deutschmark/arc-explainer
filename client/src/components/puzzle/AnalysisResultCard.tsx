@@ -18,8 +18,11 @@
 import React, { useState } from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
-import { ThumbsUp, ThumbsDown, Brain, ChevronDown, ChevronUp, CheckCircle, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ThumbsUp, ThumbsDown, Brain, ChevronDown, ChevronUp, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
 import { ExplanationFeedback } from '@/components/ExplanationFeedback';
+import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
+import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 
 // Format processing time from milliseconds to minutes:seconds format
@@ -45,6 +48,10 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
+  const [showExistingFeedback, setShowExistingFeedback] = useState(false);
+  
+  // Get feedback preview for this explanation
+  const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
   
   // Check if this is a Saturn solver result
   const isSaturnResult = result.modelName?.toLowerCase().includes('saturn') || modelKey?.toLowerCase().includes('saturn');
@@ -98,16 +105,27 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             </span>
           </Badge>
         )}
-        {hasFeedback && (
+        {(hasFeedback || feedbackSummary.total > 0) && (
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
               <ThumbsUp className="h-3 w-3 text-green-600" />
-              {result.helpfulVotes ?? 0}
+              {feedbackSummary.helpful || result.helpfulVotes || 0}
             </Badge>
             <Badge variant="outline" className="flex items-center gap-1 bg-red-50 border-red-200">
               <ThumbsDown className="h-3 w-3 text-red-600" />
-              {result.notHelpfulVotes ?? 0}
+              {feedbackSummary.notHelpful || result.notHelpfulVotes || 0}
             </Badge>
+            {feedbackSummary.total > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExistingFeedback(!showExistingFeedback)}
+                className="h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                View feedback
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -317,13 +335,46 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
         </div>
       )}
       
+      {/* Existing Feedback Display */}
+      {showExistingFeedback && feedbackSummary.total > 0 && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-between mb-3">
+            <h6 className="text-sm font-medium text-gray-800">
+              Community Feedback ({feedbackSummary.total})
+            </h6>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowExistingFeedback(false)}
+              className="h-auto p-1 text-gray-500 hover:text-gray-700"
+            >
+              <ChevronUp className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {feedbackLoading ? (
+            <div className="text-sm text-gray-500">Loading feedback...</div>
+          ) : (
+            <FeedbackViewer 
+              feedback={existingFeedback} 
+              maxItems={3}
+              className="mb-3"
+            />
+          )}
+        </div>
+      )}
+      
       {/* Only show feedback widget when we have a VALID ID from the database */}
       {result.id > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-200">
           <h6 className="text-sm font-medium mb-2">Help us improve!</h6>
           <ExplanationFeedback 
             explanationId={result.id} 
-            onFeedbackSubmitted={() => console.log(`Feedback submitted for model: ${modelKey}`)}
+            onFeedbackSubmitted={() => {
+              console.log(`Feedback submitted for model: ${modelKey}`);
+              // Trigger a refetch of feedback data
+              window.location.reload(); // Simple approach - in production, would use query invalidation
+            }}
           />
         </div>
       )}

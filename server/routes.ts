@@ -60,6 +60,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Feedback routes
   app.post("/api/feedback", validation.feedback, asyncHandler(feedbackController.create));
+  app.get("/api/explanation/:explanationId/feedback", asyncHandler(feedbackController.getByExplanation));
+  app.get("/api/puzzle/:puzzleId/feedback", asyncHandler(feedbackController.getByPuzzle));
+  app.get("/api/feedback", asyncHandler(feedbackController.getAll));
+  app.get("/api/feedback/stats", asyncHandler(feedbackController.getStats));
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));

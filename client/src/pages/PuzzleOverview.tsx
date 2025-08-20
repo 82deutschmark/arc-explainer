@@ -27,6 +27,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
+import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 
 interface PuzzleOverviewData {
   id: string;
@@ -70,6 +71,16 @@ export default function PuzzleOverview() {
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Feedback modal state
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+
+  // Handle feedback click
+  const handleFeedbackClick = useCallback((puzzleId: string) => {
+    setSelectedPuzzleId(puzzleId);
+    setFeedbackModalOpen(true);
+  }, []);
 
   // Build query parameters
   const queryParams = useMemo(() => {
@@ -391,12 +402,20 @@ export default function PuzzleOverview() {
                                     </span>
                                   </div>
                                   {puzzle.feedbackCount !== undefined && (
-                                    <div className="flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleFeedbackClick(puzzle.id)}
+                                      disabled={puzzle.feedbackCount === 0}
+                                      className={`h-auto p-1 flex items-center gap-1 hover:bg-blue-50 ${
+                                        puzzle.feedbackCount > 0 ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'
+                                      }`}
+                                    >
                                       <MessageSquare className={`h-4 w-4 ${puzzle.feedbackCount > 0 ? 'text-blue-600' : 'text-gray-400'}`} />
                                       <span className={`text-sm font-medium ${puzzle.feedbackCount > 0 ? 'text-blue-700' : 'text-gray-500'}`}>
                                         {puzzle.feedbackCount || 0} feedback
                                       </span>
-                                    </div>
+                                    </Button>
                                   )}
                                 </div>
                                 
@@ -520,6 +539,13 @@ export default function PuzzleOverview() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedbackModalOpen}
+        onOpenChange={setFeedbackModalOpen}
+        initialPuzzleId={selectedPuzzleId}
+      />
     </div>
   );
 }

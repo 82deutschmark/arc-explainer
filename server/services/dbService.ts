@@ -9,6 +9,7 @@
 import { Pool } from 'pg';
 // Import proper logger utility
 import { logger } from '../utils/logger';
+import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
 
 /**
  * Interface for puzzle explanations
@@ -550,6 +551,259 @@ const getExplanationById = async (explanationId: number) => {
   }
 };
 
+/**
+ * Get feedback for a specific explanation
+ * 
+ * @param explanationId The ID of the explanation
+ * @returns Array of feedback or empty array if none found
+ */
+const getFeedbackForExplanation = async (explanationId: number): Promise<Feedback[]> => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve feedback.', 'database');
+    return [];
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT 
+         f.id,
+         f.explanation_id AS "explanationId",
+         f.vote_type AS "voteType",
+         f.comment,
+         f.created_at AS "createdAt"
+       FROM feedback f
+       WHERE f.explanation_id = $1
+       ORDER BY f.created_at DESC`,
+      [explanationId]
+    );
+
+    logger.info(`Retrieved ${result.rows.length} feedback items for explanation ${explanationId}`, 'database');
+    return result.rows;
+  } catch (error) {
+    logger.error(`Error getting feedback for explanation: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get feedback for a specific puzzle (all explanations for that puzzle)
+ * 
+ * @param puzzleId The ID of the puzzle
+ * @returns Array of detailed feedback with explanation context
+ */
+const getFeedbackForPuzzle = async (puzzleId: string): Promise<DetailedFeedback[]> => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve feedback.', 'database');
+    return [];
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT 
+         f.id,
+         f.explanation_id AS "explanationId",
+         f.vote_type AS "voteType",
+         f.comment,
+         f.created_at AS "createdAt",
+         e.puzzle_id AS "puzzleId",
+         e.model_name AS "modelName",
+         e.confidence,
+         e.pattern_description AS "patternDescription"
+       FROM feedback f
+       JOIN explanations e ON f.explanation_id = e.id
+       WHERE e.puzzle_id = $1
+       ORDER BY f.created_at DESC`,
+      [puzzleId]
+    );
+
+    logger.info(`Retrieved ${result.rows.length} feedback items for puzzle ${puzzleId}`, 'database');
+    return result.rows;
+  } catch (error) {
+    logger.error(`Error getting feedback for puzzle: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get all feedback with optional filtering
+ * 
+ * @param filters Filtering options
+ * @returns Array of detailed feedback with explanation context
+ */
+const getAllFeedback = async (filters: FeedbackFilters = {}): Promise<DetailedFeedback[]> => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve feedback.', 'database');
+    return [];
+  }
+
+  const client = await pool.connect();
+  try {
+    let query = `
+      SELECT 
+        f.id,
+        f.explanation_id AS "explanationId",
+        f.vote_type AS "voteType",
+        f.comment,
+        f.created_at AS "createdAt",
+        e.puzzle_id AS "puzzleId",
+        e.model_name AS "modelName",
+        e.confidence,
+        e.pattern_description AS "patternDescription"
+      FROM feedback f
+      JOIN explanations e ON f.explanation_id = e.id
+      WHERE 1=1
+    `;
+
+    const queryParams: any[] = [];
+    let paramCount = 0;
+
+    // Apply filters
+    if (filters.puzzleId) {
+      query += ` AND e.puzzle_id = $${++paramCount}`;
+      queryParams.push(filters.puzzleId);
+    }
+
+    if (filters.modelName) {
+      query += ` AND e.model_name = $${++paramCount}`;
+      queryParams.push(filters.modelName);
+    }
+
+    if (filters.voteType) {
+      query += ` AND f.vote_type = $${++paramCount}`;
+      queryParams.push(filters.voteType);
+    }
+
+    if (filters.startDate) {
+      query += ` AND f.created_at >= $${++paramCount}`;
+      queryParams.push(filters.startDate);
+    }
+
+    if (filters.endDate) {
+      query += ` AND f.created_at <= $${++paramCount}`;
+      queryParams.push(filters.endDate);
+    }
+
+    query += ` ORDER BY f.created_at DESC`;
+
+    if (filters.limit) {
+      query += ` LIMIT $${++paramCount}`;
+      queryParams.push(filters.limit);
+    }
+
+    if (filters.offset) {
+      query += ` OFFSET $${++paramCount}`;
+      queryParams.push(filters.offset);
+    }
+
+    const result = await client.query(query, queryParams);
+
+    logger.info(`Retrieved ${result.rows.length} feedback items with filters`, 'database');
+    return result.rows;
+  } catch (error) {
+    logger.error(`Error getting filtered feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get feedback summary statistics
+ * 
+ * @returns Feedback statistics object
+ */
+const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve feedback stats.', 'database');
+    return {
+      totalFeedback: 0,
+      helpfulCount: 0,
+      notHelpfulCount: 0,
+      helpfulPercentage: 0,
+      notHelpfulPercentage: 0,
+      feedbackByModel: {},
+      feedbackByDay: []
+    };
+  }
+
+  const client = await pool.connect();
+  try {
+    // Get total counts
+    const totalResult = await client.query(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN vote_type = 'helpful' THEN 1 END) as helpful,
+        COUNT(CASE WHEN vote_type = 'not_helpful' THEN 1 END) as not_helpful
+      FROM feedback
+    `);
+
+    const total = parseInt(totalResult.rows[0].total);
+    const helpful = parseInt(totalResult.rows[0].helpful);
+    const notHelpful = parseInt(totalResult.rows[0].not_helpful);
+
+    // Get feedback by model
+    const modelResult = await client.query(`
+      SELECT 
+        e.model_name,
+        COUNT(CASE WHEN f.vote_type = 'helpful' THEN 1 END) as helpful,
+        COUNT(CASE WHEN f.vote_type = 'not_helpful' THEN 1 END) as not_helpful
+      FROM feedback f
+      JOIN explanations e ON f.explanation_id = e.id
+      GROUP BY e.model_name
+    `);
+
+    const feedbackByModel: Record<string, { helpful: number; notHelpful: number }> = {};
+    modelResult.rows.forEach(row => {
+      feedbackByModel[row.model_name] = {
+        helpful: parseInt(row.helpful),
+        notHelpful: parseInt(row.not_helpful)
+      };
+    });
+
+    // Get feedback by day (last 30 days)
+    const dailyResult = await client.query(`
+      SELECT 
+        DATE(f.created_at) as date,
+        COUNT(CASE WHEN f.vote_type = 'helpful' THEN 1 END) as helpful,
+        COUNT(CASE WHEN f.vote_type = 'not_helpful' THEN 1 END) as not_helpful
+      FROM feedback f
+      WHERE f.created_at >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(f.created_at)
+      ORDER BY date DESC
+    `);
+
+    const feedbackByDay = dailyResult.rows.map(row => ({
+      date: row.date,
+      helpful: parseInt(row.helpful),
+      notHelpful: parseInt(row.not_helpful)
+    }));
+
+    const stats: FeedbackStats = {
+      totalFeedback: total,
+      helpfulCount: helpful,
+      notHelpfulCount: notHelpful,
+      helpfulPercentage: total > 0 ? Math.round((helpful / total) * 100) : 0,
+      notHelpfulPercentage: total > 0 ? Math.round((notHelpful / total) * 100) : 0,
+      feedbackByModel,
+      feedbackByDay
+    };
+
+    logger.info(`Retrieved feedback stats: ${total} total feedback items`, 'database');
+    return stats;
+  } catch (error) {
+    logger.error(`Error getting feedback stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
@@ -560,6 +814,11 @@ export const dbService = {
   getExplanationById,
   hasExplanation,
   getBulkExplanationStatus,
+  // New feedback retrieval methods
+  getFeedbackForExplanation,
+  getFeedbackForPuzzle,
+  getAllFeedback,
+  getFeedbackSummaryStats,
   // Helpers
   isConnected: () => !!pool,
 };
