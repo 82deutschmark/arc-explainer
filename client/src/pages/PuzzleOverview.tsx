@@ -22,11 +22,16 @@ import {
   CheckCircle2,
   Clock,
   BarChart3,
-  MessageSquare
+  MessageSquare,
+  TrendingUp,
+  Star,
+  Award
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
+import { FeedbackModal } from '@/components/feedback/FeedbackModal';
+import type { FeedbackStats } from '@shared/types';
 
 interface PuzzleOverviewData {
   id: string;
@@ -70,6 +75,16 @@ export default function PuzzleOverview() {
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<string>('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Feedback modal state
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+
+  // Handle feedback click
+  const handleFeedbackClick = useCallback((puzzleId: string) => {
+    setSelectedPuzzleId(puzzleId);
+    setFeedbackModalOpen(true);
+  }, []);
 
   // Build query parameters
   const queryParams = useMemo(() => {
@@ -98,7 +113,17 @@ export default function PuzzleOverview() {
       const json = await response.json();
       return json.data;
     },
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+  });
+
+  // Fetch feedback statistics
+  const { data: feedbackStats, isLoading: statsLoading } = useQuery<FeedbackStats>({
+    queryKey: ['feedbackStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/feedback/stats');
+      const json = await response.json();
+      return json.data;
+    },
   });
 
   const handleSearch = useCallback(() => {
@@ -138,6 +163,39 @@ export default function PuzzleOverview() {
     });
   };
 
+  // Calculate model performance rankings based on feedback
+  const modelRankings = useMemo(() => {
+    if (!feedbackStats) return [];
+    
+    return Object.entries(feedbackStats.feedbackByModel)
+      .map(([modelName, stats]) => {
+        const total = stats.helpful + stats.notHelpful;
+        const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
+        
+        // Find model display name from MODELS array
+        const modelInfo = MODELS.find(m => m.key === modelName);
+        const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
+        
+        return {
+          modelName,
+          displayName,
+          helpful: stats.helpful,
+          notHelpful: stats.notHelpful,
+          total,
+          helpfulPercentage,
+          provider: modelInfo?.provider || 'Unknown'
+        };
+      })
+      .filter(model => model.total >= 2) // Only show models with at least 2 feedback entries
+      .sort((a, b) => {
+        // Sort by helpful percentage first, then by total feedback count
+        if (a.helpfulPercentage !== b.helpfulPercentage) {
+          return b.helpfulPercentage - a.helpfulPercentage;
+        }
+        return b.total - a.total;
+      });
+  }, [feedbackStats]);
+
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
   if (error) {
@@ -176,6 +234,177 @@ export default function PuzzleOverview() {
             </Link>
           </div>
         </header>
+
+        {/* Feedback Statistics */}
+        {feedbackStats && !statsLoading && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Overall Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Feedback Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Total Feedback:</span>
+                    <Badge variant="outline" className="text-lg font-semibold">
+                      {feedbackStats.totalFeedback}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Helpful:</span>
+                    <Badge className="bg-green-100 text-green-800">
+                      {feedbackStats.helpfulCount} ({feedbackStats.helpfulPercentage}%)
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Not Helpful:</span>
+                    <Badge className="bg-red-100 text-red-800">
+                      {feedbackStats.notHelpfulCount} ({feedbackStats.notHelpfulPercentage}%)
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Performing Models */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5" />
+                  Top Models by Feedback
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {modelRankings.slice(0, 3).map((model, index) => (
+                    <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+                      <div className="flex items-center gap-2">
+                        {index === 0 && <Star className="h-4 w-4 text-yellow-500" />}
+                        <span className="text-sm font-medium truncate">
+                          {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          className={`text-xs ${
+                            model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
+                            model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {model.helpfulPercentage}%
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          ({model.total})
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {modelRankings.length > 3 && (
+                    <div className="text-center pt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFeedbackModalOpen(true)}
+                        className="text-xs text-blue-600 hover:text-blue-800"
+                      >
+                        View all models →
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Feedback Trends */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Recent Activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {feedbackStats.feedbackByDay.slice(0, 5).map((day) => (
+                    <div key={day.date} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">
+                        {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600 font-medium">+{day.helpful}</span>
+                        <span className="text-red-600 font-medium">-{day.notHelpful}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {feedbackStats.feedbackByDay.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      No recent feedback activity
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Worst Performing Models */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
+                  Worst Models by Feedback
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {modelRankings.slice(-3).reverse().map((model, index) => (
+                    <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium truncate text-red-700">
+                          {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          className={`text-xs ${
+                            model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
+                            model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {model.helpfulPercentage}%
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          ({model.total})
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {modelRankings.length > 3 && (
+                    <div className="text-center pt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFeedbackModalOpen(true)}
+                        className="text-xs text-red-600 hover:text-red-800"
+                      >
+                        View all models →
+                      </Button>
+                    </div>
+                  )}
+                  {modelRankings.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      No models with sufficient feedback data
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Filters & Search */}
         <Card>
@@ -311,6 +540,15 @@ export default function PuzzleOverview() {
               >
                 Confidence {getSortIcon('latestConfidence')}
               </Button>
+              <Button
+                variant={sortBy === 'feedbackCount' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleSortChange('feedbackCount')}
+                className="flex items-center gap-1"
+              >
+                <MessageSquare className="h-3 w-3" />
+                Most Feedback {getSortIcon('feedbackCount')}
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -344,7 +582,7 @@ export default function PuzzleOverview() {
             ) : (
               <>
                 <div className="space-y-4">
-                  {data.puzzles.map((puzzle) => (
+                  {data.puzzles.map((puzzle: PuzzleOverviewData) => (
                     <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between">
@@ -391,12 +629,20 @@ export default function PuzzleOverview() {
                                     </span>
                                   </div>
                                   {puzzle.feedbackCount !== undefined && (
-                                    <div className="flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleFeedbackClick(puzzle.id)}
+                                      disabled={puzzle.feedbackCount === 0}
+                                      className={`h-auto p-1 flex items-center gap-1 hover:bg-blue-50 ${
+                                        puzzle.feedbackCount > 0 ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400'
+                                      }`}
+                                    >
                                       <MessageSquare className={`h-4 w-4 ${puzzle.feedbackCount > 0 ? 'text-blue-600' : 'text-gray-400'}`} />
                                       <span className={`text-sm font-medium ${puzzle.feedbackCount > 0 ? 'text-blue-700' : 'text-gray-500'}`}>
                                         {puzzle.feedbackCount || 0} feedback
                                       </span>
-                                    </div>
+                                    </Button>
                                   )}
                                 </div>
                                 
@@ -444,13 +690,13 @@ export default function PuzzleOverview() {
                                         View all {puzzle.explanations.length} explanations
                                       </summary>
                                       <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-200">
-                                        {puzzle.explanations.slice(1).map((explanation) => (
+                                        {puzzle.explanations.slice(1).map((explanation: any) => (
                                           <div key={explanation.id} className="flex items-center justify-between text-xs">
                                             <div className="flex items-center gap-2">
-                                              <Badge variant="outline" size="sm">
+                                              <Badge variant="outline" className="text-xs">
                                                 {explanation.modelName}
                                               </Badge>
-                                              <Badge className={`${getConfidenceColor(explanation.confidence)}`} size="sm">
+                                              <Badge className={`${getConfidenceColor(explanation.confidence)} text-xs`}>
                                                 {explanation.confidence}%
                                               </Badge>
                                             </div>
@@ -520,6 +766,13 @@ export default function PuzzleOverview() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedbackModalOpen}
+        onOpenChange={setFeedbackModalOpen}
+        initialPuzzleId={selectedPuzzleId}
+      />
     </div>
   );
 }
