@@ -39,11 +39,22 @@ August 20, 2025
   - **Message Cleaning**: Intelligent removal of redundant prefixes for cleaner display
   - **Progress Indicators**: Enhanced running status indicators with better visual feedback
 
+### OpenAI Responses API Integration
+- __Complete Responses API Implementation (Code by Claude Code)__: Migrated Saturn from basic ChatCompletions to structured Responses API
+  - **New Endpoint**: Added `/api/saturn/analyze-with-reasoning/:taskId` for Responses API calls
+  - **Structured Reasoning**: Captures `output_reasoning.summary` and `output_reasoning.items[]` for step-by-step analysis
+  - **Response Chaining**: Supports `previous_response_id` for multi-step reasoning chains
+  - **Real-Time Streaming**: WebSocket integration streams reasoning summaries and step updates
+  - **Step Progress Tracking**: Derives step counts from reasoning items rather than hardcoded values
+
 ### Technical Improvements
 - **State Management**: Enhanced Saturn progress hook with reasoning log tracking and history management
 - **Memory Management**: Implemented proper cleanup for timeout handlers and WebSocket connections
 - **Type Safety**: Added proper TypeScript interfaces for reasoning log streaming
 - **Performance**: Optimized log rendering and real-time updates for better responsiveness
+- **API Architecture**: Added helper methods for extracting patterns, strategies, and confidence from reasoning data
+- **Database Integration**: Enhanced explanation storage with reasoning summaries and structured analysis data
+ - **OpenAI Responses API Migration Plan (Docs)**: Added `docs/OpenAI_Responses_Migration_Plan_2025-08-20.md` outlining full migration from Chat Completions to Responses, parser updates for `output_text`/`output[]`/`output_reasoning`, token budgeting with `max_output_tokens`, session chaining via `previous_response_id`, logging raw JSON for failing runs, and streaming/polling strategy. Initial audit: `server/services/openai.ts` still uses Chat Completions for non-reasoning models and parses `choices[0].message.content`; DB lacks fields for `provider_response_id`, `provider_raw_response`, and `reasoning_items`.
 
 ## Version 1.3.9 — Enhanced Solver Mode Validation & UI Refactoring (2025-08-20)
 

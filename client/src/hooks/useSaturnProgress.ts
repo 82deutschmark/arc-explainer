@@ -23,6 +23,8 @@ export interface SaturnOptions {
   cellSize?: number;
   maxSteps?: number;
   captureReasoning?: boolean;
+  useResponsesAPI?: boolean;
+  previousResponseId?: string;
 }
 
 export interface SaturnProgressState {
@@ -106,9 +108,15 @@ export function useSaturnProgress(taskId: string | undefined) {
       cellSize: options?.cellSize ?? 24,
       maxSteps: options?.maxSteps ?? 8,
       captureReasoning: !!options?.captureReasoning,
+      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
     };
 
-    const res = await apiRequest('POST', `/api/saturn/analyze/${taskId}`, wireOptions);
+    // Choose endpoint based on whether to use Responses API
+    const endpoint = options?.useResponsesAPI 
+      ? `/api/saturn/analyze-with-reasoning/${taskId}`
+      : `/api/saturn/analyze/${taskId}`;
+    
+    const res = await apiRequest('POST', endpoint, wireOptions);
     const json = await res.json();
     const sid = json?.data?.sessionId as string;
     setSessionId(sid);
@@ -133,6 +141,9 @@ export function useSaturnProgress(taskId: string | undefined) {
           type: payload?.type,
           status: data?.status,
           phase: data?.phase,
+          step: data?.step,
+          totalSteps: data?.totalSteps,
+          progress: data?.progress,
           message: data?.message?.substring(0, 100),
           imagesCount: Array.isArray(data?.images) ? data.images.length : 0
         });
@@ -185,7 +196,9 @@ export function useSaturnProgress(taskId: string | undefined) {
             galleryCount: newState.galleryImages?.length || 0,
             logCount: newState.logLines?.length || 0,
             reasoningCount: newState.reasoningHistory?.length || 0,
-            hasCurrentReasoning: !!newState.reasoningLog
+            hasCurrentReasoning: !!newState.reasoningLog,
+            currentReasoningPreview: newState.reasoningLog?.substring(0, 100),
+            receivedReasoningLog: data.reasoningLog?.substring(0, 100)
           });
           return newState;
         });
