@@ -1,16 +1,12 @@
 /**
  * client/src/pages/SaturnVisualSolver.tsx
  *
- * Saturn Visual Solver page.
- * Allows starting a Saturn analysis for a given ARC task and shows
- * real-time progress streamed over WebSockets. Reuses existing UI
- * components and follows app patterns.
+ * Saturn Visual Solver page - redesigned for clarity and better UX.
+ * Features a streamlined single-column layout with clear sections for:
+ * - Puzzle overview and controls
+ * - Live progress and reasoning
+ * - Console output and image gallery
  *
- * Includes:
- * - Model selector (GPT-5, Claude 4, Grok 4)
- * - Live image gallery rendering streamed images from the backend
- *
- * Used by route `/puzzle/saturn/:taskId` configured in `client/src/App.tsx`.
  * Author: Cascade (model: Cascade)
  */
 
@@ -20,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Terminal, Minimize2, Maximize2, Play, Pause } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Terminal, Brain, Eye, RotateCcw } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import SaturnModelSelect, { type SaturnModelKey } from '@/components/saturn/SaturnModelSelect';
