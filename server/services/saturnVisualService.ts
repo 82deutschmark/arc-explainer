@@ -172,14 +172,32 @@ class SaturnVisualService {
         message: 'Calling OpenAI Responses API for structured reasoning...',
       });
 
-      // Use the existing OpenAI service analyze method which already supports Responses API
-      const response = await openaiService.analyze(
+      // Map UI model names to OpenAI service model keys
+      const modelKeyMapping: Record<string, string> = {
+        'gpt-5': 'gpt-5-2025-08-07',
+        'gpt-5-mini': 'gpt-5-mini-2025-08-07',
+        'gpt-5-nano': 'gpt-5-nano-2025-08-07',
+        'o3-mini': 'o3-mini-2025-01-31',
+        'o4-mini': 'o4-mini-2025-04-16',
+        'o3': 'o3-2025-04-16',
+      };
+      const modelKey = modelKeyMapping[options.model] || options.model;
+
+      // Use the existing OpenAI service analyzePuzzleWithModel method with Responses API
+      const response = await openaiService.analyzePuzzleWithModel(
         task, // puzzle task
-        options.model as any, // model key
-        'standardExplanation', // use standard prompt
+        modelKey as any, // model key
+        0.2, // temperature
         true, // capture reasoning
-        undefined, // no custom prompt
-        {} // default options
+        'standardExplanation', // prompt ID
+        undefined, // custom prompt (must be string or undefined)
+        {}, // default prompt options
+        {
+          previousResponseId: options.previousResponseId,
+          maxSteps: options.maxSteps,
+          reasoningSummary: options.reasoningSummary ? 'auto' : 'none',
+          maxRetries: 2,
+        }
       );
       
       console.log('[SATURN-RESPONSES-DEBUG] OpenAI service result:', {
@@ -191,20 +209,20 @@ class SaturnVisualService {
 
       // Extract reasoning data from the OpenAI service response format
       const reasoningLog = response?.reasoningLog || '';
-      const reasoningItems = reasoningLog ? reasoningLog.split('\n\n').filter(Boolean) : [];
+      const reasoningItems = response?.reasoningItems || [];
+      const responseId = response?.providerResponseId || `saturn-${Date.now()}`;
       const finalOutput = JSON.stringify({
         patternDescription: response?.patternDescription || '',
         solvingStrategy: response?.solvingStrategy || '',
         hints: response?.hints || []
       });
-      const responseId = `saturn-${Date.now()}`; // Generate ID since direct API response may not have one
 
       console.log('[SATURN-RESPONSES-DEBUG] Extracted reasoning data:', {
         responseId,
         reasoningLogLength: reasoningLog.length,
         reasoningItemsCount: reasoningItems.length,
         finalOutputLength: finalOutput?.length || 0,
-        hasOutputReasoning: !!response?.output_reasoning,
+        hasProviderResponseId: !!response?.providerResponseId,
         reasoningPreview: reasoningLog.substring(0, 200)
       });
 
@@ -221,20 +239,23 @@ class SaturnVisualService {
       }
 
       // Stream reasoning items as step updates
-      reasoningItems.forEach((item: string, index: number) => {
-        const step = index + 1;
-        broadcast(sessionId, {
-          status: 'running',
-          phase: 'reasoning',
-          step: step,
-          totalSteps: options.maxSteps,
-          progress: step / options.maxSteps,
-          message: `Reasoning step ${step}: ${item.substring(0, 100)}...`,
-          reasoningLog: item,
+      if (Array.isArray(reasoningItems)) {
+        reasoningItems.forEach((item: any, index: number) => {
+          const step = index + 1;
+          const itemText = typeof item === 'string' ? item : (item?.content || item?.text || JSON.stringify(item));
+          broadcast(sessionId, {
+            status: 'running',
+            phase: 'reasoning',
+            step: step,
+            totalSteps: Math.max(options.maxSteps, reasoningItems.length),
+            progress: step / Math.max(options.maxSteps, reasoningItems.length),
+            message: `Reasoning step ${step}: ${itemText.substring(0, 100)}...`,
+            reasoningLog: itemText,
+          });
         });
-      });
+      }
 
-      // Prepare explanation for database
+      // Prepare explanation for database (including new Responses API fields)
       const explanation = {
         patternDescription: this.extractPatternFromReasoning(reasoningLog, reasoningItems),
         solvingStrategy: this.extractStrategyFromReasoning(reasoningLog, reasoningItems),
@@ -246,11 +267,17 @@ class SaturnVisualService {
         reasoningLog: reasoningLog,
         hasReasoningLog: !!reasoningLog,
         apiProcessingTimeMs: Date.now(), // Approximate timing
-        saturnImages: [], // No images for Responses API version
-        saturnLog: reasoningItems.join('\n'),
+        saturnImages: [] as string[], // No images for Responses API version
+        saturnLog: Array.isArray(reasoningItems) ? reasoningItems.map(item => 
+          typeof item === 'string' ? item : (item?.content || item?.text || JSON.stringify(item))
+        ).join('\n') : '',
         saturnEvents: JSON.stringify(response),
         saturnSuccess: !!finalOutput,
-      } as const;
+        // New Responses API fields
+        providerResponseId: responseId,
+        providerRawResponse: response?.providerRawResponse || null,
+        reasoningItems: reasoningItems,
+      };
 
       // Save to database
       let explanationId: number | null = null;
@@ -585,9 +612,12 @@ Please analyze the pattern step by step:
 Your reasoning should be systematic and detailed. Focus on visual pattern recognition and logical rule discovery.`;
   }
 
-  private extractPatternFromReasoning(summary: string, items: string[]): string {
+  private extractPatternFromReasoning(summary: string, items: any[]): string {
     // Extract pattern description from reasoning
-    const combined = summary + ' ' + items.join(' ');
+    const itemTexts = Array.isArray(items) ? items.map(item => 
+      typeof item === 'string' ? item : (item?.content || item?.text || JSON.stringify(item))
+    ) : [];
+    const combined = summary + ' ' + itemTexts.join(' ');
     const patterns = [
       'pattern', 'transformation', 'rule', 'operation', 'mapping', 'relationship'
     ];
@@ -602,9 +632,12 @@ Your reasoning should be systematic and detailed. Focus on visual pattern recogn
     return summary.substring(0, 200) || 'Pattern analysis from Responses API';
   }
 
-  private extractStrategyFromReasoning(summary: string, items: string[]): string {
+  private extractStrategyFromReasoning(summary: string, items: any[]): string {
     // Extract solving strategy from reasoning
-    const combined = summary + ' ' + items.join(' ');
+    const itemTexts = Array.isArray(items) ? items.map(item => 
+      typeof item === 'string' ? item : (item?.content || item?.text || JSON.stringify(item))
+    ) : [];
+    const combined = summary + ' ' + itemTexts.join(' ');
     const strategies = [
       'strategy', 'approach', 'method', 'technique', 'solution', 'solve'
     ];
@@ -619,16 +652,19 @@ Your reasoning should be systematic and detailed. Focus on visual pattern recogn
     return 'Systematic pattern analysis and rule application';
   }
 
-  private extractHintsFromReasoning(summary: string, items: string[]): string[] {
+  private extractHintsFromReasoning(summary: string, items: any[]): string[] {
     // Extract hints from reasoning items
     const hints: string[] = [];
     
     // Add reasoning steps as hints
-    items.forEach((item, index) => {
-      if (item.length > 10) {
-        hints.push(`Step ${index + 1}: ${item.substring(0, 100)}`);
-      }
-    });
+    if (Array.isArray(items)) {
+      items.forEach((item, index) => {
+        const itemText = typeof item === 'string' ? item : (item?.content || item?.text || JSON.stringify(item));
+        if (itemText && itemText.length > 10) {
+          hints.push(`Step ${index + 1}: ${itemText.substring(0, 100)}`);
+        }
+      });
+    }
     
     // If no items, extract from summary
     if (hints.length === 0 && summary) {

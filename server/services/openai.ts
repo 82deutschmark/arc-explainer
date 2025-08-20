@@ -54,6 +54,7 @@ export class OpenAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
+    serviceOpts?: { previousResponseId?: string; maxSteps?: number; reasoningSummary?: 'auto' | 'none'; maxRetries?: number; maxOutputTokens?: number }
   ) {
     const modelName = MODELS[modelKey];
 
@@ -61,126 +62,79 @@ export class OpenAIService {
     const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
     try {
-      let response: any;
       let reasoningLog = null;
       let hasReasoningLog = false;
-      let result: any;
+      let result: any = {};
 
-      // Unified: Use Responses API for all models
       const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
       console.log(`[OpenAI] Using Responses API for model ${modelKey} (reasoning=${isReasoningModel})`);
 
-      const responsesOptions: any = {
+      // Build request to Responses API via helper for consistent parsing
+      const request = {
         model: modelName,
-        input: [{ role: "user", content: prompt }],
-        // Use most of GPT-5's 128k output token capacity for detailed reasoning
-        max_output_tokens: 100000, // Near maximum capacity for comprehensive analysis
-      };
+        input: prompt,
+        reasoning: captureReasoning && isReasoningModel
+          ? { summary: serviceOpts?.reasoningSummary || 'auto' }
+          : undefined,
+        max_steps: serviceOpts?.maxSteps,
+        previous_response_id: serviceOpts?.previousResponseId,
+        temperature: undefined,
+        // pass through visible output token cap to avoid starvation
+        max_output_tokens: serviceOpts?.maxOutputTokens,
+      } as const;
 
-      if (isReasoningModel && captureReasoning) {
-        responsesOptions.reasoning = {
-          effort: "high",
-          summary: "detailed",
-        };
+      const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
+      let lastErr: any = null;
+      let parsedResponse: any = null;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          parsedResponse = await this.callResponsesAPI(request as any);
+          lastErr = null;
+          break;
+        } catch (e) {
+          lastErr = e;
+          const backoffMs = 1000 * Math.pow(2, attempt);
+          console.warn(`[OpenAI] Responses call failed (attempt ${attempt + 1}/${maxRetries + 1}). Backing off ${backoffMs}ms`);
+          if (attempt < maxRetries) {
+            await new Promise(r => setTimeout(r, backoffMs));
+          }
+        }
       }
+      if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Note: Responses API doesn't support temperature/response_format; enforce JSON via prompt
-      console.log(`[OpenAI] Sending request to Responses API with model: ${modelName}`);
-
-      try {
-        response = await openai.responses.create(responsesOptions);
-        console.log(`[OpenAI] Received response from Responses API for model: ${modelName}`);
-        console.log(`[OpenAI] Response type: ${typeof response}, keys: ${Object.keys(response || {}).join(', ')}`);
-      } catch (apiError) {
-        console.error(`[OpenAI] Responses API error for model ${modelName}:`, apiError);
-        throw apiError;
-      }
-
-      // Debug: Log the full response structure to understand format
-      console.log(`[OpenAI] Full ResponsesAPI response structure:`, JSON.stringify(response, null, 2));
-
-      // Extract JSON result from Responses API output_text
-      const rawJson = (response as any).output_text || "";
-      console.log(`[OpenAI] Raw JSON from output_text (${rawJson.length} chars):`, rawJson.substring(0, 500));
-
-      // Also check if content is in output array
-      if ((response as any).output && Array.isArray((response as any).output)) {
-        console.log(`[OpenAI] Output array length: ${(response as any).output.length}`);
-        (response as any).output.forEach((item: any, index: number) => {
-          console.log(`[OpenAI] Output item ${index}:`, { type: item.type, hasContent: !!item.content, hasText: !!item.text });
-        });
-      }
-
+      // Parse output_text JSON
+      const rawJson = parsedResponse.output_text || '';
       try {
         result = rawJson ? JSON.parse(rawJson) : {};
-        console.log(`[OpenAI] Successfully parsed JSON result:`, Object.keys(result || {}).join(', '));
       } catch (e) {
-        console.warn("[OpenAI] Failed to parse JSON output:", rawJson.substring(0, 200), e);
-
-        // Try to extract JSON from output array if output_text failed
-        if ((response as any).output && Array.isArray((response as any).output)) {
-          for (const outputItem of (response as any).output) {
-            if (outputItem.type === "message" && outputItem.content) {
-              console.log(`[OpenAI] Trying to parse JSON from message content:`, outputItem.content.substring(0, 200));
-              try {
-                result = JSON.parse(outputItem.content);
-                console.log(`[OpenAI] Successfully parsed JSON from message content`);
-                break;
-              } catch (msgError) {
-                console.warn(`[OpenAI] Failed to parse JSON from message content:`, msgError);
-              }
-            }
-          }
-        }
-
-        if (!result || Object.keys(result).length === 0) {
-          result = {};
-        }
+        console.warn('[OpenAI] Failed to parse JSON output_text; returning empty result.');
+        result = {};
       }
 
-      // Extract reasoning logs from Responses API
+      // Extract reasoning summary/items
+      const providerResponseId = parsedResponse.id ?? null;
+      const reasoningItems = parsedResponse.output_reasoning?.items ?? [];
+      const providerRawResponse = parsedResponse.raw_response;
+
       if (captureReasoning) {
-        const reasoningParts: string[] = [];
-
-        // Prefer structured reasoning summary if available
-        const outputReasoning = (response as any).output_reasoning;
-        if (outputReasoning?.summary) {
-          if (Array.isArray(outputReasoning.summary)) {
-            reasoningParts.push(outputReasoning.summary.map((s: any) => (s?.text ?? "")).join("\n"));
-          } else if (typeof outputReasoning.summary === 'string') {
-            reasoningParts.push(outputReasoning.summary);
+        const summary = parsedResponse.output_reasoning?.summary;
+        if (summary) {
+          if (Array.isArray(summary)) {
+            reasoningLog = summary.map((s: any) => s?.text ?? '').join('\n');
+          } else if (typeof summary === 'string') {
+            reasoningLog = summary;
           }
-        }
-
-        // Fallback: scan output array entries of type "reasoning"
-        if (reasoningParts.length === 0) {
-          for (const outputItem of (response as any).output ?? []) {
-            if (outputItem.type === "reasoning") {
-              if (Array.isArray(outputItem.summary)) {
-                reasoningParts.push(outputItem.summary.map((s: any) => s.text).join("\n"));
-              } else if (typeof outputItem.summary === 'string') {
-                reasoningParts.push(outputItem.summary);
-              } else if (outputItem.reasoning) {
-                reasoningParts.push(outputItem.reasoning);
-              }
-            }
-          }
-        }
-
-        if (reasoningParts.length) {
-          reasoningLog = reasoningParts.join("\n\n");
-          hasReasoningLog = true;
-          console.log(`[OpenAI] Successfully captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
-        } else {
-          console.log(`[OpenAI] No reasoning log found in Responses API output for model ${modelKey}`);
-          console.log(`[OpenAI] Debug - Response structure:`, JSON.stringify((response as any).output?.slice(0, 3), null, 2));
+          hasReasoningLog = !!reasoningLog;
         }
       }
-      
+
       return {
         model: modelKey,
         reasoningLog,
         hasReasoningLog,
+        providerResponseId,
+        providerRawResponse,
+        reasoningItems,
         ...result,
       };
     } catch (error) {
@@ -253,6 +207,7 @@ export class OpenAIService {
     max_steps?: number;
     temperature?: number;
     previous_response_id?: string;
+    max_output_tokens?: number;
   }): Promise<any> {
     // Call OpenAI Responses API for structured reasoning
     const apiKey = process.env.OPENAI_API_KEY;
@@ -263,7 +218,8 @@ export class OpenAIService {
     console.log('[OPENAI-RESPONSES-DEBUG] Making Responses API call:', {
       model: request.model,
       maxSteps: request.max_steps,
-      hasPreviousId: !!request.previous_response_id
+      hasPreviousId: !!request.previous_response_id,
+      maxOutputTokens: request.max_output_tokens ?? 'default'
     });
 
     try {
@@ -271,7 +227,7 @@ export class OpenAIService {
       const responsesRequest: any = {
         model: request.model,
         input: [{ role: "user", content: request.input }], // FIXED: Must be array format
-        max_output_tokens: 100000, // Near maximum capacity for comprehensive reasoning (GPT-5 supports 128k)
+        max_output_tokens: Math.max(256, request.max_output_tokens ?? 2048),
         ...(request.reasoning && { reasoning: { 
           summary: request.reasoning.summary, 
           effort: "high" // CORRECTED: Use high reasoning effort

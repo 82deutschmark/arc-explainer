@@ -10,6 +10,24 @@ Author: Cascade
 
 This plan migrates all OpenAI usage to the Responses API and updates our parsers, logging, and data model to surface summarized reasoning safely without capturing raw chain-of-thought.
 
+## Progress Update — 2025-08-20 19:25 ET
+
+- Completed Phase 1 (Schema):
+  - Added `provider_response_id` (TEXT), `provider_raw_response` (JSONB, feature-flagged), `reasoning_items` (JSONB) to `explanations` with safe conditional ALTERs.
+  - Extended `PuzzleExplanation` and `dbService.saveExplanation()` to persist these fields (`provider_raw_response` gated by `RAW_RESPONSE_PERSIST`).
+- Completed Phase 2 (Core service wiring):
+  - `server/services/openai.ts` now uses Responses API universally and returns `providerResponseId`, `providerRawResponse`, and `reasoningItems` derived from `output_reasoning.items`.
+  - Parsing prefers `output_text` with fallback to `output[]`; summarized reasoning captured without raw chain-of-thought.
+- Changelog updated under v1.4.0 reflecting schema additions and service wiring.
+- Phase 3 (partial):
+  - Threaded `previousResponseId` through `openai.ts` and forwarded from `saturnVisualService.ts` to support `previous_response_id` chaining.
+  - Added simple exponential backoff retry (1s/2s/4s) in `openai.ts` Responses calls; configurable attempts.
+
+Next up: Phase 3–5
+- Controller wiring: ensure controllers/services pass `previousResponseId` from request payload everywhere.
+- Add explicit request timeout around Responses calls and persist partials on timeout.
+- Implement streaming or polling for reasoning summaries; add `RESPONSES_STREAMING` flag.
+
 ## 1) Audit Findings
 
 - __OpenAI endpoint usage__: `server/services/openai.ts`

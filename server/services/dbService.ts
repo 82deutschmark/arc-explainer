@@ -24,6 +24,10 @@ interface PuzzleExplanation {
   modelName: string;
   reasoningLog?: string | null;
   hasReasoningLog?: boolean;
+  // OpenAI Responses API identifiers and structured reasoning
+  providerResponseId?: string | null;
+  providerRawResponse?: any | null; // persisted only when RAW_RESPONSE_PERSIST=true
+  reasoningItems?: any[] | null; // array of summarized reasoning steps
   apiProcessingTimeMs?: number;
   // Saturn-specific: optional list of image paths (stored as JSON in saturn_images TEXT)
   saturnImages?: string[];
@@ -102,6 +106,10 @@ const createTablesIfNotExist = async () => {
         model_name TEXT,
         reasoning_log TEXT,
         has_reasoning_log BOOLEAN DEFAULT FALSE,
+        -- Responses API fields
+        provider_response_id TEXT,
+        provider_raw_response JSONB,
+        reasoning_items JSONB,
         api_processing_time_ms INTEGER,
         saturn_images TEXT,
         -- New columns for Saturn verbose persistence
@@ -120,6 +128,30 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN alien_meaning_confidence INTEGER;
         END IF;
         
+        -- Add provider_response_id column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'provider_response_id') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN provider_response_id TEXT;
+        END IF;
+
+        -- Add provider_raw_response column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'provider_raw_response') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN provider_raw_response JSONB;
+        END IF;
+
+        -- Add reasoning_items column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                     WHERE table_name = 'explanations' 
+                     AND column_name = 'reasoning_items') 
+        THEN
+          ALTER TABLE explanations ADD COLUMN reasoning_items JSONB;
+        END IF;
+
         -- Add api_processing_time_ms column if it doesn't exist
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                      WHERE table_name = 'explanations' 
@@ -235,18 +267,25 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       modelName,
       reasoningLog,
       hasReasoningLog,
+      providerResponseId,
+      providerRawResponse,
+      reasoningItems,
       apiProcessingTimeMs,
       saturnImages
     } = explanation;
     
+    const shouldPersistRaw = process.env.RAW_RESPONSE_PERSIST === 'true';
+
     const result = await client.query(
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
-        reasoning_log, has_reasoning_log, api_processing_time_ms, saturn_images,
+        reasoning_log, has_reasoning_log,
+        provider_response_id, provider_raw_response, reasoning_items,
+        api_processing_time_ms, saturn_images,
         saturn_log, saturn_events, saturn_success,
         predicted_output_grid, is_prediction_correct, prediction_accuracy_score)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
        RETURNING id`,
       [
         puzzleId,
@@ -259,6 +298,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         modelName || 'unknown',
         reasoningLog || null,
         hasReasoningLog || false,
+        providerResponseId || null,
+        shouldPersistRaw ? (providerRawResponse ?? null) : null,
+        reasoningItems ? JSON.stringify(reasoningItems) : null,
         apiProcessingTimeMs || null,
         saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null,
         explanation.saturnLog || null,
