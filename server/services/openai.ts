@@ -20,6 +20,7 @@ const MODELS = {
   "o3-2025-04-16": "o3-2025-04-16",
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
   "gpt-5-2025-08-07": "gpt-5",
+  "gpt-5-chat-latest": "gpt-5-chat-latest",
   "gpt-5-mini-2025-08-07": "gpt-5-mini",
   "gpt-5-nano-2025-08-07": "gpt-5-nano",
 } as const;
@@ -37,6 +38,7 @@ const MODELS_WITH_REASONING = new Set([
   "o4-mini-2025-04-16", 
   "o3-2025-04-16",
   "gpt-5-2025-08-07",
+  "gpt-5-chat-latest",
   "gpt-5-mini-2025-08-07",
   "gpt-5-nano-2025-08-07",
 ]);
