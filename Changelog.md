@@ -39,6 +39,11 @@ August 20, 2025
   - **Anthropic Error Handling**: Fixed hardcoded alien fields in error responses to respect template selection
   - **Gemini Service Cleanup**: Removed 200+ lines of duplicated prompt logic, now properly uses prompt builder
   - **Template Respect**: All AI services now properly respect selected prompt templates instead of forcing alien mode
+- **GPT-5 Models Integration**: Verified and debugged new GPT-5 model endpoints for proper ResponsesAPI usage
+  - **ResponsesAPI Configuration**: All GPT-5 models correctly use OpenAI's Responses API instead of ChatCompletions
+  - **Enhanced Debugging**: Added comprehensive logging for GPT-5 model requests and responses
+  - **WebSocket Fix**: Fixed development mode WebSocket connection issue (ws://localhost:undefined)
+  - **E2E Validation**: Confirmed GPT-5 models are properly sending requests to OpenAI and generating reasoning logs
 
 August 19, 2025 11:11pm
 
