@@ -333,10 +333,13 @@ export default function PuzzleOverview() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setFeedbackModalOpen(true)}
+                        onClick={() => {
+                          setSelectedPuzzleId('');
+                          setFeedbackModalOpen(true);
+                        }}
                         className="text-xs text-blue-600 hover:text-blue-800"
                       >
-                        View all models →
+                        View all feedback →
                       </Button>
                     </div>
                   )}
@@ -412,10 +415,13 @@ export default function PuzzleOverview() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setFeedbackModalOpen(true)}
+                        onClick={() => {
+                          setSelectedPuzzleId('');
+                          setFeedbackModalOpen(true);
+                        }}
                         className="text-xs text-red-600 hover:text-red-800"
                       >
-                        View all models →
+                        View all feedback →
                       </Button>
                     </div>
                   )}

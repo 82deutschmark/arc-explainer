@@ -190,7 +190,7 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
                           : 'bg-red-50 border-red-200 text-red-700'
                     }`}
                   >
-                    Accuracy: {Math.round(result.predictionAccuracyScore * 100)}%
+                    Trustworthiness: {Math.round(result.predictionAccuracyScore * 100)}%
                   </Badge>
                 )}
                 {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
