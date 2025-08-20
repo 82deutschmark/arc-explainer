@@ -504,6 +504,9 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.saturn_log              AS "saturnLog",
          e.saturn_events           AS "saturnEvents",
          e.saturn_success          AS "saturnSuccess",
+         e.predicted_output_grid   AS "predictedOutputGrid",
+         e.is_prediction_correct   AS "isPredictionCorrect",
+         e.prediction_accuracy_score AS "predictionAccuracyScore",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
@@ -513,10 +516,11 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
       [puzzleId]
     );
 
-    // Parse JSON fields for Saturn data
+    // Parse JSON fields for Saturn data and validation
     const processedRows = result.rows.map(row => ({
       ...row,
       saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
+      predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
     }));
     
     return processedRows.length > 0 ? processedRows : [];
@@ -560,6 +564,9 @@ const getExplanationById = async (explanationId: number) => {
          e.saturn_log              AS "saturnLog",
          e.saturn_events           AS "saturnEvents",
          e.saturn_success          AS "saturnSuccess",
+         e.predicted_output_grid   AS "predictedOutputGrid",
+         e.is_prediction_correct   AS "isPredictionCorrect",
+         e.prediction_accuracy_score AS "predictionAccuracyScore",
          e.created_at              AS "createdAt"
        FROM explanations e
        WHERE e.id = $1`,
@@ -568,10 +575,11 @@ const getExplanationById = async (explanationId: number) => {
 
     if (result.rows.length > 0) {
       const row = result.rows[0];
-      // Parse JSON fields for Saturn data
+      // Parse JSON fields for Saturn data and validation
       return {
         ...row,
         saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
+        predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
       };
     }
     return null;
