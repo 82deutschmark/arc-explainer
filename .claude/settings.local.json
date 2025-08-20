@@ -11,7 +11,8 @@
       "Bash(npm run check:*)",
       "Bash(npx tsc:*)",
       "Bash(npm install:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(echo \"Exit code: $?\")"
     ],
     "deny": [],
     "ask": []
