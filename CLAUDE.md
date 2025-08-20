@@ -128,3 +128,50 @@ app.get("*", (req, res) => {
 
 ### WebSocket Integration
 Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
+- Endpoint difference
+
+Chat Completions: /v1/chat/completions
+
+Responses API: /v1/responses
+
+Output location
+
+Chat Completions: text lives in choices[0].message.content
+
+Responses: visible answer lives in output_text or inside output[], reasoning lives in output_reasoning
+
+Reasoning capture
+
+Chat Completions: no structured reasoning, only free-form text if the model decides to include it
+
+Responses: dedicated output_reasoning.summary and output_reasoning.items[] fields
+
+Token accounting
+
+Chat Completions: max_tokens controls the final answer only
+
+Responses: reasoning tokens and visible output tokens are separate; must set max_output_tokens or you risk only getting reasoning with no final text
+
+Streaming
+
+Chat Completions: stream only text deltas for choices[].delta.content
+
+Responses: streams both reasoning and output chunks, with separate message types (reasoning-summary, output_text, etc.)
+
+Chaining
+
+Chat Completions: manually manage conversation history
+
+Responses: use previous_response_id to continue reasoning chains without resending full history
+
+Parsing logic
+
+Chat Completions: simple—always look at choices[0].message.content
+
+Responses: must parse multiple top-level keys: output_text, output[], output_reasoning, response.id
+
+Failure modes
+
+Chat Completions: usually just truncates answer if token cap too small
+
+Responses: if misconfigured, you can get only reasoning and no visible reply, or nothing if your parser ignores output[]

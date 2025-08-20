@@ -9,6 +9,14 @@ August 20, 2025
 
 ## Version 1.4.0 — Saturn Visual Solver Complete Redesign (2025-08-20)
 
+### Critical OpenAI Responses API Integration Fixes
+- __Fixed OpenAI Responses API Integration (Code by Claude Code)__: Resolved critical parsing and streaming issues with OpenAI's Responses API
+  - **Fixed Response Data Extraction**: Corrected Saturn service to properly extract `reasoningLog`, `reasoningItems`, and `providerResponseId` from OpenAI service responses
+  - **Enhanced WebSocket Streaming**: Fixed reasoning data streaming to properly handle structured reasoning items and display them in real-time
+  - **Robust Data Type Handling**: Added proper type checking and fallbacks for reasoning items (string, object, or array formats)
+  - **Database Integration**: Fixed persistence of new Responses API fields (`providerResponseId`, `reasoningItems`, `providerRawResponse`)
+  - **Improved Error Handling**: Enhanced error logging and debugging for Responses API calls with detailed field inspection
+
 ### Major UI/UX Overhaul
 - __Complete Saturn Visual Solver Redesign (Code by Claude Code)__: Completely redesigned the Saturn Visual Solver page for better clarity and user experience
   - **Streamlined Single-Column Layout**: Replaced complex two-column grid with clean, focused single-column design
@@ -47,6 +55,12 @@ August 20, 2025
   - **Real-Time Streaming**: WebSocket integration streams reasoning summaries and step updates
   - **Step Progress Tracking**: Derives step counts from reasoning items rather than hardcoded values
 
+### Chaining & Reliability (Responses API)
+- **Previous Response Chaining (Code by Cascade)**: `server/services/openai.ts` now accepts `previousResponseId` and threads it to the Responses API via `previous_response_id`.
+- **Simple Retry with Backoff (Code by Cascade)**: Added exponential backoff retries (1s/2s/4s) for transient Responses API errors; configurable attempts.
+- **Saturn Forwarding (Code by Cascade)**: `server/services/saturnVisualService.ts` forwards `previousResponseId`, `maxSteps`, and reasoning summary settings to `openaiService.analyzePuzzleWithModel()`.
+- **Type Safety Fix (Code by Cascade)**: Resolved readonly array assignment for `saturnImages` in Saturn Responses path.
+
 ### Technical Improvements
 - **State Management**: Enhanced Saturn progress hook with reasoning log tracking and history management
 - **Memory Management**: Implemented proper cleanup for timeout handlers and WebSocket connections
@@ -54,6 +68,14 @@ August 20, 2025
 - **Performance**: Optimized log rendering and real-time updates for better responsiveness
 - **API Architecture**: Added helper methods for extracting patterns, strategies, and confidence from reasoning data
 - **Database Integration**: Enhanced explanation storage with reasoning summaries and structured analysis data
+  
+### Database Schema Additions (Responses API)
+- Added new columns to `explanations` for OpenAI Responses API migration:
+  - `provider_response_id` (TEXT)
+  - `provider_raw_response` (JSONB) — persisted only when `RAW_RESPONSE_PERSIST=true`
+  - `reasoning_items` (JSONB) — structured summarized reasoning steps
+- Safe migrations: conditionally `ALTER TABLE` if columns are missing.
+- `server/services/dbService.ts` now persists these fields from OpenAI service responses.
  - **OpenAI Responses API Migration Plan (Docs)**: Added `docs/OpenAI_Responses_Migration_Plan_2025-08-20.md` outlining full migration from Chat Completions to Responses, parser updates for `output_text`/`output[]`/`output_reasoning`, token budgeting with `max_output_tokens`, session chaining via `previous_response_id`, logging raw JSON for failing runs, and streaming/polling strategy. Initial audit: `server/services/openai.ts` still uses Chat Completions for non-reasoning models and parses `choices[0].message.content`; DB lacks fields for `provider_response_id`, `provider_raw_response`, and `reasoning_items`.
 
 ## Version 1.3.9 — Enhanced Solver Mode Validation & UI Refactoring (2025-08-20)
