@@ -96,31 +96,8 @@ export class GeminiService {
     // Cascade: pass PromptOptions so backend can select emoji palette and omit answer if requested
     const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
-    const trainingExamples = task.train
-      .map(
-        (example, i) =>
-          `Example ${i + 1}:\nInput: ${JSON.stringify(example.input)}\nOutput: ${JSON.stringify(example.output)}`,
-      )
-      .join("\n\n");
-
-    // Build emoji map section if needed (only for template-based prompts with emoji support)
-    const emojiMapSection = (selectedTemplate && selectedTemplate.emojiMapIncluded) ? `
-
-${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:' : ''}
-
-0: ⬛ (no/nothing/negative)
-1: ✅ (yes/positive/agreement)
-2: 👽 (alien/them/we)
-3: 👤 (human/us/you)
-4: 🪐 (their planet/home)
-5: 🌍 (human planet/Earth)
-6: 🛸 (their ships/travel)
-7: ☄️ (danger/bad/problem)
-8: ♥ (peace/friendship/good)
-9: ⚠️ (warning/attention/important)` : '';
-
-    // Modify prompt to include reasoning capture if requested
-    const reasoningPrompt = captureReasoning ? 
+    // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
+    const prompt = captureReasoning ? 
       `${basePrompt}
 
 IMPORTANT: Before providing your final JSON response, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
@@ -130,100 +107,6 @@ IMPORTANT: Before providing your final JSON response, please show your step-by-s
 </thinking>
 
 Then provide your final structured JSON response.` : basePrompt;
-    
-    const prompt = `${reasoningPrompt}
-
-TRAINING EXAMPLES${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? ' (what the aliens taught us)' : ' (input-output pairs for analysis)'}:
-${trainingExamples}
-
-TEST CASE${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? ' (the aliens\' question and our correct answer, but we don\'t understand why the answer is correct)' : ' (input and correct answer for analysis)'}:
-Input: ${JSON.stringify(task.test[0].input)}
-Correct Answer: ${JSON.stringify(task.test[0].output)}
-
-Your job:
-1. Speculate about WHY this solution is correct by understanding these critical concepts:
-# ARC-AGI Transformation Types
-
-## Geometric Transformations
-- Rotation (90°, 180°, 270°)
-- Reflection (horizontal, vertical, diagonal)
-- Translation (moving objects)
-- Scaling (resize objects)
-
-## Pattern Operations
-- Pattern completion
-- Pattern extension
-- Pattern repetition
-- Sequence prediction
-
-## Logical Operations
-- AND operations
-- OR operations
-- XOR operations
-- NOT operations
-- Conditional logic
-
-## Grid Operations
-- Grid splitting (horizontal, vertical, quadrant)
-- Grid merging
-- Grid overlay
-- Grid subtraction
-
-## Object Manipulation
-- Object counting
-- Object sorting
-- Object grouping
-- Object filtering
-
-## Spatial Relationships
-- Inside/outside relationships
-- Adjacent/touching relationships
-- Containment relationships
-- Proximity relationships
-
-## Color Operations
-- Color mapping
-- Color replacement
-- Color pattern matching
-- Color logic operations
-
-## Shape Operations
-- Shape detection
-- Shape transformation
-- Shape combination
-- Shape decomposition
-
-## Rule Inference
-- Single rule application
-- Multiple rule application
-- Rule interaction
-- Rule generalization
-
-## Abstract Reasoning
-- Symbol interpretation
-- Semantic relationships
-- Conceptual mapping
-- Abstract pattern recognition
-
-
-${(selectedTemplate && selectedTemplate.emojiMapIncluded) ? '2. Explain it in simple terms an idiot could understand.  The user sees the puzzle as emojis, NOT AS NUMBERS.  \n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved.' : '2. Explain it in simple terms for novices to understand.'}${emojiMapSection}
-
-${captureReasoning ? 'After your <thinking> section, respond' : (selectedTemplate && selectedTemplate.emojiMapIncluded) ? 'Respond' : 'Please respond'} in this JSON format:
-${JSON.stringify((selectedTemplate && selectedTemplate.emojiMapIncluded) ? {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
-  "solvingStrategy": "Step-by-step how to solve it, for novices.  If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "alienMeaning": "What the aliens might be trying to communicate, based on the logic used and the symbols.  Speculate as to if they are angry with us or have hostile intentions.",
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
-  "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about your interpretation of the alien 'message' being presented"
-} : {
-  "patternDescription": "Simple explanation of what ARC-AGI style transformations you found",
-  "solvingStrategy": "Step-by-step how to solve it, for novices",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation"
-}, null, 2)}
-
-${captureReasoning ? 'IMPORTANT: Include your <thinking> section first, then provide the JSON response. The JSON must be valid and complete.' : 'IMPORTANT: Your response MUST be a single, valid JSON object. Do not include any other text, explanations, or markdown code fences. The entire response must start with \'{\' and end with \'}\'.'}`
 
     try {
       const model = genAI.getGenerativeModel({ model: modelName });
@@ -391,13 +274,13 @@ ${captureReasoning ? 'IMPORTANT: Include your <thinking> section first, then pro
     const prompt = captureReasoning ? 
       `${basePrompt}
 
-IMPORTANT: Before providing your final answer, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+IMPORTANT: Before providing your final JSON response, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
 
 <thinking>
 [Your detailed step-by-step analysis will go here]
 </thinking>
 
-Then provide your final structured response.` : basePrompt;
+Then provide your final structured JSON response.` : basePrompt;
 
     // Gemini uses parts array format with text content
     const messageFormat = {

@@ -67,7 +67,7 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75, captureReasoning = true, promptId = "alienCommunication", customPrompt, emojiSetKey, omitAnswer } = req.body;
+    const { temperature = 0.75, captureReasoning = true, promptId = "standardExplanation", customPrompt, emojiSetKey, omitAnswer } = req.body;
     
     // Log the request with custom prompt handling
     if (customPrompt) {
