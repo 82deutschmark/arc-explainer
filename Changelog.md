@@ -55,6 +55,10 @@ August 20, 2025
   - **Real-Time Streaming**: WebSocket integration streams reasoning summaries and step updates
   - **Step Progress Tracking**: Derives step counts from reasoning items rather than hardcoded values
 
+### Additional Fixes (2025-08-20)
+- **Visible Output Token Cap (Code by Cascade)**: Plumbed `max_output_tokens` through `openaiService.analyzePuzzleWithModel()` into the Responses API body and set a sensible default from `saturnVisualService.ts` to prevent final answer starvation.
+- **WS Message Types (Code by Cascade)**: Standardized WebSocket payloads with `messageType` fields: `reasoning-summary`, `reasoning-step`, and `final-output` to improve client-side handling and UI clarity.
+
 ### Chaining & Reliability (Responses API)
 - **Previous Response Chaining (Code by Cascade)**: `server/services/openai.ts` now accepts `previousResponseId` and threads it to the Responses API via `previous_response_id`.
 - **Simple Retry with Backoff (Code by Cascade)**: Added exponential backoff retries (1s/2s/4s) for transient Responses API errors; configurable attempts.
