@@ -42,7 +42,7 @@ export default function PuzzleExaminer() {
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [omitAnswer, setOmitAnswer] = useState(false); // Cascade: researcher option to hide correct answer in prompt
+  const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
 
   // Early return if no taskId
   if (!taskId) {
@@ -73,6 +73,14 @@ export default function PuzzleExaminer() {
     isAnalyzing,
     analyzerError,
     isProviderProcessing,
+    // GPT-5 reasoning parameters
+    reasoningEffort,
+    setReasoningEffort,
+    reasoningVerbosity,
+    setReasoningVerbosity,
+    reasoningSummaryType,
+    setReasoningSummaryType,
+    isGPT5ReasoningModel,
   } = useAnalysisResults({
     taskId,
     refetchExplanations,
@@ -402,6 +410,96 @@ export default function PuzzleExaminer() {
               </span>
             </div>
           </div>
+
+          {/* GPT-5 Reasoning Parameters */}
+          {currentModelKey && isGPT5ReasoningModel(currentModelKey) && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                <Brain className="h-4 w-4" />
+                GPT-5 Reasoning Parameters
+              </h5>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Effort Control */}
+                <div>
+                  <Label htmlFor="reasoning-effort" className="text-sm font-medium text-blue-700">
+                    Effort Level
+                  </Label>
+                  <Select 
+                    value={reasoningEffort} 
+                    onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}
+                    disabled={isAnalyzing}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select effort level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="minimal">Minimal</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {reasoningEffort === 'minimal' && 'Basic reasoning'}
+                    {reasoningEffort === 'low' && 'Light reasoning'}
+                    {reasoningEffort === 'medium' && 'Moderate reasoning'}
+                    {reasoningEffort === 'high' && 'Intensive reasoning'}
+                  </p>
+                </div>
+
+                {/* Verbosity Control */}
+                <div>
+                  <Label htmlFor="reasoning-verbosity" className="text-sm font-medium text-blue-700">
+                    Verbosity
+                  </Label>
+                  <Select 
+                    value={reasoningVerbosity} 
+                    onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}
+                    disabled={isAnalyzing}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select verbosity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {reasoningVerbosity === 'low' && 'Concise reasoning logs'}
+                    {reasoningVerbosity === 'medium' && 'Balanced detail'}
+                    {reasoningVerbosity === 'high' && 'Detailed reasoning logs'}
+                  </p>
+                </div>
+
+                {/* Summary Control */}
+                <div>
+                  <Label htmlFor="reasoning-summary" className="text-sm font-medium text-blue-700">
+                    Summary
+                  </Label>
+                  <Select 
+                    value={reasoningSummaryType} 
+                    onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}
+                    disabled={isAnalyzing}
+                  >
+                    <SelectTrigger className="w-full mt-1">
+                      <SelectValue placeholder="Select summary type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Auto</SelectItem>
+                      <SelectItem value="detailed">Detailed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {reasoningSummaryType === 'auto' && 'Automatic summary generation'}
+                    {reasoningSummaryType === 'detailed' && 'Comprehensive summary'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
 
           {/* Analysis Results */}

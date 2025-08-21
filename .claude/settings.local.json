@@ -13,9 +13,19 @@
       "Bash(npm install:*)",
       "Bash(cmd /c:*)",
       "Bash(echo \"Exit code: $?\")",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(C:WindowsSystem32taskkill.exe /PID 26904 /F)",
+      "Bash(/c/Windows/System32/taskkill.exe /PID 26904 /F)",
+      "Bash(powershell:*)",
+      "Bash(del test-gpt5-responses.js)",
+      "Bash(rm:*)",
+      "Bash(del \"D:\\1Projects\\arc-explainer\\test-parser.js\")",
+      "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "D:\\"
+    ]
   }
 }
