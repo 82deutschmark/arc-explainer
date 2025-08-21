@@ -8,6 +8,22 @@
  
 August 21, 2025
 
+## Version 1.4.6 — Markdown JSON Response Parsing Fix (2025-08-21)
+
+### Critical Bug Fixes
+- **OpenAI Markdown JSON Parsing (Code by Claude Code)**: Fixed specific OpenAI models wrapping JSON responses in markdown code blocks
+  - **Affected Models**: `gpt-5-chat-latest` and `gpt-4.1-2025-04-14` were returning responses as ````json {"patternDescription": ...} ``` instead of clean JSON
+  - **Root Cause**: These models interpret JSON format requests as markdown-formatted responses, but OpenAI service only did direct JSON parsing
+  - **Solution**: Added three-tier fallback parsing: direct JSON → markdown code block extraction → regex JSON search
+  - **Benefits**: Now handles both clean JSON (other models) and markdown-wrapped JSON (problematic models) seamlessly
+  - **Compatibility**: Maintains existing functionality while adding resilience for edge-case model behaviors
+
+### Technical Implementation
+- **Enhanced JSON Parsing**: Added markdown code block detection with regex `/```(?:json\s*)?([^`]*?)```/s`
+- **Fallback Strategy**: Similar to Anthropic service's robust JSON extraction approach
+- **Debug Logging**: Added detailed logging to track parsing attempts and identify future format changes
+- **Error Handling**: Graceful degradation through multiple parsing strategies
+
 ## Version 1.4.5 — OpenAI Response Parsing Fixes (2025-08-21)
 
 ### Critical Bug Fixes
