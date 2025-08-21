@@ -35,14 +35,14 @@ const MODELS_WITHOUT_TEMPERATURE = new Set([
   "gpt-5-nano-2025-08-07",
 ]);
 
-// Models that support reasoning logs (o3/o4 series)
+// Older models that support reasoning logs (o3/o4 series)
 const O3_O4_REASONING_MODELS = new Set([
   "o3-mini-2025-01-31",
   "o4-mini-2025-04-16", 
   "o3-2025-04-16",
 ]);
 
-// GPT-5 models that support advanced reasoning parameters
+// Newest GPT-5 models that support advanced reasoning parameters
 const GPT5_REASONING_MODELS = new Set([
   "gpt-5-2025-08-07",
   "gpt-5-mini-2025-08-07",
@@ -71,7 +71,17 @@ export class OpenAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: { previousResponseId?: string; maxSteps?: number; reasoningSummary?: 'auto' | 'none'; maxRetries?: number; maxOutputTokens?: number }
+    serviceOpts?: { 
+      previousResponseId?: string; 
+      maxSteps?: number; 
+      reasoningSummary?: 'auto' | 'none'; 
+      maxRetries?: number; 
+      maxOutputTokens?: number;
+      // GPT-5 reasoning parameters
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
+    }
   ) {
     const modelName = MODELS[modelKey];
 
@@ -96,9 +106,9 @@ export class OpenAIService {
           // GPT-5 models support advanced reasoning parameters
           reasoningConfig = {
             text: { format: 'text' },
-            effort: 'medium',
-            verbosity: 'medium',
-            summary: serviceOpts?.reasoningSummary || 'auto'
+            effort: serviceOpts?.reasoningEffort || 'medium',
+            verbosity: serviceOpts?.reasoningVerbosity || 'medium',
+            summary: serviceOpts?.reasoningSummaryType || serviceOpts?.reasoningSummary || 'auto'
           };
         } else if (isO3O4Model) {
           // o3/o4 models use simpler reasoning config
@@ -198,6 +208,11 @@ export class OpenAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
+    serviceOpts?: { 
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
+    }
   ) {
     const modelName = MODELS[modelKey];
 
@@ -209,12 +224,24 @@ export class OpenAIService {
     let providerSpecificNotes: string[] = [];
 
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
+    
     messageFormat = {
       model: modelName,
       input: [{ role: "user", content: prompt }],
       max_output_tokens: 100000, // Near maximum capacity for comprehensive analysis
       ...(isReasoningModel
-        ? { reasoning: { effort: "high", summary: "detailed" } }
+        ? { 
+            reasoning: isGPT5Model 
+              ? { 
+                  text: { format: 'text' },
+                  effort: serviceOpts?.reasoningEffort || "high", 
+                  verbosity: serviceOpts?.reasoningVerbosity || "medium",
+                  summary: serviceOpts?.reasoningSummaryType || "detailed" 
+                }
+              : { summary: "detailed" }
+          }
         : {})
     };
     providerSpecificNotes.push("Uses OpenAI Responses API");
