@@ -230,6 +230,18 @@ export class OpenAIService {
         }
       }
 
+      // Debug logging to catch reasoning data type issues
+      if (reasoningLog && typeof reasoningLog !== 'string') {
+        console.error(`[OpenAI] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
+        reasoningLog = String(reasoningLog); // Force to string
+      }
+      
+      if (reasoningItems && !Array.isArray(reasoningItems)) {
+        console.error(`[OpenAI] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
+      }
+      
+      console.log(`[OpenAI] Returning reasoning data - reasoningLog type: ${typeof reasoningLog}, length: ${reasoningLog?.length || 0}`);
+
       return {
         model: modelKey,
         reasoningLog,
