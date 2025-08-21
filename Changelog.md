@@ -8,6 +8,32 @@
  
 August 21, 2025
 
+## Version 1.4.4 — GPT-5 Reasoning Parameters Controls (2025-08-21)
+
+### GPT-5 Reasoning Enhancement
+- **GPT-5 Reasoning Parameters UI (Code by Claude Code)**: Added user controls for GPT-5 reasoning parameters in PuzzleExaminer interface
+  - **Conditional UI Controls**: Reasoning parameter controls only appear when GPT-5 reasoning models are selected (gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07)
+  - **Effort Level Control**: Dropdown selector with options: minimal, low, medium (default), high - controls reasoning depth
+  - **Verbosity Control**: Dropdown selector with options: low, medium (default), high - controls reasoning log detail
+  - **Summary Control**: Dropdown selector with options: auto (default), detailed - controls summary generation
+  - **User-Friendly Descriptions**: Each parameter includes helpful descriptions explaining their impact
+  - **Responsive Design**: Grid layout adapts to screen size, maintains consistent styling with existing temperature controls
+
+### Backend Integration
+- **OpenAI Service Enhancement (Code by Claude Code)**: Extended reasoning parameter support throughout the backend
+  - **Parameter Flow**: Frontend → useAnalysisResults hook → API controller → OpenAI service → Responses API
+  - **Backward Compatibility**: Maintains existing temperature controls and default reasoning values (medium/medium/auto)
+  - **Type Safety**: Proper TypeScript interfaces for reasoning parameters across frontend and backend
+  - **API Enhancement**: Extended `/api/puzzle/analyze` endpoint to accept reasoningEffort, reasoningVerbosity, reasoningSummaryType parameters
+  - **Prompt Preview Support**: Updated prompt preview functionality to include reasoning parameters
+
+### Technical Implementation
+- **State Management**: Added reasoning parameter state to useAnalysisResults hook with proper default values
+- **Conditional Rendering**: GPT-5 model detection logic ensures controls only show for appropriate models
+- **Parameter Validation**: Backend validates and applies reasoning parameters only for GPT-5 reasoning models
+- **UI/UX Consistency**: Blue color scheme distinguishes reasoning controls from temperature controls
+- **Documentation**: Comprehensive implementation plan created at `docs/gpt5-reasoning-parameters-implementation-aug21.md`
+
 ## Version 1.4.3 — GPT-5 Responses API Migration Complete (2025-08-21)
 
 ### OpenAI GPT-5 Models Fixed

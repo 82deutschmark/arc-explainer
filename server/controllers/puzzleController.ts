@@ -67,7 +67,18 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.2, captureReasoning = true, promptId = "solver", customPrompt, emojiSetKey, omitAnswer = true } = req.body;
+    const { 
+      temperature = 0.2, 
+      captureReasoning = true, 
+      promptId = "solver", 
+      customPrompt, 
+      emojiSetKey, 
+      omitAnswer = true,
+      // GPT-5 reasoning parameters
+      reasoningEffort,
+      reasoningVerbosity, 
+      reasoningSummaryType
+    } = req.body;
     
     // Log the request with custom prompt handling
     if (customPrompt) {
@@ -87,7 +98,13 @@ export const puzzleController = {
     if (emojiSetKey) options.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
     
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options);
+    // Build service options including reasoning parameters
+    const serviceOpts: any = {};
+    if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
+    if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
+    if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+    
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options, serviceOpts);
     
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
@@ -143,7 +160,18 @@ export const puzzleController = {
   async previewPrompt(req: Request, res: Response) {
     try {
       const { provider, taskId } = req.params;
-      const { promptId = "solver", customPrompt, temperature = 0.2, captureReasoning = true, emojiSetKey, omitAnswer = true } = req.body;
+      const { 
+        promptId = "solver", 
+        customPrompt, 
+        temperature = 0.2, 
+        captureReasoning = true, 
+        emojiSetKey, 
+        omitAnswer = true,
+        // GPT-5 reasoning parameters  
+        reasoningEffort,
+        reasoningVerbosity,
+        reasoningSummaryType
+      } = req.body;
 
       console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
 
@@ -164,6 +192,12 @@ export const puzzleController = {
       if (emojiSetKey) options.emojiSetKey = emojiSetKey;
       if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
 
+      // Build service options including reasoning parameters
+      const serviceOpts: any = {};
+      if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
+      if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
+      if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+
       // Generate provider-specific prompt preview
       const previewData = await aiService.generatePromptPreview(
         puzzle, 
@@ -172,7 +206,8 @@ export const puzzleController = {
         captureReasoning, 
         promptId, 
         customPrompt,
-        options
+        options,
+        serviceOpts
       );
 
       res.json(formatResponse.success(previewData));
