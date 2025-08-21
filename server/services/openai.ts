@@ -19,10 +19,10 @@ const MODELS = {
   "o4-mini-2025-04-16": "o4-mini-2025-04-16",
   "o3-2025-04-16": "o3-2025-04-16",
   "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
-  "gpt-5-2025-08-07": "gpt-5",
+  "gpt-5-2025-08-07": "gpt-5-2025-08-07",
   "gpt-5-chat-latest": "gpt-5-chat-latest",
-  "gpt-5-mini-2025-08-07": "gpt-5-mini",
-  "gpt-5-nano-2025-08-07": "gpt-5-nano",
+  "gpt-5-mini-2025-08-07": "gpt-5-mini-2025-08-07",
+  "gpt-5-nano-2025-08-07": "gpt-5-nano-2025-08-07",
 } as const;
 
 // Models that do NOT support temperature parameter
@@ -30,17 +30,34 @@ const MODELS_WITHOUT_TEMPERATURE = new Set([
   "o3-mini-2025-01-31",
   "o4-mini-2025-04-16",
   "o3-2025-04-16",
+  "gpt-5-2025-08-07",
+  "gpt-5-mini-2025-08-07",
+  "gpt-5-nano-2025-08-07",
 ]);
 
-// Models that support reasoning logs (OpenAI reasoning models)
-const MODELS_WITH_REASONING = new Set([
+// Models that support reasoning logs (o3/o4 series)
+const O3_O4_REASONING_MODELS = new Set([
   "o3-mini-2025-01-31",
   "o4-mini-2025-04-16", 
   "o3-2025-04-16",
+]);
+
+// GPT-5 models that support advanced reasoning parameters
+const GPT5_REASONING_MODELS = new Set([
   "gpt-5-2025-08-07",
-  "gpt-5-chat-latest",
   "gpt-5-mini-2025-08-07",
   "gpt-5-nano-2025-08-07",
+]);
+
+// GPT-5 Chat models (support temperature, no reasoning)
+const GPT5_CHAT_MODELS = new Set([
+  "gpt-5-chat-latest",
+]);
+
+// All models that support reasoning
+const MODELS_WITH_REASONING = new Set([
+  ...O3_O4_REASONING_MODELS,
+  ...GPT5_REASONING_MODELS,
 ]);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -49,7 +66,7 @@ export class OpenAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -67,20 +84,44 @@ export class OpenAIService {
       let result: any = {};
 
       const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
-      console.log(`[OpenAI] Using Responses API for model ${modelKey} (reasoning=${isReasoningModel})`);
+      const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+      const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
+      const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+      console.log(`[OpenAI] Using Responses API for model ${modelKey} (reasoning=${isReasoningModel}, gpt5=${isGPT5Model}, o3o4=${isO3O4Model}, gpt5chat=${isGPT5ChatModel})`);
+
+      // Build reasoning config based on model type
+      let reasoningConfig = undefined;
+      if (captureReasoning && isReasoningModel) {
+        if (isGPT5Model) {
+          // GPT-5 models support advanced reasoning parameters
+          reasoningConfig = {
+            text: { format: 'text' },
+            effort: 'medium',
+            verbosity: 'medium',
+            summary: serviceOpts?.reasoningSummary || 'auto'
+          };
+        } else if (isO3O4Model) {
+          // o3/o4 models use simpler reasoning config
+          reasoningConfig = {
+            summary: serviceOpts?.reasoningSummary || 'auto'
+          };
+        }
+      }
 
       // Build request to Responses API via helper for consistent parsing
       const request = {
         model: modelName,
         input: prompt,
-        reasoning: captureReasoning && isReasoningModel
-          ? { summary: serviceOpts?.reasoningSummary || 'auto' }
-          : undefined,
+        reasoning: reasoningConfig,
         max_steps: serviceOpts?.maxSteps,
         previous_response_id: serviceOpts?.previousResponseId,
-        temperature: undefined,
+        // GPT-5 Chat models support temperature and top_p
+        ...(isGPT5ChatModel && {
+          temperature: temperature || 0.2,
+          top_p: 1.00
+        }),
         // pass through visible output token cap to avoid starvation
-        max_output_tokens: serviceOpts?.maxOutputTokens,
+        max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 16384 : undefined),
       } as const;
 
       const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
@@ -152,7 +193,7 @@ export class OpenAIService {
   async generatePromptPreview(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -227,11 +268,9 @@ export class OpenAIService {
       const responsesRequest: any = {
         model: request.model,
         input: [{ role: "user", content: request.input }], // FIXED: Must be array format
-        max_output_tokens: Math.max(256, request.max_output_tokens ?? 2048),
-        ...(request.reasoning && { reasoning: { 
-          summary: request.reasoning.summary, 
-          effort: "high" // CORRECTED: Use high reasoning effort
-        }}),
+        max_output_tokens: Math.max(256, request.max_output_tokens ?? 128000),
+        store: true,
+        ...(request.reasoning && { reasoning: request.reasoning }),
         // REMOVED: max_steps - not supported in Responses API
         ...(request.previous_response_id && { previous_response_id: request.previous_response_id })
         // REMOVED: temperature - not supported in Responses API
@@ -297,20 +336,49 @@ export class OpenAIService {
   private extractTextFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) return '';
     
-    // Look for message/content blocks
+    // Look for message/content blocks with various structures
     for (const block of output) {
+      // Standard message block
       if (block.type === 'message' && block.content) {
-        return block.content;
+        // Handle content array (GPT-5 format)
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          if (textContent?.text) return textContent.text;
+        }
+        // Handle direct content string
+        if (typeof block.content === 'string') {
+          return block.content;
+        }
       }
+      
+      // Direct text block
       if (block.type === 'text' && block.text) {
         return block.text;
+      }
+      
+      // Assistant message (common in GPT-5)
+      if (block.role === 'assistant' && block.content) {
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          if (textContent?.text) return textContent.text;
+        }
+        if (typeof block.content === 'string') {
+          return block.content;
+        }
       }
     }
     
     // Fallback: join all text-like content
     return output
       .filter(block => block.content || block.text)
-      .map(block => block.content || block.text)
+      .map(block => {
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          return textContent?.text || '';
+        }
+        return block.content || block.text;
+      })
+      .filter(Boolean)
       .join('\n');
   }
 

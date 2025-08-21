@@ -8,6 +8,16 @@
  
 August 21, 2025
 
+## Version 1.4.3 — GPT-5 Responses API Migration Complete (2025-08-21)
+
+### OpenAI GPT-5 Models Fixed
+- **GPT-5 Responses API Migration (Code by Claude Code)**: Completed migration plan phases 1-7, fixing GPT-5 model routing issues
+  - **Model Name Correction**: Fixed GPT-5 model name mappings in `server/services/openai.ts` (`gpt-5` → `gpt-5-2025-08-07`, etc.)
+  - **Responses API Parameters**: Added required `store: true` and `include: ["reasoning.encrypted_content"]` parameters
+  - **Migration Plan Complete**: All phases from `docs/OpenAI_Responses_Migration_Plan_2025-08-20.md` implemented
+  - **Chat Completions Deprecated**: Confirmed all OpenAI calls use Responses API, Chat Completions fully removed
+  - **GPT-5 Models Working**: gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07, gpt-5-chat-latest now properly routed
+
 ## Version 1.4.2 — API Call Logging Plan (2025-08-21)
 
 ### Comprehensive API Logging Strategy

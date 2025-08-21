@@ -67,7 +67,7 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model } = req.params;
-    const { temperature = 0.75, captureReasoning = true, promptId = "standardExplanation", customPrompt, emojiSetKey, omitAnswer } = req.body;
+    const { temperature = 0.2, captureReasoning = true, promptId = "solver", customPrompt, emojiSetKey, omitAnswer = true } = req.body;
     
     // Log the request with custom prompt handling
     if (customPrompt) {
@@ -143,7 +143,7 @@ export const puzzleController = {
   async previewPrompt(req: Request, res: Response) {
     try {
       const { provider, taskId } = req.params;
-      const { promptId = "standardExplanation", customPrompt, temperature = 0.75, captureReasoning = true, emojiSetKey, omitAnswer } = req.body;
+      const { promptId = "solver", customPrompt, temperature = 0.2, captureReasoning = true, emojiSetKey, omitAnswer = true } = req.body;
 
       console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
 

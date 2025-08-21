@@ -284,8 +284,30 @@ export function validateSolverResponse(
     };
   }
 
-  // Extract grid from solving strategy text
-  const { grid: predictedGrid, method } = extractGridFromText(response.solvingStrategy);
+  // Try to extract grid from predictedOutput field first, then fall back to solvingStrategy text
+  let predictedGrid: number[][] | null = null;
+  let method = '';
+  
+  // First, check if there's a direct predictedOutput field
+  if (response.predictedOutput && Array.isArray(response.predictedOutput)) {
+    // Validate it's a proper numeric grid
+    const isValidNumericGrid = response.predictedOutput.every((row: any) => 
+      Array.isArray(row) && row.every((cell: any) => typeof cell === 'number' && Number.isInteger(cell))
+    );
+    
+    if (isValidNumericGrid) {
+      predictedGrid = response.predictedOutput;
+      method = 'direct_predicted_output_field';
+      logger.info(`Successfully extracted grid from predictedOutput field: ${JSON.stringify(predictedGrid)}`, 'validator');
+    }
+  }
+  
+  // Fall back to extracting from solving strategy text if no direct field found
+  if (!predictedGrid) {
+    const extractionResult = extractGridFromText(response.solvingStrategy);
+    predictedGrid = extractionResult.grid;
+    method = extractionResult.method;
+  }
   
   if (!predictedGrid) {
     logger.warn('Could not extract predicted grid from response', 'validator');
