@@ -101,14 +101,17 @@ export class OpenAIService {
 
       // Build reasoning config based on model type
       let reasoningConfig = undefined;
+      let textConfig = undefined;
       if (captureReasoning && isReasoningModel) {
         if (isGPT5Model) {
           // GPT-5 models support advanced reasoning parameters
           reasoningConfig = {
-            text: { format: 'text' },
             effort: serviceOpts?.reasoningEffort || 'medium',
-            verbosity: serviceOpts?.reasoningVerbosity || 'medium',
             summary: serviceOpts?.reasoningSummaryType || serviceOpts?.reasoningSummary || 'auto'
+          };
+          // Text config is separate for GPT-5 models
+          textConfig = {
+            verbosity: serviceOpts?.reasoningVerbosity || 'medium'
           };
         } else if (isO3O4Model) {
           // o3/o4 models use simpler reasoning config
@@ -123,6 +126,7 @@ export class OpenAIService {
         model: modelName,
         input: prompt,
         reasoning: reasoningConfig,
+        ...(textConfig && { text: textConfig }),
         max_steps: serviceOpts?.maxSteps,
         previous_response_id: serviceOpts?.previousResponseId,
         // ONLY the GPT-5 Chat model supports temperature and top_p
@@ -235,12 +239,13 @@ export class OpenAIService {
         ? { 
             reasoning: isGPT5Model 
               ? { 
-                  text: { format: 'text' },
-                  effort: serviceOpts?.reasoningEffort || "medium", 
-                  verbosity: serviceOpts?.reasoningVerbosity || "medium",
+                  effort: serviceOpts?.reasoningEffort || "medium",
                   summary: serviceOpts?.reasoningSummaryType || "detailed" 
                 }
-              : { summary: "detailed" }
+              : { summary: "detailed" },
+            ...(isGPT5Model && {
+              text: { verbosity: serviceOpts?.reasoningVerbosity || "medium" }
+            })
           }
         : {})
     };
