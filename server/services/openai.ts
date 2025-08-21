@@ -157,13 +157,29 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse output_text JSON
-      const rawJson = parsedResponse.output_text || '';
+      // Parse output_text JSON with fallback to extracting from output blocks
+      let rawJson = parsedResponse.output_text || '';
+      
+      // If no output_text but we have output blocks, extract text from them
+      if (!rawJson && parsedResponse.raw_response?.output) {
+        rawJson = this.extractTextFromOutputBlocks(parsedResponse.raw_response.output);
+      }
+      
       try {
         result = rawJson ? JSON.parse(rawJson) : {};
       } catch (e) {
-        console.warn('[OpenAI] Failed to parse JSON output_text; returning empty result.');
-        result = {};
+        console.warn('[OpenAI] Failed to parse JSON, trying to extract JSON from text');
+        const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            result = JSON.parse(jsonMatch[0]);
+          } catch (e2) {
+            console.warn('[OpenAI] All JSON parsing failed, returning empty result');
+            result = {};
+          }
+        } else {
+          result = {};
+        }
       }
 
       // Extract reasoning summary/items
@@ -364,39 +380,36 @@ export class OpenAIService {
     }
   }
 
-  // Helper methods for parsing Responses API output blocks
+  // Helper method for parsing Responses API output blocks
   private extractTextFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) return '';
     
-    // Look for message/content blocks with various structures
+    // Look for Assistant blocks first
+    const assistantBlock = output.find(block => 
+      block.type === 'Assistant' || block.role === 'assistant'
+    );
+    
+    if (assistantBlock) {
+      if (Array.isArray(assistantBlock.content)) {
+        const textContent = assistantBlock.content.find((c: any) => c.type === 'text');
+        if (textContent?.text) return textContent.text;
+      }
+      if (typeof assistantBlock.content === 'string') return assistantBlock.content;
+      if (assistantBlock.text) return assistantBlock.text;
+    }
+    
+    // Look for other message blocks
     for (const block of output) {
-      // Standard message block
       if (block.type === 'message' && block.content) {
-        // Handle content array (GPT-5 format)
         if (Array.isArray(block.content)) {
           const textContent = block.content.find((c: any) => c.type === 'text');
           if (textContent?.text) return textContent.text;
         }
-        // Handle direct content string
-        if (typeof block.content === 'string') {
-          return block.content;
-        }
+        if (typeof block.content === 'string') return block.content;
       }
       
-      // Direct text block
       if (block.type === 'text' && block.text) {
         return block.text;
-      }
-      
-      // Assistant message (common in GPT-5)
-      if (block.role === 'assistant' && block.content) {
-        if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) => c.type === 'text');
-          if (textContent?.text) return textContent.text;
-        }
-        if (typeof block.content === 'string') {
-          return block.content;
-        }
       }
     }
     
@@ -420,11 +433,18 @@ export class OpenAIService {
     // Look for reasoning blocks
     const reasoningBlocks = output.filter(block => 
       block.type === 'reasoning' || 
-      (block.type === 'message' && block.role === 'reasoning')
+      block.type === 'Reasoning' ||
+      (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
     );
     
     return reasoningBlocks
-      .map(block => block.content || block.text || block.summary)
+      .map(block => {
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          return textContent?.text || '';
+        }
+        return block.content || block.text || block.summary || '';
+      })
       .filter(Boolean)
       .join('\n');
   }
