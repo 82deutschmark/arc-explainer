@@ -268,7 +268,7 @@ Correct Answer: ${testCase.output}`;
     };
   }
   
-  console.log(`[PromptBuilder] ❌ CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE`);
+  console.log(`[PromptBuilder] 📋 CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE 📋`);
 
   // Use template-based prompt (existing logic)
   const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
@@ -332,11 +332,10 @@ Input: ${testCase.input}
 Your task:
 ${analysisInstructions}
 
-IMPORTANT: Start your response by stating what you predict the test output grid should be and why you think that's correct. Take as much time and reasoning as you need - these are complex puzzles that require careful analysis.
-
-You may organize your response however feels most natural. If you prefer structure, you could consider including:
-- Pattern Description: What pattern you identified in the examples
-- Solving Strategy: Your reasoning process  
+Reply with your prediction of the test output grid. 
+If you are able to, consider including:
+- Pattern Description: What you learned from the training examples
+- Solving Strategy: Your reasoning process, briefly 
 - Key Insights: Important observations that led to your conclusion
 - Confidence: How sure you are about your prediction
 
@@ -359,11 +358,12 @@ ${ARC_TRANSFORMATIONS}
 
 ${analysisInstructions}${emojiMapSection}
 
-Feel free to explain in whatever format works best for your reasoning. If you prefer structure, you could consider including:
-- Pattern Description: What pattern you see in the transformation
-- Solving Strategy: How someone would approach this puzzle
-- Key Insights: Important observations about the rule
-- Confidence: How sure you are about your explanation
+Reply with your prediction of the test output grid. 
+If you are able to, consider including:
+- Pattern Description: What you learned from the training examples
+- Solving Strategy: Your reasoning process, briefly 
+- Key Insights: Important observations that led to your conclusion
+- Confidence: How sure you are about your prediction
 
 Example JSON structure (optional):
 ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
