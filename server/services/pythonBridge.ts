@@ -41,7 +41,7 @@ export type SaturnBridgeOptions = {
 };
 
 export type SaturnBridgeEvent =
-  | { type: 'start'; metadata?: any }
+  | { type: 'start'; metadata?: any; source?: 'python' }
   | {
       type: 'progress';
       phase: string;
@@ -49,8 +49,9 @@ export type SaturnBridgeEvent =
       totalSteps: number;
       message?: string;
       images?: { path: string; base64?: string }[];
+      source?: 'python';
     }
-  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string }
+  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string; source?: 'python' }
   | {
       type: 'final';
       success: boolean;
@@ -58,8 +59,36 @@ export type SaturnBridgeEvent =
       result: any;
       timingMs: number;
       images?: { path: string; base64?: string }[];
+      source?: 'python';
     }
-  | { type: 'error'; message: string };
+  | { type: 'error'; message: string; source?: 'python' }
+  // Pass-through for new API logging events from Python runtime
+  | {
+      type: 'api_call_start';
+      ts?: string | number;
+      phase?: string;
+      provider?: string;
+      model?: string;
+      endpoint?: string;
+      requestId?: string;
+      attempt?: number;
+      params?: any;
+      images?: any[];
+      source?: 'python';
+    }
+  | {
+      type: 'api_call_end';
+      ts?: string | number;
+      requestId?: string;
+      status?: 'success' | 'error';
+      latencyMs?: number;
+      providerResponseId?: string;
+      httpStatus?: number;
+      reasoningSummary?: string;
+      tokenUsage?: any;
+      error?: string;
+      source?: 'python';
+    };
 
 export class PythonBridge {
   private resolvePythonBin(): string {
@@ -133,6 +162,10 @@ export class PythonBridge {
         
         try {
           const evt = JSON.parse(trimmed) as any;
+          // Tag source for downstream consumers
+          if (evt && typeof evt === 'object' && !evt.source) {
+            evt.source = 'python';
+          }
           pushEvent(evt);
           console.log(`[SATURN-DEBUG] Valid JSON event type: ${evt.type}`);
           
@@ -157,7 +190,7 @@ export class PythonBridge {
         } catch (err) {
           // Non-JSON output (likely AI model responses) - forward as log event
           console.log(`[SATURN-DEBUG] Non-JSON stdout (AI response): ${trimmed.substring(0, 100)}...`);
-          onEvent({ type: 'log', level: 'info', message: trimmed });
+          onEvent({ type: 'log', level: 'info', message: trimmed, source: 'python' });
         }
       });
 
@@ -165,7 +198,7 @@ export class PythonBridge {
       const rlErr = readline.createInterface({ input: child.stderr });
       rlErr.on('line', (line) => {
         logBuffer.push(`[stderr] ${line}`);
-        onEvent({ type: 'log', level: 'error', message: line });
+        onEvent({ type: 'log', level: 'error', message: line, source: 'python' });
       });
 
       // Send payload

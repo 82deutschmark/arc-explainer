@@ -78,6 +78,7 @@ export const saturnController = {
       provider: 'openai', // Force OpenAI for Responses API
       model: (req.body?.model as string) || 'gpt-5',
       temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 0.2,
+      cellSize: 24, // Default cell size
       maxSteps: typeof req.body?.maxSteps === 'number' ? req.body.maxSteps : 8,
       captureReasoning: true, // Always capture reasoning for this endpoint
       reasoningSummary: req.body?.reasoningSummary !== false, // Default to true
