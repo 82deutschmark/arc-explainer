@@ -2,10 +2,57 @@
   CHANGELOG.md
   What: Release notes for ARC-AGI Puzzle Explorer.
   How: Documents features, fixes, and credits. This entry covers Custom Prompt support.
-  Author (docs): GPT-5 (low reasoning)
+ Author (docs): GPT-5 (low reasoning)
 -->
 
+ 
+August 21, 2025
+
+## Version 1.4.2 — API Call Logging Plan (2025-08-21)
+
+### Comprehensive API Logging Strategy
+- **Enhanced API Logging Plan (Code by Claude Code)**: Built upon Cascade's excellent foundation with complete implementation strategy
+  - **Security Audit**: ✅ Confirmed no test answers leaked to AI - only test input images sent to OpenAI
+  - **UI Components**: Designed API timeline, statistics cards, and tabbed interface for rich data display
+  - **Data Sanitization**: Enhanced redaction policies and automatic answer filtering
+  - **Implementation Roadmap**: 4-week phased rollout with security-first approach
+  - **Documentation**: `docs/Enhanced_API_Logging_Implementation_Plan.md` with UI components and security hardening
+
+### Foundation Documentation
+- **Capturing API Call Logs Plan (Code by Cascade)**: `docs/Capturing_API_Call_Logs_Plan_2025-08-21.md` detailing end-to-end capture of API request/response snapshots with strict redaction and feature flags.
+  - Components: `server/python/saturn_wrapper.py`, `solver/arc_visual_solver.py`, `server/services/{openai.ts, anthropic.ts, pythonBridge.ts, saturnVisualService.ts, dbService.ts}`.
+  - Events: `api_call_start` / `api_call_end`; persisted via `saturnEvents` and optionally `provider_raw_response` (gated by `RAW_RESPONSE_PERSIST`).
+  - Security: no API keys or raw chain-of-thought; size caps and truncation applied.
+
 August 20, 2025
+
+## Version 1.4.1 — Saturn Autonomous Operation Fix (2025-08-20)
+
+### Critical Saturn Architecture Fix
+- __Saturn Prompt Template Bypass (Code by Claude Code)__: Fixed critical issue where Saturn solver was incorrectly using application prompt templates instead of operating autonomously
+  - **Root Cause**: Saturn was calling OpenAI service with `'standardExplanation'` template instead of its own custom prompt
+  - **Solution**: Modified Saturn to use `'custom'` prompt mode with its own `buildPuzzlePrompt()` method
+  - **Impact**: Saturn now operates fully independently without template dependencies
+  - **Architecture Compliance**: Maintains Saturn's design principle as an autonomous visual reasoning module
+  - **Documentation**: Added comprehensive `docs/Saturn_Autonomous_Operation_Plan.md` detailing the fix and architectural principles
+
+### Technical Implementation
+- **Backend**: Modified `server/services/saturnVisualService.ts:192-204` to remove inappropriate AI logic
+- **Frontend**: Redesigned `client/src/pages/SaturnVisualSolver.tsx` for pure Python wrapper display
+  - **Removed**: Redundant "Reasoning Analysis" section that duplicated Python output
+  - **Enhanced**: Terminal-style Python log display with dark theme and improved formatting
+  - **Improved**: Single-column layout focused on Python solver transparency
+  - **Added**: Collapsible puzzle details to reduce visual clutter
+- **Documentation**: Created comprehensive purity plan at `docs/Saturn_Python_Wrapper_Purity_Plan.md`
+
+### Bug Fixes
+- __Confidence Type Normalization (Code by Cascade)__: Fixed Postgres error `invalid input syntax for type integer: "0.5"` when saving Saturn results.
+  - **Root Cause**: `explanations.confidence` is INTEGER, but Saturn was producing fractional values (e.g., 0.5).
+  - **Fix**: Normalized confidence to integer percent (0–100) in both Saturn Responses and Visual paths.
+    - Updated `server/services/saturnVisualService.ts`:
+      - `calculateConfidenceFromReasoning()` now returns clamped integer percent.
+      - Final event handler now converts 0..1 confidences to 0..100 before persistence.
+  - **Result**: DB inserts succeed; UI and stats continue to read integer confidence values.
 
 ## Version 1.4.0 — Saturn Visual Solver Complete Redesign (2025-08-20)
 

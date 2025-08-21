@@ -232,7 +232,7 @@ export class OpenAIService {
           summary: request.reasoning.summary, 
           effort: "high" // CORRECTED: Use high reasoning effort
         }}),
-        ...(request.max_steps && { max_steps: request.max_steps }),
+        // REMOVED: max_steps - not supported in Responses API
         ...(request.previous_response_id && { previous_response_id: request.previous_response_id })
         // REMOVED: temperature - not supported in Responses API
       };

@@ -274,7 +274,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       saturnImages
     } = explanation;
     
-    const shouldPersistRaw = process.env.RAW_RESPONSE_PERSIST === 'true';
+    // Dev=Prod parity: default to true when unset (can be explicitly disabled with 'false')
+    const rawFlag = process.env.RAW_RESPONSE_PERSIST;
+    const shouldPersistRaw = rawFlag === undefined ? true : rawFlag === 'true';
 
     const result = await client.query(
       `INSERT INTO explanations 

@@ -1,13 +1,14 @@
 /**
  * client/src/pages/SaturnVisualSolver.tsx
  *
- * Saturn Visual Solver page - redesigned for clarity and better UX.
- * Features a streamlined single-column layout with clear sections for:
- * - Puzzle overview and controls
- * - Live progress and reasoning
- * - Console output and image gallery
+ * Saturn Visual Solver page - pure Python wrapper interface.
+ * Features a clean layout focused on showing Python solver output:
+ * - Status overview with progress tracking
+ * - Real-time Python solver logs in terminal style
+ * - Collapsible puzzle details
+ * - Python-generated image gallery
  *
- * Author: Cascade (model: Cascade)
+ * Author: Cascade (model: Cascade), Updated by Claude Code
  */
 
 import React from 'react';
@@ -16,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Terminal, Brain, Eye, RotateCcw } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import SaturnModelSelect, { type SaturnModelKey } from '@/components/saturn/SaturnModelSelect';
@@ -28,7 +29,7 @@ export default function SaturnVisualSolver() {
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, sessionId } = useSaturnProgress(taskId);
   const [model, setModel] = React.useState<SaturnModelKey>('GPT-5');
-  const [showPuzzleDetails, setShowPuzzleDetails] = React.useState(false);
+  const [showPuzzleDetails, setShowPuzzleDetails] = React.useState(true);
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const logRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -371,160 +372,123 @@ export default function SaturnVisualSolver() {
       </Card>
 
 
-      {/* Live Output and Reasoning */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* System Output */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Terminal className="h-5 w-5" />
-              System Output
-              {state.logLines && state.logLines.length > 0 && (
-                <Badge variant="outline" className="ml-2">
-                  {state.logLines.length} lines
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div
-              ref={logRef}
-              className="bg-gray-50 border rounded-lg p-4 h-64 overflow-auto space-y-1"
-            >
-              {Array.isArray(state.logLines) && state.logLines.length > 0 ? (
-                state.logLines.map((line, i) => {
-                  const formattedLog = formatLogLine(line, i);
-                  return (
-                    <div key={i} className={`flex items-start gap-2 text-sm ${formattedLog.className}`}>
-                      <span className="text-xs text-gray-400 font-mono whitespace-nowrap">
-                        {formattedLog.timestamp}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${formattedLog.levelClassName}`}>
-                        {formattedLog.level}
-                      </span>
-                      <span className="flex-1 leading-relaxed font-mono">
-                        {formattedLog.message}
-                      </span>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="text-gray-500 text-center py-8">
-                  {isRunning ? 'Waiting for system output...' : 'No output yet. Click "Start Analysis" to begin.'}
-                </div>
-              )}
-              {isRunning && (
-                <div className="flex items-center gap-2 text-green-600 animate-pulse">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs">Processing...</span>
-                </div>
-              )}
-            </div>
-
-            {/* Puzzle Details Section */}
-            <div className="border-t pt-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowPuzzleDetails(!showPuzzleDetails)}
-                className="mb-3"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                {showPuzzleDetails ? 'Hide' : 'Show'} Puzzle Details
-              </Button>
-              <div className="text-xs text-gray-600 mb-3">
-                {task.train.length} training examples • {task.test?.length || 0} test cases
+      {/* Python Solver Output */}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Terminal className="h-5 w-5" />
+            Python Solver Output
+            {state.logLines && state.logLines.length > 0 && (
+              <Badge variant="outline" className="ml-2">
+                {state.logLines.length} lines
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div
+            ref={logRef}
+            className="bg-gray-900 text-green-400 font-mono text-sm border rounded-lg p-4 h-96 overflow-auto space-y-1"
+          >
+            {Array.isArray(state.logLines) && state.logLines.length > 0 ? (
+              state.logLines.map((line, i) => {
+                const formattedLog = formatLogLine(line, i);
+                return (
+                  <div key={i} className={`flex items-start gap-2 ${formattedLog.className}`}>
+                    <span className="text-xs text-gray-500 font-mono whitespace-nowrap">
+                      {formattedLog.timestamp}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      formattedLog.level === 'ERROR' ? 'bg-red-900 text-red-300' :
+                      formattedLog.level === 'WARN' ? 'bg-yellow-900 text-yellow-300' :
+                      formattedLog.level === 'SUCCESS' ? 'bg-green-900 text-green-300' :
+                      formattedLog.level === 'SATURN' ? 'bg-purple-900 text-purple-300' :
+                      'bg-gray-700 text-gray-300'
+                    }`}>
+                      {formattedLog.level}
+                    </span>
+                    <span className="flex-1 leading-relaxed">
+                      {formattedLog.message}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-gray-500 text-center py-8">
+                {isRunning ? 'Waiting for Python solver output...' : 'No output yet. Click "Start Analysis" to begin.'}
               </div>
+            )}
+            {isRunning && (
+              <div className="flex items-center gap-2 text-green-400 animate-pulse">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-xs">Python solver running...</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-              {showPuzzleDetails && (
-                <div className="space-y-4">
-                  {/* Training Examples */}
-                  <div>
-                    <h4 className="font-medium mb-3 text-sm">Training Examples ({task.train.length})</h4>
-                    <div className="space-y-4">
-                      {task.train.map((ex, i) => (
-                        <div key={i} className="border rounded-lg p-4">
-                          <div className="text-sm font-medium mb-3 text-center">Example {i + 1}</div>
-                          <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
-                            <PuzzleGrid grid={ex.input} title="Input" showEmojis={false} />
-                            <div className="text-gray-400 text-2xl">→</div>
-                            <PuzzleGrid grid={ex.output} title="Output" showEmojis={false} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Test Case */}
-                  {Array.isArray(task.test) && task.test.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-3 text-sm">Test Case</h4>
-                      <div className="border rounded-lg p-4">
-                        <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
-                          <PuzzleGrid grid={task.test[0].input} title="Test Input" showEmojis={false} />
-                          <div className="text-gray-400 text-2xl">→</div>
-                          {task.test[0].output ? (
-                            <PuzzleGrid grid={task.test[0].output} title="Expected Output" showEmojis={false} />
-                          ) : (
-                            <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 rounded p-8">
-                              <div className="text-lg">?</div>
-                              <div className="text-sm">Solution needed</div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+      {/* Collapsible Puzzle Details */}
+      <Card>
+        <CardHeader>
+          <Button 
+            variant="ghost" 
+            onClick={() => setShowPuzzleDetails(!showPuzzleDetails)}
+            className="w-full justify-between h-auto py-4"
+          >
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4" />
+              Puzzle Details ({task.train.length} training examples, {task.test?.length || 0} test cases)
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Reasoning Analysis */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Reasoning Analysis
-              {state.reasoningHistory && state.reasoningHistory.length > 0 && (
-                <Badge variant="outline" className="ml-2">
-                  {state.reasoningHistory.length} entries
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 h-64 overflow-auto">
-              {state.reasoningLog && (
-                <div className="mb-4 p-3 bg-blue-100 rounded border-l-4 border-blue-500">
-                  <div className="text-xs text-blue-600 font-medium mb-1">Current Step Reasoning</div>
-                  <div className="text-sm text-blue-800 whitespace-pre-wrap">
-                    {state.reasoningLog}
-                  </div>
-                </div>
-              )}
-              {Array.isArray(state.reasoningHistory) && state.reasoningHistory.length > 0 ? (
-                <div className="space-y-3">
-                  <div className="text-xs text-gray-600 font-medium">Previous Reasoning Steps</div>
-                  {state.reasoningHistory.map((reasoning, i) => (
-                    <div key={i} className="p-3 bg-white rounded border">
-                      <div className="text-xs text-gray-500 mb-1">Step {i + 1}</div>
-                      <div className="text-sm text-gray-700 whitespace-pre-wrap">
-                        {reasoning}
+            <div className={`transform transition-transform ${showPuzzleDetails ? 'rotate-180' : ''}`}>
+              ▼
+            </div>
+          </Button>
+        </CardHeader>
+        {showPuzzleDetails && (
+          <CardContent className="pt-0">
+            <div className="space-y-6">
+              {/* Training Examples */}
+              <div>
+                <h4 className="font-medium mb-4 text-sm">Training Examples</h4>
+                <div className="space-y-4">
+                  {task.train.map((ex, i) => (
+                    <div key={i} className="border rounded-lg p-4 bg-gray-50">
+                      <div className="text-sm font-medium mb-3 text-center text-gray-700">Example {i + 1}</div>
+                      <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
+                        <PuzzleGrid grid={ex.input} title="Input" showEmojis={false} />
+                        <div className="text-gray-400 text-2xl">→</div>
+                        <PuzzleGrid grid={ex.output} title="Output" showEmojis={false} />
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-gray-500 text-sm">
-                  {isRunning ? 'Waiting for reasoning analysis...' : 'No reasoning data available'}
+              </div>
+
+              {/* Test Case */}
+              {Array.isArray(task.test) && task.test.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-4 text-sm">Test Case</h4>
+                  <div className="border rounded-lg p-4 bg-blue-50">
+                    <div className="flex flex-col lg:flex-row items-center gap-4 justify-center">
+                      <PuzzleGrid grid={task.test[0].input} title="Test Input" showEmojis={false} />
+                      <div className="text-gray-400 text-2xl">→</div>
+                      {task.test[0].output ? (
+                        <PuzzleGrid grid={task.test[0].output} title="Expected Output" showEmojis={false} />
+                      ) : (
+                        <div className="text-center text-gray-500 border-2 border-dashed border-gray-300 rounded p-8 bg-white">
+                          <div className="text-lg">?</div>
+                          <div className="text-sm">Solution needed</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </CardContent>
-        </Card>
-      </div>
+        )}
+      </Card>
 
       {/* Image Gallery */}
       {Array.isArray(state.galleryImages) && state.galleryImages.length > 0 && (
