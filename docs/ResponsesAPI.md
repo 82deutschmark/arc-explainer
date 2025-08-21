@@ -1,5 +1,4 @@
-Missing / wrong things that cause Responses POSTs to fail (copy-paste):
-
+Missing / wrong things that cause Responses POSTs to fail:
 1. Using `messages` / Chat Completions body instead of `input` for Responses — Requests must use `input` (role/content) when calling `/v1/responses`.
 2. Not passing a `reasoning` param when you expect structured reasoning (e.g. `reasoning: { "summary": "auto" }` or `reasoning.effort`). If omitted, you may only see internal reasoning IDs or no summary.
 3. `max_output_tokens` (or equivalent) too low / wrong param name — model can spend tokens on internal reasoning, starving visible output. Set a sufficient `max_output_tokens` and inspect token splits.
@@ -17,7 +16,7 @@ Minimal, exact request shape to test right now (POST `/v1/responses`, JSON body)
   "model": "gpt-5-nano-2025-08-07",
   "input": [{ "role": "user", "content": "Solve this puzzle: <your-payload-here>" }],
   "reasoning": { "summary": "auto", "effort": "high" },
-  "max_output_tokens": 1024,
+  "max_output_tokens": 16024,
   "include": ["reasoning.encrypted_content"],
   "store": true
 }
