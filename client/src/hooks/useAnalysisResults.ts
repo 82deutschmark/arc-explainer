@@ -38,18 +38,29 @@ export function useAnalysisResults({
   emojiSetKey,
   omitAnswer,
 }: UseAnalysisResultsProps) {
-  const [temperature, setTemperature] = useState(0.7);
-  const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
+  const [temperature, setTemperature] = useState(0.2);
+  const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
+  
+  // GPT-5 reasoning parameters
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('medium');
+  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('medium');
+  const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('auto');
 
   // Mutation to analyze the puzzle and save the explanation in one step
   const analyzeAndSaveMutation = useMutation({
-    mutationFn: async (payload: { modelKey: string; temperature?: number }) => {
-      const { modelKey, temperature: temp } = payload;
+    mutationFn: async (payload: { 
+      modelKey: string; 
+      temperature?: number; 
+      reasoningEffort?: string; 
+      reasoningVerbosity?: string; 
+      reasoningSummaryType?: string; 
+    }) => {
+      const { modelKey, temperature: temp, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
       
       // Record start time for tracking
       const startTime = Date.now();
@@ -63,6 +74,10 @@ export function useAnalysisResults({
         // New analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
+        // GPT-5 reasoning parameters
+        ...(effort ? { reasoningEffort: effort } : {}),
+        ...(verbosity ? { reasoningVerbosity: verbosity } : {}),
+        ...(summaryType ? { reasoningSummaryType: summaryType } : {}),
       };
       
       // Include custom prompt if "custom" is selected and customPrompt is provided
@@ -131,6 +146,11 @@ export function useAnalysisResults({
     );
   };
 
+  // Helper to check if model is GPT-5 reasoning model
+  const isGPT5ReasoningModel = (modelKey: string): boolean => {
+    return ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(modelKey);
+  };
+
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
     // Check if this provider is already processing
@@ -138,9 +158,18 @@ export function useAnalysisResults({
       throw new Error(`A ${getProviderFromKey(modelKey)} model is already processing. Please wait for it to complete.`);
     }
     
-    const payload = {
+    // Set current model key to show reasoning controls for GPT-5 models
+    setCurrentModelKey(modelKey);
+    
+    const payload: any = {
       modelKey,
-      ...(supportsTemperature ? { temperature } : {})
+      ...(supportsTemperature ? { temperature } : {}),
+      // Include reasoning parameters only for GPT-5 models
+      ...(isGPT5ReasoningModel(modelKey) ? {
+        reasoningEffort,
+        reasoningVerbosity,
+        reasoningSummaryType
+      } : {})
     };
     
     analyzeAndSaveMutation.mutate(payload);
@@ -168,5 +197,13 @@ export function useAnalysisResults({
     analysisStartTime,
     analysisTimes,
     isProviderProcessing,
+    // GPT-5 reasoning parameters
+    reasoningEffort,
+    setReasoningEffort,
+    reasoningVerbosity,
+    setReasoningVerbosity,
+    reasoningSummaryType,
+    setReasoningSummaryType,
+    isGPT5ReasoningModel,
   };
 }

@@ -127,7 +127,7 @@ export function PromptPreviewModal({
       const response = await apiRequest('POST', `/api/prompt/preview/${selectedProvider}/${puzzleId}`, {
         promptId: selectedPromptId,
         customPrompt: isEditing ? editedPrompt : customPrompt,
-        temperature: 0.75,
+        temperature: 0.2,
         captureReasoning: true,
         modelKey: selectedModel,
         ...(emojiSetKey ? { emojiSetKey } : {}),

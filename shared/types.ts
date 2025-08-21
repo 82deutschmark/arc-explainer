@@ -155,3 +155,44 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     emojiMapIncluded: false
   }
 };
+
+/**
+ * API call logging types (shared)
+ * These are used by Python→Node event bridge and UI rendering
+ */
+export type ApiCallStatus = 'success' | 'error';
+
+export interface ApiCallStartEvent {
+  type: 'api_call_start';
+  ts: string; // ISO timestamp
+  phase?: string; // solver phase if applicable
+  provider: string; // e.g., 'OpenAI'
+  model: string;
+  endpoint: string; // e.g., '/v1/responses'
+  requestId: string; // client-generated UUID
+  attempt: number; // retry attempt number (1-based)
+  params?: Record<string, unknown>; // sanitized request params
+  images?: Array<{ ref: string; length?: number; hash?: string }>; // references only
+}
+
+export interface ApiCallEndEvent {
+  type: 'api_call_end';
+  ts: string; // ISO timestamp
+  requestId: string;
+  status: ApiCallStatus;
+  latencyMs?: number;
+  providerResponseId?: string;
+  httpStatus?: number;
+  reasoningSummary?: string;
+  tokenUsage?: { input?: number; output?: number; total?: number };
+  error?: string; // sanitized message only
+}
+
+export type ApiCallEvent = ApiCallStartEvent | ApiCallEndEvent;
+
+export interface ReasoningItem {
+  title?: string;
+  detail?: string;
+  step?: number;
+  category?: string;
+}

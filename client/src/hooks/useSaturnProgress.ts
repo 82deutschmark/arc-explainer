@@ -23,6 +23,8 @@ export interface SaturnOptions {
   cellSize?: number;
   maxSteps?: number;
   captureReasoning?: boolean;
+  useResponsesAPI?: boolean;
+  previousResponseId?: string;
 }
 
 export interface SaturnProgressState {
@@ -39,11 +41,20 @@ export interface SaturnProgressState {
   // Python stdout/stderr as ws events with phase === 'log'. We also append
   // terminal status messages on error/completion for visibility.
   logLines?: string[];
+  // Reasoning logs from Saturn's analysis process
+  reasoningLog?: string;
+  // Accumulated reasoning logs for detailed analysis view
+  reasoningHistory?: string[];
 }
 
 export function useSaturnProgress(taskId: string | undefined) {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [state, setState] = useState<SaturnProgressState>({ status: 'idle', galleryImages: [], logLines: [] });
+  const [state, setState] = useState<SaturnProgressState>({ 
+    status: 'idle', 
+    galleryImages: [], 
+    logLines: [], 
+    reasoningHistory: [] 
+  });
   const wsRef = useRef<WebSocket | null>(null);
 
   // Helper to close any existing socket
@@ -58,7 +69,15 @@ export function useSaturnProgress(taskId: string | undefined) {
   const start = useCallback(async (options?: SaturnOptions) => {
     if (!taskId) return;
     // Reset state for new run
-    setState({ status: 'running', phase: 'initializing', step: 0, totalSteps: options?.maxSteps, galleryImages: [], logLines: [] });
+    setState({ 
+      status: 'running', 
+      phase: 'initializing', 
+      step: 0, 
+      totalSteps: options?.maxSteps, 
+      galleryImages: [], 
+      logLines: [], 
+      reasoningHistory: [] 
+    });
     closeSocket();
 
     // Map friendly UI labels to backend model ids and include provider for clarity.
@@ -89,9 +108,15 @@ export function useSaturnProgress(taskId: string | undefined) {
       cellSize: options?.cellSize ?? 24,
       maxSteps: options?.maxSteps ?? 8,
       captureReasoning: !!options?.captureReasoning,
+      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
     };
 
-    const res = await apiRequest('POST', `/api/saturn/analyze/${taskId}`, wireOptions);
+    // Choose endpoint based on whether to use Responses API
+    const endpoint = options?.useResponsesAPI 
+      ? `/api/saturn/analyze-with-reasoning/${taskId}`
+      : `/api/saturn/analyze/${taskId}`;
+    
+    const res = await apiRequest('POST', endpoint, wireOptions);
     const json = await res.json();
     const sid = json?.data?.sessionId as string;
     setSessionId(sid);
@@ -116,6 +141,9 @@ export function useSaturnProgress(taskId: string | undefined) {
           type: payload?.type,
           status: data?.status,
           phase: data?.phase,
+          step: data?.step,
+          totalSteps: data?.totalSteps,
+          progress: data?.progress,
           message: data?.message?.substring(0, 100),
           imagesCount: Array.isArray(data?.images) ? data.images.length : 0
         });
@@ -145,12 +173,32 @@ export function useSaturnProgress(taskId: string | undefined) {
             // Cap to avoid unbounded growth
             if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
           }
-          const newState = { ...prev, ...data, galleryImages: nextGallery, logLines: nextLogs };
+          
+          // Handle reasoning logs
+          let nextReasoningHistory = prev.reasoningHistory ? [...prev.reasoningHistory] : [];
+          const reasoningLog = data.reasoningLog;
+          if (reasoningLog && typeof reasoningLog === 'string') {
+            nextReasoningHistory.push(reasoningLog);
+            // Cap reasoning history to avoid unbounded growth  
+            if (nextReasoningHistory.length > 100) nextReasoningHistory = nextReasoningHistory.slice(-100);
+          }
+          
+          const newState = { 
+            ...prev, 
+            ...data, 
+            galleryImages: nextGallery, 
+            logLines: nextLogs,
+            reasoningHistory: nextReasoningHistory
+          };
           console.log('[SATURN-DEBUG] WebSocket state update:', {
             status: newState.status,
             phase: newState.phase,
             galleryCount: newState.galleryImages?.length || 0,
-            logCount: newState.logLines?.length || 0
+            logCount: newState.logLines?.length || 0,
+            reasoningCount: newState.reasoningHistory?.length || 0,
+            hasCurrentReasoning: !!newState.reasoningLog,
+            currentReasoningPreview: newState.reasoningLog?.substring(0, 100),
+            receivedReasoningLog: data.reasoningLog?.substring(0, 100)
           });
           return newState;
         });

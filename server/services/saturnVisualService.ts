@@ -42,6 +42,13 @@ interface SaturnOptions {
   reasoningEffort?: string;
 }
 
+interface SaturnResponsesOptions extends SaturnOptions {
+  /** Enable reasoning summary capture */
+  reasoningSummary: boolean;
+  /** Previous response ID for chaining */
+  previousResponseId?: string;
+}
+
 // Resolve the on-disk path to the ARC task JSON. We don't inject any content;
 // we simply provide the file path to the Python wrapper.
 function resolveTaskPath(taskId: string): string | null {
@@ -59,6 +66,13 @@ function resolveTaskPath(taskId: string): string | null {
 }
 
 class SaturnVisualService {
+  async runWithResponses(taskId: string, sessionId: string, options: SaturnResponsesOptions) {
+    // This method shouldn't exist - Saturn should only use the Python solver wrapper
+    // Redirect to the proper Saturn run method
+    console.warn('[SATURN] runWithResponses is deprecated - using standard Python solver wrapper');
+    return this.run(taskId, sessionId, options);
+  }
+
   async run(taskId: string, sessionId: string, options: SaturnOptions) {
     // Enforce DB as a hard requirement (no memory-only mode for Saturn).
     if (!dbService.isConnected()) {
@@ -109,19 +123,41 @@ class SaturnVisualService {
     });
 
     // Start the Python subprocess and stream events as they arrive
-    // Add 30-minute timeout to prevent hanging processes
-    const timeoutMs = 30 * 60 * 1000; // 30 minutes
+    // Extended timeout for long-running analyses - configurable via environment
+    const defaultTimeoutMinutes = 60; // Increased from 30 to 60 minutes
+    const configuredTimeout = process.env.SATURN_TIMEOUT_MINUTES ? 
+      parseInt(process.env.SATURN_TIMEOUT_MINUTES) : defaultTimeoutMinutes;
+    const timeoutMs = Math.max(30, configuredTimeout) * 60 * 1000; // Minimum 30 minutes
+    
     let timeoutHandle: NodeJS.Timeout | null = null;
+    let warningHandle: NodeJS.Timeout | null = null;
     let isCompleted = false;
+    
+    // Add warning at 75% of timeout duration
+    const warningTimeMs = timeoutMs * 0.75;
+    const warningPromise = new Promise<void>((resolve) => {
+      warningHandle = setTimeout(() => {
+        if (!isCompleted) {
+          const remainingMinutes = Math.ceil((timeoutMs - warningTimeMs) / (60 * 1000));
+          broadcast(sessionId, {
+            status: 'running',
+            phase: 'warning',
+            message: `Long-running analysis detected. Will timeout in ${remainingMinutes} minutes if not completed.`,
+          });
+        }
+        resolve();
+      }, warningTimeMs);
+    });
     
     const timeoutPromise = new Promise<void>((_, reject) => {
       timeoutHandle = setTimeout(() => {
         if (!isCompleted) {
-          console.log(`[SATURN-DEBUG] Timeout after ${timeoutMs}ms for session ${sessionId}`);
+          const timeoutMinutes = Math.ceil(timeoutMs / (60 * 1000));
+          console.log(`[SATURN-DEBUG] Timeout after ${timeoutMs}ms (${timeoutMinutes}min) for session ${sessionId}`);
           broadcast(sessionId, {
             status: 'error',
             phase: 'timeout',
-            message: 'Saturn analysis timed out after 30 minutes. Process terminated.',
+            message: `Saturn analysis timed out after ${timeoutMinutes} minutes. Process terminated. Consider increasing SATURN_TIMEOUT_MINUTES if needed.`,
           });
           setTimeout(() => clearSession(sessionId), 5000);
           reject(new Error('Saturn analysis timeout'));
@@ -134,6 +170,49 @@ class SaturnVisualService {
       async (evt) => {
         try {
           switch (evt.type) {
+            case 'api_call_start': {
+              // Forward API call start event for timeline UI
+              broadcast(sessionId, {
+                status: 'running',
+                phase: 'api_call_start',
+                message: `API call start: ${((evt as any).provider || 'provider')} ${(evt as any).model || ''} ${(evt as any).endpoint ? '→ ' + (evt as any).endpoint : ''}`.trim(),
+                api: {
+                  event: 'start',
+                  ts: (evt as any).ts || Date.now(),
+                  provider: (evt as any).provider,
+                  model: (evt as any).model,
+                  endpoint: (evt as any).endpoint,
+                  requestId: (evt as any).requestId,
+                  attempt: (evt as any).attempt,
+                  params: (evt as any).params,
+                  images: (evt as any).images,
+                  source: (evt as any).source || 'python',
+                }
+              });
+              break;
+            }
+            case 'api_call_end': {
+              // Forward API call end event for timeline UI
+              broadcast(sessionId, {
+                status: 'running',
+                phase: 'api_call_end',
+                message: `API call ${(evt as any).status || 'end'} (${(evt as any).httpStatus ?? 'n/a'}) in ${(evt as any).latencyMs ?? '?'}ms`,
+                api: {
+                  event: 'end',
+                  ts: (evt as any).ts || Date.now(),
+                  requestId: (evt as any).requestId,
+                  status: (evt as any).status,
+                  latencyMs: (evt as any).latencyMs,
+                  httpStatus: (evt as any).httpStatus,
+                  providerResponseId: (evt as any).providerResponseId,
+                  reasoningSummary: (evt as any).reasoningSummary,
+                  tokenUsage: (evt as any).tokenUsage,
+                  error: (evt as any).error,
+                  source: (evt as any).source || 'python',
+                }
+              });
+              break;
+            }
             case 'start': {
               broadcast(sessionId, {
                 status: 'running',
@@ -158,6 +237,8 @@ class SaturnVisualService {
                 message: evt.message,
                 images: evt.images,
                 progress: evt.totalSteps ? evt.step / evt.totalSteps : undefined,
+                // Stream reasoning logs if available
+                reasoningLog: (evt as any).reasoningLog ?? null,
               });
               break;
             }
@@ -184,12 +265,18 @@ class SaturnVisualService {
               const saturnEventsText: string | null = (evt as any).eventTrace
                 ? (() => { try { return JSON.stringify((evt as any).eventTrace); } catch { return null; } })()
                 : null;
+              // Normalize confidence to integer percent (0–100) for DB INTEGER column
+              const rawConf = (evt as any).result?.confidence;
+              const normalizedConfidence = typeof rawConf === 'number'
+                ? (rawConf <= 1 && rawConf >= 0 ? Math.round(rawConf * 100) : Math.round(rawConf))
+                : 0;
+
               const explanation = {
                 patternDescription: (evt as any).result?.patternDescription || '',
                 solvingStrategy: (evt as any).result?.solvingStrategy || '',
                 hints: Array.isArray((evt as any).result?.hints) ? (evt as any).result.hints : [],
                 alienMeaning: (evt as any).result?.alienMeaning || '',
-                confidence: typeof (evt as any).result?.confidence === 'number' ? (evt as any).result.confidence : 0,
+                confidence: normalizedConfidence,
                 alienMeaningConfidence: undefined,
                 modelName: `Saturn Visual Solver (${options.model})`,
                 reasoningLog,
@@ -235,18 +322,20 @@ class SaturnVisualService {
                 },
               });
 
-              // Mark as completed and cleanup timeout
+              // Mark as completed and cleanup timers
               isCompleted = true;
               if (timeoutHandle) clearTimeout(timeoutHandle);
+              if (warningHandle) clearTimeout(warningHandle);
               
               // Cleanup in-memory session cache later
               setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
               break;
             }
             case 'error': {
-              // Mark as completed and cleanup timeout on error
+              // Mark as completed and cleanup timers on error
               isCompleted = true;
               if (timeoutHandle) clearTimeout(timeoutHandle);
+              if (warningHandle) clearTimeout(warningHandle);
               
               broadcast(sessionId, {
                 status: 'error',
@@ -274,8 +363,10 @@ class SaturnVisualService {
       // Ensure cleanup happens even on timeout/error
       isCompleted = true;
       if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (warningHandle) clearTimeout(warningHandle);
     }
   }
+
 }
 
 export const saturnVisualService = new SaturnVisualService();

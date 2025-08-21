@@ -60,7 +60,7 @@ export class DeepSeekService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -157,7 +157,7 @@ export class DeepSeekService {
   async generatePromptPreview(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,

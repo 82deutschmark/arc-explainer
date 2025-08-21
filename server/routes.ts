@@ -70,6 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
+  app.post("/api/saturn/analyze-with-reasoning/:taskId", asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
   
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)

@@ -39,7 +39,7 @@ export class AnthropicService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -76,70 +76,51 @@ Then provide your final structured response.` : basePrompt;
 
       const response = await anthropic.messages.create(requestOptions);
       
-      // Extract text content from Anthropic's response format
+      // Simple response parsing
       const content = response.content[0];
-      const textContent = content.type === 'text' ? content.text : '{}';
+      const textContent = content.type === 'text' ? content.text : '';
       
-      // Extract reasoning log if requested and available
+      // Handle reasoning extraction if requested
       let reasoningLog = null;
       let hasReasoningLog = false;
-      let cleanedContent = textContent;
+      let contentForParsing = textContent;
       
-      if (captureReasoning) {
+      if (captureReasoning && textContent.includes('<reasoning>')) {
         const reasoningMatch = textContent.match(/<reasoning>([\s\S]*?)<\/reasoning>/);
         if (reasoningMatch) {
           reasoningLog = reasoningMatch[1].trim();
           hasReasoningLog = true;
-          // Remove reasoning tags from content for JSON parsing
-          cleanedContent = textContent.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
-          console.log(`[Anthropic] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
-        } else {
-          console.log(`[Anthropic] No reasoning log found for model ${modelKey}`);
+          // Remove reasoning tags for JSON parsing
+          contentForParsing = textContent.replace(/<reasoning>[\s\S]*?<\/reasoning>/, '').trim();
         }
       }
       
-      // Try to extract JSON from the response, even if there's extra text
+      // Simple JSON extraction - try direct parse first, then look for JSON in text
       let result;
       try {
-        // First try to parse as pure JSON
-        result = JSON.parse(cleanedContent);
+        result = JSON.parse(contentForParsing);
       } catch (parseError) {
-        // If that fails, try to find JSON within the text
-        const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
+        // Look for JSON anywhere in the full text (including reasoning if needed)
+        const allText = reasoningLog && !contentForParsing ? reasoningLog : textContent;
+        const jsonMatch = allText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           try {
             result = JSON.parse(jsonMatch[0]);
-          } catch (secondParseError) {
-            // If JSON extraction fails, create a fallback response based on template
+          } catch (secondError) {
             result = {
-              patternDescription: "Unable to parse model response",
-              solvingStrategy: "The AI model returned an invalid response format.",
-              hints: ["Try using a different model", "Check the model configuration", "The response was not in valid JSON format"],
-              confidence: 0,
-              rawResponse: cleanedContent.substring(0, 500) + "..." // Include first 500 chars for debugging
-            } as any;
-            
-            // Add alien-specific fields only if using alien communication template
-            if (selectedTemplate?.emojiMapIncluded) {
-              result.alienMeaning = "The aliens seem to be having communication difficulties.";
-              result.alienMeaningConfidence = 0;
-            }
+              patternDescription: "Parse error",
+              solvingStrategy: "Could not extract valid JSON from response",
+              hints: ["Model returned malformed JSON"],
+              confidence: 0
+            };
           }
         } else {
-          // No JSON found at all
           result = {
-            patternDescription: "No valid JSON response found",
-            solvingStrategy: "The AI model did not return a structured response.",
-            hints: ["The model may need different prompting", "Try adjusting the temperature", "Consider using a different model"],
-            confidence: 0,
-            rawResponse: textContent.substring(0, 500) + "..." // Include first 500 chars for debugging
-          } as any;
-          
-          // Add alien-specific fields only if using alien communication template
-          if (selectedTemplate?.emojiMapIncluded) {
-            result.alienMeaning = "The aliens are speaking in an unknown format.";
-            result.alienMeaningConfidence = 0;
-          }
+            patternDescription: "No JSON found",
+            solvingStrategy: "No JSON structure detected in response",
+            hints: ["Model may need different prompting"],
+            confidence: 0
+          };
         }
       }
       
@@ -164,7 +145,7 @@ Then provide your final structured response.` : basePrompt;
   async generatePromptPreview(
     task: ARCTask,
     modelKey: keyof typeof MODELS,
-    temperature: number = 0.75,
+    temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,

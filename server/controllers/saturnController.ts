@@ -13,6 +13,7 @@ import { formatResponse } from '../utils/responseFormatter';
 import { saturnVisualService } from '../services/saturnVisualService';
 import { getSessionSnapshot } from '../services/wsService';
 import { randomUUID } from 'crypto';
+import { openaiService } from '../services/openai';
 
 export const saturnController = {
   async analyze(req: Request, res: Response) {
@@ -60,5 +61,39 @@ export const saturnController = {
 
     const snapshot = getSessionSnapshot(sessionId);
     return res.json(formatResponse.success({ sessionId, snapshot }));
+  },
+
+  async analyzeWithReasoning(req: Request, res: Response) {
+    // New endpoint for Responses API integration with structured reasoning
+    const { taskId } = req.params as { taskId: string };
+
+    if (!taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing taskId'));
+    }
+
+    const sessionId = randomUUID();
+
+    // Extract Responses API specific options
+    const options = {
+      provider: 'openai', // Force OpenAI for Responses API
+      model: (req.body?.model as string) || 'gpt-5',
+      temperature: typeof req.body?.temperature === 'number' ? req.body.temperature : 0.2,
+      cellSize: 24, // Default cell size
+      maxSteps: typeof req.body?.maxSteps === 'number' ? req.body.maxSteps : 8,
+      captureReasoning: true, // Always capture reasoning for this endpoint
+      reasoningSummary: req.body?.reasoningSummary !== false, // Default to true
+      previousResponseId: req.body?.previousResponseId as string | undefined,
+    };
+
+    // Start analysis with Responses API integration
+    setImmediate(() => {
+      saturnVisualService
+        .runWithResponses(taskId, sessionId, options)
+        .catch((err: unknown) => {
+          console.error(`[Saturn Responses] Run error for ${taskId}:`, err);
+        });
+    });
+
+    return res.json(formatResponse.success({ sessionId }));
   },
 };

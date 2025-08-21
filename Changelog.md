@@ -2,10 +2,187 @@
   CHANGELOG.md
   What: Release notes for ARC-AGI Puzzle Explorer.
   How: Documents features, fixes, and credits. This entry covers Custom Prompt support.
-  Author (docs): GPT-5 (low reasoning)
+ Author (docs): GPT-5 (low reasoning)
 -->
 
+ 
+August 21, 2025
+
+## Version 1.4.5 — OpenAI Response Parsing Fixes (2025-08-21)
+
+### Critical Bug Fixes
+- **OpenAI Reasoning Log Parsing (Code by Claude Code)**: Fixed broken reasoning log display showing `[object Object]` instead of actual reasoning content
+  - **Root Cause**: Summary array objects not being properly parsed - was calling `s?.text` on objects that had different structure
+  - **Fix Applied**: Enhanced object parsing to handle multiple summary object structures (`s.text`, `s.content`, fallback to JSON.stringify)
+  - **Content Type Recognition**: Added support for `output_text` content type in OpenAI's response blocks
+  - **Backward Compatibility**: Maintains existing string and array parsing while adding robust object handling
+- **Response Extraction Enhancement (Code by Claude Code)**: Improved OpenAI response text extraction from complex output blocks
+  - **Multiple Content Types**: Now recognizes both `text` and `output_text` content types from OpenAI Responses API
+  - **Robust Parsing**: Enhanced fallback logic for various response formats from different OpenAI models
+  - **Debug Logging**: Added detailed extraction logging to troubleshoot future response format changes
+
+### Technical Details
+- **Issue**: Frontend was receiving legitimate OpenAI responses but displaying errors due to backend parsing failures
+- **Files Modified**: `server/services/openai.ts` - reasoning log parsing and text extraction methods
+- **Models Affected**: All OpenAI models using Responses API (GPT-5, o3/o4 series, GPT-4.1 series)
+- **Testing**: Dev server confirmed working with proper response display and reasoning logs
+
+## Version 1.4.4 — GPT-5 Reasoning Parameters Controls (2025-08-21)
+
+### GPT-5 Reasoning Enhancement
+- **GPT-5 Reasoning Parameters UI (Code by Claude Code)**: Added user controls for GPT-5 reasoning parameters in PuzzleExaminer interface
+  - **Conditional UI Controls**: Reasoning parameter controls only appear when GPT-5 reasoning models are selected (gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07)
+  - **Effort Level Control**: Dropdown selector with options: minimal, low, medium (default), high - controls reasoning depth
+  - **Verbosity Control**: Dropdown selector with options: low, medium (default), high - controls reasoning log detail
+  - **Summary Control**: Dropdown selector with options: auto (default), detailed - controls summary generation
+  - **User-Friendly Descriptions**: Each parameter includes helpful descriptions explaining their impact
+  - **Responsive Design**: Grid layout adapts to screen size, maintains consistent styling with existing temperature controls
+
+### Backend Integration
+- **OpenAI Service Enhancement (Code by Claude Code)**: Extended reasoning parameter support throughout the backend
+  - **Parameter Flow**: Frontend → useAnalysisResults hook → API controller → OpenAI service → Responses API
+  - **Backward Compatibility**: Maintains existing temperature controls and default reasoning values (medium/medium/auto)
+  - **Type Safety**: Proper TypeScript interfaces for reasoning parameters across frontend and backend
+  - **API Enhancement**: Extended `/api/puzzle/analyze` endpoint to accept reasoningEffort, reasoningVerbosity, reasoningSummaryType parameters
+  - **Prompt Preview Support**: Updated prompt preview functionality to include reasoning parameters
+
+### Technical Implementation
+- **State Management**: Added reasoning parameter state to useAnalysisResults hook with proper default values
+- **Conditional Rendering**: GPT-5 model detection logic ensures controls only show for appropriate models
+- **Parameter Validation**: Backend validates and applies reasoning parameters only for GPT-5 reasoning models
+- **UI/UX Consistency**: Blue color scheme distinguishes reasoning controls from temperature controls
+- **Documentation**: Comprehensive implementation plan created at `docs/gpt5-reasoning-parameters-implementation-aug21.md`
+
+## Version 1.4.3 — GPT-5 Responses API Migration Complete (2025-08-21)
+
+### OpenAI GPT-5 Models Fixed
+- **GPT-5 Responses API Migration (Code by Claude Code)**: Completed migration plan phases 1-7, fixing GPT-5 model routing issues
+  - **Model Name Correction**: Fixed GPT-5 model name mappings in `server/services/openai.ts` (`gpt-5` → `gpt-5-2025-08-07`, etc.)
+  - **Responses API Parameters**: Added required `store: true` and `include: ["reasoning.encrypted_content"]` parameters
+  - **Migration Plan Complete**: All phases from `docs/OpenAI_Responses_Migration_Plan_2025-08-20.md` implemented
+  - **Chat Completions Deprecated**: Confirmed all OpenAI calls use Responses API, Chat Completions fully removed
+  - **GPT-5 Models Working**: gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07, gpt-5-chat-latest now properly routed
+
+## Version 1.4.2 — API Call Logging Plan (2025-08-21)
+
+### Comprehensive API Logging Strategy
+- **Enhanced API Logging Plan (Code by Claude Code)**: Built upon Cascade's excellent foundation with complete implementation strategy
+  - **Security Audit**: ✅ Confirmed no test answers leaked to AI - only test input images sent to OpenAI
+  - **UI Components**: Designed API timeline, statistics cards, and tabbed interface for rich data display
+  - **Data Sanitization**: Enhanced redaction policies and automatic answer filtering
+  - **Implementation Roadmap**: 4-week phased rollout with security-first approach
+  - **Documentation**: `docs/Enhanced_API_Logging_Implementation_Plan.md` with UI components and security hardening
+
+### Foundation Documentation
+- **Capturing API Call Logs Plan (Code by Cascade)**: `docs/Capturing_API_Call_Logs_Plan_2025-08-21.md` detailing end-to-end capture of API request/response snapshots with strict redaction and feature flags.
+  - Components: `server/python/saturn_wrapper.py`, `solver/arc_visual_solver.py`, `server/services/{openai.ts, anthropic.ts, pythonBridge.ts, saturnVisualService.ts, dbService.ts}`.
+  - Events: `api_call_start` / `api_call_end`; persisted via `saturnEvents` and optionally `provider_raw_response` (gated by `RAW_RESPONSE_PERSIST`).
+  - Security: no API keys or raw chain-of-thought; size caps and truncation applied.
+
 August 20, 2025
+
+## Version 1.4.1 — Saturn Autonomous Operation Fix (2025-08-20)
+
+### Critical Saturn Architecture Fix
+- __Saturn Prompt Template Bypass (Code by Claude Code)__: Fixed critical issue where Saturn solver was incorrectly using application prompt templates instead of operating autonomously
+  - **Root Cause**: Saturn was calling OpenAI service with `'standardExplanation'` template instead of its own custom prompt
+  - **Solution**: Modified Saturn to use `'custom'` prompt mode with its own `buildPuzzlePrompt()` method
+  - **Impact**: Saturn now operates fully independently without template dependencies
+  - **Architecture Compliance**: Maintains Saturn's design principle as an autonomous visual reasoning module
+  - **Documentation**: Added comprehensive `docs/Saturn_Autonomous_Operation_Plan.md` detailing the fix and architectural principles
+
+### Technical Implementation
+- **Backend**: Modified `server/services/saturnVisualService.ts:192-204` to remove inappropriate AI logic
+- **Frontend**: Redesigned `client/src/pages/SaturnVisualSolver.tsx` for pure Python wrapper display
+  - **Removed**: Redundant "Reasoning Analysis" section that duplicated Python output
+  - **Enhanced**: Terminal-style Python log display with dark theme and improved formatting
+  - **Improved**: Single-column layout focused on Python solver transparency
+  - **Added**: Collapsible puzzle details to reduce visual clutter
+- **Documentation**: Created comprehensive purity plan at `docs/Saturn_Python_Wrapper_Purity_Plan.md`
+
+### Bug Fixes
+- __Confidence Type Normalization (Code by Cascade)__: Fixed Postgres error `invalid input syntax for type integer: "0.5"` when saving Saturn results.
+  - **Root Cause**: `explanations.confidence` is INTEGER, but Saturn was producing fractional values (e.g., 0.5).
+  - **Fix**: Normalized confidence to integer percent (0–100) in both Saturn Responses and Visual paths.
+    - Updated `server/services/saturnVisualService.ts`:
+      - `calculateConfidenceFromReasoning()` now returns clamped integer percent.
+      - Final event handler now converts 0..1 confidences to 0..100 before persistence.
+  - **Result**: DB inserts succeed; UI and stats continue to read integer confidence values.
+
+## Version 1.4.0 — Saturn Visual Solver Complete Redesign (2025-08-20)
+
+### Critical OpenAI Responses API Integration Fixes
+- __Fixed OpenAI Responses API Integration (Code by Claude Code)__: Resolved critical parsing and streaming issues with OpenAI's Responses API
+  - **Fixed Response Data Extraction**: Corrected Saturn service to properly extract `reasoningLog`, `reasoningItems`, and `providerResponseId` from OpenAI service responses
+  - **Enhanced WebSocket Streaming**: Fixed reasoning data streaming to properly handle structured reasoning items and display them in real-time
+  - **Robust Data Type Handling**: Added proper type checking and fallbacks for reasoning items (string, object, or array formats)
+  - **Database Integration**: Fixed persistence of new Responses API fields (`providerResponseId`, `reasoningItems`, `providerRawResponse`)
+  - **Improved Error Handling**: Enhanced error logging and debugging for Responses API calls with detailed field inspection
+
+### Major UI/UX Overhaul
+- __Complete Saturn Visual Solver Redesign (Code by Claude Code)__: Completely redesigned the Saturn Visual Solver page for better clarity and user experience
+  - **Streamlined Single-Column Layout**: Replaced complex two-column grid with clean, focused single-column design
+  - **Enhanced Status Overview**: Added detailed phase explanations, progress indicators with color coding, and real-time timing information
+  - **Collapsible Puzzle Details**: Made puzzle overview collapsible to reduce visual clutter while maintaining accessibility
+  - **Improved Progress Explanations**: Added comprehensive phase descriptions explaining what Saturn is doing during each step
+  - **Real-Time Timing Display**: Shows elapsed time and estimated remaining time with automatic updates
+
+### Backend Performance & Reliability
+- __Extended Timeout Management (Code by Claude Code)__: Enhanced Saturn analysis timeout handling for long-running tasks
+  - **Configurable Timeout**: Increased default timeout from 30 to 60 minutes with SATURN_TIMEOUT_MINUTES environment variable support
+  - **Warning System**: Added 75% timeout warnings to notify users of approaching time limits
+  - **Proper Cleanup**: Improved timeout and warning handle cleanup to prevent memory leaks
+  - **Better Error Messages**: Enhanced timeout messages with configuration guidance
+
+### Real-Time Reasoning Display
+- __Live Reasoning Log Streaming (Code by Claude Code)__: Added comprehensive reasoning log display and streaming capabilities
+  - **WebSocket Reasoning Streams**: Modified backend to stream reasoning logs in real-time via WebSocket
+  - **Dual-Panel Layout**: Split output into "System Output" and "Reasoning Analysis" for better organization
+  - **Reasoning History**: Track and display all reasoning steps throughout the analysis process
+  - **Current Step Highlighting**: Prominently display the current reasoning step with visual emphasis
+
+### Enhanced Console Output
+- __Structured Log Display (Code by Claude Code)__: Completely revamped console output with intelligent categorization and formatting
+  - **Log Level Detection**: Automatic categorization (ERROR, WARN, INFO, DEBUG, SATURN, SUCCESS) with color coding
+  - **Timestamp Integration**: Added real-time timestamps for all log entries
+  - **Visual Indicators**: Color-coded log levels with appropriate background highlighting
+  - **Message Cleaning**: Intelligent removal of redundant prefixes for cleaner display
+  - **Progress Indicators**: Enhanced running status indicators with better visual feedback
+
+### OpenAI Responses API Integration
+- __Complete Responses API Implementation (Code by Claude Code)__: Migrated Saturn from basic ChatCompletions to structured Responses API
+  - **New Endpoint**: Added `/api/saturn/analyze-with-reasoning/:taskId` for Responses API calls
+  - **Structured Reasoning**: Captures `output_reasoning.summary` and `output_reasoning.items[]` for step-by-step analysis
+  - **Response Chaining**: Supports `previous_response_id` for multi-step reasoning chains
+  - **Real-Time Streaming**: WebSocket integration streams reasoning summaries and step updates
+  - **Step Progress Tracking**: Derives step counts from reasoning items rather than hardcoded values
+
+### Additional Fixes (2025-08-20)
+- **Visible Output Token Cap (Code by Cascade)**: Plumbed `max_output_tokens` through `openaiService.analyzePuzzleWithModel()` into the Responses API body and set a sensible default from `saturnVisualService.ts` to prevent final answer starvation.
+- **WS Message Types (Code by Cascade)**: Standardized WebSocket payloads with `messageType` fields: `reasoning-summary`, `reasoning-step`, and `final-output` to improve client-side handling and UI clarity.
+
+### Chaining & Reliability (Responses API)
+- **Previous Response Chaining (Code by Cascade)**: `server/services/openai.ts` now accepts `previousResponseId` and threads it to the Responses API via `previous_response_id`.
+- **Simple Retry with Backoff (Code by Cascade)**: Added exponential backoff retries (1s/2s/4s) for transient Responses API errors; configurable attempts.
+- **Saturn Forwarding (Code by Cascade)**: `server/services/saturnVisualService.ts` forwards `previousResponseId`, `maxSteps`, and reasoning summary settings to `openaiService.analyzePuzzleWithModel()`.
+- **Type Safety Fix (Code by Cascade)**: Resolved readonly array assignment for `saturnImages` in Saturn Responses path.
+
+### Technical Improvements
+- **State Management**: Enhanced Saturn progress hook with reasoning log tracking and history management
+- **Memory Management**: Implemented proper cleanup for timeout handlers and WebSocket connections
+- **Type Safety**: Added proper TypeScript interfaces for reasoning log streaming
+- **Performance**: Optimized log rendering and real-time updates for better responsiveness
+- **API Architecture**: Added helper methods for extracting patterns, strategies, and confidence from reasoning data
+- **Database Integration**: Enhanced explanation storage with reasoning summaries and structured analysis data
+  
+### Database Schema Additions (Responses API)
+- Added new columns to `explanations` for OpenAI Responses API migration:
+  - `provider_response_id` (TEXT)
+  - `provider_raw_response` (JSONB) — persisted only when `RAW_RESPONSE_PERSIST=true`
+  - `reasoning_items` (JSONB) — structured summarized reasoning steps
+- Safe migrations: conditionally `ALTER TABLE` if columns are missing.
+- `server/services/dbService.ts` now persists these fields from OpenAI service responses.
+ - **OpenAI Responses API Migration Plan (Docs)**: Added `docs/OpenAI_Responses_Migration_Plan_2025-08-20.md` outlining full migration from Chat Completions to Responses, parser updates for `output_text`/`output[]`/`output_reasoning`, token budgeting with `max_output_tokens`, session chaining via `previous_response_id`, logging raw JSON for failing runs, and streaming/polling strategy. Initial audit: `server/services/openai.ts` still uses Chat Completions for non-reasoning models and parses `choices[0].message.content`; DB lacks fields for `provider_response_id`, `provider_raw_response`, and `reasoning_items`.
 
 ## Version 1.3.9 — Enhanced Solver Mode Validation & UI Refactoring (2025-08-20)
 
@@ -37,6 +214,7 @@ August 20, 2025
 - **ARC Color Palette Single Source of Truth (Code by Cascade)**: Fixed incorrect Tailwind color mapping in `client/src/components/saturn/CompactGrid.tsx` and consolidated exact ARC colors into `client/src/constants/colors.ts` (matching `client/src/constants/colors.md`). Components now use precise RGB values via inline styles for pixel-accurate rendering.
   - **TS Constants Update (Code by Cascade)**: `client/src/constants/models.ts` now exports `CELL_COLORS` from `ARC_COLORS` to eliminate duplicate palettes in the frontend.
   - **Python ARC Palette Alignment (Code by Cascade)**: Corrected maroon to `(128, 0, 0)` in `solver/arc_visualizer.py` and `solver/arc_stdin_visualizer.py` (black unchanged). Solver-generated images now match the canonical client palette.
+  - **GridCell Palette Fix (Code by Cascade)**: `client/src/components/puzzle/GridCell.tsx` now imports `ARC_COLORS` from `constants/colors` and uses it for cell backgrounds, ensuring the exact canonical colors in puzzle grids.
 - **AI Service Prompt Compliance**: Fixed hardcoded prompt templates in Anthropic and Gemini services
   - **Controller Default Fix**: Changed hardcoded "alienCommunication" default to proper "standardExplanation"
   - **Anthropic Error Handling**: Fixed hardcoded alien fields in error responses to respect template selection

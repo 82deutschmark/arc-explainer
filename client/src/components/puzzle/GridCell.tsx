@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { GridCellProps, SIZE_CLASSES } from '@/types/puzzle';
-import { CELL_COLORS } from '@/constants/models';
+import { ARC_COLORS } from '@/constants/colors';
 import { getSpaceEmoji } from '@/lib/spaceEmojis';
 
 export function GridCell({ value, showEmojis, size = "normal", emojiSet }: GridCellProps) {
@@ -14,7 +14,7 @@ export function GridCell({ value, showEmojis, size = "normal", emojiSet }: GridC
     <div
       className={`${SIZE_CLASSES[size]} border border-gray-300 flex items-center justify-center font-mono`}
       style={{ 
-        backgroundColor: showEmojis ? 'white' : (CELL_COLORS[value] || '#FFFFFF'),
+        backgroundColor: showEmojis ? 'white' : (ARC_COLORS[value] || '#FFFFFF'),
         color: showEmojis ? '#000' : '#FFF'
       }}
     >
