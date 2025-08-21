@@ -125,7 +125,7 @@ export class OpenAIService {
         reasoning: reasoningConfig,
         max_steps: serviceOpts?.maxSteps,
         previous_response_id: serviceOpts?.previousResponseId,
-        // GPT-5 Chat models support temperature and top_p
+        // ONLY the GPT-5 Chat model supports temperature and top_p
         ...(isGPT5ChatModel && {
           temperature: temperature || 0.2,
           top_p: 1.00
@@ -236,7 +236,7 @@ export class OpenAIService {
             reasoning: isGPT5Model 
               ? { 
                   text: { format: 'text' },
-                  effort: serviceOpts?.reasoningEffort || "high", 
+                  effort: serviceOpts?.reasoningEffort || "medium", 
                   verbosity: serviceOpts?.reasoningVerbosity || "medium",
                   summary: serviceOpts?.reasoningSummaryType || "detailed" 
                 }
