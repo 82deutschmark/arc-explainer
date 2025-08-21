@@ -38,8 +38,8 @@ export function useAnalysisResults({
   emojiSetKey,
   omitAnswer,
 }: UseAnalysisResultsProps) {
-  const [temperature, setTemperature] = useState(0.7);
-  const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
+  const [temperature, setTemperature] = useState(0.2);
+  const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());

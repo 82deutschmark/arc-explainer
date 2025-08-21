@@ -42,7 +42,7 @@ export default function PuzzleExaminer() {
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
-  const [omitAnswer, setOmitAnswer] = useState(false); // Cascade: researcher option to hide correct answer in prompt
+  const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
 
   // Early return if no taskId
   if (!taskId) {

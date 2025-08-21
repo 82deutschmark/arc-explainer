@@ -16,7 +16,9 @@
       "Bash(grep:*)",
       "Bash(C:WindowsSystem32taskkill.exe /PID 26904 /F)",
       "Bash(/c/Windows/System32/taskkill.exe /PID 26904 /F)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(del test-gpt5-responses.js)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

@@ -221,7 +221,7 @@ function getSolverResponseFormat(): object {
  */
 export function buildAnalysisPrompt(
   task: ARCTask,
-  promptId: string = "standardExplanation",
+  promptId: string = "solver",
   customPrompt?: string,
   options?: PromptOptions
 ): {
@@ -365,7 +365,7 @@ ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
  * Get default prompt ID that uses numeric grids (not emojis)
  */
 export function getDefaultPromptId(): string {
-  return "standardExplanation";
+  return "solver";
 }
 
 /**
