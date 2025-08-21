@@ -12,6 +12,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run windows-dev` - Windows-specific development command
 - `npm run windows-start` - Windows-specific production command
 
+**IMPORTANT FOR CLAUDE CODE**: Always use PowerShell with background execution to prevent orphaned processes:
+```powershell
+powershell -Command "npm run dev"
+```
+Use `run_in_background: true` parameter to avoid port conflicts from persistent processes.
+
 ### Database Management
 - `npm run db:push` - Push database schema changes using Drizzle
 - Database tables auto-create on startup if using PostgreSQL

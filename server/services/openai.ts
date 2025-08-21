@@ -157,29 +157,13 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse output_text JSON with fallback to extracting from output blocks
-      let rawJson = parsedResponse.output_text || '';
-      
-      // If no output_text but we have output blocks, extract text from them
-      if (!rawJson && parsedResponse.raw_response?.output) {
-        rawJson = this.extractTextFromOutputBlocks(parsedResponse.raw_response.output);
-      }
-      
+      // Parse output_text JSON
+      const rawJson = parsedResponse.output_text || '';
       try {
         result = rawJson ? JSON.parse(rawJson) : {};
       } catch (e) {
-        console.warn('[OpenAI] Failed to parse JSON, trying to extract JSON from text');
-        const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            result = JSON.parse(jsonMatch[0]);
-          } catch (e2) {
-            console.warn('[OpenAI] All JSON parsing failed, returning empty result');
-            result = {};
-          }
-        } else {
-          result = {};
-        }
+        console.warn('[OpenAI] Failed to parse JSON output_text; returning empty result.');
+        result = {};
       }
 
       // Extract reasoning summary/items
@@ -191,7 +175,15 @@ export class OpenAIService {
         const summary = parsedResponse.output_reasoning?.summary;
         if (summary) {
           if (Array.isArray(summary)) {
-            reasoningLog = summary.map((s: any) => s?.text ?? '').join('\n');
+            // Extract text from objects in the summary array
+            reasoningLog = summary.map((s: any) => {
+              // Handle different summary object structures
+              if (typeof s === 'string') return s;
+              if (s && typeof s === 'object' && s.text) return s.text;
+              if (s && typeof s === 'object' && s.content) return s.content;
+              // Fallback to JSON stringify if the object structure is unknown
+              return typeof s === 'object' ? JSON.stringify(s) : String(s);
+            }).filter(Boolean).join('\n\n');
           } else if (typeof summary === 'string') {
             reasoningLog = summary;
           }
@@ -355,7 +347,7 @@ export class OpenAIService {
         reasoningSummary: result.output_reasoning?.summary?.substring(0, 100)
       });
 
-      // Enhanced response parsing according to migration plan
+      // Enhanced response parsing - extract from output blocks if needed
       const parsedResponse = {
         id: result.id,
         output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
@@ -365,12 +357,6 @@ export class OpenAIService {
         },
         raw_response: result // For debugging
       };
-
-      console.log('[OPENAI-RESPONSES-DEBUG] Parsed Response:', {
-        hasOutputText: !!parsedResponse.output_text,
-        reasoningSummaryLength: parsedResponse.output_reasoning.summary?.length || 0,
-        reasoningItemsCount: parsedResponse.output_reasoning.items.length
-      });
 
       return parsedResponse;
 
@@ -382,7 +368,17 @@ export class OpenAIService {
 
   // Helper method for parsing Responses API output blocks
   private extractTextFromOutputBlocks(output: any[]): string {
-    if (!Array.isArray(output)) return '';
+    if (!Array.isArray(output)) {
+      console.log('[OPENAI-EXTRACT] Output is not an array:', typeof output);
+      return '';
+    }
+    
+    console.log('[OPENAI-EXTRACT] Processing', output.length, 'blocks:', output.map(b => ({
+      type: b.type,
+      role: b.role,
+      hasContent: !!b.content,
+      hasText: !!b.text
+    })));
     
     // Look for Assistant blocks first
     const assistantBlock = output.find(block => 
@@ -390,25 +386,49 @@ export class OpenAIService {
     );
     
     if (assistantBlock) {
+      console.log('[OPENAI-EXTRACT] Found Assistant block');
       if (Array.isArray(assistantBlock.content)) {
-        const textContent = assistantBlock.content.find((c: any) => c.type === 'text');
-        if (textContent?.text) return textContent.text;
+        // Look for text or output_text content types
+        const textContent = assistantBlock.content.find((c: any) => 
+          c.type === 'text' || c.type === 'output_text'
+        );
+        if (textContent?.text) {
+          console.log('[OPENAI-EXTRACT] Extracted from Assistant array:', textContent.text.substring(0, 200));
+          return textContent.text;
+        }
       }
-      if (typeof assistantBlock.content === 'string') return assistantBlock.content;
-      if (assistantBlock.text) return assistantBlock.text;
+      if (typeof assistantBlock.content === 'string') {
+        console.log('[OPENAI-EXTRACT] Extracted from Assistant string:', assistantBlock.content.substring(0, 200));
+        return assistantBlock.content;
+      }
+      if (assistantBlock.text) {
+        console.log('[OPENAI-EXTRACT] Extracted from Assistant text:', assistantBlock.text.substring(0, 200));
+        return assistantBlock.text;
+      }
     }
     
     // Look for other message blocks
     for (const block of output) {
       if (block.type === 'message' && block.content) {
+        console.log('[OPENAI-EXTRACT] Processing message block');
         if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) => c.type === 'text');
-          if (textContent?.text) return textContent.text;
+          // Look for both text and output_text content types
+          const textContent = block.content.find((c: any) => 
+            c.type === 'text' || c.type === 'output_text'
+          );
+          if (textContent?.text) {
+            console.log('[OPENAI-EXTRACT] Extracted from message array:', textContent.text.substring(0, 200));
+            return textContent.text;
+          }
         }
-        if (typeof block.content === 'string') return block.content;
+        if (typeof block.content === 'string') {
+          console.log('[OPENAI-EXTRACT] Extracted from message string:', block.content.substring(0, 200));
+          return block.content;
+        }
       }
       
       if (block.type === 'text' && block.text) {
+        console.log('[OPENAI-EXTRACT] Extracted from text block:', block.text.substring(0, 200));
         return block.text;
       }
     }
@@ -418,7 +438,10 @@ export class OpenAIService {
       .filter(block => block.content || block.text)
       .map(block => {
         if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) => c.type === 'text');
+          // Look for both text and output_text content types
+          const textContent = block.content.find((c: any) => 
+            c.type === 'text' || c.type === 'output_text'
+          );
           return textContent?.text || '';
         }
         return block.content || block.text;
