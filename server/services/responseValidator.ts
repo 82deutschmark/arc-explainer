@@ -54,8 +54,27 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
   for (const keyword of keywordPatterns) {
     const index = lowerText.indexOf(keyword);
     if (index !== -1) {
-      // Look for [[ after the keyword
-      const afterKeyword = text.substring(index + keyword.length);
+      // Look for [[ after the keyword, but first handle markdown code blocks
+      let afterKeyword = text.substring(index + keyword.length);
+      
+      // Check if there's a markdown code block after the keyword
+      const codeBlockStart = afterKeyword.indexOf('```');
+      if (codeBlockStart !== -1) {
+        // Find the closing ```
+        const afterCodeBlockStart = afterKeyword.substring(codeBlockStart + 3);
+        const codeBlockEnd = afterCodeBlockStart.indexOf('```');
+        if (codeBlockEnd !== -1) {
+          // Extract content inside the code block
+          const codeBlockContent = afterCodeBlockStart.substring(0, codeBlockEnd).trim();
+          logger.info(`Found markdown code block: ${codeBlockContent.substring(0, 100)}...`, 'validator');
+          
+          // Check if the code block contains a valid grid
+          if (codeBlockContent.includes('[[') && codeBlockContent.includes(']]')) {
+            afterKeyword = codeBlockContent;
+          }
+        }
+      }
+      
       const startBracket = afterKeyword.indexOf('[[');
       if (startBracket !== -1) {
         // Find the matching ]]
@@ -111,6 +130,40 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
             logger.info(`Skipping non-numeric grid candidate: ${gridText.substring(0, 50)}`, 'validator');
           }
         }
+      }
+    }
+  }
+
+  // Strategy 1.5: Check for markdown code blocks containing grids
+  // This handles both plain ``` and language-specified blocks like ```json, ```python, etc.
+  const codeBlockRegex = /```(?:[a-z]*\s*)?[^`]*(\[\[[\s\S]*?\]\])[^`]*```/g;
+  let codeBlockMatch;
+  while ((codeBlockMatch = codeBlockRegex.exec(text)) !== null) {
+    const gridText = codeBlockMatch[1];
+    if (/^[\[\]\d\s,]+$/.test(gridText)) {
+      try {
+        const cleanedText = gridText
+          .replace(/\s+/g, ' ')
+          .replace(/,\s*]/g, ']')
+          .replace(/,\s*,/g, ',')
+          .replace(/\[\s+/g, '[')
+          .replace(/\s+\]/g, ']');
+        
+        logger.info(`Found grid in markdown code block: ${cleanedText}`, 'validator');
+        const grid = JSON.parse(cleanedText);
+        
+        if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
+          const isValidNumericGrid = grid.every(row => 
+            Array.isArray(row) && row.every(cell => typeof cell === 'number' && Number.isInteger(cell))
+          );
+          
+          if (isValidNumericGrid) {
+            logger.info(`Successfully extracted numeric grid from markdown code block: ${JSON.stringify(grid)}`, 'validator');
+            return { grid, method: 'markdown_code_block' };
+          }
+        }
+      } catch (error) {
+        logger.info(`Failed to parse grid from markdown code block: ${gridText}`, 'validator');
       }
     }
   }

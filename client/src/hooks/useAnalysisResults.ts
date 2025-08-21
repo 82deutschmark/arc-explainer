@@ -158,6 +158,9 @@ export function useAnalysisResults({
       throw new Error(`A ${getProviderFromKey(modelKey)} model is already processing. Please wait for it to complete.`);
     }
     
+    // Set current model key to show reasoning controls for GPT-5 models
+    setCurrentModelKey(modelKey);
+    
     const payload: any = {
       modelKey,
       ...(supportsTemperature ? { temperature } : {}),
