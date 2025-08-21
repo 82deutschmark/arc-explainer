@@ -332,7 +332,15 @@ Input: ${testCase.input}
 Your task:
 ${analysisInstructions}
 
-${responsePrefix} in this JSON format:
+IMPORTANT: Start your response by stating what you predict the test output grid should be and why you think that's correct. Take as much time and reasoning as you need - these are complex puzzles that require careful analysis.
+
+You may organize your response however feels most natural. If you prefer structure, you could consider including:
+- Pattern Description: What pattern you identified in the examples
+- Solving Strategy: Your reasoning process  
+- Key Insights: Important observations that led to your conclusion
+- Confidence: How sure you are about your prediction
+
+Example JSON structure (optional):
 ${JSON.stringify(getSolverResponseFormat(), null, 2)}`;
   } else {
     // Explanation mode: correct answer provided, ask AI to explain
@@ -351,7 +359,13 @@ ${ARC_TRANSFORMATIONS}
 
 ${analysisInstructions}${emojiMapSection}
 
-${responsePrefix} in this JSON format:
+Feel free to explain in whatever format works best for your reasoning. If you prefer structure, you could consider including:
+- Pattern Description: What pattern you see in the transformation
+- Solving Strategy: How someone would approach this puzzle
+- Key Insights: Important observations about the rule
+- Confidence: How sure you are about your explanation
+
+Example JSON structure (optional):
 ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
   }
 
