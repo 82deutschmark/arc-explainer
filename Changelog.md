@@ -8,6 +8,25 @@
  
 August 21, 2025
 
+## Version 1.4.5 — OpenAI Response Parsing Fixes (2025-08-21)
+
+### Critical Bug Fixes
+- **OpenAI Reasoning Log Parsing (Code by Claude Code)**: Fixed broken reasoning log display showing `[object Object]` instead of actual reasoning content
+  - **Root Cause**: Summary array objects not being properly parsed - was calling `s?.text` on objects that had different structure
+  - **Fix Applied**: Enhanced object parsing to handle multiple summary object structures (`s.text`, `s.content`, fallback to JSON.stringify)
+  - **Content Type Recognition**: Added support for `output_text` content type in OpenAI's response blocks
+  - **Backward Compatibility**: Maintains existing string and array parsing while adding robust object handling
+- **Response Extraction Enhancement (Code by Claude Code)**: Improved OpenAI response text extraction from complex output blocks
+  - **Multiple Content Types**: Now recognizes both `text` and `output_text` content types from OpenAI Responses API
+  - **Robust Parsing**: Enhanced fallback logic for various response formats from different OpenAI models
+  - **Debug Logging**: Added detailed extraction logging to troubleshoot future response format changes
+
+### Technical Details
+- **Issue**: Frontend was receiving legitimate OpenAI responses but displaying errors due to backend parsing failures
+- **Files Modified**: `server/services/openai.ts` - reasoning log parsing and text extraction methods
+- **Models Affected**: All OpenAI models using Responses API (GPT-5, o3/o4 series, GPT-4.1 series)
+- **Testing**: Dev server confirmed working with proper response display and reasoning logs
+
 ## Version 1.4.4 — GPT-5 Reasoning Parameters Controls (2025-08-21)
 
 ### GPT-5 Reasoning Enhancement
