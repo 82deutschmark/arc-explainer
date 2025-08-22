@@ -268,7 +268,7 @@ Correct Answer: ${testCase.output}`;
     };
   }
   
-  console.log(`[PromptBuilder] ❌ CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE`);
+  console.log(`[PromptBuilder] 📋 CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE 📋`);
 
   // Use template-based prompt (existing logic)
   const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
@@ -332,7 +332,14 @@ Input: ${testCase.input}
 Your task:
 ${analysisInstructions}
 
-${responsePrefix} in this JSON format:
+Reply with your prediction of the test output grid. 
+If you are able to, consider including:
+- Pattern Description: What you learned from the training examples
+- Solving Strategy: Your reasoning process, briefly 
+- Key Insights: Important observations that led to your conclusion
+- Confidence: How sure you are about your prediction
+
+Example JSON structure (optional):
 ${JSON.stringify(getSolverResponseFormat(), null, 2)}`;
   } else {
     // Explanation mode: correct answer provided, ask AI to explain
@@ -351,7 +358,14 @@ ${ARC_TRANSFORMATIONS}
 
 ${analysisInstructions}${emojiMapSection}
 
-${responsePrefix} in this JSON format:
+Reply with your prediction of the test output grid. 
+If you are able to, consider including:
+- Pattern Description: What you learned from the training examples
+- Solving Strategy: Your reasoning process, briefly 
+- Key Insights: Important observations that led to your conclusion
+- Confidence: How sure you are about your prediction
+
+Example JSON structure (optional):
 ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
   }
 
