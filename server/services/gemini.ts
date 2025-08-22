@@ -1,7 +1,8 @@
 /**
  * Google Gemini Service Integration for ARC-AGI Puzzle Analysis
  * Supports reasoning log capture through structured prompting with <thinking> tags
- * Since Gemini doesn't provide built-in reasoning logs, we prompt it to show its reasoning
+ * Since Gemini doesn't provide built-in reasoning logs, we prompt it to show its reasoning WHICH CAN BE PROBLEMATIC
+ *    * Switched to modular and clean code to avoid issues with Gemini's response format
  * @author Cascade / Gemini Pro 2.5
  * 
  * This service provides integration with Google's Gemini models for analyzing ARC-AGI puzzles.
@@ -100,7 +101,8 @@ export class GeminiService {
     const prompt = captureReasoning ? 
       `${basePrompt}
 
-IMPORTANT: Before providing your final JSON response, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
+If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
 
 <thinking>
 [Your detailed step-by-step analysis will go here]
@@ -243,8 +245,7 @@ Then provide your final structured JSON response.` : basePrompt;
       "gemini-2.5-flash-lite": "Most cost-efficient model with high throughput",
       "gemini-2.0-flash": "General purpose multimodal model with enhanced features",
       "gemini-2.0-flash-lite": "Optimized for cost efficiency and low latency",
-      "gemini-1.5-pro": "Legacy multimodal model (deprecated)",
-      "gemini-1.5-flash": "Legacy fast model (deprecated)",
+
     };
     return descriptions[modelKey] || "Google Gemini model";
   }
@@ -274,7 +275,8 @@ Then provide your final structured JSON response.` : basePrompt;
     const prompt = captureReasoning ? 
       `${basePrompt}
 
-IMPORTANT: Before providing your final JSON response, please show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
+IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
+If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
 
 <thinking>
 [Your detailed step-by-step analysis will go here]

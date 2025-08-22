@@ -157,13 +157,52 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse output_text JSON
+      // Parse output_text JSON with markdown code block handling
       const rawJson = parsedResponse.output_text || '';
       try {
         result = rawJson ? JSON.parse(rawJson) : {};
       } catch (e) {
-        console.warn('[OpenAI] Failed to parse JSON output_text; returning empty result.');
-        result = {};
+        console.warn('[OpenAI] Failed direct JSON parse, attempting markdown extraction...');
+        
+        // Try to extract JSON from markdown code blocks (fixes gpt-5-chat-latest and gpt-4.1-2025-04-14)
+        const codeBlockMatch = rawJson.match(/```(?:json\s*)?([^`]*?)```/s);
+        if (codeBlockMatch) {
+          try {
+            const cleanedJson = codeBlockMatch[1].trim();
+            console.log(`[OpenAI] Found JSON in markdown code block: ${cleanedJson.substring(0, 200)}...`);
+            result = JSON.parse(cleanedJson);
+          } catch (markdownError) {
+            console.warn('[OpenAI] Failed to parse JSON from markdown code block, trying regex fallback...');
+            
+            // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
+            const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              try {
+                result = JSON.parse(jsonMatch[0]);
+              } catch (regexError) {
+                console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
+                result = {};
+              }
+            } else {
+              console.warn('[OpenAI] No JSON structure found in response.');
+              result = {};
+            }
+          }
+        } else {
+          // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
+          const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            try {
+              result = JSON.parse(jsonMatch[0]);
+            } catch (regexError) {
+              console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
+              result = {};
+            }
+          } else {
+            console.warn('[OpenAI] No JSON structure found in response.');
+            result = {};
+          }
+        }
       }
 
       // Extract reasoning summary/items
@@ -190,6 +229,18 @@ export class OpenAIService {
           hasReasoningLog = !!reasoningLog;
         }
       }
+
+      // Debug logging to catch reasoning data type issues
+      if (reasoningLog && typeof reasoningLog !== 'string') {
+        console.error(`[OpenAI] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
+        reasoningLog = String(reasoningLog); // Force to string
+      }
+      
+      if (reasoningItems && !Array.isArray(reasoningItems)) {
+        console.error(`[OpenAI] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
+      }
+      
+      console.log(`[OpenAI] Returning reasoning data - reasoningLog type: ${typeof reasoningLog}, length: ${reasoningLog?.length || 0}`);
 
       return {
         model: modelKey,
