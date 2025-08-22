@@ -62,6 +62,55 @@ const MODELS_WITH_REASONING = new Set([
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// JSON-structure-enforcing system prompts (extracted from user prompts)
+const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
+
+{
+  "predictedOutput": [[0,1,2],[3,4,5],[6,7,8]],
+  "patternDescription": "Clear description of what you learned from the training examples",
+  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
+  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
+
+const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
+
+{
+  "predictedOutputs": [[[0,1],[2,3]], [[4,5],[6,7]]],
+  "patternDescription": "Clear description of what you learned from the training examples", 
+  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
+  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
+
+const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
+
+{
+  "patternDescription": "Clear description of the rules learned from the training examples",
+  "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
+
+const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
+
+{
+  "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
+  "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
+  "confidence": 85,
+  "alienMeaning": "The aliens' message",
+  "alienMeaningConfidence": 85
+}
+
+CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
+
 export class OpenAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -81,12 +130,49 @@ export class OpenAIService {
       reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
       reasoningVerbosity?: 'low' | 'medium' | 'high';
       reasoningSummaryType?: 'auto' | 'detailed';
+      // System prompt mode
+      systemPromptMode?: 'ARC' | 'None';
     }
   ) {
     const modelName = MODELS[modelKey];
 
+    // Determine system prompt mode (default to ARC for better results)
+    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    
     // Build prompt using shared prompt builder
     const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    
+    // Prepare system and user messages based on mode
+    let systemMessage: string | undefined;
+    let userMessage: string;
+    
+    if (systemPromptMode === 'ARC') {
+      // ARC Mode: Select appropriate system prompt based on context
+      const isSolverMode = promptId === "solver";
+      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
+      const hasMultipleTests = task.test.length > 1;
+      
+      if (isSolverMode && hasMultipleTests) {
+        systemMessage = MULTI_SOLVER_SYSTEM_PROMPT;
+        console.log(`[OpenAI] Using multi-test solver system prompt (${task.test.length} tests)`);
+      } else if (isSolverMode) {
+        systemMessage = SOLVER_SYSTEM_PROMPT;
+        console.log(`[OpenAI] Using single-test solver system prompt`);
+      } else if (isAlienMode) {
+        systemMessage = ALIEN_EXPLANATION_SYSTEM_PROMPT;
+        console.log(`[OpenAI] Using alien explanation system prompt`);
+      } else {
+        systemMessage = EXPLANATION_SYSTEM_PROMPT;
+        console.log(`[OpenAI] Using standard explanation system prompt`);
+      }
+      
+      userMessage = prompt; // For now, use full prompt as user message (TODO: separate later)
+    } else {
+      // None Mode: Current behavior - everything as user message
+      systemMessage = undefined;
+      userMessage = prompt;
+      console.log(`[OpenAI] Using None mode (current behavior) with model ${modelKey}`);
+    }
 
     try {
       let reasoningLog = null;
@@ -122,9 +208,16 @@ export class OpenAIService {
       }
 
       // Build request to Responses API via helper for consistent parsing
+      // Create message array based on system prompt mode
+      const messages: any[] = [];
+      if (systemMessage) {
+        messages.push({ role: "system", content: systemMessage });
+      }
+      messages.push({ role: "user", content: userMessage });
+      
       const request = {
         model: modelName,
-        input: prompt,
+        input: messages,
         reasoning: reasoningConfig,
         ...(textConfig && { text: textConfig }),
         max_steps: serviceOpts?.maxSteps,
@@ -275,12 +368,49 @@ export class OpenAIService {
       reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
       reasoningVerbosity?: 'low' | 'medium' | 'high';
       reasoningSummaryType?: 'auto' | 'detailed';
+      systemPromptMode?: 'ARC' | 'None';
     }
   ) {
     const modelName = MODELS[modelKey];
 
+    // Determine system prompt mode (default to ARC for better results)
+    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+
     // Build prompt using shared prompt builder
     const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+
+    // Prepare system and user messages based on mode
+    let systemMessage: string | undefined;
+    let userMessage: string;
+    
+    if (systemPromptMode === 'ARC') {
+      // ARC Mode: Select appropriate system prompt based on context
+      const isSolverMode = promptId === "solver";
+      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
+      const hasMultipleTests = task.test.length > 1;
+      
+      if (isSolverMode && hasMultipleTests) {
+        systemMessage = MULTI_SOLVER_SYSTEM_PROMPT;
+      } else if (isSolverMode) {
+        systemMessage = SOLVER_SYSTEM_PROMPT;
+      } else if (isAlienMode) {
+        systemMessage = ALIEN_EXPLANATION_SYSTEM_PROMPT;
+      } else {
+        systemMessage = EXPLANATION_SYSTEM_PROMPT;
+      }
+      
+      userMessage = prompt; // For now, use full prompt as user message (TODO: separate later)
+    } else {
+      systemMessage = undefined;
+      userMessage = prompt;
+    }
+
+    // Create message array for preview
+    const messages: any[] = [];
+    if (systemMessage) {
+      messages.push({ role: "system", content: systemMessage });
+    }
+    messages.push({ role: "user", content: userMessage });
 
     // Responses API format for all models
     let messageFormat: any;
@@ -292,7 +422,7 @@ export class OpenAIService {
     
     messageFormat = {
       model: modelName,
-      input: [{ role: "user", content: prompt }],
+      input: messages,
       max_output_tokens: 100000, // Near maximum capacity for comprehensive analysis
       ...(isReasoningModel
         ? { 
@@ -310,11 +440,20 @@ export class OpenAIService {
     };
     providerSpecificNotes.push("Uses OpenAI Responses API");
     providerSpecificNotes.push("Temperature/JSON response_format not used; JSON enforced via prompt");
+    
+    // Add system prompt mode notes
+    if (systemPromptMode === 'ARC') {
+      providerSpecificNotes.push("System Prompt Mode: {ARC} - Using structured system prompt for better parsing");
+      providerSpecificNotes.push(`System Message: "${ARC_SYSTEM_PROMPT}"`);
+    } else {
+      providerSpecificNotes.push("System Prompt Mode: {None} - Current behavior (all content as user message)");
+    }
 
     return {
       provider: "OpenAI",
       modelName,
-      promptText: prompt,
+      promptText: systemPromptMode === 'ARC' ? userMessage : prompt,
+      systemPrompt: systemMessage,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
@@ -334,7 +473,7 @@ export class OpenAIService {
 
   async callResponsesAPI(request: {
     model: string;
-    input: string;
+    input: string | Array<{role: string, content: string}>;
     reasoning?: { summary: 'auto' | 'none' };
     max_steps?: number;
     temperature?: number;
@@ -358,7 +497,7 @@ export class OpenAIService {
       // Prepare the request for OpenAI's Responses API
       const responsesRequest: any = {
         model: request.model,
-        input: [{ role: "user", content: request.input }], // FIXED: Must be array format
+        input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }], // Support both message array and string
         max_output_tokens: Math.max(256, request.max_output_tokens ?? 128000),
         store: true,
         ...(request.reasoning && { reasoning: request.reasoning }),
