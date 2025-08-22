@@ -22,7 +22,13 @@ export function GridCell({ value, showEmojis, size = "normal", emojiSet, mismatc
         {showEmojis ? getSpaceEmoji(value, emojiSet) : value}
       </div>
       {mismatch && (
-        <span className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4 w-2 h-2 rounded-full bg-red-500 border border-white"></span>
+        <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          {/* High-contrast bullseye marker */}
+          <span className="relative inline-flex items-center justify-center">
+            <span className="block w-3.5 h-3.5 rounded-full bg-black/80 ring-2 ring-white shadow-[0_0_0_1px_rgba(0,0,0,0.45)]"></span>
+            <span className="absolute block w-2 h-2 rounded-full bg-white/95 ring-1 ring-black/60"></span>
+          </span>
+        </span>
       )}
     </div>
   );
