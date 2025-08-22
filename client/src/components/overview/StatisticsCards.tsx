@@ -122,8 +122,8 @@ export function StatisticsCards({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {modelRankings.slice(0, 3).map((model, index) => (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {modelRankings.map((model, index) => (
                 <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
                   <div className="flex items-center gap-2">
                     {index === 0 && <Star className="h-4 w-4 text-yellow-500" />}
@@ -147,17 +147,10 @@ export function StatisticsCards({
                   </div>
                 </div>
               ))}
-              {modelRankings.length > 3 && (
-                <div className="text-center pt-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onViewAllFeedback}
-                    className="text-xs text-blue-600 hover:text-blue-800"
-                  >
-                    View all feedback →
-                  </Button>
-                </div>
+              {modelRankings.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  No models with sufficient feedback data
+                </p>
               )}
             </div>
           </CardContent>
@@ -202,8 +195,8 @@ export function StatisticsCards({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {modelRankings.slice(-3).reverse().map((model) => (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {modelRankings.slice().reverse().map((model) => (
                 <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium truncate text-red-700">
@@ -226,18 +219,6 @@ export function StatisticsCards({
                   </div>
                 </div>
               ))}
-              {modelRankings.length > 3 && (
-                <div className="text-center pt-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onViewAllFeedback}
-                    className="text-xs text-red-600 hover:text-red-800"
-                  >
-                    View all feedback →
-                  </Button>
-                </div>
-              )}
               {modelRankings.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">
                   No models with sufficient feedback data
@@ -268,8 +249,8 @@ export function StatisticsCards({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {accuracyStats.accuracyByModel.slice(0, 3).map((model, index) => {
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {accuracyStats.accuracyByModel.map((model, index) => {
                     const modelInfo = MODELS.find(m => m.key === model.modelName);
                     const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
                     
@@ -313,8 +294,8 @@ export function StatisticsCards({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {accuracyStats.accuracyByModel.slice(-3).reverse().map((model) => {
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {accuracyStats.accuracyByModel.slice().reverse().map((model) => {
                     const modelInfo = MODELS.find(m => m.key === model.modelName);
                     const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
                     
