@@ -117,7 +117,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
               <XCircle className="h-3 w-3" />
             )}
             <span className="text-xs font-medium">
-              {result.saturnSuccess ? 'SOLVED' : 'FAILED'}
+              {result.saturnSuccess ? 'SOLVED' : 'Incorrect'}
             </span>
           </Badge>
         )}
@@ -223,8 +223,8 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                     Confidence: {formatConfidence(result.confidence)}
                   </Badge>
                 )}
-                {/* Show prediction accuracy score for solver mode */}
-                {result.predictionAccuracyScore !== undefined && (
+                {/* Show prediction accuracy score for solver mode (but not for Saturn) */}
+                {!isSaturnResult && result.predictionAccuracyScore !== undefined && (
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${

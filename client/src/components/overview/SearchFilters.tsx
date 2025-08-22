@@ -28,6 +28,8 @@ interface SearchFiltersProps {
   setHasFeedbackFilter: (filter: string) => void;
   modelFilter: string;
   setModelFilter: (filter: string) => void;
+  saturnFilter: string;
+  setSaturnFilter: (filter: string) => void;
   confidenceMin: string;
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
@@ -48,6 +50,8 @@ export function SearchFilters({
   setHasFeedbackFilter,
   modelFilter,
   setModelFilter,
+  saturnFilter,
+  setSaturnFilter,
   confidenceMin,
   setConfidenceMin,
   confidenceMax,
@@ -129,6 +133,22 @@ export function SearchFilters({
                     {model.name} ({model.provider})
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Saturn Solver Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="saturn">🪐 Saturn Solver</Label>
+            <Select value={saturnFilter} onValueChange={setSaturnFilter}>
+              <SelectTrigger id="saturn">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Results</SelectItem>
+                <SelectItem value="solved">✅ Solved</SelectItem>
+                <SelectItem value="failed">❌ Failed</SelectItem>
+                <SelectItem value="attempted">🪐 Has Saturn Results</SelectItem>
               </SelectContent>
             </Select>
           </div>
