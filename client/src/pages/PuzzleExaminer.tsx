@@ -43,7 +43,7 @@ export default function PuzzleExaminer() {
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
-  const [systemPromptMode, setSystemPromptMode] = useState<'ARC' | 'None'>('ARC'); // Default to ARC mode for better results
+  // systemPromptMode is now hardcoded to 'ARC' - the new modular architecture replaces legacy {ARC}/{None} toggle
 
   // Early return if no taskId
   if (!taskId) {
@@ -87,7 +87,7 @@ export default function PuzzleExaminer() {
     // Forward researcher options to backend
     emojiSetKey: sendAsEmojis ? emojiSet : undefined, // Only send emoji set if "Send as emojis" is enabled
     omitAnswer,
-    systemPromptMode,
+    systemPromptMode: 'ARC', // Hardcoded to use new modular system prompt architecture
   });
   
   // Find the current model's details if we're analyzing
@@ -127,7 +127,7 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl space-y-6">
+    <div className="container mx-auto p-4 max-w-6xl space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -297,8 +297,7 @@ export default function PuzzleExaminer() {
             onSendAsEmojisChange={setSendAsEmojis}
             omitAnswer={omitAnswer}
             onOmitAnswerChange={setOmitAnswer}
-            systemPromptMode={systemPromptMode}
-            onSystemPromptModeChange={setSystemPromptMode}
+            // systemPromptMode removed - now using modular architecture
           />
 
           {/* Prompt Preview */}
@@ -339,7 +338,7 @@ export default function PuzzleExaminer() {
           />
           
           {/* Model Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
             {MODELS.map((model) => {
               const isThisModelProcessing = processingModels.has(model.key);
               
@@ -357,8 +356,8 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* Saturn Visual Solver */}
-          <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
+          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
               <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
                 <Rocket className="h-4 w-4" />
                 Alternative Visual Solver
@@ -391,7 +390,7 @@ export default function PuzzleExaminer() {
           </div>
           
           {/* Temperature Control */}
-          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="mb-3 p-2 bg-gray-50 border border-gray-200 rounded">
             <div className="flex items-center gap-4">
               <Label htmlFor="temperature" className="text-sm font-medium">
                 Temperature: {temperature}

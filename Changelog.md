@@ -7,6 +7,25 @@
 
 August 22, 2025
 
+## Version 1.6.4 — OpenAI Reasoning & Confidence Improvements (2025-08-22)
+
+### 🛠️ Fixes & Improvements (Code by Claude)
+- **OpenAI Reasoning Extraction Fix**: Fixed OpenAI structured output parsing to properly handle `keySteps` field when returned as string instead of array. Added validation and string parsing to convert numbered step lists into proper arrays.
+  - File: `server/services/openai.ts` - Added type checking and parsing for `result.keySteps` to handle both string and array formats
+- **Database Confidence Normalization**: Ensured confidence values are properly normalized from decimal (0-1) to integer (0-100) scale before database insertion.
+  - File: `server/services/dbService.ts` - Added `normalizeConfidence()` import and usage
+- **Removed Hardcoded Confidence Values**: Replaced hardcoded confidence examples (85) with instructions for honest integer confidence assessment across all AI providers.
+  - Files: `server/services/anthropic.ts`, `server/services/gemini.ts`, `server/services/schemas/solver.ts`
+  - Changed example responses to use `[INTEGER 0-100: Your honest assessment of solution accuracy]` format
+- **React Performance Optimizations**: Added React.memo and useMemo optimizations for grid rendering performance with large 30x30 grids.
+  - Files: `client/src/components/puzzle/PuzzleGrid.tsx`, `client/src/components/puzzle/GridCell.tsx`
+
+### ✅ Outcome
+- OpenAI reasoning extraction now properly handles both array and string format responses
+- AI models will provide genuine confidence assessments instead of copying template values
+- Grid rendering performance improved for large datasets across multiple analyses
+- Database errors from decimal confidence values resolved
+
 ## Version 1.6.3 — Provider Services PromptPackage Alignment (2025-08-22)
 
 ### 🛠️ Fixes & Refactors (Code by Cascade)

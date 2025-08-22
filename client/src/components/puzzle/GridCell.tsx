@@ -1,25 +1,34 @@
 /**
  * GridCell Component
  * Renders a single cell in a puzzle grid with either numeric value or emoji
+ * Optimized with React.memo to prevent unnecessary re-renders
  * Author: Cascade
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { GridCellProps, SIZE_CLASSES } from '@/types/puzzle';
 import { ARC_COLORS } from '@/constants/colors';
 import { getSpaceEmoji } from '@/lib/spaceEmojis';
 
-export function GridCell({ value, showEmojis, size = "normal", emojiSet, mismatch }: GridCellProps) {
+export const GridCell = React.memo(function GridCell({ value, showEmojis, size = "normal", emojiSet, mismatch }: GridCellProps) {
+  // Memoize style calculations to avoid recalculating on every render
+  const cellStyle = useMemo(() => ({
+    backgroundColor: showEmojis ? 'white' : (ARC_COLORS[value] || '#FFFFFF'),
+    color: showEmojis ? '#000' : '#FFF'
+  }), [showEmojis, value]);
+
+  // Memoize cell content to avoid recalculating emoji/value
+  const cellContent = useMemo(() => {
+    return showEmojis ? getSpaceEmoji(value, emojiSet) : value;
+  }, [showEmojis, value, emojiSet]);
+
   return (
     <div className="relative">
       <div
         className={`${SIZE_CLASSES[size]} border border-gray-300 flex items-center justify-center font-mono`}
-        style={{ 
-          backgroundColor: showEmojis ? 'white' : (ARC_COLORS[value] || '#FFFFFF'),
-          color: showEmojis ? '#000' : '#FFF'
-        }}
+        style={cellStyle}
       >
-        {showEmojis ? getSpaceEmoji(value, emojiSet) : value}
+        {cellContent}
       </div>
       {mismatch && (
         <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
@@ -32,4 +41,4 @@ export function GridCell({ value, showEmojis, size = "normal", emojiSet, mismatc
       )}
     </div>
   );
-}
+});

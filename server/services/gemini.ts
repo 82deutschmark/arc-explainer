@@ -56,7 +56,7 @@ const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid J
   "patternDescription": "Clear description of what you learned from the training examples",
   "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
   "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
 }
 
 CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
@@ -68,7 +68,7 @@ const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY v
   "patternDescription": "Clear description of what you learned from the training examples", 
   "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
   "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
 }
 
 CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
@@ -79,7 +79,7 @@ const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond wit
   "patternDescription": "Clear description of the rules learned from the training examples",
   "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality]
 }
 
 CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
@@ -90,9 +90,9 @@ const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respo
   "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
   "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
-  "confidence": 85,
+  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality],
   "alienMeaning": "The aliens' message",
-  "alienMeaningConfidence": 85
+  "alienMeaningConfidence": [INTEGER 0-100: Your honest confidence in alien interpretation]
 }
 
 CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
