@@ -113,7 +113,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true
+    supportsReasoning: false
   },
   { 
     key: 'gpt-5-mini-2025-08-07', 
