@@ -63,6 +63,7 @@ export interface GridCellProps {
   showEmojis: boolean;
   size?: keyof typeof SIZE_CLASSES;
   emojiSet?: EmojiSet;
+  mismatch?: boolean; // Compact diff overlay indicator
 }
 
 /**
@@ -74,6 +75,7 @@ export interface PuzzleGridProps {
   showEmojis: boolean;
   highlight?: boolean;
   emojiSet?: EmojiSet;
+  diffMask?: boolean[][]; // Optional mask to highlight mismatched cells
 }
 
 /**
@@ -129,4 +131,5 @@ export interface AnalysisResultCardProps {
   modelKey: string;
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
+  expectedOutputGrid?: number[][]; // Correct answer grid from the original task (first test by default)
 }

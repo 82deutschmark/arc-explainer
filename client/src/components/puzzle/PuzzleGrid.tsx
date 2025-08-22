@@ -9,7 +9,7 @@ import { PuzzleGridProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
 import { GridCell } from './GridCell';
 
-export function PuzzleGrid({ grid, title, showEmojis, highlight = false, emojiSet }: PuzzleGridProps) {
+export function PuzzleGrid({ grid, title, showEmojis, highlight = false, emojiSet, diffMask }: PuzzleGridProps) {
   const rows = grid.length;
   const cols = grid[0]?.length || 0;
   const maxDim = Math.max(rows, cols);
@@ -33,6 +33,7 @@ export function PuzzleGrid({ grid, title, showEmojis, highlight = false, emojiSe
                 showEmojis={showEmojis}
                 size={size}
                 emojiSet={emojiSet}
+                mismatch={diffMask ? Boolean(diffMask[rowIndex]?.[colIndex]) : false}
               />
             ))}
           </div>

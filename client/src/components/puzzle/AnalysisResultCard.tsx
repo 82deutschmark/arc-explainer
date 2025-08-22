@@ -45,7 +45,7 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCardProps) {
+export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
@@ -55,9 +55,30 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
   // Get feedback preview for this explanation
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
   
-  // Check if this is a Saturn solver result
-  const isSaturnResult = result.modelName?.toLowerCase().includes('saturn') || modelKey?.toLowerCase().includes('saturn');
-  
+  // Check if this is a Saturn solver result (align with ExplanationData fields)
+  const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
+
+  // Normalized predicted grid (single answer expected; if array provided, take first)
+  const predictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0];
+
+  // Build a diff mask highlighting cell mismatches between predicted and expected grids
+  const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
+    if (!pred || !exp) return undefined;
+    const rows = Math.max(pred.length, exp.length);
+    const cols = Math.max(pred[0]?.length || 0, exp[0]?.length || 0);
+    const mask: boolean[][] = [];
+    for (let r = 0; r < rows; r++) {
+      mask[r] = [];
+      for (let c = 0; c < cols; c++) {
+        const pv = pred[r]?.[c];
+        const ev = exp[r]?.[c];
+        mask[r][c] = pv !== ev; // marks true when values differ or are undefined
+      }
+    }
+    return mask;
+  };
+  const diffMask = buildDiffMask(predictedGrid, expectedOutputGrid);
+
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
     alienMeaning: result.alienMeaning,
@@ -396,8 +417,40 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             </div>
           )}
 
-          {/* Model predicted answer display (single answer; edge case: use first if array provided) */}
-          {((result as any)?.predictedOutputGrids?.length > 0) || result.predictedOutputGrid ? (
+          {/* Answers display: side-by-side if both available, else single */}
+          {predictedGrid && expectedOutputGrid ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                  {result.extractionMethod && (
+                    <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                      Extracted via: {result.extractionMethod}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center justify-center">
+                  <PuzzleGrid grid={predictedGrid} title="Predicted" showEmojis={false} diffMask={diffMask} />
+                </div>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
+                  {result.isPredictionCorrect !== undefined && (
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                    >
+                      {result.isPredictionCorrect ? 'Matches prediction' : 'Differs from prediction'}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center justify-center">
+                  <PuzzleGrid grid={expectedOutputGrid} title="Correct" showEmojis={false} highlight={true} />
+                </div>
+              </div>
+            </div>
+          ) : predictedGrid ? (
             <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
@@ -408,11 +461,24 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
                 )}
               </div>
               <div className="flex items-center justify-center">
-                <PuzzleGrid
-                  grid={result.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0]}
-                  title="Predicted Answer"
-                  showEmojis={false}
-                />
+                <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={undefined} />
+              </div>
+            </div>
+          ) : expectedOutputGrid ? (
+            <div className="bg-green-50 border border-green-200 rounded p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
+                {result.isPredictionCorrect !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                  >
+                    {result.isPredictionCorrect ? 'Matches prediction' : 'Differs from prediction'}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center justify-center">
+                <PuzzleGrid grid={expectedOutputGrid} title="Correct Answer" showEmojis={false} highlight={true} />
               </div>
             </div>
           ) : null}
