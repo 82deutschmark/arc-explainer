@@ -20,7 +20,9 @@
       "Bash(del test-gpt5-responses.js)",
       "Bash(rm:*)",
       "Bash(del \"D:\\1Projects\\arc-explainer\\test-parser.js\")",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],
