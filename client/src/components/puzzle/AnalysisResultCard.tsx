@@ -154,6 +154,39 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
             </span>
           </Badge>
         )}
+        
+        {/* Analysis Parameters */}
+        {(result.temperature !== null && result.temperature !== undefined && model?.supportsTemperature) && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+            <span className="text-xs text-gray-600">
+              Temp: {result.temperature}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningEffort && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-purple-50 border-purple-200">
+            <span className="text-xs text-purple-600">
+              Effort: {result.reasoningEffort}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningVerbosity && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-indigo-50 border-indigo-200">
+            <span className="text-xs text-indigo-600">
+              Verbosity: {result.reasoningVerbosity}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningSummaryType && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-cyan-50 border-cyan-200">
+            <span className="text-xs text-cyan-600">
+              Summary: {result.reasoningSummaryType}
+            </span>
+          </Badge>
+        )}
         {(hasFeedback || feedbackSummary.total > 0) && (
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">

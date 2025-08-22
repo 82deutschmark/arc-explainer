@@ -41,6 +41,11 @@ interface PuzzleExplanation {
   predictedOutputGrid?: number[][] | null;
   isPredictionCorrect?: boolean | null;
   predictionAccuracyScore?: number | null;
+  // Analysis parameters used to generate this explanation
+  temperature?: number | null;
+  reasoningEffort?: string | null;
+  reasoningVerbosity?: string | null;
+  reasoningSummaryType?: string | null;
 }
 
 /**
@@ -215,6 +220,38 @@ const createTablesIfNotExist = async () => {
         THEN
           ALTER TABLE explanations ADD COLUMN saturn_success BOOLEAN;
         END IF;
+
+        -- Add temperature column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'temperature')
+        THEN
+          ALTER TABLE explanations ADD COLUMN temperature FLOAT;
+        END IF;
+
+        -- Add reasoning_effort column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'reasoning_effort')
+        THEN
+          ALTER TABLE explanations ADD COLUMN reasoning_effort TEXT;
+        END IF;
+
+        -- Add reasoning_verbosity column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'reasoning_verbosity')
+        THEN
+          ALTER TABLE explanations ADD COLUMN reasoning_verbosity TEXT;
+        END IF;
+
+        -- Add reasoning_summary_type column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'reasoning_summary_type')
+        THEN
+          ALTER TABLE explanations ADD COLUMN reasoning_summary_type TEXT;
+        END IF;
       END $$;
     `);
     logger.info('Explanations table created or already exists', 'database');
@@ -271,7 +308,11 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       providerRawResponse,
       reasoningItems,
       apiProcessingTimeMs,
-      saturnImages
+      saturnImages,
+      temperature,
+      reasoningEffort,
+      reasoningVerbosity,
+      reasoningSummaryType
     } = explanation;
     
     // Dev=Prod parity: default to true when unset (can be explicitly disabled with 'false')
@@ -286,8 +327,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         provider_response_id, provider_raw_response, reasoning_items,
         api_processing_time_ms, saturn_images,
         saturn_log, saturn_events, saturn_success,
-        predicted_output_grid, is_prediction_correct, prediction_accuracy_score)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+        predicted_output_grid, is_prediction_correct, prediction_accuracy_score,
+        temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
        RETURNING id`,
       [
         puzzleId,
@@ -310,7 +352,11 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         explanation.saturnSuccess ?? null,
         explanation.predictedOutputGrid ? JSON.stringify(explanation.predictedOutputGrid) : null,
         explanation.isPredictionCorrect ?? null,
-        explanation.predictionAccuracyScore ?? null
+        explanation.predictionAccuracyScore ?? null,
+        temperature ?? null,
+        reasoningEffort || null,
+        reasoningVerbosity || null,
+        reasoningSummaryType || null
       ]
     );
     
@@ -551,6 +597,10 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.predicted_output_grid   AS "predictedOutputGrid",
          e.is_prediction_correct   AS "isPredictionCorrect",
          e.prediction_accuracy_score AS "predictionAccuracyScore",
+         e.temperature             AS "temperature",
+         e.reasoning_effort        AS "reasoningEffort",
+         e.reasoning_verbosity     AS "reasoningVerbosity",
+         e.reasoning_summary_type  AS "reasoningSummaryType",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"

@@ -414,12 +414,11 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* GPT-5 Reasoning Parameters */}
-          {currentModelKey && isGPT5ReasoningModel(currentModelKey) && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                GPT-5 Reasoning Parameters
-              </h5>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              GPT-5 Reasoning Parameters
+            </h5>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Effort Control */}
@@ -501,7 +500,6 @@ export default function PuzzleExaminer() {
                 </div>
               </div>
             </div>
-          )}
 
 
           {/* Analysis Results */}

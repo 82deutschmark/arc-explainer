@@ -94,6 +94,9 @@ export class AnthropicService {
     options?: PromptOptions,
     serviceOpts?: {
       systemPromptMode?: 'ARC' | 'None';
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
     }
   ) {
     const modelName = MODELS[modelKey];
@@ -194,6 +197,11 @@ export class AnthropicService {
         model: modelKey,
         reasoningLog: null,
         hasReasoningLog: false,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...result,
       };
     } catch (error) {

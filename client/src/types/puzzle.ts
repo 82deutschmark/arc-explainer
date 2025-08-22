@@ -122,6 +122,11 @@ export interface ExplanationData {
   isPredictionCorrect?: boolean; // Whether prediction matches correct answer
   predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
   extractionMethod?: string; // Method used to extract the grid
+  // Analysis parameters used to generate this explanation
+  temperature?: number | null;
+  reasoningEffort?: string | null;
+  reasoningVerbosity?: string | null;
+  reasoningSummaryType?: string | null;
 }
 
 /**

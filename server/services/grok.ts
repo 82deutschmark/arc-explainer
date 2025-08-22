@@ -76,6 +76,11 @@ export class GrokService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
+    serviceOpts?: {
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
+    }
   ) {
     const modelName = MODELS[modelKey];
 
@@ -143,6 +148,11 @@ export class GrokService {
         model: modelKey,
         reasoningLog,
         hasReasoningLog,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...result,
       };
     } catch (error) {
