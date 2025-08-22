@@ -25,6 +25,7 @@ import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { getCostDisplay } from '@/utils/costCalculator';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -117,7 +118,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
               <XCircle className="h-3 w-3" />
             )}
             <span className="text-xs font-medium">
-              {result.saturnSuccess ? 'SOLVED' : 'FAILED'}
+              {result.saturnSuccess ? 'SOLVED' : 'Incorrect'}
             </span>
           </Badge>
         )}
@@ -151,6 +152,48 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
             <span className="text-xs text-blue-600">
               {formatProcessingTime(result.apiProcessingTimeMs)}
+            </span>
+          </Badge>
+        )}
+        
+        {/* Cost Estimate */}
+        {modelKey && getCostDisplay(modelKey) && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
+            <span className="text-xs text-green-600">
+              Cost: {getCostDisplay(modelKey)}
+            </span>
+          </Badge>
+        )}
+        
+        {/* Analysis Parameters */}
+        {(result.temperature !== null && result.temperature !== undefined && model?.supportsTemperature) && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+            <span className="text-xs text-gray-600">
+              Temp: {result.temperature}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningEffort && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-purple-50 border-purple-200">
+            <span className="text-xs text-purple-600">
+              Effort: {result.reasoningEffort}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningVerbosity && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-indigo-50 border-indigo-200">
+            <span className="text-xs text-indigo-600">
+              Verbosity: {result.reasoningVerbosity}
+            </span>
+          </Badge>
+        )}
+        
+        {result.reasoningSummaryType && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-cyan-50 border-cyan-200">
+            <span className="text-xs text-cyan-600">
+              Summary: {result.reasoningSummaryType}
             </span>
           </Badge>
         )}
@@ -223,8 +266,8 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                     Confidence: {formatConfidence(result.confidence)}
                   </Badge>
                 )}
-                {/* Show prediction accuracy score for solver mode */}
-                {result.predictionAccuracyScore !== undefined && (
+                {/* Show prediction accuracy score for solver mode (but not for Saturn) */}
+                {!isSaturnResult && result.predictionAccuracyScore !== undefined && (
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${

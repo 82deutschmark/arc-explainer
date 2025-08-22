@@ -222,13 +222,13 @@ export class OpenAIService {
         ...(textConfig && { text: textConfig }),
         max_steps: serviceOpts?.maxSteps,
         previous_response_id: serviceOpts?.previousResponseId,
-        // ONLY the GPT-5 Chat model supports temperature and top_p
-        ...(isGPT5ChatModel && {
+        // Apply temperature for models that support it (non-reasoning models: GPT-4.1 series and GPT-5 Chat)
+        ...(!isReasoningModel && {
           temperature: temperature || 0.2,
-          top_p: 1.00
+          ...(isGPT5ChatModel && { top_p: 1.00 })
         }),
-        // pass through visible output token cap to avoid starvation
-        max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 16384 : undefined),
+        // pass through visible output token cap to avoid starvation - using high limits from models.yml
+        max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
       } as const;
 
       const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
@@ -342,6 +342,11 @@ export class OpenAIService {
         providerResponseId,
         providerRawResponse,
         reasoningItems,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...result,
       };
     } catch (error) {

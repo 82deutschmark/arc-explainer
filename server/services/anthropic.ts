@@ -94,6 +94,9 @@ export class AnthropicService {
     options?: PromptOptions,
     serviceOpts?: {
       systemPromptMode?: 'ARC' | 'None';
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
     }
   ) {
     const modelName = MODELS[modelKey];
@@ -140,7 +143,7 @@ export class AnthropicService {
       // Build request options with proper Anthropic system parameter
       const requestOptions: any = {
         model: modelName,
-        max_tokens: 4000,
+        max_tokens: 20000, // Increased from 4000 based on models.yml capabilities
         messages: [{ role: "user", content: userMessage }],
       };
       
@@ -194,6 +197,11 @@ export class AnthropicService {
         model: modelKey,
         reasoningLog: null,
         hasReasoningLog: false,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...result,
       };
     } catch (error) {
@@ -225,7 +233,7 @@ export class AnthropicService {
     // Anthropic uses messages array format
     const messageFormat = {
       model: modelName,
-      max_tokens: 4000,
+      max_tokens: 20000, // Updated from 4000 based on models.yml
       messages: [{ role: "user", content: prompt }],
       temperature: temperature
     };
@@ -233,7 +241,7 @@ export class AnthropicService {
     const providerSpecificNotes = [
       "Uses Anthropic Messages API",
       "Temperature parameter supported",
-      "Max tokens set to 4000"
+      "Max tokens set to 20000"
     ];
 
     return {
