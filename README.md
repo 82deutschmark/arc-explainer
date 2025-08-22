@@ -15,31 +15,33 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 ## 🚀 Major Features That Will Excite Users
 
-• **DeepSeek Integration** - Brand new AI provider with advanced reasoning models (completely free to use)
+• **🤖 System Prompt Architecture (NEW!)** - Revolutionary JSON structure enforcement across all AI providers with {ARC}/{None} modes ensuring perfect parsing and consistent responses
 
-• **Universal Reasoning Capture** - See step-by-step AI thinking from all models that provide reasoning logs
+• **🧠 GPT-5 Reasoning Integration** - Advanced reasoning parameters (effort/verbosity/summary) with real-time reasoning log streaming and OpenAI Responses API integration
 
-• **Concurrent Provider Processing** - Run multiple AI models simultaneously across different providers
+• **🪐 Saturn Visual Solver** - Mind-blowing visual reasoning solver that streams intermediate images in real-time! Watch AI think through puzzles step-by-step with GPT-5, Claude 4, and Grok 4 model selection. Features success/failure tracking and specialized UI
 
-• **Real-Time Timing Display** - Live progress bars and exact processing times for each analysis
+• **🔬 Custom Prompts for Researchers** - Complete freedom! Override any template with your own prompts. Includes live prompt preview showing exactly what gets sent to each AI provider
 
-• **Accurate Progress Indicators** - Model-specific progress bars based on real response time estimates
+• **⚡ Concurrent Provider Processing** - Run multiple AI models simultaneously! DeepSeek + Claude + Gemini can analyze the same puzzle at once with independent progress tracking
 
-• **Production-Ready Architecture** - Robust database schema and TypeScript interfaces for reasoning storage
+• **📊 Comprehensive Analytics Dashboard** - Real-time feedback statistics with model performance rankings, engagement metrics, and "Top/Worst Performing Models" leaderboards at `/overview`
 
-• **Enhanced Frontend Components** - Polished UI displaying reasoning logs and processing status
+• **🎯 Multi-Test Solver Validation** - Advanced accuracy scoring across multiple test cases with visual diff overlays showing exactly where predictions differ from correct answers
 
-• **100% Free APIs** - All AI analysis completely free - no usage costs or API fees! (Donated by me!)
+• **⏱️ Real-Time Progress & Timing** - Live progress bars, elapsed timers, and exact processing times. See estimated vs actual response times for every analysis
 
-• **Saturn Visual Solver** - Visual, phased solver that streams intermediate images while reasoning. Includes a model selector (GPT‑5, Claude 4, Grok 4) and visible Saturn ARC attribution banners with a GitHub link on `SaturnVisualSolver` and `PuzzleExaminer` pages. Features complete success/failure status tracking with specialized UI displaying solver results distinctly from confidence-based AI analysis.
+• **🔄 Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis with AI-guided improvements
 
-• **Feedback-Driven Retry** - Mark explanations as unhelpful and automatically trigger improved reanalysis
+• **🎨 Enhanced UI/UX** - Modular component architecture with collapsible sections, raw database record toggles, and markdown JSON parsing fixes
 
-• **Custom Prompts for Researchers** - Enter your own analysis prompt to override templates per run
+• **💡 Universal Reasoning Capture** - See step-by-step AI thinking from all models with structured reasoning logs and cross-provider consistency
 
-• **Database Overview Dashboard** - Browse all puzzles with comprehensive filtering, search, and sorting capabilities. View explanation status, model analysis history, confidence ratings, and processing times across the entire puzzle database
+• **🆓 100% Free APIs** - All AI analysis completely free - no usage costs or API fees! (Donated by me!)
 
-• **Comprehensive Feedback Analytics** - Real-time feedback statistics dashboard showing total feedback count, model performance rankings, and recent activity trends. Includes "Top Performing Models" and "Worst Performing Models" sections with helpful percentage rankings, plus sortable "Most Feedback" option
+• **🔍 Database Overview Dashboard** - Browse all puzzles with advanced filtering by explanation status, feedback status, model analysis, and comprehensive search capabilities
+
+• **📈 Performance Insights** - Track model accuracy, processing times, user engagement, and feedback trends with detailed analytics and visual indicators
 
 ## 🌟 Development & Credits
 
