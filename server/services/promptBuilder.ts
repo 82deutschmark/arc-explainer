@@ -261,7 +261,7 @@ TEST CASE:
 Input: ${testCase.input}
 Correct Answer: ${testCase.output}`;
 
-    console.log(`[PromptBuilder] ✅ RETURNING CUSTOM PROMPT (${prompt.length} chars) - NO TEMPLATE INSTRUCTIONS`);
+    console.log(`[PromptBuilder] 📝 RETURNING CUSTOM PROMPT (${prompt.length} chars) - NO TEMPLATE INSTRUCTIONS`);
     return {
       prompt,
       selectedTemplate: null // No template for custom prompts
