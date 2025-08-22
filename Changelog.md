@@ -58,6 +58,9 @@ August 21, 2025
 - **Predicted Answer(s) Display**: `AnalysisResultCard` renders model-predicted grid(s) when available (`predictedOutputGrid` or `predictedOutputGrids[]`), with an optional extraction method badge. Uses `PuzzleGrid` with numeric view.
 - **Correct Answer Grid**: `AnalysisResultCard` now shows the correct output grid from the task file (first test by default), passed from `PuzzleExaminer.tsx` via `expectedOutputGrid`.
 - **Compact Diff Overlay**: Added mismatch indicators (small red dots) on predicted grid cells that differ from the correct grid. Implemented via `diffMask` in `PuzzleGrid` and `mismatch` in `GridCell`.
+  - Enhancement: Replaced corner dot with a centered high‑contrast bullseye marker for better visibility across all cell colors.
+  - Placement: Correctness badge moved to the "Model Predicted Answer" panel to clarify comparison direction.
+  - Control: Added a "Diff overlay: On/Off" toggle to enable/disable mismatch markers on the predicted grid.
 
 ### Multi‑Test Support Improvements (Code by Cascade)
 - **Prompt Builder**: `server/services/promptBuilder.ts` now includes ALL test cases in prompts. Solver mode instructs models to return `predictedOutputs` (array) for multi-test tasks, with backward-compatible `predictedOutput` for single-test.
