@@ -16,9 +16,17 @@ August 22, 2025
 - **Prompt Preview Consistency**: Fixed `generatePromptPreview()` across providers to show the correct user prompt text and accurate prompt statistics.
 - **Type Safety**: Resolved compile-time type mismatches stemming from outdated prompt fields; aligned with backend schema and prompt architecture.
 
+### 🔧 Additional Fixes (Code by Cascade)
+- **Solver Validator Normalization**: `server/services/schemas/solver.ts` now accepts either `predictedOutput` (single) or `predictedOutputs` (multi) in both scenarios and normalizes to `predictedGrids`. `extractPredictions()` maps single→multi when needed. Prevents avoidable rejects from provider variance.
+- **Prompt Template Typing Cleanup**: `server/services/prompts/userTemplates.ts` made builder map homogeneous and added explicit types for `getUserPromptBuilder()`/`buildUserPromptForTemplate()` to keep type surface tidy. No behavior change.
+
 ### ✅ Outcome
 - Providers compile cleanly and share a consistent prompt data flow from backend → frontend.
 - Preview panels now reflect the exact prompt sent to models, improving debuggability.
+
+### ⚡ Performance
+- **Diff Overlay Optimization (Code by Cascade)**: Defaulted diff overlay to off and memoized diff mask in `client/src/components/puzzle/AnalysisResultCard.tsx`.
+  - Reduces initial render and re-render cost on large grids by computing the diff only when the toggle is enabled and inputs change.
 
 ## Version 1.6.2 — System Prompts + Structured Outputs Architecture Implementation (2025-08-22)
 
