@@ -429,7 +429,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningEffort} 
                     onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select effort level" />
@@ -457,7 +456,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningVerbosity} 
                     onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select verbosity" />
@@ -483,7 +481,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningSummaryType} 
                     onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select summary type" />
