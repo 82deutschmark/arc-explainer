@@ -51,6 +51,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
+  const [showDiff, setShowDiff] = useState(true);
   
   // Get feedback preview for this explanation
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
@@ -423,27 +424,36 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
               <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
-                  {result.extractionMethod && (
-                    <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
-                      Extracted via: {result.extractionMethod}
-                    </Badge>
-                  )}
-                </div>
-                <div className="flex items-center justify-center">
-                  <PuzzleGrid grid={predictedGrid} title="Predicted" showEmojis={false} diffMask={diffMask} />
-                </div>
-              </div>
-              <div className="bg-green-50 border border-green-200 rounded p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
                   {result.isPredictionCorrect !== undefined && (
                     <Badge 
                       variant="outline" 
                       className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
                     >
-                      {result.isPredictionCorrect ? 'Matches prediction' : 'Differs from prediction'}
+                      {result.isPredictionCorrect ? 'Prediction matches correct answer' : 'Prediction differs from correct answer'}
                     </Badge>
                   )}
+                  {result.extractionMethod && (
+                    <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                      Extracted via: {result.extractionMethod}
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDiff(!showDiff)}
+                    className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
+                    title="Toggle diff overlay"
+                  >
+                    Diff overlay: {showDiff ? 'On' : 'Off'}
+                  </Button>
+                </div>
+                <div className="flex items-center justify-center">
+                  <PuzzleGrid grid={predictedGrid} title="Predicted" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
+                </div>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
                 </div>
                 <div className="flex items-center justify-center">
                   <PuzzleGrid grid={expectedOutputGrid} title="Correct" showEmojis={false} highlight={true} />
@@ -454,28 +464,37 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
             <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                {result.isPredictionCorrect !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                  >
+                    {result.isPredictionCorrect ? 'Prediction matches correct answer' : 'Prediction differs from correct answer'}
+                  </Badge>
+                )}
                 {result.extractionMethod && (
                   <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
                     Extracted via: {result.extractionMethod}
                   </Badge>
                 )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDiff(!showDiff)}
+                  className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
+                  title="Toggle diff overlay"
+                >
+                  Diff overlay: {showDiff ? 'On' : 'Off'}
+                </Button>
               </div>
               <div className="flex items-center justify-center">
-                <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={undefined} />
+                <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
               </div>
             </div>
           ) : expectedOutputGrid ? (
             <div className="bg-green-50 border border-green-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
-                {result.isPredictionCorrect !== undefined && (
-                  <Badge 
-                    variant="outline" 
-                    className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
-                  >
-                    {result.isPredictionCorrect ? 'Matches prediction' : 'Differs from prediction'}
-                  </Badge>
-                )}
               </div>
               <div className="flex items-center justify-center">
                 <PuzzleGrid grid={expectedOutputGrid} title="Correct Answer" showEmojis={false} highlight={true} />
