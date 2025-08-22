@@ -46,6 +46,55 @@ import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade using GPT-5 (medium reasoning): thread emojiSetKey/omitAnswer options
 
+// JSON-structure-enforcing system prompts (same format as other services)
+const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
+
+{
+  "predictedOutput": [[0,1,2],[3,4,5],[6,7,8]],
+  "patternDescription": "Clear description of what you learned from the training examples",
+  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
+  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
+
+const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
+
+{
+  "predictedOutputs": [[[0,1],[2,3]], [[4,5],[6,7]]],
+  "patternDescription": "Clear description of what you learned from the training examples", 
+  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
+  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
+
+const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
+
+{
+  "patternDescription": "Clear description of the rules learned from the training examples",
+  "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
+  "confidence": 85
+}
+
+CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
+
+const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
+
+{
+  "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
+  "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
+  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
+  "confidence": 85,
+  "alienMeaning": "The aliens' message",
+  "alienMeaningConfidence": 85
+}
+
+CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
+
 const MODELS = {
   "gemini-2.5-pro": "gemini-2.5-pro",
   "gemini-2.5-flash": "gemini-2.5-flash",
@@ -90,16 +139,48 @@ export class GeminiService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions, // Cascade: optional prompt options forwarded to builder
+    serviceOpts?: {
+      systemPromptMode?: 'ARC' | 'None';
+    }
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
 
+    // Determine system prompt mode (default to ARC for better results)
+    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    
     // Build prompt using shared prompt builder
-    // Cascade: pass PromptOptions so backend can select emoji palette and omit answer if requested
     const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
     
-    // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
-    const prompt = captureReasoning ? 
-      `${basePrompt}
+    // Prepare system instruction and user prompt based on mode
+    let systemInstruction: string | undefined;
+    let userPrompt: string;
+    
+    if (systemPromptMode === 'ARC') {
+      // ARC Mode: Select appropriate system prompt based on context
+      const isSolverMode = promptId === "solver";
+      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
+      const hasMultipleTests = task.test.length > 1;
+      
+      if (isSolverMode && hasMultipleTests) {
+        systemInstruction = MULTI_SOLVER_SYSTEM_PROMPT;
+        console.log(`[Gemini] Using multi-test solver system instruction (${task.test.length} tests)`);
+      } else if (isSolverMode) {
+        systemInstruction = SOLVER_SYSTEM_PROMPT;
+        console.log(`[Gemini] Using single-test solver system instruction`);
+      } else if (isAlienMode) {
+        systemInstruction = ALIEN_EXPLANATION_SYSTEM_PROMPT;
+        console.log(`[Gemini] Using alien explanation system instruction`);
+      } else {
+        systemInstruction = EXPLANATION_SYSTEM_PROMPT;
+        console.log(`[Gemini] Using standard explanation system instruction`);
+      }
+      
+      userPrompt = basePrompt;
+    } else {
+      // None Mode: Current behavior with reasoning wrapper
+      systemInstruction = undefined;
+      userPrompt = captureReasoning ? 
+        `${basePrompt}
 
 IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
 If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
@@ -109,10 +190,28 @@ If possible, explicitly show your step-by-step reasoning process inside <thinkin
 </thinking>
 
 Then provide your final structured JSON response.` : basePrompt;
+      console.log(`[Gemini] Using None mode (current behavior) with model ${modelKey}`);
+    }
 
     try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
+      // Create model with optional system instruction (Gemini's systemInstruction parameter)
+      const modelConfig: any = { 
+        model: modelName,
+        generationConfig: {
+          temperature: temperature,
+          maxOutputTokens: 4096,
+        }
+      };
+      
+      // Add system instruction if in ARC mode
+      if (systemInstruction) {
+        modelConfig.systemInstruction = {
+          parts: [{ text: systemInstruction }]
+        };
+      }
+      
+      const model = genAI.getGenerativeModel(modelConfig);
+      const result = await model.generateContent(userPrompt);
 
       const rawText: string = result.response.text() ?? "";
       

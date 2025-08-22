@@ -43,6 +43,7 @@ export default function PuzzleExaminer() {
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
+  const [systemPromptMode, setSystemPromptMode] = useState<'ARC' | 'None'>('ARC'); // Default to ARC mode for better results
 
   // Early return if no taskId
   if (!taskId) {
@@ -87,6 +88,7 @@ export default function PuzzleExaminer() {
     // Forward researcher options to backend
     emojiSetKey: sendAsEmojis ? emojiSet : undefined, // Only send emoji set if "Send as emojis" is enabled
     omitAnswer,
+    systemPromptMode,
   });
   
   // Find the current model's details if we're analyzing
@@ -296,6 +298,8 @@ export default function PuzzleExaminer() {
             onSendAsEmojisChange={setSendAsEmojis}
             omitAnswer={omitAnswer}
             onOmitAnswerChange={setOmitAnswer}
+            systemPromptMode={systemPromptMode}
+            onSystemPromptModeChange={setSystemPromptMode}
           />
 
           {/* Prompt Preview */}
