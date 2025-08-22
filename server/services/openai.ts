@@ -444,9 +444,9 @@ export class OpenAIService {
     // Add system prompt mode notes
     if (systemPromptMode === 'ARC') {
       providerSpecificNotes.push("System Prompt Mode: {ARC} - Using structured system prompt for better parsing");
-      providerSpecificNotes.push(`System Message: "${ARC_SYSTEM_PROMPT}"`);
+      providerSpecificNotes.push(`System Message: "${systemMessage}"`);
     } else {
-      providerSpecificNotes.push("System Prompt Mode: {None} - Current behavior (all content as user message)");
+      providerSpecificNotes.push("System Prompt Mode: {None} - Old behavior (all content as user message)");
     }
 
     return {

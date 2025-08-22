@@ -56,6 +56,8 @@ August 21, 2025
 ### UI Enhancements (Code by Cascade)
 - **Raw DB Record Toggle**: `client/src/components/puzzle/AnalysisResultCard.tsx` now includes a header toggle to show/hide the raw explanation database record (pretty‑printed JSON). Useful for debugging provider parsing vs stored values. Non-intrusive ghost button; collapsible, scrollable panel.
 - **Predicted Answer(s) Display**: `AnalysisResultCard` renders model-predicted grid(s) when available (`predictedOutputGrid` or `predictedOutputGrids[]`), with an optional extraction method badge. Uses `PuzzleGrid` with numeric view.
+- **Correct Answer Grid**: `AnalysisResultCard` now shows the correct output grid from the task file (first test by default), passed from `PuzzleExaminer.tsx` via `expectedOutputGrid`.
+- **Compact Diff Overlay**: Added mismatch indicators (small red dots) on predicted grid cells that differ from the correct grid. Implemented via `diffMask` in `PuzzleGrid` and `mismatch` in `GridCell`.
 
 ### Multi‑Test Support Improvements (Code by Cascade)
 - **Prompt Builder**: `server/services/promptBuilder.ts` now includes ALL test cases in prompts. Solver mode instructs models to return `predictedOutputs` (array) for multi-test tasks, with backward-compatible `predictedOutput` for single-test.
