@@ -1,5 +1,5 @@
 <!--
-File: docs/token-usage-and-costs.md
+FROM THE MODEL COMPARE PROJECT!!!  USE AS REFERENCE!!!
 Purpose: Explain exactly how token usage is captured and costs are calculated across providers, with code snippets.
 How it works: Documents the centralized cost formula in `server/providers/base.ts` and the per‑provider token mapping logic used to feed it. Also notes routing pass‑through and UI aggregation.
 Used by project: As a reference for developers when changing provider implementations or pricing tables.
