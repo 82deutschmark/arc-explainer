@@ -194,7 +194,7 @@ export default function PuzzleOverview() {
           provider: modelInfo?.provider || 'Unknown'
         };
       })
-      .filter(model => model.total >= 2) // Only show models with at least 2 feedback entries
+      .filter(model => model.total >= 1) // Show all models with at least 1 feedback entry
       .sort((a, b) => {
         // Sort by helpful percentage first, then by total feedback count
         if (a.helpfulPercentage !== b.helpfulPercentage) {

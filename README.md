@@ -45,7 +45,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 ## 🌟 Development & Credits
 
-**Primary Development**: Cascade
+**Primary Development**: Cascade and Claude Code using Sonnet 4
 **AI Assistant**: Kimi K2 - Advanced AI system providing exceptional implementation support
 
 ### Kimi K2's Contributions (July 26, 2025)
