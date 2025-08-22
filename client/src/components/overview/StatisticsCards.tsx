@@ -3,7 +3,7 @@
  * Displays feedback and solver mode accuracy statistics in a modular card layout
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +47,18 @@ interface StatisticsCardsProps {
   onViewAllFeedback: () => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
+  recentActivity?: Array<{
+    id: string;
+    type: 'explanation' | 'feedback';
+    puzzleId: string;
+    modelName?: string;
+    createdAt: string;
+  }>;
+  saturnResults?: Array<{
+    puzzleId: string;
+    solved: boolean;
+    createdAt: string;
+  }>;
 }
 
 export function StatisticsCards({
@@ -55,109 +67,156 @@ export function StatisticsCards({
   modelRankings,
   onViewAllFeedback,
   statsLoading,
-  accuracyLoading
+  accuracyLoading,
+  recentActivity = [],
+  saturnResults = []
 }: StatisticsCardsProps) {
-  if (statsLoading || !feedbackStats) {
+  if (statsLoading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map(i => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader>
-              <div className="h-6 bg-gray-200 rounded"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-6">
+        {/* Loading state for new layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[1, 2].map(i => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader>
+                <div className="h-6 bg-gray-200 rounded"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => (
+            <Card key={`second-${i}`} className="animate-pulse">
+              <CardHeader>
+                <div className="h-6 bg-gray-200 rounded"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
 
+  // Saturn results are already passed as prop
+  const saturnStats = { saturnResults };
+
   return (
     <div className="space-y-6">
-      {/* Feedback Statistics */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Overall Stats */}
-        <Card>
+      {/* Priority 1: Solver Performance (Top Section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Large Solver Overview */}
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Feedback Overview
+              <Award className="h-6 w-6 text-green-600" />
+              Solver Performance Overview
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total Feedback:</span>
-                <Badge variant="outline" className="text-lg font-semibold">
-                  {feedbackStats.totalFeedback}
-                </Badge>
+            {accuracyStats && accuracyStats.totalSolverAttempts > 0 ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600">
+                    {accuracyStats.totalSolverAttempts}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Solver Attempts</div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-xl font-semibold text-green-700">
+                      {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
+                        sum + model.accuracyPercentage, 0) / accuracyStats.accuracyByModel.length) || 0}%
+                    </div>
+                    <div className="text-xs text-green-600">Avg Accuracy</div>
+                  </div>
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-xl font-semibold text-blue-700">
+                      {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
+                        sum + model.avgAccuracyScore, 0) / accuracyStats.accuracyByModel.length * 100) || 0}%
+                    </div>
+                    <div className="text-xs text-blue-600">Avg Trust Score</div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Helpful:</span>
-                <Badge className="bg-green-100 text-green-800">
-                  {feedbackStats.helpfulCount} ({feedbackStats.helpfulPercentage}%)
-                </Badge>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Award className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No solver mode data available</p>
+                <p className="text-xs">Run analyses in solver mode to see performance metrics</p>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Not Helpful:</span>
-                <Badge className="bg-red-100 text-red-800">
-                  {feedbackStats.notHelpfulCount} ({feedbackStats.notHelpfulPercentage}%)
-                </Badge>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Top Performing Models */}
-        <Card>
+        {/* Saturn Solver Results */}
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Top Models by Feedback
+              <span className="text-2xl">🪐</span>
+              Saturn Visual Solver Results
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {modelRankings.map((model, index) => (
-                <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    {index === 0 && <Star className="h-4 w-4 text-yellow-500" />}
-                    <span className="text-sm font-medium truncate">
-                      {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {saturnStats.saturnResults.length > 0 ? (
+                saturnStats.saturnResults.map((result) => (
+                  <a
+                    key={result.puzzleId}
+                    href={`/examine/${result.puzzleId}`}
+                    className="flex items-center justify-between p-3 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors block"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">🪐</span>
+                      <div>
+                        <div className="text-sm font-medium text-purple-700">
+                          Puzzle {result.puzzleId}
+                        </div>
+                        <div className="text-xs text-purple-600">
+                          {new Date(result.createdAt).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
+                    </div>
                     <Badge 
-                      className={`text-xs ${
-                        model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
-                        model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}
+                      className={result.solved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
                     >
-                      {model.helpfulPercentage}%
+                      {result.solved ? '✅ Solved' : '❌ Failed'}
                     </Badge>
-                    <span className="text-xs text-gray-500">
-                      ({model.total})
-                    </span>
-                  </div>
+                  </a>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <span className="text-4xl opacity-30">🪐</span>
+                  <p className="mt-3">No Saturn solver results</p>
+                  <p className="text-xs">Use Saturn Visual Solver to see results here</p>
                 </div>
-              ))}
-              {modelRankings.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">
-                  No models with sufficient feedback data
-                </p>
               )}
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Recent Feedback Trends */}
-        <Card>
+      {/* Priority 2: Activity & Engagement (Middle Section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Extended Recent Activity */}
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -165,165 +224,175 @@ export function StatisticsCards({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {feedbackStats.feedbackByDay.slice(0, 5).map((day) => (
-                <div key={day.date} className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">
-                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-600 font-medium">+{day.helpful}</span>
-                    <span className="text-red-600 font-medium">-{day.notHelpful}</span>
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {recentActivity.slice(0, 15).map((activity) => (
+                <div key={`${activity.type}-${activity.id}`} className="flex justify-between items-center text-sm p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {activity.type === 'explanation' ? (
+                      <span className="text-xl">🧠</span>
+                    ) : (
+                      <span className="text-xl">👍</span>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-gray-800 truncate font-medium">
+                        {activity.type === 'explanation' ? (
+                          `${activity.modelName} analyzed puzzle ${activity.puzzleId}`
+                        ) : (
+                          `Feedback received for puzzle ${activity.puzzleId}`
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {new Date(activity.createdAt).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
-              {feedbackStats.feedbackByDay.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">
-                  No recent feedback activity
-                </p>
+              {recentActivity.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <TrendingUp className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p>No recent activity</p>
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Worst Performing Models */}
-        <Card>
+        {/* Compact Feedback Summary */}
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-              Needs Improvement
+              <MessageSquare className="h-5 w-5" />
+              Community Feedback
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {modelRankings.slice().reverse().map((model) => (
-                <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate text-red-700">
-                      {model.displayName.length > 25 ? `${model.displayName.substring(0, 25)}...` : model.displayName}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge 
-                      className={`text-xs ${
-                        model.helpfulPercentage >= 70 ? 'bg-green-100 text-green-800' :
-                        model.helpfulPercentage >= 50 ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {model.helpfulPercentage}%
-                    </Badge>
-                    <span className="text-xs text-gray-500">
-                      ({model.total})
-                    </span>
-                  </div>
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {feedbackStats?.totalFeedback || 0}
                 </div>
-              ))}
-              {modelRankings.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">
-                  No models with sufficient feedback data
-                </p>
-              )}
+                <div className="text-sm text-gray-600">Total Feedback</div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Helpful:</span>
+                  <Badge className="bg-green-100 text-green-800">
+                    {feedbackStats?.helpfulPercentage || 0}%
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Not Helpful:</span>
+                  <Badge className="bg-red-100 text-red-800">
+                    {feedbackStats?.notHelpfulPercentage || 0}%
+                  </Badge>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={onViewAllFeedback}
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+              >
+                View All Feedback
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Solver Mode Accuracy Statistics */}
+      {/* Priority 3: Model Rankings (Bottom Section) - Only if solver data exists */}
       {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">Solver Mode Accuracy</h2>
-            <Badge variant="outline" className="text-xs">
-              {accuracyStats.totalSolverAttempts} attempts
-            </Badge>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Most Accurate Models */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="h-5 w-5 text-green-500" />
-                  Most Accurate Models
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {accuracyStats.accuracyByModel.map((model, index) => {
-                    const modelInfo = MODELS.find(m => m.key === model.modelName);
-                    const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                    
-                    return (
-                      <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-green-50 border border-green-100">
-                        <div className="flex items-center gap-2">
-                          {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
-                          <span className="text-sm font-medium truncate text-green-700">
-                            {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className="text-xs bg-green-100 text-green-800">
-                            {model.accuracyPercentage}%
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {Math.round(model.avgAccuracyScore * 100)}% trust
-                          </Badge>
-                          <span className="text-xs text-gray-500">
-                            ({model.totalAttempts})
-                          </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Top Solver Models */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-green-500" />
+                Top Solver Models
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {accuracyStats.accuracyByModel.map((model, index) => {
+                  const modelInfo = MODELS.find(m => m.key === model.modelName);
+                  const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                  
+                  return (
+                    <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100 hover:bg-green-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
+                        <div>
+                          <div className="text-sm font-medium text-green-700">
+                            {displayName}
+                          </div>
+                          <div className="text-xs text-green-600">
+                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
+                          </div>
                         </div>
                       </div>
-                    );
-                  })}
-                  {accuracyStats.accuracyByModel.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">
-                      No solver mode data available
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge className="text-xs bg-green-100 text-green-800">
+                          {model.accuracyPercentage}% accuracy
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {Math.round(model.avgAccuracyScore * 100)}% trust
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Least Accurate Models */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-                  Needs Improvement
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {accuracyStats.accuracyByModel.slice().reverse().map((model) => {
-                    const modelInfo = MODELS.find(m => m.key === model.modelName);
-                    const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                    
-                    return (
-                      <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-100">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium truncate text-red-700">
-                            {displayName.length > 25 ? `${displayName.substring(0, 25)}...` : displayName}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className="text-xs bg-red-100 text-red-800">
-                            {model.accuracyPercentage}%
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {Math.round(model.avgAccuracyScore * 100)}% trust
-                          </Badge>
-                          <span className="text-xs text-gray-500">
-                            ({model.totalAttempts})
-                          </span>
+          {/* Solver Models Needing Improvement */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
+                Solver Models - Needs Improvement
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {accuracyStats.accuracyByModel.slice().reverse().map((model) => {
+                  const modelInfo = MODELS.find(m => m.key === model.modelName);
+                  const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                  
+                  return (
+                    <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="text-sm font-medium text-red-700">
+                            {displayName}
+                          </div>
+                          <div className="text-xs text-red-600">
+                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
+                          </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge className="text-xs bg-red-100 text-red-800">
+                          {model.accuracyPercentage}% accuracy
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {Math.round(model.avgAccuracyScore * 100)}% trust
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

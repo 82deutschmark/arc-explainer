@@ -35,6 +35,11 @@ August 22, 2025
 - **Multi-Test Support**: Handles both single (`predictedOutput`) and multi-test (`predictedOutputs`) scenarios
 - **Template Integration**: Works with all existing prompt templates (solver, explanation, alien communication)
 
+### 🛠️ UI Fixes (Code by Cascade)
+- Removed provider-level lock that disabled clicking other models from the same provider while an analysis was running.
+  - Change: `client/src/pages/PuzzleExaminer.tsx` now disables only the exact model currently processing; other models (even within the same provider) remain clickable.
+  - Cleanup: Removed `isProviderProcessing` export from `client/src/hooks/useAnalysisResults.ts`.
+
 August 21, 2025
 
 ## Version 1.4.6 — Markdown JSON Response Parsing Fix (2025-08-21)

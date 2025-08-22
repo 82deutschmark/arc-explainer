@@ -73,7 +73,6 @@ export default function PuzzleExaminer() {
     processingModels,
     isAnalyzing,
     analyzerError,
-    isProviderProcessing,
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
@@ -342,7 +341,6 @@ export default function PuzzleExaminer() {
           {/* Model Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {MODELS.map((model) => {
-              const isThisProviderProcessing = isProviderProcessing(model.key);
               const isThisModelProcessing = processingModels.has(model.key);
               
               return (
@@ -352,7 +350,7 @@ export default function PuzzleExaminer() {
                   isAnalyzing={isThisModelProcessing}
                   explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
                   onAnalyze={handleAnalyzeWithModel}
-                  disabled={isThisProviderProcessing}
+                  disabled={isThisModelProcessing}
                 />
               );
             })}
