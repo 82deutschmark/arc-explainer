@@ -127,6 +127,12 @@ export interface ExplanationData {
   reasoningEffort?: string | null;
   reasoningVerbosity?: string | null;
   reasoningSummaryType?: string | null;
+  // Token usage and cost tracking
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  reasoningTokens?: number | null;
+  totalTokens?: number | null;
+  estimatedCost?: number | null;
 }
 
 /**

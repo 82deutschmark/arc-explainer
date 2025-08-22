@@ -8,6 +8,99 @@
  
 August 22, 2025
 
+## Version 1.6.2 — System Prompts + Structured Outputs Architecture Implementation (2025-08-22)
+
+### 🚀 Major System Prompt & Structured Outputs Refactor
+- **Modular Prompt Architecture (Code by Claude Code)**: Complete refactor of prompt system addressing persistent JSON parsing issues from versions 1.4.4-1.4.6
+  - **New File Structure**: 
+    - `server/services/schemas/` - JSON schemas for structured outputs
+    - `server/services/prompts/` - System and user prompt templates  
+    - `server/services/formatters/` - Grid formatting and emoji utilities
+    - Refactored `promptBuilder.ts` from 450+ lines to clean orchestration layer
+  - **Answer-First Output Enforcement**: `predictedOutput`/`predictedOutputs` always appears first in JSON responses per V1.5.0 requirements
+  - **Structured JSON Schema**: OpenAI structured outputs with `response_format` eliminate parsing ambiguity
+  - **Reasoning Log Capture**: OpenAI reasoning automatically captured in `solvingStrategy` field for deterministic parsing
+
+### 🎯 Architecture Benefits
+- **Eliminates JSON Parsing Issues**: Replaces regex-based parsing with structured JSON schemas  
+- **Captures OpenAI Reasoning**: Structured `solvingStrategy` field contains complete reasoning logs
+- **Modular & Maintainable**: Separated concerns across focused modules
+- **Provider Agnostic**: Schema enforcement where supported, instruction-based elsewhere
+- **Backwards Compatible**: Legacy parsing remains as fallback
+
+### 🔧 Technical Implementation  
+- **JSON Schemas**: Strict schema definitions with `additionalProperties: false` for OpenAI structured outputs
+- **System Prompts**: Role-based prompts separate from user data delivery
+- **Answer-First Structure**: Solver schemas enforce prediction fields as first properties
+- **Grid Formatters**: Extracted emoji/numeric conversion utilities for reuse
+- **Prompt Orchestration**: Clean separation of system prompts, user prompts, and JSON schemas
+
+### 📁 New Modular Structure
+```
+server/services/
+├── schemas/
+│   ├── common.ts     # Shared schema components
+│   ├── solver.ts     # Solver mode JSON schemas  
+│   └── explanation.ts # Explanation mode JSON schemas
+├── prompts/
+│   ├── systemPrompts.ts   # AI role and behavior definitions
+│   └── userTemplates.ts   # Clean puzzle data delivery
+├── formatters/
+│   └── grids.ts          # Emoji/numeric conversion utilities
+└── promptBuilder.ts      # Orchestrates system+user+schema
+```
+
+### ✅ Migration Status
+- [x] Phase 1: Schema definitions with OpenAI structured outputs compatibility
+- [x] Phase 2: System prompts for role/behavior definitions  
+- [x] Phase 3: User prompt simplification to raw puzzle data
+- [x] Phase 4: PromptBuilder refactor to orchestrate new architecture
+- [x] Phase 5: OpenAI service integration with structured outputs
+- [ ] Phase 6: Update remaining AI providers (Anthropic, Gemini, Grok, DeepSeek)
+
+### 📋 Implementation Notes
+- **OpenAI Service Updated**: Uses structured outputs with `response_format` parameter
+- **Legacy Compatibility**: Old parsing methods remain as fallback strategies
+- **Documentation**: Complete migration plan at `docs/System_Prompts_Structured_Outputs_Migration_Plan_Aug22.md`
+- **Testing**: Structured output validation ensures schema compliance
+
+## Version 1.6.1 — Saturn Step Hang Fallback Fix (2025-08-22)
+
+### 🛠️ Bug Fixes
+- **Prevent Indefinite "Running" State (Code by Cascade)**: Added a robust fallback in `server/services/saturnVisualService.ts` to handle cases where the Python wrapper exits without emitting a terminal `'final'` or `'error'` event.
+  - On detecting this edge case, the service now broadcasts a clear `status: 'error'` with phase `runtime`, includes the Python exit code, clears timeout/warning timers, and schedules session cleanup. This unblocks the UI and avoids lingering "still running" steps.
+  - No frontend changes required; `client/src/hooks/useSaturnProgress.ts` already merges `status` updates into UI state.
+
+### ✅ Testing Notes
+- Re-run a Saturn analysis for a previously hanging task and verify the UI transitions to either `completed` (normal) or `error` (fallback) within the configured timeout. Check server logs for `[SATURN-DEBUG] Fallback completion` if the fallback path triggers.
+
+## Version 1.6.0 — Real Token Usage & Cost Tracking Implementation (2025-08-22)
+
+### 🚀 Major Features
+- **Real Token Usage Tracking (Code by Claude Code)**: Comprehensive implementation of actual API token usage capture across all AI providers
+  - **Provider-Specific Token Extraction**: 
+    - Anthropic: `message.usage.input_tokens` & `output_tokens`
+    - Gemini: `usageMetadata.promptTokenCount` & `candidatesTokenCount`
+    - Grok: `response.usage.prompt_tokens` & `completion_tokens` (OpenAI-compatible)
+    - DeepSeek: Standard usage + special `reasoning_tokens` field for R1 model
+    - OpenAI: `result.usage.input_tokens` & `output_tokens` from Responses API
+  - **Real Cost Calculation**: Uses actual pricing from models.ts configuration (per-million-token costs)
+  - **Database Storage**: New columns for `input_tokens`, `output_tokens`, `reasoning_tokens`, `total_tokens`, `estimated_cost`
+  - **Frontend Display**: Live cost and token badges in analysis result cards
+
+### 🎯 Benefits
+- **Accurate Cost Tracking**: Shows real API costs like `$0.004` or `$12.34¢` for micro-costs based on actual token usage
+- **Token Usage Insights**: Displays smart-formatted token counts (`3.2k tokens`, `1.1M tokens`) for efficiency analysis
+- **Real-Time Cost Feedback**: Users see precise costs immediately after analysis completion
+- **Historical Cost Analysis**: All token usage and costs stored in database for future analytics
+- **Transparency**: Complete visibility into model efficiency and actual API costs per analysis
+
+### 🔧 Technical Implementation
+- **Shared Cost Calculator**: Centralized utility using models.ts pricing data with proper token-to-cost conversion
+- **Type Safety**: Updated ExplanationData interface with optional token and cost fields
+- **Smart Formatting**: Automatic cost formatting (cents for micro-amounts, dollars for larger) and token abbreviation
+- **Error Handling**: Graceful fallback when token usage unavailable (older analyses, API limitations)
+
 ## Version 1.5.0 — System Prompt Architecture Implementation (2025-08-22)
 
 ### 🚀 Major Features
