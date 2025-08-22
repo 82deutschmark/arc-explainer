@@ -10,6 +10,7 @@ import { Pool } from 'pg';
 // Import proper logger utility
 import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
+import { normalizeConfidence } from './schemas/explanation.js';
 
 /**
  * Interface for puzzle explanations
@@ -384,8 +385,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         patternDescription || '',
         solvingStrategy || '',
         hints || [],
-        confidence || 0,
-        alienMeaningConfidence || null,
+        normalizeConfidence(confidence),
+        alienMeaningConfidence ? normalizeConfidence(alienMeaningConfidence) : null,
         alienMeaning || '',
         modelName || 'unknown',
         reasoningLog || null,

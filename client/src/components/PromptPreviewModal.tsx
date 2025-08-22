@@ -23,6 +23,12 @@ import { apiRequest } from '@/lib/queryClient';
 interface PromptPreviewData {
   provider: string;
   modelName: string;
+  // New modular architecture data
+  systemPrompt: string;
+  userPrompt: string;
+  jsonSchema?: any;
+  useStructuredOutput: boolean;
+  // Legacy data for backwards compatibility
   promptText: string;
   messageFormat: any;
   templateInfo: {
@@ -31,7 +37,9 @@ interface PromptPreviewData {
     usesEmojis: boolean;
   };
   promptStats: {
-    characterCount: number;
+    systemPromptLength: number;
+    userPromptLength: number;
+    totalCharacterCount: number;
     wordCount: number;
     lineCount: number;
   };
@@ -297,53 +305,114 @@ export function PromptPreviewModal({
             </div>
           )}
 
-          {/* Preview Results */}
+          {/* New Architecture Preview */}
           {previewData && (
             <div className="space-y-4">
-              {/* Preview Header with Stats */}
+              {/* Preview Header with Architecture Status */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Preview for {previewData.provider} - {previewData.modelName}</span>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span className="flex items-center gap-2">
+                      <span>🤖</span>
+                      {previewData.provider} - {previewData.modelName}
+                    </span>
                     <div className="flex items-center gap-2">
+                      {previewData.useStructuredOutput && (
+                        <Badge variant="default" className="bg-green-100 text-green-800">
+                          JSON Schema
+                        </Badge>
+                      )}
                       {previewData.templateInfo.usesEmojis && (
                         <Badge variant="secondary">🛸 Emoji Mode</Badge>
                       )}
                       {previewData.isReasoningModel && (
-                        <Badge variant="outline">🧠 Reasoning Model</Badge>
-                      )}
-                      {previewData.pricingTier && (
-                        <Badge variant="outline">{previewData.pricingTier}</Badge>
+                        <Badge variant="outline">🧠 Reasoning</Badge>
                       )}
                     </div>
                   </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Characters:</span> {previewData.promptStats.characterCount.toLocaleString()}
-                    </div>
-                    <div>
-                      <span className="font-medium">Words:</span> {previewData.promptStats.wordCount.toLocaleString()}
-                    </div>
-                    <div>
-                      <span className="font-medium">Lines:</span> {previewData.promptStats.lineCount.toLocaleString()}
-                    </div>
+                  <div className="text-sm text-gray-600">
+                    System: {previewData.promptStats.systemPromptLength} chars • 
+                    User: {previewData.promptStats.userPromptLength} chars • 
+                    Total: {previewData.promptStats.totalCharacterCount} chars
                   </div>
+                </CardHeader>
                 </CardContent>
               </Card>
 
-              {/* Tabbed Content */}
-              <Tabs defaultValue="prompt" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="prompt">Prompt Text</TabsTrigger>
-                  <TabsTrigger value="format">Message Format</TabsTrigger>
-                  <TabsTrigger value="notes">Provider Notes</TabsTrigger>
+              {/* New Architecture Tabs */}
+              <Tabs defaultValue="system" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="system">🤖 System Prompt</TabsTrigger>
+                  <TabsTrigger value="user">📋 User Prompt</TabsTrigger>
+                  <TabsTrigger value="schema">⚙️ JSON Schema</TabsTrigger>
+                  <TabsTrigger value="legacy">🔧 Legacy View</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="prompt" className="space-y-2">
+                <TabsContent value="system" className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">Final Prompt Text</h3>
+                    <h3 className="text-sm font-medium text-blue-700">System Prompt (AI Role & Behavior)</h3>
+                    <Badge variant="outline" className="text-xs">
+                      {previewData.promptStats.systemPromptLength} chars
+                    </Badge>
+                  </div>
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 mb-3">
+                    <p><strong>Purpose:</strong> Defines the AI's role, output format, and behavior instructions</p>
+                  </div>
+                  <div className="bg-gray-50 border rounded-lg p-4 max-h-80 overflow-y-auto">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                      {previewData.systemPrompt || 'No system prompt (legacy mode)'}
+                    </pre>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="user" className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-green-700">User Prompt (Clean Puzzle Data)</h3>
+                    <Badge variant="outline" className="text-xs">
+                      {previewData.promptStats.userPromptLength} chars
+                    </Badge>
+                  </div>
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-xs text-green-800 mb-3">
+                    <p><strong>Purpose:</strong> Delivers clean puzzle data without formatting instructions</p>
+                  </div>
+                  <div className="bg-gray-50 border rounded-lg p-4 max-h-80 overflow-y-auto">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                      {previewData.userPrompt || 'Combined in legacy prompt'}
+                    </pre>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="schema" className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-purple-700">JSON Schema (Structure Enforcement)</h3>
+                    <div className="flex items-center gap-2">
+                      {previewData.useStructuredOutput ? (
+                        <Badge variant="default" className="bg-green-100 text-green-800 text-xs">Active</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs">Not Available</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-800 mb-3">
+                    <p><strong>Purpose:</strong> Enforces exact JSON structure for reliable parsing (OpenAI structured outputs)</p>
+                  </div>
+                  {previewData.jsonSchema ? (
+                    <div className="bg-gray-50 border rounded-lg p-4 max-h-80 overflow-y-auto">
+                      <pre className="text-xs font-mono whitespace-pre-wrap">
+                        {JSON.stringify(previewData.jsonSchema, null, 2)}
+                      </pre>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-gray-100 border border-gray-300 rounded-lg text-center text-sm text-gray-600">
+                      <p>JSON Schema not available for this provider</p>
+                      <p className="text-xs mt-1">Falls back to instruction-based JSON enforcement</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="legacy" className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium text-gray-700">Legacy Combined Prompt</h3>
                     <Button
                       variant="outline"
                       size="sm"
@@ -363,38 +432,33 @@ export function PromptPreviewModal({
                       )}
                     </Button>
                   </div>
-                  <div className="bg-gray-50 border rounded-lg p-4 max-h-96 overflow-y-auto">
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 mb-3">
+                    <p><strong>Legacy View:</strong> Shows old monolithic prompt format for debugging/comparison</p>
+                  </div>
+                  <div className="bg-gray-50 border rounded-lg p-4 max-h-80 overflow-y-auto">
                     <pre className="text-xs font-mono whitespace-pre-wrap break-words">
                       {previewData.promptText}
                     </pre>
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="format" className="space-y-2">
-                  <h3 className="text-sm font-medium">Provider-Specific Message Format</h3>
-                  <div className="bg-gray-50 border rounded-lg p-4 max-h-96 overflow-y-auto">
-                    <pre className="text-xs font-mono whitespace-pre-wrap">
-                      {JSON.stringify(previewData.messageFormat, null, 2)}
-                    </pre>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="notes" className="space-y-2">
-                  <h3 className="text-sm font-medium">Provider-Specific Implementation Notes</h3>
-                  <div className="space-y-2">
-                    {previewData.providerSpecificNotes.map((note, index) => (
-                      <div key={index} className="flex items-start gap-2 text-sm">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>{note}</span>
-                      </div>
-                    ))}
-                  </div>
                   
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="text-sm space-y-1">
-                      <div><span className="font-medium">Template:</span> {previewData.templateInfo.name}</div>
-                      <div><span className="font-medium">Temperature:</span> {previewData.temperature}</div>
-                      <div><span className="font-medium">Reasoning Capture:</span> {previewData.captureReasoning ? 'Enabled' : 'Disabled'}</div>
+                  {/* Provider Notes in Legacy Tab */}
+                  <div className="mt-4">
+                    <h4 className="text-sm font-medium mb-2">Provider Implementation</h4>
+                    <div className="space-y-2">
+                      {previewData.providerSpecificNotes.map((note, index) => (
+                        <div key={index} className="flex items-start gap-2 text-sm">
+                          <span className="text-blue-600 mt-1">•</span>
+                          <span>{note}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="text-sm space-y-1">
+                        <div><span className="font-medium">Template:</span> {previewData.templateInfo.name}</div>
+                        <div><span className="font-medium">Temperature:</span> {previewData.temperature}</div>
+                        <div><span className="font-medium">Reasoning:</span> {previewData.captureReasoning ? 'Enabled' : 'Disabled'}</div>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>

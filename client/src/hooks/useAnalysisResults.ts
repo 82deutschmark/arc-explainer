@@ -25,12 +25,12 @@ import { MODELS } from '@/constants/models';
 interface UseAnalysisResultsProps {
   taskId: string;
   refetchExplanations: (options?: any) => void;
-  // New optional analysis options passed from UI state
+  // Analysis options passed from UI state
   // emojiSetKey selects which emoji palette server-side prompt builder uses
   // omitAnswer tells prompt builder to omit the "Correct Answer" portion in the test case section
   emojiSetKey?: string;
   omitAnswer?: boolean;
-  systemPromptMode?: 'ARC' | 'None';
+  // systemPromptMode removed - now using modular architecture (hardcoded to 'ARC')
 }
 
 export function useAnalysisResults({
@@ -38,7 +38,6 @@ export function useAnalysisResults({
   refetchExplanations,
   emojiSetKey,
   omitAnswer,
-  systemPromptMode,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
@@ -73,10 +72,10 @@ export function useAnalysisResults({
       const requestBody: any = { 
         temperature: temp,
         promptId,
-        // New analysis options forwarded end-to-end
+        // Analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
-        ...(systemPromptMode ? { systemPromptMode } : {}),
+        systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
         // GPT-5 reasoning parameters
         ...(effort ? { reasoningEffort: effort } : {}),
         ...(verbosity ? { reasoningVerbosity: verbosity } : {}),
