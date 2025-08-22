@@ -39,6 +39,8 @@ import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 const MODELS = {
   "deepseek-chat": "deepseek-chat",
@@ -75,10 +77,12 @@ export class DeepSeekService {
 
     // Use custom prompt if provided, otherwise use selected template
     // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // DeepSeek requires the word "json" in the prompt when using json_object response format
-    const deepseekPrompt = prompt + "\n\nPlease respond in valid JSON format.";
+    const deepseekPrompt = basePrompt + "\n\nPlease respond in valid JSON format.";
 
     try {
       const requestOptions: any = {
@@ -96,6 +100,24 @@ export class DeepSeekService {
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
       
+      // Extract token usage from DeepSeek response (OpenAI-compatible + reasoning_tokens for R1)
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (response.usage) {
+        tokenUsage = {
+          input: response.usage.prompt_tokens,
+          output: response.usage.completion_tokens,
+          reasoning: (response.usage as any).reasoning_tokens, // DeepSeek R1 specific
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
+      
       // For deepseek-reasoner, also capture the reasoning content (Chain of Thought)
       const responseData: any = {
         model: modelKey,
@@ -104,6 +126,12 @@ export class DeepSeekService {
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data
+        inputTokens: tokenUsage?.input || null,
+        outputTokens: tokenUsage?.output || null,
+        reasoningTokens: tokenUsage?.reasoning || null,
+        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
+        estimatedCost: cost?.total || null,
         ...result,
       };
       
@@ -176,12 +204,14 @@ export class DeepSeekService {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // DeepSeek uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
 
@@ -204,7 +234,7 @@ export class DeepSeekService {
     return {
       provider: "DeepSeek",
       modelName,
-      promptText: prompt,
+      promptText: basePrompt,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
@@ -212,9 +242,9 @@ export class DeepSeekService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: basePrompt.length,
+        wordCount: basePrompt.split(/\s+/).length,
+        lineCount: basePrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,

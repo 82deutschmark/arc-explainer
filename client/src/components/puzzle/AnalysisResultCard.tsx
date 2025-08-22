@@ -15,7 +15,7 @@
  * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
  * This component is designed to be a self-contained card, making it easy to reuse and maintain.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,6 @@ import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
-import { getCostDisplay } from '@/utils/costCalculator';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -46,13 +45,37 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
+// Format cost for display
+const formatCost = (cost: number): string => {
+  if (cost < 0.001) {
+    return `$${(cost * 1000).toFixed(2)}¢`;
+  } else if (cost < 0.01) {
+    return `$${cost.toFixed(4)}`;
+  } else if (cost < 1.0) {
+    return `$${cost.toFixed(3)}`;
+  } else {
+    return `$${cost.toFixed(2)}`;
+  }
+};
+
+// Format token count for display
+const formatTokens = (tokens: number): string => {
+  if (tokens >= 1_000_000) {
+    return `${(tokens / 1_000_000).toFixed(1)}M`;
+  } else if (tokens >= 1_000) {
+    return `${(tokens / 1_000).toFixed(1)}k`;
+  } else {
+    return tokens.toString();
+  }
+};
+
 export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
-  const [showDiff, setShowDiff] = useState(true);
+  const [showDiff, setShowDiff] = useState(false);
   
   // Get feedback preview for this explanation
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
@@ -79,7 +102,10 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
     }
     return mask;
   };
-  const diffMask = buildDiffMask(predictedGrid, expectedOutputGrid);
+  const diffMask = useMemo(() => {
+    if (!showDiff) return undefined;
+    return buildDiffMask(predictedGrid, expectedOutputGrid);
+  }, [showDiff, predictedGrid, expectedOutputGrid]);
 
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
@@ -156,11 +182,19 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           </Badge>
         )}
         
-        {/* Cost Estimate */}
-        {modelKey && getCostDisplay(modelKey) && (
+        {/* Cost and Token Usage */}
+        {result.estimatedCost && (
           <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
             <span className="text-xs text-green-600">
-              Cost: {getCostDisplay(modelKey)}
+              Cost: {formatCost(result.estimatedCost)}
+            </span>
+          </Badge>
+        )}
+        
+        {result.totalTokens && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+            <span className="text-xs text-blue-600">
+              {formatTokens(result.totalTokens)} tokens
             </span>
           </Badge>
         )}

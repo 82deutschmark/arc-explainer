@@ -1,429 +1,172 @@
 /**
- * server/services/promptBuilder.ts
+ * server/services/promptBuilder.ts (REFACTORED)
  * 
- * Centralized prompt construction service for ARC-AGI puzzle analysis.
- * Handles template selection, emoji mapping, and prompt formatting across all AI providers.
- * This eliminates code duplication and provides a single source of truth for prompt logic.
+ * New modular prompt construction service for ARC-AGI puzzle analysis.
+ * Orchestrates system prompts, user prompts, and JSON schemas for structured outputs.
+ * 
+ * Architecture:
+ * - System prompts define AI role and behavior (prompts/systemPrompts.ts)
+ * - User prompts deliver clean puzzle data (prompts/userTemplates.ts)
+ * - JSON schemas enforce structure (schemas/*.ts)
+ * - Grid formatters handle emoji/numeric conversion (formatters/grids.ts)
  * 
  * Key Features:
- * - Unified prompt construction logic for all AI services
- * - Emoji mapping only for "alienCommunication" template
- * - Raw numeric grids for all other templates and custom prompts
- * - Integration with existing spaceEmojis system
- * - Template-specific formatting and JSON response structures
+ * - Separation of system vs user concerns
+ * - Structured JSON output enforcement
+ * - OpenAI reasoning log capture
+ * - Answer-first output for solver mode
+ * - Modular, maintainable architecture
  * 
- * Additions: Dynamic emoji palette selection and optional omission of the 'Correct Answer' section
- * (researcher options), implemented by Cascade using GPT-5 (medium reasoning).
- * 
- * Original Author: Claude 4 Sonnet Thinking
- * Recent Changes Author: Cascade using GPT-5 (medium reasoning)
+ * @author Claude Code with Sonnet 4
+ * @date August 22, 2025
  */
 
-import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types";
+import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types.js";
+import { getSystemPrompt, getStructuredOutputSystemPrompt, isAlienCommunicationMode, isSolverMode, getCustomSystemPrompt } from "./prompts/systemPrompts.js";
+import { buildUserPromptForTemplate, UserPromptOptions } from "./prompts/userTemplates.js";
+import { getSolverSchema } from "./schemas/solver.js";
+import { getExplanationSchema } from "./schemas/explanation.js";
 
 /**
- * PromptOptions
- * 
- * Shared options passed from controllers/services to the prompt builder.
- * Centralizing this type avoids hardcoding option shapes across provider services.
- * Added by Cascade using GPT-5 (medium reasoning).
+ * Enhanced PromptOptions with new architecture support
  */
-export type PromptOptions = {
+export interface PromptOptions {
   emojiSetKey?: string;
   omitAnswer?: boolean;
   systemPromptMode?: 'ARC' | 'None';
-};
-
-/**
- * Server-side emoji palette registry.
- * Matches keys defined in `client/src/lib/spaceEmojis.ts`.
- * Default remains legacy_default for backward compatibility.
- * Added by Cascade using GPT-5 (medium reasoning).
- */
-const SERVER_SPACE_EMOJI_SETS: Record<string, string[]> = {
-  legacy_default: ['⬛', '✅', '👽', '👤', '🪐', '🌍', '🛸', '☄️', '♥️', '⚠️'],
-  alien_language: ['🈵', '☮', '🈳', '🚯', '✴', '❗', '💹', '💟', '🔜', '🤗'],
-  celestial_set1: ['⬛', '🌍', '🌎', '🌏', '⭐', '🌟', '✨', '💫', '🌠', '🪐'],
-  celestial_set2: ['⬛', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '☀️'],
-  tech_set1: ['⬛', '⚡', '🔋', '🔌', '⛽', '☢️', '⚛️', '🔗', '⚙️', '🔧'],
-  tech_set2: ['⬛', '📡', '🛰️', '📱', '⌨️', '📶', '📋', '💻', '🎚️', '🎧'],
-  nav_alerts: ['⬛', '⬆️', '⬇️', '⬅️', '➡️', '↗️', '↖️', '↘️', '↙️', '🧭'],
-  status_alerts: ['⬛', '✅', '❌', '⚠️', '🚨', '🦺', '🔥', '❄️', '📍', '🎯'],
-  weather_climate: ['⬛', '🌞', '🌝', '🌛', '🌜', '🌧️', '⛈️', '🌩️', '🌨️', '❄️'],
-  status_emojis: ['⬛', '😂', '😶', '😐', '🙄', '😴', '😵', '🤗', '🤔', '😣'],
-  ai_emojis: ['⬛', '🤖', '💡', '🧠', '🔗', '⚙️', '🔧', '🔄', '⚡', '🚫'],
-  vague_symbols: ['⬛', '♊', '💕', '💢', '🆎', '🆒', '🈚', '🛃', '💠', '☣'],
-  arc_colors: ['⬛', '🟦', '🟥', '🟩', '🟨', '⬜', '🟪', '🟧', '🟫', '🀄'],
-  mahjong: ['⬛', '🀇', '🀈', '🀉', '🀊', '🀋', '🀌', '🀍', '🀎', '🀏'],
-};
-
-/** Get a specific emoji set by key, defaulting to legacy_default */
-function getEmojiSetByKey(key?: string): string[] {
-  if (key && SERVER_SPACE_EMOJI_SETS[key]) return SERVER_SPACE_EMOJI_SETS[key];
-  return SERVER_SPACE_EMOJI_SETS["legacy_default"]; // fallback
+  useStructuredOutput?: boolean;
 }
 
 /**
- * ARC-AGI transformation types reference for all prompts
+ * Complete prompt package for AI services
  */
-const ARC_TRANSFORMATIONS = `# ARC-AGI Transformation Types
-
-## Geometric Transformations
-- Rotation (90°, 180°, 270°)
-- Reflection (horizontal, vertical, diagonal)
-- Translation (moving objects)
-- Scaling (resize objects)
-
-## Pattern Operations
-- Pattern completion
-- Pattern extension
-- Pattern repetition
-- Sequence prediction
-
-## Logical Operations
-- AND operations
-- OR operations
-- XOR operations
-- NOT operations
-- Conditional logic
-
-## Grid Operations
-- Grid splitting (horizontal, vertical, quadrant)
-- Grid merging
-- Grid overlay
-- Grid subtraction
-
-## Object Manipulation
-- Object counting
-- Object sorting
-- Object filtering
-- Object grouping
-
-## Color Operations
-- Color replacement
-- Color mapping
-- Color counting
-- Color patterns
-
-## Shape Operations
-- Shape detection
-- Shape transformation
-- Shape completion
-- Shape generation
-
-## Spatial Relations
-- Adjacency rules
-- Containment
-- Alignment
-- Distance relationships
-
-## Sequential Logic
-- Temporal patterns
-- Step-by-step transformations
-- Progressive changes
-- Rule application order`;
-
-/**
- * Convert numeric grid to emoji representation using a provided palette (length-10 array).
- * Added by Cascade using GPT-5 (medium reasoning).
- */
-function convertGridToEmojis(grid: number[][], emojiSet: string[]): string[][] {
-  return grid.map(row => row.map(cell => emojiSet[cell] ?? '❓'));
+export interface PromptPackage {
+  systemPrompt: string;
+  userPrompt: string;
+  selectedTemplate: PromptTemplate | null;
+  jsonSchema?: any;
+  useStructuredOutput: boolean;
+  isAlienMode: boolean;
+  isSolver: boolean;
 }
 
 /**
- * Format training examples based on template requirements
- */
-function formatTrainingExamples(task: ARCTask, useEmojis: boolean, emojiSet?: string[]): string {
-  return task.train
-    .map((example, i) => {
-      if (useEmojis) {
-        const emojiInput = convertGridToEmojis(example.input, emojiSet ?? getEmojiSetByKey());
-        const emojiOutput = convertGridToEmojis(example.output, emojiSet ?? getEmojiSetByKey());
-        return `Example ${i + 1}:\nInput: ${JSON.stringify(emojiInput)}\nOutput: ${JSON.stringify(emojiOutput)}`;
-      } else {
-        return `Example ${i + 1}:\nInput: ${JSON.stringify(example.input)}\nOutput: ${JSON.stringify(example.output)}`;
-      }
-    })
-    .join("\n\n");
-}
-
-/**
- * Format test cases based on template requirements
- */
-function formatTestCases(
-  task: ARCTask,
-  useEmojis: boolean,
-  emojiSet?: string[]
-): { inputs: string[]; outputs: string[] } {
-  const inputs: string[] = [];
-  const outputs: string[] = [];
-  const palette = emojiSet ?? getEmojiSetByKey();
-  for (const ex of task.test) {
-    if (useEmojis) {
-      const emojiInput = convertGridToEmojis(ex.input, palette);
-      const emojiOutput = convertGridToEmojis(ex.output, palette);
-      inputs.push(JSON.stringify(emojiInput));
-      outputs.push(JSON.stringify(emojiOutput));
-    } else {
-      inputs.push(JSON.stringify(ex.input));
-      outputs.push(JSON.stringify(ex.output));
-    }
-  }
-  return { inputs, outputs };
-}
-
-/**
- * Build an emoji map section dynamically for the selected palette (0..9 listing).
- * Simplified to avoid hardcoded semantic labels that may not match custom palettes.
- * Added by Cascade using GPT-5 (medium reasoning).
- */
-function getEmojiMapSection(emojiSet: string[]): string {
-  const lines = emojiSet.map((e, i) => `${i}: ${e}`);
-  return `
-
-4. The aliens gave us this emoji map of the numbers 0-9. Recognize that the user sees the numbers 0-9 map to emojis like this:
-
-${lines.join("\n")}`;
-}
-
-/**
- * Get JSON response format based on template
- */
-function getJsonResponseFormat(selectedTemplate: PromptTemplate | null): object {
-  const isAlienCommunication = selectedTemplate?.emojiMapIncluded || false;
-  
-  if (isAlienCommunication) {
-    return {
-      "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
-      "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "confidence": "A confidence score between 0 and 100, how sure you are about your answer and your explanation",
-      "alienMeaning": "The aliens' message",
-      "alienMeaningConfidence": "A confidence score between 0 and 100, how sure you are about the aliens' message"
-    };
-  } else {
-    return {
-      "patternDescription": "Clear description of the rules learned from the training examples",
-      "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps",
-      "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-      "confidence": "A confidence score between 0 and 100, how sure you are about your explanation and the transformation rules being applied"
-    };
-  }
-}
-
-/**
- * Get JSON response format for solver mode (predicting answers)
- * Uses same format as explanation mode for frontend compatibility
- */
-function getSolverResponseFormat(): object {
-  return {
-    "patternDescription": "Clear description of what was learned from training examples",
-    "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
-    "hints": [
-      "Key reasoning insight 1",
-      "Key reasoning insight 2", 
-      "Key reasoning insight 3"
-    ],
-    "confidence": "A confidence score between 0 and 100, how sure you are about your predicted answer"
-  };
-}
-
-/**
- * Build complete prompt for AI analysis
+ * Main prompt building function - orchestrates all components
  */
 export function buildAnalysisPrompt(
   task: ARCTask,
   promptId: string = "solver",
   customPrompt?: string,
-  options?: PromptOptions
-): {
-  prompt: string;
-  selectedTemplate: PromptTemplate | null;
-} {
-  // DEBUG: Log all parameters
-  console.log(`[PromptBuilder] DEBUG - promptId: "${promptId}", customPrompt length: ${customPrompt?.length || 0}`);
+  options: PromptOptions = {}
+): PromptPackage {
+  console.log(`[PromptBuilder] Building prompt for template: ${promptId}`);
   
-  // Handle custom prompt - ONLY custom text + raw puzzle data, NO template wrapping
-  if (promptId === "custom" || (customPrompt && customPrompt.trim())) {
-    console.log(`[PromptBuilder] ✅ CUSTOM PROMPT DETECTED - RAW MODE ACTIVATED`);
-    console.log(`[PromptBuilder] promptId === "custom": ${promptId === "custom"}`);
-    console.log(`[PromptBuilder] customPrompt exists: ${!!(customPrompt && customPrompt.trim())}`);
-    
-    // If no custom prompt text provided, return just the puzzle data
-    const customText = customPrompt && customPrompt.trim() ? customPrompt : "";
-    
-    // For custom prompts, use raw numeric grids (no emojis, no formatting)
-    const trainingExamples = formatTrainingExamples(task, false);
-    const testCases = formatTestCases(task, false);
-    
-    // Simple, clean format for custom prompts - ONLY custom text + raw puzzle data
-    const multi = task.test.length > 1;
-    const testSection = multi
-      ? testCases.inputs
-          .map((inp, idx) => `Test ${idx + 1} Input: ${inp}\nCorrect Answer: ${testCases.outputs[idx]}`)
-          .join("\n\n")
-      : `Input: ${testCases.inputs[0]}\nCorrect Answer: ${testCases.outputs[0]}`;
+  const {
+    emojiSetKey,
+    omitAnswer = false,
+    systemPromptMode = 'ARC',
+    useStructuredOutput = true
+  } = options;
 
-    const prompt = customText ? 
-      `${customText}
-
-TRAINING EXAMPLES:
-${trainingExamples}
-
-TEST CASE${multi ? 'S' : ''}:
-${testSection}` :
-      `TRAINING EXAMPLES:
-${trainingExamples}
-
-TEST CASE${multi ? 'S' : ''}:
-${testSection}`;
-
-    console.log(`[PromptBuilder] 📝 RETURNING CUSTOM PROMPT (${prompt.length} chars) - NO TEMPLATE INSTRUCTIONS`);
-    return {
-      prompt,
-      selectedTemplate: null // No template for custom prompts
-    };
-  }
+  // Determine prompt characteristics
+  const isCustom = promptId === 'custom' || (customPrompt && customPrompt.trim());
+  const isAlien = isAlienCommunicationMode(promptId);
+  const isSolver = isSolverMode(promptId);
+  const selectedTemplate = isCustom ? null : (PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation);
   
-  console.log(`[PromptBuilder] 📋 CUSTOM PROMPT NOT DETECTED - USING TEMPLATE MODE 📋`);
+  console.log(`[PromptBuilder] Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
 
-  // Use template-based prompt (existing logic)
-  const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
-  const basePrompt = selectedTemplate.content;
-  console.log(`[PromptBuilder] Using prompt template: ${selectedTemplate.name} (${promptId})`);
-  
-  // Determine if we should use emojis (only for alienCommunication template)
-  const useEmojis = selectedTemplate?.emojiMapIncluded || false;
-  // Resolve selected emoji palette for emoji-enabled templates
-  const selectedEmojiSet = useEmojis ? getEmojiSetByKey(options?.emojiSetKey) : undefined;
-  
-  // Check if this is solver mode (no correct answer provided)
-  const isSolverMode = promptId === "solver";
-  // Researcher option: omit the explicit Correct Answer line in explanation mode
-  const omitAnswer = !!options?.omitAnswer && !isSolverMode;
-  
-  // Format data based on emoji requirements
-  const trainingExamples = formatTrainingExamples(task, useEmojis, selectedEmojiSet);
-  const testCases = formatTestCases(task, useEmojis, selectedEmojiSet);
-  
-  // Build sections conditionally
-  const emojiMapSection = useEmojis ? getEmojiMapSection(selectedEmojiSet!) : '';
-  
-  const trainingLabel = useEmojis 
-    ? "TRAINING EXAMPLES (what the aliens taught us):"
-    : "TRAINING EXAMPLES:";
-    
-  // Different test labels for solver vs explanation mode
-  const testLabel = isSolverMode 
-    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case and output it in the same format as the `Input` grid at the top of your reply.\n3. Explain your reasoning step by step in simple terms anyone could understand.\n4. Explain why you are sure or unsure about your answer."
-    : omitAnswer
-      ? (useEmojis
-          ? "TEST CASE (the aliens' question; correct answer withheld):"
-          : "TEST CASE (input only; correct answer withheld):")
-      : (useEmojis 
-          ? "TEST CASE (the aliens' question and our correct answer, but we don't understand why the answer is correct):"
-          : "TEST CASE (input and correct answer for analysis):");
-      
-  // Different instructions for solver vs explanation mode
-  const analysisInstructions = isSolverMode
-    ? "1. Analyze the transformations from the training examples.\n2. Apply what you learned to predict the correct answer that will satisfy the `Output` grid for the test case and output it in the same format as the `Input` grid at the top of your reply.\n3. Explain your reasoning step by step.\n4. Explain why you are sure or unsure about your answer. \n5. Here is the test input, now predict the output grid."
-    : useEmojis
-      ? "2. Explain it in simple terms anyone could understand. The user sees the puzzle as emojis, NOT AS NUMBERS.\n3. Make a creative guess for the user about what the aliens might be trying to communicate based on the transformation type you think is involved."
-      : "2. Explain it in simple terms for novices to understand.";
-      
-  const responsePrefix = useEmojis ? "Respond" : "Please respond";
-  
-  // Build complete prompt - different format for solver mode
-  let prompt: string;
-  
-  if (isSolverMode) {
-    // Solver mode: NO correct answer provided, ask AI to predict
-    const multi = task.test.length > 1;
-    const testSection = multi
-      ? testCases.inputs
-          .map((inp, idx) => `Test ${idx + 1} Input: ${inp}`)
-          .join("\n\n")
-      : `Input: ${testCases.inputs[0]}`;
+  // Build system prompt
+  let systemPrompt: string;
+  let jsonSchema: any = undefined;
 
-    const returnInstructions = multi
-      ? `Return your final predictions as a JSON field named "predictedOutputs" which is an array of 2D integer grids (one per test in the same order).`
-      : `Return your final prediction as a JSON field named "predictedOutput" which is a 2D integer grid.`;
-
-    const exampleJson = multi
-      ? {
-          patternDescription: "...",
-          solvingStrategy: "... include numeric predicted outputs ...",
-          hints: ["..."],
-          confidence: "0-100",
-          predictedOutputs: [[[0]], [[0]]]
-        }
-      : {
-          patternDescription: "...",
-          solvingStrategy: "... include numeric predicted output ...",
-          hints: ["..."],
-          confidence: "0-100",
-          predictedOutput: [[0]]
-        };
-
-    prompt = `${basePrompt}
-
-${trainingLabel}
-${trainingExamples}
-
-${testLabel}
-${testSection}
-
-Your task:
-${analysisInstructions}
-
-Reply with your prediction${multi ? 's for ALL test cases' : ''} of the test output grid${multi ? 's' : ''}. 
-If you are able to, consider including:
-- Pattern Description: What you learned from the training examples
-- Solving Strategy: Your reasoning process, briefly 
-- Key Insights: Important observations that led to your conclusion
-- Confidence: How sure you are about your prediction
-\n${returnInstructions}
-
-Example JSON structure (optional):
-${JSON.stringify(exampleJson, null, 2)}`;
+  if (systemPromptMode === 'None') {
+    // Legacy mode: minimal system prompt
+    systemPrompt = "You are an expert at analyzing ARC-AGI puzzles.";
   } else {
-    // Explanation mode: correct answer provided, ask AI to explain
-    const multi = task.test.length > 1;
-    const testSection = multi
-      ? testCases.inputs
-          .map((inp, idx) => {
-            const ans = testCases.outputs[idx];
-            const line = omitAnswer ? `Test ${idx + 1} Input: ${inp}` : `Test ${idx + 1} Input: ${inp}\nCorrect Answer: ${ans}`;
-            return line;
-          })
-          .join("\n\n")
-      : `Input: ${testCases.inputs[0]}\n${omitAnswer ? '' : `Correct Answer: ${testCases.outputs[0]}`}`;
-
-    prompt = `${basePrompt}
-
-${trainingLabel}
-${trainingExamples}
-
-${testLabel}
-${testSection}
-
-Your job:
-1. Speculate about WHY this solution is correct by understanding these critical concepts:
-${ARC_TRANSFORMATIONS}
-
-${analysisInstructions}${emojiMapSection}
-
-Reply with your prediction${multi ? 's for ALL test cases' : ''} of the test output grid${multi ? 's' : ''}. 
-If you are able to, consider including:
-- Pattern Description: What you learned from the training examples
-- Solving Strategy: Your reasoning process, briefly 
-- Key Insights: Important observations that led to your conclusion
-- Confidence: How sure you are about your prediction
-
-Example JSON structure (optional):
-${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
+    // New ARC mode: structured system prompt
+    if (isCustom) {
+      systemPrompt = getCustomSystemPrompt();
+    } else if (useStructuredOutput) {
+      // Get appropriate schema
+      if (isSolver) {
+        jsonSchema = getSolverSchema(task.test.length);
+        systemPrompt = getStructuredOutputSystemPrompt(promptId, jsonSchema.name);
+      } else {
+        jsonSchema = getExplanationSchema(isAlien);
+        systemPrompt = getStructuredOutputSystemPrompt(promptId, jsonSchema.name);
+      }
+    } else {
+      systemPrompt = getSystemPrompt(promptId);
+    }
   }
+
+  // Build user prompt
+  const userPromptOptions: UserPromptOptions = {
+    emojiSetKey,
+    omitAnswer,
+    useEmojis: isAlien,
+    isSolverMode: isSolver,
+    isMultiTest: task.test.length > 1
+  };
+
+  let userPrompt: string;
+  
+  if (systemPromptMode === 'None') {
+    // Legacy mode: all instructions in user prompt (old behavior)
+    const legacyResult = buildLegacyPrompt(task, promptId, customPrompt, options);
+    userPrompt = legacyResult.prompt;
+  } else {
+    // New ARC mode: clean user prompt with just data
+    userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPrompt);
+  }
+
+  console.log(`[PromptBuilder] Generated system prompt: ${systemPrompt.length} chars`);
+  console.log(`[PromptBuilder] Generated user prompt: ${userPrompt.length} chars`);
+  console.log(`[PromptBuilder] Schema attached: ${!!jsonSchema}`);
+
+  return {
+    systemPrompt,
+    userPrompt,
+    selectedTemplate,
+    jsonSchema,
+    useStructuredOutput: useStructuredOutput && !!jsonSchema,
+    isAlienMode: isAlien,
+    isSolver
+  };
+}
+
+/**
+ * Legacy prompt building for backwards compatibility
+ * Uses the old monolithic approach when systemPromptMode === 'None'
+ */
+function buildLegacyPrompt(
+  task: ARCTask,
+  promptId: string,
+  customPrompt?: string,
+  options: PromptOptions = {}
+): { prompt: string; selectedTemplate: PromptTemplate | null } {
+  console.log(`[PromptBuilder] Using legacy prompt mode`);
+  
+  // This would use the old promptBuilder logic
+  // For now, return a simplified version
+  const selectedTemplate = PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation;
+  
+  // Simple legacy prompt construction
+  const userPromptOptions: UserPromptOptions = {
+    emojiSetKey: options.emojiSetKey,
+    omitAnswer: options.omitAnswer,
+    useEmojis: selectedTemplate?.emojiMapIncluded || false,
+    isSolverMode: isSolverMode(promptId),
+    isMultiTest: task.test.length > 1
+  };
+
+  const userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPrompt);
+  const instructions = selectedTemplate ? selectedTemplate.content : '';
+  
+  const prompt = customPrompt && customPrompt.trim() ? 
+    userPrompt : // Custom prompt already includes instructions
+    `${instructions}\n\n${userPrompt}`;
 
   return {
     prompt,
@@ -432,20 +175,78 @@ ${JSON.stringify(getJsonResponseFormat(selectedTemplate), null, 2)}`;
 }
 
 /**
- * Get default prompt ID that uses numeric grids (not emojis)
+ * Get structured output configuration for OpenAI
+ */
+export function getStructuredOutputConfig(promptPackage: PromptPackage) {
+  if (!promptPackage.useStructuredOutput || !promptPackage.jsonSchema) {
+    return undefined;
+  }
+
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: promptPackage.jsonSchema.name,
+      strict: true,
+      schema: promptPackage.jsonSchema.schema
+    }
+  };
+}
+
+/**
+ * Extract reasoning log from structured response
+ */
+export function extractReasoningFromStructuredResponse(response: any): {
+  reasoningLog: string;
+  reasoningItems: string[];
+} {
+  return {
+    reasoningLog: response.solvingStrategy || '',
+    reasoningItems: response.keySteps || []
+  };
+}
+
+/**
+ * Backwards compatibility function - returns old format
+ */
+export function buildAnalysisPromptLegacy(
+  task: ARCTask,
+  promptId: string = "solver",
+  customPrompt?: string,
+  options: PromptOptions = {}
+): { prompt: string; selectedTemplate: PromptTemplate | null } {
+  const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, { 
+    ...options, 
+    systemPromptMode: 'None' 
+  });
+  
+  return {
+    prompt: promptPackage.userPrompt,
+    selectedTemplate: promptPackage.selectedTemplate
+  };
+}
+
+/**
+ * Utility functions for backwards compatibility
  */
 export function getDefaultPromptId(): string {
   return "solver";
 }
 
-/**
- * Check if a prompt uses emoji mapping
- */
 export function promptUsesEmojis(promptId: string, customPrompt?: string): boolean {
-  if (customPrompt) {
-    return false; // Custom prompts never use emojis
-  }
-  
-  const template = PROMPT_TEMPLATES[promptId];
-  return template?.emojiMapIncluded || false;
+  if (customPrompt) return false;
+  return isAlienCommunicationMode(promptId);
+}
+
+/**
+ * Check if system prompts are enabled
+ */
+export function shouldUseSystemPrompts(options: PromptOptions = {}): boolean {
+  return options.systemPromptMode !== 'None';
+}
+
+/**
+ * Get prompt mode for logging/debugging
+ */
+export function getPromptMode(options: PromptOptions = {}): string {
+  return options.systemPromptMode === 'None' ? 'Legacy' : 'ARC';
 }

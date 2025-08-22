@@ -15,7 +15,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 ## 🚀 Major Features That Will Excite Users
 
-• **🤖 System Prompt Architecture (NEW!)** - Revolutionary JSON structure enforcement across all AI providers with {ARC}/{None} modes ensuring perfect parsing and consistent responses
+• **🤖 System Prompts + Structured Outputs (NEW!)** - Revolutionary modular architecture eliminating JSON parsing issues with OpenAI structured outputs, answer-first enforcement, and captured reasoning logs in structured fields
 
 • **🧠 GPT-5 Reasoning Integration** - Advanced reasoning parameters (effort/verbosity/summary) with real-time reasoning log streaming and OpenAI Responses API integration
 
@@ -432,6 +432,43 @@ The application is built around a core loop of examining puzzles, generating AI 
 - **Local Puzzle Storage**: Efficient loading of puzzle data
 - **Custom Analysis Logic**: Processing of puzzle patterns
 - **Structured Logger**: Consistent error handling and debugging
+
+### 🤖 System Prompts + Structured Outputs Architecture (v1.6.2)
+
+**Major architectural refactor addressing persistent JSON parsing issues from v1.4.4-1.4.6**
+
+#### New Modular Structure
+```
+server/services/
+├── schemas/
+│   ├── common.ts         # Shared JSON schema components
+│   ├── solver.ts         # Solver mode schemas (predictedOutput/predictedOutputs)  
+│   └── explanation.ts    # Explanation mode schemas
+├── prompts/
+│   ├── systemPrompts.ts  # AI role & behavior definitions
+│   └── userTemplates.ts  # Clean puzzle data delivery
+├── formatters/
+│   └── grids.ts         # Emoji/numeric conversion utilities
+└── promptBuilder.ts      # Orchestrates system+user+schema
+```
+
+#### Architecture Benefits
+- **🎯 Eliminates JSON Parsing Issues**: OpenAI structured outputs with `response_format` eliminate regex-based parsing
+- **🧠 Captures OpenAI Reasoning**: Reasoning automatically flows into `solvingStrategy` field for deterministic parsing
+- **📐 Answer-First Output**: `predictedOutput`/`predictedOutputs` enforced as first JSON field per v1.5.0 requirements
+- **🔧 Modular & Maintainable**: Separated concerns across focused modules (450+ line promptBuilder reduced to clean orchestration)
+- **🔄 Backwards Compatible**: Legacy parsing remains as fallback for non-structured providers
+
+#### Key Components
+- **JSON Schemas**: Strict validation with `additionalProperties: false` for OpenAI structured outputs
+- **System Prompts**: Role-based AI behavior definitions separate from user data
+- **User Templates**: Clean puzzle data delivery without formatting instructions  
+- **Grid Formatters**: Reusable emoji/numeric conversion utilities
+- **Schema Orchestration**: Clean separation of system prompts, user prompts, and JSON schemas
+
+#### Provider Support Status
+- ✅ **OpenAI**: Full structured outputs with `response_format` parameter
+- 🔄 **Others**: Anthropic, Gemini, Grok, DeepSeek - planned for Phase 6
 
 ### API Endpoints
 - `GET /api/puzzles`: Fetches a list of all available puzzles.

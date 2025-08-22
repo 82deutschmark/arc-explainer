@@ -365,6 +365,30 @@ class SaturnVisualService {
       if (timeoutHandle) clearTimeout(timeoutHandle);
       if (warningHandle) clearTimeout(warningHandle);
     }
+
+    // Fallback: If the Python process exited but we never observed a 'final' or 'error'
+    // event (isCompleted remains false), emit an error to unblock the UI and clear timers.
+    // This covers edge cases where the child exits cleanly without sending a terminal event.
+    if (!isCompleted) {
+      let code: number | null = null;
+      try {
+        const res = await analysisPromise; // already resolved if race completed via analysis
+        code = (res as any)?.code ?? null;
+      } catch {}
+
+      isCompleted = true;
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (warningHandle) clearTimeout(warningHandle);
+
+      console.warn(`[SATURN-DEBUG] Fallback completion for session ${sessionId}: Python exited without 'final' event (code=${code ?? 'unknown'})`);
+      broadcast(sessionId, {
+        status: 'error',
+        phase: 'runtime',
+        message: `Saturn analysis finished (code ${code ?? 'unknown'}) but no 'final' event was received. Aborting and cleaning up.`,
+      });
+      // Cleanup in-memory session cache later to allow clients to read final snapshot
+      setTimeout(() => clearSession(sessionId), 5 * 60 * 1000);
+    }
   }
 
 }

@@ -46,6 +46,12 @@ interface PuzzleExplanation {
   reasoningEffort?: string | null;
   reasoningVerbosity?: string | null;
   reasoningSummaryType?: string | null;
+  // Token usage and cost tracking
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  reasoningTokens?: number | null;
+  totalTokens?: number | null;
+  estimatedCost?: number | null;
 }
 
 /**
@@ -252,6 +258,42 @@ const createTablesIfNotExist = async () => {
         THEN
           ALTER TABLE explanations ADD COLUMN reasoning_summary_type TEXT;
         END IF;
+
+        -- Add token usage columns if they don't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'input_tokens')
+        THEN
+          ALTER TABLE explanations ADD COLUMN input_tokens INTEGER;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'output_tokens')
+        THEN
+          ALTER TABLE explanations ADD COLUMN output_tokens INTEGER;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'reasoning_tokens')
+        THEN
+          ALTER TABLE explanations ADD COLUMN reasoning_tokens INTEGER;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'total_tokens')
+        THEN
+          ALTER TABLE explanations ADD COLUMN total_tokens INTEGER;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'estimated_cost')
+        THEN
+          ALTER TABLE explanations ADD COLUMN estimated_cost DECIMAL(10, 6);
+        END IF;
       END $$;
     `);
     logger.info('Explanations table created or already exists', 'database');
@@ -312,7 +354,12 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       temperature,
       reasoningEffort,
       reasoningVerbosity,
-      reasoningSummaryType
+      reasoningSummaryType,
+      inputTokens,
+      outputTokens,
+      reasoningTokens,
+      totalTokens,
+      estimatedCost
     } = explanation;
     
     // Dev=Prod parity: default to true when unset (can be explicitly disabled with 'false')
@@ -328,8 +375,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         api_processing_time_ms, saturn_images,
         saturn_log, saturn_events, saturn_success,
         predicted_output_grid, is_prediction_correct, prediction_accuracy_score,
-        temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
+        temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type,
+        input_tokens, output_tokens, reasoning_tokens, total_tokens, estimated_cost)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
        RETURNING id`,
       [
         puzzleId,
@@ -356,7 +404,12 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         temperature ?? null,
         reasoningEffort || null,
         reasoningVerbosity || null,
-        reasoningSummaryType || null
+        reasoningSummaryType || null,
+        inputTokens ?? null,
+        outputTokens ?? null,
+        reasoningTokens ?? null,
+        totalTokens ?? null,
+        estimatedCost ?? null
       ]
     );
     
@@ -601,6 +654,11 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.reasoning_effort        AS "reasoningEffort",
          e.reasoning_verbosity     AS "reasoningVerbosity",
          e.reasoning_summary_type  AS "reasoningSummaryType",
+         e.input_tokens            AS "inputTokens",
+         e.output_tokens           AS "outputTokens",
+         e.reasoning_tokens        AS "reasoningTokens",
+         e.total_tokens            AS "totalTokens",
+         e.estimated_cost          AS "estimatedCost",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"

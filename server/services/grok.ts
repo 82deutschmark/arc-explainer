@@ -42,6 +42,8 @@ import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 const MODELS = {
   "grok-4-0709": "grok-4-0709",
@@ -84,13 +86,15 @@ export class GrokService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder (refactored by Claude 4 Sonnet Thinking)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt using shared prompt builder (refactored)
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "user", content: basePrompt }],
         response_format: { type: "json_object" },
       };
 
@@ -143,6 +147,24 @@ export class GrokService {
           }
         }
       }
+
+      // Extract token usage from Grok response (OpenAI-compatible)
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (response.usage) {
+        tokenUsage = {
+          input: response.usage.prompt_tokens,
+          output: response.usage.completion_tokens,
+          // Grok doesn't provide separate reasoning tokens currently
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
       
       return {
         model: modelKey,
@@ -153,6 +175,12 @@ export class GrokService {
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data
+        inputTokens: tokenUsage?.input || null,
+        outputTokens: tokenUsage?.output || null,
+        reasoningTokens: tokenUsage?.reasoning || null,
+        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
+        estimatedCost: cost?.total || null,
         ...result,
       };
     } catch (error) {
@@ -213,13 +241,15 @@ export class GrokService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt using shared builder
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // Grok uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
 
@@ -249,7 +279,7 @@ export class GrokService {
     return {
       provider: "xAI Grok",
       modelName,
-      promptText: prompt,
+      promptText: basePrompt,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
@@ -257,9 +287,9 @@ export class GrokService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: basePrompt.length,
+        wordCount: basePrompt.split(/\s+/).length,
+        lineCount: basePrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,

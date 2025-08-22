@@ -40,9 +40,18 @@ export interface PuzzleMetadata {
 export interface PuzzleAnalysis {
   patternDescription: string;
   solvingStrategy: string;
+  /** Optional structured breadcrumbs from analysis */
+  keySteps?: string[];
   hints: string[];
+  /** Confidence is 0-100 per backend schema */
   confidence: number;
-  // Solver mode validation fields
+  // Solver prediction fields (schema-aligned)
+  /** Single-test prediction */
+  predictedOutput?: number[][];
+  /** Multi-test predictions */
+  predictedOutputs?: number[][][];
+  // Legacy/derived UI fields (back-compat with existing components)
+  /** Deprecated: prefer predictedOutput/predictedOutputs */
   predictedOutputGrid?: number[][];
   isPredictionCorrect?: boolean;
   predictionAccuracyScore?: number;
