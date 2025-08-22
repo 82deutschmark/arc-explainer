@@ -141,6 +141,9 @@ export class GeminiService {
     options?: PromptOptions, // Cascade: optional prompt options forwarded to builder
     serviceOpts?: {
       systemPromptMode?: 'ARC' | 'None';
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
     }
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
@@ -253,6 +256,11 @@ Then provide your final structured JSON response.` : basePrompt;
         model: modelKey,
         reasoningLog,
         hasReasoningLog,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...jsonResult,
       };
     } catch (error) {

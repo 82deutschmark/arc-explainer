@@ -342,6 +342,11 @@ export class OpenAIService {
         providerResponseId,
         providerRawResponse,
         reasoningItems,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...result,
       };
     } catch (error) {
