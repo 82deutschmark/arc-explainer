@@ -8,8 +8,10 @@
 
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
-import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
-import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
+import { buildAnalysisPrompt, getDefaultPromptId, getStructuredOutputConfig, extractReasoningFromStructuredResponse } from "./promptBuilder";
+import type { PromptOptions, PromptPackage } from "./promptBuilder";
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
@@ -62,54 +64,7 @@ const MODELS_WITH_REASONING = new Set([
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// JSON-structure-enforcing system prompts (extracted from user prompts)
-const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
-
-{
-  "predictedOutput": [[0,1,2],[3,4,5],[6,7,8]],
-  "patternDescription": "Clear description of what you learned from the training examples",
-  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
-  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
-}
-
-CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
-
-const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
-
-{
-  "predictedOutputs": [[[0,1],[2,3]], [[4,5],[6,7]]],
-  "patternDescription": "Clear description of what you learned from the training examples", 
-  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
-  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
-}
-
-CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
-
-const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
-
-{
-  "patternDescription": "Clear description of the rules learned from the training examples",
-  "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "confidence": 85
-}
-
-CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
-
-const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
-
-{
-  "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
-  "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
-  "confidence": 85,
-  "alienMeaning": "The aliens' message",
-  "alienMeaningConfidence": 85
-}
-
-CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
+// Legacy system prompts removed - now using modular system from prompts/systemPrompts.ts
 
 export class OpenAIService {
   async analyzePuzzleWithModel(
@@ -139,40 +94,22 @@ export class OpenAIService {
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
-    // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt package using new architecture
+    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: true
+    });
     
-    // Prepare system and user messages based on mode
-    let systemMessage: string | undefined;
-    let userMessage: string;
+    console.log(`[OpenAI] Using system prompt mode: ${systemPromptMode}`);
+    console.log(`[OpenAI] Structured output enabled: ${promptPackage.useStructuredOutput}`);
     
-    if (systemPromptMode === 'ARC') {
-      // ARC Mode: Select appropriate system prompt based on context
-      const isSolverMode = promptId === "solver";
-      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
-      const hasMultipleTests = task.test.length > 1;
-      
-      if (isSolverMode && hasMultipleTests) {
-        systemMessage = MULTI_SOLVER_SYSTEM_PROMPT;
-        console.log(`[OpenAI] Using multi-test solver system prompt (${task.test.length} tests)`);
-      } else if (isSolverMode) {
-        systemMessage = SOLVER_SYSTEM_PROMPT;
-        console.log(`[OpenAI] Using single-test solver system prompt`);
-      } else if (isAlienMode) {
-        systemMessage = ALIEN_EXPLANATION_SYSTEM_PROMPT;
-        console.log(`[OpenAI] Using alien explanation system prompt`);
-      } else {
-        systemMessage = EXPLANATION_SYSTEM_PROMPT;
-        console.log(`[OpenAI] Using standard explanation system prompt`);
-      }
-      
-      userMessage = prompt; // For now, use full prompt as user message (TODO: separate later)
-    } else {
-      // None Mode: Current behavior - everything as user message
-      systemMessage = undefined;
-      userMessage = prompt;
-      console.log(`[OpenAI] Using None mode (current behavior) with model ${modelKey}`);
-    }
+    // Extract system and user prompts from prompt package
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+    
+    console.log(`[OpenAI] System prompt: ${systemMessage.length} chars`);
+    console.log(`[OpenAI] User prompt: ${userMessage.length} chars`);
 
     try {
       let reasoningLog = null;
@@ -215,6 +152,9 @@ export class OpenAIService {
       }
       messages.push({ role: "user", content: userMessage });
       
+      // Add structured output configuration if available
+      const structuredOutputConfig = getStructuredOutputConfig(promptPackage);
+      
       const request = {
         model: modelName,
         input: messages,
@@ -227,16 +167,20 @@ export class OpenAIService {
           temperature: temperature || 0.2,
           ...(isGPT5ChatModel && { top_p: 1.00 })
         }),
+        // Add structured output for JSON schema enforcement
+        ...(structuredOutputConfig && { response_format: structuredOutputConfig }),
         // pass through visible output token cap to avoid starvation - using high limits from models.yml
         max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
       } as const;
+      
+      console.log(`[OpenAI] Request includes structured output: ${!!structuredOutputConfig}`);
 
       const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
       let lastErr: any = null;
       let parsedResponse: any = null;
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-          parsedResponse = await this.callResponsesAPI(request as any);
+          parsedResponse = await this.callResponsesAPI(request as any, modelKey);
           lastErr = null;
           break;
         } catch (e) {
@@ -250,60 +194,31 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse output_text JSON with markdown code block handling
+      // Parse JSON response - structured outputs should eliminate parsing issues
       const rawJson = parsedResponse.output_text || '';
-      try {
-        result = rawJson ? JSON.parse(rawJson) : {};
-      } catch (e) {
-        console.warn('[OpenAI] Failed direct JSON parse, attempting markdown extraction...');
-        
-        // Try to extract JSON from markdown code blocks (fixes gpt-5-chat-latest and gpt-4.1-2025-04-14)
-        const codeBlockMatch = rawJson.match(/```(?:json\s*)?([^`]*?)```/s);
-        if (codeBlockMatch) {
-          try {
-            const cleanedJson = codeBlockMatch[1].trim();
-            console.log(`[OpenAI] Found JSON in markdown code block: ${cleanedJson.substring(0, 200)}...`);
-            result = JSON.parse(cleanedJson);
-          } catch (markdownError) {
-            console.warn('[OpenAI] Failed to parse JSON from markdown code block, trying regex fallback...');
-            
-            // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
-            const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-              try {
-                result = JSON.parse(jsonMatch[0]);
-              } catch (regexError) {
-                console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
-                result = {};
-              }
-            } else {
-              console.warn('[OpenAI] No JSON structure found in response.');
-              result = {};
-            }
-          }
-        } else {
-          // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
-          const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            try {
-              result = JSON.parse(jsonMatch[0]);
-            } catch (regexError) {
-              console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
-              result = {};
-            }
-          } else {
-            console.warn('[OpenAI] No JSON structure found in response.');
-            result = {};
-          }
+      
+      if (promptPackage.useStructuredOutput && structuredOutputConfig) {
+        // For structured outputs, JSON should be clean and parseable
+        try {
+          result = rawJson ? JSON.parse(rawJson) : {};
+          console.log('[OpenAI] Successfully parsed structured output JSON');
+        } catch (e) {
+          console.warn('[OpenAI] Structured output JSON parsing failed - falling back to legacy parsing');
+          result = await this.parseJsonWithFallback(rawJson);
         }
+      } else {
+        // Legacy parsing with fallbacks for non-structured outputs
+        result = await this.parseJsonWithFallback(rawJson);
       }
 
-      // Extract reasoning summary/items
-      const providerResponseId = parsedResponse.id ?? null;
-      const reasoningItems = parsedResponse.output_reasoning?.items ?? [];
-      const providerRawResponse = parsedResponse.raw_response;
-
-      if (captureReasoning) {
+      // Extract reasoning log using structured approach
+      if (promptPackage.useStructuredOutput && result.solvingStrategy) {
+        // For structured outputs, reasoning is in solvingStrategy field
+        reasoningLog = result.solvingStrategy;
+        hasReasoningLog = true;
+        console.log('[OpenAI] Extracted reasoning from structured solvingStrategy field');
+      } else if (captureReasoning) {
+        // Legacy reasoning extraction from OpenAI's output_reasoning
         const summary = parsedResponse.output_reasoning?.summary;
         if (summary) {
           if (Array.isArray(summary)) {
@@ -322,6 +237,13 @@ export class OpenAIService {
           hasReasoningLog = !!reasoningLog;
         }
       }
+
+      // Extract structured response metadata
+      const providerResponseId = parsedResponse.id ?? null;
+      const reasoningItems = promptPackage.useStructuredOutput ? 
+        (result.keySteps || []) : 
+        (parsedResponse.output_reasoning?.items ?? []);
+      const providerRawResponse = parsedResponse.raw_response;
 
       // Debug logging to catch reasoning data type issues
       if (reasoningLog && typeof reasoningLog !== 'string') {
@@ -347,6 +269,12 @@ export class OpenAIService {
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data from Responses API
+        inputTokens: parsedResponse?.tokenUsage?.input || null,
+        outputTokens: parsedResponse?.tokenUsage?.output || null,
+        reasoningTokens: parsedResponse?.tokenUsage?.reasoning || null,
+        totalTokens: parsedResponse?.tokenUsage ? (parsedResponse.tokenUsage.input + parsedResponse.tokenUsage.output + (parsedResponse.tokenUsage.reasoning || 0)) : null,
+        estimatedCost: parsedResponse?.cost?.total || null,
         ...result,
       };
     } catch (error) {
@@ -381,34 +309,16 @@ export class OpenAIService {
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
 
-    // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt package using new architecture
+    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: true
+    });
 
-    // Prepare system and user messages based on mode
-    let systemMessage: string | undefined;
-    let userMessage: string;
-    
-    if (systemPromptMode === 'ARC') {
-      // ARC Mode: Select appropriate system prompt based on context
-      const isSolverMode = promptId === "solver";
-      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
-      const hasMultipleTests = task.test.length > 1;
-      
-      if (isSolverMode && hasMultipleTests) {
-        systemMessage = MULTI_SOLVER_SYSTEM_PROMPT;
-      } else if (isSolverMode) {
-        systemMessage = SOLVER_SYSTEM_PROMPT;
-      } else if (isAlienMode) {
-        systemMessage = ALIEN_EXPLANATION_SYSTEM_PROMPT;
-      } else {
-        systemMessage = EXPLANATION_SYSTEM_PROMPT;
-      }
-      
-      userMessage = prompt; // For now, use full prompt as user message (TODO: separate later)
-    } else {
-      systemMessage = undefined;
-      userMessage = prompt;
-    }
+    // Extract system and user messages from prompt package
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
 
     // Create message array for preview
     const messages: any[] = [];
@@ -454,21 +364,26 @@ export class OpenAIService {
       providerSpecificNotes.push("System Prompt Mode: {None} - Old behavior (all content as user message)");
     }
 
+    // Compose preview text; in ARC mode, system is separate so show user content; in None, show combined
+    const previewText = systemPromptMode === 'ARC'
+      ? userMessage
+      : `${systemMessage}\n\n${userMessage}`;
+
     return {
       provider: "OpenAI",
       modelName,
-      promptText: systemPromptMode === 'ARC' ? userMessage : prompt,
+      promptText: previewText,
       systemPrompt: systemMessage,
       messageFormat,
       templateInfo: {
-        id: selectedTemplate?.id || "custom",
-        name: selectedTemplate?.name || "Custom Prompt",
-        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+        id: promptPackage.selectedTemplate?.id || "custom",
+        name: promptPackage.selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: promptPackage.selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: previewText.length,
+        wordCount: previewText.split(/\s+/).length,
+        lineCount: previewText.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,
@@ -484,7 +399,7 @@ export class OpenAIService {
     temperature?: number;
     previous_response_id?: string;
     max_output_tokens?: number;
-  }): Promise<any> {
+  }, modelKey: string): Promise<any> {
     // Call OpenAI Responses API for structured reasoning
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -533,6 +448,24 @@ export class OpenAIService {
 
       const result = await response.json();
       
+      // Extract token usage from OpenAI Responses API response
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (result.usage) {
+        tokenUsage = {
+          input: result.usage.input_tokens,
+          output: result.usage.output_tokens,
+          // OpenAI doesn't provide separate reasoning tokens yet in Responses API
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
+      
       console.log('[OPENAI-RESPONSES-DEBUG] API Response:', {
         id: result.id,
         hasOutputReasoning: !!result.output_reasoning,
@@ -550,7 +483,11 @@ export class OpenAIService {
           summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
           items: result.output_reasoning?.items || []
         },
-        raw_response: result // For debugging
+        raw_response: result, // For debugging
+        // Include token usage and cost data
+        usage: result.usage,
+        tokenUsage,
+        cost
       };
 
       return parsedResponse;
@@ -643,6 +580,45 @@ export class OpenAIService {
       })
       .filter(Boolean)
       .join('\n');
+  }
+
+  /**
+   * Parse JSON with fallback strategies for robustness
+   */
+  private async parseJsonWithFallback(rawJson: string): Promise<any> {
+    if (!rawJson) return {};
+    
+    try {
+      return JSON.parse(rawJson);
+    } catch (e) {
+      console.warn('[OpenAI] Failed direct JSON parse, attempting markdown extraction...');
+      
+      // Try to extract JSON from markdown code blocks (fixes gpt-5-chat-latest and gpt-4.1-2025-04-14)
+      const codeBlockMatch = rawJson.match(/```(?:json\s*)?([^`]*?)```/s);
+      if (codeBlockMatch) {
+        try {
+          const cleanedJson = codeBlockMatch[1].trim();
+          console.log(`[OpenAI] Found JSON in markdown code block: ${cleanedJson.substring(0, 200)}...`);
+          return JSON.parse(cleanedJson);
+        } catch (markdownError) {
+          console.warn('[OpenAI] Failed to parse JSON from markdown code block, trying regex fallback...');
+        }
+      }
+      
+      // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
+      const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]);
+        } catch (regexError) {
+          console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
+          return {};
+        }
+      } else {
+        console.warn('[OpenAI] No JSON structure found in response.');
+        return {};
+      }
+    }
   }
 
   private extractReasoningFromOutputBlocks(output: any[]): string {

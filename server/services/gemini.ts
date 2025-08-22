@@ -45,6 +45,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade using GPT-5 (medium reasoning): thread emojiSetKey/omitAnswer options
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 // JSON-structure-enforcing system prompts (same format as other services)
 const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
@@ -152,7 +154,9 @@ export class GeminiService {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
     
     // Prepare system instruction and user prompt based on mode
     let systemInstruction: string | undefined;
@@ -252,6 +256,24 @@ Then provide your final structured JSON response.` : basePrompt;
         jsonResult = { explanation: cleanText };
       }
 
+      // Extract token usage from Gemini response
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (result.response.usageMetadata) {
+        tokenUsage = {
+          input: result.response.usageMetadata.promptTokenCount || 0,
+          output: result.response.usageMetadata.candidatesTokenCount || 0,
+          // Gemini doesn't provide separate reasoning tokens currently
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
+
       return {
         model: modelKey,
         reasoningLog,
@@ -261,6 +283,12 @@ Then provide your final structured JSON response.` : basePrompt;
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data
+        inputTokens: tokenUsage?.input || null,
+        outputTokens: tokenUsage?.output || null,
+        reasoningTokens: tokenUsage?.reasoning || null,
+        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
+        estimatedCost: cost?.total || null,
         ...jsonResult,
       };
     } catch (error) {
@@ -376,7 +404,9 @@ Then provide your final structured JSON response.` : basePrompt;
 
     // Build prompt using shared prompt builder
     // Cascade: forward PromptOptions to keep preview in sync with analysis
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
     
     // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
     const prompt = captureReasoning ? 
