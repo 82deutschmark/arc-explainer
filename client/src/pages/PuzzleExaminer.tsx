@@ -400,16 +400,18 @@ export default function PuzzleExaminer() {
                 <Slider
                   id="temperature"
                   min={0.1}
-                  max={1.0}
+                  max={2.0}
                   step={0.05}
                   value={[temperature]}
                   onValueChange={(value) => setTemperature(value[0])}
                   className="w-full"
                 />
               </div>
-              <span className="text-xs text-gray-600">
-                Controls creativity (some models don't support this)
-              </span>
+              <div className="text-xs text-gray-600">
+                <div>Controls creativity • Only GPT-4.1 series & GPT-5 Chat support this</div>
+                <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive features</div>
+                <div className="text-amber-600 font-medium">⚠️ Values above 1.1 may produce crazy and illegible replies</div>
+              </div>
             </div>
           </div>
 

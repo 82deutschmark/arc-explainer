@@ -25,6 +25,7 @@ import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { getCostDisplay } from '@/utils/costCalculator';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -151,6 +152,15 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
             <span className="text-xs text-blue-600">
               {formatProcessingTime(result.apiProcessingTimeMs)}
+            </span>
+          </Badge>
+        )}
+        
+        {/* Cost Estimate */}
+        {modelKey && getCostDisplay(modelKey) && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
+            <span className="text-xs text-green-600">
+              Cost: {getCostDisplay(modelKey)}
             </span>
           </Badge>
         )}
