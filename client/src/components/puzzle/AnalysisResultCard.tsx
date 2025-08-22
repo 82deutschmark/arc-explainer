@@ -15,7 +15,7 @@
  * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
  * This component is designed to be a self-contained card, making it easy to reuse and maintain.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -75,7 +75,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
-  const [showDiff, setShowDiff] = useState(true);
+  const [showDiff, setShowDiff] = useState(false);
   
   // Get feedback preview for this explanation
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
@@ -102,7 +102,10 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
     }
     return mask;
   };
-  const diffMask = buildDiffMask(predictedGrid, expectedOutputGrid);
+  const diffMask = useMemo(() => {
+    if (!showDiff) return undefined;
+    return buildDiffMask(predictedGrid, expectedOutputGrid);
+  }, [showDiff, predictedGrid, expectedOutputGrid]);
 
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
