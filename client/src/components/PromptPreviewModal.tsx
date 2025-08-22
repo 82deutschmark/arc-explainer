@@ -331,12 +331,11 @@ export function PromptPreviewModal({
                     </div>
                   </CardTitle>
                   <div className="text-sm text-gray-600">
-                    System: {previewData.promptStats.systemPromptLength} chars • 
-                    User: {previewData.promptStats.userPromptLength} chars • 
-                    Total: {previewData.promptStats.totalCharacterCount} chars
+                    System: {previewData?.promptStats?.systemPromptLength ?? 0} chars • 
+                    User: {previewData?.promptStats?.userPromptLength ?? 0} chars • 
+                    Total: {previewData?.promptStats?.totalCharacterCount ?? 0} chars
                   </div>
                 </CardHeader>
-                </CardContent>
               </Card>
 
               {/* New Architecture Tabs */}
@@ -352,7 +351,7 @@ export function PromptPreviewModal({
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-medium text-blue-700">System Prompt (AI Role & Behavior)</h3>
                     <Badge variant="outline" className="text-xs">
-                      {previewData.promptStats.systemPromptLength} chars
+                      {previewData?.promptStats?.systemPromptLength ?? 0} chars
                     </Badge>
                   </div>
                   <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 mb-3">
