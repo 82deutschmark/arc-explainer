@@ -107,7 +107,9 @@ export class AnthropicService {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
     // Build prompt using shared prompt builder - keep it simple
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const prompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
     
     // Prepare system and user messages based on mode
     let systemMessage: string | undefined;
@@ -253,8 +255,10 @@ export class AnthropicService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder - keep it simple  
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt using shared prompt builder - keep it simple
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const prompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // Anthropic uses messages array format
     const messageFormat = {

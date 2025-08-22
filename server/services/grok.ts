@@ -86,13 +86,15 @@ export class GrokService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder (refactored by Claude 4 Sonnet Thinking)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt using shared prompt builder (refactored)
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "user", content: basePrompt }],
         response_format: { type: "json_object" },
       };
 
@@ -239,13 +241,15 @@ export class GrokService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // Build prompt using shared builder
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // Grok uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
 
@@ -275,7 +279,7 @@ export class GrokService {
     return {
       provider: "xAI Grok",
       modelName,
-      promptText: prompt,
+      promptText: basePrompt,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
@@ -283,9 +287,9 @@ export class GrokService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: basePrompt.length,
+        wordCount: basePrompt.split(/\s+/).length,
+        lineCount: basePrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,

@@ -154,7 +154,9 @@ export class GeminiService {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
     // Build prompt using shared prompt builder
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
     
     // Prepare system instruction and user prompt based on mode
     let systemInstruction: string | undefined;
@@ -402,7 +404,9 @@ Then provide your final structured JSON response.` : basePrompt;
 
     // Build prompt using shared prompt builder
     // Cascade: forward PromptOptions to keep preview in sync with analysis
-    const { prompt: basePrompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
     
     // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
     const prompt = captureReasoning ? 
