@@ -31,6 +31,7 @@ import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types";
 export type PromptOptions = {
   emojiSetKey?: string;
   omitAnswer?: boolean;
+  systemPromptMode?: 'ARC' | 'None';
 };
 
 /**
@@ -148,16 +149,28 @@ function formatTrainingExamples(task: ARCTask, useEmojis: boolean, emojiSet?: st
 }
 
 /**
- * Format test case based on template requirements
+ * Format test cases based on template requirements
  */
-function formatTestCase(task: ARCTask, useEmojis: boolean, emojiSet?: string[]): { input: string, output: string } {
-  if (useEmojis) {
-    const emojiInput = convertGridToEmojis(task.test[0].input, emojiSet ?? getEmojiSetByKey());
-    const emojiOutput = convertGridToEmojis(task.test[0].output, emojiSet ?? getEmojiSetByKey());
-    return { input: JSON.stringify(emojiInput), output: JSON.stringify(emojiOutput) };
-  } else {
-    return { input: JSON.stringify(task.test[0].input), output: JSON.stringify(task.test[0].output) };
+function formatTestCases(
+  task: ARCTask,
+  useEmojis: boolean,
+  emojiSet?: string[]
+): { inputs: string[]; outputs: string[] } {
+  const inputs: string[] = [];
+  const outputs: string[] = [];
+  const palette = emojiSet ?? getEmojiSetByKey();
+  for (const ex of task.test) {
+    if (useEmojis) {
+      const emojiInput = convertGridToEmojis(ex.input, palette);
+      const emojiOutput = convertGridToEmojis(ex.output, palette);
+      inputs.push(JSON.stringify(emojiInput));
+      outputs.push(JSON.stringify(emojiOutput));
+    } else {
+      inputs.push(JSON.stringify(ex.input));
+      outputs.push(JSON.stringify(ex.output));
+    }
   }
+  return { inputs, outputs };
 }
 
 /**
@@ -242,24 +255,29 @@ export function buildAnalysisPrompt(
     
     // For custom prompts, use raw numeric grids (no emojis, no formatting)
     const trainingExamples = formatTrainingExamples(task, false);
-    const testCase = formatTestCase(task, false);
+    const testCases = formatTestCases(task, false);
     
     // Simple, clean format for custom prompts - ONLY custom text + raw puzzle data
+    const multi = task.test.length > 1;
+    const testSection = multi
+      ? testCases.inputs
+          .map((inp, idx) => `Test ${idx + 1} Input: ${inp}\nCorrect Answer: ${testCases.outputs[idx]}`)
+          .join("\n\n")
+      : `Input: ${testCases.inputs[0]}\nCorrect Answer: ${testCases.outputs[0]}`;
+
     const prompt = customText ? 
       `${customText}
 
 TRAINING EXAMPLES:
 ${trainingExamples}
 
-TEST CASE:
-Input: ${testCase.input}
-Correct Answer: ${testCase.output}` :
+TEST CASE${multi ? 'S' : ''}:
+${testSection}` :
       `TRAINING EXAMPLES:
 ${trainingExamples}
 
-TEST CASE:
-Input: ${testCase.input}
-Correct Answer: ${testCase.output}`;
+TEST CASE${multi ? 'S' : ''}:
+${testSection}`;
 
     console.log(`[PromptBuilder] 📝 RETURNING CUSTOM PROMPT (${prompt.length} chars) - NO TEMPLATE INSTRUCTIONS`);
     return {
@@ -287,7 +305,7 @@ Correct Answer: ${testCase.output}`;
   
   // Format data based on emoji requirements
   const trainingExamples = formatTrainingExamples(task, useEmojis, selectedEmojiSet);
-  const testCase = formatTestCase(task, useEmojis, selectedEmojiSet);
+  const testCases = formatTestCases(task, useEmojis, selectedEmojiSet);
   
   // Build sections conditionally
   const emojiMapSection = useEmojis ? getEmojiMapSection(selectedEmojiSet!) : '';
@@ -321,36 +339,74 @@ Correct Answer: ${testCase.output}`;
   
   if (isSolverMode) {
     // Solver mode: NO correct answer provided, ask AI to predict
+    const multi = task.test.length > 1;
+    const testSection = multi
+      ? testCases.inputs
+          .map((inp, idx) => `Test ${idx + 1} Input: ${inp}`)
+          .join("\n\n")
+      : `Input: ${testCases.inputs[0]}`;
+
+    const returnInstructions = multi
+      ? `Return your final predictions as a JSON field named "predictedOutputs" which is an array of 2D integer grids (one per test in the same order).`
+      : `Return your final prediction as a JSON field named "predictedOutput" which is a 2D integer grid.`;
+
+    const exampleJson = multi
+      ? {
+          patternDescription: "...",
+          solvingStrategy: "... include numeric predicted outputs ...",
+          hints: ["..."],
+          confidence: "0-100",
+          predictedOutputs: [[[0]], [[0]]]
+        }
+      : {
+          patternDescription: "...",
+          solvingStrategy: "... include numeric predicted output ...",
+          hints: ["..."],
+          confidence: "0-100",
+          predictedOutput: [[0]]
+        };
+
     prompt = `${basePrompt}
 
 ${trainingLabel}
 ${trainingExamples}
 
 ${testLabel}
-Input: ${testCase.input}
+${testSection}
 
 Your task:
 ${analysisInstructions}
 
-Reply with your prediction of the test output grid. 
+Reply with your prediction${multi ? 's for ALL test cases' : ''} of the test output grid${multi ? 's' : ''}. 
 If you are able to, consider including:
 - Pattern Description: What you learned from the training examples
 - Solving Strategy: Your reasoning process, briefly 
 - Key Insights: Important observations that led to your conclusion
 - Confidence: How sure you are about your prediction
+\n${returnInstructions}
 
 Example JSON structure (optional):
-${JSON.stringify(getSolverResponseFormat(), null, 2)}`;
+${JSON.stringify(exampleJson, null, 2)}`;
   } else {
     // Explanation mode: correct answer provided, ask AI to explain
+    const multi = task.test.length > 1;
+    const testSection = multi
+      ? testCases.inputs
+          .map((inp, idx) => {
+            const ans = testCases.outputs[idx];
+            const line = omitAnswer ? `Test ${idx + 1} Input: ${inp}` : `Test ${idx + 1} Input: ${inp}\nCorrect Answer: ${ans}`;
+            return line;
+          })
+          .join("\n\n")
+      : `Input: ${testCases.inputs[0]}\n${omitAnswer ? '' : `Correct Answer: ${testCases.outputs[0]}`}`;
+
     prompt = `${basePrompt}
 
 ${trainingLabel}
 ${trainingExamples}
 
 ${testLabel}
-Input: ${testCase.input}
-${omitAnswer ? '' : `Correct Answer: ${testCase.output}`}
+${testSection}
 
 Your job:
 1. Speculate about WHY this solution is correct by understanding these critical concepts:
@@ -358,7 +414,7 @@ ${ARC_TRANSFORMATIONS}
 
 ${analysisInstructions}${emojiMapSection}
 
-Reply with your prediction of the test output grid. 
+Reply with your prediction${multi ? 's for ALL test cases' : ''} of the test output grid${multi ? 's' : ''}. 
 If you are able to, consider including:
 - Pattern Description: What you learned from the training examples
 - Solving Strategy: Your reasoning process, briefly 

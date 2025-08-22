@@ -12,6 +12,19 @@ export interface ValidationResult {
   extractionMethod?: string;
 }
 
+export interface MultiValidationItemResult extends ValidationResult {
+  index: number;
+  expectedDimensions?: { rows: number; cols: number };
+}
+
+export interface MultiValidationResult {
+  predictedGrids: (number[][] | null)[];
+  itemResults: MultiValidationItemResult[];
+  allCorrect: boolean;
+  averageAccuracyScore: number;
+  extractionMethodSummary?: string;
+}
+
 /**
  * Extracts grid from AI response text using multiple pattern matching strategies
  */
@@ -255,6 +268,63 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
 }
 
 /**
+ * Extract multiple grids from AI response text
+ * Reuses existing strategies but scans for multiple occurrences
+ */
+function extractAllGridsFromText(text: string): { grids: number[][][]; method: string } {
+  const grids: number[][][] = [];
+  let method = 'not_found';
+  if (!text) return { grids, method };
+
+  // 1) Scan markdown code blocks first (may contain multiple blocks)
+  const codeBlockRegex = /```(?:[a-z]*\s*)?[^`]*?(\[\[[\s\S]*?\]\])[^`]*?```/g;
+  let blockMatch: RegExpExecArray | null;
+  while ((blockMatch = codeBlockRegex.exec(text)) !== null) {
+    const candidate = blockMatch[1];
+    if (/^[\[\]\d\s,]+$/.test(candidate)) {
+      try {
+        const cleaned = candidate
+          .replace(/\s+/g, ' ')
+          .replace(/,\s*]/g, ']')
+          .replace(/,\s*,/g, ',')
+          .replace(/\[\s+/g, '[')
+          .replace(/\s+\]/g, ']');
+        const grid = JSON.parse(cleaned);
+        if (Array.isArray(grid) && Array.isArray(grid[0])) {
+          const valid = grid.every((row: any) => Array.isArray(row) && row.every((c: any) => Number.isInteger(c)));
+          if (valid) {
+            grids.push(grid);
+            method = 'markdown_code_block_multi';
+          }
+        }
+      } catch {}
+    }
+  }
+
+  // 2) Generic pattern match throughout text
+  const pattern = /(\[\[\d+(?:\s*,\s*\d+)*\](?:\s*,\s*\[\d+(?:\s*,\s*\d+)*\])*\])/g;
+  let m: RegExpExecArray | null;
+  while ((m = pattern.exec(text)) !== null) {
+    try {
+      const cleaned = m[1]
+        .replace(/\s+/g, ' ')
+        .replace(/,\s*]/g, ']')
+        .replace(/,\s*,/g, ',');
+      const grid = JSON.parse(cleaned);
+      if (Array.isArray(grid) && Array.isArray(grid[0])) {
+        const valid = grid.every((row: any) => Array.isArray(row) && row.every((c: any) => Number.isInteger(c)));
+        if (valid) {
+          grids.push(grid);
+          if (method === 'not_found') method = 'pattern_multi';
+        }
+      }
+    } catch {}
+  }
+
+  return { grids, method };
+}
+
+/**
  * Validates grid dimensions match expected output
  */
 function validateGridDimensions(grid: number[][], expectedOutput: number[][]): boolean {
@@ -398,5 +468,121 @@ export function validateSolverResponse(
     isPredictionCorrect: isCorrect,
     predictionAccuracyScore: accuracyScore,
     extractionMethod: method
+  };
+}
+
+/**
+ * Multi-test validation for solver responses
+ * Attempts to read `predictedOutputs` (array of grids). If absent, extracts multiple grids
+ * from `solvingStrategy` text. Validates each predicted grid against corresponding expected output.
+ */
+export function validateSolverResponseMulti(
+  response: any,
+  correctAnswers: number[][][],
+  promptId: string,
+  confidence: number = 50
+): MultiValidationResult {
+  const isSolverMode = promptId === 'solver';
+  if (!isSolverMode) {
+    return {
+      predictedGrids: [],
+      itemResults: [],
+      allCorrect: true,
+      averageAccuracyScore: 1.0,
+      extractionMethodSummary: 'not_solver_mode'
+    };
+  }
+
+  // Collect candidate predicted grids
+  let predictedGrids: (number[][] | null)[] = [];
+  let extractionMethod = '';
+
+  // 1) Prefer structured field predictedOutputs: number[][][]
+  if (Array.isArray(response?.predictedOutputs)) {
+    const arr = response.predictedOutputs as any[];
+    predictedGrids = arr.map((g: any) => (Array.isArray(g) ? g : null));
+    extractionMethod = 'direct_predicted_outputs_field';
+  } else {
+    // 2) Fallback: extract multiple from solvingStrategy text
+    const text = response?.solvingStrategy || '';
+    const { grids, method } = extractAllGridsFromText(text);
+    predictedGrids = grids.length ? grids : [];
+    extractionMethod = method || 'not_found';
+  }
+
+  // Align counts: ensure we have the same number as expected answers
+  if (predictedGrids.length < correctAnswers.length) {
+    // pad with nulls
+    predictedGrids = predictedGrids.concat(
+      Array(correctAnswers.length - predictedGrids.length).fill(null)
+    );
+  } else if (predictedGrids.length > correctAnswers.length) {
+    // trim extras
+    predictedGrids = predictedGrids.slice(0, correctAnswers.length);
+  }
+
+  const itemResults: MultiValidationItemResult[] = [];
+  let totalScore = 0;
+  let allCorrect = true;
+
+  for (let i = 0; i < correctAnswers.length; i++) {
+    const expected = correctAnswers[i];
+    const predicted = predictedGrids[i];
+
+    if (!predicted) {
+      const score = calculateAccuracyScore(false, confidence);
+      itemResults.push({
+        index: i,
+        predictedGrid: null,
+        isPredictionCorrect: false,
+        predictionAccuracyScore: score,
+        extractionMethod: extractionMethod,
+        expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
+      });
+      totalScore += score;
+      allCorrect = false;
+      continue;
+    }
+
+    // Validate dimensions
+    if (!validateGridDimensions(predicted, expected)) {
+      const score = calculateAccuracyScore(false, confidence);
+      itemResults.push({
+        index: i,
+        predictedGrid: predicted,
+        isPredictionCorrect: false,
+        predictionAccuracyScore: score,
+        extractionMethod: extractionMethod + '_wrong_dimensions',
+        expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
+      });
+      totalScore += score;
+      allCorrect = false;
+      continue;
+    }
+
+    const isCorrect = gridsAreEqual(predicted, expected);
+    const score = calculateAccuracyScore(isCorrect, confidence);
+    itemResults.push({
+      index: i,
+      predictedGrid: predicted,
+      isPredictionCorrect: isCorrect,
+      predictionAccuracyScore: score,
+      extractionMethod,
+      expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
+    });
+    totalScore += score;
+    if (!isCorrect) allCorrect = false;
+  }
+
+  const averageAccuracyScore = itemResults.length
+    ? totalScore / itemResults.length
+    : 0;
+
+  return {
+    predictedGrids,
+    itemResults,
+    allCorrect,
+    averageAccuracyScore,
+    extractionMethodSummary: extractionMethod
   };
 }

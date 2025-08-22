@@ -22,12 +22,14 @@
       "Bash(del \"D:\\1Projects\\arc-explainer\\test-parser.js\")",
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(git branch:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
-      "D:\\"
+      "D:\\",
+      "D:\\d\\1Projects"
     ]
   }
 }

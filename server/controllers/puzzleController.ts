@@ -15,7 +15,7 @@ import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
 import { dbService } from '../services/dbService';
 import type { PromptOptions } from '../services/promptBuilder';
-import { validateSolverResponse } from '../services/responseValidator.js';
+import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
 
 export const puzzleController = {
   /**
@@ -77,7 +77,9 @@ export const puzzleController = {
       // GPT-5 reasoning parameters
       reasoningEffort,
       reasoningVerbosity, 
-      reasoningSummaryType
+      reasoningSummaryType,
+      // System prompt mode
+      systemPromptMode = 'ARC'
     } = req.body;
     
     // Log the request with custom prompt handling
@@ -103,6 +105,7 @@ export const puzzleController = {
     if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
     if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+    if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
     
     const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options, serviceOpts);
     
@@ -121,18 +124,33 @@ export const puzzleController = {
     
     // Validate solver mode responses
     if (promptId === "solver") {
-      const correctAnswer = puzzle.test[0].output;
       const confidence = result.confidence || 50; // Default confidence if not provided
-      
-      const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
-      
-      // Add validation results to response
-      result.predictedOutputGrid = validation.predictedGrid;
-      result.isPredictionCorrect = validation.isPredictionCorrect;
-      result.predictionAccuracyScore = validation.predictionAccuracyScore;
-      result.extractionMethod = validation.extractionMethod;
-      
-      console.log(`[Controller] Solver validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
+      const testCount = puzzle.test?.length || 0;
+
+      if (testCount > 1) {
+        const correctAnswers = puzzle.test.map(t => t.output);
+        const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
+
+        // Attach multi-test validation summary and details
+        result.predictedOutputGrids = multi.predictedGrids;
+        result.multiValidation = multi.itemResults;
+        result.allPredictionsCorrect = multi.allCorrect;
+        result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
+        result.extractionMethod = multi.extractionMethodSummary;
+
+        console.log(`[Controller] Solver multi-test: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
+      } else {
+        const correctAnswer = puzzle.test[0].output;
+        const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
+
+        // Add validation results to response (single-test)
+        result.predictedOutputGrid = validation.predictedGrid;
+        result.isPredictionCorrect = validation.isPredictionCorrect;
+        result.predictionAccuracyScore = validation.predictionAccuracyScore;
+        result.extractionMethod = validation.extractionMethod;
+
+        console.log(`[Controller] Solver validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
+      }
     }
     
     res.json(formatResponse.success(result));

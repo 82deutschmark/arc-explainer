@@ -24,6 +24,12 @@ August 21, 2025
 - **Debug Logging**: Added detailed logging to track parsing attempts and identify future format changes
 - **Error Handling**: Graceful degradation through multiple parsing strategies
 
+### Multi‑Test Support Improvements (Code by Cascade)
+- **Prompt Builder**: `server/services/promptBuilder.ts` now includes ALL test cases in prompts. Solver mode instructs models to return `predictedOutputs` (array) for multi-test tasks, with backward-compatible `predictedOutput` for single-test.
+- **Validator**: `server/services/responseValidator.ts` adds `validateSolverResponseMulti()` and multi-grid extraction to validate arrays of predicted outputs against multiple expected outputs, computing per-test and average scores.
+- **Controller Wiring**: `server/controllers/puzzleController.ts` routes multi-test tasks through the new multi-test validator and returns `predictedOutputGrids`, `multiValidation`, `allPredictionsCorrect`, and `averagePredictionAccuracyScore` fields.
+- **BC Compatibility**: Single-test behavior unchanged; existing consumers continue to receive `predictedOutputGrid` and related fields.
+
 ## Version 1.4.5 — OpenAI Response Parsing Fixes (2025-08-21)
 
 ### Critical Bug Fixes
