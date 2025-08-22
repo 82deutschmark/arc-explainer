@@ -39,6 +39,8 @@ import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 const MODELS = {
   "deepseek-chat": "deepseek-chat",
@@ -96,6 +98,24 @@ export class DeepSeekService {
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
       
+      // Extract token usage from DeepSeek response (OpenAI-compatible + reasoning_tokens for R1)
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (response.usage) {
+        tokenUsage = {
+          input: response.usage.prompt_tokens,
+          output: response.usage.completion_tokens,
+          reasoning: (response.usage as any).reasoning_tokens, // DeepSeek R1 specific
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
+      
       // For deepseek-reasoner, also capture the reasoning content (Chain of Thought)
       const responseData: any = {
         model: modelKey,
@@ -104,6 +124,12 @@ export class DeepSeekService {
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data
+        inputTokens: tokenUsage?.input || null,
+        outputTokens: tokenUsage?.output || null,
+        reasoningTokens: tokenUsage?.reasoning || null,
+        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
+        estimatedCost: cost?.total || null,
         ...result,
       };
       

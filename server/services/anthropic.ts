@@ -17,6 +17,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ARCTask } from "../../shared/types";
 import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
 import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
+import { calculateCost } from "../utils/costCalculator";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
 
 // Latest Anthropic models - updated with current model names from official documentation
 const MODELS = {
@@ -192,6 +194,24 @@ export class AnthropicService {
           };
         }
       }
+
+      // Extract token usage from Anthropic response
+      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
+      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      
+      if (response.usage) {
+        tokenUsage = {
+          input: response.usage.input_tokens,
+          output: response.usage.output_tokens,
+          // For Anthropic, we don't have separate reasoning tokens, but we could estimate from reasoning content length
+        };
+
+        // Find the model config to get pricing
+        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        if (modelConfig && tokenUsage) {
+          cost = calculateCost(modelConfig.cost, tokenUsage);
+        }
+      }
       
       return {
         model: modelKey,
@@ -202,6 +222,12 @@ export class AnthropicService {
         reasoningEffort: serviceOpts?.reasoningEffort || null,
         reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
         reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
+        // Token usage and cost data
+        inputTokens: tokenUsage?.input || null,
+        outputTokens: tokenUsage?.output || null,
+        reasoningTokens: tokenUsage?.reasoning || null,
+        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
+        estimatedCost: cost?.total || null,
         ...result,
       };
     } catch (error) {

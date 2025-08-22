@@ -25,7 +25,6 @@ import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
-import { getCostDisplay } from '@/utils/costCalculator';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -43,6 +42,30 @@ const formatProcessingTime = (milliseconds: number): string => {
     return `${minutes}m ${seconds}s`;
   } else {
     return `${seconds}s`;
+  }
+};
+
+// Format cost for display
+const formatCost = (cost: number): string => {
+  if (cost < 0.001) {
+    return `$${(cost * 1000).toFixed(2)}¢`;
+  } else if (cost < 0.01) {
+    return `$${cost.toFixed(4)}`;
+  } else if (cost < 1.0) {
+    return `$${cost.toFixed(3)}`;
+  } else {
+    return `$${cost.toFixed(2)}`;
+  }
+};
+
+// Format token count for display
+const formatTokens = (tokens: number): string => {
+  if (tokens >= 1_000_000) {
+    return `${(tokens / 1_000_000).toFixed(1)}M`;
+  } else if (tokens >= 1_000) {
+    return `${(tokens / 1_000).toFixed(1)}k`;
+  } else {
+    return tokens.toString();
   }
 };
 
@@ -156,11 +179,19 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           </Badge>
         )}
         
-        {/* Cost Estimate */}
-        {modelKey && getCostDisplay(modelKey) && (
+        {/* Cost and Token Usage */}
+        {result.estimatedCost && (
           <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
             <span className="text-xs text-green-600">
-              Cost: {getCostDisplay(modelKey)}
+              Cost: {formatCost(result.estimatedCost)}
+            </span>
+          </Badge>
+        )}
+        
+        {result.totalTokens && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+            <span className="text-xs text-blue-600">
+              {formatTokens(result.totalTokens)} tokens
             </span>
           </Badge>
         )}
