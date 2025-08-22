@@ -206,6 +206,69 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
+  // Generate recent activity from puzzle data (AI models only)
+  const recentActivity = useMemo(() => {
+    if (!data?.puzzles) return [];
+    
+    const activities: Array<{
+      id: string;
+      type: 'explanation' | 'feedback';
+      puzzleId: string;
+      modelName?: string;
+      createdAt: string;
+    }> = [];
+    
+    // Extract explanations from all puzzles (exclude Saturn)
+    data.puzzles.forEach(puzzle => {
+      puzzle.explanations.forEach(explanation => {
+        // Skip Saturn results in recent activity
+        if (explanation.saturnSuccess !== undefined) return;
+        
+        activities.push({
+          id: explanation.id.toString(),
+          type: 'explanation',
+          puzzleId: puzzle.id,
+          modelName: explanation.modelName,
+          createdAt: explanation.createdAt
+        });
+      });
+    });
+    
+    // Sort by creation date (newest first) and take the most recent
+    return activities
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 20); // Keep more items for the scrollable list
+  }, [data]);
+
+  // Generate Saturn results separately
+  const saturnResults = useMemo(() => {
+    if (!data?.puzzles) return [];
+    
+    const results: Array<{
+      puzzleId: string;
+      solved: boolean;
+      createdAt: string;
+    }> = [];
+    
+    // Extract Saturn results from all puzzles
+    data.puzzles.forEach(puzzle => {
+      puzzle.explanations.forEach(explanation => {
+        // Only include Saturn results
+        if (explanation.saturnSuccess !== undefined) {
+          results.push({
+            puzzleId: puzzle.id,
+            solved: explanation.saturnSuccess,
+            createdAt: explanation.createdAt
+          });
+        }
+      });
+    });
+    
+    // Sort by creation date (newest first)
+    return results
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [data]);
+
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
   if (error) {
@@ -256,6 +319,8 @@ export default function PuzzleOverview() {
           }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
+          recentActivity={recentActivity}
+          saturnResults={saturnResults}
         />
 
         {/* Search and Filters */}

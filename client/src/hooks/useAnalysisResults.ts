@@ -141,14 +141,6 @@ export function useAnalysisResults({
     return model?.provider || 'Unknown';
   };
 
-  // Check if any model from the same provider is currently processing
-  const isProviderProcessing = (modelKey: string): boolean => {
-    const targetProvider = getProviderFromKey(modelKey);
-    return Array.from(processingModels).some(key => 
-      getProviderFromKey(key) === targetProvider
-    );
-  };
-
   // Helper to check if model is GPT-5 reasoning model
   const isGPT5ReasoningModel = (modelKey: string): boolean => {
     return ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(modelKey);
@@ -156,10 +148,7 @@ export function useAnalysisResults({
 
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
-    // Check if this provider is already processing
-    if (isProviderProcessing(modelKey)) {
-      throw new Error(`A ${getProviderFromKey(modelKey)} model is already processing. Please wait for it to complete.`);
-    }
+    // Removed provider restriction - now allows concurrent requests to same provider
     
     // Set current model key to show reasoning controls for GPT-5 models
     setCurrentModelKey(modelKey);
@@ -199,7 +188,6 @@ export function useAnalysisResults({
     analyzerError: analyzeAndSaveMutation.error,
     analysisStartTime,
     analysisTimes,
-    isProviderProcessing,
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
