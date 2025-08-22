@@ -6,6 +6,35 @@
 -->
 
  
+August 22, 2025
+
+## Version 1.5.0 — System Prompt Architecture Implementation (2025-08-22)
+
+### 🚀 Major Features
+- **System Prompt Support (Code by Claude Code)**: Comprehensive implementation of JSON-structure-enforcing system prompts across all AI providers
+  - **{ARC} Mode (Default)**: Structured system prompts enforce exact JSON format with answer-first output (`predictedOutput`/`predictedOutputs` always first)
+  - **{None} Mode**: Legacy behavior for backward compatibility (all instructions mixed in user message)
+  - **Smart Selection**: Automatically chooses appropriate system prompt based on solver mode, multi-test scenarios, and alien communication templates
+  - **Provider-Specific Implementation**: 
+    - OpenAI: Uses system message in input array
+    - Anthropic: Uses dedicated `system` parameter  
+    - Gemini: Uses `systemInstruction` with parts array
+    - Grok/DeepSeek: Uses standard system message role
+  - **Frontend UI**: Added intuitive system prompt mode selection in Advanced Options with clear {ARC}/{None} toggle
+
+### 🎯 Benefits
+- **Eliminates Complex Parsing**: Removes need for 587 lines of regex-based grid extraction logic in `responseValidator.ts`
+- **Consistent JSON Structure**: Enforces exact field names and types expected by frontend/database
+- **Answer-First Output**: `predictedOutput` field always appears first, eliminating parsing ambiguity
+- **Reduced Parsing Errors**: Structured system prompts prevent models from mixing instructions with analysis
+- **Cross-Provider Consistency**: All AI services now behave consistently regardless of underlying API differences
+
+### 🔧 Technical Implementation
+- **End-to-End Pipeline**: Complete flow from frontend UI → controller → prompt builder → all AI services
+- **Comprehensive Documentation**: New `docs/ai-pipeline.md` documents complete architecture and file relationships
+- **Multi-Test Support**: Handles both single (`predictedOutput`) and multi-test (`predictedOutputs`) scenarios
+- **Template Integration**: Works with all existing prompt templates (solver, explanation, alien communication)
+
 August 21, 2025
 
 ## Version 1.4.6 — Markdown JSON Response Parsing Fix (2025-08-21)
@@ -23,6 +52,10 @@ August 21, 2025
 - **Fallback Strategy**: Similar to Anthropic service's robust JSON extraction approach
 - **Debug Logging**: Added detailed logging to track parsing attempts and identify future format changes
 - **Error Handling**: Graceful degradation through multiple parsing strategies
+
+### UI Enhancements (Code by Cascade)
+- **Raw DB Record Toggle**: `client/src/components/puzzle/AnalysisResultCard.tsx` now includes a header toggle to show/hide the raw explanation database record (pretty‑printed JSON). Useful for debugging provider parsing vs stored values. Non-intrusive ghost button; collapsible, scrollable panel.
+- **Predicted Answer(s) Display**: `AnalysisResultCard` renders model-predicted grid(s) when available (`predictedOutputGrid` or `predictedOutputGrids[]`), with an optional extraction method badge. Uses `PuzzleGrid` with numeric view.
 
 ### Multi‑Test Support Improvements (Code by Cascade)
 - **Prompt Builder**: `server/services/promptBuilder.ts` now includes ALL test cases in prompts. Solver mode instructs models to return `predictedOutputs` (array) for multi-test tasks, with backward-compatible `predictedOutput` for single-test.

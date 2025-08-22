@@ -41,6 +41,8 @@ interface PromptPickerProps {
   onSendAsEmojisChange?: (sendAsEmojis: boolean) => void;
   omitAnswer?: boolean;
   onOmitAnswerChange?: (omitAnswer: boolean) => void;
+  systemPromptMode?: 'ARC' | 'None';
+  onSystemPromptModeChange?: (mode: 'ARC' | 'None') => void;
 }
 
 export function PromptPicker({ 
@@ -52,7 +54,9 @@ export function PromptPicker({
   sendAsEmojis,
   onSendAsEmojisChange,
   omitAnswer,
-  onOmitAnswerChange
+  onOmitAnswerChange,
+  systemPromptMode,
+  onSystemPromptModeChange
 }: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -180,8 +184,61 @@ export function PromptPicker({
         {/* Advanced Options integrated into Explanation Style */}
         <div className="mt-6 pt-4 border-t border-gray-200">
           <h6 className="text-sm font-semibold mb-3 text-gray-700">Advanced Options</h6>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* System Prompt Mode Selection */}
+          <div className="mb-4">
+            <label className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2 block">
+              System Prompt Mode
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {/* ARC Mode */}
+              <div 
+                className={`p-3 border rounded cursor-pointer transition-all ${
+                  systemPromptMode === 'ARC' 
+                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => onSystemPromptModeChange?.('ARC')}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-blue-700">{'{ARC}'}</span>
+                  <Badge variant="default" className="text-xs">Recommended</Badge>
+                </div>
+                <p className="text-xs text-gray-600">
+                  Structured system prompt enforces JSON format and answer-first output
+                </p>
+              </div>
+
+              {/* None Mode */}
+              <div 
+                className={`p-3 border rounded cursor-pointer transition-all ${
+                  systemPromptMode === 'None' 
+                    ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' 
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => onSystemPromptModeChange?.('None')}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-amber-700">{'{None}'}</span>
+                  <Badge variant="outline" className="text-xs">Current</Badge>
+                </div>
+                <p className="text-xs text-gray-600">
+                  All instructions mixed with data (legacy behavior)
+                </p>
+              </div>
+            </div>
             
+            {/* System Prompt Impact Explanation */}
+            <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+              <strong>System Prompt Impact:</strong>
+              <ul className="mt-1 space-y-1 text-gray-600">
+                <li>• <strong>{'{ARC}'}:</strong> Separates instructions from puzzle data, enforces JSON structure, reduces parsing errors</li>
+                <li>• <strong>{'{None}'}:</strong> Maintains current mixed-message approach</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Send as Emojis Toggle */}
             <div className="space-y-2">
               <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Prompt Format</label>

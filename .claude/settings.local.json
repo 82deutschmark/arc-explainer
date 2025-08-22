@@ -23,7 +23,8 @@
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(git branch:*)",
       "Bash(git checkout:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": [],

@@ -30,6 +30,7 @@ interface UseAnalysisResultsProps {
   // omitAnswer tells prompt builder to omit the "Correct Answer" portion in the test case section
   emojiSetKey?: string;
   omitAnswer?: boolean;
+  systemPromptMode?: 'ARC' | 'None';
 }
 
 export function useAnalysisResults({
@@ -37,6 +38,7 @@ export function useAnalysisResults({
   refetchExplanations,
   emojiSetKey,
   omitAnswer,
+  systemPromptMode,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
@@ -74,6 +76,7 @@ export function useAnalysisResults({
         // New analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
+        ...(systemPromptMode ? { systemPromptMode } : {}),
         // GPT-5 reasoning parameters
         ...(effort ? { reasoningEffort: effort } : {}),
         ...(verbosity ? { reasoningVerbosity: verbosity } : {}),

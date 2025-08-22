@@ -24,6 +24,7 @@ import { ExplanationFeedback } from '@/components/ExplanationFeedback';
 import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -49,6 +50,7 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
+  const [showRawDb, setShowRawDb] = useState(false);
   
   // Get feedback preview for this explanation
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
@@ -153,6 +155,27 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
             )}
           </div>
         )}
+
+        {/* Toggle to show raw DB record */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowRawDb(!showRawDb)}
+          className="h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ml-auto"
+          title="Show the raw explanation record from the database"
+        >
+          {showRawDb ? (
+            <>
+              <ChevronUp className="h-3 w-3 mr-1" />
+              Hide raw DB record
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-3 w-3 mr-1" />
+              Show raw DB record
+            </>
+          )}
+        </Button>
       </div>
       
       {/* Handle empty response case */}
@@ -370,6 +393,45 @@ export function AnalysisResultCard({ modelKey, result, model }: AnalysisResultCa
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Model predicted answer display (single answer; edge case: use first if array provided) */}
+          {((result as any)?.predictedOutputGrids?.length > 0) || result.predictedOutputGrid ? (
+            <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                {result.extractionMethod && (
+                  <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                    Extracted via: {result.extractionMethod}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center justify-center">
+                <PuzzleGrid
+                  grid={result.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0]}
+                  title="Predicted Answer"
+                  showEmojis={false}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {/* Raw DB record viewer */}
+          {showRawDb && (
+            <div className="bg-gray-50 border border-gray-200 rounded">
+              <div className="p-3 border-b border-gray-200 flex items-center justify-between">
+                <h5 className="font-semibold text-gray-800">Raw DB record</h5>
+                <Badge variant="outline" className="text-xs bg-gray-50">
+                  {result.id ? `id: ${result.id}` : 'unsaved'}
+                </Badge>
+              </div>
+              <div className="p-3 max-h-64 overflow-y-auto">
+                <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+{JSON.stringify(result, null, 2)}
+                </pre>
+              </div>
+              <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
             </div>
           )}
         </div>

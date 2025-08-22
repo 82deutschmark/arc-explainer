@@ -188,7 +188,9 @@ export const puzzleController = {
         // GPT-5 reasoning parameters  
         reasoningEffort,
         reasoningVerbosity,
-        reasoningSummaryType
+        reasoningSummaryType,
+        // System prompt mode
+        systemPromptMode = 'ARC'
       } = req.body;
 
       console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
@@ -215,6 +217,7 @@ export const puzzleController = {
       if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
       if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
       if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+      if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
 
       // Generate provider-specific prompt preview
       const previewData = await aiService.generatePromptPreview(
