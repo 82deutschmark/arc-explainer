@@ -73,7 +73,6 @@ export default function PuzzleExaminer() {
     processingModels,
     isAnalyzing,
     analyzerError,
-    isProviderProcessing,
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
@@ -342,7 +341,6 @@ export default function PuzzleExaminer() {
           {/* Model Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
             {MODELS.map((model) => {
-              const isThisProviderProcessing = isProviderProcessing(model.key);
               const isThisModelProcessing = processingModels.has(model.key);
               
               return (
@@ -352,7 +350,7 @@ export default function PuzzleExaminer() {
                   isAnalyzing={isThisModelProcessing}
                   explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
                   onAnalyze={handleAnalyzeWithModel}
-                  disabled={isThisProviderProcessing}
+                  disabled={isThisModelProcessing}
                 />
               );
             })}
@@ -402,26 +400,27 @@ export default function PuzzleExaminer() {
                 <Slider
                   id="temperature"
                   min={0.1}
-                  max={1.0}
+                  max={2.0}
                   step={0.05}
                   value={[temperature]}
                   onValueChange={(value) => setTemperature(value[0])}
                   className="w-full"
                 />
               </div>
-              <span className="text-xs text-gray-600">
-                Controls creativity (some models don't support this)
-              </span>
+              <div className="text-xs text-gray-600">
+                <div>Controls creativity • Only GPT-4.1 series & GPT-5 Chat support this</div>
+                <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive features</div>
+                <div className="text-amber-600 font-medium">⚠️ Values above 1.1 may produce crazy and illegible replies</div>
+              </div>
             </div>
           </div>
 
           {/* GPT-5 Reasoning Parameters */}
-          {currentModelKey && isGPT5ReasoningModel(currentModelKey) && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                GPT-5 Reasoning Parameters
-              </h5>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              GPT-5 Reasoning Parameters
+            </h5>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Effort Control */}
@@ -432,7 +431,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningEffort} 
                     onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select effort level" />
@@ -460,7 +458,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningVerbosity} 
                     onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select verbosity" />
@@ -486,7 +483,6 @@ export default function PuzzleExaminer() {
                   <Select 
                     value={reasoningSummaryType} 
                     onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}
-                    disabled={isAnalyzing}
                   >
                     <SelectTrigger className="w-full mt-1">
                       <SelectValue placeholder="Select summary type" />
@@ -503,7 +499,6 @@ export default function PuzzleExaminer() {
                 </div>
               </div>
             </div>
-          )}
 
 
           {/* Analysis Results */}

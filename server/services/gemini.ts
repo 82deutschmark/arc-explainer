@@ -141,6 +141,9 @@ export class GeminiService {
     options?: PromptOptions, // Cascade: optional prompt options forwarded to builder
     serviceOpts?: {
       systemPromptMode?: 'ARC' | 'None';
+      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+      reasoningVerbosity?: 'low' | 'medium' | 'high';
+      reasoningSummaryType?: 'auto' | 'detailed';
     }
   ) {
     const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
@@ -199,7 +202,7 @@ Then provide your final structured JSON response.` : basePrompt;
         model: modelName,
         generationConfig: {
           temperature: temperature,
-          maxOutputTokens: 4096,
+          maxOutputTokens: 65536, // Increased from 4096 based on models.yml (most models support 65,536)
         }
       };
       
@@ -253,6 +256,11 @@ Then provide your final structured JSON response.` : basePrompt;
         model: modelKey,
         reasoningLog,
         hasReasoningLog,
+        // Include analysis parameters for database storage
+        temperature,
+        reasoningEffort: serviceOpts?.reasoningEffort || null,
+        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
+        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
         ...jsonResult,
       };
     } catch (error) {
@@ -391,7 +399,7 @@ Then provide your final structured JSON response.` : basePrompt;
       }],
       generationConfig: {
         temperature: temperature,
-        maxOutputTokens: 4000,
+        maxOutputTokens: 65536, // Updated from 4000 based on models.yml
         responseMimeType: "application/json"
       }
     };
@@ -401,7 +409,7 @@ Then provide your final structured JSON response.` : basePrompt;
       "Supports reasoning capture via <thinking> tags",
       "Temperature parameter supported",
       "JSON response format enforced via responseMimeType",
-      "Max output tokens set to 4000",
+      "Max output tokens set to 65536",
       `Context window: ${this.getContextWindow(modelKey).toLocaleString()} tokens`
     ];
 

@@ -28,6 +28,8 @@ interface SearchFiltersProps {
   setHasFeedbackFilter: (filter: string) => void;
   modelFilter: string;
   setModelFilter: (filter: string) => void;
+  saturnFilter: string;
+  setSaturnFilter: (filter: string) => void;
   confidenceMin: string;
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
@@ -48,6 +50,8 @@ export function SearchFilters({
   setHasFeedbackFilter,
   modelFilter,
   setModelFilter,
+  saturnFilter,
+  setSaturnFilter,
   confidenceMin,
   setConfidenceMin,
   confidenceMax,
@@ -115,15 +119,42 @@ export function SearchFilters({
             </Select>
           </div>
 
-          {/* Model Filter */}
+          {/* Analysis Type Filter - Mutually Exclusive */}
           <div className="space-y-2">
-            <Label htmlFor="model">AI Model</Label>
-            <Select value={modelFilter} onValueChange={setModelFilter}>
-              <SelectTrigger id="model">
-                <SelectValue placeholder="All models" />
+            <Label htmlFor="analysisType">Analysis Type</Label>
+            <Select 
+              value={saturnFilter !== 'all' ? saturnFilter : (modelFilter !== 'all' ? modelFilter : 'all')} 
+              onValueChange={(value) => {
+                if (['solved', 'failed', 'attempted'].includes(value)) {
+                  setSaturnFilter(value);
+                  setModelFilter('all');
+                } else if (value === 'all') {
+                  setSaturnFilter('all');
+                  setModelFilter('all');
+                } else {
+                  setModelFilter(value);
+                  setSaturnFilter('all');
+                }
+              }}
+            >
+              <SelectTrigger id="analysisType">
+                <SelectValue placeholder="All analysis types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Models</SelectItem>
+                <SelectItem value="all">All Results</SelectItem>
+                
+                {/* Saturn Options */}
+                <div className="px-2 py-1 text-xs font-semibold text-purple-600 bg-purple-50 border-b">
+                  🪐 Saturn Solver
+                </div>
+                <SelectItem value="solved">✅ Saturn Solved</SelectItem>
+                <SelectItem value="failed">❌ Saturn Failed</SelectItem>
+                <SelectItem value="attempted">🪐 Any Saturn Results</SelectItem>
+                
+                {/* AI Model Options */}
+                <div className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-50 border-b border-t">
+                  🧠 AI Models
+                </div>
                 {MODELS.map((model) => (
                   <SelectItem key={model.key} value={model.key}>
                     {model.name} ({model.provider})
