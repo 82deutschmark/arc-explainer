@@ -165,15 +165,17 @@ export const USER_TEMPLATE_BUILDERS = {
   solver: buildSolverUserPrompt,
   standardExplanation: buildExplanationUserPrompt,
   educationalApproach: buildExplanationUserPrompt,
-  alienCommunication: buildAlienUserPrompt,
-  custom: buildCustomUserPromptSimple
+  alienCommunication: buildAlienUserPrompt
 } as const;
 
 /**
  * Get user prompt builder function for template ID
  */
-export function getUserPromptBuilder(promptId: string) {
-  return USER_TEMPLATE_BUILDERS[promptId as keyof typeof USER_TEMPLATE_BUILDERS] || buildExplanationUserPrompt;
+export function getUserPromptBuilder(
+  promptId: string
+): (task: ARCTask, options?: UserPromptOptions) => string {
+  const builder = USER_TEMPLATE_BUILDERS[promptId as keyof typeof USER_TEMPLATE_BUILDERS];
+  return builder ?? buildExplanationUserPrompt;
 }
 
 /**
@@ -185,11 +187,11 @@ export function buildUserPromptForTemplate(
   options: UserPromptOptions = {},
   customText?: string
 ): string {
-  const builder = getUserPromptBuilder(promptId);
+  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
   
   if (promptId === 'custom' && customText) {
     return buildCustomUserPromptSimple(task, customText);
   }
   
-  return builder(task, options);
+  return builderFn(task, options);
 }

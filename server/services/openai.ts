@@ -364,21 +364,26 @@ export class OpenAIService {
       providerSpecificNotes.push("System Prompt Mode: {None} - Old behavior (all content as user message)");
     }
 
+    // Compose preview text; in ARC mode, system is separate so show user content; in None, show combined
+    const previewText = systemPromptMode === 'ARC'
+      ? userMessage
+      : `${systemMessage}\n\n${userMessage}`;
+
     return {
       provider: "OpenAI",
       modelName,
-      promptText: systemPromptMode === 'ARC' ? userMessage : prompt,
+      promptText: previewText,
       systemPrompt: systemMessage,
       messageFormat,
       templateInfo: {
-        id: selectedTemplate?.id || "custom",
-        name: selectedTemplate?.name || "Custom Prompt",
-        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+        id: promptPackage.selectedTemplate?.id || "custom",
+        name: promptPackage.selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: promptPackage.selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: previewText.length,
+        wordCount: previewText.split(/\s+/).length,
+        lineCount: previewText.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,

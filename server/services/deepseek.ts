@@ -77,10 +77,12 @@ export class DeepSeekService {
 
     // Use custom prompt if provided, otherwise use selected template
     // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // DeepSeek requires the word "json" in the prompt when using json_object response format
-    const deepseekPrompt = prompt + "\n\nPlease respond in valid JSON format.";
+    const deepseekPrompt = basePrompt + "\n\nPlease respond in valid JSON format.";
 
     try {
       const requestOptions: any = {
@@ -202,12 +204,14 @@ export class DeepSeekService {
     const modelName = MODELS[modelKey];
 
     // Build prompt using shared prompt builder
-    const { prompt, selectedTemplate } = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    const basePrompt = promptPackage.userPrompt;
+    const selectedTemplate = promptPackage.selectedTemplate;
 
     // DeepSeek uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
 
@@ -230,7 +234,7 @@ export class DeepSeekService {
     return {
       provider: "DeepSeek",
       modelName,
-      promptText: prompt,
+      promptText: basePrompt,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
@@ -238,9 +242,9 @@ export class DeepSeekService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: basePrompt.length,
+        wordCount: basePrompt.split(/\s+/).length,
+        lineCount: basePrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,

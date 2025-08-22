@@ -77,14 +77,20 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
     errors.push(`Missing required fields: ${missingBase.join(', ')}`);
   }
   
-  // Check prediction fields based on test case count
-  if (testCaseCount > 1) {
-    if (!response.predictedOutputs) {
-      errors.push('Missing predictedOutputs field for multi-test case');
-    } else if (!Array.isArray(response.predictedOutputs)) {
+  // Check prediction fields: accept either single or multi in both modes
+  const hasSingle = 'predictedOutput' in response;
+  const hasMulti = 'predictedOutputs' in response;
+
+  if (!hasSingle && !hasMulti) {
+    errors.push(
+      testCaseCount > 1
+        ? 'Missing predictedOutputs (preferred) or predictedOutput field'
+        : 'Missing predictedOutput (preferred) or predictedOutputs field'
+    );
+  } else if (hasMulti && response.predictedOutputs != null) {
+    if (!Array.isArray(response.predictedOutputs)) {
       errors.push('predictedOutputs must be an array');
     } else {
-      // Validate each predicted grid
       for (let i = 0; i < response.predictedOutputs.length; i++) {
         const grid = response.predictedOutputs[i];
         if (!validateGrid(grid)) {
@@ -95,10 +101,8 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
         predictedGrids = response.predictedOutputs;
       }
     }
-  } else {
-    if (!response.predictedOutput) {
-      errors.push('Missing predictedOutput field for single test case');
-    } else if (!validateGrid(response.predictedOutput)) {
+  } else if (hasSingle && response.predictedOutput != null) {
+    if (!validateGrid(response.predictedOutput)) {
       errors.push('predictedOutput is not a valid 2D grid of integers 0-9');
     } else {
       predictedGrids = [response.predictedOutput];
@@ -140,11 +144,16 @@ export function extractPredictions(response: any, testCaseCount: number): {
   predictedOutput?: number[][];
   predictedOutputs?: number[][][];
 } {
-  if (testCaseCount > 1) {
+  // Prefer returning the field that exists; normalize if needed
+  if (Array.isArray(response?.predictedOutputs)) {
     return { predictedOutputs: response.predictedOutputs };
-  } else {
-    return { predictedOutput: response.predictedOutput };
   }
+  if (response?.predictedOutput) {
+    return testCaseCount > 1
+      ? { predictedOutputs: [response.predictedOutput] }
+      : { predictedOutput: response.predictedOutput };
+  }
+  return {};
 }
 
 /**

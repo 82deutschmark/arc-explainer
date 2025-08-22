@@ -5,8 +5,20 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
- 
 August 22, 2025
+
+## Version 1.6.3 — Provider Services PromptPackage Alignment (2025-08-22)
+
+### 🛠️ Fixes & Refactors (Code by Cascade)
+- **Unified PromptPackage Usage**: Refactored all AI provider services to use `PromptPackage.userPrompt` and `PromptPackage.selectedTemplate` from `server/services/promptBuilder.ts`.
+  - Files: `server/services/openai.ts`, `server/services/gemini.ts`, `server/services/grok.ts`, `server/services/deepseek.ts`.
+  - Removed legacy destructuring of `{ prompt, selectedTemplate }` to eliminate undefined references and type errors.
+- **Prompt Preview Consistency**: Fixed `generatePromptPreview()` across providers to show the correct user prompt text and accurate prompt statistics.
+- **Type Safety**: Resolved compile-time type mismatches stemming from outdated prompt fields; aligned with backend schema and prompt architecture.
+
+### ✅ Outcome
+- Providers compile cleanly and share a consistent prompt data flow from backend → frontend.
+- Preview panels now reflect the exact prompt sent to models, improving debuggability.
 
 ## Version 1.6.2 — System Prompts + Structured Outputs Architecture Implementation (2025-08-22)
 
