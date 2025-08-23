@@ -58,6 +58,11 @@ interface PuzzleExplanation {
   predictedOutputGrid?: number[][] | null;
   isPredictionCorrect?: boolean | null;
   predictionAccuracyScore?: number | null;
+  // Multi-output prediction fields
+  multiplePredictedOutputs?: number[][][] | null;
+  multiTestResults?: any[] | null;
+  multiTestAllCorrect?: boolean | null;
+  multiTestAverageAccuracy?: number | null;
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
@@ -310,6 +315,35 @@ const createTablesIfNotExist = async () => {
                      AND column_name = 'estimated_cost')
         THEN
           ALTER TABLE explanations ADD COLUMN estimated_cost DECIMAL(10, 6);
+        END IF;
+
+        -- Add multi-output prediction columns if they don't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multiple_predicted_outputs')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multiple_predicted_outputs JSONB;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_results')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_results JSONB;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_all_correct')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_all_correct BOOLEAN;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_average_accuracy')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_average_accuracy FLOAT;
         END IF;
       END $$;
     `);
