@@ -3,9 +3,14 @@
   What: A step-by-step trace of the data flow for puzzle analysis.
   How: Explains the process from a user click to the result display.
   Author: Cascade
+  Last Updated: August 23, 2025
 -->
 
 # Analysis Data Flow Trace
+
+*Last Updated: August 23, 2025*
+
+> **Note:** For recent changes, see the [Changelog](../Changelog.md#august-23-2025) for details on the multi-output prediction support added on this date.
 
 This document provides a detailed, step-by-step trace of the data flow that occurs when a user initiates a puzzle analysis in the ARC Explainer application. Understanding this flow is key to debugging and extending the application's capabilities.
 
