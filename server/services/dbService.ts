@@ -484,13 +484,13 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         hasReasoningLog || false,
         providerResponseId || null,
         shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        reasoningItems ? JSON.stringify(reasoningItems) : null,
+        safeJsonStringify(reasoningItems),
         apiProcessingTimeMs || null,
-        saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null,
+        safeJsonStringify(saturnImages),
         explanation.saturnLog || null,
         explanation.saturnEvents || null,
         explanation.saturnSuccess ?? null,
-        explanation.predictedOutputGrid ? JSON.stringify(explanation.predictedOutputGrid) : null,
+        safeJsonStringify(explanation.predictedOutputGrid),
         explanation.isPredictionCorrect ?? null,
         explanation.predictionAccuracyScore ?? null,
         temperature ?? null,
@@ -852,13 +852,23 @@ const getExplanationById = async (explanationId: number) => {
     if (result.rows.length > 0) {
       const row = result.rows[0];
       // Parse JSON fields for Saturn data and validation
+      const safeJsonParse = (jsonString: string | null, fieldName: string) => {
+        if (!jsonString) return null;
+        try {
+          return JSON.parse(jsonString);
+        } catch (error) {
+          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          return null;
+        }
+      };
+
       return {
         ...row,
-        saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
-        predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
+        saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
+        predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
         // Parse multi-output prediction fields
-        multiplePredictedOutputs: row.multiplePredictedOutputs ? JSON.parse(row.multiplePredictedOutputs) : null,
-        multiTestResults: row.multiTestResults ? JSON.parse(row.multiTestResults) : null,
+        multiplePredictedOutputs: safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+        multiTestResults: safeJsonParse(row.multiTestResults, 'multiTestResults'),
       };
     }
     return null;
