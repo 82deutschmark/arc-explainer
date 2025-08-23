@@ -26,19 +26,29 @@ let wss: WebSocketServer | null = null;
 function parseSessionId(url?: string | null): string | null {
   if (!url) return null;
   try {
-    // Expect URL like /api/saturn/progress?sessionId=...
+    // Support both Saturn progress (/api/saturn/progress?sessionId=...) 
+    // and Batch progress (/api/batch/progress?batchId=...)
     const qs = url.split('?')[1] || '';
     const params = new URLSearchParams(qs);
-    const sid = params.get('sessionId');
-    return sid || null;
+    const sessionId = params.get('sessionId');
+    const batchId = params.get('batchId');
+    return sessionId || batchId || null;
   } catch {}
   return null;
 }
 
 export function attach(server: Server) {
   if (wss) return wss;
-  // Attach on specific path; clients should connect to ws(s)://host/api/saturn/progress?sessionId=...
-  wss = new WebSocketServer({ server, path: '/api/saturn/progress' });
+  // Attach WebSocket server to handle multiple progress streams:
+  // - Saturn: /api/saturn/progress?sessionId=...
+  // - Batch: /api/batch/progress?batchId=...
+  wss = new WebSocketServer({ 
+    server,
+    verifyClient: (info: { req: { url?: string } }) => {
+      const url = info.req.url || '';
+      return url.startsWith('/api/saturn/progress') || url.startsWith('/api/batch/progress');
+    }
+  });
 
   wss.on('connection', (ws, req) => {
     const url = req.url || '';

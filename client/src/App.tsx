@@ -8,12 +8,14 @@ import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import PuzzleOverview from "@/pages/PuzzleOverview";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
+import BatchTesting from "@/pages/BatchTesting";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={PuzzleBrowser} />
       <Route path="/overview" component={PuzzleOverview} />
+      <Route path="/batch" component={BatchTesting} />
       <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
       <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
       <Route component={NotFound} />

@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/utils';
+import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { Link } from 'wouter';
+import type { FeedbackStats } from '@shared/types';
 
 // Components
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
@@ -48,12 +49,6 @@ interface PuzzleOverviewResponse {
   hasMore: boolean;
 }
 
-interface FeedbackStats {
-  feedbackByModel: Record<string, {
-    helpful: number;
-    notHelpful: number;
-  }>;
-}
 
 interface AccuracyStats {
   accuracyByModel: Array<{

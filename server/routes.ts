@@ -19,6 +19,7 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
+import { batchController } from "./controllers/batchController";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -72,6 +73,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
+  
+  // Batch testing routes
+  app.post("/api/batch/start", asyncHandler(batchController.start));
+  app.get("/api/batch/:id", asyncHandler(batchController.getById));
+  app.post("/api/batch/:id/stop", asyncHandler(batchController.stop));
+  app.get("/api/batch/list", asyncHandler(batchController.list));
+  app.get("/api/batch/:id/results", asyncHandler(batchController.getResults));
   
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {
