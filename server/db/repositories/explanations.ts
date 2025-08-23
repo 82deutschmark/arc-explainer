@@ -80,6 +80,15 @@ export class ExplanationsRepository {
    */
   async save(data: CreateExplanationData): Promise<ExplanationRow> {
     const validated = validateCreateExplanation(data);
+
+    // Prepare data for insertion, ensuring JSON fields are correctly stringified
+    const preparedData = {
+      ...validated,
+      providerRawResponse: validated.providerRawResponse ? JSON.stringify(validated.providerRawResponse) : null,
+      reasoningItems: validated.reasoningItems ? JSON.stringify(validated.reasoningItems) : null,
+      saturnImages: validated.saturnImages ? JSON.stringify(validated.saturnImages) : null,
+      predictedOutputGrid: validated.predictedOutputGrid ? JSON.stringify(validated.predictedOutputGrid) : null,
+    };
     
     const sql = `
       INSERT INTO explanations (
@@ -100,34 +109,34 @@ export class ExplanationsRepository {
     `;
 
     const params = [
-      validated.puzzleId,
-      validated.modelName,
-      validated.patternDescription,
-      validated.solvingStrategy,
-      validated.confidence,
-      validated.hints || [], // Pass array directly for TEXT[] column
-      validated.alienMeaning,
-      validated.alienMeaningConfidence,
-      validated.providerResponseId,
-      validated.providerRawResponse,
-      validated.reasoningItems,
-      validated.apiProcessingTimeMs,
-      validated.inputTokens,
-      validated.outputTokens,
-      validated.reasoningTokens,
-      validated.totalTokens,
-      validated.estimatedCost,
-      validated.temperature,
-      validated.reasoningEffort,
-      validated.reasoningVerbosity,
-      validated.reasoningSummaryType,
-      validated.saturnImages,
-      validated.saturnLog,
-      validated.saturnEvents,
-      validated.saturnSuccess,
-      validated.predictedOutputGrid,
-      validated.isPredictionCorrect,
-      validated.predictionAccuracyScore
+      preparedData.puzzleId,
+      preparedData.modelName,
+      preparedData.patternDescription,
+      preparedData.solvingStrategy,
+      preparedData.confidence,
+      preparedData.hints || [], // Pass array directly for TEXT[] column
+      preparedData.alienMeaning,
+      preparedData.alienMeaningConfidence,
+      preparedData.providerResponseId,
+      preparedData.providerRawResponse,
+      preparedData.reasoningItems,
+      preparedData.apiProcessingTimeMs,
+      preparedData.inputTokens,
+      preparedData.outputTokens,
+      preparedData.reasoningTokens,
+      preparedData.totalTokens,
+      preparedData.estimatedCost,
+      preparedData.temperature,
+      preparedData.reasoningEffort,
+      preparedData.reasoningVerbosity,
+      preparedData.reasoningSummaryType,
+      preparedData.saturnImages,
+      preparedData.saturnLog,
+      preparedData.saturnEvents,
+      preparedData.saturnSuccess,
+      preparedData.predictedOutputGrid,
+      preparedData.isPredictionCorrect,
+      preparedData.predictionAccuracyScore
     ];
 
     try {
