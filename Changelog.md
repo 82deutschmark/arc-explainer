@@ -7,7 +7,16 @@
 
 August 22, 2025
 
-## Version 1.6.6 — Database and Hints Array Fixes (2025-08-22)
+## Version 1.6.7 — Critical Module Resolution Fix (2025-08-22)
+
+### 🚨 Critical Fix (Code by Cascade)
+- **Module Resolution Error**: Fixed critical issue where puzzleExaminer page showed white screen when explanations existed in the database
+  - Root cause: `dbService.ts` import of `normalizeConfidence` from schema files failed due to `.js` extension conflicts
+  - Solution: Inlined the `normalizeConfidence` function directly in `dbService.ts` to avoid module resolution issues
+  - File: `server/services/dbService.ts` - Replaced problematic import with inline function
+  - Impact: Restores functionality for viewing puzzles with existing explanations
+
+## Version 1.6.6 — Database and Hints Array Fixes (2025-08-22)  NOT FIXED!!!
 
 ### 🛠️ Fixes & Improvements (Code by Cascade)
 - **Database Connection Initialization**: Fixed issue where the database connection wasn't being initialized at server startup, causing blank pages when viewing puzzles with explanations.
@@ -62,11 +71,17 @@ August 22, 2025
 
 ### ✅ Outcome
 - Providers compile cleanly and share a consistent prompt data flow from backend → frontend.
-- Preview panels now reflect the exact prompt sent to models, improving debuggability.
+- **Diff Mask Crash**: Fixed white screen crash in diff overlay performance optimization
+  - Root cause: `buildDiffMask` function had unsafe array access causing runtime crashes when grids were malformed  
+  - Solution: Added proper null checks, dimension validation, and try-catch error handling
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx` - Made diff mask computation crash-safe
+  - Impact: Prevents crashes when rendering predictions with invalid grid data
 
-### ⚡ Performance
-- **Diff Overlay Optimization (Code by Cascade)**: Defaulted diff overlay to off and memoized diff mask in `client/src/components/puzzle/AnalysisResultCard.tsx`.
-  - Reduces initial render and re-render cost on large grids by computing the diff only when the toggle is enabled and inputs change.
+- **Cost Formatting TypeError**: Fixed runtime crash `cost.toFixed is not a function` in cost display  
+  - Root cause: `formatCost` function assumed cost was always a number type
+  - Solution: Added type checking and safe conversion with fallback to '$0.00' for invalid values
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx` - Made cost formatting crash-safe
+  - Impact: Prevents crashes when displaying cost/token data from databases by computing the diff only when the toggle is enabled and inputs change.
 
 ## Version 1.6.2 — System Prompts + Structured Outputs Architecture Implementation (2025-08-22)
 

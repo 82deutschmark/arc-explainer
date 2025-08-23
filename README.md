@@ -21,7 +21,7 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **🪐 Saturn Visual Solver** - Mind-blowing visual reasoning solver that streams intermediate images in real-time! Watch AI think through puzzles step-by-step with GPT-5, Claude 4, and Grok 4 model selection. Features success/failure tracking and specialized UI
 
-• **🔬 Custom Prompts for Researchers** - Complete freedom! Override any template with your own prompts. Includes live prompt preview showing exactly what gets sent to each AI provider
+• **🔬 Custom Prompts for Researchers** - Complete freedom! Override any template with your own system prompt.
 
 • **⚡ Concurrent Provider Processing** - Run multiple AI models simultaneously! DeepSeek + Claude + Gemini can analyze the same puzzle at once with independent progress tracking
 
