@@ -105,12 +105,12 @@ export class ExplanationsRepository {
       validated.patternDescription,
       validated.solvingStrategy,
       validated.confidence,
-      JSON.stringify(validated.hints || []),
+      validated.hints || [], // Pass array directly for TEXT[] column
       validated.alienMeaning,
       validated.alienMeaningConfidence,
       validated.providerResponseId,
-      validated.providerRawResponse ? JSON.stringify(validated.providerRawResponse) : null,
-      validated.reasoningItems ? JSON.stringify(validated.reasoningItems) : null,
+      validated.providerRawResponse,
+      validated.reasoningItems,
       validated.apiProcessingTimeMs,
       validated.inputTokens,
       validated.outputTokens,
@@ -121,11 +121,11 @@ export class ExplanationsRepository {
       validated.reasoningEffort,
       validated.reasoningVerbosity,
       validated.reasoningSummaryType,
-      validated.saturnImages ? JSON.stringify(validated.saturnImages) : null,
+      validated.saturnImages,
       validated.saturnLog,
       validated.saturnEvents,
       validated.saturnSuccess,
-      validated.predictedOutputGrid ? JSON.stringify(validated.predictedOutputGrid) : null,
+      validated.predictedOutputGrid,
       validated.isPredictionCorrect,
       validated.predictionAccuracyScore
     ];
@@ -134,7 +134,7 @@ export class ExplanationsRepository {
       const [row] = await this.db.query<ExplanationRow>(sql, params);
       const parsed = parseExplanationRow({
         ...row,
-        hints: this.parseJsonField(row.hints, []),
+        hints: row.hints || [], // Already an array from the DB driver
         saturn_images: this.parseJsonField(row.saturn_images, null),
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
         provider_raw_response: row.provider_raw_response,
@@ -180,7 +180,7 @@ export class ExplanationsRepository {
       return rows.map(row => {
         const transformedRow = {
           ...row,
-          hints: this.parseJsonField(row.hints, []),
+          hints: row.hints || [], // Already an array from the DB driver
           saturn_images: this.parseJsonField(row.saturn_images, null),
           predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
           helpful_count: parseInt(String(row.helpful_count)) || 0,
@@ -212,7 +212,7 @@ export class ExplanationsRepository {
 
       return parseExplanationRow({
         ...row,
-        hints: this.parseJsonField(row.hints, []),
+        hints: row.hints || [], // Already an array from the DB driver
         saturn_images: this.parseJsonField(row.saturn_images, null),
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null)
       });
@@ -266,7 +266,7 @@ export class ExplanationsRepository {
         // Transform row data with manual type conversion
         const transformedRow = {
           ...row,
-          hints: this.parseJsonField(row.hints, []),
+          hints: row.hints || [], // Already an array from the DB driver
           saturn_images: this.parseJsonField(row.saturn_images, null),
           predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
           // Force convert to integers manually
@@ -434,7 +434,7 @@ export class ExplanationsRepository {
       
       return rows.map(row => ExplanationWithFeedbackSchema.parse({
         ...row,
-        hints: this.parseJsonField(row.hints, []),
+        hints: row.hints || [], // Already an array from the DB driver
         saturn_images: this.parseJsonField(row.saturn_images, null),
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null)
       }));
