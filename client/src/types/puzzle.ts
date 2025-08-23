@@ -118,10 +118,21 @@ export interface ExplanationData {
   saturnLog?: string | null; // Verbose stdout/stderr logs from Saturn solver
   saturnEvents?: string | null; // Compressed NDJSON/JSON event trace
   // Solver mode validation fields
-  predictedOutputGrid?: number[][] | null; // Grid extracted from AI response
-  isPredictionCorrect?: boolean; // Whether prediction matches correct answer
-  predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
+  predictedOutputGrid?: number[][] | null; // Grid extracted from AI response (single test)
+  predictedOutputGrids?: number[][][] | null; // Grids extracted from AI response (multi-test)
+  isPredictionCorrect?: boolean; // Whether prediction matches correct answer (single test)
+  predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness (single test)
   extractionMethod?: string; // Method used to extract the grid
+  // Multi-test validation fields
+  multiValidation?: Array<{
+    testIndex: number;
+    predictedGrid: number[][] | null;
+    isPredictionCorrect: boolean;
+    predictionAccuracyScore: number;
+    extractionMethod?: string;
+  }>; // Per-test validation results
+  allPredictionsCorrect?: boolean; // Whether all predictions in multi-test are correct
+  averagePredictionAccuracyScore?: number; // Average accuracy across all tests
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
@@ -143,4 +154,5 @@ export interface AnalysisResultCardProps {
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
   expectedOutputGrid?: number[][]; // Correct answer grid from the original task (first test by default)
+  allExpectedOutputGrids?: number[][][]; // All expected output grids for multi-test cases
 }

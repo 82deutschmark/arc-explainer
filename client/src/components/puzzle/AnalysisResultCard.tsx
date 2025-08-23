@@ -77,7 +77,7 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
+export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid, allExpectedOutputGrids }: AnalysisResultCardProps) {
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
@@ -96,8 +96,22 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   // Check if this is a Saturn solver result (align with ExplanationData fields)
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
-  // Normalized predicted grid (single answer expected; if array provided, take first)
+  // Handle both single and multi-test cases
+  const isMultiTest = allExpectedOutputGrids && allExpectedOutputGrids.length > 1;
   const predictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0];
+  const predictedGrids: number[][][] | undefined = (result as any)?.predictedOutputGrids;
+  
+  // DEBUG: Log multi-test detection
+  if (isMultiTest) {
+    console.log('[UI DEBUG] Multi-test case detected:', {
+      expectedOutputsCount: allExpectedOutputGrids?.length,
+      hasPredictedGrids: !!predictedGrids,
+      predictedGridsCount: predictedGrids?.length,
+      hasMultiValidation: !!(result as any)?.multiValidation,
+      resultKeys: Object.keys(result || {})
+    });
+  }
+  
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
@@ -182,8 +196,29 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           </Badge>
         )}
 
-        {/* Solver mode validation indicator */}
-        {result.isPredictionCorrect !== undefined && (
+        {/* Multi-test validation indicator */}
+        {isMultiTest && result.allPredictionsCorrect !== undefined && (
+          <Badge 
+            variant="outline" 
+            className={`flex items-center gap-1 ${
+              result.allPredictionsCorrect 
+                ? 'bg-green-50 border-green-200 text-green-700' 
+                : 'bg-red-50 border-red-200 text-red-700'
+            }`}
+          >
+            {result.allPredictionsCorrect ? (
+              <CheckCircle className="h-3 w-3" />
+            ) : (
+              <XCircle className="h-3 w-3" />
+            )}
+            <span className="text-xs font-medium">
+              {result.allPredictionsCorrect ? 'ALL CORRECT' : 'SOME INCORRECT'}
+            </span>
+          </Badge>
+        )}
+        
+        {/* Single-test validation indicator */}
+        {!isMultiTest && result.isPredictionCorrect !== undefined && (
           <Badge 
             variant="outline" 
             className={`flex items-center gap-1 ${
@@ -334,7 +369,21 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                   </Badge>
                 )}
                 {/* Show prediction accuracy score for solver mode (but not for Saturn) */}
-                {!isSaturnResult && result.predictionAccuracyScore !== undefined && (
+                {!isSaturnResult && isMultiTest && result.averagePredictionAccuracyScore !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${
+                      result.averagePredictionAccuracyScore >= 0.8 
+                        ? 'bg-green-50 border-green-200 text-green-700'
+                        : result.averagePredictionAccuracyScore >= 0.5
+                          ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                          : 'bg-red-50 border-red-200 text-red-700'
+                    }`}
+                  >
+                    Avg Trustworthiness: {Math.round(result.averagePredictionAccuracyScore * 100)}%
+                  </Badge>
+                )}
+                {!isSaturnResult && !isMultiTest && result.predictionAccuracyScore !== undefined && (
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${
@@ -528,12 +577,87 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
             </div>
           )}
 
-          {/* Answers display: side-by-side if both available, else single */}
-          {predictedGrid && expectedOutputGrid ? (
+          {/* Multi-test answers display */}
+          {isMultiTest && allExpectedOutputGrids ? (
+            <div className="space-y-4">
+              <h5 className="font-semibold text-gray-800">Multi-Test Case Results ({allExpectedOutputGrids.length} test cases)</h5>
+              {allExpectedOutputGrids.map((expectedGrid, testIndex) => {
+                const testResult = result.multiValidation?.[testIndex];
+                const testPredictedGrid = testResult?.predictedGrid || predictedGrids?.[testIndex] || null;
+                const isTestCorrect = testResult?.isPredictionCorrect;
+                
+                return (
+                  <div key={testIndex} className="border border-gray-200 rounded p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h6 className="text-sm font-medium">Test Case {testIndex + 1}</h6>
+                      {isTestCorrect !== undefined && (
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            isTestCorrect 
+                              ? 'bg-green-50 border-green-200 text-green-700' 
+                              : 'bg-red-50 border-red-200 text-red-700'
+                          }`}
+                        >
+                          {isTestCorrect ? 'CORRECT' : 'INCORRECT'}
+                        </Badge>
+                      )}
+                      {testResult?.extractionMethod && (
+                        <Badge variant="outline" className="text-xs bg-gray-50 border-gray-200 text-gray-700">
+                          {testResult.extractionMethod}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {testPredictedGrid && (
+                        <div className={`border rounded p-2 ${
+                          isTestCorrect === true 
+                            ? 'bg-green-50 border-green-200' 
+                            : isTestCorrect === false 
+                              ? 'bg-red-50 border-red-200'
+                              : 'bg-emerald-50 border-emerald-200'
+                        }`}>
+                          <h6 className={`text-xs font-medium mb-1 ${
+                            isTestCorrect === true 
+                              ? 'text-green-800' 
+                              : isTestCorrect === false 
+                                ? 'text-red-800'
+                                : 'text-emerald-800'
+                          }`}>Model Prediction</h6>
+                          <div className="flex items-center justify-center">
+                            <PuzzleGrid grid={testPredictedGrid} title="Predicted" showEmojis={false} />
+                          </div>
+                        </div>
+                      )}
+                      <div className="bg-green-50 border border-green-200 rounded p-2">
+                        <h6 className="text-xs font-medium text-green-800 mb-1">Correct Answer</h6>
+                        <div className="flex items-center justify-center">
+                          <PuzzleGrid grid={expectedGrid} title="Correct" showEmojis={false} highlight={true} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : !isMultiTest && /* Single-test answers display */
+          predictedGrid && expectedOutputGrid ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+              <div className={`border rounded p-3 ${
+                result.isPredictionCorrect === true 
+                  ? 'bg-green-50 border-green-200' 
+                  : result.isPredictionCorrect === false 
+                    ? 'bg-red-50 border-red-200'
+                    : 'bg-emerald-50 border-emerald-200'
+              }`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                  <h5 className={`font-semibold ${
+                    result.isPredictionCorrect === true 
+                      ? 'text-green-800' 
+                      : result.isPredictionCorrect === false 
+                        ? 'text-red-800'
+                        : 'text-emerald-800'
+                  }`}>Model Predicted Answer</h5>
                   {result.isPredictionCorrect !== undefined && (
                     <Badge 
                       variant="outline" 
@@ -543,7 +667,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                     </Badge>
                   )}
                   {result.extractionMethod && (
-                    <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                    <Badge variant="outline" className={`text-xs ${
+                      result.isPredictionCorrect === true 
+                        ? 'bg-green-50 border-green-200 text-green-700' 
+                        : result.isPredictionCorrect === false 
+                          ? 'bg-red-50 border-red-200 text-red-700'
+                          : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    }`}>
                       Extracted via: {result.extractionMethod}
                     </Badge>
                   )}
@@ -551,7 +681,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowDiff(!showDiff)}
-                    className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
+                    className={`h-auto p-1 ml-auto ${
+                      result.isPredictionCorrect === true 
+                        ? 'text-green-700 hover:text-green-900 hover:bg-green-100' 
+                        : result.isPredictionCorrect === false 
+                          ? 'text-red-700 hover:text-red-900 hover:bg-red-100'
+                          : 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100'
+                    }`}
                     title="Toggle diff overlay"
                   >
                     Diff overlay: {showDiff ? 'On' : 'Off'}
@@ -571,9 +707,21 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
               </div>
             </div>
           ) : predictedGrid ? (
-            <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+            <div className={`border rounded p-3 ${
+              result.isPredictionCorrect === true 
+                ? 'bg-green-50 border-green-200' 
+                : result.isPredictionCorrect === false 
+                  ? 'bg-red-50 border-red-200'
+                  : 'bg-emerald-50 border-emerald-200'
+            }`}>
               <div className="flex items-center gap-2 mb-2">
-                <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                <h5 className={`font-semibold ${
+                  result.isPredictionCorrect === true 
+                    ? 'text-green-800' 
+                    : result.isPredictionCorrect === false 
+                      ? 'text-red-800'
+                      : 'text-emerald-800'
+                }`}>Model Predicted Answer</h5>
                 {result.isPredictionCorrect !== undefined && (
                   <Badge 
                     variant="outline" 
@@ -583,7 +731,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                   </Badge>
                 )}
                 {result.extractionMethod && (
-                  <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                  <Badge variant="outline" className={`text-xs ${
+                    result.isPredictionCorrect === true 
+                      ? 'bg-green-50 border-green-200 text-green-700' 
+                      : result.isPredictionCorrect === false 
+                        ? 'bg-red-50 border-red-200 text-red-700'
+                        : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                  }`}>
                     Extracted via: {result.extractionMethod}
                   </Badge>
                 )}
@@ -591,7 +745,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowDiff(!showDiff)}
-                  className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
+                  className={`h-auto p-1 ml-auto ${
+                    result.isPredictionCorrect === true 
+                      ? 'text-green-700 hover:text-green-900 hover:bg-green-100' 
+                      : result.isPredictionCorrect === false 
+                        ? 'text-red-700 hover:text-red-900 hover:bg-red-100'
+                        : 'text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100'
+                  }`}
                   title="Toggle diff overlay"
                 >
                   Diff overlay: {showDiff ? 'On' : 'Off'}

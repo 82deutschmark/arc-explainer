@@ -126,8 +126,11 @@ export const puzzleController = {
     if (promptId === "solver") {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
+      
+      console.log(`[Controller] Puzzle ${taskId}: testCount=${testCount}, promptId=${promptId}`);
 
       if (testCount > 1) {
+        console.log(`[Controller] Using MULTI-test validation for ${testCount} test cases`);
         const correctAnswers = puzzle.test.map(t => t.output);
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
@@ -139,6 +142,11 @@ export const puzzleController = {
         result.extractionMethod = multi.extractionMethodSummary;
 
         console.log(`[Controller] Solver multi-test: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
+        console.log(`[Controller] Multi-test result structure:`, {
+          predictedGridsCount: multi.predictedGrids?.length,
+          itemResultsCount: multi.itemResults?.length,
+          extractionMethod: multi.extractionMethodSummary
+        });
       } else {
         const correctAnswer = puzzle.test[0].output;
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);

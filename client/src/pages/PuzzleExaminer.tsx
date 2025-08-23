@@ -100,7 +100,7 @@ export default function PuzzleExaminer() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading alien communication pattern...</span>
+            <span>Loading ARC puzzle data...</span>
           </div>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl space-y-4">
+    <div className="container mx-auto p-2 max-w-4xl space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -138,8 +138,8 @@ export default function PuzzleExaminer() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Puzzle {taskId}</h1>
-            <p className="text-gray-600">Examining alien communication pattern</p>
+            <h1 className="text-xl font-bold">Puzzle {taskId}</h1>
+            <p className="text-gray-600 text-sm">Testing LLM ARC-AGI Performance</p>
           </div>
         </div>
         
@@ -191,25 +191,25 @@ export default function PuzzleExaminer() {
       </div>
 
 
-      {/* Complete Puzzle Pattern */}
+      {/* Training & Test Grids */}
       <Card>
-        <CardHeader>
-          <CardTitle>Complete Puzzle Pattern</CardTitle>
-          <p className="text-sm text-gray-600">Training examples show the pattern, test case shows the question and correct answer</p>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Training & Test Grids for Task {taskId}</CardTitle>
+          <p className="text-xs text-gray-600">Training examples demonstrate pattern, test shows challenge</p>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-8">
+        <CardContent className="p-3">
+          <div className="space-y-4">
             {/* Training Examples */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <h3 className="text-base font-semibold mb-2 flex items-center gap-2">
                 Training Examples 
-                <Badge variant="outline">{task.train.length} examples</Badge>
+                <Badge variant="outline" className="text-xs">{task.train.length} examples</Badge>
               </h3>
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {task.train.map((example, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="text-sm font-medium mb-3 text-center">Example {index + 1}</h4>
-                    <div className="flex items-center justify-center gap-8">
+                  <div key={index} className="border border-gray-200 rounded p-2">
+                    <h4 className="text-xs font-medium mb-2 text-center">Example {index + 1}</h4>
+                    <div className="flex items-center justify-center gap-4">
                       <PuzzleGrid 
                         grid={example.input}
                         title="Input"  
@@ -230,41 +230,46 @@ export default function PuzzleExaminer() {
             </div>
 
             {/* Test Case */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4 text-center">Test Case & Correct Answer</h3>
-              {task.test.map((testCase, index) => (
-                <div key={index} className="flex items-center justify-center gap-8">
-                  <PuzzleGrid 
-                    grid={testCase.input}
-                    title="Test Question"
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                  />
-                  <div className="text-3xl text-green-600">→</div>
-                  <PuzzleGrid 
-                    grid={testCase.output}
-                    title="Correct Answer"
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    highlight={true}
-                  />
-                </div>
-              ))}
+            <div className="border-t pt-3">
+              <h3 className="text-base font-semibold mb-2 text-center">{task.test.length === 1 ? 'Test Case & Correct Answer' : `Test Cases & Correct Answers (${task.test.length})`}</h3>
+              <div className="space-y-4">
+                {task.test.map((testCase, index) => (
+                  <div key={index} className="border border-gray-200 rounded p-3">
+                    <h4 className="text-xs font-medium mb-2 text-center">Test Case {index + 1}</h4>
+                    <div className="flex items-center justify-center gap-4">
+                      <PuzzleGrid 
+                        grid={testCase.input}
+                        title="Test Question"
+                        showEmojis={showEmojis}
+                        emojiSet={emojiSet}
+                      />
+                      <div className="text-3xl text-green-600">→</div>
+                      <PuzzleGrid 
+                        grid={testCase.output}
+                        title="Correct Answer"
+                        showEmojis={showEmojis}
+                        emojiSet={emojiSet}
+                        highlight={true}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* AI Model Testing */}
+      {/* Model Performance Analysis */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            AI Model Analysis
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Brain className="h-4 w-4" />
+            Model Performance Analysis
           </CardTitle>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Test how different AI models try to explain why this solution is correct
+            <p className="text-xs text-gray-600">
+              Test different LLMs on this ARC-AGI challenge
             </p>
             {isAnalyzing && currentModel && (
               <div className="flex flex-col">
@@ -333,41 +338,38 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* Saturn Visual Solver */}
-          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
-                <Rocket className="h-4 w-4" />
-                Alternative Visual Solver
+          <div className="mb-3 p-2 bg-indigo-50 border border-indigo-200 rounded">
+            <div className="flex items-center justify-between mb-1">
+              <h5 className="text-xs font-semibold text-indigo-800 flex items-center gap-2">
+                <Rocket className="h-3 w-3" />
+                Saturn Visual Solver
               </h5>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs">
               <Link href={`/puzzle/saturn/${taskId}`}>
-                <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
-                  <Rocket className="h-4 w-4" />
-                  Open Saturn Visual Solver
+                <Button size="sm" className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-xs">
+                  <Rocket className="h-3 w-3" />
+                  Open Saturn
                 </Button>
               </Link>
               <div className="flex-1">
-                <p className="text-sm text-indigo-700 mb-1">
-                  Uses iterative visual analysis to solve puzzles step-by-step
-                </p>
-                <p className="text-xs text-indigo-600">
-                  💡 Powered by the open-source{' '}
-                  <a
-                    href="https://github.com/zoecarver/saturn-arc"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-medium hover:text-indigo-800"
-                  >
-                    Saturn ARC project by Zoe Carver
-                  </a>
-                </p>
+                <span className="text-indigo-700">
+                  Iterative visual analysis • 
+                </span>
+                <a
+                  href="https://github.com/zoecarver/saturn-arc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-indigo-600 hover:text-indigo-800"
+                >
+                  Saturn ARC project
+                </a>
               </div>
             </div>
           </div>
           
           {/* Temperature Control */}
-          <div className="mb-3 p-2 bg-gray-50 border border-gray-200 rounded">
+          <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
             <div className="flex items-center gap-4">
               <Label htmlFor="temperature" className="text-sm font-medium">
                 Temperature: {temperature}
@@ -392,13 +394,13 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* GPT-5 Reasoning Parameters */}
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-              <Brain className="h-4 w-4" />
+          <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded">
+            <h5 className="text-xs font-semibold text-blue-800 mb-2 flex items-center gap-2">
+              <Brain className="h-3 w-3" />
               GPT-5 Reasoning Parameters
             </h5>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {/* Effort Control */}
                 <div>
                   <Label htmlFor="reasoning-effort" className="text-sm font-medium text-blue-700">
@@ -479,14 +481,14 @@ export default function PuzzleExaminer() {
 
           {/* Analysis Results */}
           {explanations.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-lg font-semibold mb-3">Analysis Results</h4>
+            <div className="mt-4">
+              <h4 className="text-base font-semibold mb-2">Analysis Results</h4>
               
               {/* Database Explanations Section */}
               {explanations.filter(exp => exp.id !== undefined).length > 0 && (
-                <div className="mb-6">
-                  <h5 className="text-md font-medium text-blue-800 mb-2">Database Explanations</h5>
-                  <div className="space-y-4">
+                <div className="mb-4">
+                  <h5 className="text-sm font-medium text-blue-800 mb-1">Database Explanations</h5>
+                  <div className="space-y-2">
                     {explanations
                       .filter(explanation => explanation.id !== undefined)
                       .map((explanation) => (
@@ -495,6 +497,7 @@ export default function PuzzleExaminer() {
                           modelKey={explanation.modelName}
                           result={explanation}
                           expectedOutputGrid={task.test && task.test.length > 0 ? task.test[0].output : undefined}
+                          allExpectedOutputGrids={task.test?.map(t => t.output) || []}
                         />
                       ))}
                   </div>
@@ -504,8 +507,8 @@ export default function PuzzleExaminer() {
               {/* AI Generated Explanations Section */}
               {explanations.filter(exp => exp.id === undefined).length > 0 && (
                 <div>
-                  <h5 className="text-md font-medium text-green-800 mb-2">AI Generated Explanations</h5>
-                  <div className="space-y-4">
+                  <h5 className="text-sm font-medium text-green-800 mb-1">AI Generated Explanations</h5>
+                  <div className="space-y-2">
                     {explanations
                       .filter(explanation => explanation.id === undefined)
                       .map((explanation, index) => (
@@ -514,6 +517,7 @@ export default function PuzzleExaminer() {
                           modelKey={explanation.modelName}
                           result={explanation}
                           expectedOutputGrid={task.test && task.test.length > 0 ? task.test[0].output : undefined}
+                          allExpectedOutputGrids={task.test?.map(t => t.output) || []}
                         />
                       ))}
                   </div>
