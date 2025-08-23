@@ -1,5 +1,22 @@
-import React from 'react';
-import { MinimalOverview } from '@/components/overview/MinimalOverview';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/utils';
+import { MODELS } from '@/constants/models';
+import { Link } from 'wouter';
+
+// Components
+import { StatisticsCards } from '@/components/overview/StatisticsCards';
+import { ActiveFilters } from '@/components/overview/ActiveFilters';
+import { WorkingFilterSidebar } from '@/components/overview/WorkingFilterSidebar';
+import { EnhancedPuzzleGrid } from '@/components/overview/EnhancedPuzzleGrid';
+import { FeedbackModal } from '@/components/feedback/FeedbackModal';
+
+// UI Components
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+// Icons
+import { Database, Menu, X, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface PuzzleOverviewData {
   id: string;
@@ -29,6 +46,13 @@ interface PuzzleOverviewResponse {
   puzzles: PuzzleOverviewData[];
   total: number;
   hasMore: boolean;
+}
+
+interface FeedbackStats {
+  feedbackByModel: Record<string, {
+    helpful: number;
+    notHelpful: number;
+  }>;
 }
 
 interface AccuracyStats {

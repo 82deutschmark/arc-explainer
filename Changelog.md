@@ -7,6 +7,44 @@
 
 August 22, 2025
 
+## Version 1.6.10 — Cost Badge Display Fix (2025-08-23)
+
+### 🐛 Bug Fixes (Code by Cascade)
+- **Fixed Cost Badge Formatting**: Corrected inconsistent cost display in analysis result cards
+  - **Root Cause**: Duplicate `formatCost` functions with different logic between AnalysisResultCard.tsx and costCalculator.ts
+  - **Solution**: Updated AnalysisResultCard to use consistent formatting logic matching the centralized utility
+  - **Impact**: Cost badges now display accurate formatting for small amounts (e.g., `$0.003¢` vs incorrect `$0.00¢`)
+  - **Files Modified**: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
+## Version 1.6.9 — Batch Testing System for GPT-5-Nano (2025-08-22)
+
+### 🧪 Batch Processing System (Code by Cascade)
+- **Complete Batch Testing Infrastructure**: Created comprehensive system for testing all 118 evaluation2 puzzles with GPT-5-nano
+  - **Main Script**: `scripts/batch_solver_gpt5nano.py` - Full-featured batch processor with progress tracking and resumability
+  - **Test Validator**: `scripts/test_batch_system.py` - Validation script for testing system with small subset
+  - **Documentation**: `docs/Batch_Testing_System_GPT5Nano.md` - Complete usage and architecture guide
+
+- **System Integration**: Leverages existing server infrastructure rather than creating duplicate code
+  - Uses existing `puzzleController.analyze` endpoint via HTTP POST to `localhost:5000`
+  - Integrates with `buildAnalysisPrompt()` using "solver" template for consistent 1-shot prompting
+  - Automatic DB storage via existing `explanationService` and `dbService`
+  - Proper rate limiting (2-second delays) for API stability with GPT-5-nano
+
+- **Configuration for GPT-5-Nano**: Optimized settings for fast, consistent evaluation
+  - **Minimal reasoning**: `reasoningEffort: "minimal"` for fastest response times
+  - **Low verbosity**: `reasoningVerbosity: "minimal"` to reduce token costs
+  - **Answer omission**: `omitAnswer: true` to prevent data leakage in prompts
+  - **ARC system prompts**: `systemPromptMode: "ARC"` for proper prompt architecture
+  - **Low temperature**: `temperature: 0.1` for consistent outputs
+
+- **Progress Management**: Robust tracking and error handling for long-running batches
+  - **JSON progress file**: Tracks completed/failed/remaining puzzles with timestamps
+  - **Resumability**: Can restart from any puzzle or continue after interruption
+  - **Status monitoring**: Real-time success rates, timing data, and accuracy scores
+  - **Error logging**: Detailed failure reasons and retry capability
+
+- **Expected Performance**: ~4 minutes total runtime for all 118 puzzles (GPT-5-nano is near-instant)
+
 ## Version 1.6.8 — PuzzleExaminer UI Redesign & Color Coding Fix (2025-08-22)
 
 ### 🎨 UI/UX Improvements (Code by Cascade)
