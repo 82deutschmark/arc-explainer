@@ -5,6 +5,21 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
+August 24, 2025
+
+## Version 1.6.9 — Analysis Results Card Multi-Test Fix (2025-08-24)
+
+### 🚀 Fixes & Improvements (Code by Cascade)
+- **Analysis Results Multi-Test Fix**: Refactored the `AnalysisResultCard` and related components to reliably handle puzzles with multiple test cases.
+  - **Root Cause**: The `AnalysisResultCard` received an ambiguous `expectedOutputGrid` prop, which made it difficult to determine whether it was dealing with a single test case or multiple.
+  - **Solution**:
+    - Updated `client/src/types/puzzle.ts` to define a clear `TestCase` interface and changed `AnalysisResultCardProps` to accept a `testCases: TestCase[]` prop.
+    - Refactored `client/src/pages/PuzzleExaminer.tsx` to pass the complete `task.test` array to the `AnalysisResultCard`.
+    - Simplified `client/src/components/puzzle/AnalysisResultCard.tsx` to use the new `testCases` prop, removing the ambiguous logic.
+  - **Impact**: The UI now correctly and reliably displays analysis results for all puzzles, including those with multiple test cases.
+
+---
+
 August 23, 2025
 
 ## Version 1.6.8 — Researcher Debugging Features & Timeout Fixes (2025-08-23)

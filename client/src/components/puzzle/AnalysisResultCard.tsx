@@ -70,14 +70,9 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
-  // Handle multiple expected outputs (for puzzles with multiple test cases)
-  // Distinguish between single grid (number[][]) and multiple grids (number[][][])
-  const expectedOutputGrids: number[][][] = expectedOutputGrid 
-    ? (Array.isArray(expectedOutputGrid[0]) && Array.isArray(expectedOutputGrid[0][0])) 
-      ? expectedOutputGrid as number[][][] // It's array of grids
-      : [expectedOutputGrid as number[][]]  // It's single grid, wrap in array
-    : [];
+export function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
+  // Get the expected output grids directly from the test cases prop
+  const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
@@ -139,7 +134,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const diffMask = useMemo(() => {
     if (!showDiff) return undefined;
     try {
-      return buildDiffMask(predictedGrid, expectedOutputGrids[0]);
+      return buildDiffMask(predictedGrid, expectedOutputGrids.length > 0 ? expectedOutputGrids[0] : undefined);
     } catch (error) {
       console.warn('Error in diff mask useMemo:', error);
       return undefined;
