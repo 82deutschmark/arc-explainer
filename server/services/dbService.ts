@@ -15,11 +15,15 @@ const normalizeConfidence = (confidence: any): number => {
   if (typeof confidence === 'string') {
     const parsed = parseFloat(confidence);
     if (!isNaN(parsed)) {
-      return Math.round(Math.max(0, Math.min(100, parsed)));
+      // If decimal (0-1), convert to percentage; if already 0-100, use as-is
+      const normalized = parsed <= 1 ? parsed * 100 : parsed;
+      return Math.round(Math.max(0, Math.min(100, normalized)));
     }
   }
   if (typeof confidence === 'number') {
-    return Math.round(Math.max(0, Math.min(100, confidence)));
+    // If decimal (0-1), convert to percentage; if already 0-100, use as-is
+    const normalized = confidence <= 1 ? confidence * 100 : confidence;
+    return Math.round(Math.max(0, Math.min(100, normalized)));
   }
   return 50; // Default fallback
 };
