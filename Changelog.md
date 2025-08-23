@@ -153,14 +153,6 @@ server/services/
 └── promptBuilder.ts      # Orchestrates system+user+schema
 ```
 
-### ✅ Migration Status
-- [x] Phase 1: Schema definitions with OpenAI structured outputs compatibility
-- [x] Phase 2: System prompts for role/behavior definitions  
-- [x] Phase 3: User prompt simplification to raw puzzle data
-- [x] Phase 4: PromptBuilder refactor to orchestrate new architecture
-- [x] Phase 5: OpenAI service integration with structured outputs
-- [ ] Phase 6: Update remaining AI providers (Anthropic, Gemini, Grok, DeepSeek)
-
 ### 📋 Implementation Notes
 - **OpenAI Service Updated**: Uses structured outputs with `response_format` parameter
 - **Legacy Compatibility**: Old parsing methods remain as fallback strategies
