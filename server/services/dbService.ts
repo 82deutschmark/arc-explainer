@@ -10,7 +10,19 @@ import { Pool } from 'pg';
 // Import proper logger utility
 import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
-import { normalizeConfidence } from './schemas/explanation';
+// Inline normalizeConfidence function to avoid module resolution issues
+const normalizeConfidence = (confidence: any): number => {
+  if (typeof confidence === 'string') {
+    const parsed = parseFloat(confidence);
+    if (!isNaN(parsed)) {
+      return Math.round(Math.max(0, Math.min(100, parsed)));
+    }
+  }
+  if (typeof confidence === 'number') {
+    return Math.round(Math.max(0, Math.min(100, confidence)));
+  }
+  return 50; // Default fallback
+};
 
 /**
  * Interface for puzzle explanations
