@@ -8,7 +8,7 @@
 ### 🐛 Bug Fixes (Code by Cascade)
 - **API:** Fixed 500 Internal Server Errors on explanation endpoints by refactoring `explanationService.ts` to use the new repository-based data access layer. Replaced legacy database calls with `explanationsRepository.getWithFeedbackCounts` and `explanationsRepository.save`.
 - **UI:** Resolved a runtime crash on the Puzzle Overview page by removing an invalid `SelectItem` with an empty value from the AI Model Filter in `WorkingFilterSidebar.tsx`. The component now correctly uses the `placeholder` prop for the 'All Models' option.
-- **DB:** Fixed a `ZodError` in the explanations repository by explicitly parsing the `estimated_cost` field from a string to a number before validation. This resolves type mismatch errors caused by the database driver returning numeric types as strings.
+- **DB:** Resolved a series of data serialization errors (`malformed array literal`, `invalid input syntax for type json`, and `ZodError`) by implementing robust data preparation in the explanations repository. This ensures all `jsonb`, array, and numeric fields are correctly formatted before database insertion and validation.
 - **Corrected Data Access Logic**: Fixed data access logic in `puzzleService` and `feedbackService` to correctly handle data shapes returned by the new repository layer (e.g., `snake_case` vs. `camelCase` properties, `Array` vs. `Map` return types).
 - **Restored Frontend Functionality**: The refactoring and bug fixes have restored full functionality to the puzzle overview and feedback systems, which were previously broken due to the inconsistent data access patterns.
 
