@@ -13,3 +13,4 @@ vite.config.ts.*
 nul
 /solver/img_tmp
 /batch
+.claude/settings.local.json
