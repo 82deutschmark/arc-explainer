@@ -45,26 +45,18 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-// Format cost for display with safe type checking
+// Format cost for display with safe type checking - always show in dollars with consistent decimal places
 const formatCost = (cost: any): string => {
   // Convert to number and validate
   const numCost = typeof cost === 'number' ? cost : parseFloat(cost);
   
   // Return fallback if not a valid number
   if (isNaN(numCost) || numCost < 0) {
-    return '$0.00';
+    return '$0.000';
   }
   
-  if (numCost < 0.001) {
-    // Show as cents for very small amounts (remove dollar sign, use only ¢)
-    return `${(numCost * 100).toFixed(3)}¢`;
-  } else if (numCost < 0.01) {
-    return `$${numCost.toFixed(4)}`;
-  } else if (numCost < 1.0) {
-    return `$${numCost.toFixed(3)}`;
-  } else {
-    return `$${numCost.toFixed(2)}`;
-  }
+  // Always show in dollars with 3 decimal places for consistency
+  return `$${numCost.toFixed(3)}`;
 };
 
 // Format token count for display
