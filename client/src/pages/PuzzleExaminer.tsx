@@ -100,7 +100,7 @@ export default function PuzzleExaminer() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading alien communication pattern...</span>
+            <span>Loading tasks...</span>
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function PuzzleExaminer() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Puzzle {taskId}</h1>
-            <p className="text-gray-600">Examining alien communication pattern</p>
+            <p className="text-gray-600">ARC Task Examiner</p>
           </div>
         </div>
         
