@@ -13,6 +13,31 @@ An interactive web application for examining ARC-AGI (Abstract Reasoning Corpus 
 
 This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite—many people find these puzzles extremely challenging. The app treats ARC-AGI puzzles as alien communication patterns that humans can study and decode. It loads real puzzles from the v1 and v2 training set of the ARC-AGI prize, focuses on smaller grids (≤10x10 for better comprehension), and provides AI-powered explanations of WHY solutions work.
 
+## 📐 ARC Task Structure (CRITICAL UNDERSTANDING)
+
+**Every developer must understand this fundamental ARC task structure to avoid confusion:**
+
+### Training Examples (`train` array)
+- **Purpose**: Demonstrate the pattern/rule to be learned
+- **Count**: 2-9 examples typically (varies by puzzle)
+- **Structure**: Each has `input` grid and corresponding `output` grid
+- **AI Role**: Study these to understand the transformation pattern
+
+### Test Cases (`test` array) 
+- **Purpose**: Apply learned pattern to predict outputs
+- **Count**: Usually 1, but **sometimes 2** test cases (rare but critical)
+- **Structure**: Each has `input` grid and `output` grid (ground truth for validation)
+- **AI Role**: Generate `predictedOutput` for each test case
+
+### Multi-Test Scenarios
+**When there are 2 test cases**, the LLM must generate **2 separate predictions**:
+- `Test Case 1`: Input Grid A → Predicted Output A
+- `Test Case 2`: Input Grid B → Predicted Output B
+
+**NOT** 2 predictions for the same test case. Each test case is independent.
+
+**Example Multi-Test Puzzle**: `9110e3c5` has 2 test cases requiring 2 distinct predictions.
+
 ## 🚀 Major Features That Will Excite Users
 
 • **🤖 System Prompts + Structured Outputs (NEW!)** - Revolutionary modular architecture eliminating JSON parsing issues with OpenAI structured outputs, answer-first enforcement, and captured reasoning logs in structured fields
