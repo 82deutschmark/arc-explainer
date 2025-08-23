@@ -75,10 +75,19 @@ export const explanationController = {
    * @param res - Express response object
    */
   async create(req: Request, res: Response) {
-    const { puzzleId } = req.params;
-    const { explanations } = req.body;
-    
-    const result = await explanationService.saveExplanation(puzzleId, explanations);
-    res.json(formatResponse.success(result, result.message));
+    try {
+      const { puzzleId } = req.params;
+      const { explanations } = req.body;
+      
+      const result = await explanationService.saveExplanation(puzzleId, explanations);
+      res.json(formatResponse.success(result, result.message));
+    } catch (error) {
+      console.error('Error in explanationController.create:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR', 
+        'Failed to save explanation',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
   }
 };

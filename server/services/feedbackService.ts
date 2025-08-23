@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-import { dbService } from './dbService';
+import { getDatabaseService } from '../db/index.js';
 import { AppError } from '../middleware/errorHandler';
 import { explanationService } from './explanationService';
 
@@ -28,7 +28,7 @@ export const feedbackService = {
     
     try {
       // First, record the feedback
-      const feedbackId = await dbService.addFeedback(
+      const feedbackId = await getDatabaseService().addFeedback(
         numericExplanationId,
         voteType as 'helpful' | 'not_helpful',
         comment
@@ -38,7 +38,7 @@ export const feedbackService = {
       if (voteType === 'not_helpful') {
         try {
           // Get the original explanation to extract puzzle details
-          const originalExplanation = await dbService.getExplanationById(numericExplanationId);
+          const originalExplanation = await getDatabaseService().getExplanationById(numericExplanationId);
           if (originalExplanation) {
             // Trigger retry analysis with user feedback as guidance
             await explanationService.retryAnalysis(

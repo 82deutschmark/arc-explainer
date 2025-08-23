@@ -28,13 +28,13 @@ import { validation } from "./middleware/validation";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";
-import { dbService } from "./services/dbService";
+import { getDatabaseService } from "./db/index.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await aiServiceFactory.initialize();
-  const dbInitialized = await dbService.init();
-  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
+  const dbService = getDatabaseService(); // Database already initialized
+  console.log('Database service ready with new architecture');
 
   // Routes with consistent naming and error handling
   

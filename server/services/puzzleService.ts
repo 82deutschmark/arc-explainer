@@ -48,8 +48,8 @@ export const puzzleService = {
       console.log('Sample puzzle metadata:', puzzleList[0]);
     }
     
-    // Import dbService here to avoid circular dependency
-    const { dbService } = await import('./dbService');
+    // Import database service here to avoid circular dependency
+    const { getDatabaseService } = await import('../db/index.js');
     
     // Create a base puzzle list with metadata
     const enhancedPuzzles = puzzleList.map(puzzle => ({
@@ -68,6 +68,7 @@ export const puzzleService = {
     try {
       // Use bulk query to get explanation status for all puzzles at once - optimizes performance
       const puzzleIds = enhancedPuzzles.map(p => p.id);
+      const dbService = getDatabaseService();
       const explanationStatusMap = await dbService.getBulkExplanationStatus(puzzleIds);
       
       // Update each puzzle with its explanation status
@@ -124,7 +125,7 @@ export const puzzleService = {
    * @returns Boolean indicating if the puzzle has an explanation
    */
   async hasPuzzleExplanation(puzzleId: string) {
-    const { dbService } = await import('./dbService');
-    return dbService.hasExplanation(puzzleId);
+    const { getDatabaseService } = await import('../db/index.js');
+    return getDatabaseService().hasExplanation(puzzleId);
   }
 };

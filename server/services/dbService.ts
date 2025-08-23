@@ -147,172 +147,8 @@ const createTablesIfNotExist = async () => {
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
       
-      -- Add alien_meaning_confidence column if it doesn't exist
-      DO $$ 
-      BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'alien_meaning_confidence') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN alien_meaning_confidence INTEGER;
-        END IF;
-        
-        -- Add provider_response_id column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'provider_response_id') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN provider_response_id TEXT;
-        END IF;
-
-        -- Add provider_raw_response column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'provider_raw_response') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN provider_raw_response JSONB;
-        END IF;
-
-        -- Add reasoning_items column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'reasoning_items') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN reasoning_items JSONB;
-        END IF;
-
-        -- Add api_processing_time_ms column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'api_processing_time_ms') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN api_processing_time_ms INTEGER;
-        END IF;
-
-        -- Add saturn_images column if it doesn't exist (stores JSON string of image paths)
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                     WHERE table_name = 'explanations' 
-                     AND column_name = 'saturn_images') 
-        THEN
-          ALTER TABLE explanations ADD COLUMN saturn_images TEXT;
-        END IF;
-
-        -- Add saturn_log column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'saturn_log')
-        THEN
-          ALTER TABLE explanations ADD COLUMN saturn_log TEXT;
-        END IF;
-
-        -- Add saturn_events column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'saturn_events')
-        THEN
-          ALTER TABLE explanations ADD COLUMN saturn_events TEXT;
-        END IF;
-
-        -- Add predicted_output_grid column if it doesn't exist (for solver mode validation)
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'predicted_output_grid')
-        THEN
-          ALTER TABLE explanations ADD COLUMN predicted_output_grid TEXT;
-        END IF;
-
-        -- Add is_prediction_correct column if it doesn't exist (for solver mode validation)
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'is_prediction_correct')
-        THEN
-          ALTER TABLE explanations ADD COLUMN is_prediction_correct BOOLEAN;
-        END IF;
-
-        -- Add prediction_accuracy_score column if it doesn't exist (for solver mode validation)
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'prediction_accuracy_score')
-        THEN
-          ALTER TABLE explanations ADD COLUMN prediction_accuracy_score FLOAT;
-        END IF;
-
-        -- Add saturn_success column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'saturn_success')
-        THEN
-          ALTER TABLE explanations ADD COLUMN saturn_success BOOLEAN;
-        END IF;
-
-        -- Add temperature column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'temperature')
-        THEN
-          ALTER TABLE explanations ADD COLUMN temperature FLOAT;
-        END IF;
-
-        -- Add reasoning_effort column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'reasoning_effort')
-        THEN
-          ALTER TABLE explanations ADD COLUMN reasoning_effort TEXT;
-        END IF;
-
-        -- Add reasoning_verbosity column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'reasoning_verbosity')
-        THEN
-          ALTER TABLE explanations ADD COLUMN reasoning_verbosity TEXT;
-        END IF;
-
-        -- Add reasoning_summary_type column if it doesn't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'reasoning_summary_type')
-        THEN
-          ALTER TABLE explanations ADD COLUMN reasoning_summary_type TEXT;
-        END IF;
-
-        -- Add token usage columns if they don't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'input_tokens')
-        THEN
-          ALTER TABLE explanations ADD COLUMN input_tokens INTEGER;
-        END IF;
-
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'output_tokens')
-        THEN
-          ALTER TABLE explanations ADD COLUMN output_tokens INTEGER;
-        END IF;
-
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'reasoning_tokens')
-        THEN
-          ALTER TABLE explanations ADD COLUMN reasoning_tokens INTEGER;
-        END IF;
-
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'total_tokens')
-        THEN
-          ALTER TABLE explanations ADD COLUMN total_tokens INTEGER;
-        END IF;
-
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                     WHERE table_name = 'explanations'
-                     AND column_name = 'estimated_cost')
-        THEN
-          ALTER TABLE explanations ADD COLUMN estimated_cost DECIMAL(10, 6);
-        END IF;
-      END $$;
+      -- NOTE: Additional columns added via migration 001_explanations_columns.sql
+      -- Schema modifications have been moved to proper migration files for production safety
     `);
     logger.info('Explanations table created or already exists', 'database');
     
@@ -324,6 +160,20 @@ const createTablesIfNotExist = async () => {
         vote_type VARCHAR CHECK (vote_type IN ('helpful', 'not_helpful')),
         comment TEXT,
         created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Saturn log table - stores solver session metadata
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS saturn_log (
+        id SERIAL PRIMARY KEY,
+        request_id VARCHAR(100) NOT NULL UNIQUE,
+        explanation_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        status VARCHAR(50) DEFAULT 'running', -- 'running', 'completed', 'failed'
+        total_events INTEGER DEFAULT 0,
+        session_data JSONB -- metadata about the solver session
       )
     `);
 
@@ -1236,6 +1086,159 @@ const getBatchResults = async (batchRunId: number) => {
   }
 };
 
+/**
+ * Create a new Saturn solver session log
+ * @param requestId Unique identifier for the solver session
+ * @param explanationId Optional link to explanation being processed
+ * @returns Saturn log ID
+ */
+const createSaturnLog = async (requestId: string, explanationId?: number): Promise<number> => {
+  if (!pool) {
+    throw new Error('No database connection available');
+  }
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `INSERT INTO saturn_log (request_id, explanation_id, status, session_data)
+       VALUES ($1, $2, 'running', $3)
+       RETURNING id`,
+      [requestId, explanationId || null, JSON.stringify({ started_at: new Date().toISOString() })]
+    );
+
+    const logId = result.rows[0].id;
+    logger.info(`Created Saturn log session: ${requestId} (ID: ${logId})`, 'database');
+    return logId;
+  } catch (error) {
+    logger.error(`Failed to create Saturn log: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Add an event to a Saturn solver session
+ * @param saturnLogId The saturn_log ID
+ * @param eventType Type of event (e.g., 'api_call_start', 'image_generated', 'solve_complete')
+ * @param data Event data
+ * @param provider Optional provider name
+ * @param model Optional model name
+ * @param phase Optional phase identifier
+ * @param requestId Optional request identifier
+ */
+const addSaturnEvent = async (
+  saturnLogId: number,
+  eventType: string,
+  data: any,
+  provider?: string,
+  model?: string,
+  phase?: string,
+  requestId?: string
+): Promise<void> => {
+  if (!pool) {
+    throw new Error('No database connection available');
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO saturn_events (saturn_log_id, event_type, timestamp, provider, model, phase, request_id, data)
+       VALUES ($1, $2, NOW(), $3, $4, $5, $6, $7)`,
+      [saturnLogId, eventType, provider, model, phase, requestId, JSON.stringify(data)]
+    );
+
+    // Update event counter in saturn_log
+    await client.query(
+      `UPDATE saturn_log SET total_events = total_events + 1, updated_at = NOW() WHERE id = $1`,
+      [saturnLogId]
+    );
+
+    logger.debug(`Added Saturn event: ${eventType} to session ${saturnLogId}`, 'database');
+  } catch (error) {
+    logger.error(`Failed to add Saturn event: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Complete a Saturn solver session
+ * @param saturnLogId The saturn_log ID
+ * @param status Final status ('completed' or 'failed')
+ * @param finalData Optional final session data
+ */
+const completeSaturnLog = async (saturnLogId: number, status: 'completed' | 'failed', finalData?: any): Promise<void> => {
+  if (!pool) {
+    throw new Error('No database connection available');
+  }
+
+  const client = await pool.connect();
+  try {
+    const sessionData = finalData ? JSON.stringify({
+      ...finalData,
+      completed_at: new Date().toISOString()
+    }) : null;
+
+    await client.query(
+      `UPDATE saturn_log 
+       SET status = $1, updated_at = NOW(), session_data = COALESCE($2, session_data)
+       WHERE id = $3`,
+      [status, sessionData, saturnLogId]
+    );
+
+    logger.info(`Completed Saturn log session ${saturnLogId} with status: ${status}`, 'database');
+  } catch (error) {
+    logger.error(`Failed to complete Saturn log: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get Saturn solver session with all events
+ * @param requestId The request ID to look up
+ * @returns Saturn log with events
+ */
+const getSaturnSession = async (requestId: string): Promise<any> => {
+  if (!pool) {
+    throw new Error('No database connection available');
+  }
+
+  const client = await pool.connect();
+  try {
+    // Get log details
+    const logResult = await client.query(
+      `SELECT * FROM saturn_log WHERE request_id = $1`,
+      [requestId]
+    );
+
+    if (logResult.rows.length === 0) {
+      return null;
+    }
+
+    const log = logResult.rows[0];
+
+    // Get all events for this session
+    const eventsResult = await client.query(
+      `SELECT * FROM saturn_events WHERE saturn_log_id = $1 ORDER BY timestamp ASC`,
+      [log.id]
+    );
+
+    return {
+      ...log,
+      events: eventsResult.rows
+    };
+  } catch (error) {
+    logger.error(`Failed to get Saturn session: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
@@ -1260,6 +1263,11 @@ export const dbService = {
   getAllBatchRuns,
   addBatchResult,
   getBatchResults,
+  // Saturn solver session management
+  createSaturnLog,
+  addSaturnEvent,
+  completeSaturnLog,
+  getSaturnSession,
   // Helpers
   isConnected: () => !!pool,
 };
