@@ -14,8 +14,8 @@
       "Bash(cmd /c:*)",
       "Bash(echo \"Exit code: $?\")",
       "Bash(grep:*)",
-      "Bash(C:WindowsSystem32taskkill.exe /PID 26904 /F)",
-      "Bash(/c/Windows/System32/taskkill.exe /PID 26904 /F)",
+      "Bash(C:WindowsSystem32taskkill.exe /PID /F)",
+      "Bash(/c/Windows/System32/taskkill.exe /PID /F)",
       "Bash(powershell:*)",
       "Bash(del test-gpt5-responses.js)",
       "Bash(rm:*)",
@@ -25,8 +25,7 @@
       "Bash(git checkout:*)",
       "Bash(find:*)",
       "WebSearch",
-      "Bash(cat:*)",
-      "Bash(timeout:*)"
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": [],
