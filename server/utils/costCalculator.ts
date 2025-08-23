@@ -73,8 +73,8 @@ export function calculateCost(modelPricing: ModelPricing, tokenUsage: TokenUsage
  */
 export function formatCost(cost: number): string {
   if (cost < 0.001) {
-    // Show as fractions of cents for very small amounts
-    return `$${(cost * 1000).toFixed(3)}¢`;
+    // Show as cents for very small amounts (remove dollar sign, use only ¢)
+    return `${(cost * 100).toFixed(3)}¢`;
   } else if (cost < 0.01) {
     // 4 decimal places for small amounts
     return `$${cost.toFixed(4)}`;
