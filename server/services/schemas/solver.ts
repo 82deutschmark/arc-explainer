@@ -183,7 +183,20 @@ export function extractPredictions(response: any, testCaseCount: number): {
     }
     // Fallback to the main array if individual keys are missing
     if (collectedGrids.length === 0 && Array.isArray(response.multiplePredictedOutputs)) {
-        return { predictedOutputs: response.multiplePredictedOutputs };
+        // Check if it's structured format with testCase/predictedOutput objects
+        const extractedGrids = [];
+        for (const item of response.multiplePredictedOutputs) {
+          if (item && typeof item === 'object' && item.predictedOutput) {
+            // Extract the predictedOutput grid from structured format
+            if (validateGrid(item.predictedOutput)) {
+              extractedGrids.push(item.predictedOutput);
+            }
+          } else if (validateGrid(item)) {
+            // Direct grid format
+            extractedGrids.push(item);
+          }
+        }
+        return { predictedOutputs: extractedGrids };
     }
     return { predictedOutputs: collectedGrids };
   }
