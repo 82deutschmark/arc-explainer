@@ -479,11 +479,11 @@ export default function PuzzleExaminer() {
           {/* Analysis Results */}
           {explanations.length > 0 && (
             <div className="mt-4">
-              <h4 className="text-lg font-semibold mb-2">Analysis Results</h4>
+              <h4 className="text-lg font-semibold mb-2">Analysis Results ({explanations.length})</h4>
               <div className="space-y-3">
                 {explanations.map((explanation) => (
                   <AnalysisResultCard
-                    key={explanation.id} // All explanations are from DB and have an ID
+                    key={`${explanation.id}-${explanation.modelName}`} // More specific key for better React reconciliation
                     modelKey={explanation.modelName}
                     result={explanation}
                     testCases={task.test} // Pass the full test array

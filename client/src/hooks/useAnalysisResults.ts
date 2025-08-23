@@ -48,8 +48,8 @@ export function useAnalysisResults({
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
   
   // GPT-5 reasoning parameters
-  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('medium');
-  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('medium');
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('minimal');
+  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('low');
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('auto');
 
   // Mutation to analyze the puzzle and save the explanation in one step

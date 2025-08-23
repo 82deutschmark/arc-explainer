@@ -70,7 +70,7 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
   // Get the expected output grids directly from the test cases prop
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
@@ -91,13 +91,24 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
   // Check if this is a Saturn solver result (align with ExplanationData fields)
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
-  // Handle both single and multiple predicted outputs
-  const predictedGrids: number[][][] | undefined = (result as any)?.multiplePredictedOutputs || (result as any)?.predictedOutputGrids;
-  const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
-  const multiValidation = (result as any)?.multiTestResults || (result as any)?.multiValidation;
+  // Handle both single and multiple predicted outputs - memoize expensive computations
+  const gridData = useMemo(() => {
+    const predictedGrids: number[][][] | undefined = (result as any)?.multiplePredictedOutputs || (result as any)?.predictedOutputGrids;
+    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
+    const multiValidation = (result as any)?.multiTestResults || (result as any)?.multiValidation;
+    
+    // For backwards compatibility, use single grid if no multi-grid data
+    const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
+    
+    return {
+      predictedGrids,
+      singlePredictedGrid,
+      multiValidation,
+      hasPredictedGrids
+    };
+  }, [result]);
   
-  // For backwards compatibility, use single grid if no multi-grid data
-  const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
+  const { predictedGrids, singlePredictedGrid, multiValidation, hasPredictedGrids } = gridData;
   const predictedGrid: number[][] | undefined = hasPredictedGrids ? predictedGrids[0] : singlePredictedGrid;
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
@@ -782,4 +793,4 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
       )}
     </div>
   );
-}
+});
