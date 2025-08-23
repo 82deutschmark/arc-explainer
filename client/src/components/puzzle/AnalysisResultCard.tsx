@@ -72,7 +72,12 @@ const formatTokens = (tokens: number): string => {
 
 export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
   // Handle multiple expected outputs (for puzzles with multiple test cases)
-  const expectedOutputGrids = Array.isArray(expectedOutputGrid) ? expectedOutputGrid : expectedOutputGrid ? [expectedOutputGrid] : [];
+  // Distinguish between single grid (number[][]) and multiple grids (number[][][])
+  const expectedOutputGrids: number[][][] = expectedOutputGrid 
+    ? (Array.isArray(expectedOutputGrid[0]) && Array.isArray(expectedOutputGrid[0][0])) 
+      ? expectedOutputGrid as number[][][] // It's array of grids
+      : [expectedOutputGrid as number[][]]  // It's single grid, wrap in array
+    : [];
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
