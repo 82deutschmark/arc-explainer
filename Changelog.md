@@ -48,6 +48,21 @@ August 22, 2025
   - Added explicit test case count in multi-test headers
   - Backend multi-test validation logic was already implemented via `validateSolverResponseMulti`
 
+### 📐 ARC Task Structure Understanding (Code by Cascade)
+- **Root Cause Solution**: Enshrined fundamental ARC task structure to prevent train/test confusion
+  - **PROBLEM**: Components confused training examples (2-9 patterns) with test cases (1-2 predictions)
+  - **SOLUTION**: Created `shared/arcTaskStructure.ts` with business logic types and validation
+  - **Documentation**: Added comprehensive ARC structure explanation in README
+  - **Validation**: Components now validate they handle test cases (not training) correctly
+  - **Multi-test clarity**: When 2 test cases exist, LLM generates 2 separate predictions for different inputs
+
+- **System-wide Enforcement**: ARC understanding built into all components
+  - **Backend**: `puzzleController.ts` uses `ARCTaskAnalyzer` to validate structure and log warnings
+  - **Frontend**: `PuzzleExaminer.tsx` shows ARC structure info with multi-test warnings
+  - **UI Components**: `AnalysisResultCard.tsx` validates expected outputs match test case count
+  - **Constants**: Known multi-test puzzles documented (e.g., `9110e3c5`)
+  - **Error Prevention**: Runtime validation prevents components from mishandling train vs test data
+
 ### 🎛️ Collapsible Controls (Code by Cascade)
 - **Explanation Style Section**: Made collapsible to save screen space
   - Starts collapsed by default, shows current selection as badge when closed

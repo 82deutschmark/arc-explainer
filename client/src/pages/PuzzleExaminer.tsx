@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RotateCcw, Download, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -196,6 +196,13 @@ export default function PuzzleExaminer() {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Training & Test Grids for Task {taskId}</CardTitle>
           <p className="text-xs text-gray-600">Training examples demonstrate pattern, test shows challenge</p>
+          {/* ARC STRUCTURE VALIDATION */}
+          <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border">
+            📐 <strong>ARC Structure:</strong> {task.train.length} training examples → {task.test.length} test case{task.test.length > 1 ? 's' : ''}
+            {task.test.length > 1 && (
+              <div className="text-orange-600 font-medium">⚠️ Multi-test scenario: LLM must generate {task.test.length} separate predictions</div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-3">
           <div className="space-y-4">

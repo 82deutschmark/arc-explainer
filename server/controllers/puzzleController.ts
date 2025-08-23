@@ -16,6 +16,8 @@ import { formatResponse } from '../utils/responseFormatter';
 import { dbService } from '../services/dbService';
 import type { PromptOptions } from '../services/promptBuilder';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
+import { asyncHandler } from '../middleware/asyncHandler';
+import { ARCTaskAnalyzer, ARCTaskValidator } from '../../shared/arcTaskStructure';
 
 export const puzzleController = {
   /**
@@ -122,15 +124,26 @@ export const puzzleController = {
       console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
     }
     
-    // Validate solver mode responses
+    // Validate solver mode responses with ARC structure understanding
     if (promptId === "solver") {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
       
+      // ARC STRUCTURE VALIDATION: Ensure we understand train vs test distinction
+      const arcStructure = ARCTaskAnalyzer.analyze(puzzle);
+      console.log(`[Controller] ARC Structure Analysis:`, ARCTaskAnalyzer.getStructureDescription(puzzle));
+      
+      // Validate that we're handling test cases correctly (not training examples)
+      ARCTaskValidator.validateTestCaseHandling(
+        'puzzleController.analyze', 
+        puzzle, 
+        testCount > 1 ? 'MULTI_TEST' : 'SINGLE_TEST'
+      );
+      
       console.log(`[Controller] Puzzle ${taskId}: testCount=${testCount}, promptId=${promptId}`);
 
       if (testCount > 1) {
-        console.log(`[Controller] Using MULTI-test validation for ${testCount} test cases`);
+        console.log(`[Controller] Using MULTI-test validation for ${testCount} separate test cases (NOT multiple predictions for same test)`);
         const correctAnswers = puzzle.test.map(t => t.output);
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
@@ -260,6 +273,7 @@ export const puzzleController = {
         hasExplanation, 
         hasFeedback,
         modelName, 
+        saturnFilter,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -270,8 +284,13 @@ export const puzzleController = {
 
       console.log('[Controller] Puzzle overview request with filters:', req.query);
 
+      // Build filters for puzzle service (only the ones it supports)
+      const puzzleFilters: any = {};
+      // Note: The puzzle service supports these filters, but overview may need them applied later
+      // For now, we get all puzzles and filter in-memory for explanation/feedback filters
+      
       // Get all puzzles from the puzzle service
-      const allPuzzles = await puzzleService.getPuzzleList({});
+      const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic puzzle list
       if (!dbService.isConnected()) {
@@ -376,19 +395,50 @@ export const puzzleController = {
 
       // Convert map back to array
       let results = Array.from(puzzleMap.values());
+      console.log(`[DEBUG] Starting with ${results.length} total puzzles`);
 
         // Apply hasExplanation filter
         if (hasExplanation === 'true') {
+          const beforeCount = results.length;
           results = results.filter(puzzle => puzzle.hasExplanation);
+          console.log(`[DEBUG] hasExplanation=true filter: ${beforeCount} -> ${results.length} puzzles`);
         } else if (hasExplanation === 'false') {
+          const beforeCount = results.length;
           results = results.filter(puzzle => !puzzle.hasExplanation);
+          console.log(`[DEBUG] hasExplanation=false filter: ${beforeCount} -> ${results.length} puzzles`);
         }
 
         // Apply hasFeedback filter
         if (hasFeedback === 'true') {
+          const beforeCount = results.length;
           results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
+          console.log(`[DEBUG] hasFeedback=true filter: ${beforeCount} -> ${results.length} puzzles`);
         } else if (hasFeedback === 'false') {
+          const beforeCount = results.length;
           results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
+          console.log(`[DEBUG] hasFeedback=false filter: ${beforeCount} -> ${results.length} puzzles`);
+        }
+
+        // Apply Saturn filter
+        console.log(`[DEBUG] Before Saturn filter (${saturnFilter}): ${results.length} puzzles`);
+        if (saturnFilter === 'solved') {
+          const beforeCount = results.length;
+          results = results.filter(puzzle => 
+            puzzle.explanations.some((exp: any) => exp.saturnSuccess === true)
+          );
+          console.log(`[DEBUG] Saturn 'solved' filter: ${beforeCount} -> ${results.length} puzzles`);
+        } else if (saturnFilter === 'failed') {
+          const beforeCount = results.length;
+          results = results.filter(puzzle => 
+            puzzle.explanations.some((exp: any) => exp.saturnSuccess === false)
+          );
+          console.log(`[DEBUG] Saturn 'failed' filter: ${beforeCount} -> ${results.length} puzzles`);
+        } else if (saturnFilter === 'attempted') {
+          const beforeCount = results.length;
+          results = results.filter(puzzle => 
+            puzzle.explanations.some((exp: any) => exp.saturnSuccess !== undefined)
+          );
+          console.log(`[DEBUG] Saturn 'attempted' filter: ${beforeCount} -> ${results.length} puzzles`);
         }
 
         // Apply sorting
@@ -424,15 +474,16 @@ export const puzzleController = {
 
         // Apply pagination
         const total = results.length;
-        const paginatedResults = results.slice(
-          parseInt(offset as string), 
-          parseInt(offset as string) + parseInt(limit as string)
-        );
+        const offsetInt = parseInt(offset as string);
+        const limitInt = parseInt(limit as string);
+        const paginatedResults = results.slice(offsetInt, offsetInt + limitInt);
+        
+        console.log(`[DEBUG] Final results: total=${total}, offset=${offsetInt}, limit=${limitInt}, returning ${paginatedResults.length} puzzles`);
 
         res.json(formatResponse.success({
           puzzles: paginatedResults,
           total: total,
-          hasMore: total > parseInt(offset as string) + parseInt(limit as string)
+          hasMore: total > offsetInt + limitInt
         }));
 
     } catch (error) {

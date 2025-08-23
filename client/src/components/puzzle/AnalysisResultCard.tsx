@@ -15,16 +15,19 @@
  * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
  * This component is designed to be a self-contained card, making it easy to reuse and maintain.
  */
-import React, { useMemo, useState } from 'react';
-import { AnalysisResultCardProps } from '@/types/puzzle';
+import React, { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, Brain, ChevronDown, ChevronUp, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
+import { Clock, Download, ChevronUp, ChevronDown, CheckCircle, XCircle, ThumbsUp, ThumbsDown, MessageSquare, Brain } from 'lucide-react';
+import { PuzzleGrid } from './PuzzleGrid';
+// Temporary comment out ARC validation until import path is fixed
+// import { ARCTaskValidator, ARCTaskAnalyzer } from '../../../../shared/arcTaskStructure';
+import type { AnalysisResultCardProps } from '@/types/puzzle';
 import { ExplanationFeedback } from '@/components/ExplanationFeedback';
 import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
@@ -101,7 +104,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const predictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0];
   const predictedGrids: number[][][] | undefined = (result as any)?.predictedOutputGrids;
   
-  // DEBUG: Log multi-test detection
+  // DEBUG: Log multi-test detection with ARC structure validation
   if (isMultiTest) {
     console.log('[UI DEBUG] Multi-test case detected:', {
       expectedOutputsCount: allExpectedOutputGrids?.length,
@@ -110,6 +113,10 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
       hasMultiValidation: !!(result as any)?.multiValidation,
       resultKeys: Object.keys(result || {})
     });
+    
+    // ARC STRUCTURE VALIDATION: Ensure we understand this is about TEST CASES, not TRAINING
+    console.log('[ARC VALIDATION] This component is handling TEST CASE predictions, not training examples.');
+    console.log('[ARC VALIDATION] Expected outputs represent ground truth for', allExpectedOutputGrids?.length, 'separate test cases.');
   }
   
 
