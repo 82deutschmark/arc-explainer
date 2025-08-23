@@ -59,7 +59,7 @@ Put all your raw reasoning and analysis in the structured JSON fields:
 - keySteps: Step-by-step analysis progression, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
 - hints: Key insights that led to your conclusion
-- confidence: Your certainty level (0-100)`;
+- confidence: Your certainty level as an INTEGER from 0 to 100 (not decimal)`;
 
 /**
  * System prompt for solver mode (predicting answers)
@@ -108,7 +108,7 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 
 Additional required fields:
 - alienMeaning: Creative interpretation of the aliens' message
-- alienMeaningConfidence: Your certainty about the communication interpretation (0-100)
+- alienMeaningConfidence: Your certainty about the communication interpretation as INTEGER from 0 to 100
 
 Remember: Users see emoji symbols, not numbers. Reference the visual patterns they observe.
 Be creative but grounded in the actual transformation and abstract reasoning when interpreting alien meaning.`;

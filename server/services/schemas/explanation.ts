@@ -178,16 +178,21 @@ export function hasAlienFields(response: any): boolean {
 
 /**
  * Normalize confidence values to integers 0-100
+ * Handles both decimal (0-1) and percentage (0-100) formats
  */
 export function normalizeConfidence(confidence: any): number {
   if (typeof confidence === 'string') {
     const parsed = parseFloat(confidence);
     if (!isNaN(parsed)) {
-      return Math.round(Math.max(0, Math.min(100, parsed)));
+      // Convert to percentage if decimal, clamp to 0-100 range
+      const normalized = parsed <= 1 ? parsed * 100 : parsed;
+      return Math.round(Math.max(0, Math.min(100, normalized)));
     }
   }
   if (typeof confidence === 'number') {
-    return Math.round(Math.max(0, Math.min(100, confidence)));
+    // Convert decimal confidence (0-1) to percentage (0-100)
+    const normalized = confidence <= 1 ? confidence * 100 : confidence;
+    return Math.round(Math.max(0, Math.min(100, normalized)));
   }
   return 50; // Default fallback
 }

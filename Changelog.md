@@ -5,6 +5,55 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
+## Version 1.6.13 — DeepSeek & Grok System Prompt Integration Fix (2025-08-23)
+
+### 🚨 Critical Bug Fixes (Code by Claude Code)
+- **DeepSeek & Grok System Prompt Integration**: Fixed critical issue where DeepSeek and Grok services were ignoring system prompts after the system prompt architecture implementation
+  - **Root Cause**: Both services were only using `promptPackage.userPrompt` but ignoring `promptPackage.systemPrompt` where JSON schema instructions had moved
+  - **Solution**: Updated both services to properly extract and use both system and user prompts in API calls
+  - **System Prompt Mode Support**: Added `systemPromptMode` parameter supporting both 'ARC' (structured prompts) and 'None' (legacy) modes
+  - **Message Structure Fix**: Both services now create proper message arrays with system role when in ARC mode
+  - **Preview Generation Fix**: Updated `generatePromptPreview()` methods to show correct system/user prompt structure
+  - **Files Modified**: 
+    - `server/services/deepseek.ts` - Added system prompt integration and ARC mode support
+    - `server/services/grok.ts` - Added system prompt integration and ARC mode support
+  - **Impact**: DeepSeek and Grok services now properly receive JSON schema instructions, fixing response format issues
+
+### 🔧 Technical Implementation
+- **Unified Architecture**: Both services now match the working pattern used by OpenAI, Gemini, and Anthropic services
+- **Backwards Compatibility**: Added support for both new ARC mode and legacy None mode for seamless migration
+- **Enhanced Logging**: Added proper debugging and console output for system/user prompt lengths
+- **Provider Notes**: Updated preview generation to show system prompt mode information
+
+### ✅ Outcome  
+- DeepSeek and Grok responses now follow expected JSON schema format
+- System prompt instructions properly included in API calls
+- Consistent behavior across all AI provider services
+- Eliminates response parsing errors caused by missing schema instructions
+
+### 🐛 Additional Bug Fixes (Code by Claude Code)
+- **OpenAI o3 Model Confidence Formatting**: Fixed critical issue where o3 models were returning decimal confidence (0.25) instead of integer percentages (25)
+  - **Root Cause**: o3 models ignored JSON schema `"type": "integer"` specification and system prompt guidance
+  - **Faulty Normalization**: `normalizeConfidence()` function didn't convert 0-1 decimals to 0-100 percentages  
+  - **Multi-Layer Solution**:
+    - Fixed `normalizeConfidence()` logic in both `server/services/schemas/explanation.ts` and `server/services/dbService.ts`
+    - Added confidence normalization to OpenAI service before database storage
+    - Strengthened system prompts: `(0-100)` → `"as an INTEGER from 0 to 100 (not decimal)"`
+  - **Files Modified**:
+    - `server/services/schemas/explanation.ts` - Fixed decimal-to-percentage conversion
+    - `server/services/dbService.ts` - Updated duplicate normalization function  
+    - `server/services/openai.ts` - Added confidence normalization with logging
+    - `server/services/prompts/systemPrompts.ts` - Emphasized INTEGER confidence requirement
+  - **Impact**: o3 responses now properly display as `25%` instead of raw `0.25` in logs and UI
+
+- **Cost Display Formatting Bug**: Fixed incorrect "$0.71¢" format mixing dollar signs and cent symbols
+  - **Root Cause**: Duplicate `formatCost()` functions using `(cost * 1000)` instead of `(cost * 100)` for cent conversion
+  - **Solution**: Fixed both instances to properly convert decimals to cents: `${(cost * 100).toFixed(2)}¢`
+  - **Files Modified**: 
+    - `server/utils/costCalculator.ts` - Fixed centralized cost formatting
+    - `client/src/components/puzzle/AnalysisResultCard.tsx` - Fixed duplicate function
+  - **Impact**: DeepSeek and other low-cost models now display correct formats like `0.07¢` instead of `$0.71¢`
+
 ## Version 1.6.12 — BatchTesting Component Rewrite & Bug Fixes (2025-08-23)
 
 ### 🔧 Major Rewrite (Code by Cascade)

@@ -12,6 +12,7 @@ import { buildAnalysisPrompt, getDefaultPromptId, getStructuredOutputConfig, ext
 import type { PromptOptions, PromptPackage } from "./promptBuilder";
 import { calculateCost } from "../utils/costCalculator";
 import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
+import { normalizeConfidence } from "./schemas/explanation.js";
 
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
@@ -276,6 +277,19 @@ export class OpenAIService {
       
       console.log(`[OpenAI] Returning reasoning data - reasoningLog type: ${typeof reasoningLog}, length: ${reasoningLog?.length || 0}`);
 
+      // Normalize confidence values to integers (fixes o3 decimal confidence bug)
+      const normalizedResult = { ...result };
+      if (normalizedResult.confidence !== undefined) {
+        const originalConfidence = normalizedResult.confidence;
+        normalizedResult.confidence = normalizeConfidence(originalConfidence);
+        console.log(`[OpenAI] Normalized confidence: ${originalConfidence} -> ${normalizedResult.confidence}`);
+      }
+      if (normalizedResult.alienMeaningConfidence !== undefined) {
+        const originalAlienConfidence = normalizedResult.alienMeaningConfidence;
+        normalizedResult.alienMeaningConfidence = normalizeConfidence(originalAlienConfidence);
+        console.log(`[OpenAI] Normalized alienMeaningConfidence: ${originalAlienConfidence} -> ${normalizedResult.alienMeaningConfidence}`);
+      }
+
       return {
         model: modelKey,
         reasoningLog,
@@ -294,7 +308,7 @@ export class OpenAIService {
         reasoningTokens: parsedResponse?.tokenUsage?.reasoning || null,
         totalTokens: parsedResponse?.tokenUsage ? (parsedResponse.tokenUsage.input + parsedResponse.tokenUsage.output + (parsedResponse.tokenUsage.reasoning || 0)) : null,
         estimatedCost: parsedResponse?.cost?.total || null,
-        ...result,
+        ...normalizedResult,
       };
     } catch (error) {
       console.error(`Error with model ${modelKey}:`, error);
