@@ -73,6 +73,17 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const explanationData = explanations[modelKey];
+
+        let hintsData = explanationData.hints || [];
+        if (typeof hintsData === 'string') {
+          try {
+            hintsData = JSON.parse(hintsData);
+          } catch (e) {
+            // If it's not valid JSON, treat it as a single hint in an array
+            hintsData = [hintsData];
+          }
+        }
+
         // Transform AI response data to database format
         const transformedData = {
           puzzleId: puzzleId,
@@ -80,7 +91,7 @@ export const explanationService = {
           patternDescription: explanationData.patternDescription || '',
           solvingStrategy: explanationData.solvingStrategy || '',
           confidence: explanationData.confidence || 50,
-          hints: explanationData.hints || [],
+          hints: hintsData,
           alienMeaning: explanationData.alienMeaning,
           alienMeaningConfidence: explanationData.alienMeaningConfidence,
           
