@@ -143,8 +143,7 @@ export class ExplanationsRepository {
       const [row] = await this.db.query<ExplanationRow>(sql, params);
       const parsed = parseExplanationRow({
         ...row,
-        estimated_cost: row.estimated_cost ? parseFloat(row.estimated_cost as any) : null,
-        ...row,
+        estimated_cost: row.estimated_cost ? parseFloat(String(row.estimated_cost)) : null,
         hints: row.hints || [], // Already an array from the DB driver
         saturn_images: this.parseJsonField(row.saturn_images, null),
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
