@@ -446,13 +446,15 @@ export class OpenAIService {
       };
 
       // Make the API call to OpenAI's Responses endpoint
+      // Set timeout to 45 minutes (2700000ms) for long-running responses
       const response = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(responsesRequest)
+        body: JSON.stringify(responsesRequest),
+        signal: AbortSignal.timeout(2700000) // 45 minutes timeout
       });
 
       if (!response.ok) {

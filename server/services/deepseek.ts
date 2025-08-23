@@ -56,6 +56,7 @@ const REASONING_MODELS = new Set([
 const deepseek = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com",
+  timeout: 2700000, // 45 minutes timeout for long-running responses
 });
 
 export class DeepSeekService {

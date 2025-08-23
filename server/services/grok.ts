@@ -67,6 +67,7 @@ const MODELS_WITH_REASONING = new Set([
 const xai = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
   baseURL: "https://api.x.ai/v1",
+  timeout: 2700000, // 45 minutes timeout for long-running responses
 });
 
 export class GrokService {
