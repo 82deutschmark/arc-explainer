@@ -32,7 +32,7 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ModelButton } from '@/components/puzzle/ModelButton';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPicker } from '@/components/PromptPicker';
-// PromptPreviewModal removed - was broken and marked for deletion
+import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { MODELS } from '@/constants/models';
 
@@ -41,7 +41,7 @@ export default function PuzzleExaminer() {
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested - controls UI display
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
-  // Preview modal functionality temporarily disabled due to broken component
+  const [showPromptPreview, setShowPromptPreview] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
   // systemPromptMode is now hardcoded to 'ARC' - the new modular architecture replaces legacy {ARC}/{None} toggle
 
@@ -127,7 +127,7 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl space-y-4">
+    <div className="container mx-auto p-3 max-w-6xl space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -205,11 +205,11 @@ export default function PuzzleExaminer() {
                 Training Examples 
                 <Badge variant="outline">{task.train.length} examples</Badge>
               </h3>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {task.train.map((example, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="text-sm font-medium mb-3 text-center">Example {index + 1}</h4>
-                    <div className="flex items-center justify-center gap-8">
+                  <div key={index} className="border border-gray-200 rounded-lg p-3">
+                    <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
+                    <div className="flex items-center justify-center gap-6">
                       <PuzzleGrid 
                         grid={example.input}
                         title="Input"  
@@ -230,10 +230,10 @@ export default function PuzzleExaminer() {
             </div>
 
             {/* Test Case */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4 text-center">Test Case & Correct Answer</h3>
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-semibold mb-3 text-center">Test Case & Correct Answer</h3>
               {task.test.map((testCase, index) => (
-                <div key={index} className="flex items-center justify-center gap-8">
+                <div key={index} className="flex items-center justify-center gap-6">
                   <PuzzleGrid 
                     grid={testCase.input}
                     title="Test Question"
@@ -300,17 +300,17 @@ export default function PuzzleExaminer() {
             // systemPromptMode removed - now using modular architecture
           />
 
-          {/* Prompt Preview - Temporarily disabled due to broken component */}
-          <div className="mb-4 flex justify-center">
+          {/* Prompt Preview */}
+          <div className="mb-3 flex justify-center">
             <Button
               variant="outline"
               size="sm"
-              disabled={true}
-              className="flex items-center gap-2 opacity-50"
-              title="Prompt preview temporarily disabled - component needs rebuild for new architecture"
+              onClick={() => setShowPromptPreview(true)}
+              disabled={isAnalyzing}
+              className="flex items-center gap-2"
             >
               <Eye className="h-4 w-4" />
-              Preview Prompt (Disabled)
+              Preview Prompt
             </Button>
           </div>
           
@@ -367,9 +367,9 @@ export default function PuzzleExaminer() {
           </div>
           
           {/* Temperature Control */}
-          <div className="mb-3 p-2 bg-gray-50 border border-gray-200 rounded">
-            <div className="flex items-center gap-4">
-              <Label htmlFor="temperature" className="text-sm font-medium">
+          <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
+            <div className="flex items-center gap-3">
+              <Label htmlFor="temperature" className="text-sm font-medium whitespace-nowrap">
                 Temperature: {temperature}
               </Label>
               <div className="flex-1 max-w-xs">
@@ -383,22 +383,21 @@ export default function PuzzleExaminer() {
                   className="w-full"
                 />
               </div>
-              <div className="text-xs text-gray-600">
-                <div>Controls creativity • Only GPT-4.1 series & GPT-5 Chat support this</div>
-                <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive features</div>
-                <div className="text-amber-600 font-medium">⚠️ Values above 1.1 may produce crazy and illegible replies</div>
+              <div className="text-xs text-gray-600 flex-shrink-0">
+                <div>Controls creativity • GPT-4.1 & GPT-5 only</div>
+                <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive</div>
               </div>
             </div>
           </div>
 
           {/* GPT-5 Reasoning Parameters */}
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <h5 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+          <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+            <h5 className="text-sm font-semibold text-blue-800 mb-2 flex items-center gap-2">
               <Brain className="h-4 w-4" />
               GPT-5 Reasoning Parameters
             </h5>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {/* Effort Control */}
                 <div>
                   <Label htmlFor="reasoning-effort" className="text-sm font-medium text-blue-700">
@@ -418,7 +417,7 @@ export default function PuzzleExaminer() {
                       <SelectItem value="high">High</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-blue-600 mt-0.5">
                     {reasoningEffort === 'minimal' && 'Basic reasoning'}
                     {reasoningEffort === 'low' && 'Light reasoning'}
                     {reasoningEffort === 'medium' && 'Moderate reasoning'}
@@ -444,7 +443,7 @@ export default function PuzzleExaminer() {
                       <SelectItem value="high">High</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-blue-600 mt-0.5">
                     {reasoningVerbosity === 'low' && 'Concise reasoning logs'}
                     {reasoningVerbosity === 'medium' && 'Balanced detail'}
                     {reasoningVerbosity === 'high' && 'Detailed reasoning logs'}
@@ -468,7 +467,7 @@ export default function PuzzleExaminer() {
                       <SelectItem value="detailed">Detailed</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-blue-600 mt-0.5">
                     {reasoningSummaryType === 'auto' && 'Automatic summary generation'}
                     {reasoningSummaryType === 'detailed' && 'Comprehensive summary'}
                   </p>
@@ -479,14 +478,14 @@ export default function PuzzleExaminer() {
 
           {/* Analysis Results */}
           {explanations.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-lg font-semibold mb-3">Analysis Results</h4>
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">Analysis Results</h4>
               
               {/* Database Explanations Section */}
               {explanations.filter(exp => exp.id !== undefined).length > 0 && (
-                <div className="mb-6">
+                <div className="mb-4">
                   <h5 className="text-md font-medium text-blue-800 mb-2">Database Explanations</h5>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {explanations
                       .filter(explanation => explanation.id !== undefined)
                       .map((explanation) => (
@@ -505,7 +504,7 @@ export default function PuzzleExaminer() {
               {explanations.filter(exp => exp.id === undefined).length > 0 && (
                 <div>
                   <h5 className="text-md font-medium text-green-800 mb-2">AI Generated Explanations</h5>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {explanations
                       .filter(explanation => explanation.id === undefined)
                       .map((explanation, index) => (
@@ -523,6 +522,21 @@ export default function PuzzleExaminer() {
           )}
         </CardContent>
       </Card>
+      
+      {/* Prompt Preview Modal */}
+      <PromptPreviewModal
+        isOpen={showPromptPreview}
+        onClose={() => setShowPromptPreview(false)}
+        task={task}
+        taskId={taskId}
+        promptId={promptId}
+        customPrompt={customPrompt}
+        options={{
+          emojiSetKey: emojiSet,
+          omitAnswer,
+          sendAsEmojis
+        }}
+      />
     </div>
   );
 }
