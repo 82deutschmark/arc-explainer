@@ -71,6 +71,8 @@ const formatTokens = (tokens: number): string => {
 };
 
 export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
+  // Handle multiple expected outputs (for puzzles with multiple test cases)
+  const expectedOutputGrids = Array.isArray(expectedOutputGrid) ? expectedOutputGrid : expectedOutputGrid ? [expectedOutputGrid] : [];
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
@@ -89,8 +91,14 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   // Check if this is a Saturn solver result (align with ExplanationData fields)
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
-  // Normalized predicted grid (single answer expected; if array provided, take first)
-  const predictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0];
+  // Handle both single and multiple predicted outputs
+  const predictedGrids: number[][][] | undefined = (result as any)?.predictedOutputGrids;
+  const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
+  const multiValidation = (result as any)?.multiValidation;
+  
+  // For backwards compatibility, use single grid if no multi-grid data
+  const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
+  const predictedGrid: number[][] | undefined = hasPredictedGrids ? predictedGrids[0] : singlePredictedGrid;
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
@@ -126,12 +134,12 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const diffMask = useMemo(() => {
     if (!showDiff) return undefined;
     try {
-      return buildDiffMask(predictedGrid, expectedOutputGrid);
+      return buildDiffMask(predictedGrid, expectedOutputGrids[0]);
     } catch (error) {
       console.warn('Error in diff mask useMemo:', error);
       return undefined;
     }
-  }, [showDiff, predictedGrid, expectedOutputGrid]);
+  }, [showDiff, predictedGrid, expectedOutputGrids]);
 
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
@@ -521,8 +529,100 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
             </div>
           )}
 
-          {/* Answers display: side-by-side if both available, else single */}
-          {predictedGrid && expectedOutputGrid ? (
+          {/* Multi-test answer display */}
+          {hasPredictedGrids && expectedOutputGrids.length > 1 ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-3">
+                <h5 className="font-semibold text-gray-800">Test Results ({predictedGrids?.length || 0} predictions)</h5>
+                {result.allPredictionsCorrect !== undefined && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${result.allPredictionsCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                  >
+                    {result.allPredictionsCorrect ? 'All predictions correct' : 'Some predictions incorrect'}
+                  </Badge>
+                )}
+                {result.averagePredictionAccuracyScore !== undefined && (
+                  <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                    Avg Score: {Math.round(result.averagePredictionAccuracyScore * 100)}%
+                  </Badge>
+                )}
+              </div>
+              {predictedGrids?.map((predGrid, testIndex) => {
+                const expectedGrid = expectedOutputGrids[testIndex];
+                const validation = multiValidation?.[testIndex];
+                const isCorrect = validation?.isPredictionCorrect;
+                const testDiffMask = useMemo(() => {
+                  if (!showDiff || !predGrid || !expectedGrid) return undefined;
+                  return buildDiffMask(predGrid, expectedGrid);
+                }, [showDiff, predGrid, expectedGrid]);
+                
+                return (
+                  <div key={testIndex} className="border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <h6 className="font-medium text-gray-700">Test {testIndex + 1}</h6>
+                      {isCorrect !== undefined && (
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${isCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                        >
+                          {isCorrect ? 'CORRECT' : 'INCORRECT'}
+                        </Badge>
+                      )}
+                      {validation?.predictionAccuracyScore !== undefined && (
+                        <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                          Score: {Math.round(validation.predictionAccuracyScore * 100)}%
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h6 className="font-semibold text-emerald-800">Predicted</h6>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          {predGrid ? (
+                            <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={showDiff ? testDiffMask : undefined} />
+                          ) : (
+                            <div className="text-sm text-gray-500 p-4">No prediction found</div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="bg-green-50 border border-green-200 rounded p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h6 className="font-semibold text-green-800">Expected</h6>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          {expectedGrid ? (
+                            <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
+                          ) : (
+                            <div className="text-sm text-gray-500 p-4">No expected output</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex items-center gap-2 mt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDiff(!showDiff)}
+                  className="h-auto p-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  title="Toggle diff overlay for all tests"
+                >
+                  Diff overlay: {showDiff ? 'On' : 'Off'}
+                </Button>
+                {result.extractionMethod && (
+                  <Badge variant="outline" className="text-xs bg-gray-50 border-gray-200 text-gray-700">
+                    Extracted via: {result.extractionMethod}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ) : predictedGrid && expectedOutputGrids.length > 0 ? (
+            /* Single test case display */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
                 <div className="flex items-center gap-2 mb-2">
@@ -559,7 +659,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                   <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
                 </div>
                 <div className="flex items-center justify-center">
-                  <PuzzleGrid grid={expectedOutputGrid} title="Correct" showEmojis={false} highlight={true} />
+                  <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct" showEmojis={false} highlight={true} />
                 </div>
               </div>
             </div>
@@ -594,13 +694,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                 <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
               </div>
             </div>
-          ) : expectedOutputGrid ? (
+          ) : expectedOutputGrids.length > 0 ? (
             <div className="bg-green-50 border border-green-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
               </div>
               <div className="flex items-center justify-center">
-                <PuzzleGrid grid={expectedOutputGrid} title="Correct Answer" showEmojis={false} highlight={true} />
+                <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct Answer" showEmojis={false} highlight={true} />
               </div>
             </div>
           ) : null}
