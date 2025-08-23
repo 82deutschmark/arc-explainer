@@ -19,15 +19,11 @@ export const explanationService = {
    * @throws AppError if explanations cannot be retrieved
    */
   async getExplanationsForPuzzle(puzzleId: string) {
-    const explanations = await getDatabaseService().getExplanationsForPuzzle(puzzleId);
-    if (explanations === null) {
-      throw new AppError(
-        'Could not retrieve explanations due to a server error.',
-        500, 
-        'DATABASE_ERROR'
-      );
+    const db = getDatabaseService();
+    if (!db) {
+      throw new AppError('Database service is not available.', 500, 'DATABASE_ERROR');
     }
-    return explanations;
+    return await db.explanations.getWithFeedbackCounts(puzzleId);
   },
 
   /**
@@ -38,11 +34,13 @@ export const explanationService = {
    * @throws AppError if explanation cannot be retrieved
    */
   async getExplanationForPuzzle(puzzleId: string) {
-    const explanation = await getDatabaseService().getExplanationForPuzzle(puzzleId);
-    if (explanation === null) {
-      return null; // No explanation found is not an error
+    const db = getDatabaseService();
+    if (!db) {
+      throw new AppError('Database service is not available.', 500, 'DATABASE_ERROR');
     }
-    return explanation;
+    // Assuming we want the most recent or a specific one. For now, let's get all and return the first.
+    const explanations = await db.explanations.getWithFeedbackCounts(puzzleId);
+    return explanations.length > 0 ? explanations[0] : null;
   },
 
   /**
@@ -117,9 +115,9 @@ export const explanationService = {
           predictionAccuracyScore: explanationData.predictionAccuracyScore
         };
         
-        const explanationId = await getDatabaseService().saveExplanation(transformedData);
-        if (explanationId) {
-          savedExplanationIds.push(explanationId);
+        const savedExplanation = await getDatabaseService().explanations.save(transformedData);
+        if (savedExplanation && savedExplanation.id) {
+          savedExplanationIds.push(savedExplanation.id);
         }
       }
     }
@@ -184,13 +182,19 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
     }
 
     // Save the new explanation as a separate attempt
-    const explanationId = await getDatabaseService().saveExplanation({
+    const savedExplanation = await getDatabaseService().explanations.save({
       puzzleId: puzzleId,
       ...newExplanation,
       modelName,
       retryReason: userFeedback, // Store the feedback that triggered this retry
       isRetry: true // Mark as retry attempt
     });
+
+    if (!savedExplanation || !savedExplanation.id) {
+      throw new AppError('Failed to save the new explanation.', 500, 'DATABASE_ERROR');
+    }
+
+    const explanationId = savedExplanation.id;
 
     return {
       success: true,
