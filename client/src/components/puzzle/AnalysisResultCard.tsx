@@ -92,9 +92,9 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
   // Handle both single and multiple predicted outputs
-  const predictedGrids: number[][][] | undefined = (result as any)?.predictedOutputGrids;
+  const predictedGrids: number[][][] | undefined = (result as any)?.multiplePredictedOutputs || (result as any)?.predictedOutputGrids;
   const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
-  const multiValidation = (result as any)?.multiValidation;
+  const multiValidation = (result as any)?.multiTestResults || (result as any)?.multiValidation;
   
   // For backwards compatibility, use single grid if no multi-grid data
   const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
@@ -553,17 +553,17 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
               <div className="flex items-center gap-2 mb-3">
                 <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests)</h5>
                 {/* Support both field name variants */}
-                {(result.allPredictionsCorrect !== undefined || result.multiTestAllCorrect !== undefined) && (
+                {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
                   <Badge 
                     variant="outline" 
-                    className={`text-xs ${(result.allPredictionsCorrect ?? result.multiTestAllCorrect) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                    className={`text-xs ${(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
                   >
-                    {(result.allPredictionsCorrect ?? result.multiTestAllCorrect) ? 'All predictions correct' : 'Some predictions incorrect'}
+                    {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All predictions correct' : 'Some predictions incorrect'}
                   </Badge>
                 )}
-                {(result.averagePredictionAccuracyScore !== undefined || result.multiTestAverageAccuracy !== undefined) && (
+                {(result.multiTestAverageAccuracy !== undefined || result.averagePredictionAccuracyScore !== undefined) && (
                   <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                    Avg Score: {Math.round((result.averagePredictionAccuracyScore ?? result.multiTestAverageAccuracy ?? 0) * 100)}%
+                    Avg Score: {Math.round((result.multiTestAverageAccuracy ?? result.averagePredictionAccuracyScore ?? 0) * 100)}%
                   </Badge>
                 )}
               </div>
