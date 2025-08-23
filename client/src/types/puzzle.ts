@@ -142,5 +142,5 @@ export interface AnalysisResultCardProps {
   modelKey: string;
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
-  expectedOutputGrid?: number[][]; // Correct answer grid from the original task (first test by default)
+  expectedOutputGrid?: number[][] | number[][][]; // Correct answer grid(s) from the original task (single grid or array for multiple test cases)
 }
