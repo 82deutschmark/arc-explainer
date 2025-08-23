@@ -16,7 +16,7 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({ grid, title, showEmoj
     const rows = grid.length;
     const cols = grid[0]?.length || 0;
     const maxDim = Math.max(rows, cols);
-    const size = maxDim <= 5 ? "large" : maxDim <= 10 ? "normal" : "small";
+    const size: "small" | "normal" | "large" = maxDim <= 5 ? "large" : maxDim <= 10 ? "normal" : "small";
     
     return { rows, cols, maxDim, size };
   }, [grid]);

@@ -19,9 +19,24 @@ export const explanationController = {
    * @param res - Express response object
    */
   async getAll(req: Request, res: Response) {
-    const { puzzleId } = req.params;
-    const explanations = await explanationService.getExplanationsForPuzzle(puzzleId);
-    res.json(formatResponse.success(explanations));
+    try {
+      const { puzzleId } = req.params;
+      const explanations = await explanationService.getExplanationsForPuzzle(puzzleId);
+      
+      if (explanations === null) {
+        // Database is not connected, return an empty array instead of null
+        return res.json(formatResponse.success([]));
+      }
+      
+      res.json(formatResponse.success(explanations));
+    } catch (error) {
+      console.error('Error in explanationController.getAll:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR', 
+        'Failed to retrieve explanations',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
   },
 
   /**
@@ -31,17 +46,26 @@ export const explanationController = {
    * @param res - Express response object
    */
   async getOne(req: Request, res: Response) {
-    const { puzzleId } = req.params;
-    const explanation = await explanationService.getExplanationForPuzzle(puzzleId);
-    
-    if (!explanation) {
-      return res.status(404).json(formatResponse.error(
-        'NOT_FOUND', 
-        'No explanation found for this puzzle'
+    try {
+      const { puzzleId } = req.params;
+      const explanation = await explanationService.getExplanationForPuzzle(puzzleId);
+      
+      if (!explanation) {
+        return res.status(404).json(formatResponse.error(
+          'NOT_FOUND', 
+          'No explanation found for this puzzle'
+        ));
+      }
+      
+      res.json(formatResponse.success(explanation));
+    } catch (error) {
+      console.error('Error in explanationController.getOne:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR', 
+        'Failed to retrieve explanation',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
       ));
     }
-    
-    res.json(formatResponse.success(explanation));
   },
 
   /**

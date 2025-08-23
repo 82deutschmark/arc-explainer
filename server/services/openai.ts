@@ -251,7 +251,7 @@ export class OpenAIService {
           } else if (typeof result.keySteps === 'string') {
             // If keySteps comes as string, try to split it into steps
             console.warn(`[OpenAI] keySteps received as string instead of array, attempting to parse`);
-            reasoningItems = result.keySteps.split(/\d+\)\s+/).filter(step => step.trim().length > 0);
+            reasoningItems = result.keySteps.split(/\d+\)\s+/).filter((step: string) => step.trim().length > 0);
           } else {
             console.warn(`[OpenAI] keySteps has unexpected type:`, typeof result.keySteps);
             reasoningItems = [];
