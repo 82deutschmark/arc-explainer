@@ -48,8 +48,8 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-// Format cost for display with safe type checking
-const formatCost = (cost: any): string => {
+// Safe cost formatting with validation - uses centralized logic
+const formatCostSafe = (cost: any): string => {
   // Convert to number and validate
   const numCost = typeof cost === 'number' ? cost : parseFloat(cost);
   
@@ -58,13 +58,18 @@ const formatCost = (cost: any): string => {
     return '$0.00';
   }
   
+  // Use centralized formatting logic
   if (numCost < 0.001) {
-    return `$${(numCost * 1000).toFixed(2)}¢`;
+    // Show as fractions of cents for very small amounts
+    return `$${(numCost * 1000).toFixed(3)}¢`;
   } else if (numCost < 0.01) {
+    // 4 decimal places for small amounts
     return `$${numCost.toFixed(4)}`;
   } else if (numCost < 1.0) {
+    // 3 decimal places for amounts under $1
     return `$${numCost.toFixed(3)}`;
   } else {
+    // 2 decimal places for larger amounts
     return `$${numCost.toFixed(2)}`;
   }
 };
@@ -261,7 +266,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
         {result.estimatedCost && (
           <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
             <span className="text-xs text-green-600">
-              Cost: {formatCost(result.estimatedCost)}
+              Cost: {formatCostSafe(result.estimatedCost)}
             </span>
           </Badge>
         )}
