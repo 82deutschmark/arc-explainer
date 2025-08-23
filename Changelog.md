@@ -5,7 +5,35 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
-August 22, 2025
+August 23, 2025
+
+## Version 1.6.8 — Researcher Debugging Features & Timeout Fixes (2025-08-23)
+
+### 🔧 Developer & Researcher Tools (Code by Claude Code)
+- **PromptPreviewModal Enhancement**: Fixed broken prompt preview modal with new debugging capabilities for researchers
+  - Added "Raw API JSON" tab showing OpenAI-style message structure that would be sent to AI providers
+  - Shows system/user message format, response_format settings, and other API parameters
+  - Content truncated for display but full structure copyable for debugging
+  - Files: `client/src/components/PromptPreviewModal.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `server/controllers/promptController.ts`, `server/routes.ts`
+
+- **AnalysisResultCard Raw DB Display**: Confirmed "Show raw DB record" button properly displays complete explanation objects from database
+  - Shows all fields including token counts, costs, reasoning logs, timestamps, and internal data structures
+  - Essential for researchers debugging AI responses and database storage
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
+### ⚡ Performance & Reliability (Code by Claude Code)
+- **API Timeout Increases**: Extended all AI service timeouts to 45 minutes to handle long-running reasoning responses (25-40 minutes)
+  - OpenAI Responses API: Added `AbortSignal.timeout(2700000)` to fetch calls
+  - DeepSeek API: Added `timeout: 2700000` to OpenAI SDK client configuration
+  - Grok API: Added `timeout: 2700000` to OpenAI SDK client configuration
+  - Fixes `HeadersTimeoutError` for complex reasoning tasks requiring extended processing time
+  - Files: `server/services/openai.ts`, `server/services/deepseek.ts`, `server/services/grok.ts`
+
+### 💰 UI Improvements (Code by Claude Code)
+- **Cost Display Simplification**: Standardized cost formatting to always show 3 decimal places in dollars (e.g., $0.010)
+  - Removed complex conditional formatting that mixed dollars and cents
+  - Provides consistent, readable cost display across all analysis results
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx`
 
 ## Version 1.6.7 — Critical Module Resolution Fix (2025-08-22)
 
