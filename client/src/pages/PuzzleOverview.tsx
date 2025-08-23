@@ -1,21 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { 
-  Database, 
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown
-} from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
-import { FeedbackModal } from '@/components/feedback/FeedbackModal';
-import { StatisticsCards } from '@/components/overview/StatisticsCards';
-import { SearchFilters } from '@/components/overview/SearchFilters';
-import { PuzzleList } from '@/components/overview/PuzzleList';
-import type { FeedbackStats } from '@shared/types';
+import React from 'react';
+import { MinimalOverview } from '@/components/overview/MinimalOverview';
 
 interface PuzzleOverviewData {
   id: string;
@@ -64,16 +48,40 @@ interface AccuracyStats {
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
+  // UI state
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Enhanced search and basic filters
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // New ARC dataset filters
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  
+  // Grid size filters
+  const [gridSizeRange, setGridSizeRange] = useState<[number, number]>([1, 30]);
+  const [gridConsistency, setGridConsistency] = useState<string>('all');
+  
+  // AI Provider filters (grouped)
+  const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  
+  // Performance filters
+  const [confidenceRange, setConfidenceRange] = useState<[number, number]>([0, 100]);
+  const [processingTimeRange, setProcessingTimeRange] = useState<[number, number]>([0, 300000]);
+  
+  // Date filters
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+  
+  // Legacy engagement filters (maintained for compatibility)
   const [hasExplanationFilter, setHasExplanationFilter] = useState<string>('all');
   const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
-  const [modelFilter, setModelFilter] = useState<string>('all');
   const [saturnFilter, setSaturnFilter] = useState<string>('all');
-  const [confidenceMin, setConfidenceMin] = useState<string>('');
-  const [confidenceMax, setConfidenceMax] = useState<string>('');
+  
+  // Sorting
   const [sortBy, setSortBy] = useState<string>('createdAt');
   const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
   
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -85,25 +93,37 @@ export default function PuzzleOverview() {
     setFeedbackModalOpen(true);
   }, []);
 
-  // Build query parameters
+  // Build query parameters that match what the backend actually supports
   const queryParams = useMemo(() => {
     const params = new URLSearchParams();
     
+    // Basic search (only searches puzzle IDs)
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    
+    // Supported engagement filters
     if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
     if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
-    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
-    if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
-    if (confidenceMin) params.set('confidenceMin', confidenceMin);
-    if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    
+    // Model filter (only supports single model, not multiple)
+    if (selectedModels.length === 1) params.set('modelName', selectedModels[0]);
+    
+    // Confidence range
+    if (confidenceRange[0] > 0) params.set('confidenceMin', confidenceRange[0].toString());
+    if (confidenceRange[1] < 100) params.set('confidenceMax', confidenceRange[1].toString());
+    
+    // Sorting (supported by backend)
     if (sortBy) params.set('sortBy', sortBy);
     if (sortOrder) params.set('sortOrder', sortOrder);
     
+    // Pagination
     params.set('limit', ITEMS_PER_PAGE.toString());
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [
+    searchQuery, hasExplanationFilter, hasFeedbackFilter, selectedModels,
+    confidenceRange, sortBy, sortOrder, currentPage
+  ]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -140,6 +160,18 @@ export default function PuzzleOverview() {
     setCurrentPage(1);
     refetch();
   }, [refetch]);
+
+  const handleClearAll = useCallback(() => {
+    // Reset only the filters that actually work with the backend
+    setSearchQuery('');
+    setSelectedModels([]);
+    setConfidenceRange([0, 100]);
+    setHasExplanationFilter('all');
+    setHasFeedbackFilter('all');
+    setSortBy('createdAt');
+    setSortOrder('desc');
+    setCurrentPage(1);
+  }, []);
 
   const handleSortChange = useCallback((newSortBy: string) => {
     if (sortBy === newSortBy) {
@@ -286,29 +318,41 @@ export default function PuzzleOverview() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <header className="text-center space-y-4">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden"
+            >
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+            
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
-                <Database className="h-8 w-8" />
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <Database className="h-6 w-6" />
                 Puzzle Database Overview
               </h1>
-              <p className="text-lg text-gray-600">
-                Browse all puzzles and their explanations stored in the database
+              <p className="text-sm text-gray-600">
+                Browse and analyze ARC-AGI puzzles with enhanced filtering
               </p>
             </div>
-            <Link href="/">
-              <Button variant="outline">
-                ← Back to Browser
-              </Button>
-            </Link>
           </div>
-        </header>
+          
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              ← Back to Browser
+            </Button>
+          </Link>
+        </div>
+      </header>
 
-        {/* Statistics Cards */}
+      {/* Statistics Section */}
+      <div className="bg-white border-b border-gray-200 px-4 py-6">
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
@@ -322,32 +366,70 @@ export default function PuzzleOverview() {
           recentActivity={recentActivity}
           saturnResults={saturnResults}
         />
+      </div>
 
-        {/* Search and Filters */}
-        <SearchFilters
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          hasExplanationFilter={hasExplanationFilter}
-          setHasExplanationFilter={setHasExplanationFilter}
-          hasFeedbackFilter={hasFeedbackFilter}
-          setHasFeedbackFilter={setHasFeedbackFilter}
-          modelFilter={modelFilter}
-          setModelFilter={setModelFilter}
-          saturnFilter={saturnFilter}
-          setSaturnFilter={setSaturnFilter}
-          confidenceMin={confidenceMin}
-          setConfidenceMin={setConfidenceMin}
-          confidenceMax={confidenceMax}
-          setConfidenceMax={setConfidenceMax}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSearch={handleSearch}
-          onSortChange={handleSortChange}
-          getSortIcon={getSortIcon}
-        />
+      {/* Active Filters */}
+      <ActiveFilters
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedSources={selectedSources}
+        setSelectedSources={setSelectedSources}
+        gridSizeRange={gridSizeRange}
+        setGridSizeRange={setGridSizeRange}
+        gridConsistency={gridConsistency}
+        setGridConsistency={setGridConsistency}
+        selectedProviders={selectedProviders}
+        setSelectedProviders={setSelectedProviders}
+        selectedModels={selectedModels}
+        setSelectedModels={setSelectedModels}
+        confidenceRange={confidenceRange}
+        setConfidenceRange={setConfidenceRange}
+        processingTimeRange={processingTimeRange}
+        setProcessingTimeRange={setProcessingTimeRange}
+        dateFrom={dateFrom}
+        setDateFrom={setDateFrom}
+        dateTo={dateTo}
+        setDateTo={setDateTo}
+        hasExplanationFilter={hasExplanationFilter}
+        setHasExplanationFilter={setHasExplanationFilter}
+        hasFeedbackFilter={hasFeedbackFilter}
+        setHasFeedbackFilter={setHasFeedbackFilter}
+        saturnFilter={saturnFilter}
+        setSaturnFilter={setSaturnFilter}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+      />
 
-        {/* Puzzle List with Pagination */}
-        <PuzzleList
+      {/* Main content area with sidebar */}
+      <div className="flex h-[calc(100vh-300px)]">
+        {/* Working Filter Sidebar */}
+        {sidebarOpen && (
+          <div className="lg:block hidden">
+            <WorkingFilterSidebar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedModels={selectedModels}
+              setSelectedModels={setSelectedModels}
+              confidenceRange={confidenceRange}
+              setConfidenceRange={setConfidenceRange}
+              hasExplanationFilter={hasExplanationFilter}
+              setHasExplanationFilter={setHasExplanationFilter}
+              hasFeedbackFilter={hasFeedbackFilter}
+              setHasFeedbackFilter={setHasFeedbackFilter}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              onSearch={handleSearch}
+              onClearAll={handleClearAll}
+              resultCount={data?.total}
+              isLoading={isLoading}
+            />
+          </div>
+        )}
+
+        {/* Enhanced Puzzle Grid */}
+        <EnhancedPuzzleGrid
           puzzles={data?.puzzles}
           total={data?.total || 0}
           isLoading={isLoading}
@@ -357,8 +439,37 @@ export default function PuzzleOverview() {
           onFeedbackClick={handleFeedbackClick}
           formatDate={formatDate}
           getConfidenceColor={getConfidenceColor}
+          hasMore={data?.hasMore}
         />
       </div>
+
+      {/* Mobile Filter Drawer */}
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setSidebarOpen(false)}>
+          <div className="fixed left-0 top-0 bottom-0 w-80 bg-white" onClick={(e) => e.stopPropagation()}>
+            <WorkingFilterSidebar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedModels={selectedModels}
+              setSelectedModels={setSelectedModels}
+              confidenceRange={confidenceRange}
+              setConfidenceRange={setConfidenceRange}
+              hasExplanationFilter={hasExplanationFilter}
+              setHasExplanationFilter={setHasExplanationFilter}
+              hasFeedbackFilter={hasFeedbackFilter}
+              setHasFeedbackFilter={setHasFeedbackFilter}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              onSearch={handleSearch}
+              onClearAll={handleClearAll}
+              resultCount={data?.total}
+              isLoading={isLoading}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Feedback Modal */}
       <FeedbackModal
