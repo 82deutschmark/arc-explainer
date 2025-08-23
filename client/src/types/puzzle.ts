@@ -148,11 +148,19 @@ export interface ExplanationData {
 }
 
 /**
+ * A single test case for a puzzle, with an input and an output grid.
+ */
+export interface TestCase {
+  input: number[][];
+  output: number[][];
+}
+
+/**
  * Props for the AnalysisResultCard component
  */
 export interface AnalysisResultCardProps {
   modelKey: string;
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
-  expectedOutputGrid?: number[][] | number[][][]; // Correct answer grid(s) from the original task (single grid or array for multiple test cases)
+  testCases: TestCase[]; // Pass the full test array, ensuring the card has all necessary data
 }

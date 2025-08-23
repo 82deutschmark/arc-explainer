@@ -480,44 +480,16 @@ export default function PuzzleExaminer() {
           {explanations.length > 0 && (
             <div className="mt-4">
               <h4 className="text-lg font-semibold mb-2">Analysis Results</h4>
-              
-              {/* Database Explanations Section */}
-              {explanations.filter(exp => exp.id !== undefined).length > 0 && (
-                <div className="mb-4">
-                  <h5 className="text-md font-medium text-blue-800 mb-2">Database Explanations</h5>
-                  <div className="space-y-3">
-                    {explanations
-                      .filter(explanation => explanation.id !== undefined)
-                      .map((explanation) => (
-                        <AnalysisResultCard
-                          key={explanation.id}
-                          modelKey={explanation.modelName}
-                          result={explanation}
-                          expectedOutputGrid={task.test && task.test.length > 0 ? (task.test.length === 1 ? task.test[0].output : task.test.map(t => t.output)) : undefined}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* AI Generated Explanations Section */}
-              {explanations.filter(exp => exp.id === undefined).length > 0 && (
-                <div>
-                  <h5 className="text-md font-medium text-green-800 mb-2">AI Generated Explanations</h5>
-                  <div className="space-y-3">
-                    {explanations
-                      .filter(explanation => explanation.id === undefined)
-                      .map((explanation, index) => (
-                        <AnalysisResultCard
-                          key={`generated-${index}`}
-                          modelKey={explanation.modelName}
-                          result={explanation}
-                          expectedOutputGrid={task.test && task.test.length > 0 ? (task.test.length === 1 ? task.test[0].output : task.test.map(t => t.output)) : undefined}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
+              <div className="space-y-3">
+                {explanations.map((explanation) => (
+                  <AnalysisResultCard
+                    key={explanation.id} // All explanations are from DB and have an ID
+                    modelKey={explanation.modelName}
+                    result={explanation}
+                    testCases={task.test} // Pass the full test array
+                  />
+                ))}
+              </div>
             </div>
           )}
         </CardContent>
