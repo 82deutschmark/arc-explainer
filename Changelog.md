@@ -1,3 +1,13 @@
+## Version 1.7.4 — DB Type Safety Fix (2025-08-23)
+
+### 🐛 Bug Fixes (Code by Cascade)
+- **DB Type Safety**: Fixed a critical bug causing `500 Internal Server Errors` when fetching explanations.
+  - **Root Cause**: The database driver returned `estimated_cost` (a `DECIMAL` type) as a string to preserve precision, but the Zod validation schema expected a `number`, causing a type mismatch error.
+  - **Solution**: Explicitly parsed the `estimated_cost` string to a floating-point number in the `ExplanationsRepository` before validation. This ensures type consistency between the database and application layers.
+  - **Impact**: The explanations API endpoint is now stable and correctly handles numeric data from the database.
+
+---
+
 ## Version 1.7.3 — Database Service Refactor Complete (2025-08-23)
 
 ### 🚀 Major Architectural Improvement (Code by Cascade)
