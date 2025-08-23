@@ -311,6 +311,24 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
         </Button>
       </div>
       
+      {/* Raw DB record viewer - moved above puzzle grid rendering */}
+      {showRawDb && (
+        <div className="bg-gray-50 border border-gray-200 rounded">
+          <div className="p-3 border-b border-gray-200 flex items-center justify-between">
+            <h5 className="font-semibold text-gray-800">Raw DB record</h5>
+            <Badge variant="outline" className="text-xs bg-gray-50">
+              {result.id ? `id: ${result.id}` : 'unsaved'}
+            </Badge>
+          </div>
+          <div className="p-3 max-h-64 overflow-y-auto">
+            <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+{JSON.stringify(result, null, 2)}
+            </pre>
+          </div>
+          <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
+        </div>
+      )}
+      
       {/* Handle empty response case */}
       {isEmptyResult && (
         <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
@@ -704,24 +722,6 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
               </div>
             </div>
           ) : null}
-
-          {/* Raw DB record viewer */}
-          {showRawDb && (
-            <div className="bg-gray-50 border border-gray-200 rounded">
-              <div className="p-3 border-b border-gray-200 flex items-center justify-between">
-                <h5 className="font-semibold text-gray-800">Raw DB record</h5>
-                <Badge variant="outline" className="text-xs bg-gray-50">
-                  {result.id ? `id: ${result.id}` : 'unsaved'}
-                </Badge>
-              </div>
-              <div className="p-3 max-h-64 overflow-y-auto">
-                <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
-{JSON.stringify(result, null, 2)}
-                </pre>
-              </div>
-              <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
-            </div>
-          )}
         </div>
       )}
       
