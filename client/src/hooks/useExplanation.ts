@@ -14,7 +14,7 @@ interface ExplanationStatus {
   hasExplanation: boolean;
 }
 
-// This is the raw data structure from the backend API, using snake_case
+// This is the raw data structure from the backend API - now using camelCase (fixed)
 interface RawExplanationData {
   id: number;
   puzzleId: string;
@@ -23,10 +23,18 @@ interface RawExplanationData {
   solvingStrategy: string;
   hints: string[];
   alienMeaning: string;
+  alienMeaningConfidence: number;
   confidence: number;
-  helpful_votes: number | null;
-  not_helpful_votes: number | null;
+  helpfulCount: number;
+  notHelpfulCount: number;
+  totalFeedback: number;
   createdAt: string;
+  saturnImages: any;
+  saturnSuccess: boolean | null;
+  predictedOutputGrid: any;
+  isPredictionCorrect: boolean | null;
+  apiProcessingTimeMs: number;
+  hasReasoningLog: boolean;
 }
 
 /**
@@ -64,12 +72,12 @@ export function useExplanations(puzzleId: string | null) {
         const json = await response.json();
         const rawData: RawExplanationData[] = Array.isArray(json.data) ? json.data : [];
 
-        // Transform snake_case from the API to camelCase for our app
+        // API already returns camelCase - just add explanationId mapping
         return rawData.map(raw => ({
           ...raw,
-          helpfulVotes: raw.helpful_votes,
-          notHelpfulVotes: raw.not_helpful_votes,
-          explanationId: raw.id, // Ensure explanationId is mapped
+          helpfulVotes: raw.helpfulCount,
+          notHelpfulVotes: raw.notHelpfulCount,
+          explanationId: raw.id, // Ensure explanationId is mapped for feedback components
         }));
       } catch (error) {
         console.error("Error fetching explanations:", error);
