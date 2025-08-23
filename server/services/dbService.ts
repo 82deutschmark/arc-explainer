@@ -28,6 +28,34 @@ const normalizeConfidence = (confidence: any): number => {
   return 50; // Default fallback
 };
 
+// Safe JSON serialization helper to prevent "[object Object]" errors
+const safeJsonStringify = (value: any): string | null => {
+  if (!value) return null;
+  
+  // If already a string, try to parse it first to validate it's proper JSON
+  if (typeof value === 'string') {
+    try {
+      JSON.parse(value); // Validate it's proper JSON
+      return value;
+    } catch {
+      // If not valid JSON, treat as invalid and return null
+      return null;
+    }
+  }
+  
+  // If it's an array or object, stringify it
+  if (Array.isArray(value) || typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch (error) {
+      logger.error(`Failed to stringify value: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return null;
+    }
+  }
+  
+  return null;
+};
+
 /**
  * Interface for puzzle explanations
  */
@@ -475,8 +503,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         totalTokens ?? null,
         estimatedCost ?? null,
         // Multi-output prediction fields (safe fallbacks)
-        multiplePredictedOutputs && multiplePredictedOutputs.length > 0 ? JSON.stringify(multiplePredictedOutputs) : null,
-        multiTestResults && multiTestResults.length > 0 ? JSON.stringify(multiTestResults) : null,
+        safeJsonStringify(multiplePredictedOutputs),
+        safeJsonStringify(multiTestResults),
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]
