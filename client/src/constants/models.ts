@@ -99,7 +99,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-emerald-500', 
     premium: true,
     cost: { input: '$1.25', output: '$10.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: true
