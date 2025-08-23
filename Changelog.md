@@ -8,7 +8,7 @@
 ### 🐛 Bug Fixes (Code by Cascade)
 - **API:** Fixed 500 Internal Server Errors on explanation endpoints by refactoring `explanationService.ts` to use the new repository-based data access layer. Replaced legacy database calls with `explanationsRepository.getWithFeedbackCounts` and `explanationsRepository.save`.
 - **UI:** Resolved a runtime crash on the Puzzle Overview page by removing an invalid `SelectItem` with an empty value from the AI Model Filter in `WorkingFilterSidebar.tsx`. The component now correctly uses the `placeholder` prop for the 'All Models' option.
-- **DB:** Fixed a persistent `malformed array literal` error by adding robust JSON parsing in `explanationService.ts`. This ensures that stringified array fields from AI model responses (like `hints`) are correctly parsed into native arrays before being saved to the database.
+- **DB:** Fixed an `invalid input syntax for type json` error in the explanations repository by ensuring all `jsonb` fields are explicitly stringified before being passed to the database. This prevents errors caused by passing non-JSON string data to `jsonb` columns.
 - **Corrected Data Access Logic**: Fixed data access logic in `puzzleService` and `feedbackService` to correctly handle data shapes returned by the new repository layer (e.g., `snake_case` vs. `camelCase` properties, `Array` vs. `Map` return types).
 - **Restored Frontend Functionality**: The refactoring and bug fixes have restored full functionality to the puzzle overview and feedback systems, which were previously broken due to the inconsistent data access patterns.
 
