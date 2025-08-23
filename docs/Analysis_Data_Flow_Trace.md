@@ -82,7 +82,32 @@ The process is broken down into two main parts: the Frontend (what happens in th
     *   **Where**: `server/services/responseValidator.ts`.
     *   **What**: After the AI model responds, its output is passed to the `responseValidator`. This service extracts the predicted grid(s) from the JSON response and compares them to the actual correct output grids from the puzzle file. It calculates correctness and accuracy scores.
 
-6.  **Saving to the Database**
+6.  **Validate & Save**
+    *   **Where**: `puzzleController.ts` calls validation services and then `explanationService.saveExplanation`.
+    *   **What**: The AI response is validated and then saved to the database.
+
+    **Detailed Step 6 Process:**
+
+    6a. **Response Validation** - The controller determines whether this is a single-test or multi-test puzzle:
+        - For **single test cases**: Calls `validateSolverResponse()` which extracts the predicted grid from the AI response and validates it against the expected output.
+        - For **multi-test cases**: Calls `validateSolverResponseMulti()` which:
+          - Extracts multiple predicted grids using the new `multiplePredictedOutputs` format
+          - Validates each prediction against its corresponding expected output  
+          - Returns aggregated results including accuracy scores and correctness flags
+
+    6b. **Field Mapping** - The controller maps validation results to database-compatible field names:
+        - `multi.predictedGrids` → `result.multiplePredictedOutputs`
+        - `multi.itemResults` → `result.multiTestResults` 
+        - `multi.allCorrect` → `result.multiTestAllCorrect`
+        - `multi.averageAccuracyScore` → `result.multiTestAverageAccuracy`
+
+    6c. **Database Persistence** - `explanationService.saveExplanation()` calls `dbService.saveExplanation()` which:
+        - Inserts the explanation into the `explanations` table
+        - For multi-output cases, stores additional columns:
+          - `multiple_predicted_outputs` (JSONB) - Array of predicted grids
+          - `multi_test_results` (JSONB) - Detailed validation results for each test case
+          - `multi_test_all_correct` (BOOLEAN) - Whether all predictions were correct
+          - `multi_test_average_accuracy` (FLOAT) - Average accuracy across all test cases
     *   **Where**: `server/services/dbService.ts`.
     *   **What**: The controller takes the full, validated result—including the AI's text explanation, the predicted grids, correctness flags, and performance scores—and calls `dbService.saveExplanation`.
     *   **Action**: This service function inserts a new record into the `explanations` table in the PostgreSQL database.
