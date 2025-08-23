@@ -5,6 +5,35 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
+## Version 1.6.12 — BatchTesting Component Rewrite & Bug Fixes (2025-08-23)
+
+### 🔧 Major Rewrite (Code by Cascade)
+- **BatchTesting Component Complete Rewrite**: Rebuilt to mirror PuzzleExaminer.tsx architecture for consistency
+  - **Real Model Integration**: Uses actual `MODELS` from `@/constants/models` instead of hardcoded array
+  - **Provider-Grouped Models**: Models organized by provider (OpenAI, Anthropic, Google, etc.) with badges for Premium/Reasoning
+  - **Full PromptPicker Integration**: Complete prompt template system with researcher options built-in
+  - **GPT-5 Reasoning Controls**: 4 effort levels × 3 verbosity levels × 2 summary types for reasoning models
+  - **Temperature Controls**: Context-aware temperature slider only for models that support it
+  - **Model Capabilities**: Shows cost information, response time estimates, and feature detection
+
+- **Backend Service Enhancement**: Extended BatchService to support all PuzzleExaminer parameters
+  - **Reasoning Parameters**: Full support for GPT-5 reasoning (effort, verbosity, summary type)
+  - **Emoji Grid Support**: All emoji sets from the project with proper parameter forwarding
+  - **Analysis Options**: Omit answer toggle, custom prompts, temperature control per model type
+  - **Request Format Matching**: Ensures batch requests match exactly with PuzzleExaminer format
+
+### 🐛 Critical Bug Fixes (Code by Cascade)
+- **WebSocket Connection Fixed**: Corrected URL from `/ws/batch/` to `/api/batch/progress?batchId=` to match wsService expectations
+- **API Parameter Fix**: Changed `dataset` to `datasetPath` in batch start request to match backend controller expectations
+- **PromptPicker Props**: Fixed prop names from `promptId/onPromptIdChange` to `selectedPromptId/onPromptChange`
+- **Configuration Object**: Proper forwarding of all analysis parameters including reasoning options
+
+### 🎯 UI Improvements (Code by Cascade)
+- **Professional Model Selection**: Model cards with provider colors, capability badges, and cost information
+- **Contextual Controls**: Temperature slider only appears for compatible models, reasoning controls only for GPT-5
+- **Integrated Options**: Researcher options (emojis, omit answer) moved into PromptPicker for consistency
+- **Better UX**: Loading states, error handling, and proper validation throughout
+
 ## Version 1.6.11 — Web-Based Batch Testing System (2025-08-23)
 
 ### 🚀 Major Features (Code by Cascade)

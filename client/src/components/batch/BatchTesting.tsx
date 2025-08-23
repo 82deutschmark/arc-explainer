@@ -144,7 +144,7 @@ export function BatchTesting() {
 
     const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
     const wsHost = import.meta.env.DEV ? 'localhost:5000' : location.host;
-    const wsUrl = `${wsProtocol}://${wsHost}/ws/batch/${batchId}`;
+    const wsUrl = `${wsProtocol}://${wsHost}/api/batch/progress?batchId=${batchId}`;
     wsRef.current = new WebSocket(wsUrl);
 
     wsRef.current.onopen = () => {
@@ -220,7 +220,7 @@ export function BatchTesting() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          dataset: selectedDataset,
+          datasetPath: selectedDataset,
           model: selectedModel,
           config
         })
