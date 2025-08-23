@@ -7,6 +7,19 @@
 
 August 24, 2025
 
+## Version 1.6.12 — Multi-Test Puzzle Display Fix (2025-08-24)
+
+### 🚀 Major UI Fix (Code by Claude)
+- **Multi-Test Puzzle Display**: Fixed AnalysisResultCard component to properly handle puzzles with multiple test cases.
+  - **Root Issue**: Component failed to display puzzles like `17b866bd` that have 2+ test cases, showing only first expected output.
+  - **Key Changes**:
+    - Changed condition from `hasPredictedGrids && expectedOutputGrids.length > 1` to `expectedOutputGrids.length > 1`
+    - Added support for both current and documented field names (`allPredictionsCorrect`/`multiTestAllCorrect`)
+    - Robust iteration over all expected test cases regardless of prediction availability
+    - Smart layout: two-column when predictions exist, centered single-column when missing
+    - Explicit separation of multi-test vs single-test display logic
+  - **Impact**: Multi-test puzzles now display correctly whether AI provided predictions or not, showing all test cases instead of just the first.
+
 ## Version 1.6.11 — Raw DB Record Display Position Fix (2025-08-24)
 
 ### 🚀 UI/UX Improvements (Code by Claude)

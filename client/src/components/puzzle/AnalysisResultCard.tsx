@@ -548,25 +548,28 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
           )}
 
           {/* Multi-test answer display */}
-          {hasPredictedGrids && expectedOutputGrids.length > 1 ? (
+          {expectedOutputGrids.length > 1 ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-3">
-                <h5 className="font-semibold text-gray-800">Test Results ({predictedGrids?.length || 0} predictions)</h5>
-                {result.allPredictionsCorrect !== undefined && (
+                <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests)</h5>
+                {/* Support both field name variants */}
+                {(result.allPredictionsCorrect !== undefined || result.multiTestAllCorrect !== undefined) && (
                   <Badge 
                     variant="outline" 
-                    className={`text-xs ${result.allPredictionsCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                    className={`text-xs ${(result.allPredictionsCorrect ?? result.multiTestAllCorrect) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
                   >
-                    {result.allPredictionsCorrect ? 'All predictions correct' : 'Some predictions incorrect'}
+                    {(result.allPredictionsCorrect ?? result.multiTestAllCorrect) ? 'All predictions correct' : 'Some predictions incorrect'}
                   </Badge>
                 )}
-                {result.averagePredictionAccuracyScore !== undefined && (
+                {(result.averagePredictionAccuracyScore !== undefined || result.multiTestAverageAccuracy !== undefined) && (
                   <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                    Avg Score: {Math.round(result.averagePredictionAccuracyScore * 100)}%
+                    Avg Score: {Math.round((result.averagePredictionAccuracyScore ?? result.multiTestAverageAccuracy ?? 0) * 100)}%
                   </Badge>
                 )}
               </div>
-              {predictedGrids?.map((predGrid, testIndex) => {
+              {/* Iterate over all test cases, whether predictions exist or not */}
+              {Array.from({ length: expectedOutputGrids.length }).map((_, testIndex) => {
+                const predGrid = predictedGrids?.[testIndex];
                 const expectedGrid = expectedOutputGrids[testIndex];
                 const validation = multiValidation?.[testIndex];
                 const isCorrect = validation?.isPredictionCorrect;
@@ -593,32 +596,42 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
                         </Badge>
                       )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h6 className="font-semibold text-emerald-800">Predicted</h6>
-                        </div>
-                        <div className="flex items-center justify-center">
-                          {predGrid ? (
+                    {predGrid ? (
+                      // Show both prediction and expected when prediction exists
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h6 className="font-semibold text-emerald-800">Predicted</h6>
+                          </div>
+                          <div className="flex items-center justify-center">
                             <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={showDiff ? testDiffMask : undefined} />
-                          ) : (
-                            <div className="text-sm text-gray-500 p-4">No prediction found</div>
-                          )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="bg-green-50 border border-green-200 rounded p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h6 className="font-semibold text-green-800">Expected</h6>
-                        </div>
-                        <div className="flex items-center justify-center">
-                          {expectedGrid ? (
+                        <div className="bg-green-50 border border-green-200 rounded p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h6 className="font-semibold text-green-800">Expected</h6>
+                          </div>
+                          <div className="flex items-center justify-center">
                             <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
-                          ) : (
-                            <div className="text-sm text-gray-500 p-4">No expected output</div>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      // Show only expected output centered when no prediction
+                      <div className="flex justify-center">
+                        <div className="bg-green-50 border border-green-200 rounded p-3 max-w-md">
+                          <div className="flex items-center gap-2 mb-2 justify-center">
+                            <h6 className="font-semibold text-green-800">Expected Answer</h6>
+                            <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
+                              No prediction
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -639,7 +652,7 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
                 )}
               </div>
             </div>
-          ) : predictedGrid && expectedOutputGrids.length > 0 ? (
+          ) : predictedGrid && expectedOutputGrids.length === 1 ? (
             /* Single test case display */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
@@ -712,7 +725,7 @@ export function AnalysisResultCard({ modelKey, result, model, testCases }: Analy
                 <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
               </div>
             </div>
-          ) : expectedOutputGrids.length > 0 ? (
+          ) : expectedOutputGrids.length === 1 ? (
             <div className="bg-green-50 border border-green-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
