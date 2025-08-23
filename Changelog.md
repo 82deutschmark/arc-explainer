@@ -7,6 +7,22 @@
 
 August 24, 2025
 
+## Version 1.6.11 — Raw DB Record Display Position Fix (2025-08-24)
+
+### 🚀 UI/UX Improvements (Code by Claude)
+- **Raw DB Record Position**: Moved raw database record display above puzzle grid rendering when enabled.
+  - **Context**: The "Show raw DB record" option in `AnalysisResultCard` component was previously displayed at the bottom after all analysis content.
+  - **Change**: Raw DB record now appears immediately after the header badges but before the pattern description and puzzle grids.
+  - **Benefits**: Users can quickly see the raw data structure before analyzing the visual puzzle grids and analysis content.
+
+## Version 1.6.10 — Database JSON Parsing Error Fix (2025-08-24)
+
+### 🚀 Fixes & Improvements (Code by Cascade)
+- **Database JSON Parsing Error Fix**: Fixed server crashes caused by malformed JSON data in database queries.
+  - **Root Cause**: The `dbService.ts` was calling `JSON.parse()` directly on database fields without error handling, causing crashes when encountering corrupted JSON data.
+  - **Solution**: Added `safeJsonParse()` helper function in `server/services/dbService.ts` that catches JSON parsing errors and logs them while returning `null` for invalid data.
+  - **Impact**: Server now handles malformed JSON gracefully without crashing, improving system stability.
+
 ## Version 1.6.9 — Analysis Results Card Multi-Test Fix (2025-08-24)
 
 ### 🚀 Fixes & Improvements (Code by Cascade)
