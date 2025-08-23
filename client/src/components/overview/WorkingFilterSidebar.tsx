@@ -144,7 +144,6 @@ export function WorkingFilterSidebar(props: WorkingFilterSidebarProps) {
                   <SelectValue placeholder="All Models" />
                 </SelectTrigger>
                 <SelectContent className="max-h-80">
-                  <SelectItem value="">All Models</SelectItem>
                   {MODELS.map((model) => (
                     <SelectItem key={model.key} value={model.key}>
                       {model.name} ({model.provider})
