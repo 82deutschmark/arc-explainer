@@ -493,6 +493,16 @@ export function validateSolverResponseMulti(
     };
   }
 
+  // DEBUG: Log actual response structure
+  console.log('[VALIDATOR] validateSolverResponseMulti input:', {
+    responseKeys: Object.keys(response || {}),
+    hasPredictedOutputs: !!(response?.predictedOutputs),
+    predictedOutputsType: typeof response?.predictedOutputs,
+    predictedOutputsIsArray: Array.isArray(response?.predictedOutputs),
+    predictedOutputsValue: response?.predictedOutputs,
+    solvingStrategyLength: response?.solvingStrategy?.length || 0
+  });
+
   // Collect candidate predicted grids
   let predictedGrids: (number[][] | null)[] = [];
   let extractionMethod = '';

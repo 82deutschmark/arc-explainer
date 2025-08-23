@@ -17,7 +17,8 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, HelpCircle, Edit3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, HelpCircle, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/queryClient';
 import { EMOJI_SET_INFO } from '@/lib/spaceEmojis';
@@ -59,6 +60,7 @@ export function PromptPicker({
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Fetch available prompts on component mount
   useEffect(() => {
@@ -114,21 +116,47 @@ export function PromptPicker({
   return (
     <Card className="mb-4">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          Explanation Style
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <HelpCircle className="h-4 w-4 text-gray-500" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs">Choose how you want the AI to explain the puzzle solution. Different styles provide different perspectives and detail levels.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Explanation Style
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <HelpCircle className="h-4 w-4 text-gray-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">Choose how you want the AI to explain the puzzle solution. Different styles provide different perspectives and detail levels.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="h-auto p-2"
+            disabled={disabled}
+          >
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+        {!isExpanded && (
+          <div className="mt-2">
+            <Badge variant="outline" className="text-xs">
+              {selectedPromptId === 'solver' ? '🎯 Solver Mode' : 
+               selectedPromptId === 'alienCommunication' ? '🛸 Alien Communication' :
+               selectedPromptId === 'educationalApproach' ? '🎓 Educational' :
+               selectedPromptId === 'custom' ? '🔧 Custom' : '📝 Explanation'}
+            </Badge>
+          </div>
+        )}
       </CardHeader>
-      <CardContent>
+      {isExpanded && (
+        <CardContent>
         <RadioGroup
           value={selectedPromptId}
           onValueChange={onPromptChange}
@@ -268,7 +296,8 @@ export function PromptPicker({
             )}
           </div>
         )}
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }
