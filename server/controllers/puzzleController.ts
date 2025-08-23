@@ -136,6 +136,12 @@ export const puzzleController = {
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
+        
+        // Store in database-compatible field names for multi-output prediction edge case
+        result.multiplePredictedOutputs = multi.predictedGrids;
+        result.multiTestResults = multi.itemResults;
+        result.multiTestAllCorrect = multi.allCorrect;
+        result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
         console.log(`[Controller] Solver multi-test: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
