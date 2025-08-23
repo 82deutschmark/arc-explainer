@@ -88,15 +88,28 @@ export class GrokService {
 
     // Build prompt using shared prompt builder (refactored)
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: basePrompt }],
         response_format: { type: "json_object" },
       };
+
+      // Create message array with proper system/user prompt structure
+      if (systemPromptMode === 'ARC' && systemPrompt) {
+        // ARC mode: use proper system/user message structure
+        requestOptions.messages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ];
+      } else {
+        // Legacy mode: combine prompts in user message
+        requestOptions.messages = [{ role: "user", content: userPrompt }];
+      }
 
       // Grok 4 reasoning models don't support temperature, presence_penalty, frequency_penalty, or stop
       if (!REASONING_MODELS.has(modelKey)) {
@@ -243,15 +256,26 @@ export class GrokService {
 
     // Build prompt using shared builder
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     // Grok uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
+
+    // Show correct message structure based on system prompt mode
+    if (systemPromptMode === 'ARC' && systemPrompt) {
+      messageFormat.messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ];
+    } else {
+      messageFormat.messages = [{ role: "user", content: userPrompt }];
+    }
 
     const providerSpecificNotes = [
       "Uses xAI API with OpenAI SDK compatibility",
@@ -279,8 +303,9 @@ export class GrokService {
     return {
       provider: "xAI Grok",
       modelName,
-      promptText: basePrompt,
+      promptText: systemPromptMode === 'ARC' ? `SYSTEM: ${systemPrompt}\n\nUSER: ${userPrompt}` : userPrompt,
       messageFormat,
+      systemPromptMode,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
         name: selectedTemplate?.name || "Custom Prompt",
