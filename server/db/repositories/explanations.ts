@@ -151,6 +151,52 @@ export class ExplanationsRepository {
   }
 
   /**
+   * Get ALL explanations with optimized feedback counts.
+   * This is a crucial method for the main puzzle overview page.
+   * @returns All explanations with their associated feedback statistics.
+   */
+  async getAllWithFeedbackCounts(): Promise<ExplanationWithFeedback[]> {
+    const sql = `
+      SELECT 
+        e.*,
+        COALESCE(f.helpful_count, 0)::integer as helpful_count,
+        COALESCE(f.not_helpful_count, 0)::integer as not_helpful_count,
+        COALESCE(f.total_feedback, 0)::integer as total_feedback
+      FROM explanations e
+      LEFT JOIN (
+        SELECT 
+          explanation_id,
+          COUNT(*) FILTER (WHERE vote_type = 'helpful')::integer as helpful_count,
+          COUNT(*) FILTER (WHERE vote_type = 'not_helpful')::integer as not_helpful_count,
+          COUNT(*)::integer as total_feedback
+        FROM feedback
+        GROUP BY explanation_id
+      ) f ON e.id = f.explanation_id
+      ORDER BY e.created_at DESC
+    `;
+
+    try {
+      const rows = await this.db.query(sql);
+      return rows.map(row => {
+        const transformedRow = {
+          ...row,
+          hints: this.parseJsonField(row.hints, []),
+          saturn_images: this.parseJsonField(row.saturn_images, null),
+          predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
+          helpful_count: parseInt(String(row.helpful_count)) || 0,
+          not_helpful_count: parseInt(String(row.not_helpful_count)) || 0,
+          total_feedback: parseInt(String(row.total_feedback)) || 0,
+          api_processing_time_ms: row.api_processing_time_ms ?? 0
+        };
+        return ExplanationWithFeedbackSchema.parse(transformedRow);
+      });
+    } catch (error) {
+      logger.error(`Failed to get all explanations with feedback counts: ${(error as Error).message}`, 'explanations-repo');
+      throw error;
+    }
+  }
+
+  /**
    * Get explanation by ID with type safety
    * @param id Explanation ID
    * @returns Parsed explanation row or null

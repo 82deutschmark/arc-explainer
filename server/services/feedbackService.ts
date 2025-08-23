@@ -28,22 +28,23 @@ export const feedbackService = {
     
     try {
       // First, record the feedback
-      const feedbackId = await getDatabaseService().addFeedback(
-        numericExplanationId,
-        voteType as 'helpful' | 'not_helpful',
+      const result = await getDatabaseService().feedback.add({
+        explanationId: numericExplanationId,
+        voteType: voteType as 'helpful' | 'not_helpful',
         comment
-      );
+      });
+      const feedbackId = result.id;
       
       // If feedback is "not helpful", trigger retry analysis
       if (voteType === 'not_helpful') {
         try {
           // Get the original explanation to extract puzzle details
-          const originalExplanation = await getDatabaseService().getExplanationById(numericExplanationId);
+          const originalExplanation = await getDatabaseService().explanations.getById(numericExplanationId);
           if (originalExplanation) {
             // Trigger retry analysis with user feedback as guidance
             await explanationService.retryAnalysis(
-              originalExplanation.puzzleId,
-              originalExplanation.modelName,
+              originalExplanation.puzzle_id,
+              originalExplanation.model_name,
               comment // User feedback as guidance for improvement
             );
           }
@@ -77,6 +78,45 @@ export const feedbackService = {
    * @param comment - User's comment
    * @throws AppError if validation fails
    */
+  /**
+   * Get feedback for a specific explanation
+   * 
+   * @param explanationId - The ID of the explanation
+   * @returns A list of feedback entries
+   */
+  async getFeedbackForExplanation(explanationId: number) {
+    return await getDatabaseService().feedback.getForExplanation(explanationId);
+  },
+
+  /**
+   * Get feedback for a specific puzzle
+   * 
+   * @param puzzleId - The ID of the puzzle
+   * @returns A list of feedback entries
+   */
+  async getFeedbackForPuzzle(puzzleId: string) {
+    return await getDatabaseService().feedback.getForPuzzle(puzzleId);
+  },
+
+  /**
+   * Get all feedback with optional filters
+   * 
+   * @param filters - Filtering criteria
+   * @returns A list of all feedback entries matching the criteria
+   */
+  async getAllFeedback(filters: any) {
+    return await getDatabaseService().feedback.getAllWithFilters(filters);
+  },
+
+  /**
+   * Get feedback summary statistics
+   * 
+   * @returns An object with feedback statistics
+   */
+  async getFeedbackStats() {
+    return await getDatabaseService().feedback.getSummaryStats();
+  },
+
   validateFeedback(explanationId: any, voteType: string, comment: string) {
     const MINIMUM_COMMENT_LENGTH = 20;
     

@@ -10,7 +10,6 @@
 import { Request, Response } from 'express';
 import { feedbackService } from '../services/feedbackService';
 import { formatResponse } from '../utils/responseFormatter';
-import { getDatabaseService } from '../db/index.js';
 import type { FeedbackFilters } from '../../shared/types';
 
 export const feedbackController = {
@@ -49,7 +48,7 @@ export const feedbackController = {
       return res.status(400).json(formatResponse.error('Invalid explanation ID', 'The explanation ID must be a valid number'));
     }
 
-    const feedback = await getDatabaseService().getFeedbackForExplanation(explanationIdNum);
+    const feedback = await feedbackService.getFeedbackForExplanation(explanationIdNum);
     res.json(formatResponse.success(feedback));
   },
 
@@ -62,7 +61,7 @@ export const feedbackController = {
   async getByPuzzle(req: Request, res: Response) {
     const { puzzleId } = req.params;
 
-    const feedback = await getDatabaseService().getFeedbackForPuzzle(puzzleId);
+    const feedback = await feedbackService.getFeedbackForPuzzle(puzzleId);
     res.json(formatResponse.success(feedback));
   },
 
@@ -90,7 +89,7 @@ export const feedbackController = {
       }
     });
 
-    const feedback = await getDatabaseService().getAllFeedback(filters);
+    const feedback = await feedbackService.getAllFeedback(filters);
     res.json(formatResponse.success(feedback));
   },
 
@@ -101,7 +100,7 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async getStats(req: Request, res: Response) {
-    const stats = await getDatabaseService().getFeedbackSummaryStats();
+    const stats = await feedbackService.getFeedbackStats();
     res.json(formatResponse.success(stats));
   }
 };

@@ -1,3 +1,16 @@
+## Version 1.7.3 — Database Service Refactor Complete (2025-08-23)
+
+### 🚀 Major Architectural Improvement (Code by Cascade)
+- **Database Service Refactor**: Finalized the transition to a strict, layered architecture by removing the legacy database compatibility layer from `server/db/index.ts`.
+- **Consistent Service Layer Usage**: Refactored all controllers and services (`puzzleController`, `feedbackService`, `puzzleService`) to exclusively use the new repository-based data access patterns, improving code consistency and maintainability.
+- **Lint Error Resolution**: Fixed all TypeScript linting errors that arose from the architectural changes, ensuring a clean and maintainable codebase.
+
+### 🐛 Bug Fixes (Code by Cascade)
+- **Corrected Data Access Logic**: Fixed data access logic in `puzzleService` and `feedbackService` to correctly handle data shapes returned by the new repository layer (e.g., `snake_case` vs. `camelCase` properties, `Array` vs. `Map` return types).
+- **Restored Frontend Functionality**: The refactoring and bug fixes have restored full functionality to the puzzle overview and feedback systems, which were previously broken due to the inconsistent data access patterns.
+
+---
+
 ## Version 1.7.2 — Logger Signature Fix (2025-08-23)
 
 ### 🐛 Bug Fixes (Code by Cascade)
