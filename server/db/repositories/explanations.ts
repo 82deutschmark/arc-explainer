@@ -190,6 +190,7 @@ export class ExplanationsRepository {
       return rows.map(row => {
         const transformedRow = {
           ...row,
+          estimated_cost: row.estimated_cost ? parseFloat(String(row.estimated_cost)) : null,
           hints: row.hints || [], // Already an array from the DB driver
           saturn_images: this.parseJsonField(row.saturn_images, null),
           predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
@@ -276,6 +277,7 @@ export class ExplanationsRepository {
         // Transform row data with manual type conversion
         const transformedRow = {
           ...row,
+          estimated_cost: row.estimated_cost ? parseFloat(String(row.estimated_cost)) : null,
           hints: row.hints || [], // Already an array from the DB driver
           saturn_images: this.parseJsonField(row.saturn_images, null),
           predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null),
@@ -444,6 +446,7 @@ export class ExplanationsRepository {
       
       return rows.map(row => ExplanationWithFeedbackSchema.parse({
         ...row,
+        estimated_cost: row.estimated_cost ? parseFloat(String(row.estimated_cost)) : null,
         hints: row.hints || [], // Already an array from the DB driver
         saturn_images: this.parseJsonField(row.saturn_images, null),
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null)
