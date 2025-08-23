@@ -122,6 +122,18 @@ export interface ExplanationData {
   isPredictionCorrect?: boolean; // Whether prediction matches correct answer
   predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
   extractionMethod?: string; // Method used to extract the grid
+  // Multi-test validation fields (set by backend controller for multi-test cases)
+  predictedOutputGrids?: (number[][] | null)[]; // Array of predicted grids from validateSolverResponseMulti
+  multiValidation?: Array<{ // Individual validation results from itemResults
+    index: number;
+    predictedGrid: number[][] | null;
+    isPredictionCorrect: boolean;
+    predictionAccuracyScore: number; // Trustworthiness score (0-1) for this specific test
+    extractionMethod?: string;
+    expectedDimensions?: { rows: number; cols: number };
+  }>;
+  allPredictionsCorrect?: boolean; // Whether all test predictions are correct (from allCorrect)
+  averagePredictionAccuracyScore?: number; // Average trustworthiness across all tests (from averageAccuracyScore)
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
