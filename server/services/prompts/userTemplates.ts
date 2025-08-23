@@ -1,14 +1,27 @@
 /**
  * server/services/prompts/userTemplates.ts
  * 
- * Simplified user prompt templates that focus on delivering clean puzzle data.
- * These work in conjunction with system prompts to separate concerns properly.
+ * IMPORTANT TERMINOLOGY CLARIFICATION FOR DEVELOPERS:
+ * 
+ * This file handles "USER PROMPTS" in the LLM prompting system - NOT app user prompts!
+ * In LLM terminology:
+ * - SYSTEM PROMPT (system role): Instructions for the AI about how to behave
+ * - USER PROMPT (user role): The actual data/question sent to the AI
+ * - ASSISTANT PROMPT (assistant role): The AI's response
+ * 
+ * WHAT OUR APP USERS CALL "CUSTOM PROMPTS" are actually:
+ * - Combined system + user prompts that get sent to the LLM
+ * - These replace the default template instructions
+ * - The user is essentially providing both AI instructions AND puzzle data formatting
+ * 
+ * This file specifically handles the "user role" part that delivers clean puzzle data.
+ * The AI role/behavior instructions come from systemPrompts.ts (system role).
  * 
  * Key Features:
- * - Clean puzzle data presentation
+ * - Clean puzzle data presentation for the LLM
  * - Minimal formatting instructions
  * - Template-specific data variations (emoji vs numeric)
- * - Support for custom prompts with raw data
+ * - Support for custom prompts with raw puzzle data
  * 
  * @author Claude Code
  * @date August 22, 2025

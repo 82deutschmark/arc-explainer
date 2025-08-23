@@ -153,10 +153,15 @@ export class GeminiService {
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
-    // Build prompt using shared prompt builder
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
-    const selectedTemplate = promptPackage.selectedTemplate;
+    // Build prompt package using new modular architecture
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: false // Gemini doesn't support structured output yet
+    });
+    
+    console.log(`[Gemini] Using modular system prompt architecture`);
+    console.log(`[Gemini] System prompt mode: ${systemPromptMode}`);
     
     // Prepare system instruction and user prompt based on mode
     let systemInstruction: string | undefined;
@@ -165,7 +170,7 @@ export class GeminiService {
     if (systemPromptMode === 'ARC') {
       // ARC Mode: Select appropriate system prompt based on context
       const isSolverMode = promptId === "solver";
-      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
+      const isAlienMode = promptPackage.selectedTemplate?.emojiMapIncluded || false;
       const hasMultipleTests = task.test.length > 1;
       
       if (isSolverMode && hasMultipleTests) {
@@ -182,12 +187,12 @@ export class GeminiService {
         console.log(`[Gemini] Using standard explanation system instruction`);
       }
       
-      userPrompt = basePrompt;
+      userPrompt = promptPackage.userPrompt;
     } else {
       // None Mode: Current behavior with reasoning wrapper
       systemInstruction = undefined;
       userPrompt = captureReasoning ? 
-        `${basePrompt}
+        `${promptPackage.userPrompt}
 
 IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
 If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
@@ -196,7 +201,7 @@ If possible, explicitly show your step-by-step reasoning process inside <thinkin
 [Your detailed step-by-step analysis will go here]
 </thinking>
 
-Then provide your final structured JSON response.` : basePrompt;
+Then provide your final structured JSON response.` : promptPackage.userPrompt;
       console.log(`[Gemini] Using None mode (current behavior) with model ${modelKey}`);
     }
 

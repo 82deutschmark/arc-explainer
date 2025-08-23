@@ -10,7 +10,7 @@ import { Pool } from 'pg';
 // Import proper logger utility
 import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
-import { normalizeConfidence } from './schemas/explanation.js';
+import { normalizeConfidence } from './schemas/explanation';
 
 /**
  * Interface for puzzle explanations
@@ -340,7 +340,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
     const {
       patternDescription,
       solvingStrategy,
-      hints,
+      hints: rawHints,
       alienMeaning,
       confidence,
       alienMeaningConfidence,
@@ -362,6 +362,13 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       totalTokens,
       estimatedCost
     } = explanation;
+    
+    // Ensure hints is always an array of strings
+    const hints = Array.isArray(rawHints) 
+      ? rawHints.filter(hint => typeof hint === 'string')
+      : typeof rawHints === 'string' 
+        ? [rawHints] 
+        : [];
     
     // Dev=Prod parity: default to true when unset (can be explicitly disabled with 'false')
     const rawFlag = process.env.RAW_RESPONSE_PERSIST;

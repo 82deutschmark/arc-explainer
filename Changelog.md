@@ -7,6 +7,27 @@
 
 August 22, 2025
 
+## Version 1.6.6 — Database and Hints Array Fixes (2025-08-22)
+
+### 🛠️ Fixes & Improvements (Code by Cascade)
+- **Database Connection Initialization**: Fixed issue where the database connection wasn't being initialized at server startup, causing blank pages when viewing puzzles with explanations.
+  - Files: 
+    - `server/index.ts` - Added database initialization on server startup
+    - `server/controllers/explanationController.ts` - Added error handling for database connection issues
+    - `server/services/dbService.ts` - Improved database connection error handling
+
+- **Hints Array Validation**: Fixed issue where non-array hints would cause database errors. Now ensures hints is always an array of strings before saving to the database.
+  - File: `server/services/dbService.ts` - Added validation and normalization of hints array
+
+- **Confidence Normalization**: Fixed import statement for `normalizeConfidence` function to use the correct TypeScript file extension.
+  - File: `server/services/dbService.ts` - Updated import path from `'./schemas/explanation.js'` to `'./schemas/explanation'`
+
+## Version 1.6.5 — Gemini Service Fix (2025-08-22)
+
+### 🛠️ Fixes & Improvements (Code by Cascade)
+- **Gemini Service Fix**: Fixed unassigned variable issue in Gemini service where `basePrompt` was undefined in the None mode fallback path. Now correctly uses `promptPackage.userPrompt`.
+  - File: `server/services/gemini.ts` - Replaced undefined `basePrompt` with `promptPackage.userPrompt`
+
 ## Version 1.6.4 — OpenAI Reasoning & Confidence Improvements (2025-08-22)
 
 ### 🛠️ Fixes & Improvements (Code by Claude)
