@@ -141,19 +141,11 @@ export class ExplanationsRepository {
         reasoning_items: row.reasoning_items
       });
 
-      logger.info(`Saved explanation for puzzle ${validated.puzzleId}`, {
-        id: parsed.id,
-        model: validated.modelName,
-        confidence: validated.confidence
-      }, 'explanations-repo');
+      logger.info(`Saved explanation: ${JSON.stringify({ id: parsed.id, puzzleId: validated.puzzleId, model: validated.modelName })}`, 'explanations-repo');
 
       return parsed;
     } catch (error) {
-      logger.error('Failed to save explanation', {
-        error: (error as Error).message,
-        puzzleId: validated.puzzleId,
-        modelName: validated.modelName
-      }, 'explanations-repo');
+      logger.error(`Failed to save explanation for puzzle ${validated.puzzleId}: ${JSON.stringify({ error: (error as Error).message, modelName: validated.modelName })}`, 'explanations-repo');
       throw error;
     }
   }
@@ -179,9 +171,7 @@ export class ExplanationsRepository {
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null)
       });
     } catch (error) {
-      logger.error(`Failed to get explanation ${id}`, {
-        error: (error as Error).message
-      }, 'explanations-repo');
+      logger.error(`Failed to get explanation by id ${id}: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
@@ -236,15 +226,14 @@ export class ExplanationsRepository {
           // Force convert to integers manually
           helpful_count: parseInt(String(row.helpful_count)) || 0,
           not_helpful_count: parseInt(String(row.not_helpful_count)) || 0,
-          total_feedback: parseInt(String(row.total_feedback)) || 0
+          total_feedback: parseInt(String(row.total_feedback)) || 0,
+          api_processing_time_ms: row.api_processing_time_ms ?? 0
         };
         
         return ExplanationWithFeedbackSchema.parse(transformedRow);
       });
     } catch (error) {
-      logger.error(`Failed to get explanations for puzzle ${puzzleId}`, {
-        error: (error as Error).message
-      }, 'explanations-repo');
+      logger.error(`Failed to get explanations for puzzle ${puzzleId}: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
@@ -270,11 +259,7 @@ export class ExplanationsRepository {
       const row = await this.db.queryOne(sql, params);
       return !!row;
     } catch (error) {
-      logger.error(`Failed to check explanation existence`, {
-        error: (error as Error).message,
-        puzzleId,
-        modelName
-      }, 'explanations-repo');
+      logger.error(`Failed to check explanation existence for ${puzzleId}: ${(error as Error).message}`, 'explanations-repo');
       return false;
     }
   }
@@ -303,17 +288,11 @@ export class ExplanationsRepository {
     try {
       const rows = await this.db.query<BulkStatusResult>(sql, [puzzleIds]);
       
-      logger.debug(`Retrieved bulk status for ${rows.length} puzzles`, {
-        requested: puzzleIds.length,
-        found: rows.length
-      }, 'explanations-repo');
+      logger.debug(`Retrieved bulk status for ${rows.length}/${puzzleIds.length} puzzles`, 'explanations-repo');
 
       return rows;
     } catch (error) {
-      logger.error('Failed to get bulk explanation status', {
-        error: (error as Error).message,
-        puzzleCount: puzzleIds.length
-      }, 'explanations-repo');
+      logger.error(`Failed to get bulk status for ${puzzleIds.length} puzzles: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
@@ -370,14 +349,9 @@ export class ExplanationsRepository {
 
     try {
       await this.db.query(sql, params);
-      logger.info(`Updated Saturn data for explanation ${id}`, {
-        updatedFields: Object.keys(saturnData).filter(k => saturnData[k as keyof typeof saturnData] !== undefined)
-      }, 'explanations-repo');
+      logger.info(`Updated Saturn data for explanation ${id}: ${Object.keys(saturnData).filter(k => saturnData[k as keyof typeof saturnData] !== undefined).join(', ')}`, 'explanations-repo');
     } catch (error) {
-      logger.error(`Failed to update Saturn data for explanation ${id}`, {
-        error: (error as Error).message,
-        saturnData
-      }, 'explanations-repo');
+      logger.error(`Failed to update Saturn data for explanation ${id}: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
@@ -419,10 +393,7 @@ export class ExplanationsRepository {
         predicted_output_grid: this.parseJsonField(row.predicted_output_grid, null)
       }));
     } catch (error) {
-      logger.error('Failed to get latest explanations per puzzle', {
-        error: (error as Error).message,
-        limit
-      }, 'explanations-repo');
+      logger.error(`Failed to get latest explanations per puzzle: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
@@ -465,9 +436,7 @@ export class ExplanationsRepository {
         avgConfidenceIncorrect: Math.round((row.avg_confidence_incorrect || 0) * 100) / 100
       };
     } catch (error) {
-      logger.error('Failed to get accuracy stats', {
-        error: (error as Error).message
-      }, 'explanations-repo');
+      logger.error(`Failed to get accuracy stats: ${(error as Error).message}`, 'explanations-repo');
       throw error;
     }
   }
