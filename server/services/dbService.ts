@@ -321,7 +321,55 @@ const createTablesIfNotExist = async () => {
         created_at TIMESTAMP DEFAULT NOW()
       )
     `);
-    
+
+    // Saturn events table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS saturn_events (
+        id SERIAL PRIMARY KEY,
+        saturn_log_id INTEGER REFERENCES saturn_log(id) ON DELETE CASCADE,
+        event_type VARCHAR(50) NOT NULL, -- e.g., 'api_call_start', 'api_call_end'
+        timestamp TIMESTAMP NOT NULL,
+        provider VARCHAR(50),
+        model VARCHAR(100),
+        phase VARCHAR(50),
+        request_id VARCHAR(100),
+        data JSONB -- compressed event details
+      )
+    `);
+
+    // Batch testing tables
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS batch_runs (
+        id SERIAL PRIMARY KEY,
+        status VARCHAR(20) NOT NULL CHECK (status IN ('running', 'completed', 'stopped', 'error')),
+        model VARCHAR(50) NOT NULL,
+        dataset_path VARCHAR(200) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMP,
+        total_puzzles INTEGER NOT NULL,
+        processed_count INTEGER DEFAULT 0,
+        success_count INTEGER DEFAULT 0,
+        error_count INTEGER DEFAULT 0,
+        average_accuracy DECIMAL(5,2),
+        total_processing_time_ms BIGINT DEFAULT 0,
+        config JSONB -- stores rate limiting, retry settings, etc.
+      )
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS batch_results (
+        id SERIAL PRIMARY KEY,
+        batch_run_id INTEGER REFERENCES batch_runs(id) ON DELETE CASCADE,
+        puzzle_id VARCHAR(50) NOT NULL,
+        explanation_id INTEGER REFERENCES explanations(id),
+        processing_time_ms INTEGER,
+        accuracy_score DECIMAL(5,2),
+        success BOOLEAN NOT NULL,
+        error_message TEXT,
+        processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     await client.query('COMMIT');
     logger.info('Database tables created or confirmed', 'database');
   } catch (error) {
@@ -1074,6 +1122,115 @@ const getAccuracyStats = async () => {
   }
 };
 
+// Batch testing database operations
+const createBatchRun = async (model: string, datasetPath: string, totalPuzzles: number, config: any = {}) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot create batch run.', 'database');
+    return null;
+  }
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `INSERT INTO batch_runs (status, model, dataset_path, total_puzzles, config) 
+       VALUES ('running', $1, $2, $3, $4) RETURNING *`,
+      [model, datasetPath, totalPuzzles, JSON.stringify(config)]
+    );
+    logger.info(`Created batch run ${result.rows[0].id} for ${totalPuzzles} puzzles with model ${model}`, 'database');
+    return result.rows[0];
+  } finally {
+    client.release();
+  }
+};
+
+const updateBatchRun = async (id: number, updates: Partial<{ status: string; processed_count: number; success_count: number; error_count: number; average_accuracy: number; total_processing_time_ms: number; completed_at: Date }>) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot update batch run.', 'database');
+    return null;
+  }
+  const client = await pool.connect();
+  try {
+    const setClause = Object.keys(updates).map((key, index) => `${key} = $${index + 2}`).join(', ');
+    const values = [id, ...Object.values(updates)];
+    
+    const result = await client.query(
+      `UPDATE batch_runs SET ${setClause} WHERE id = $1 RETURNING *`,
+      values
+    );
+    return result.rows[0] || null;
+  } finally {
+    client.release();
+  }
+};
+
+const getBatchRun = async (id: number) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve batch run.', 'database');
+    return null;
+  }
+  const client = await pool.connect();
+  try {
+    const result = await client.query('SELECT * FROM batch_runs WHERE id = $1', [id]);
+    return result.rows[0] || null;
+  } finally {
+    client.release();
+  }
+};
+
+const getAllBatchRuns = async (limit = 50, offset = 0) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve batch runs.', 'database');
+    return [];
+  }
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      'SELECT * FROM batch_runs ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+    return result.rows;
+  } finally {
+    client.release();
+  }
+};
+
+const addBatchResult = async (batchRunId: number, puzzleId: string, explanationId: number | null, processingTimeMs: number, accuracyScore: number | null, success: boolean, errorMessage: string | null = null) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot add batch result.', 'database');
+    return;
+  }
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO batch_results (batch_run_id, puzzle_id, explanation_id, processing_time_ms, accuracy_score, success, error_message)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [batchRunId, puzzleId, explanationId, processingTimeMs, accuracyScore, success, errorMessage]
+    );
+  } finally {
+    client.release();
+  }
+};
+
+const getBatchResults = async (batchRunId: number) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot retrieve batch results.', 'database');
+    return [];
+  }
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT br.*, e.pattern_description, e.confidence 
+       FROM batch_results br 
+       LEFT JOIN explanations e ON br.explanation_id = e.id 
+       WHERE br.batch_run_id = $1 
+       ORDER BY br.processed_at ASC`,
+      [batchRunId]
+    );
+    return result.rows;
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
@@ -1091,6 +1248,13 @@ export const dbService = {
   getFeedbackSummaryStats,
   // Solver mode accuracy stats
   getAccuracyStats,
+  // Batch testing methods
+  createBatchRun,
+  updateBatchRun,
+  getBatchRun,
+  getAllBatchRuns,
+  addBatchResult,
+  getBatchResults,
   // Helpers
   isConnected: () => !!pool,
 };

@@ -5,7 +5,41 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
-August 22, 2025
+## Version 1.6.11 — Web-Based Batch Testing System (2025-08-23)
+
+### 🚀 Major Features (Code by Cascade)
+- **Complete Web UI Batch Testing System**: Integrated TypeScript/Node.js batch processing directly into the web application
+  - **BatchTesting Page**: Full-featured UI at `/batch` route with model selection, dataset selection, and real-time progress tracking
+  - **WebSocket Integration**: Live progress updates with connection status, current puzzle tracking, and ETA calculations
+  - **Batch Controller**: RESTful API endpoints for starting, stopping, monitoring, and retrieving batch run results
+  - **Database Schema**: New `batch_runs` and `batch_results` tables for comprehensive batch execution tracking
+  
+- **Backend Infrastructure**: Production-ready batch processing service with enterprise-grade features
+  - **BatchService**: Orchestrates puzzle analysis using existing `puzzleController.analyze()` infrastructure
+  - **Rate Limiting**: Configurable delays between API calls to prevent service overload
+  - **Error Recovery**: Retry logic, timeout handling, and graceful failure management
+  - **Progress Persistence**: Database-backed progress tracking with resume capability after interruptions
+  
+- **Real-Time Features**: Live batch monitoring and control through WebSocket connections
+  - **Progress Broadcasting**: Real-time updates of completion percentage, success/error counts, and current puzzle
+  - **Batch Control**: Start, stop, and monitor batch runs directly from the web interface
+  - **Results Dashboard**: Detailed analytics with CSV export, accuracy metrics, and processing time analysis
+
+- **UI Integration**: Seamless integration with existing application architecture
+  - **Navigation**: Added "Batch Testing" button to main PuzzleBrowser page with Play icon
+  - **Route Integration**: New `/batch` route in App.tsx router configuration  
+  - **Component Architecture**: Modular BatchTesting and BatchResults components following project patterns
+
+- **Database Extensions**: Enhanced data persistence for batch operations
+  - **Batch Runs**: Track execution metadata, configuration, status, and aggregate metrics
+  - **Batch Results**: Store individual puzzle results with accuracy scores and processing times
+  - **WebSocket Service**: Extended existing WS infrastructure to support batch progress channels
+
+### 🔧 Technical Implementation (Code by Cascade)
+- **Server Routes**: Added batch API endpoints (`/api/batch/start`, `/api/batch/:id`, `/api/batch/:id/stop`, etc.)
+- **Type Safety**: Fixed TypeScript validation issues in batchService with proper MultiValidationResult handling
+- **Response Formatting**: Consistent error handling and response formatting across all batch endpoints
+- **Documentation**: Updated project docs with comprehensive batch testing system architecture
 
 ## Version 1.6.10 — Cost Badge Display Fix (2025-08-23)
 
