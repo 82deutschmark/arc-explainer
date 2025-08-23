@@ -41,8 +41,7 @@ interface PromptPickerProps {
   onSendAsEmojisChange?: (sendAsEmojis: boolean) => void;
   omitAnswer?: boolean;
   onOmitAnswerChange?: (omitAnswer: boolean) => void;
-  systemPromptMode?: 'ARC' | 'None';
-  onSystemPromptModeChange?: (mode: 'ARC' | 'None') => void;
+  // systemPromptMode removed - now using modular architecture
 }
 
 export function PromptPicker({ 
@@ -54,9 +53,8 @@ export function PromptPicker({
   sendAsEmojis,
   onSendAsEmojisChange,
   omitAnswer,
-  onOmitAnswerChange,
-  systemPromptMode,
-  onSystemPromptModeChange
+  onOmitAnswerChange
+  // systemPromptMode removed - now using modular architecture
 }: PromptPickerProps) {
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,56 +183,35 @@ export function PromptPicker({
         <div className="mt-6 pt-4 border-t border-gray-200">
           <h6 className="text-sm font-semibold mb-3 text-gray-700">Advanced Options</h6>
           
-          {/* System Prompt Mode Selection */}
+          {/* Active System Prompt Template */}
           <div className="mb-4">
-            <label className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2 block">
-              System Prompt Mode
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {/* ARC Mode */}
-              <div 
-                className={`p-3 border rounded cursor-pointer transition-all ${
-                  systemPromptMode === 'ARC' 
-                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onClick={() => onSystemPromptModeChange?.('ARC')}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-blue-700">{'{ARC}'}</span>
-                  <Badge variant="default" className="text-xs">Recommended</Badge>
-                </div>
-                <p className="text-xs text-gray-600">
-                  Structured system prompt enforces JSON format and answer-first output
-                </p>
-              </div>
-
-              {/* None Mode */}
-              <div 
-                className={`p-3 border rounded cursor-pointer transition-all ${
-                  systemPromptMode === 'None' 
-                    ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onClick={() => onSystemPromptModeChange?.('None')}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-amber-700">{'{None}'}</span>
-                  <Badge variant="outline" className="text-xs">Current</Badge>
-                </div>
-                <p className="text-xs text-gray-600">
-                  All instructions mixed with data (legacy behavior)
-                </p>
-              </div>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                Active System Prompt
+              </label>
+              <Badge variant="default" className="text-xs bg-blue-100 text-blue-800">
+                {selectedPromptId === 'solver' ? 'Solver Mode' : 
+                 selectedPromptId === 'alienCommunication' ? 'Alien Communication' :
+                 selectedPromptId === 'educationalApproach' ? 'Educational' :
+                 selectedPromptId === 'custom' ? 'Custom' : 'Explanation'}
+              </Badge>
             </div>
-            
-            {/* System Prompt Impact Explanation */}
-            <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-              <strong>System Prompt Impact:</strong>
-              <ul className="mt-1 space-y-1 text-gray-600">
-                <li>• <strong>{'{ARC}'}:</strong> Separates instructions from puzzle data, enforces JSON structure, reduces parsing errors</li>
-                <li>• <strong>{'{None}'}:</strong> Maintains current mixed-message approach</li>
-              </ul>
+            <div className="p-3 border border-blue-200 bg-blue-50 rounded">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-blue-700">
+                  {selectedPromptId === 'solver' ? '🎯 Answer Prediction' : 
+                   selectedPromptId === 'alienCommunication' ? '🛸 Alien Communication' :
+                   selectedPromptId === 'educationalApproach' ? '🎓 Educational Guide' :
+                   selectedPromptId === 'custom' ? '🔧 Custom Instructions' : '📝 Pattern Explanation'} System Prompt
+                </span>
+              </div>
+              <p className="text-xs text-blue-700">
+                {selectedPromptId === 'solver' ? 'AI predicts answers using structured output with predictedOutput field first' : 
+                 selectedPromptId === 'alienCommunication' ? 'AI explains patterns as alien communication with emoji interpretation' :
+                 selectedPromptId === 'educationalApproach' ? 'AI provides educational explanations with learning objectives' :
+                 selectedPromptId === 'custom' ? 'AI uses your custom instructions with minimal system prompts' :
+                 'AI explains why provided answers are correct using structured analysis'}
+              </p>
             </div>
           </div>
 

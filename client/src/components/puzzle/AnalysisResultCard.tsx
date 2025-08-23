@@ -45,16 +45,24 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-// Format cost for display
-const formatCost = (cost: number): string => {
-  if (cost < 0.001) {
-    return `$${(cost * 1000).toFixed(2)}¢`;
-  } else if (cost < 0.01) {
-    return `$${cost.toFixed(4)}`;
-  } else if (cost < 1.0) {
-    return `$${cost.toFixed(3)}`;
+// Format cost for display with safe type checking
+const formatCost = (cost: any): string => {
+  // Convert to number and validate
+  const numCost = typeof cost === 'number' ? cost : parseFloat(cost);
+  
+  // Return fallback if not a valid number
+  if (isNaN(numCost) || numCost < 0) {
+    return '$0.00';
+  }
+  
+  if (numCost < 0.001) {
+    return `$${(numCost * 1000).toFixed(2)}¢`;
+  } else if (numCost < 0.01) {
+    return `$${numCost.toFixed(4)}`;
+  } else if (numCost < 1.0) {
+    return `$${numCost.toFixed(3)}`;
   } else {
-    return `$${cost.toFixed(2)}`;
+    return `$${numCost.toFixed(2)}`;
   }
 };
 
@@ -77,8 +85,13 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
   
-  // Get feedback preview for this explanation
-  const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
+  // Get feedback preview for this explanation - add error handling to prevent crashes
+  const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading, error: feedbackError } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
+  
+  // Log any feedback errors for debugging
+  if (feedbackError) {
+    console.warn('Feedback preview error:', feedbackError);
+  }
   
   // Check if this is a Saturn solver result (align with ExplanationData fields)
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
@@ -88,23 +101,43 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
-    if (!pred || !exp) return undefined;
-    const rows = Math.max(pred.length, exp.length);
-    const cols = Math.max(pred[0]?.length || 0, exp[0]?.length || 0);
-    const mask: boolean[][] = [];
-    for (let r = 0; r < rows; r++) {
-      mask[r] = [];
-      for (let c = 0; c < cols; c++) {
-        const pv = pred[r]?.[c];
-        const ev = exp[r]?.[c];
-        mask[r][c] = pv !== ev; // marks true when values differ or are undefined
+    if (!pred || !exp || pred.length === 0 || exp.length === 0) return undefined;
+    
+    try {
+      // Safely get dimensions with fallbacks
+      const predRows = pred.length;
+      const expRows = exp.length;
+      const predCols = pred[0]?.length || 0;
+      const expCols = exp[0]?.length || 0;
+      
+      if (predCols === 0 || expCols === 0) return undefined;
+      
+      const rows = Math.max(predRows, expRows);
+      const cols = Math.max(predCols, expCols);
+      const mask: boolean[][] = [];
+      
+      for (let r = 0; r < rows; r++) {
+        mask[r] = [];
+        for (let c = 0; c < cols; c++) {
+          const pv = pred[r]?.[c];
+          const ev = exp[r]?.[c];
+          mask[r][c] = pv !== ev; // marks true when values differ or are undefined
+        }
       }
+      return mask;
+    } catch (error) {
+      console.warn('Error building diff mask:', error);
+      return undefined;
     }
-    return mask;
   };
   const diffMask = useMemo(() => {
     if (!showDiff) return undefined;
-    return buildDiffMask(predictedGrid, expectedOutputGrid);
+    try {
+      return buildDiffMask(predictedGrid, expectedOutputGrid);
+    } catch (error) {
+      console.warn('Error in diff mask useMemo:', error);
+      return undefined;
+    }
   }, [showDiff, predictedGrid, expectedOutputGrid]);
 
   // Log the result to see what we're getting

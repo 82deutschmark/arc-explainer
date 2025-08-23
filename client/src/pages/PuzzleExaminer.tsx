@@ -32,7 +32,7 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ModelButton } from '@/components/puzzle/ModelButton';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPicker } from '@/components/PromptPicker';
-import { PromptPreviewModal } from '@/components/PromptPreviewModal';
+// PromptPreviewModal removed - was broken and marked for deletion
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { MODELS } from '@/constants/models';
 
@@ -41,9 +41,9 @@ export default function PuzzleExaminer() {
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested - controls UI display
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
-  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  // Preview modal functionality temporarily disabled due to broken component
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
-  const [systemPromptMode, setSystemPromptMode] = useState<'ARC' | 'None'>('ARC'); // Default to ARC mode for better results
+  // systemPromptMode is now hardcoded to 'ARC' - the new modular architecture replaces legacy {ARC}/{None} toggle
 
   // Early return if no taskId
   if (!taskId) {
@@ -87,7 +87,7 @@ export default function PuzzleExaminer() {
     // Forward researcher options to backend
     emojiSetKey: sendAsEmojis ? emojiSet : undefined, // Only send emoji set if "Send as emojis" is enabled
     omitAnswer,
-    systemPromptMode,
+    // systemPromptMode removed - now hardcoded to 'ARC' in the backend
   });
   
   // Find the current model's details if we're analyzing
@@ -127,7 +127,7 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl space-y-6">
+    <div className="container mx-auto p-4 max-w-6xl space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -297,49 +297,25 @@ export default function PuzzleExaminer() {
             onSendAsEmojisChange={setSendAsEmojis}
             omitAnswer={omitAnswer}
             onOmitAnswerChange={setOmitAnswer}
-            systemPromptMode={systemPromptMode}
-            onSystemPromptModeChange={setSystemPromptMode}
+            // systemPromptMode removed - now using modular architecture
           />
 
-          {/* Prompt Preview */}
+          {/* Prompt Preview - Temporarily disabled due to broken component */}
           <div className="mb-4 flex justify-center">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsPreviewModalOpen(true)}
-              disabled={isAnalyzing}
-              className="flex items-center gap-2"
+              disabled={true}
+              className="flex items-center gap-2 opacity-50"
+              title="Prompt preview temporarily disabled - component needs rebuild for new architecture"
             >
               <Eye className="h-4 w-4" />
-              Preview Prompt
+              Preview Prompt (Disabled)
             </Button>
           </div>
           
-          <PromptPreviewModal
-            isOpen={isPreviewModalOpen}
-            onClose={() => setIsPreviewModalOpen(false)}
-            puzzleId={taskId}
-            selectedPromptId={promptId}
-            customPrompt={customPrompt}
-            disabled={isAnalyzing}
-            // Cascade: ensure preview uses the same prompt options
-            emojiSetKey={emojiSet}
-            omitAnswer={omitAnswer}
-            onAnalyze={(provider, model, editedPrompt) => {
-              // Find the model key and analyze with the edited prompt if provided
-              const modelData = MODELS.find(m => m.key === model);
-              if (modelData && editedPrompt) {
-                // Update custom prompt and analyze
-                setCustomPrompt(editedPrompt);
-                analyzeWithModel(modelData.key);
-              } else if (modelData) {
-                analyzeWithModel(modelData.key);
-              }
-            }}
-          />
-          
           {/* Model Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
             {MODELS.map((model) => {
               const isThisModelProcessing = processingModels.has(model.key);
               
@@ -357,8 +333,8 @@ export default function PuzzleExaminer() {
           </div>
 
           {/* Saturn Visual Solver */}
-          <div className="mb-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
+          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
               <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
                 <Rocket className="h-4 w-4" />
                 Alternative Visual Solver
@@ -391,7 +367,7 @@ export default function PuzzleExaminer() {
           </div>
           
           {/* Temperature Control */}
-          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="mb-3 p-2 bg-gray-50 border border-gray-200 rounded">
             <div className="flex items-center gap-4">
               <Label htmlFor="temperature" className="text-sm font-medium">
                 Temperature: {temperature}

@@ -10,6 +10,19 @@ import { Pool } from 'pg';
 // Import proper logger utility
 import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
+// Inline normalizeConfidence function to avoid module resolution issues
+const normalizeConfidence = (confidence: any): number => {
+  if (typeof confidence === 'string') {
+    const parsed = parseFloat(confidence);
+    if (!isNaN(parsed)) {
+      return Math.round(Math.max(0, Math.min(100, parsed)));
+    }
+  }
+  if (typeof confidence === 'number') {
+    return Math.round(Math.max(0, Math.min(100, confidence)));
+  }
+  return 50; // Default fallback
+};
 
 /**
  * Interface for puzzle explanations
@@ -339,7 +352,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
     const {
       patternDescription,
       solvingStrategy,
-      hints,
+      hints: rawHints,
       alienMeaning,
       confidence,
       alienMeaningConfidence,
@@ -361,6 +374,13 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       totalTokens,
       estimatedCost
     } = explanation;
+    
+    // Ensure hints is always an array of strings
+    const hints = Array.isArray(rawHints) 
+      ? rawHints.filter(hint => typeof hint === 'string')
+      : typeof rawHints === 'string' 
+        ? [rawHints] 
+        : [];
     
     // Dev=Prod parity: default to true when unset (can be explicitly disabled with 'false')
     const rawFlag = process.env.RAW_RESPONSE_PERSIST;
@@ -384,8 +404,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         patternDescription || '',
         solvingStrategy || '',
         hints || [],
-        confidence || 0,
-        alienMeaningConfidence || null,
+        normalizeConfidence(confidence),
+        alienMeaningConfidence ? normalizeConfidence(alienMeaningConfidence) : null,
         alienMeaning || '',
         modelName || 'unknown',
         reasoningLog || null,
