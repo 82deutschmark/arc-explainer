@@ -240,9 +240,28 @@ export class OpenAIService {
 
       // Extract structured response metadata
       const providerResponseId = parsedResponse.id ?? null;
-      const reasoningItems = promptPackage.useStructuredOutput ? 
-        (result.keySteps || []) : 
-        (parsedResponse.output_reasoning?.items ?? []);
+      
+      // Handle reasoning items with proper validation
+      let reasoningItems: string[] = [];
+      if (promptPackage.useStructuredOutput) {
+        // For structured outputs, extract keySteps with validation
+        if (result.keySteps) {
+          if (Array.isArray(result.keySteps)) {
+            reasoningItems = result.keySteps;
+          } else if (typeof result.keySteps === 'string') {
+            // If keySteps comes as string, try to split it into steps
+            console.warn(`[OpenAI] keySteps received as string instead of array, attempting to parse`);
+            reasoningItems = result.keySteps.split(/\d+\)\s+/).filter((step: string) => step.trim().length > 0);
+          } else {
+            console.warn(`[OpenAI] keySteps has unexpected type:`, typeof result.keySteps);
+            reasoningItems = [];
+          }
+        }
+      } else {
+        // Legacy reasoning extraction
+        reasoningItems = parsedResponse.output_reasoning?.items ?? [];
+      }
+      
       const providerRawResponse = parsedResponse.raw_response;
 
       // Debug logging to catch reasoning data type issues

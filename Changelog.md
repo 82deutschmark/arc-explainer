@@ -7,6 +7,55 @@
 
 August 22, 2025
 
+## Version 1.6.7 — Critical Module Resolution Fix (2025-08-22)
+
+### 🚨 Critical Fix (Code by Cascade)
+- **Module Resolution Error**: Fixed critical issue where puzzleExaminer page showed white screen when explanations existed in the database
+  - Root cause: `dbService.ts` import of `normalizeConfidence` from schema files failed due to `.js` extension conflicts
+  - Solution: Inlined the `normalizeConfidence` function directly in `dbService.ts` to avoid module resolution issues
+  - File: `server/services/dbService.ts` - Replaced problematic import with inline function
+  - Impact: Restores functionality for viewing puzzles with existing explanations
+
+## Version 1.6.6 — Database and Hints Array Fixes (2025-08-22)  NOT FIXED!!!
+
+### 🛠️ Fixes & Improvements (Code by Cascade)
+- **Database Connection Initialization**: Fixed issue where the database connection wasn't being initialized at server startup, causing blank pages when viewing puzzles with explanations.
+  - Files: 
+    - `server/index.ts` - Added database initialization on server startup
+    - `server/controllers/explanationController.ts` - Added error handling for database connection issues
+    - `server/services/dbService.ts` - Improved database connection error handling
+
+- **Hints Array Validation**: Fixed issue where non-array hints would cause database errors. Now ensures hints is always an array of strings before saving to the database.
+  - File: `server/services/dbService.ts` - Added validation and normalization of hints array
+
+- **Confidence Normalization**: Fixed import statement for `normalizeConfidence` function to use the correct TypeScript file extension.
+  - File: `server/services/dbService.ts` - Updated import path from `'./schemas/explanation.js'` to `'./schemas/explanation'`
+
+## Version 1.6.5 — Gemini Service Fix (2025-08-22)
+
+### 🛠️ Fixes & Improvements (Code by Cascade)
+- **Gemini Service Fix**: Fixed unassigned variable issue in Gemini service where `basePrompt` was undefined in the None mode fallback path. Now correctly uses `promptPackage.userPrompt`.
+  - File: `server/services/gemini.ts` - Replaced undefined `basePrompt` with `promptPackage.userPrompt`
+
+## Version 1.6.4 — OpenAI Reasoning & Confidence Improvements (2025-08-22)
+
+### 🛠️ Fixes & Improvements (Code by Claude)
+- **OpenAI Reasoning Extraction Fix**: Fixed OpenAI structured output parsing to properly handle `keySteps` field when returned as string instead of array. Added validation and string parsing to convert numbered step lists into proper arrays.
+  - File: `server/services/openai.ts` - Added type checking and parsing for `result.keySteps` to handle both string and array formats
+- **Database Confidence Normalization**: Ensured confidence values are properly normalized from decimal (0-1) to integer (0-100) scale before database insertion.
+  - File: `server/services/dbService.ts` - Added `normalizeConfidence()` import and usage
+- **Removed Hardcoded Confidence Values**: Replaced hardcoded confidence examples (85) with instructions for honest integer confidence assessment across all AI providers.
+  - Files: `server/services/anthropic.ts`, `server/services/gemini.ts`, `server/services/schemas/solver.ts`
+  - Changed example responses to use `[INTEGER 0-100: Your honest assessment of solution accuracy]` format
+- **React Performance Optimizations**: Added React.memo and useMemo optimizations for grid rendering performance with large 30x30 grids.
+  - Files: `client/src/components/puzzle/PuzzleGrid.tsx`, `client/src/components/puzzle/GridCell.tsx`
+
+### ✅ Outcome
+- OpenAI reasoning extraction now properly handles both array and string format responses
+- AI models will provide genuine confidence assessments instead of copying template values
+- Grid rendering performance improved for large datasets across multiple analyses
+- Database errors from decimal confidence values resolved
+
 ## Version 1.6.3 — Provider Services PromptPackage Alignment (2025-08-22)
 
 ### 🛠️ Fixes & Refactors (Code by Cascade)
@@ -22,11 +71,17 @@ August 22, 2025
 
 ### ✅ Outcome
 - Providers compile cleanly and share a consistent prompt data flow from backend → frontend.
-- Preview panels now reflect the exact prompt sent to models, improving debuggability.
+- **Diff Mask Crash**: Fixed white screen crash in diff overlay performance optimization
+  - Root cause: `buildDiffMask` function had unsafe array access causing runtime crashes when grids were malformed  
+  - Solution: Added proper null checks, dimension validation, and try-catch error handling
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx` - Made diff mask computation crash-safe
+  - Impact: Prevents crashes when rendering predictions with invalid grid data
 
-### ⚡ Performance
-- **Diff Overlay Optimization (Code by Cascade)**: Defaulted diff overlay to off and memoized diff mask in `client/src/components/puzzle/AnalysisResultCard.tsx`.
-  - Reduces initial render and re-render cost on large grids by computing the diff only when the toggle is enabled and inputs change.
+- **Cost Formatting TypeError**: Fixed runtime crash `cost.toFixed is not a function` in cost display  
+  - Root cause: `formatCost` function assumed cost was always a number type
+  - Solution: Added type checking and safe conversion with fallback to '$0.00' for invalid values
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx` - Made cost formatting crash-safe
+  - Impact: Prevents crashes when displaying cost/token data from databases by computing the diff only when the toggle is enabled and inputs change.
 
 ## Version 1.6.2 — System Prompts + Structured Outputs Architecture Implementation (2025-08-22)
 

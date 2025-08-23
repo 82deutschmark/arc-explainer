@@ -167,7 +167,7 @@ export function createSampleSolverResponse(testCaseCount: number = 1) {
       "Applied pattern logic to test case input", 
       "Generated predicted output grid"
     ],
-    confidence: 85,
+    confidence: 73,
     patternDescription: "The rule transforms input by rotating 90 degrees clockwise",
     hints: [
       "Pattern involves geometric rotation",

@@ -56,7 +56,7 @@ const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid J
   "patternDescription": "Clear description of what you learned from the training examples",
   "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
   "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
 }
 
 CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
@@ -68,7 +68,7 @@ const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY v
   "patternDescription": "Clear description of what you learned from the training examples", 
   "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
   "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
 }
 
 CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
@@ -79,7 +79,7 @@ const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond wit
   "patternDescription": "Clear description of the rules learned from the training examples",
   "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "confidence": 85
+  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality]
 }
 
 CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
@@ -90,9 +90,9 @@ const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respo
   "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
   "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
   "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
-  "confidence": 85,
+  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality],
   "alienMeaning": "The aliens' message",
-  "alienMeaningConfidence": 85
+  "alienMeaningConfidence": [INTEGER 0-100: Your honest confidence in alien interpretation]
 }
 
 CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
@@ -153,10 +153,15 @@ export class GeminiService {
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
-    // Build prompt using shared prompt builder
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
-    const selectedTemplate = promptPackage.selectedTemplate;
+    // Build prompt package using new modular architecture
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: false // Gemini doesn't support structured output yet
+    });
+    
+    console.log(`[Gemini] Using modular system prompt architecture`);
+    console.log(`[Gemini] System prompt mode: ${systemPromptMode}`);
     
     // Prepare system instruction and user prompt based on mode
     let systemInstruction: string | undefined;
@@ -165,7 +170,7 @@ export class GeminiService {
     if (systemPromptMode === 'ARC') {
       // ARC Mode: Select appropriate system prompt based on context
       const isSolverMode = promptId === "solver";
-      const isAlienMode = selectedTemplate?.emojiMapIncluded || false;
+      const isAlienMode = promptPackage.selectedTemplate?.emojiMapIncluded || false;
       const hasMultipleTests = task.test.length > 1;
       
       if (isSolverMode && hasMultipleTests) {
@@ -182,12 +187,12 @@ export class GeminiService {
         console.log(`[Gemini] Using standard explanation system instruction`);
       }
       
-      userPrompt = basePrompt;
+      userPrompt = promptPackage.userPrompt;
     } else {
       // None Mode: Current behavior with reasoning wrapper
       systemInstruction = undefined;
       userPrompt = captureReasoning ? 
-        `${basePrompt}
+        `${promptPackage.userPrompt}
 
 IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
 If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
@@ -196,7 +201,7 @@ If possible, explicitly show your step-by-step reasoning process inside <thinkin
 [Your detailed step-by-step analysis will go here]
 </thinking>
 
-Then provide your final structured JSON response.` : basePrompt;
+Then provide your final structured JSON response.` : promptPackage.userPrompt;
       console.log(`[Gemini] Using None mode (current behavior) with model ${modelKey}`);
     }
 
