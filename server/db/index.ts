@@ -159,7 +159,30 @@ class ProductionDatabaseService implements DatabaseService {
   }
 
   async getExplanationsForPuzzle(puzzleId: string): Promise<any> {
-    return await this.explanations.getWithFeedbackCounts(puzzleId);
+    const results = await this.explanations.getWithFeedbackCounts(puzzleId);
+    
+    // Transform database column names to camelCase properties expected by controllers
+    return results.map(result => ({
+      id: result.id,
+      puzzleId: result.puzzle_id,
+      modelName: result.model_name,
+      patternDescription: result.pattern_description,
+      solvingStrategy: result.solving_strategy,
+      confidence: result.confidence,
+      hints: result.hints,
+      alienMeaning: result.alien_meaning,
+      alienMeaningConfidence: result.alien_meaning_confidence,
+      createdAt: result.created_at,
+      saturnImages: result.saturn_images,
+      saturnSuccess: result.saturn_success,
+      predictedOutputGrid: result.predicted_output_grid,
+      isPredictionCorrect: result.is_prediction_correct,
+      apiProcessingTimeMs: result.api_processing_time_ms,
+      hasReasoningLog: !!(result.reasoning_items && result.reasoning_items.length > 0),
+      helpfulCount: result.helpful_count,
+      notHelpfulCount: result.not_helpful_count,
+      totalFeedback: result.total_feedback
+    }));
   }
 
   async getExplanationById(id: number): Promise<any> {
