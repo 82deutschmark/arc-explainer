@@ -9,16 +9,20 @@ August 24, 2025
 
 ## Version 1.6.12 — Multi-Test Puzzle Display Fix (2025-08-24)
 
-### 🚀 Major UI Fix (Code by Claude)
-- **Multi-Test Puzzle Display**: Fixed AnalysisResultCard component to properly handle puzzles with multiple test cases.
-  - **Root Issue**: Component failed to display puzzles like `17b866bd` that have 2+ test cases, showing only first expected output.
-  - **Key Changes**:
+### 🚀 Critical Field Mapping Fix (Code by Claude)
+- **Multi-Test Puzzle Display**: Fixed AnalysisResultCard component field name mismatch for puzzles with multiple test cases.
+  - **Root Issue**: Frontend was looking for `predictedOutputGrids`/`multiValidation` but database returns `multiplePredictedOutputs`/`multiTestResults`.
+  - **Field Mapping Fixes**:
+    - `predictedOutputGrids` → `multiplePredictedOutputs` (with fallback)
+    - `multiValidation` → `multiTestResults` (with fallback)  
+    - `allPredictionsCorrect` → `multiTestAllCorrect` (priority order corrected)
+    - `averagePredictionAccuracyScore` → `multiTestAverageAccuracy` (priority order corrected)
+  - **Logic Improvements**:
     - Changed condition from `hasPredictedGrids && expectedOutputGrids.length > 1` to `expectedOutputGrids.length > 1`
-    - Added support for both current and documented field names (`allPredictionsCorrect`/`multiTestAllCorrect`)
     - Robust iteration over all expected test cases regardless of prediction availability
     - Smart layout: two-column when predictions exist, centered single-column when missing
     - Explicit separation of multi-test vs single-test display logic
-  - **Impact**: Multi-test puzzles now display correctly whether AI provided predictions or not, showing all test cases instead of just the first.
+  - **Impact**: Multi-test puzzles like `17b866bd` now correctly display all predictions and test cases instead of showing "Correct Answer (Task)" with only first expected output.
 
 ## Version 1.6.11 — Raw DB Record Display Position Fix (2025-08-24)
 
