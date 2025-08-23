@@ -745,15 +745,27 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
       [puzzleId]
     );
 
-    // Parse JSON fields for Saturn data and validation
-    const processedRows = result.rows.map(row => ({
-      ...row,
-      saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
-      predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
-      // Parse multi-output prediction fields
-      multiplePredictedOutputs: row.multiplePredictedOutputs ? JSON.parse(row.multiplePredictedOutputs) : null,
-      multiTestResults: row.multiTestResults ? JSON.parse(row.multiTestResults) : null,
-    }));
+    // Parse JSON fields for Saturn data and validation with error handling
+    const processedRows = result.rows.map(row => {
+      const safeJsonParse = (jsonString: string | null, fieldName: string) => {
+        if (!jsonString) return null;
+        try {
+          return JSON.parse(jsonString);
+        } catch (error) {
+          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          return null;
+        }
+      };
+
+      return {
+        ...row,
+        saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
+        predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
+        // Parse multi-output prediction fields
+        multiplePredictedOutputs: safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+        multiTestResults: safeJsonParse(row.multiTestResults, 'multiTestResults'),
+      };
+    });
     
     return processedRows.length > 0 ? processedRows : [];
   } catch (error) {
