@@ -71,23 +71,43 @@ export class DeepSeekService {
       reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
       reasoningVerbosity?: 'low' | 'medium' | 'high';
       reasoningSummaryType?: 'auto' | 'detailed';
+      systemPromptMode?: 'ARC' | 'None';
     }
   ) {
     const modelName = MODELS[modelKey];
 
-    // Use custom prompt if provided, otherwise use selected template
-    // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    // Determine system prompt mode (default to ARC for better results)
+    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    
+    // Build prompt package using new modular architecture
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: false // DeepSeek doesn't support structured output yet
+    });
+    
+    console.log(`[DeepSeek] Using modular system prompt architecture`);
+    console.log(`[DeepSeek] System prompt mode: ${systemPromptMode}`);
+    
+    // Extract system and user prompts from prompt package
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
-
-    // DeepSeek requires the word "json" in the prompt when using json_object response format
-    const deepseekPrompt = basePrompt + "\n\nPlease respond in valid JSON format.";
+    
+    console.log(`[DeepSeek] System prompt: ${systemMessage.length} chars`);
+    console.log(`[DeepSeek] User prompt: ${userMessage.length} chars`);
 
     try {
+      // Create message array based on system prompt mode
+      const messages: any[] = [];
+      if (systemPromptMode === 'ARC' && systemMessage) {
+        messages.push({ role: "system", content: systemMessage });
+      }
+      messages.push({ role: "user", content: userMessage });
+      
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: deepseekPrompt }],
+        messages: messages,
         response_format: { type: "json_object" },
       };
 
@@ -200,18 +220,37 @@ export class DeepSeekService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
+    serviceOpts?: {
+      systemPromptMode?: 'ARC' | 'None';
+    }
   ) {
     const modelName = MODELS[modelKey];
 
-    // Build prompt using shared prompt builder
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    // Determine system prompt mode (default to ARC for better results)
+    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+
+    // Build prompt package using new modular architecture
+    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
+      ...options,
+      systemPromptMode,
+      useStructuredOutput: false
+    });
+    
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+
+    // Create message array based on system prompt mode
+    const messages: any[] = [];
+    if (systemPromptMode === 'ARC' && systemMessage) {
+      messages.push({ role: "system", content: systemMessage });
+    }
+    messages.push({ role: "user", content: userMessage });
 
     // DeepSeek uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: basePrompt }],
+      messages: messages,
       response_format: { type: "json_object" }
     };
 
@@ -221,6 +260,14 @@ export class DeepSeekService {
       "JSON response format enforced",
       "64k context window for all models"
     ];
+    
+    // Add system prompt mode notes
+    if (systemPromptMode === 'ARC') {
+      providerSpecificNotes.push("System Prompt Mode: {ARC} - Using structured system prompt for better parsing");
+      providerSpecificNotes.push(`System Message: "${systemMessage}"`);
+    } else {
+      providerSpecificNotes.push("System Prompt Mode: {None} - Old behavior (all content as user message)");
+    }
 
     // DeepSeek reasoning models don't support temperature
     if (!REASONING_MODELS.has(modelKey)) {
@@ -231,10 +278,16 @@ export class DeepSeekService {
       providerSpecificNotes.push("Supports reasoning log capture via reasoning_content field");
     }
 
+    // Compose preview text; in ARC mode, system is separate so show user content; in None, show combined
+    const previewText = systemPromptMode === 'ARC'
+      ? userMessage
+      : `${systemMessage}\n\n${userMessage}`;
+
     return {
       provider: "DeepSeek",
       modelName,
-      promptText: basePrompt,
+      promptText: previewText,
+      systemPrompt: systemMessage,
       messageFormat,
       templateInfo: {
         id: selectedTemplate?.id || "custom",

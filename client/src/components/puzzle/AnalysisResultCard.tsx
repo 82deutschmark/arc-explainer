@@ -48,7 +48,7 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-// Safe cost formatting with validation - uses centralized logic
+// Safe cost formatting with validation - fixed duplicate formatting issue
 const formatCostSafe = (cost: any): string => {
   // Convert to number and validate
   const numCost = typeof cost === 'number' ? cost : parseFloat(cost);
@@ -58,10 +58,10 @@ const formatCostSafe = (cost: any): string => {
     return '$0.00';
   }
   
-  // Use centralized formatting logic
+  // Fixed cost formatting logic (was creating $X.XX¢ format incorrectly)
   if (numCost < 0.001) {
-    // Show as fractions of cents for very small amounts
-    return `$${(numCost * 1000).toFixed(3)}¢`;
+    // Show as fractions of cents for very small amounts (convert to cents properly)
+    return `${(numCost * 100).toFixed(2)}¢`;
   } else if (numCost < 0.01) {
     // 4 decimal places for small amounts
     return `$${numCost.toFixed(4)}`;
