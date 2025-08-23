@@ -7,16 +7,16 @@
  * In LLM terminology:
  * - SYSTEM PROMPT (system role): Instructions for the AI about how to behave ← THIS FILE
  * - USER PROMPT (user role): The actual data/question sent to the AI (see userTemplates.ts)
- * - ASSISTANT PROMPT (assistant role): The AI's response
+ * - ASSISTANT PROMPT (assistant role): The AI's response to our question
  * 
- * WHAT OUR APP USERS CALL "CUSTOM PROMPTS" are different:
- * - App users provide custom instructions that replace our default templates
- * - Their "custom prompts" become part of the user role in LLM terms
- * - This file provides the system role that works with any user input
+ * WHAT OUR APP CALLS "CUSTOM PROMPTS" ARE MODIFYING THE SYSTEM PROMPT:
+ * - App users provide custom instructions that replace our default templates for the system prompt
+ * - Their "custom prompts" become part of the system role in LLM terms this is how the AI behaves
+ * - This file provides users access to the "system role" that tells the AI how to behave
  * 
  * System prompt definitions for ARC puzzle analysis.
- * These define the AI's role, behavior, and output requirements.
- * Separated from user prompts to enable proper system/user message structure.
+ * These define the AI's role, behavior, and output requirements. Our project relies on a strict json output format!
+ * Separated from user prompts to enable proper system/user/assistant message structure.
  * 
  * Key Features:
  * - Role-based system prompts for different analysis modes
