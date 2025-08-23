@@ -13,7 +13,7 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
-import { dbService } from '../services/dbService';
+import { getDatabaseService } from '../db/index.js';
 import type { PromptOptions } from '../services/promptBuilder';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
 import { asyncHandler } from '../middleware/asyncHandler';
@@ -293,7 +293,7 @@ export const puzzleController = {
       const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic puzzle list
-      if (!dbService.isConnected()) {
+      if (!getDatabaseService().isConnected()) {
         const basicResults = allPuzzles.map(puzzle => ({
           ...puzzle,
           explanations: [],
@@ -336,7 +336,7 @@ export const puzzleController = {
       }
 
       // Get bulk explanation status for all filtered puzzles
-      const explanationStatusMap = await dbService.getBulkExplanationStatus(filteredPuzzleIds);
+      const explanationStatusMap = await getDatabaseService().getBulkExplanationStatus(filteredPuzzleIds);
 
       // Build results by merging puzzle data with explanation status
       explanationStatusMap.forEach((status, puzzleId) => {
@@ -353,7 +353,7 @@ export const puzzleController = {
       for (const [puzzleId, status] of explanationStatusMap) {
         if (status.hasExplanation && status.explanationId) {
           try {
-            const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+            const explanations = await getDatabaseService().getExplanationsForPuzzle(puzzleId);
             if (explanations && explanations.length > 0) {
               const puzzle = puzzleMap.get(puzzleId);
               if (puzzle) {
@@ -512,7 +512,7 @@ export const puzzleController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      const accuracyStats = await dbService.getAccuracyStats();
+      const accuracyStats = await getDatabaseService().getAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
       console.error('[Controller] Error fetching accuracy stats:', error);

@@ -10,7 +10,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { dbService } from './dbService';
+import { getDatabaseService } from '../db/index.js';
 import { puzzleService } from './puzzleService';
 import { aiServiceFactory } from './aiServiceFactory';
 import { broadcast } from './wsService';
@@ -97,7 +97,8 @@ class BatchService {
     };
 
     // Create batch run record
-    const batchRun = await dbService.createBatchRun(model, datasetPath, puzzles.length, fullConfig);
+    const dbService = getDatabaseService();
+    const batchRun = await dbService.createBatchRun?.({model, datasetPath, totalCount: puzzles.length, config: fullConfig});
     if (!batchRun) {
       throw new Error('Failed to create batch run record');
     }
@@ -115,7 +116,8 @@ class BatchService {
    * Get current status of a batch run
    */
   async getBatchRunStatus(batchId: number): Promise<BatchRunStatus | null> {
-    const batchRun = await dbService.getBatchRun(batchId);
+    const dbService = getDatabaseService();
+    const batchRun = await dbService.getBatchRun?.(batchId);
     if (!batchRun) {
       return null;
     }
@@ -151,10 +153,8 @@ class BatchService {
     activeRun.shouldStop = true;
     
     // Update database status
-    await dbService.updateBatchRun(batchId, {
-      status: 'stopped',
-      completed_at: new Date()
-    });
+    const dbService = getDatabaseService();
+    await dbService.updateBatchRun?.(batchId, { status: 'stopped', completed_at: new Date() });
 
     // Broadcast stop notification
     broadcast(`batch-${batchId}`, {
@@ -174,24 +174,26 @@ class BatchService {
     status?: string;
     model?: string;
   } = {}): Promise<BatchRunStatus[]> {
-    const batchRuns = await dbService.getAllBatchRuns(filters.limit, filters.offset);
+    const dbService = getDatabaseService();
+    const batchRuns = await dbService.getAllBatchRuns?.() || [];
     
     return batchRuns
-      .filter(run => {
+      .filter((run: any) => {
         if (filters.status && run.status !== filters.status) return false;
         if (filters.model && run.model !== filters.model) return false;
         return true;
       })
-      .map(run => this.formatBatchRunStatus(run));
+      .map((run: any) => this.formatBatchRunStatus(run));
   }
 
   /**
    * Get detailed results for a batch run
    */
   async getBatchResults(batchId: number): Promise<BatchResult[]> {
-    const results = await dbService.getBatchResults(batchId);
+    const dbService = getDatabaseService();
+    const results = await dbService.getBatchResults?.(batchId) || [];
     
-    return results.map(result => ({
+    return results.map((result: any) => ({
       puzzleId: result.puzzle_id,
       success: result.success,
       accuracyScore: result.accuracy_score,
@@ -280,7 +282,8 @@ class BatchService {
 
         // Update database progress every 10 puzzles
         if (processedCount % 10 === 0 || processedCount === puzzles.length) {
-          await dbService.updateBatchRun(batchId, {
+          const dbService = getDatabaseService();
+          await dbService.updateBatchRun?.(batchId, {
             processed_count: processedCount,
             success_count: successCount,
             error_count: errorCount,
@@ -291,7 +294,7 @@ class BatchService {
       }
 
       // Mark as completed
-      await dbService.updateBatchRun(batchId, {
+      await getDatabaseService().updateBatchRun?.(batchId, {
         status: 'completed',
         completed_at: new Date(),
         processed_count: processedCount,
@@ -394,15 +397,15 @@ class BatchService {
         }
 
         // Store result in database
-        await dbService.addBatchResult(
+        await getDatabaseService().addBatchResult?.({
           batchId,
           puzzleId,
-          result.explanationId || null,
+          explanationId: result.explanationId || null,
           processingTime,
           accuracyScore,
           success,
-          null
-        );
+          errorMessage: null
+        });
 
         return {
           puzzleId,
@@ -427,15 +430,15 @@ class BatchService {
     // All retries failed
     const errorMessage = lastError?.message || 'Unknown error after all retries';
     
-    await dbService.addBatchResult(
+    await getDatabaseService().addBatchResult?.({
       batchId,
       puzzleId,
-      null,
-      0,
-      null,
-      false,
+      explanationId: null,
+      processingTime: 0,
+      accuracyScore: null,
+      success: false,
       errorMessage
-    );
+    });
 
     return {
       puzzleId,
@@ -471,7 +474,7 @@ class BatchService {
    * Mark batch run as errored
    */
   private async markBatchRunError(batchId: number, errorMessage: string): Promise<void> {
-    await dbService.updateBatchRun(batchId, {
+    await getDatabaseService().updateBatchRun?.(batchId, {
       status: 'error',
       completed_at: new Date()
     });

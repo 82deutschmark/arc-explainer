@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-import { dbService } from './dbService';
+import { getDatabaseService } from '../db/index.js';
 import { AppError } from '../middleware/errorHandler';
 
 export const explanationService = {
@@ -19,7 +19,7 @@ export const explanationService = {
    * @throws AppError if explanations cannot be retrieved
    */
   async getExplanationsForPuzzle(puzzleId: string) {
-    const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+    const explanations = await getDatabaseService().getExplanationsForPuzzle(puzzleId);
     if (explanations === null) {
       throw new AppError(
         'Could not retrieve explanations due to a server error.',
@@ -38,7 +38,7 @@ export const explanationService = {
    * @throws AppError if explanation cannot be retrieved
    */
   async getExplanationForPuzzle(puzzleId: string) {
-    const explanation = await dbService.getExplanationForPuzzle(puzzleId);
+    const explanation = await getDatabaseService().getExplanationForPuzzle(puzzleId);
     if (explanation === null) {
       return null; // No explanation found is not an error
     }
@@ -75,10 +75,49 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const explanationData = explanations[modelKey];
-        const explanationId = await dbService.saveExplanation(puzzleId, {
-          ...explanationData,
-          modelName: modelKey, // Ensure modelKey is passed as modelName
-        });
+        // Transform AI response data to database format
+        const transformedData = {
+          puzzleId: puzzleId,
+          modelName: modelKey,
+          patternDescription: explanationData.patternDescription || '',
+          solvingStrategy: explanationData.solvingStrategy || '',
+          confidence: explanationData.confidence || 50,
+          hints: explanationData.hints || [],
+          alienMeaning: explanationData.alienMeaning,
+          alienMeaningConfidence: explanationData.alienMeaningConfidence,
+          
+          // Provider data - handle various formats
+          providerResponseId: explanationData.providerResponseId,
+          providerRawResponse: explanationData.providerRawResponse,
+          reasoningItems: explanationData.reasoningItems, // Let the repository handle the transformation
+          
+          // Performance metrics
+          apiProcessingTimeMs: explanationData.apiProcessingTimeMs || explanationData.actualProcessingTime * 1000 || 0,
+          inputTokens: explanationData.inputTokens,
+          outputTokens: explanationData.outputTokens,
+          reasoningTokens: explanationData.reasoningTokens,
+          totalTokens: explanationData.totalTokens,
+          estimatedCost: explanationData.estimatedCost,
+          
+          // AI model parameters
+          temperature: explanationData.temperature,
+          reasoningEffort: explanationData.reasoningEffort,
+          reasoningVerbosity: explanationData.reasoningVerbosity,
+          reasoningSummaryType: explanationData.reasoningSummaryType,
+          
+          // Saturn data
+          saturnImages: explanationData.saturnImages,
+          saturnLog: explanationData.saturnLog,
+          saturnEvents: explanationData.saturnEvents,
+          saturnSuccess: explanationData.saturnSuccess,
+          
+          // Solver data
+          predictedOutputGrid: explanationData.predictedOutputGrid,
+          isPredictionCorrect: explanationData.isPredictionCorrect,
+          predictionAccuracyScore: explanationData.predictionAccuracyScore
+        };
+        
+        const explanationId = await getDatabaseService().saveExplanation(transformedData);
         if (explanationId) {
           savedExplanationIds.push(explanationId);
         }
@@ -145,7 +184,8 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
     }
 
     // Save the new explanation as a separate attempt
-    const explanationId = await dbService.saveExplanation(puzzleId, {
+    const explanationId = await getDatabaseService().saveExplanation({
+      puzzleId: puzzleId,
       ...newExplanation,
       modelName,
       retryReason: userFeedback, // Store the feedback that triggered this retry

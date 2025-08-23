@@ -27,7 +27,7 @@ import fs from 'fs';
 import path from 'path';
 import { broadcast, clearSession } from './wsService';
 import { pythonBridge } from './pythonBridge';
-import { dbService } from './dbService';
+import { getDatabaseService } from '../db/index.js';
 import { puzzleLoader } from './puzzleLoader';
 
 interface SaturnOptions {
@@ -75,7 +75,7 @@ class SaturnVisualService {
 
   async run(taskId: string, sessionId: string, options: SaturnOptions) {
     // Enforce DB as a hard requirement (no memory-only mode for Saturn).
-    if (!dbService.isConnected()) {
+    if (!getDatabaseService().isConnected()) {
       broadcast(sessionId, {
         status: 'error',
         phase: 'init',
@@ -290,7 +290,7 @@ class SaturnVisualService {
 
               let explanationId: number | null = null;
               try {
-                explanationId = await dbService.saveExplanation(taskId, explanation);
+                explanationId = await getDatabaseService().saveExplanation({ puzzleId: taskId, ...explanation });
               } catch (saveErr) {
                 broadcast(sessionId, {
                   status: 'error',
