@@ -56,7 +56,8 @@ const formatCost = (cost: any): string => {
   }
   
   if (numCost < 0.001) {
-    return `$${(numCost * 1000).toFixed(2)}¢`;
+    // Show as cents for very small amounts (remove dollar sign, use only ¢)
+    return `${(numCost * 100).toFixed(3)}¢`;
   } else if (numCost < 0.01) {
     return `$${numCost.toFixed(4)}`;
   } else if (numCost < 1.0) {
