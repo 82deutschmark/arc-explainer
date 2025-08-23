@@ -76,7 +76,8 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 
 ANSWER-FIRST REQUIREMENT: 
 - For single test cases, "predictedOutput" must be the FIRST field in your JSON response
-- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field in your JSON response, followed by "predictedOutput1", "predictedOutput2", etc.
+- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field
+  in your JSON response, followed by "predictedOutput1", "predictedOutput2", etc.
 
 Example reasoning approach:
 1. Examine each training example to understand input→output transformation
