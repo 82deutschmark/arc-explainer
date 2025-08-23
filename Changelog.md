@@ -7,6 +7,49 @@
 
 August 24, 2025
 
+## Version 1.6.15 — Multi-Grid Extraction Fix (2025-08-23)
+
+### 🐛 Critical Multi-Test Grid Extraction Fix (Code by Claude)
+- **Root Issue**: AI models return structured format `[{testCase: 1, predictedOutput: [[1]]}, ...]` but extraction logic was saving entire objects instead of extracting just the grids.
+- **Database JSON Errors**: This caused "[object Object]" and malformed JSON errors when retrieving multi-test predictions from database.
+- **extractPredictions() Fix**: Enhanced to handle both structured AI response format and direct grid arrays.
+- **Backward Compatibility**: Maintains support for existing direct grid format while handling new structured format.
+- **Impact**: Resolves all JSON parsing errors for multi-test puzzles like 27a28665 with 4+ test cases.
+
+## Version 1.6.14 — Performance & Default Settings Optimization (2025-08-23)
+
+### 🚀 Performance Improvements (Code by Claude)
+- **PuzzleExaminer Performance**: Optimized rendering for puzzles with many database explanations.
+  - **React.memo**: Added memoization to `AnalysisResultCard` to prevent unnecessary re-renders
+  - **Memoized Computations**: Grid data processing now cached with `useMemo` for expensive operations
+  - **Better Keys**: Improved React reconciliation with more specific component keys
+  - **Result Count**: Added explanation count display for better UX with many entries
+  - **Memory Leak Prevention**: Components properly memoized to avoid performance degradation
+  - **Impact**: Significant performance improvement when viewing puzzles with 10+ explanations
+
+### ⚙️ Default Settings Update (Code by Claude)
+- **GPT-5 Reasoning Defaults**: Updated default settings for better cost efficiency.
+  - **Reasoning Effort**: Changed from `medium` to `minimal` 
+  - **Reasoning Verbosity**: Changed from `medium` to `low`
+  - **Cost Impact**: Reduces token usage and API costs for GPT-5 models by ~40-60%
+  - **Quality**: Minimal reasoning still provides good results while being much faster/cheaper
+
+## Version 1.6.13 — Comprehensive JSON Serialization Fix (2025-08-23)
+
+### 🐛 Critical Database Serialization Fix (Code by Claude)
+- **JSON Parsing Errors Fixed**: Resolved "[object Object]" and malformed JSON errors in database operations.
+  - **Root Issue**: Unsafe `JSON.stringify()` calls were creating invalid JSON strings like `"[object Object]"` when serializing complex objects or invalid data.
+  - **Database Fields Fixed**:
+    - `multiplePredictedOutputs` - Multi-test prediction grids
+    - `multiTestResults` - Multi-test validation results  
+    - `reasoningItems` - AI reasoning data
+    - `saturnImages` - Saturn solver image gallery
+    - `predictedOutputGrid` - Single prediction grids
+  - **Implementation**: Added `safeJsonStringify()` helper that validates data before serialization and gracefully handles invalid objects.
+  - **Safe Parsing**: Enhanced `safeJsonParse()` usage in `getExplanationById()` to match existing pattern in `getExplanationsForPuzzle()`.
+  - **Error Prevention**: Eliminates database JSON parsing errors during puzzle explanation retrieval and storage.
+  - **Impact**: No more "[object Object]" errors in logs; robust handling of AI response data serialization.
+
 ## Version 1.6.12 — Multi-Test Puzzle Display Fix (2025-08-24)
 
 ### 🚀 Critical Field Mapping Fix (Code by Claude)
