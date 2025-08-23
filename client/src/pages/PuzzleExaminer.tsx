@@ -493,7 +493,7 @@ export default function PuzzleExaminer() {
                           key={explanation.id}
                           modelKey={explanation.modelName}
                           result={explanation}
-                          expectedOutputGrid={task.test && task.test.length > 0 ? task.test[0].output : undefined}
+                          expectedOutputGrid={task.test && task.test.length > 0 ? (task.test.length === 1 ? task.test[0].output : task.test.map(t => t.output)) : undefined}
                         />
                       ))}
                   </div>
@@ -512,7 +512,7 @@ export default function PuzzleExaminer() {
                           key={`generated-${index}`}
                           modelKey={explanation.modelName}
                           result={explanation}
-                          expectedOutputGrid={task.test && task.test.length > 0 ? task.test[0].output : undefined}
+                          expectedOutputGrid={task.test && task.test.length > 0 ? (task.test.length === 1 ? task.test[0].output : task.test.map(t => t.output)) : undefined}
                         />
                       ))}
                   </div>
