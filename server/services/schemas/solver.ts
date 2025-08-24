@@ -223,8 +223,26 @@ export function extractPredictions(response: any, testCaseCount: number): {
     return { predictedOutputs: response.predictedOutputs };
   }
 
-  // Handle single output format
+  // Handle single output format or TestCase array format
   if (response?.predictedOutput) {
+    // Check if predictedOutput is an array of TestCase objects (OpenAI multi-test format)
+    if (Array.isArray(response.predictedOutput)) {
+      const extractedGrids = [];
+      for (const item of response.predictedOutput) {
+        if (item && typeof item === 'object' && item.output) {
+          // Extract the output grid from TestCase format: { "TestCase": 1, "output": [...] }
+          if (validateGrid(item.output)) {
+            extractedGrids.push(item.output);
+          }
+        } else if (validateGrid(item)) {
+          // Direct grid format in array
+          extractedGrids.push(item);
+        }
+      }
+      return { predictedOutputs: extractedGrids };
+    }
+    
+    // Handle single grid format
     return testCaseCount > 1
       ? { predictedOutputs: [response.predictedOutput] }
       : { predictedOutput: response.predictedOutput };
