@@ -29,10 +29,11 @@ const MODELS = {
   "claude-3-haiku-20240307": "claude-3-haiku-20240307",
 } as const;
 
-// Models that do NOT support temperature parameter (based on Anthropic documentation)
-const MODELS_WITHOUT_TEMPERATURE = new Set<string>([
-  // Most Anthropic models support temperature, but we'll keep this for potential future models
-]);
+// Helper function to check if model supports temperature using centralized config
+function modelSupportsTemperature(modelKey: string): boolean {
+  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+  return modelConfig?.supportsTemperature ?? false;
+}
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -89,7 +90,7 @@ export class AnthropicService {
       }
 
       // Only add temperature for models that support it
-      if (!MODELS_WITHOUT_TEMPERATURE.has(modelName)) {
+      if (modelSupportsTemperature(modelKey)) {
         requestOptions.temperature = temperature;
       }
 

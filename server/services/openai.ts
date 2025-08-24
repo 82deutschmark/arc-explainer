@@ -27,15 +27,11 @@ const MODELS = {
   "gpt-5-nano-2025-08-07": "gpt-5-nano-2025-08-07",
 } as const;
 
-// Models that do NOT support temperature parameter
-const MODELS_WITHOUT_TEMPERATURE = new Set([
-  "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16",
-  "o3-2025-04-16",
-  "gpt-5-2025-08-07",
-  "gpt-5-mini-2025-08-07",
-  "gpt-5-nano-2025-08-07",
-]);
+// Helper function to check if model supports temperature using centralized config
+function modelSupportsTemperature(modelKey: string): boolean {
+  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+  return modelConfig?.supportsTemperature ?? false;
+}
 
 // Older models that support reasoning logs (o3/o4 series)
 const O3_O4_REASONING_MODELS = new Set([
@@ -162,8 +158,8 @@ export class OpenAIService {
         ...(textConfig && { text: textConfig }),
         max_steps: serviceOpts?.maxSteps,
         previous_response_id: serviceOpts?.previousResponseId,
-        // Apply temperature for models that support it (non-reasoning models: GPT-4.1 series and GPT-5 Chat)
-        ...(!isReasoningModel && {
+        // Apply temperature only for models that support it according to centralized config
+        ...(modelSupportsTemperature(modelKey) && {
           temperature: temperature || 0.2,
           ...(isGPT5ChatModel && { top_p: 1.00 })
         }),
@@ -406,7 +402,7 @@ export class OpenAIService {
       },
       providerSpecificNotes,
       captureReasoning,
-      temperature: MODELS_WITH_REASONING.has(modelKey) ? "Not supported" : temperature
+      temperature: modelSupportsTemperature(modelKey) ? temperature : "Not supported"
     };
   }
 
