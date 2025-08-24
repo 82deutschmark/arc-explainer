@@ -2,7 +2,9 @@
  * PuzzleLoader.ts - Service to load ARC puzzle data from local directories
  * 
  * This module handles loading puzzle data from multiple sources with priority:
- * ARC2-Eval (evaluation2) -> ARC2 (training2) -> ARC1-Eval (evaluation) -> ARC1 (training)
+ * ARC1-Eval (evaluation) -> ARC1 (training) -> ARC2-Eval (evaluation2) -> ARC2 (training2)
+ * 
+ * Puzzles are labeled by their first appearance - ARC1 datasets take precedence over ARC2.
  * 
  * @author Cascade
  */
@@ -36,29 +38,30 @@ export class PuzzleLoader {
   private initialized = false;
 
   // Centralized data source configuration with explicit priority
+  // Priority order: ARC1 datasets take precedence over ARC2 for duplicate puzzles
   private readonly dataSources: DataSource[] = [
-    {
-      name: 'ARC2-Eval',
-      directory: path.join(process.cwd(), 'data', 'evaluation2'),
-      source: 'ARC2-Eval',
-      priority: 1
-    },
-    {
-      name: 'ARC2',
-      directory: path.join(process.cwd(), 'data', 'training2'),
-      source: 'ARC2',
-      priority: 2
-    },
     {
       name: 'ARC1-Eval',
       directory: path.join(process.cwd(), 'data', 'evaluation'),
       source: 'ARC1-Eval',
-      priority: 3
+      priority: 1
     },
     {
       name: 'ARC1',
       directory: path.join(process.cwd(), 'data', 'training'),
       source: 'ARC1',
+      priority: 2
+    },
+    {
+      name: 'ARC2-Eval',
+      directory: path.join(process.cwd(), 'data', 'evaluation2'),
+      source: 'ARC2-Eval',
+      priority: 3
+    },
+    {
+      name: 'ARC2',
+      directory: path.join(process.cwd(), 'data', 'training2'),
+      source: 'ARC2',
       priority: 4
     }
   ];
