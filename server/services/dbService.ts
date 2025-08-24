@@ -504,9 +504,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields - force JSON.stringify to prevent PostgreSQL auto-conversion
-        multiplePredictedOutputs ? JSON.stringify(multiplePredictedOutputs) : null,
-        multiTestResults ? JSON.stringify(multiTestResults) : null,
+        // Multi-output prediction fields - use safeJsonStringify for consistency
+        safeJsonStringify(multiplePredictedOutputs),
+        safeJsonStringify(multiTestResults),
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]

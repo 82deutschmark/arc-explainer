@@ -7,6 +7,17 @@
 
 August 24, 2025
 
+## Version 1.6.21 — Multi-Test Database Storage Serialization Fix (2025-08-24)
+
+### 🔧 Database Serialization Fix (Code by Claude)
+- **Root Cause**: Multi-test puzzle predictions were corrupted during database storage due to inconsistent JSON serialization between single-test and multi-test data
+- **PostgreSQL Parameter Binding Issue**: Nested arrays like `[[[0,1,0]], [[2,0,0]]]` were incorrectly converted to `"[object Object],[object Object]"` strings during database insertion
+- **Consistent Serialization**: Changed `JSON.stringify()` to `safeJsonStringify()` for multi-test fields to match single-test field handling
+- **Fixed Fields**: `multiplePredictedOutputs` and `multiTestResults` now properly serialize complex nested arrays
+- **Impact**: Multi-test puzzles (20a9e565, 27a28665) will now store and retrieve predicted grids correctly without corruption
+
+August 24, 2025
+
 ## Version 1.6.20 — Multi-Test Puzzle Extraction Fix (2025-08-24)
 
 ### 🎯 Critical Multi-Test Puzzle Fix (Code by Claude)
