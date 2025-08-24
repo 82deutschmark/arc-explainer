@@ -7,6 +7,14 @@
 
 August 24, 2025
 
+## Version 1.7.4 — Multi-Test Performance Optimization (2025-08-24)
+
+### 🚀 UI Performance & Stability (Code by Cascade)
+- **Collapsible Multi-Test Results**: Implemented a collapsible section for multi-test results in `AnalysisResultCard.tsx` to improve performance by deferring the rendering of predicted output grids until the user explicitly expands the section.
+  - **Impact**: Significantly improves initial render performance when dealing with a large number of test cases and enhances user experience by reducing clutter.
+- **Type Safety Fix**: Resolved related TypeScript errors by adding conditional checks to ensure grid data is defined before being passed to the `PuzzleGrid` component, enhancing stability for both single and multi-test cases.
+  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
 ## Version 1.7.3 — UI Bug Fix (2025-08-24)
 
 ### 🐛 Bug Fix (Code by Cascade)
