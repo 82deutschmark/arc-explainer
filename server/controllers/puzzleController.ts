@@ -265,6 +265,13 @@ export const puzzleController = {
         saturnFilter,
         source,
         multiTestFilter,
+        gridSizeMin,
+        gridSizeMax,
+        gridConsistency,
+        processingTimeMin,
+        processingTimeMax,
+        hasPredictions,
+        predictionAccuracy,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -282,6 +289,15 @@ export const puzzleController = {
       }
       if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
         puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
+      }
+      if (gridSizeMin) {
+        puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
+      }
+      if (gridSizeMax) {
+        puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
+      }
+      if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
+        puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
       }
 
       // Get all puzzles from the puzzle service
@@ -378,6 +394,42 @@ export const puzzleController = {
                     if (confidenceMax && confidence > parseInt(confidenceMax as string)) return false;
                     return true;
                   });
+                }
+
+                // Filter by processing time if specified
+                if (processingTimeMin || processingTimeMax) {
+                  filteredExplanations = filteredExplanations.filter(exp => {
+                    const processingTime = exp.apiProcessingTimeMs || 0;
+                    if (processingTimeMin && processingTime < parseInt(processingTimeMin as string)) return false;
+                    if (processingTimeMax && processingTime > parseInt(processingTimeMax as string)) return false;
+                    return true;
+                  });
+                }
+
+                // Filter by has predictions if specified
+                if (hasPredictions) {
+                  if (hasPredictions === 'true') {
+                    filteredExplanations = filteredExplanations.filter(exp => 
+                      exp.predictedOutputGrid || exp.multiplePredictedOutputs
+                    );
+                  } else if (hasPredictions === 'false') {
+                    filteredExplanations = filteredExplanations.filter(exp => 
+                      !exp.predictedOutputGrid && !exp.multiplePredictedOutputs
+                    );
+                  }
+                }
+
+                // Filter by prediction accuracy if specified
+                if (predictionAccuracy) {
+                  if (predictionAccuracy === 'correct') {
+                    filteredExplanations = filteredExplanations.filter(exp => 
+                      exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true
+                    );
+                  } else if (predictionAccuracy === 'incorrect') {
+                    filteredExplanations = filteredExplanations.filter(exp => 
+                      exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false
+                    );
+                  }
                 }
 
                 if (filteredExplanations.length > 0) {

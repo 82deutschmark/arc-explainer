@@ -34,6 +34,20 @@ interface SearchFiltersProps {
   setSourceFilter: (filter: string) => void;
   multiTestFilter: string;
   setMultiTestFilter: (filter: string) => void;
+  gridSizeMin: string;
+  setGridSizeMin: (min: string) => void;
+  gridSizeMax: string;
+  setGridSizeMax: (max: string) => void;
+  gridConsistencyFilter: string;
+  setGridConsistencyFilter: (filter: string) => void;
+  processingTimeMin: string;
+  setProcessingTimeMin: (min: string) => void;
+  processingTimeMax: string;
+  setProcessingTimeMax: (max: string) => void;
+  hasPredictionsFilter: string;
+  setHasPredictionsFilter: (filter: string) => void;
+  predictionAccuracyFilter: string;
+  setPredictionAccuracyFilter: (filter: string) => void;
   confidenceMin: string;
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
@@ -60,6 +74,20 @@ export function SearchFilters({
   setSourceFilter,
   multiTestFilter,
   setMultiTestFilter,
+  gridSizeMin,
+  setGridSizeMin,
+  gridSizeMax,
+  setGridSizeMax,
+  gridConsistencyFilter,
+  setGridConsistencyFilter,
+  processingTimeMin,
+  setProcessingTimeMin,
+  processingTimeMax,
+  setProcessingTimeMax,
+  hasPredictionsFilter,
+  setHasPredictionsFilter,
+  predictionAccuracyFilter,
+  setPredictionAccuracyFilter,
   confidenceMin,
   setConfidenceMin,
   confidenceMax,
@@ -79,7 +107,7 @@ export function SearchFilters({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-4">
           {/* Search */}
           <div className="space-y-2">
             <Label htmlFor="search">Search Puzzle ID</Label>
@@ -159,6 +187,46 @@ export function SearchFilters({
             </Select>
           </div>
 
+          {/* Grid Size Range */}
+          <div className="space-y-2">
+            <Label htmlFor="gridSizeMin">Grid Size Range</Label>
+            <div className="flex gap-2">
+              <Input
+                id="gridSizeMin"
+                placeholder="Min"
+                type="number"
+                min="1"
+                max="30"
+                value={gridSizeMin}
+                onChange={(e) => setGridSizeMin(e.target.value)}
+              />
+              <Input
+                id="gridSizeMax"
+                placeholder="Max"
+                type="number"
+                min="1"
+                max="30"
+                value={gridSizeMax}
+                onChange={(e) => setGridSizeMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Grid Consistency Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="gridConsistency">Grid Consistency</Label>
+            <Select value={gridConsistencyFilter} onValueChange={setGridConsistencyFilter}>
+              <SelectTrigger id="gridConsistency">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any</SelectItem>
+                <SelectItem value="true">Consistent Sizes</SelectItem>
+                <SelectItem value="false">Variable Sizes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Model Filter */}
           <div className="space-y-2">
             <Label htmlFor="model">AI Model</Label>
@@ -189,6 +257,59 @@ export function SearchFilters({
                 <SelectItem value="solved">✅ Solved</SelectItem>
                 <SelectItem value="failed">❌ Failed</SelectItem>
                 <SelectItem value="attempted">🪐 Has Saturn Results</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Processing Time Range */}
+          <div className="space-y-2">
+            <Label htmlFor="processingTimeMin">Processing Time (ms)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="processingTimeMin"
+                placeholder="Min"
+                type="number"
+                min="0"
+                value={processingTimeMin}
+                onChange={(e) => setProcessingTimeMin(e.target.value)}
+              />
+              <Input
+                id="processingTimeMax"
+                placeholder="Max"
+                type="number"
+                min="0"
+                value={processingTimeMax}
+                onChange={(e) => setProcessingTimeMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Has Predictions Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="hasPredictions">Has Predictions</Label>
+            <Select value={hasPredictionsFilter} onValueChange={setHasPredictionsFilter}>
+              <SelectTrigger id="hasPredictions">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any</SelectItem>
+                <SelectItem value="true">Has Solver Predictions</SelectItem>
+                <SelectItem value="false">No Predictions</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Prediction Accuracy Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="predictionAccuracy">Prediction Accuracy</Label>
+            <Select value={predictionAccuracyFilter} onValueChange={setPredictionAccuracyFilter}>
+              <SelectTrigger id="predictionAccuracy">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any</SelectItem>
+                <SelectItem value="correct">Correct Predictions</SelectItem>
+                <SelectItem value="incorrect">Incorrect Predictions</SelectItem>
               </SelectContent>
             </Select>
           </div>
