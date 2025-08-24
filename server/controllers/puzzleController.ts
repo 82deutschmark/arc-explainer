@@ -127,20 +127,24 @@ export const puzzleController = {
     if (promptId === "solver") {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
+      
+      // Check if AI provided multiple predictions (regardless of test count)
+      const hasMultiplePredictions = result.multiplePredictedOutputs === true;
 
-      if (testCount > 1) {
-        const correctAnswers = puzzle.test.map(t => t.output);
+      if (hasMultiplePredictions) {
+        // Handle multiple predictions from AI (can happen for single or multi-test puzzles)
+        const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-        // Attach multi-test validation summary and details
+        // Attach multi-prediction validation summary and details
         result.predictedOutputGrids = multi.predictedGrids;
-        result.predictedOutputGrid = null; // Multi-test doesn't use single grid field for DB
+        result.predictedOutputGrid = null; // Multiple predictions don't use single grid field
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         
-        // Store in database-compatible field names for multi-output prediction edge case
-        console.log('[CONTROLLER-DEBUG] About to store multi-test data:');
+        // Store in database-compatible field names for multi-output predictions
+        console.log('[CONTROLLER-DEBUG] About to store multi-prediction data:');
         console.log('  multi.predictedGrids type:', typeof multi.predictedGrids, 'isArray:', Array.isArray(multi.predictedGrids));
         console.log('  multi.predictedGrids:', multi.predictedGrids);
         console.log('  multi.itemResults type:', typeof multi.itemResults, 'isArray:', Array.isArray(multi.itemResults));
@@ -151,18 +155,19 @@ export const puzzleController = {
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
-        console.log(`[Controller] Solver multi-test: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
+        console.log(`[Controller] Solver multi-prediction: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
       } else {
+        // Handle single prediction from AI
         const correctAnswer = puzzle.test[0].output;
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
-        // Add validation results to response (single-test)
+        // Add validation results to response (single prediction)
         result.predictedOutputGrid = validation.predictedGrid;
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
         result.extractionMethod = validation.extractionMethod;
 
-        console.log(`[Controller] Solver validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
+        console.log(`[Controller] Solver single-prediction: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
       }
     }
     
