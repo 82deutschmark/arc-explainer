@@ -10,7 +10,9 @@ You need to Git add and commit any changes you make to the codebase.  Be detaile
 - Database tables auto-create on startup if using PostgreSQL
 
 ### Testing and Validation
--  You may not run the dev server or do any testing on your own.  You may write scripts for automated tests if the user asks. You need to ask the user if you 100% need the dev server started right this instant, then they will do it. The user will test the app for you.
+-You need to ask the user if you 100% need the dev server started right this instant, if you get permission then start it, but wait for at least 10 seconds before doing any testing.  Use that time to tell the user exactly what you are going to do.
+
+Whenever you run tests you need to wait at least 10 seconds to read the output.  Tell the user a joke about coding while you wait.
 
 
 ## Architecture Overview

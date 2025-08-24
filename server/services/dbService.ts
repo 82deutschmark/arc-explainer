@@ -455,6 +455,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       logger.info(`  multiplePredictedOutputs: ${JSON.stringify(multiplePredictedOutputs)}`, 'database');
       logger.info(`  multiTestResults type: ${typeof multiTestResults}, isArray: ${Array.isArray(multiTestResults)}`, 'database');
       logger.info(`  multiTestResults: ${JSON.stringify(multiTestResults)}`, 'database');
+      logger.info(`  predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)}`, 'database');
     }
     
     // Ensure hints is always an array of strings
