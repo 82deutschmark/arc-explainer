@@ -109,7 +109,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result]);
   
   const { predictedGrids, singlePredictedGrid, multiValidation, hasPredictedGrids } = gridData;
-  const predictedGrid: number[][] | undefined = hasPredictedGrids ? predictedGrids[0] : singlePredictedGrid;
+  const predictedGrid: number[][] | undefined = hasPredictedGrids && predictedGrids ? predictedGrids[0] : singlePredictedGrid;
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
