@@ -174,13 +174,19 @@ export function extractPredictions(response: any, testCaseCount: number): {
   if (response?.multiplePredictedOutputs) {
     const collectedGrids = [];
     let i = 1;
+    console.log(`[EXTRACT-DEBUG] Looking for individual predictedOutput fields, expected testCaseCount: ${testCaseCount}`);
     while (`predictedOutput${i}` in response) {
       const grid = response[`predictedOutput${i}`];
+      console.log(`[EXTRACT-DEBUG] Found predictedOutput${i}, validating...`);
       if (validateGrid(grid)) {
+        console.log(`[EXTRACT-DEBUG] predictedOutput${i} is valid, adding to collection`);
         collectedGrids.push(grid);
+      } else {
+        console.log(`[EXTRACT-DEBUG] predictedOutput${i} failed validation:`, grid);
       }
       i++;
     }
+    console.log(`[EXTRACT-DEBUG] Collected ${collectedGrids.length} grids from individual fields`);
     // Fallback to the main array if individual keys are missing
     if (collectedGrids.length === 0 && Array.isArray(response.multiplePredictedOutputs)) {
         // Check if it's structured format with testCase/predictedOutput objects
