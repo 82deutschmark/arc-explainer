@@ -609,44 +609,30 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                       )}
                     </div>
                     {predGrid ? (
-                      // Show both prediction and expected when prediction exists
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className={`rounded p-3 ${
-                          isCorrect 
-                            ? 'bg-emerald-50 border border-emerald-200' 
-                            : 'bg-red-50 border border-red-200'
-                        }`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <h6 className={`font-semibold ${
-                              isCorrect ? 'text-emerald-800' : 'text-red-800'
-                            }`}>Predicted</h6>
-                          </div>
+                        <div className={`rounded p-3 ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+                          <h6 className={`font-semibold mb-2 ${isCorrect ? 'text-emerald-800' : 'text-red-800'}`}>Predicted Answer</h6>
                           <div className="flex items-center justify-center">
-                            <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={showDiff ? testDiffMask : undefined} />
+                            <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={testDiffMask} />
                           </div>
                         </div>
                         <div className="bg-green-50 border border-green-200 rounded p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h6 className="font-semibold text-green-800">Expected</h6>
-                          </div>
+                          <h6 className="font-semibold text-green-800 mb-2">Correct Answer</h6>
                           <div className="flex items-center justify-center">
                             <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
                           </div>
                         </div>
                       </div>
                     ) : (
-                      // Show only expected output centered when no prediction
-                      <div className="flex justify-center">
-                        <div className="bg-green-50 border border-green-200 rounded p-3 max-w-md">
-                          <div className="flex items-center gap-2 mb-2 justify-center">
-                            <h6 className="font-semibold text-green-800">Expected Answer</h6>
-                            <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
-                              No prediction
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-center">
-                            <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
-                          </div>
+                      <div className="bg-gray-50 border border-gray-200 rounded p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h6 className="font-semibold text-gray-800">Correct Answer</h6>
+                          <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
+                            No prediction available
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
                         </div>
                       </div>
                     )}
@@ -749,8 +735,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                 {result.isPredictionCorrect !== undefined && (
                   <Badge 
                     variant="outline" 
-                    className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
-                  >
+                    className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
                     {result.isPredictionCorrect ? 'Prediction matches correct answer' : 'Prediction differs from correct answer'}
                   </Badge>
                 )}
