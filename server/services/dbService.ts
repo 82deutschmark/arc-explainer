@@ -777,6 +777,17 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
     const processedRows = result.rows.map(row => {
       const safeJsonParse = (jsonString: string | null, fieldName: string) => {
         if (!jsonString) return null;
+        
+        // Skip obviously corrupted data patterns to reduce log noise
+        if (typeof jsonString === 'string') {
+          if (jsonString.includes('[object Object]') || 
+              jsonString.startsWith(',,') || 
+              jsonString === ',' ||
+              jsonString.trim().length === 0) {
+            return null; // Silently ignore known corruption patterns
+          }
+        }
+        
         try {
           return JSON.parse(jsonString);
         } catch (error) {
@@ -854,6 +865,17 @@ const getExplanationById = async (explanationId: number) => {
       // Parse JSON fields for Saturn data and validation
       const safeJsonParse = (jsonString: string | null, fieldName: string) => {
         if (!jsonString) return null;
+        
+        // Skip obviously corrupted data patterns to reduce log noise
+        if (typeof jsonString === 'string') {
+          if (jsonString.includes('[object Object]') || 
+              jsonString.startsWith(',,') || 
+              jsonString === ',' ||
+              jsonString.trim().length === 0) {
+            return null; // Silently ignore known corruption patterns
+          }
+        }
+        
         try {
           return JSON.parse(jsonString);
         } catch (error) {
