@@ -32,6 +32,11 @@ export default function PuzzleBrowser() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
+  // Set page title
+  React.useEffect(() => {
+    document.title = 'ARC Puzzle Browser';
+  }, []);
+
   // Create filters object for the hook
   const filters = React.useMemo(() => {
     const result: any = {};

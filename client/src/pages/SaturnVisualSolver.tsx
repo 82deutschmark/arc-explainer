@@ -33,6 +33,11 @@ export default function SaturnVisualSolver() {
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const logRef = React.useRef<HTMLDivElement | null>(null);
 
+  // Set page title with puzzle ID
+  React.useEffect(() => {
+    document.title = taskId ? `Saturn Solver - ${taskId}` : 'Saturn Visual Solver';
+  }, [taskId]);
+
   // Derived state variables (moved before useEffect hooks)
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
