@@ -26,9 +26,9 @@ async function checkMultiTestData() {
              multi_test_average_accuracy,
              created_at
       FROM explanations 
-      WHERE puzzle_id = '27a28665'
+      WHERE puzzle_id = '27a28665' OR created_at > NOW() - INTERVAL '5 minutes'
       ORDER BY created_at DESC 
-      LIMIT 3
+      LIMIT 10
     `);
     
     console.log(`Found ${result.rows.length} explanations for puzzle 27a28665:\n`);
