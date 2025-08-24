@@ -175,23 +175,44 @@ export function isSolverMode(promptId: string): boolean {
   return promptId === 'solver';
 }
 
-/**
+/*
  * Get the appropriate system prompt for OpenAI structured outputs
  * Includes additional instruction about strict JSON schema compliance
+ *
+ * Temporarily commented out - 2025-08-24
+ *
+ * export function getStructuredOutputSystemPrompt(promptId: string, schemaName: string): string {
+ *   const basePrompt = getSystemPrompt(promptId);
+ *   
+ *   return `${basePrompt}
+ * 
+ * STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "${schemaName}". 
+ * All fields marked as required must be present. Do not include any additional properties.
+ * Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
+ * }
+ *
+ * 
+ * System prompt specifically for custom prompts with minimal structure
+ *
+ * export const CUSTOM_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
+ * 
+ * The user will provide a custom analysis request along with puzzle data (training examples and test cases).
+ * 
+ * STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "Custom". 
+ * All fields marked as required must be present. Do not include any additional properties.
+ * Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
+ *
+ * 
+ * Get system prompt for custom prompt mode
+ *
+ * export function getCustomSystemPrompt(): string {
+ *   return CUSTOM_SYSTEM_PROMPT;
+ * }
  */
-export function getStructuredOutputSystemPrompt(promptId: string, schemaName: string): string {
-  const basePrompt = getSystemPrompt(promptId);
-  
-  return `${basePrompt}
-
-STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "${schemaName}". 
-All fields marked as required must be present. Do not include any additional properties.
-Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
-}
 
 /**
  * System prompt specifically for custom prompts with minimal structure
- */
+ 
 export const CUSTOM_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
 
 The user will provide a custom analysis request along with puzzle data (training examples and test cases).
@@ -203,6 +224,8 @@ Put your complete reasoning in the solvingStrategy field - this is where OpenAI 
 /**
  * Get system prompt for custom prompt mode
  */
-export function getCustomSystemPrompt(): string {
-  return CUSTOM_SYSTEM_PROMPT;
-}
+//export function getCustomSystemPrompt(): string {
+//  return CUSTOM_SYSTEM_PROMPT;
+// }
+
+//

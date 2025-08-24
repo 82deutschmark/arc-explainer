@@ -28,13 +28,13 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git log:*)"
+
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
       "D:\\",
-      "D:\\d\\1Projects"
+      "D:\\1Projects\\arc-explainer"
     ]
   }
 }
