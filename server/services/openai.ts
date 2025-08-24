@@ -214,7 +214,8 @@ export class OpenAIService {
       // Handle reasoning items with proper validation
       let reasoningItems: string[] = [];
       if (result.keySteps) {
-        // Extract keySteps with validation
+        // For structured outputs, extract keySteps with validation
+        if (result.keySteps) {
           if (Array.isArray(result.keySteps)) {
             reasoningItems = result.keySteps;
           } else if (typeof result.keySteps === 'string') {
