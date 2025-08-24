@@ -14,12 +14,11 @@ import path from "path";
 import fs from "fs";
 
 // Import controllers
-import { puzzleController } from './controllers/puzzleController';
-import { explanationController } from './controllers/explanationController';
-import { feedbackController } from './controllers/feedbackController';
-import { promptController } from './controllers/promptController';
-import { saturnController } from './controllers/saturnController';
-import { researchController } from './controllers/researchController';
+import { puzzleController } from "./controllers/puzzleController";
+import { explanationController } from "./controllers/explanationController";
+import { feedbackController } from "./controllers/feedbackController";
+import { promptController } from "./controllers/promptController";
+import { saturnController } from "./controllers/saturnController";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -74,12 +73,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
-  
-  // Research analytics routes
-  app.get("/api/research/model-discrepancies", asyncHandler(researchController.getModelDiscrepancies));
-  app.get("/api/research/saturn-analytics", asyncHandler(researchController.getSaturnAnalytics));
-  app.get("/api/research/insights", asyncHandler(researchController.getResearchInsights));
-  app.post("/api/research/advanced-search", asyncHandler(researchController.advancedSearch));
   
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {

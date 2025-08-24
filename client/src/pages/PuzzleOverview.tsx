@@ -2,21 +2,18 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Database, 
   ArrowUpDown,
   ArrowUp,
-  ArrowDown,
-  Search,
-  BarChart3
+  ArrowDown
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
-// import { ResearchDashboard } from '@/components/research/ResearchDashboard';
-// import { AdvancedSearchPanel } from '@/components/research/AdvancedSearchPanel';
+import { StatisticsCards } from '@/components/overview/StatisticsCards';
+import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
 import type { FeedbackStats } from '@shared/types';
 
@@ -67,15 +64,20 @@ interface AccuracyStats {
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
-  const [activeTab, setActiveTab] = useState('list');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [hasExplanationFilter, setHasExplanationFilter] = useState<string>('all');
+  const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
+  const [modelFilter, setModelFilter] = useState<string>('all');
+  const [saturnFilter, setSaturnFilter] = useState<string>('all');
+  const [confidenceMin, setConfidenceMin] = useState<string>('');
+  const [confidenceMax, setConfidenceMax] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<string>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
-
-  // Research search state
-  const [searchCriteria, setSearchCriteria] = useState<any>(null);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -83,81 +85,46 @@ export default function PuzzleOverview() {
     setFeedbackModalOpen(true);
   }, []);
 
-  // Build query parameters for basic puzzle list (used for research insights)
-  const basicQueryParams = useMemo(() => {
+  // Build query parameters
+  const queryParams = useMemo(() => {
     const params = new URLSearchParams();
-    params.set('limit', '1000'); // Get more for research analysis
-    params.set('offset', '0');
-    return params.toString();
-  }, []);
-
-  // Build query parameters for advanced search
-  const searchQueryParams = useMemo(() => {
-    if (!searchCriteria) return null;
     
-    const params = new URLSearchParams();
-    if (searchCriteria.puzzleId) params.set('puzzleId', searchCriteria.puzzleId);
-    if (searchCriteria.source?.length > 0) params.set('source', searchCriteria.source.join(','));
-    if (searchCriteria.hasExplanations !== null) params.set('hasExplanations', searchCriteria.hasExplanations.toString());
-    if (searchCriteria.modelName?.length > 0) params.set('modelName', searchCriteria.modelName.join(','));
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
+    if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
+    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
+    if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
+    if (confidenceMin) params.set('confidenceMin', confidenceMin);
+    if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    if (sortBy) params.set('sortBy', sortBy);
+    if (sortOrder) params.set('sortOrder', sortOrder);
     
     params.set('limit', ITEMS_PER_PAGE.toString());
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchCriteria, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
-  // Fetch basic puzzle data for research insights
-  const { data: basicPuzzleData, isLoading: basicLoading, error } = useQuery<PuzzleOverviewResponse>({
-    queryKey: ['puzzleOverview', basicQueryParams],
+  // Fetch puzzle overview data
+  const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
+    queryKey: ['puzzleOverview', queryParams],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/puzzle/overview?${basicQueryParams}`);
+      const response = await apiRequest('GET', `/api/puzzle/overview?${queryParams}`);
+      const json = await response.json();
+      return json.data;
+    },
+    placeholderData: (previousData) => previousData,
+  });
+
+  // Fetch feedback statistics
+  const { data: feedbackStats, isLoading: statsLoading } = useQuery<FeedbackStats>({
+    queryKey: ['feedbackStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/feedback/stats');
       const json = await response.json();
       return json.data;
     },
   });
-
-  // Advanced search - TEMPORARILY DISABLED
-  // const { data: searchResults, isLoading: searchLoading } = useQuery<PuzzleOverviewResponse>({
-  //   queryKey: ['advancedSearch', searchQueryParams],
-  //   queryFn: async () => {
-  //     if (!searchQueryParams) return null;
-  //     const response = await apiRequest('POST', `/api/research/advanced-search?${searchQueryParams}`);
-  //     const json = await response.json();
-  //     return json.data;
-  //   },
-  //   enabled: !!searchQueryParams,
-  // });
-
-  // Research insights - TEMPORARILY DISABLED
-  // const { data: researchInsights, isLoading: insightsLoading } = useQuery({
-  //   queryKey: ['researchInsights'],
-  //   queryFn: async () => {
-  //     const response = await apiRequest('GET', '/api/research/insights');
-  //     const json = await response.json();
-  //     return json.data;
-  //   },
-  // });
-
-  // Model discrepancies - TEMPORARILY DISABLED  
-  // const { data: modelDiscrepancies, isLoading: discrepanciesLoading } = useQuery({
-  //   queryKey: ['modelDiscrepancies'],
-  //   queryFn: async () => {
-  //     const response = await apiRequest('GET', '/api/research/model-discrepancies');
-  //     const json = await response.json();
-  //     return json.data?.discrepancies || [];
-  //   },
-  // });
-
-  // Saturn analytics - TEMPORARILY DISABLED
-  // const { data: saturnAnalytics, isLoading: saturnLoading } = useQuery({
-  //   queryKey: ['saturnAnalytics'],
-  //   queryFn: async () => {
-  //     const response = await apiRequest('GET', '/api/research/saturn-analytics');
-  //     const json = await response.json();
-  //     return json.data;
-  //   },
-  // });
 
   // Fetch solver mode accuracy statistics
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
@@ -169,16 +136,32 @@ export default function PuzzleOverview() {
     },
   });
 
-  const handleAdvancedSearch = useCallback((criteria: any) => {
-    setSearchCriteria(criteria);
+  const handleSearch = useCallback(() => {
     setCurrentPage(1);
-    setActiveTab('search');
-  }, []);
+    refetch();
+  }, [refetch]);
 
-  const handleResetSearch = useCallback(() => {
-    setSearchCriteria(null);
+  const handleSortChange = useCallback((newSortBy: string) => {
+    if (sortBy === newSortBy) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(newSortBy);
+      setSortOrder('desc');
+    }
     setCurrentPage(1);
-  }, []);
+  }, [sortBy, sortOrder]);
+
+  const getSortIcon = useCallback((field: string) => {
+    if (sortBy !== field) return <ArrowUpDown className="h-4 w-4" />;
+    return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
+  }, [sortBy, sortOrder]);
+
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 80) return 'bg-green-100 text-green-800';
+    if (confidence >= 60) return 'bg-yellow-100 text-yellow-800';
+    if (confidence >= 40) return 'bg-orange-100 text-orange-800';
+    return 'bg-red-100 text-red-800';
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -190,60 +173,115 @@ export default function PuzzleOverview() {
     });
   };
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'bg-green-100 text-green-800';
-    if (confidence >= 60) return 'bg-yellow-100 text-yellow-800';
-    if (confidence >= 40) return 'bg-orange-100 text-orange-800';
-    return 'bg-red-100 text-red-800';
-  };
-
-  // Transform accuracy stats for research dashboard
-  const modelPerformance = useMemo(() => {
-    if (!accuracyStats?.accuracyByModel) return [];
+  // Calculate model performance rankings based on feedback
+  const modelRankings = useMemo(() => {
+    if (!feedbackStats) return [];
     
-    return accuracyStats.accuracyByModel.map(model => {
-      const modelInfo = MODELS.find(m => m.key === model.modelName);
-      return {
-        ...model,
-        displayName: modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName,
-        provider: modelInfo?.provider || 'Unknown'
-      };
+    return Object.entries(feedbackStats.feedbackByModel)
+      .map(([modelName, stats]) => {
+        const total = stats.helpful + stats.notHelpful;
+        const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
+        
+        // Find model display name from MODELS array
+        const modelInfo = MODELS.find(m => m.key === modelName);
+        const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
+        
+        return {
+          modelName,
+          displayName,
+          helpful: stats.helpful,
+          notHelpful: stats.notHelpful,
+          total,
+          helpfulPercentage,
+          provider: modelInfo?.provider || 'Unknown'
+        };
+      })
+      .filter(model => model.total >= 1) // Show all models with at least 1 feedback entry
+      .sort((a, b) => {
+        // Sort by helpful percentage first, then by total feedback count
+        if (a.helpfulPercentage !== b.helpfulPercentage) {
+          return b.helpfulPercentage - a.helpfulPercentage;
+        }
+        return b.total - a.total;
+      });
+  }, [feedbackStats]);
+
+  // Generate recent activity from puzzle data (AI models only)
+  const recentActivity = useMemo(() => {
+    if (!data?.puzzles) return [];
+    
+    const activities: Array<{
+      id: string;
+      type: 'explanation' | 'feedback';
+      puzzleId: string;
+      modelName?: string;
+      createdAt: string;
+    }> = [];
+    
+    // Extract explanations from all puzzles (exclude Saturn)
+    data.puzzles.forEach(puzzle => {
+      puzzle.explanations.forEach(explanation => {
+        // Skip Saturn results in recent activity
+        if (explanation.saturnSuccess !== undefined) return;
+        
+        activities.push({
+          id: explanation.id.toString(),
+          type: 'explanation',
+          puzzleId: puzzle.id,
+          modelName: explanation.modelName,
+          createdAt: explanation.createdAt
+        });
+      });
     });
-  }, [accuracyStats]);
+    
+    // Sort by creation date (newest first) and take the most recent
+    return activities
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 20); // Keep more items for the scrollable list
+  }, [data]);
 
-  // Transform Saturn analytics for research dashboard - TEMPORARILY DISABLED
-  // const saturnPerformance = useMemo(() => {
-  //   if (!saturnAnalytics) return {
-  //     totalAttempts: 0,
-  //     successCount: 0,
-  //     failureCount: 0,
-  //     successRate: 0,
-  //     recentResults: []
-  //   };
-  //   
-  //   return {
-  //     totalAttempts: saturnAnalytics.totalAttempts || 0,
-  //     successCount: saturnAnalytics.successCount || 0,
-  //     failureCount: saturnAnalytics.failureCount || 0,
-  //     successRate: saturnAnalytics.successRate || 0,
-  //     recentResults: saturnAnalytics.recentResults || []
-  //   };
-  // }, [saturnAnalytics]);
+  // Generate Saturn results separately - filtered by saturnFilter state
+  const saturnResults = useMemo(() => {
+    if (!data?.puzzles) return [];
+    
+    const results: Array<{
+      puzzleId: string;
+      solved: boolean;
+      createdAt: string;
+    }> = [];
+    
+    // Extract Saturn results from all puzzles
+    data.puzzles.forEach(puzzle => {
+      puzzle.explanations.forEach(explanation => {
+        // Only include Saturn results
+        if (explanation.saturnSuccess !== undefined) {
+          // Apply Saturn filter
+          let includeResult = false;
+          if (saturnFilter === 'all' || saturnFilter === 'attempted') {
+            includeResult = true;
+          } else if (saturnFilter === 'solved') {
+            includeResult = explanation.saturnSuccess === true;
+          } else if (saturnFilter === 'failed') {
+            includeResult = explanation.saturnSuccess === false;
+          }
+          
+          if (includeResult) {
+            results.push({
+              puzzleId: puzzle.id,
+              solved: explanation.saturnSuccess,
+              createdAt: explanation.createdAt
+            });
+          }
+        }
+      });
+    });
+    
+    // Sort by creation date (newest first)
+    return results
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [data, saturnFilter]);
 
-  // Get current data for display (search disabled, always use basic data)
-  const currentData = basicPuzzleData;
-  const isLoading = basicLoading;
-  
-  // Get puzzle counts for dashboard - TEMPORARILY DISABLED
-  // const puzzleCounts = useMemo(() => {
-  //   const total = researchInsights?.totalPuzzles || 0;
-  //   const withExplanations = researchInsights?.puzzlesWithExplanations || 0;
-  //   const withSaturnResults = researchInsights?.puzzlesWithSaturnResults || 0;
-  //   
-  //   return { total, withExplanations, withSaturnResults };
-  // }, [researchInsights]);
-
-  const totalPages = currentData ? Math.ceil(currentData.total / ITEMS_PER_PAGE) : 0;
+  const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
   if (error) {
     return (
@@ -263,139 +301,83 @@ export default function PuzzleOverview() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Database className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">ARC Puzzle Research Dashboard</h1>
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-lg shadow-sm border mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'dashboard'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Research Dashboard
-              </button>
-              <button
-                onClick={() => setActiveTab('search')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'search'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Advanced Search
-                {searchCriteria && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                    Active
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('list')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'list'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Puzzle List
-                {currentData && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                    {currentData.total}
-                  </span>
-                )}
-              </button>
-            </nav>
-          </div>
-        </div>
-
-        {/* Puzzle List View */}
-        {activeTab === 'list' && (
-          <>
-            {searchCriteria && (
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-blue-800">
-                    <strong>Active Search:</strong> {searchCriteria.puzzleId ? `Puzzle ID: ${searchCriteria.puzzleId}` : 'Advanced filters applied'}
-                  </div>
-                  <button
-                    onClick={handleResetSearch}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    Clear Search
-                  </button>
-                </div>
-              </div>
-            )}
-            
-            {isLoading ? (
-              <div className="bg-white rounded-lg shadow-sm border p-8">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading puzzles...</p>
-                </div>
-              </div>
-            ) : !currentData?.puzzles || currentData.puzzles.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm border p-8">
-                <div className="text-center">
-                  <p className="text-gray-600">No puzzles found{searchCriteria ? ' with the current search criteria' : ''}.</p>
-                </div>
-              </div>
-            ) : (
-              <PuzzleList
-                puzzles={currentData.puzzles}
-                total={currentData.total || 0}
-                isLoading={isLoading}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                onFeedbackClick={handleFeedbackClick}
-                formatDate={formatDate}
-                getConfidenceColor={getConfidenceColor}
-              />
-            )}
-          </>
-        )}
-        
-        {/* Research Dashboard - TEMPORARILY DISABLED */}
-        {activeTab === 'dashboard' && (
-          <div className="bg-white rounded-lg shadow-sm border p-8">
-            <div className="text-center">
-              <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">Research Dashboard</h3>
-              <p className="text-gray-500">Temporarily disabled while backend endpoints are being implemented</p>
+        <header className="text-center space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
+                <Database className="h-8 w-8" />
+                Puzzle Database Overview
+              </h1>
+              <p className="text-lg text-gray-600">
+                Browse all puzzles and their explanations stored in the database
+              </p>
             </div>
+            <Link href="/">
+              <Button variant="outline">
+                ← Back to Browser
+              </Button>
+            </Link>
           </div>
-        )}
-        
-        {/* Advanced Search Panel - TEMPORARILY DISABLED */}
-        {activeTab === 'search' && (
-          <div className="bg-white rounded-lg shadow-sm border p-8">
-            <div className="text-center">
-              <Search className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">Advanced Search</h3>
-              <p className="text-gray-500">Temporarily disabled while backend endpoints are being implemented</p>
-            </div>
-          </div>
-        )}
+        </header>
 
+        {/* Statistics Cards */}
+        <StatisticsCards
+          feedbackStats={feedbackStats}
+          accuracyStats={accuracyStats}
+          modelRankings={modelRankings}
+          onViewAllFeedback={() => {
+            setSelectedPuzzleId('');
+            setFeedbackModalOpen(true);
+          }}
+          statsLoading={statsLoading}
+          accuracyLoading={accuracyLoading}
+          recentActivity={recentActivity}
+          saturnResults={saturnResults}
+        />
 
-        {/* Feedback Modal */}
-        <FeedbackModal
-          open={feedbackModalOpen}
-          onOpenChange={setFeedbackModalOpen}
-          initialPuzzleId={selectedPuzzleId || undefined}
+        {/* Search and Filters */}
+        <SearchFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          hasExplanationFilter={hasExplanationFilter}
+          setHasExplanationFilter={setHasExplanationFilter}
+          hasFeedbackFilter={hasFeedbackFilter}
+          setHasFeedbackFilter={setHasFeedbackFilter}
+          modelFilter={modelFilter}
+          setModelFilter={setModelFilter}
+          saturnFilter={saturnFilter}
+          setSaturnFilter={setSaturnFilter}
+          confidenceMin={confidenceMin}
+          setConfidenceMin={setConfidenceMin}
+          confidenceMax={confidenceMax}
+          setConfidenceMax={setConfidenceMax}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSearch={handleSearch}
+          onSortChange={handleSortChange}
+          getSortIcon={getSortIcon}
+        />
+
+        {/* Puzzle List with Pagination */}
+        <PuzzleList
+          puzzles={data?.puzzles}
+          total={data?.total || 0}
+          isLoading={isLoading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          onFeedbackClick={handleFeedbackClick}
+          formatDate={formatDate}
+          getConfidenceColor={getConfidenceColor}
         />
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedbackModalOpen}
+        onOpenChange={setFeedbackModalOpen}
+        initialPuzzleId={selectedPuzzleId}
+      />
     </div>
   );
 }
