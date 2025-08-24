@@ -136,6 +136,15 @@ export const puzzleController = {
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
+        
+        // Store in database-compatible field names for multi-output prediction edge case
+        console.log('[CONTROLLER-DEBUG] About to store multi-test data:');
+        console.log('  multi.predictedGrids:', multi.predictedGrids);
+        console.log('  multi.itemResults:', multi.itemResults);
+        result.multiplePredictedOutputs = multi.predictedGrids;
+        result.multiTestResults = multi.itemResults;
+        result.multiTestAllCorrect = multi.allCorrect;
+        result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
         console.log(`[Controller] Solver multi-test: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
@@ -252,6 +261,8 @@ export const puzzleController = {
         hasExplanation, 
         hasFeedback,
         modelName, 
+        saturnFilter,
+        source,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -262,8 +273,14 @@ export const puzzleController = {
 
       console.log('[Controller] Puzzle overview request with filters:', req.query);
 
+      // Build filters for puzzle service
+      const puzzleFilters: any = {};
+      if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
+        puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+      }
+
       // Get all puzzles from the puzzle service
-      const allPuzzles = await puzzleService.getPuzzleList({});
+      const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic puzzle list
       if (!dbService.isConnected()) {
@@ -334,6 +351,18 @@ export const puzzleController = {
                 let filteredExplanations = explanations;
                 if (modelName) {
                   filteredExplanations = explanations.filter(exp => exp.modelName === modelName);
+                }
+
+                // Filter by Saturn status if specified
+                if (saturnFilter) {
+                  if (saturnFilter === 'solved') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === true);
+                  } else if (saturnFilter === 'failed') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === false);
+                  } else if (saturnFilter === 'attempted') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess !== undefined);
+                  }
+                  // saturnFilter === 'all' shows all results (no filtering)
                 }
 
                 // Filter by confidence if specified

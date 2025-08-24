@@ -30,6 +30,8 @@ interface SearchFiltersProps {
   setModelFilter: (filter: string) => void;
   saturnFilter: string;
   setSaturnFilter: (filter: string) => void;
+  sourceFilter: string;
+  setSourceFilter: (filter: string) => void;
   confidenceMin: string;
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
@@ -52,6 +54,8 @@ export function SearchFilters({
   setModelFilter,
   saturnFilter,
   setSaturnFilter,
+  sourceFilter,
+  setSourceFilter,
   confidenceMin,
   setConfidenceMin,
   confidenceMax,
@@ -115,6 +119,23 @@ export function SearchFilters({
                 <SelectItem value="all">All Puzzles</SelectItem>
                 <SelectItem value="true">Has Feedback</SelectItem>
                 <SelectItem value="false">No Feedback</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* ARC Source Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="sourceFilter">ARC Dataset</Label>
+            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+              <SelectTrigger id="sourceFilter">
+                <SelectValue placeholder="All datasets" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Datasets</SelectItem>
+                <SelectItem value="ARC1">ARC1 Training</SelectItem>
+                <SelectItem value="ARC1-Eval">ARC1 Evaluation</SelectItem>
+                <SelectItem value="ARC2">ARC2 Training</SelectItem>
+                <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
               </SelectContent>
             </Select>
           </div>

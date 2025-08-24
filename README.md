@@ -23,6 +23,8 @@ This tool was created after stumbling onto the ARC-AGI "easy for humans" tagline
 
 • **🔬 Custom Prompts for Researchers** - Complete freedom! Override any template with your own system prompt.
 
+• **🔧 Advanced Debugging Tools** - Researcher-focused debugging capabilities with prompt preview modal showing raw API message structures and analysis result cards displaying complete database records for deep inspection
+
 • **⚡ Concurrent Provider Processing** - Run multiple AI models simultaneously! DeepSeek + Claude + Gemini can analyze the same puzzle at once with independent progress tracking
 
 • **📊 Comprehensive Analytics Dashboard** - Real-time feedback statistics with model performance rankings, engagement metrics, and "Top/Worst Performing Models" leaderboards at `/overview`

@@ -15,13 +15,47 @@ const normalizeConfidence = (confidence: any): number => {
   if (typeof confidence === 'string') {
     const parsed = parseFloat(confidence);
     if (!isNaN(parsed)) {
-      return Math.round(Math.max(0, Math.min(100, parsed)));
+      // If decimal (0-1), convert to percentage; if already 0-100, use as-is
+      const normalized = parsed <= 1 ? parsed * 100 : parsed;
+      return Math.round(Math.max(0, Math.min(100, normalized)));
     }
   }
   if (typeof confidence === 'number') {
-    return Math.round(Math.max(0, Math.min(100, confidence)));
+    // If decimal (0-1), convert to percentage; if already 0-100, use as-is
+    const normalized = confidence <= 1 ? confidence * 100 : confidence;
+    return Math.round(Math.max(0, Math.min(100, normalized)));
   }
   return 50; // Default fallback
+};
+
+// Safe JSON serialization helper to prevent "[object Object]" errors
+const safeJsonStringify = (value: any): string | null => {
+  if (!value) return null;
+  
+  // If already a string, try to parse it first to validate it's proper JSON
+  if (typeof value === 'string') {
+    try {
+      JSON.parse(value); // Validate it's proper JSON
+      return value;
+    } catch {
+      // If not valid JSON, treat as invalid and return null
+      return null;
+    }
+  }
+  
+  // If it's an array or object, stringify it directly with JSON.stringify
+  // This prevents PostgreSQL parameter binding from auto-converting arrays to strings
+  if (Array.isArray(value) || typeof value === 'object') {
+    try {
+      // Force JSON.stringify to handle nested arrays properly
+      return JSON.stringify(value);
+    } catch (error) {
+      logger.error(`Failed to stringify value: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return null;
+    }
+  }
+  
+  return null;
 };
 
 /**
@@ -54,6 +88,11 @@ interface PuzzleExplanation {
   predictedOutputGrid?: number[][] | null;
   isPredictionCorrect?: boolean | null;
   predictionAccuracyScore?: number | null;
+  // Multi-output prediction fields
+  multiplePredictedOutputs?: number[][][] | null;
+  multiTestResults?: any[] | null;
+  multiTestAllCorrect?: boolean | null;
+  multiTestAverageAccuracy?: number | null;
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
@@ -307,6 +346,35 @@ const createTablesIfNotExist = async () => {
         THEN
           ALTER TABLE explanations ADD COLUMN estimated_cost DECIMAL(10, 6);
         END IF;
+
+        -- Add multi-output prediction columns if they don't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multiple_predicted_outputs')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multiple_predicted_outputs JSONB;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_results')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_results JSONB;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_all_correct')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_all_correct BOOLEAN;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'multi_test_average_accuracy')
+        THEN
+          ALTER TABLE explanations ADD COLUMN multi_test_average_accuracy FLOAT;
+        END IF;
       END $$;
     `);
     logger.info('Explanations table created or already exists', 'database');
@@ -372,7 +440,12 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       outputTokens,
       reasoningTokens,
       totalTokens,
-      estimatedCost
+      estimatedCost,
+      // Multi-output prediction fields (edge case)
+      multiplePredictedOutputs,
+      multiTestResults,
+      multiTestAllCorrect,
+      multiTestAverageAccuracy
     } = explanation;
     
     // Ensure hints is always an array of strings
@@ -396,8 +469,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         saturn_log, saturn_events, saturn_success,
         predicted_output_grid, is_prediction_correct, prediction_accuracy_score,
         temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type,
-        input_tokens, output_tokens, reasoning_tokens, total_tokens, estimated_cost)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
+        input_tokens, output_tokens, reasoning_tokens, total_tokens, estimated_cost,
+        multiple_predicted_outputs, multi_test_results, multi_test_all_correct, multi_test_average_accuracy)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
        RETURNING id`,
       [
         puzzleId,
@@ -412,13 +486,13 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         hasReasoningLog || false,
         providerResponseId || null,
         shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        reasoningItems ? JSON.stringify(reasoningItems) : null,
+        safeJsonStringify(reasoningItems),
         apiProcessingTimeMs || null,
-        saturnImages && saturnImages.length > 0 ? JSON.stringify(saturnImages) : null,
+        safeJsonStringify(saturnImages),
         explanation.saturnLog || null,
         explanation.saturnEvents || null,
         explanation.saturnSuccess ?? null,
-        explanation.predictedOutputGrid ? JSON.stringify(explanation.predictedOutputGrid) : null,
+        safeJsonStringify(explanation.predictedOutputGrid),
         explanation.isPredictionCorrect ?? null,
         explanation.predictionAccuracyScore ?? null,
         temperature ?? null,
@@ -429,7 +503,12 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         outputTokens ?? null,
         reasoningTokens ?? null,
         totalTokens ?? null,
-        estimatedCost ?? null
+        estimatedCost ?? null,
+        // Multi-output prediction fields - force JSON.stringify to prevent PostgreSQL auto-conversion
+        multiplePredictedOutputs ? JSON.stringify(multiplePredictedOutputs) : null,
+        multiTestResults ? JSON.stringify(multiTestResults) : null,
+        multiTestAllCorrect ?? null,
+        multiTestAverageAccuracy ?? null
       ]
     );
     
@@ -513,6 +592,10 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.saturn_images           AS "saturnImages",
          e.saturn_log              AS "saturnLog",
          e.saturn_events           AS "saturnEvents",
+         e.multiple_predicted_outputs AS "multiplePredictedOutputs",
+         e.multi_test_results      AS "multiTestResults",
+         e.multi_test_all_correct  AS "multiTestAllCorrect",
+         e.multi_test_average_accuracy AS "multiTestAverageAccuracy",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
@@ -679,6 +762,10 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          e.reasoning_tokens        AS "reasoningTokens",
          e.total_tokens            AS "totalTokens",
          e.estimated_cost          AS "estimatedCost",
+         e.multiple_predicted_outputs AS "multiplePredictedOutputs",
+         e.multi_test_results      AS "multiTestResults",
+         e.multi_test_all_correct  AS "multiTestAllCorrect",
+         e.multi_test_average_accuracy AS "multiTestAverageAccuracy",
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
@@ -688,12 +775,38 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
       [puzzleId]
     );
 
-    // Parse JSON fields for Saturn data and validation
-    const processedRows = result.rows.map(row => ({
-      ...row,
-      saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
-      predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
-    }));
+    // Parse JSON fields for Saturn data and validation with error handling
+    const processedRows = result.rows.map(row => {
+      const safeJsonParse = (jsonString: string | null, fieldName: string) => {
+        if (!jsonString) return null;
+        
+        // Skip obviously corrupted data patterns to reduce log noise
+        if (typeof jsonString === 'string') {
+          if (jsonString.includes('[object Object]') || 
+              jsonString.startsWith(',,') || 
+              jsonString === ',' ||
+              jsonString.trim().length === 0) {
+            return null; // Silently ignore known corruption patterns
+          }
+        }
+        
+        try {
+          return JSON.parse(jsonString);
+        } catch (error) {
+          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          return null;
+        }
+      };
+
+      return {
+        ...row,
+        saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
+        predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
+        // Parse multi-output prediction fields
+        multiplePredictedOutputs: safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+        multiTestResults: safeJsonParse(row.multiTestResults, 'multiTestResults'),
+      };
+    });
     
     return processedRows.length > 0 ? processedRows : [];
   } catch (error) {
@@ -739,6 +852,10 @@ const getExplanationById = async (explanationId: number) => {
          e.predicted_output_grid   AS "predictedOutputGrid",
          e.is_prediction_correct   AS "isPredictionCorrect",
          e.prediction_accuracy_score AS "predictionAccuracyScore",
+         e.multiple_predicted_outputs AS "multiplePredictedOutputs",
+         e.multi_test_results      AS "multiTestResults",
+         e.multi_test_all_correct  AS "multiTestAllCorrect",
+         e.multi_test_average_accuracy AS "multiTestAverageAccuracy",
          e.created_at              AS "createdAt"
        FROM explanations e
        WHERE e.id = $1`,
@@ -748,10 +865,34 @@ const getExplanationById = async (explanationId: number) => {
     if (result.rows.length > 0) {
       const row = result.rows[0];
       // Parse JSON fields for Saturn data and validation
+      const safeJsonParse = (jsonString: string | null, fieldName: string) => {
+        if (!jsonString) return null;
+        
+        // Skip obviously corrupted data patterns to reduce log noise
+        if (typeof jsonString === 'string') {
+          if (jsonString.includes('[object Object]') || 
+              jsonString.startsWith(',,') || 
+              jsonString === ',' ||
+              jsonString.trim().length === 0) {
+            return null; // Silently ignore known corruption patterns
+          }
+        }
+        
+        try {
+          return JSON.parse(jsonString);
+        } catch (error) {
+          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          return null;
+        }
+      };
+
       return {
         ...row,
-        saturnImages: row.saturnImages ? JSON.parse(row.saturnImages) : null,
-        predictedOutputGrid: row.predictedOutputGrid ? JSON.parse(row.predictedOutputGrid) : null,
+        saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
+        predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
+        // Parse multi-output prediction fields
+        multiplePredictedOutputs: safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+        multiTestResults: safeJsonParse(row.multiTestResults, 'multiTestResults'),
       };
     }
     return null;

@@ -4,6 +4,7 @@
  */
 
 import { logger } from '../utils/logger.js';
+import { extractPredictions } from './schemas/solver.js';
 
 export interface ValidationResult {
   predictedGrid: number[][] | null;
@@ -497,13 +498,17 @@ export function validateSolverResponseMulti(
   let predictedGrids: (number[][] | null)[] = [];
   let extractionMethod = '';
 
-  // 1) Prefer structured field predictedOutputs: number[][][]
-  if (Array.isArray(response?.predictedOutputs)) {
-    const arr = response.predictedOutputs as any[];
-    predictedGrids = arr.map((g: any) => (Array.isArray(g) ? g : null));
-    extractionMethod = 'direct_predicted_outputs_field';
+  // Use the new centralized extraction logic
+  const extracted = extractPredictions(response, correctAnswers.length);
+
+  if (extracted.predictedOutputs) {
+    predictedGrids = extracted.predictedOutputs;
+    extractionMethod = 'direct_predicted_outputs_field'; // Covers new and old formats
+  } else if (extracted.predictedOutput) {
+    predictedGrids = [extracted.predictedOutput]; // Handle single case returned for multi-test puzzle
+    extractionMethod = 'direct_predicted_output_field';
   } else {
-    // 2) Fallback: extract multiple from solvingStrategy text
+    // Fallback: extract multiple from solvingStrategy text
     const text = response?.solvingStrategy || '';
     const { grids, method } = extractAllGridsFromText(text);
     predictedGrids = grids.length ? grids : [];

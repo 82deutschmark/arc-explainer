@@ -69,6 +69,7 @@ export default function PuzzleOverview() {
   const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
   const [modelFilter, setModelFilter] = useState<string>('all');
   const [saturnFilter, setSaturnFilter] = useState<string>('all');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [confidenceMin, setConfidenceMin] = useState<string>('');
   const [confidenceMax, setConfidenceMax] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -94,6 +95,7 @@ export default function PuzzleOverview() {
     if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
     if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
     if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
+    if (sourceFilter !== 'all') params.set('source', sourceFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
     if (sortBy) params.set('sortBy', sortBy);
@@ -103,7 +105,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -240,7 +242,7 @@ export default function PuzzleOverview() {
       .slice(0, 20); // Keep more items for the scrollable list
   }, [data]);
 
-  // Generate Saturn results separately
+  // Generate Saturn results separately - filtered by saturnFilter state
   const saturnResults = useMemo(() => {
     if (!data?.puzzles) return [];
     
@@ -255,11 +257,23 @@ export default function PuzzleOverview() {
       puzzle.explanations.forEach(explanation => {
         // Only include Saturn results
         if (explanation.saturnSuccess !== undefined) {
-          results.push({
-            puzzleId: puzzle.id,
-            solved: explanation.saturnSuccess,
-            createdAt: explanation.createdAt
-          });
+          // Apply Saturn filter
+          let includeResult = false;
+          if (saturnFilter === 'all' || saturnFilter === 'attempted') {
+            includeResult = true;
+          } else if (saturnFilter === 'solved') {
+            includeResult = explanation.saturnSuccess === true;
+          } else if (saturnFilter === 'failed') {
+            includeResult = explanation.saturnSuccess === false;
+          }
+          
+          if (includeResult) {
+            results.push({
+              puzzleId: puzzle.id,
+              solved: explanation.saturnSuccess,
+              createdAt: explanation.createdAt
+            });
+          }
         }
       });
     });
@@ -267,7 +281,7 @@ export default function PuzzleOverview() {
     // Sort by creation date (newest first)
     return results
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [data]);
+  }, [data, saturnFilter]);
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -335,6 +349,8 @@ export default function PuzzleOverview() {
           setModelFilter={setModelFilter}
           saturnFilter={saturnFilter}
           setSaturnFilter={setSaturnFilter}
+          sourceFilter={sourceFilter}
+          setSourceFilter={setSourceFilter}
           confidenceMin={confidenceMin}
           setConfidenceMin={setConfidenceMin}
           confidenceMax={confidenceMax}

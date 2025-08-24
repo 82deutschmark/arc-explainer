@@ -31,11 +31,13 @@
 /**
  * Base system prompt that establishes the AI's role and core behavior
  */
-const BASE_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. Your job is to understand transformation patterns and provide clear, structured analysis.
+const BASE_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
+Your job is to understand transformation patterns and provide clear, structured analysis.
+
 
 ARC-AGI puzzles consist of:
 - Training examples showing input→output transformations  
-- Test cases where you analyze or predict the transformation
+- Test cases where you predict the transformation based on what you learned from the training examples
 
 Key transformation types include:
 - Geometric: rotation, reflection, translation, scaling
@@ -52,7 +54,7 @@ Key transformation types include:
  */
 const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
 
-JSON STRUCTURE REQUIREMENT: For solver mode, the predictedOutput or predictedOutputs field must be THE FIRST field in your JSON response.
+JSON STRUCTURE REQUIREMENT: For solver mode, the predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
 
 Put all your raw reasoning and analysis in the structured JSON fields:
 - solvingStrategy: Your complete reasoning process, including 
@@ -66,13 +68,17 @@ Put all your raw reasoning and analysis in the structured JSON fields:
  */
 export const SOLVER_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Analyze training examples, identify the transformation pattern, and predict the correct output for the test case or cases.
+TASK: Each puzzle has training which are the examples to learn from. 
+Analyze training examples, identify the transformation patterns, 
+and predict the correct output for the test case. Some puzzles have multiple test cases.
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
 ANSWER-FIRST REQUIREMENT: 
 - For single test cases, "predictedOutput" must be the FIRST field in your JSON response
-- For multiple test cases, "predictedOutputs" must be the FIRST field in your JSON response
+- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
+  THEN... 
+  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
 
 Example reasoning approach:
 1. Examine each training example to understand input→output transformation
@@ -85,9 +91,17 @@ Example reasoning approach:
  */
 export const EXPLANATION_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Analyze training examples and explain why the provided test case answer is correct.
+TASK: Each puzzle has training which are the examples to learn from. 
+Analyze training examples, identify the transformation patterns, 
+and explain the correct output for the test case. Some puzzles have multiple test cases.
 
 ${JSON_OUTPUT_INSTRUCTIONS}
+
+ANSWER-FIRST REQUIREMENT: 
+- For single test cases, "predictedOutput" must be the FIRST field in your JSON response
+- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
+  THEN... 
+  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
 
 Focus on:
 1. What transformation pattern is demonstrated in the training examples

@@ -38,12 +38,18 @@ export const SINGLE_SOLVER_SCHEMA = createSchema(
  * JSON schema for multi test case solver responses
  * NOTE: predictedOutputs should be first field per system prompt instructions  
  */
+/**
+ * JSON schema for multi test case solver responses
+ * NOTE: multiplePredictedOutputs should be first field per system prompt instructions
+ * The schema also allows for dynamic keys like predictedOutput1, predictedOutput2, etc.
+ * which are handled in the custom validation logic.
+ */
 export const MULTI_SOLVER_SCHEMA = createSchema(
   {
-    predictedOutputs: PREDICTION_PROPERTIES.predictedOutputs,
+    multiplePredictedOutputs: PREDICTION_PROPERTIES.predictedOutputs, // Renamed from predictedOutputs
     ...COMMON_PROPERTIES
   },
-  ["predictedOutputs"], // Additional required fields beyond base
+  ["multiplePredictedOutputs"], // Additional required fields beyond base
   "arc_solver_multi"
 );
 
@@ -77,29 +83,49 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
     errors.push(`Missing required fields: ${missingBase.join(', ')}`);
   }
   
-  // Check prediction fields: accept either single or multi in both modes
+  // Check prediction fields: accept single, new multi, or old multi format
   const hasSingle = 'predictedOutput' in response;
-  const hasMulti = 'predictedOutputs' in response;
+  const hasNewMulti = 'multiplePredictedOutputs' in response;
+  const hasOldMulti = 'predictedOutputs' in response; // For backward compatibility
 
-  if (!hasSingle && !hasMulti) {
-    errors.push(
-      testCaseCount > 1
-        ? 'Missing predictedOutputs (preferred) or predictedOutput field'
-        : 'Missing predictedOutput (preferred) or predictedOutputs field'
-    );
-  } else if (hasMulti && response.predictedOutputs != null) {
-    if (!Array.isArray(response.predictedOutputs)) {
-      errors.push('predictedOutputs must be an array');
-    } else {
-      for (let i = 0; i < response.predictedOutputs.length; i++) {
-        const grid = response.predictedOutputs[i];
-        if (!validateGrid(grid)) {
-          errors.push(`predictedOutputs[${i}] is not a valid 2D grid of integers 0-9`);
+  if (!hasSingle && !hasNewMulti && !hasOldMulti) {
+    errors.push('Missing required prediction field (e.g., predictedOutput, multiplePredictedOutputs)');
+  } else if (hasNewMulti) {
+    const collectedGrids = [];
+    let i = 1;
+    while (`predictedOutput${i}` in response) {
+      const grid = response[`predictedOutput${i}`];
+      if (validateGrid(grid)) {
+        collectedGrids.push(grid);
+      } else {
+        errors.push(`predictedOutput${i} is not a valid 2D grid of integers 0-9`);
+      }
+      i++;
+    }
+    if (collectedGrids.length === 0 && Array.isArray(response.multiplePredictedOutputs)) {
+        // Fallback to the main array if individual ones aren't found
+        for (let j = 0; j < response.multiplePredictedOutputs.length; j++) {
+            const grid = response.multiplePredictedOutputs[j];
+            if (!validateGrid(grid)) {
+                errors.push(`multiplePredictedOutputs[${j}] is not a valid 2D grid of integers 0-9`);
+            } else {
+                collectedGrids.push(grid);
+            }
         }
+    }
+    if (errors.length === 0) {
+      predictedGrids = collectedGrids;
+    }
+  } else if (hasOldMulti && Array.isArray(response.predictedOutputs)) {
+    // Handle old format for backward compatibility
+    for (let i = 0; i < response.predictedOutputs.length; i++) {
+      const grid = response.predictedOutputs[i];
+      if (!validateGrid(grid)) {
+        errors.push(`predictedOutputs[${i}] is not a valid 2D grid of integers 0-9`);
       }
-      if (errors.length === 0) {
-        predictedGrids = response.predictedOutputs;
-      }
+    }
+    if (errors.length === 0) {
+      predictedGrids = response.predictedOutputs;
     }
   } else if (hasSingle && response.predictedOutput != null) {
     if (!validateGrid(response.predictedOutput)) {
@@ -144,15 +170,55 @@ export function extractPredictions(response: any, testCaseCount: number): {
   predictedOutput?: number[][];
   predictedOutputs?: number[][][];
 } {
-  // Prefer returning the field that exists; normalize if needed
+  // Handle new multi-output format
+  if (response?.multiplePredictedOutputs) {
+    const collectedGrids = [];
+    let i = 1;
+    console.log(`[EXTRACT-DEBUG] Looking for individual predictedOutput fields, expected testCaseCount: ${testCaseCount}`);
+    while (`predictedOutput${i}` in response) {
+      const grid = response[`predictedOutput${i}`];
+      console.log(`[EXTRACT-DEBUG] Found predictedOutput${i}, validating...`);
+      if (validateGrid(grid)) {
+        console.log(`[EXTRACT-DEBUG] predictedOutput${i} is valid, adding to collection`);
+        collectedGrids.push(grid);
+      } else {
+        console.log(`[EXTRACT-DEBUG] predictedOutput${i} failed validation:`, grid);
+      }
+      i++;
+    }
+    console.log(`[EXTRACT-DEBUG] Collected ${collectedGrids.length} grids from individual fields`);
+    // Fallback to the main array if individual keys are missing
+    if (collectedGrids.length === 0 && Array.isArray(response.multiplePredictedOutputs)) {
+        // Check if it's structured format with testCase/predictedOutput objects
+        const extractedGrids = [];
+        for (const item of response.multiplePredictedOutputs) {
+          if (item && typeof item === 'object' && item.predictedOutput) {
+            // Extract the predictedOutput grid from structured format
+            if (validateGrid(item.predictedOutput)) {
+              extractedGrids.push(item.predictedOutput);
+            }
+          } else if (validateGrid(item)) {
+            // Direct grid format
+            extractedGrids.push(item);
+          }
+        }
+        return { predictedOutputs: extractedGrids };
+    }
+    return { predictedOutputs: collectedGrids };
+  }
+
+  // Handle old multi-output format for backward compatibility
   if (Array.isArray(response?.predictedOutputs)) {
     return { predictedOutputs: response.predictedOutputs };
   }
+
+  // Handle single output format
   if (response?.predictedOutput) {
     return testCaseCount > 1
       ? { predictedOutputs: [response.predictedOutput] }
       : { predictedOutput: response.predictedOutput };
   }
+
   return {};
 }
 

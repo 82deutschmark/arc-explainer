@@ -56,6 +56,7 @@ const REASONING_MODELS = new Set([
 const deepseek = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com",
+  timeout: 2700000, // 45 minutes timeout for long-running responses
 });
 
 export class DeepSeekService {
@@ -75,21 +76,31 @@ export class DeepSeekService {
   ) {
     const modelName = MODELS[modelKey];
 
-    // Use custom prompt if provided, otherwise use selected template
     // Build prompt using shared prompt builder and forward PromptOptions (emojiSetKey, omitAnswer)
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
-
-    // DeepSeek requires the word "json" in the prompt when using json_object response format
-    const deepseekPrompt = basePrompt + "\n\nPlease respond in valid JSON format.";
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: deepseekPrompt }],
         response_format: { type: "json_object" },
       };
+
+      // Create message array with proper system/user prompt structure
+      if (systemPromptMode === 'ARC' && systemPrompt) {
+        // ARC mode: use proper system/user message structure
+        requestOptions.messages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ];
+      } else {
+        // Legacy mode: combine prompts in user message
+        const combinedPrompt = userPrompt + "\n\nPlease respond in valid JSON format.";
+        requestOptions.messages = [{ role: "user", content: combinedPrompt }];
+      }
 
       // Apply temperature for non-reasoning models
       if (!REASONING_MODELS.has(modelKey)) {
@@ -205,15 +216,27 @@ export class DeepSeekService {
 
     // Build prompt using shared prompt builder
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     // DeepSeek uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
+
+    // Show correct message structure based on system prompt mode
+    if (systemPromptMode === 'ARC' && systemPrompt) {
+      messageFormat.messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ];
+    } else {
+      const combinedPrompt = userPrompt + "\n\nPlease respond in valid JSON format.";
+      messageFormat.messages = [{ role: "user", content: combinedPrompt }];
+    }
 
     const providerSpecificNotes = [
       "Uses DeepSeek API with OpenAI SDK compatibility",
@@ -234,8 +257,9 @@ export class DeepSeekService {
     return {
       provider: "DeepSeek",
       modelName,
-      promptText: basePrompt,
+      promptText: systemPromptMode === 'ARC' ? `SYSTEM: ${systemPrompt}\n\nUSER: ${userPrompt}` : userPrompt,
       messageFormat,
+      systemPromptMode,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
         name: selectedTemplate?.name || "Custom Prompt",

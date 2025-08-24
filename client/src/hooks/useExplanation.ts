@@ -70,6 +70,11 @@ export function useExplanations(puzzleId: string | null) {
           helpfulVotes: raw.helpful_votes,
           notHelpfulVotes: raw.not_helpful_votes,
           explanationId: raw.id, // Ensure explanationId is mapped
+          // Map multi-test database field names to frontend field names
+          multiplePredictedOutputs: (raw as any).multiplePredictedOutputs,
+          multiTestResults: (raw as any).multiTestResults,
+          multiTestAllCorrect: (raw as any).multiTestAllCorrect,
+          multiTestAverageAccuracy: (raw as any).multiTestAverageAccuracy,
         }));
       } catch (error) {
         console.error("Error fetching explanations:", error);
