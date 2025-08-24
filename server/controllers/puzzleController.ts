@@ -264,6 +264,7 @@ export const puzzleController = {
         modelName, 
         saturnFilter,
         source,
+        multiTestFilter,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -278,6 +279,9 @@ export const puzzleController = {
       const puzzleFilters: any = {};
       if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
         puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+      }
+      if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
+        puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
       }
 
       // Get all puzzles from the puzzle service

@@ -32,6 +32,8 @@ interface SearchFiltersProps {
   setSaturnFilter: (filter: string) => void;
   sourceFilter: string;
   setSourceFilter: (filter: string) => void;
+  multiTestFilter: string;
+  setMultiTestFilter: (filter: string) => void;
   confidenceMin: string;
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
@@ -56,6 +58,8 @@ export function SearchFilters({
   setSaturnFilter,
   sourceFilter,
   setSourceFilter,
+  multiTestFilter,
+  setMultiTestFilter,
   confidenceMin,
   setConfidenceMin,
   confidenceMax,
@@ -136,6 +140,21 @@ export function SearchFilters({
                 <SelectItem value="ARC1-Eval">ARC1 Evaluation</SelectItem>
                 <SelectItem value="ARC2">ARC2 Training</SelectItem>
                 <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Test Cases Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="multiTestFilter">Test Cases</Label>
+            <Select value={multiTestFilter} onValueChange={setMultiTestFilter}>
+              <SelectTrigger id="multiTestFilter">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any</SelectItem>
+                <SelectItem value="single">Single (1 test)</SelectItem>
+                <SelectItem value="multi">Multiple (2+ tests)</SelectItem>
               </SelectContent>
             </Select>
           </div>
