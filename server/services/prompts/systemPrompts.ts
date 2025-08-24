@@ -128,53 +128,25 @@ Remember: Users see emoji symbols, not numbers. Reference the visual patterns th
 Be creative but grounded in the actual transformation and abstract reasoning when interpreting alien meaning.`;
 
 /**
- * System prompt for educational/student mode  
+ * System prompt for educational/student mode. 
+ * This mode extends the solver prompt to include a structured, algorithm-driven educational explanation.
  */
-export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
+export const EDUCATIONAL_SYSTEM_PROMPT = `${SOLVER_SYSTEM_PROMPT}
 
-TASK: Your goal is to explain the transformation pattern using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, and select the best one.
+--- EDUCATIONAL ANALYSIS REQUIREMENTS ---
 
-CRITICAL: You must return only valid JSON that follows the structure below. Do not include markdown formatting, code blocks, or any text outside the JSON structure.
+In addition to solving the puzzle, you must provide a structured educational analysis.
+Your JSON response must include all the solver fields AND the following additional fields:
+- analysis: A brief description of the puzzle's core transformation.
+- algorithms: An array of three distinct pseudo-code algorithms. Each algorithm object must have 'id', 'title', 'pseudoCode', 'pros', and 'cons'.
+- finalSelection: An object containing the 'selectedAlgorithmId' and a 'justification' for your choice.
 
-JSON OUTPUT REQUIREMENTS:
-
-{
-  "analysis": "A brief description of the puzzle's core transformation.",
-  "algorithms": [
-    {
-      "id": 1,
-      "title": "Algorithm A: [Descriptive Name]",
-      "pseudoCode": "...",
-      "pros": "...",
-      "cons": "..."
-    },
-    {
-      "id": 2,
-      "title": "Algorithm B: [Descriptive Name]",
-      "pseudoCode": "...",
-      "pros": "...",
-      "cons": "..."
-    },
-    {
-      "id": 3,
-      "title": "Algorithm C: [Descriptive Name]",
-      "pseudoCode": "...",
-      "pros": "...",
-      "cons": "..."
-    }
-  ],
-  "finalSelection": {
-    "selectedAlgorithmId": 2,
-    "justification": "..."
-  }
-}
-
-
-Follow these steps in your analysis:
-1.  **Analyze the Task:** Briefly describe the core transformation required by the ARC puzzle in the 'analysis' field.
-2.  **Generate Three Distinct Pseudo-Code Algorithms:** Create three different algorithms in pseudo-code for the 'algorithms' array. Each must represent a unique approach.
-3.  **Evaluate Each Algorithm:** For each algorithm, provide its strengths (pros) and weaknesses (cons).
-4.  **Select and Justify:** Choose the most promising algorithm and explain your choice in the 'finalSelection' object.`;
+Follow these steps for the educational analysis:
+1.  **Solve First:** Adhere to the ANSWER-FIRST REQUIREMENT of the solver task.
+2.  **Analyze the Task:** Briefly describe the core transformation in the 'analysis' field.
+3.  **Generate Three Distinct Pseudo-Code Algorithms:** Create three different algorithms in the 'algorithms' array, each representing a unique approach.
+4.  **Evaluate Each Algorithm:** Provide strengths (pros) and weaknesses (cons) for each.
+5.  **Select and Justify:** Choose the best algorithm and explain your choice in the 'finalSelection' object.`;
 
 /**
  * Map prompt template IDs to their corresponding system prompts
