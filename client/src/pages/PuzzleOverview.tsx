@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Link } from 'wouter';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { 
@@ -64,21 +64,53 @@ interface AccuracyStats {
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [hasExplanationFilter, setHasExplanationFilter] = useState<string>('all');
-  const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
-  const [modelFilter, setModelFilter] = useState<string>('all');
-  const [saturnFilter, setSaturnFilter] = useState<string>('all');
-  const [sourceFilter, setSourceFilter] = useState<string>('all');
-  const [confidenceMin, setConfidenceMin] = useState<string>('');
-  const [confidenceMax, setConfidenceMax] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('createdAt');
-  const [sortOrder, setSortOrder] = useState<string>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [location, setLocation] = useLocation();
+  
+  // Initialize state from URL parameters
+  const urlParams = useMemo(() => new URLSearchParams(location.split('?')[1] || ''), [location]);
+  
+  const [searchQuery, setSearchQuery] = useState(urlParams.get('search') || '');
+  const [hasExplanationFilter, setHasExplanationFilter] = useState<string>(urlParams.get('hasExplanation') || 'all');
+  const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>(urlParams.get('hasFeedback') || 'all');
+  const [modelFilter, setModelFilter] = useState<string>(urlParams.get('modelName') || 'all');
+  const [saturnFilter, setSaturnFilter] = useState<string>(urlParams.get('saturnFilter') || 'all');
+  const [sourceFilter, setSourceFilter] = useState<string>(urlParams.get('source') || 'all');
+  const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
+  const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
+  const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
+  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
+  const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
   
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+
+  // Set page title
+  React.useEffect(() => {
+    document.title = 'Puzzle Database Overview';
+  }, []);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
+    if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
+    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
+    if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
+    if (sourceFilter !== 'all') params.set('source', sourceFilter);
+    if (confidenceMin) params.set('confidenceMin', confidenceMin);
+    if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    if (sortBy !== 'createdAt') params.set('sortBy', sortBy);
+    if (sortOrder !== 'desc') params.set('sortOrder', sortOrder);
+    if (currentPage !== 1) params.set('page', currentPage.toString());
+    
+    const newUrl = `/overview${params.toString() ? '?' + params.toString() : ''}`;
+    if (newUrl !== location) {
+      setLocation(newUrl);
+    }
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -86,7 +118,7 @@ export default function PuzzleOverview() {
     setFeedbackModalOpen(true);
   }, []);
 
-  // Build query parameters
+  // Build query parameters for API calls
   const queryParams = useMemo(() => {
     const params = new URLSearchParams();
     

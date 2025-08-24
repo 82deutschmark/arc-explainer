@@ -1,7 +1,13 @@
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
 export default function NotFound() {
+  // Set page title
+  React.useEffect(() => {
+    document.title = '404 - Page Not Found';
+  }, []);
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md mx-4">
