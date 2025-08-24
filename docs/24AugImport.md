@@ -57,22 +57,18 @@ From `neoneye/arc-dataset-collection`:
 - Show import source in puzzle details
 - Maybe add a simple "Import Dataset" button (just runs the script)
 
-## Phase 3: Future Expansion (when needed)
+## Phase 3: Future Expansion (only if actually needed)
 
 ### 3.1 Multiple Datasets
-- Support importing from different repo paths
+- Support importing from different repo paths  
 - Handle naming conflicts between datasets
 - Priority system for overlapping puzzles
 
-### 3.2 Automatic Updates
-- Check for new files in repos
-- Re-import changed puzzles
-- Basic version tracking
+### 3.2 Manual Re-import
+- Re-run import script when datasets change
+- Simple cleanup of old puzzles before re-import
 
-### 3.3 Better UI
-- Progress tracking during imports
-- Dataset management interface
-- Error reporting and retry
+That's it. No automatic updates, no complex UI. Keep it simple.
 
 ## Implementation Strategy
 
