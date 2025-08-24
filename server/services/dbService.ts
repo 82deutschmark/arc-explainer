@@ -513,9 +513,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields - use safeJsonStringify for consistency
-        safeJsonStringify(multiplePredictedOutputs),
-        safeJsonStringify(multiTestResults),
+        // Multi-output prediction fields - pass raw arrays to JSONB columns
+        multiplePredictedOutputs ?? null,
+        multiTestResults ?? null,
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]

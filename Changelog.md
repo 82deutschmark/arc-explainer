@@ -7,6 +7,21 @@
 
 August 24, 2025
 
+## Version 1.7.5 — Critical Multi-Test Data Corruption Fix (2025-08-24)
+
+**CRITICAL BUG FIX**: Fixed systematic data corruption in multi-test puzzle storage where 3D prediction arrays were being converted to comma-separated strings (e.g., `[[[1]], [[6]], [[2]]]` became `"1,6,2"`).
+
+**Root Cause**: PostgreSQL JSONB columns were receiving pre-stringified JSON via `safeJsonStringify()` instead of native JavaScript arrays. 
+
+**Solution**: Pass raw JavaScript objects directly to JSONB columns, allowing PostgreSQL to handle serialization automatically.
+
+**Impact**: 
+- Fixes complete failure of multi-test functionality for puzzles requiring 2+ predictions
+- Resolves frontend display issues for complex ARC puzzles
+- Affects all historical multi-test data (requires re-analysis for full fix)
+
+**Files Modified**: `server/services/dbService.ts:517-518`
+
 ## Version 1.7.4 — Multi-Test Performance Optimization (2025-08-24)
 
 ### 🚀 UI Performance & Stability (Code by Cascade)
