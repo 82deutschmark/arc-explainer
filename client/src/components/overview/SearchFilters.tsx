@@ -140,47 +140,36 @@ export function SearchFilters({
             </Select>
           </div>
 
-          {/* Analysis Type Filter - Mutually Exclusive */}
+          {/* Model Filter */}
           <div className="space-y-2">
-            <Label htmlFor="analysisType">Analysis Type</Label>
-            <Select 
-              value={saturnFilter !== 'all' ? saturnFilter : (modelFilter !== 'all' ? modelFilter : 'all')} 
-              onValueChange={(value) => {
-                if (['solved', 'failed', 'attempted'].includes(value)) {
-                  setSaturnFilter(value);
-                  setModelFilter('all');
-                } else if (value === 'all') {
-                  setSaturnFilter('all');
-                  setModelFilter('all');
-                } else {
-                  setModelFilter(value);
-                  setSaturnFilter('all');
-                }
-              }}
-            >
-              <SelectTrigger id="analysisType">
-                <SelectValue placeholder="All analysis types" />
+            <Label htmlFor="model">AI Model</Label>
+            <Select value={modelFilter} onValueChange={setModelFilter}>
+              <SelectTrigger id="model">
+                <SelectValue placeholder="All models" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Results</SelectItem>
-                
-                {/* Saturn Options */}
-                <div className="px-2 py-1 text-xs font-semibold text-purple-600 bg-purple-50 border-b">
-                  🪐 Saturn Solver
-                </div>
-                <SelectItem value="solved">✅ Saturn Solved</SelectItem>
-                <SelectItem value="failed">❌ Saturn Failed</SelectItem>
-                <SelectItem value="attempted">🪐 Any Saturn Results</SelectItem>
-                
-                {/* AI Model Options */}
-                <div className="px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-50 border-b border-t">
-                  🧠 AI Models
-                </div>
+                <SelectItem value="all">All Models</SelectItem>
                 {MODELS.map((model) => (
                   <SelectItem key={model.key} value={model.key}>
                     {model.name} ({model.provider})
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Saturn Solver Filter */}
+          <div className="space-y-2">
+            <Label htmlFor="saturn">🪐 Saturn Solver</Label>
+            <Select value={saturnFilter} onValueChange={setSaturnFilter}>
+              <SelectTrigger id="saturn">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Results</SelectItem>
+                <SelectItem value="solved">✅ Solved</SelectItem>
+                <SelectItem value="failed">❌ Failed</SelectItem>
+                <SelectItem value="attempted">🪐 Has Saturn Results</SelectItem>
               </SelectContent>
             </Select>
           </div>
