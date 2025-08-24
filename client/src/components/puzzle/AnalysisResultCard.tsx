@@ -610,9 +610,15 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                     {predGrid ? (
                       // Show both prediction and expected when prediction exists
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                        <div className={`rounded p-3 ${
+                          isCorrect 
+                            ? 'bg-emerald-50 border border-emerald-200' 
+                            : 'bg-red-50 border border-red-200'
+                        }`}>
                           <div className="flex items-center gap-2 mb-2">
-                            <h6 className="font-semibold text-emerald-800">Predicted</h6>
+                            <h6 className={`font-semibold ${
+                              isCorrect ? 'text-emerald-800' : 'text-red-800'
+                            }`}>Predicted</h6>
                           </div>
                           <div className="flex items-center justify-center">
                             <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={showDiff ? testDiffMask : undefined} />
@@ -666,9 +672,15 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
           ) : predictedGrid && expectedOutputGrids.length === 1 ? (
             /* Single test case display */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+              <div className={`rounded p-3 ${
+                result.isPredictionCorrect 
+                  ? 'bg-emerald-50 border border-emerald-200' 
+                  : 'bg-red-50 border border-red-200'
+              }`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                  <h5 className={`font-semibold ${
+                    result.isPredictionCorrect ? 'text-emerald-800' : 'text-red-800'
+                  }`}>Model Predicted Answer</h5>
                   {result.isPredictionCorrect !== undefined && (
                     <Badge 
                       variant="outline" 
@@ -706,9 +718,15 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
               </div>
             </div>
           ) : predictedGrid ? (
-            <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+            <div className={`rounded p-3 ${
+              result.isPredictionCorrect 
+                ? 'bg-emerald-50 border border-emerald-200' 
+                : 'bg-red-50 border border-red-200'
+            }`}>
               <div className="flex items-center gap-2 mb-2">
-                <h5 className="font-semibold text-emerald-800">Model Predicted Answer</h5>
+                <h5 className={`font-semibold ${
+                  result.isPredictionCorrect ? 'text-emerald-800' : 'text-red-800'
+                }`}>Model Predicted Answer</h5>
                 {result.isPredictionCorrect !== undefined && (
                   <Badge 
                     variant="outline" 
