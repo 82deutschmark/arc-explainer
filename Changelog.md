@@ -10,9 +10,13 @@ August 24, 2025
 ## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
 
 ### 🛠️ Refactor (Code by Cascade)
-- **Modular Prompt Design**: Refactored `EDUCATIONAL_SYSTEM_PROMPT` to build upon `SOLVER_SYSTEM_PROMPT`.
-  - **Reduced Duplication**: Removed hardcoded JSON structure, instead describing the required additional fields (`analysis`, `algorithms`, `finalSelection`) textually.
-  - **Improved Maintainability**: This change makes the prompt system more modular and easier to maintain, ensuring the educational prompt inherits solver behavior directly.
+- **Educational Prompt Redesign**: Reworked the `EDUCATIONAL_SYSTEM_PROMPT` to repurpose existing solver JSON fields for a new educational methodology.
+  - **No New Fields**: Instead of adding new fields, the prompt now instructs the AI to populate the standard solver fields (`patternDescription`, `keySteps`, `hints`) with specific educational content.
+  - **Content Mapping**: 
+    - `hints`: Contains the pseudo-code for three distinct algorithms.
+    - `keySteps`: Contains the pros and cons for each algorithm.
+    - `patternDescription`: Describes the chosen, winning algorithm.
+  - **Goal**: This approach teaches the model by forcing it to perform algorithmic analysis within the existing, rigid solver data structure.
   - **File**: `server/services/prompts/systemPrompts.ts`
 
 ## Version 1.7.1 — Performance Optimization for Analysis Results (2025-08-24)
