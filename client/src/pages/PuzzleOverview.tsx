@@ -75,6 +75,7 @@ export default function PuzzleOverview() {
   const [modelFilter, setModelFilter] = useState<string>(urlParams.get('modelName') || 'all');
   const [saturnFilter, setSaturnFilter] = useState<string>(urlParams.get('saturnFilter') || 'all');
   const [sourceFilter, setSourceFilter] = useState<string>(urlParams.get('source') || 'all');
+  const [multiTestFilter, setMultiTestFilter] = useState<string>(urlParams.get('multiTestFilter') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
@@ -100,6 +101,7 @@ export default function PuzzleOverview() {
     if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
     if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
     if (sourceFilter !== 'all') params.set('source', sourceFilter);
+    if (multiTestFilter !== 'all') params.set('multiTestFilter', multiTestFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
     if (sortBy !== 'createdAt') params.set('sortBy', sortBy);
@@ -110,7 +112,7 @@ export default function PuzzleOverview() {
     if (newUrl !== location) {
       setLocation(newUrl);
     }
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -128,6 +130,7 @@ export default function PuzzleOverview() {
     if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
     if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
     if (sourceFilter !== 'all') params.set('source', sourceFilter);
+    if (multiTestFilter !== 'all') params.set('multiTestFilter', multiTestFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
     if (sortBy) params.set('sortBy', sortBy);
@@ -137,7 +140,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -383,6 +386,8 @@ export default function PuzzleOverview() {
           setSaturnFilter={setSaturnFilter}
           sourceFilter={sourceFilter}
           setSourceFilter={setSourceFilter}
+          multiTestFilter={multiTestFilter}
+          setMultiTestFilter={setMultiTestFilter}
           confidenceMin={confidenceMin}
           setConfidenceMin={setConfidenceMin}
           confidenceMax={confidenceMax}
