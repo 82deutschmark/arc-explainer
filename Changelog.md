@@ -7,6 +7,13 @@
 
 August 24, 2025
 
+## Version 1.7.3 — UI Bug Fix (2025-08-24)
+
+### 🐛 Bug Fix (Code by Cascade)
+- **Corrupted JSX Fix**: Corrected a corrupted JSX section in `AnalysisResultCard.tsx` that was causing multiple syntax errors and preventing the component from rendering.
+  - **Impact**: This fix restores the collapsible prediction grid functionality for single-test puzzles, which was broken by a previous malformed edit.
+  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
 ## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
 
 ### 🛠️ Refactor (Code by Cascade)
