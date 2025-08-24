@@ -261,6 +261,7 @@ export const puzzleController = {
         hasExplanation, 
         hasFeedback,
         modelName, 
+        saturnFilter,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -343,6 +344,18 @@ export const puzzleController = {
                 let filteredExplanations = explanations;
                 if (modelName) {
                   filteredExplanations = explanations.filter(exp => exp.modelName === modelName);
+                }
+
+                // Filter by Saturn status if specified
+                if (saturnFilter) {
+                  if (saturnFilter === 'solved') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === true);
+                  } else if (saturnFilter === 'failed') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === false);
+                  } else if (saturnFilter === 'attempted') {
+                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess !== undefined);
+                  }
+                  // saturnFilter === 'all' shows all results (no filtering)
                 }
 
                 // Filter by confidence if specified
