@@ -7,6 +7,13 @@
 
 August 24, 2025
 
+## Version 1.7.1 — Performance Optimization for Analysis Results (2025-08-24)
+
+### 🚀 UI Performance (Code by Cascade)
+- **Collapsible Prediction Grid**: In the `AnalysisResultCard`, the predicted answer grid is now collapsed by default and will only render when the user clicks to expand it.
+  - **Impact**: This improves initial page load performance, especially on puzzles with numerous analyses, by deferring the rendering of complex grid components.
+  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
 ## Version 1.7.0 — Educational Prompt System Redesign (2025-08-24)
 
 ### 🎯 Enhanced Educational Analysis (Code by Claude)
