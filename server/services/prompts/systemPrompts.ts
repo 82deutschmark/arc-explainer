@@ -129,11 +129,11 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
 
 /**
  * System prompt for educational/student mode. 
- * This mode extends the solver prompt to include a structured, algorithm-driven educational explanation.
+ * This mode extends the solver prompt to use a structured, algorithm-driven educational method.
  */
 export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. Your entire output must be a single JSON object that repurposes the standard solver fields for this educational task.
+TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. Your entire output must be a single JSON object that repurposes the standard solver fields for this task.
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
@@ -141,12 +141,12 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 
 You must populate the standard JSON fields with the following specific content:
 
-- **predictedOutput / multiplePredictedOutputs**: The final grid solution, derived from your chosen algorithm. This MUST be the first field in your JSON.
+- **predictedOutput / multiplePredictedOutputs**: The final grid solution(s), derived from your chosen algorithm. This MUST be the first field in your JSON.
 - **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
 - **solvingStrategy**: A high-level summary of your approach: generating three algorithms, evaluating them, and selecting the best one.
-- **keySteps**: An array of strings detailing the pros and cons for each of the three algorithms you considered. Example: ["Algorithm A Pros: ..., Cons: ...", "Algorithm B Pros: ..., Cons: ..."]
-- **hints**: An array of strings, where each string is the complete pseudo-code for one of the three algorithms you considered.
-- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness.`
+- **keySteps**: Detail the pros and cons for each of the three algorithms you considered.
+- **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
+- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
 
 /**
  * Map prompt template IDs to their corresponding system prompts
