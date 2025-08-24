@@ -109,7 +109,28 @@ export class DeepSeekService {
 
       const response = await deepseek.chat.completions.create(requestOptions);
 
-      const result = JSON.parse(response.choices[0].message.content || "{}");
+      // Safely parse JSON response with error handling
+      let result: any = {};
+      const responseContent = response.choices[0].message.content || "{}";
+      
+      try {
+        result = JSON.parse(responseContent);
+      } catch (parseError) {
+        console.error(`DeepSeek JSON parsing failed for model ${modelKey}:`, parseError);
+        console.error(`Response content (first 500 chars):`, responseContent.substring(0, 500));
+        
+        // Attempt to extract JSON from markdown code blocks or other wrapping
+        const jsonMatch = responseContent.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
+        if (jsonMatch) {
+          try {
+            result = JSON.parse(jsonMatch[1]);
+          } catch (innerError) {
+            throw new Error(`Failed to parse JSON response even after extracting from code blocks: ${innerError instanceof Error ? innerError.message : String(innerError)}`);
+          }
+        } else {
+          throw new Error(`Invalid JSON response from DeepSeek: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+        }
+      }
       
       // Extract token usage from DeepSeek response (OpenAI-compatible + reasoning_tokens for R1)
       let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
@@ -266,9 +287,9 @@ export class DeepSeekService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: basePrompt.length,
-        wordCount: basePrompt.split(/\s+/).length,
-        lineCount: basePrompt.split('\n').length
+        characterCount: userPrompt.length,
+        wordCount: userPrompt.split(/\s+/).length,
+        lineCount: userPrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,
