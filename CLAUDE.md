@@ -4,26 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Common Commands
 
-### Development
-- `npm run dev` - Start development server (both frontend on :5173 and backend on :5000)
-- `npm run build` - Build for production (client to dist/public, server to dist/)
-- `npm run start` - Run production build
-- `npm run check` - TypeScript type checking
-- `npm run windows-dev` - Windows-specific development command
-- `npm run windows-start` - Windows-specific production command
-
-**IMPORTANT FOR CLAUDE CODE**: Always use PowerShell with background execution to prevent orphaned processes:
-```powershell
-powershell -Command "npm run dev"
-```
-Use `run_in_background: true` parameter to avoid port conflicts from persistent processes.
-
 ### Database Management
 - `npm run db:push` - Push database schema changes using Drizzle
 - Database tables auto-create on startup if using PostgreSQL
 
 ### Testing and Validation
-- No specific test commands configured - check project for testing framework setup
+-  You may not run the dev server or do any testing on your own.  You need to ask the user if you 100% need the dev server started right this instant, then they will do it. The user will test the app for you.
+
 
 ## Architecture Overview
 
