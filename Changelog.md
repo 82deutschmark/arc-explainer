@@ -7,6 +7,15 @@
 
 August 24, 2025
 
+## Version 1.6.16 — Multi-Test JSON Serialization Fix (2025-08-23)
+
+### 🐛 Critical Database JSON Serialization Fix (Code by Cascade)
+- **Root Issue**: Multi-test puzzles had arrays stored as comma-separated strings ("4,3,2") instead of proper JSON arrays ([[[4]], [[3]], [[2]]]) in PostgreSQL database.
+- **Parameter Binding Fix**: PostgreSQL was auto-converting nested arrays to strings during parameter binding. Fixed by using JSON.stringify() directly for multiplePredictedOutputs and multiTestResults fields.
+- **Database Storage**: Arrays now properly serialize as valid JSON instead of corrupted string representations.
+- **Frontend Display**: Resolves "Multi-Test Results (0 predictions, 3 tests)" display issue - now correctly shows prediction count.
+- **Impact**: Fixes all multi-test puzzles (3+ test cases) including 27a28665 reference case.
+
 ## Version 1.6.15 — Multi-Grid Extraction Fix (2025-08-23)
 
 ### 🐛 Critical Multi-Test Grid Extraction Fix (Code by Claude)

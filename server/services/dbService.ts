@@ -43,9 +43,11 @@ const safeJsonStringify = (value: any): string | null => {
     }
   }
   
-  // If it's an array or object, stringify it
+  // If it's an array or object, stringify it directly with JSON.stringify
+  // This prevents PostgreSQL parameter binding from auto-converting arrays to strings
   if (Array.isArray(value) || typeof value === 'object') {
     try {
+      // Force JSON.stringify to handle nested arrays properly
       return JSON.stringify(value);
     } catch (error) {
       logger.error(`Failed to stringify value: ${error instanceof Error ? error.message : String(error)}`, 'database');
@@ -502,19 +504,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields (safe fallbacks)  
-        (() => {
-          console.log('[DB-DEBUG] About to stringify multiplePredictedOutputs:', multiplePredictedOutputs);
-          const result = safeJsonStringify(multiplePredictedOutputs);
-          console.log('[DB-DEBUG] Stringified multiplePredictedOutputs:', result);
-          return result;
-        })(),
-        (() => {
-          console.log('[DB-DEBUG] About to stringify multiTestResults:', multiTestResults);
-          const result = safeJsonStringify(multiTestResults);
-          console.log('[DB-DEBUG] Stringified multiTestResults:', result);
-          return result;
-        })(),
+        // Multi-output prediction fields - force JSON.stringify to prevent PostgreSQL auto-conversion
+        multiplePredictedOutputs ? JSON.stringify(multiplePredictedOutputs) : null,
+        multiTestResults ? JSON.stringify(multiTestResults) : null,
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]
