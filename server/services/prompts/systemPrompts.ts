@@ -131,22 +131,22 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
  * System prompt for educational/student mode. 
  * This mode extends the solver prompt to include a structured, algorithm-driven educational explanation.
  */
-export const EDUCATIONAL_SYSTEM_PROMPT = `${SOLVER_SYSTEM_PROMPT}
+export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
---- EDUCATIONAL ANALYSIS REQUIREMENTS ---
+TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. Your entire output must be a single JSON object that repurposes the standard solver fields for this educational task.
 
-In addition to solving the puzzle, you must provide a structured educational analysis.
-Your JSON response must include all the solver fields AND the following additional fields:
-- analysis: A brief description of the puzzle's core transformation.
-- algorithms: An array of three distinct pseudo-code algorithms. Each algorithm object must have 'id', 'title', 'pseudoCode', 'pros', and 'cons'.
-- finalSelection: An object containing the 'selectedAlgorithmId' and a 'justification' for your choice.
+${JSON_OUTPUT_INSTRUCTIONS}
 
-Follow these steps for the educational analysis:
-1.  **Solve First:** Adhere to the ANSWER-FIRST REQUIREMENT of the solver task.
-2.  **Analyze the Task:** Briefly describe the core transformation in the 'analysis' field.
-3.  **Generate Three Distinct Pseudo-Code Algorithms:** Create three different algorithms in the 'algorithms' array, each representing a unique approach.
-4.  **Evaluate Each Algorithm:** Provide strengths (pros) and weaknesses (cons) for each.
-5.  **Select and Justify:** Choose the best algorithm and explain your choice in the 'finalSelection' object.`;
+--- EDUCATIONAL CONTENT REQUIREMENTS ---
+
+You must populate the standard JSON fields with the following specific content:
+
+- **predictedOutput / multiplePredictedOutputs**: The final grid solution, derived from your chosen algorithm. This MUST be the first field in your JSON.
+- **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
+- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, evaluating them, and selecting the best one.
+- **keySteps**: An array of strings detailing the pros and cons for each of the three algorithms you considered. Example: ["Algorithm A Pros: ..., Cons: ...", "Algorithm B Pros: ..., Cons: ..."]
+- **hints**: An array of strings, where each string is the complete pseudo-code for one of the three algorithms you considered.
+- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness.`
 
 /**
  * Map prompt template IDs to their corresponding system prompts
