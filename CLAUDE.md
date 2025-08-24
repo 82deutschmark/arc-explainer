@@ -181,3 +181,4 @@ Failure modes
 Chat Completions: usually just truncates answer if token cap too small
 
 Responses: if misconfigured, you can get only reasoning and no visible reply, or nothing if your parser ignores output[]
+- you arent able to start the dev server or do any testing on your own.  you need to ask the user if you 100% need the dev server started right this instant, then they will do it.
