@@ -98,7 +98,6 @@ export class OpenAIService {
     });
     
     console.log(`[OpenAI] Using system prompt mode: ${systemPromptMode}`);
-    console.log(`[OpenAI] Structured output enabled: ${promptPackage.useStructuredOutput}`);
     
     // Extract system and user prompts from prompt package
     const systemMessage = promptPackage.systemPrompt;
@@ -148,9 +147,6 @@ export class OpenAIService {
       }
       messages.push({ role: "user", content: userMessage });
       
-      // Add structured output configuration if available
-      const structuredOutputConfig = getStructuredOutputConfig(promptPackage);
-      
       const request = {
         model: modelName,
         input: messages,
@@ -163,13 +159,9 @@ export class OpenAIService {
           temperature: temperature || 0.2,
           ...(isGPT5ChatModel && { top_p: 1.00 })
         }),
-        // Add structured output for JSON schema enforcement
-        ...(structuredOutputConfig && { response_format: structuredOutputConfig }),
         // pass through visible output token cap to avoid starvation - using high limits from models.yml
         max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
       } as const;
-      
-      console.log(`[OpenAI] Request includes structured output: ${!!structuredOutputConfig}`);
 
       const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
       let lastErr: any = null;
@@ -190,30 +182,12 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse JSON response - structured outputs should eliminate parsing issues
+      // Parse JSON response
       const rawJson = parsedResponse.output_text || '';
-      
-      if (promptPackage.useStructuredOutput && structuredOutputConfig) {
-        // For structured outputs, JSON should be clean and parseable
-        try {
-          result = rawJson ? JSON.parse(rawJson) : {};
-          console.log('[OpenAI] Successfully parsed structured output JSON');
-        } catch (e) {
-          console.warn('[OpenAI] Structured output JSON parsing failed - falling back to legacy parsing');
-          result = await this.parseJsonWithFallback(rawJson);
-        }
-      } else {
-        // Legacy parsing with fallbacks for non-structured outputs
-        result = await this.parseJsonWithFallback(rawJson);
-      }
+      result = await this.parseJsonWithFallback(rawJson);
 
-      // Extract reasoning log using structured approach
-      if (promptPackage.useStructuredOutput && result.solvingStrategy) {
-        // For structured outputs, reasoning is in solvingStrategy field
-        reasoningLog = result.solvingStrategy;
-        hasReasoningLog = true;
-        console.log('[OpenAI] Extracted reasoning from structured solvingStrategy field');
-      } else if (captureReasoning) {
+      // Extract reasoning log  
+      if (captureReasoning) {
         // Legacy reasoning extraction from OpenAI's output_reasoning
         const summary = parsedResponse.output_reasoning?.summary;
         if (summary) {
@@ -239,9 +213,8 @@ export class OpenAIService {
       
       // Handle reasoning items with proper validation
       let reasoningItems: string[] = [];
-      if (promptPackage.useStructuredOutput) {
-        // For structured outputs, extract keySteps with validation
-        if (result.keySteps) {
+      if (result.keySteps) {
+        // Extract keySteps with validation
           if (Array.isArray(result.keySteps)) {
             reasoningItems = result.keySteps;
           } else if (typeof result.keySteps === 'string') {
