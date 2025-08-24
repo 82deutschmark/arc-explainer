@@ -170,11 +170,14 @@ export function extractPredictions(response: any, testCaseCount: number): {
   predictedOutput?: number[][];
   predictedOutputs?: number[][][];
 } {
-  // Handle new multi-output format
-  if (response?.multiplePredictedOutputs) {
+  // Handle new multi-output format - check for boolean true flag or array
+  if (response?.multiplePredictedOutputs === true || (response?.multiplePredictedOutputs && Array.isArray(response.multiplePredictedOutputs))) {
     const collectedGrids = [];
     let i = 1;
     console.log(`[EXTRACT-DEBUG] Looking for individual predictedOutput fields, expected testCaseCount: ${testCaseCount}`);
+    console.log(`[EXTRACT-DEBUG] multiplePredictedOutputs value:`, response.multiplePredictedOutputs);
+    
+    // First try to collect individual numbered fields (predictedOutput1, predictedOutput2, etc.)
     while (`predictedOutput${i}` in response) {
       const grid = response[`predictedOutput${i}`];
       console.log(`[EXTRACT-DEBUG] Found predictedOutput${i}, validating...`);
@@ -186,9 +189,15 @@ export function extractPredictions(response: any, testCaseCount: number): {
       }
       i++;
     }
-    console.log(`[EXTRACT-DEBUG] Collected ${collectedGrids.length} grids from individual fields`);
-    // Fallback to the main array if individual keys are missing
-    if (collectedGrids.length === 0 && Array.isArray(response.multiplePredictedOutputs)) {
+    console.log(`[EXTRACT-DEBUG] Collected ${collectedGrids.length} grids from individual numbered fields`);
+    
+    // If we found numbered fields, return them
+    if (collectedGrids.length > 0) {
+      return { predictedOutputs: collectedGrids };
+    }
+    
+    // Fallback to the main array if individual keys are missing and it's an array
+    if (Array.isArray(response.multiplePredictedOutputs)) {
         // Check if it's structured format with testCase/predictedOutput objects
         const extractedGrids = [];
         for (const item of response.multiplePredictedOutputs) {
@@ -204,7 +213,9 @@ export function extractPredictions(response: any, testCaseCount: number): {
         }
         return { predictedOutputs: extractedGrids };
     }
-    return { predictedOutputs: collectedGrids };
+    
+    // If multiplePredictedOutputs is true but we found no numbered fields or array, return empty
+    return { predictedOutputs: [] };
   }
 
   // Handle old multi-output format for backward compatibility
