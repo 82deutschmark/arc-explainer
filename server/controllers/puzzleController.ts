@@ -129,7 +129,8 @@ export const puzzleController = {
       const testCount = puzzle.test?.length || 0;
       
       // Check if AI provided multiple predictions (regardless of test count)
-      const hasMultiplePredictions = result.multiplePredictedOutputs === true;
+      const hasMultiplePredictions = result.multiplePredictedOutputs === true || 
+                                   (Array.isArray(result.predictedOutput) && result.predictedOutput.length > 1);
 
       if (hasMultiplePredictions) {
         // Handle multiple predictions from AI (can happen for single or multi-test puzzles)
