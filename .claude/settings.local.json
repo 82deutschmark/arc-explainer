@@ -27,13 +27,14 @@
       "WebSearch",
       "Bash(cat:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(dir D:\\1Projects\\arc-explainer\\client)"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
       "D:\\",
-      "D:\\d\\1Projects"
+      "D:\\1Projects\\arc-explainer"
     ]
   }
 }
