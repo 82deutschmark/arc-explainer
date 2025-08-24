@@ -85,6 +85,7 @@ export function ResearchDashboard({
 
   // Top performing models by accuracy
   const topPerformers = useMemo(() => {
+    if (!Array.isArray(modelPerformance)) return [];
     return [...modelPerformance]
       .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
       .slice(0, 10);
@@ -92,6 +93,7 @@ export function ResearchDashboard({
 
   // Models with highest extraction success rates
   const extractionLeaders = useMemo(() => {
+    if (!Array.isArray(modelPerformance)) return [];
     return [...modelPerformance]
       .sort((a, b) => b.extractionSuccessRate - a.extractionSuccessRate)
       .slice(0, 10);
@@ -99,6 +101,7 @@ export function ResearchDashboard({
 
   // Most controversial puzzles (highest model disagreement)
   const controversialPuzzles = useMemo(() => {
+    if (!Array.isArray(modelDiscrepancies)) return [];
     return [...modelDiscrepancies]
       .sort((a, b) => a.agreementRate - b.agreementRate)
       .slice(0, 10);
@@ -106,6 +109,7 @@ export function ResearchDashboard({
 
   // High confidence failures (models very confident but wrong)
   const confidenceFailures = useMemo(() => {
+    if (!Array.isArray(modelDiscrepancies)) return [];
     return modelDiscrepancies
       .flatMap(puzzle => 
         puzzle.models
