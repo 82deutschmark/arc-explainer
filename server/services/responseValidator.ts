@@ -398,12 +398,15 @@ export function validateSolverResponse(
     };
   }
 
+  // Use confidence from response if available, fallback to parameter
+  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
+
   if (!response?.solvingStrategy) {
     logger.warn('No solving strategy found in solver response', 'validator');
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, confidence),
+      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
       extractionMethod: 'no_solving_strategy'
     };
   }
@@ -438,7 +441,7 @@ export function validateSolverResponse(
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, confidence),
+      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
       extractionMethod: method
     };
   }
@@ -449,18 +452,18 @@ export function validateSolverResponse(
     return {
       predictedGrid,
       isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, confidence),
+      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
       extractionMethod: method + '_wrong_dimensions'
     };
   }
 
   // Check if prediction is correct
   const isCorrect = gridsAreEqual(predictedGrid, correctAnswer);
-  const accuracyScore = calculateAccuracyScore(isCorrect, confidence);
+  const accuracyScore = calculateAccuracyScore(isCorrect, actualConfidence);
 
   logger.info(
     `Validation result: ${isCorrect ? 'CORRECT' : 'INCORRECT'}, ` +
-    `confidence: ${confidence}%, score: ${(accuracyScore * 100).toFixed(1)}%`,
+    `confidence: ${actualConfidence}%, score: ${(accuracyScore * 100).toFixed(1)}%`,
     'validator'
   );
 
@@ -493,6 +496,21 @@ export function validateSolverResponseMulti(
       extractionMethodSummary: 'not_solver_mode'
     };
   }
+
+  // Validate required fields first
+  if (!response?.solvingStrategy) {
+    logger.warn('No solving strategy found in multi-test solver response', 'validator');
+    return {
+      predictedGrids: [],
+      itemResults: [],
+      allCorrect: false,
+      averageAccuracyScore: calculateAccuracyScore(false, actualConfidence),
+      extractionMethodSummary: 'no_solving_strategy'
+    };
+  }
+
+  // Use confidence from response if available, fallback to parameter
+  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
 
   // Collect candidate predicted grids
   let predictedGrids: (number[][] | null)[] = [];
@@ -535,7 +553,7 @@ export function validateSolverResponseMulti(
     const predicted = predictedGrids[i];
 
     if (!predicted) {
-      const score = calculateAccuracyScore(false, confidence);
+      const score = calculateAccuracyScore(false, actualConfidence);
       itemResults.push({
         index: i,
         predictedGrid: null,
@@ -551,7 +569,7 @@ export function validateSolverResponseMulti(
 
     // Validate dimensions
     if (!validateGridDimensions(predicted, expected)) {
-      const score = calculateAccuracyScore(false, confidence);
+      const score = calculateAccuracyScore(false, actualConfidence);
       itemResults.push({
         index: i,
         predictedGrid: predicted,
@@ -566,7 +584,7 @@ export function validateSolverResponseMulti(
     }
 
     const isCorrect = gridsAreEqual(predicted, expected);
-    const score = calculateAccuracyScore(isCorrect, confidence);
+    const score = calculateAccuracyScore(isCorrect, actualConfidence);
     itemResults.push({
       index: i,
       predictedGrid: predicted,
