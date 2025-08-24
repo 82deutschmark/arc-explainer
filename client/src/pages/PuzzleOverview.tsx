@@ -15,8 +15,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
-import { ResearchDashboard } from '@/components/research/ResearchDashboard';
-import { AdvancedSearchPanel } from '@/components/research/AdvancedSearchPanel';
+// import { ResearchDashboard } from '@/components/research/ResearchDashboard';
+// import { AdvancedSearchPanel } from '@/components/research/AdvancedSearchPanel';
 import { PuzzleList } from '@/components/overview/PuzzleList';
 import type { FeedbackStats } from '@shared/types';
 
@@ -67,7 +67,7 @@ interface AccuracyStats {
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('list');
   const [currentPage, setCurrentPage] = useState(1);
   
   // Feedback modal state
@@ -117,47 +117,47 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch advanced search results when criteria is set
-  const { data: searchResults, isLoading: searchLoading } = useQuery<PuzzleOverviewResponse>({
-    queryKey: ['advancedSearch', searchQueryParams],
-    queryFn: async () => {
-      if (!searchQueryParams) return null;
-      const response = await apiRequest('POST', `/api/research/advanced-search?${searchQueryParams}`);
-      const json = await response.json();
-      return json.data;
-    },
-    enabled: !!searchQueryParams,
-  });
+  // Advanced search - TEMPORARILY DISABLED
+  // const { data: searchResults, isLoading: searchLoading } = useQuery<PuzzleOverviewResponse>({
+  //   queryKey: ['advancedSearch', searchQueryParams],
+  //   queryFn: async () => {
+  //     if (!searchQueryParams) return null;
+  //     const response = await apiRequest('POST', `/api/research/advanced-search?${searchQueryParams}`);
+  //     const json = await response.json();
+  //     return json.data;
+  //   },
+  //   enabled: !!searchQueryParams,
+  // });
 
-  // Fetch research insights
-  const { data: researchInsights, isLoading: insightsLoading } = useQuery({
-    queryKey: ['researchInsights'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/research/insights');
-      const json = await response.json();
-      return json.data;
-    },
-  });
+  // Research insights - TEMPORARILY DISABLED
+  // const { data: researchInsights, isLoading: insightsLoading } = useQuery({
+  //   queryKey: ['researchInsights'],
+  //   queryFn: async () => {
+  //     const response = await apiRequest('GET', '/api/research/insights');
+  //     const json = await response.json();
+  //     return json.data;
+  //   },
+  // });
 
-  // Fetch model discrepancies
-  const { data: modelDiscrepancies, isLoading: discrepanciesLoading } = useQuery({
-    queryKey: ['modelDiscrepancies'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/research/model-discrepancies');
-      const json = await response.json();
-      return json.data?.discrepancies || [];
-    },
-  });
+  // Model discrepancies - TEMPORARILY DISABLED  
+  // const { data: modelDiscrepancies, isLoading: discrepanciesLoading } = useQuery({
+  //   queryKey: ['modelDiscrepancies'],
+  //   queryFn: async () => {
+  //     const response = await apiRequest('GET', '/api/research/model-discrepancies');
+  //     const json = await response.json();
+  //     return json.data?.discrepancies || [];
+  //   },
+  // });
 
-  // Fetch Saturn analytics
-  const { data: saturnAnalytics, isLoading: saturnLoading } = useQuery({
-    queryKey: ['saturnAnalytics'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/research/saturn-analytics');
-      const json = await response.json();
-      return json.data;
-    },
-  });
+  // Saturn analytics - TEMPORARILY DISABLED
+  // const { data: saturnAnalytics, isLoading: saturnLoading } = useQuery({
+  //   queryKey: ['saturnAnalytics'],
+  //   queryFn: async () => {
+  //     const response = await apiRequest('GET', '/api/research/saturn-analytics');
+  //     const json = await response.json();
+  //     return json.data;
+  //   },
+  // });
 
   // Fetch solver mode accuracy statistics
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
@@ -211,37 +211,37 @@ export default function PuzzleOverview() {
     });
   }, [accuracyStats]);
 
-  // Transform Saturn analytics for research dashboard
-  const saturnPerformance = useMemo(() => {
-    if (!saturnAnalytics) return {
-      totalAttempts: 0,
-      successCount: 0,
-      failureCount: 0,
-      successRate: 0,
-      recentResults: []
-    };
-    
-    return {
-      totalAttempts: saturnAnalytics.totalAttempts || 0,
-      successCount: saturnAnalytics.successCount || 0,
-      failureCount: saturnAnalytics.failureCount || 0,
-      successRate: saturnAnalytics.successRate || 0,
-      recentResults: saturnAnalytics.recentResults || []
-    };
-  }, [saturnAnalytics]);
+  // Transform Saturn analytics for research dashboard - TEMPORARILY DISABLED
+  // const saturnPerformance = useMemo(() => {
+  //   if (!saturnAnalytics) return {
+  //     totalAttempts: 0,
+  //     successCount: 0,
+  //     failureCount: 0,
+  //     successRate: 0,
+  //     recentResults: []
+  //   };
+  //   
+  //   return {
+  //     totalAttempts: saturnAnalytics.totalAttempts || 0,
+  //     successCount: saturnAnalytics.successCount || 0,
+  //     failureCount: saturnAnalytics.failureCount || 0,
+  //     successRate: saturnAnalytics.successRate || 0,
+  //     recentResults: saturnAnalytics.recentResults || []
+  //   };
+  // }, [saturnAnalytics]);
 
-  // Get current data for display
-  const currentData = searchCriteria ? searchResults : basicPuzzleData;
-  const isLoading = searchCriteria ? searchLoading : basicLoading;
+  // Get current data for display (search disabled, always use basic data)
+  const currentData = basicPuzzleData;
+  const isLoading = basicLoading;
   
-  // Get puzzle counts for dashboard
-  const puzzleCounts = useMemo(() => {
-    const total = researchInsights?.totalPuzzles || 0;
-    const withExplanations = researchInsights?.puzzlesWithExplanations || 0;
-    const withSaturnResults = researchInsights?.puzzlesWithSaturnResults || 0;
-    
-    return { total, withExplanations, withSaturnResults };
-  }, [researchInsights]);
+  // Get puzzle counts for dashboard - TEMPORARILY DISABLED
+  // const puzzleCounts = useMemo(() => {
+  //   const total = researchInsights?.totalPuzzles || 0;
+  //   const withExplanations = researchInsights?.puzzlesWithExplanations || 0;
+  //   const withSaturnResults = researchInsights?.puzzlesWithSaturnResults || 0;
+  //   
+  //   return { total, withExplanations, withSaturnResults };
+  // }, [researchInsights]);
 
   const totalPages = currentData ? Math.ceil(currentData.total / ITEMS_PER_PAGE) : 0;
 
@@ -366,26 +366,26 @@ export default function PuzzleOverview() {
           </>
         )}
         
-        {/* Research Dashboard */}
+        {/* Research Dashboard - TEMPORARILY DISABLED */}
         {activeTab === 'dashboard' && (
-          <ResearchDashboard
-            modelPerformance={modelPerformance}
-            modelDiscrepancies={modelDiscrepancies}
-            saturnPerformance={saturnPerformance}
-            totalPuzzles={puzzleCounts.total}
-            puzzlesWithExplanations={puzzleCounts.withExplanations}
-            puzzlesWithSaturnResults={puzzleCounts.withSaturnResults}
-            isLoading={basicLoading || insightsLoading || discrepanciesLoading || saturnLoading || accuracyLoading}
-          />
+          <div className="bg-white rounded-lg shadow-sm border p-8">
+            <div className="text-center">
+              <BarChart3 className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-600 mb-2">Research Dashboard</h3>
+              <p className="text-gray-500">Temporarily disabled while backend endpoints are being implemented</p>
+            </div>
+          </div>
         )}
         
-        {/* Advanced Search Panel */}
+        {/* Advanced Search Panel - TEMPORARILY DISABLED */}
         {activeTab === 'search' && (
-          <AdvancedSearchPanel
-            onSearch={handleAdvancedSearch}
-            onReset={handleResetSearch}
-            isLoading={searchLoading}
-          />
+          <div className="bg-white rounded-lg shadow-sm border p-8">
+            <div className="text-center">
+              <Search className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-600 mb-2">Advanced Search</h3>
+              <p className="text-gray-500">Temporarily disabled while backend endpoints are being implemented</p>
+            </div>
+          </div>
         )}
 
 
