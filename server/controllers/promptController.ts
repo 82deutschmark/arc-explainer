@@ -64,8 +64,6 @@ export const promptController = {
         systemPrompt: promptPackage.systemPrompt,
         userPrompt: promptPackage.userPrompt,
         selectedTemplate: promptPackage.selectedTemplate,
-        jsonSchema: promptPackage.jsonSchema,
-        useStructuredOutput: promptPackage.useStructuredOutput,
         isAlienMode: promptPackage.isAlienMode,
         isSolver: promptPackage.isSolver
       }));
