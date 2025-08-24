@@ -502,9 +502,19 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields (safe fallbacks)
-        safeJsonStringify(multiplePredictedOutputs),
-        safeJsonStringify(multiTestResults),
+        // Multi-output prediction fields (safe fallbacks)  
+        (() => {
+          console.log('[DB-DEBUG] About to stringify multiplePredictedOutputs:', multiplePredictedOutputs);
+          const result = safeJsonStringify(multiplePredictedOutputs);
+          console.log('[DB-DEBUG] Stringified multiplePredictedOutputs:', result);
+          return result;
+        })(),
+        (() => {
+          console.log('[DB-DEBUG] About to stringify multiTestResults:', multiTestResults);
+          const result = safeJsonStringify(multiTestResults);
+          console.log('[DB-DEBUG] Stringified multiTestResults:', result);
+          return result;
+        })(),
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]
