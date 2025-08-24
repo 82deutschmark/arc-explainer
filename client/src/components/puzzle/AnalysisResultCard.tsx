@@ -79,6 +79,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
+  const [showPrediction, setShowPrediction] = useState(false);
   
   // Get feedback preview for this explanation - add error handling to prevent crashes
   const { feedback: existingFeedback, summary: feedbackSummary, isLoading: feedbackLoading, error: feedbackError } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
@@ -670,52 +671,70 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
               </div>
             </div>
           ) : predictedGrid && expectedOutputGrids.length === 1 ? (
-            /* Single test case display */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className={`rounded p-3 ${
-                result.isPredictionCorrect 
-                  ? 'bg-emerald-50 border border-emerald-200' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <h5 className={`font-semibold ${
-                    result.isPredictionCorrect ? 'text-emerald-800' : 'text-red-800'
-                  }`}>Model Predicted Answer</h5>
+            <div className="border rounded bg-gray-50 border-gray-200">
+              <button
+                onClick={() => setShowPrediction(!showPrediction)}
+                className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <h5 className="font-semibold text-gray-800">Model Prediction</h5>
                   {result.isPredictionCorrect !== undefined && (
                     <Badge 
                       variant="outline" 
                       className={`text-xs ${result.isPredictionCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
                     >
-                      {result.isPredictionCorrect ? 'Prediction matches correct answer' : 'Prediction differs from correct answer'}
+                      {result.isPredictionCorrect ? 'Correct' : 'Incorrect'}
                     </Badge>
                   )}
-                  {result.extractionMethod && (
-                    <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
-                      Extracted via: {result.extractionMethod}
-                    </Badge>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowDiff(!showDiff)}
-                    className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
-                    title="Toggle diff overlay"
-                  >
-                    Diff overlay: {showDiff ? 'On' : 'Off'}
-                  </Button>
                 </div>
-                <div className="flex items-center justify-center">
-                  <PuzzleGrid grid={predictedGrid} title="Predicted" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
+                {showPrediction ? (
+                  <ChevronUp className="h-4 w-4 text-gray-600" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-600" />
+                )}
+              </button>
+              {showPrediction && (
+                <div className="p-3 border-t border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className={`rounded p-3 ${
+                      result.isPredictionCorrect 
+                        ? 'bg-emerald-50 border border-emerald-200' 
+                        : 'bg-red-50 border border-red-200'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h5 className={`font-semibold ${
+                          result.isPredictionCorrect ? 'text-emerald-800' : 'text-red-800'
+                        }`}>Predicted Answer</h5>
+                        {result.extractionMethod && (
+                          <Badge variant="outline" className="text-xs bg-emerald-50 border-emerald-200 text-emerald-700">
+                            Extracted via: {result.extractionMethod}
+                          </Badge>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowDiff(!showDiff)}
+                          className="h-auto p-1 ml-auto text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100"
+                          title="Toggle diff overlay"
+                        >
+                          Diff: {showDiff ? 'On' : 'Off'}
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <PuzzleGrid grid={predictedGrid} title="Predicted" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
+                      </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h5 className="font-semibold text-green-800">Correct Answer</h5>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct" showEmojis={false} highlight={true} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="bg-green-50 border border-green-200 rounded p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
-                </div>
-                <div className="flex items-center justify-center">
-                  <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct" showEmojis={false} highlight={true} />
-                </div>
-              </div>
+              )}
             </div>
           ) : predictedGrid ? (
             <div className={`rounded p-3 ${

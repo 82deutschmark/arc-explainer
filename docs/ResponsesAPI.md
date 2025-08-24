@@ -4,7 +4,7 @@ Missing / wrong things that cause Responses POSTs to fail:
 3. `max_output_tokens` (or equivalent) too low / wrong param name — model can spend tokens on internal reasoning, starving visible output. Set a sufficient `max_output_tokens` and inspect token splits.
 4. Only reading `output_text` or assuming a single text field — Responses returns an `output[]` array containing reasoning items (type=`reasoning`) and messages (type=`message`) whose `content` entries include `type: "output_text"`. Parse `output[]`, not just one field.
 5. Not persisting `response.id` or failing to use `previous_response_id` for stateful chains — if you need chaining or tool use, save `response.id` in your DB (DB = database) and pass it back.
-6. ZDR / `store=false` / encrypted reasoning flows — if org policy or your call sets `store=false`, you must include `include: ["reasoning.encrypted_content"]` and handle encrypted content; otherwise reasoning items may be unavailable. (ZDR = Zero Data Retention)
+
 7. Using an older SDK (SDK = Software Development Kit) / client that posts Chat-style params (or auto-serializes `messages`) — upgrade to the client that supports `client.responses.create()` or craft raw `/v1/responses` JSON.
 8. Expecting streaming deltas like `choices[].delta.content` — Responses streams separate event types (reasoning vs output); ensure your stream parser handles `response.output_text` and reasoning chunks and your WS (WS = WebSocket) forwarder preserves those event types.
 9. Not logging raw response JSON (JSON = JavaScript Object Notation) — always persist a failing `response` JSON blob to DB to inspect `output[]`, `reasoning`, `usage` fields for debugging.

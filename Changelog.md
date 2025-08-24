@@ -7,6 +7,34 @@
 
 August 24, 2025
 
+## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
+
+### 🛠️ Refactor (Code by Cascade)
+- **Educational Prompt Redesign**: Reworked the `EDUCATIONAL_SYSTEM_PROMPT` to repurpose existing solver JSON fields for a new educational methodology.
+  - **No New Fields**: Instead of adding new fields, the prompt now instructs the AI to populate the standard solver fields (`patternDescription`, `keySteps`, `hints`) with specific educational content.
+  - **Content Mapping**: 
+    - `hints`: Contains the pseudo-code for three distinct algorithms.
+    - `keySteps`: Contains the pros and cons for each algorithm.
+    - `patternDescription`: Describes the chosen, winning algorithm.
+  - **Goal**: This approach teaches the model by forcing it to perform algorithmic analysis within the existing, rigid solver data structure.
+  - **File**: `server/services/prompts/systemPrompts.ts`
+
+## Version 1.7.1 — Performance Optimization for Analysis Results (2025-08-24)
+
+### 🚀 UI Performance (Code by Cascade)
+- **Collapsible Prediction Grid**: In the `AnalysisResultCard`, the predicted answer grid is now collapsed by default and will only render when the user clicks to expand it.
+  - **Impact**: This improves initial page load performance, especially on puzzles with numerous analyses, by deferring the rendering of complex grid components.
+  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
+## Version 1.7.0 — Educational Prompt System Redesign (2025-08-24)
+
+### 🎯 Enhanced Educational Analysis (Code by Claude)
+- **Educational Prompt System Redesign:** Overhauled the educational analysis mode to enforce a more rigorous, algorithm-driven approach.
+  - **New Structured Prompt:** The `educationalApproach` prompt now requires the AI to generate three distinct pseudo-code algorithms for solving a given ARC puzzle.
+  - **Algorithm Evaluation:** For each algorithm, the model must provide an analysis of its pros and cons.
+  - **Strict JSON Schema:** A new, strict JSON output schema is enforced for the educational mode, ensuring predictable and machine-readable responses. The schema includes fields for `analysis`, `algorithms`, and `finalSelection`.
+  - **Architectural Consolidation:** This change is the first step in a larger plan to unify the fragmented prompt architecture into a more robust and maintainable system.
+
 ## Version 1.6.23 — Comprehensive Puzzle Filtering System (2025-08-24)
 
 ### 🎯 Enhanced Puzzle Discovery (Code by Claude)

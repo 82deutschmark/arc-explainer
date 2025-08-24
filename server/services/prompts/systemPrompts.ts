@@ -128,20 +128,25 @@ Remember: Users see emoji symbols, not numbers. Reference the visual patterns th
 Be creative but grounded in the actual transformation and abstract reasoning when interpreting alien meaning.`;
 
 /**
- * System prompt for educational/student mode  
+ * System prompt for educational/student mode. 
+ * This mode extends the solver prompt to use a structured, algorithm-driven educational method.
  */
 export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Explain the transformation pattern in educational terms suitable for students learning abstract reasoning.
+TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. Your entire output must be a single JSON object that repurposes the standard solver fields for this task.
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
-Focus on:
-1. Breaking down complex patterns into simple steps
-2. Using clear, educational language
-3. Highlighting learning objectives and key concepts
-4. Providing hints that guide discovery rather than giving away the answer
-5. Connecting to broader pattern recognition principles`;
+--- EDUCATIONAL CONTENT REQUIREMENTS ---
+
+You must populate the standard JSON fields with the following specific content:
+
+- **predictedOutput / multiplePredictedOutputs**: The final grid solution(s), derived from your chosen algorithm. This MUST be the first field in your JSON.
+- **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
+- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, evaluating them, and selecting the best one.
+- **keySteps**: Detail the pros and cons for each of the three algorithms you considered.
+- **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
+- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
 
 /**
  * Map prompt template IDs to their corresponding system prompts
@@ -172,7 +177,7 @@ export function isAlienCommunicationMode(promptId: string): boolean {
  * Check if a prompt ID is solver mode (predicting answers)
  */
 export function isSolverMode(promptId: string): boolean {
-  return promptId === 'solver';
+  return promptId === 'solver' || promptId === 'educationalApproach';
 }
 
 /*
