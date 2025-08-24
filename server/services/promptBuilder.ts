@@ -22,7 +22,7 @@
  */
 
 import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types.js";
-import { getSystemPrompt, getStructuredOutputSystemPrompt, isAlienCommunicationMode, isSolverMode, getCustomSystemPrompt } from "./prompts/systemPrompts.js";
+import { getSystemPrompt, getStructuredOutputSystemPrompt, isAlienCommunicationMode, isSolverMode } from "./prompts/systemPrompts.js";
 import { buildUserPromptForTemplate, UserPromptOptions } from "./prompts/userTemplates.js";
 import { getSolverSchema } from "./schemas/solver.js";
 import { getExplanationSchema } from "./schemas/explanation.js";
@@ -86,7 +86,8 @@ export function buildAnalysisPrompt(
   } else {
     // New ARC mode: structured system prompt
     if (isCustom) {
-      systemPrompt = getCustomSystemPrompt();
+      // Custom prompt mode - use basic system prompt since getCustomSystemPrompt was commented out
+      systemPrompt = "You are an expert at analyzing ARC-AGI puzzles. Follow the instructions provided by the user.";
     } else if (useStructuredOutput) {
       // Get appropriate schema
       if (isSolver) {
