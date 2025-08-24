@@ -138,6 +138,9 @@ export const puzzleController = {
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         
         // Store in database-compatible field names for multi-output prediction edge case
+        console.log('[CONTROLLER-DEBUG] About to store multi-test data:');
+        console.log('  multi.predictedGrids:', multi.predictedGrids);
+        console.log('  multi.itemResults:', multi.itemResults);
         result.multiplePredictedOutputs = multi.predictedGrids;
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
