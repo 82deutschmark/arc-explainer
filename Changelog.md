@@ -7,7 +7,7 @@
 
 August 24, 2025
 
-## Version 1.6.18 — Saturn Filter Display Fix (2025-08-23)
+## Version 1.6.18 — Puzzle Organization & Filtering Fix (2025-08-23)
 
 ### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)
 - **Root Issue**: Saturn Visual Solver Results section incorrectly displayed ALL Saturn results regardless of active filter selection.
@@ -15,6 +15,15 @@ August 24, 2025
 - **Frontend Fix**: Updated `saturnResults` computation in PuzzleOverview.tsx to respect `saturnFilter` state instead of showing all results.
 - **Filter Alignment**: Synchronized backend Saturn filter values with frontend dropdown options ('solved', 'failed', 'attempted', 'all').
 - **Impact**: Saturn results card now properly filters and displays only the requested subset of results when specific Saturn filters are applied.
+
+### 🏷️ ARC Dataset Source Priority Fix (Code by Cascade)
+- **Root Issue**: Puzzles appearing in multiple datasets (e.g., both ARC1 and ARC2) were incorrectly labeled by later appearance instead of first appearance.
+- **Priority Correction**: Fixed PuzzleLoader data source priority order - ARC1 datasets now take precedence over ARC2 for duplicate puzzles.
+- **New Priority Order**: ARC1-Eval → ARC1 → ARC2-Eval → ARC2 (was previously ARC2-Eval → ARC2 → ARC1-Eval → ARC1).
+- **Enhanced Filtering**: Added ARC Dataset filter dropdown to PuzzleOverview with options for ARC1 Training, ARC1 Evaluation, ARC2 Training, ARC2 Evaluation.
+- **Backend Support**: Updated `/api/puzzle/overview` endpoint to handle `source` parameter for proper dataset filtering.
+- **Badge Accuracy**: Puzzle badges now reflect true first-appearance source, ensuring accurate dataset identification.
+- **Impact**: Puzzles are now properly organized and labeled by their historical first appearance in ARC datasets, improving data consistency and filtering accuracy.
 
 ## Version 1.6.17 — Temperature Parameter Fix (2025-08-23)
 

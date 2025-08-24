@@ -69,6 +69,7 @@ export default function PuzzleOverview() {
   const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>('all');
   const [modelFilter, setModelFilter] = useState<string>('all');
   const [saturnFilter, setSaturnFilter] = useState<string>('all');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [confidenceMin, setConfidenceMin] = useState<string>('');
   const [confidenceMax, setConfidenceMax] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -94,6 +95,7 @@ export default function PuzzleOverview() {
     if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
     if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
     if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
+    if (sourceFilter !== 'all') params.set('source', sourceFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
     if (sortBy) params.set('sortBy', sortBy);
@@ -103,7 +105,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -347,6 +349,8 @@ export default function PuzzleOverview() {
           setModelFilter={setModelFilter}
           saturnFilter={saturnFilter}
           setSaturnFilter={setSaturnFilter}
+          sourceFilter={sourceFilter}
+          setSourceFilter={setSourceFilter}
           confidenceMin={confidenceMin}
           setConfidenceMin={setConfidenceMin}
           confidenceMax={confidenceMax}
