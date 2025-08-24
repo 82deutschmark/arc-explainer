@@ -262,6 +262,7 @@ export const puzzleController = {
         hasFeedback,
         modelName, 
         saturnFilter,
+        source,
         confidenceMin, 
         confidenceMax,
         limit = 50,
@@ -272,8 +273,14 @@ export const puzzleController = {
 
       console.log('[Controller] Puzzle overview request with filters:', req.query);
 
+      // Build filters for puzzle service
+      const puzzleFilters: any = {};
+      if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
+        puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+      }
+
       // Get all puzzles from the puzzle service
-      const allPuzzles = await puzzleService.getPuzzleList({});
+      const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic puzzle list
       if (!dbService.isConnected()) {

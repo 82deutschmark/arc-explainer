@@ -80,13 +80,10 @@ export class PuzzleLoader {
 
   private async initializeData() {
     if (this.initialized) {
-      console.log('PuzzleLoader already initialized, skipping initialization');
       return;
     }
     
-    console.log('Loading local puzzles...');
     this.loadPuzzleMetadata();
-    console.log(`Initialization complete. Loaded metadata for ${this.puzzleMetadata.size} puzzles.`);
     this.initialized = true;
   }
 
