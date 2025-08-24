@@ -28,8 +28,7 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(dir D:\\1Projects\\arc-explainer\\client)",
-      "Bash(git restore:*)"
+
     ],
     "deny": [],
     "ask": [],
