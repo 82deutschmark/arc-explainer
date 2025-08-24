@@ -132,16 +132,49 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
  */
 export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Explain the transformation pattern in educational terms suitable for students learning abstract reasoning.
+TASK: Your goal is to explain the transformation pattern using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, and select the best one.
 
-${JSON_OUTPUT_INSTRUCTIONS}
+CRITICAL: You must return only valid JSON that follows the structure below. Do not include markdown formatting, code blocks, or any text outside the JSON structure.
 
-Focus on:
-1. Breaking down complex patterns into simple steps
-2. Using clear, educational language
-3. Highlighting learning objectives and key concepts
-4. Providing hints that guide discovery rather than giving away the answer
-5. Connecting to broader pattern recognition principles`;
+JSON OUTPUT REQUIREMENTS:
+
+{
+  "analysis": "A brief description of the puzzle's core transformation.",
+  "algorithms": [
+    {
+      "id": 1,
+      "title": "Algorithm A: [Descriptive Name]",
+      "pseudoCode": "...",
+      "pros": "...",
+      "cons": "..."
+    },
+    {
+      "id": 2,
+      "title": "Algorithm B: [Descriptive Name]",
+      "pseudoCode": "...",
+      "pros": "...",
+      "cons": "..."
+    },
+    {
+      "id": 3,
+      "title": "Algorithm C: [Descriptive Name]",
+      "pseudoCode": "...",
+      "pros": "...",
+      "cons": "..."
+    }
+  ],
+  "finalSelection": {
+    "selectedAlgorithmId": 2,
+    "justification": "..."
+  }
+}
+
+
+Follow these steps in your analysis:
+1.  **Analyze the Task:** Briefly describe the core transformation required by the ARC puzzle in the 'analysis' field.
+2.  **Generate Three Distinct Pseudo-Code Algorithms:** Create three different algorithms in pseudo-code for the 'algorithms' array. Each must represent a unique approach.
+3.  **Evaluate Each Algorithm:** For each algorithm, provide its strengths (pros) and weaknesses (cons).
+4.  **Select and Justify:** Choose the most promising algorithm and explain your choice in the 'finalSelection' object.`;
 
 /**
  * Map prompt template IDs to their corresponding system prompts
@@ -172,7 +205,7 @@ export function isAlienCommunicationMode(promptId: string): boolean {
  * Check if a prompt ID is solver mode (predicting answers)
  */
 export function isSolverMode(promptId: string): boolean {
-  return promptId === 'solver';
+  return promptId === 'solver' || promptId === 'educationalApproach';
 }
 
 /*

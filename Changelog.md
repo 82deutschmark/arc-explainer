@@ -7,6 +7,15 @@
 
 August 24, 2025
 
+## Version 1.7.0 — Educational Prompt System Redesign (2025-08-24)
+
+### 🎯 Enhanced Educational Analysis (Code by Claude)
+- **Educational Prompt System Redesign:** Overhauled the educational analysis mode to enforce a more rigorous, algorithm-driven approach.
+  - **New Structured Prompt:** The `educationalApproach` prompt now requires the AI to generate three distinct pseudo-code algorithms for solving a given ARC puzzle.
+  - **Algorithm Evaluation:** For each algorithm, the model must provide an analysis of its pros and cons.
+  - **Strict JSON Schema:** A new, strict JSON output schema is enforced for the educational mode, ensuring predictable and machine-readable responses. The schema includes fields for `analysis`, `algorithms`, and `finalSelection`.
+  - **Architectural Consolidation:** This change is the first step in a larger plan to unify the fragmented prompt architecture into a more robust and maintainable system.
+
 ## Version 1.6.23 — Comprehensive Puzzle Filtering System (2025-08-24)
 
 ### 🎯 Enhanced Puzzle Discovery (Code by Claude)
