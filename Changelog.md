@@ -7,6 +7,48 @@
 
 August 24, 2025
 
+## Version 1.6.23 — Code Cleanup: Commented Out Unused Structured Output Functions (2025-08-24)
+
+### 🔧 Code Maintenance (Code by Claude)
+- **Temporarily Disabled Code**: Commented out unused structured output functions in `systemPrompts.ts`
+  - `getStructuredOutputSystemPrompt()` and related code wrapped in block comments
+  - Code preserved for future reference with clear documentation of deprecation
+  - Follows best practices for code maintenance while preserving history
+
+## Version 1.6.22 — Multi-Test Case Filter for Puzzle Browser (2025-08-24)
+
+### 🎯 Enhanced Puzzle Discovery (Code by Claude)
+- **Multi-Test Case Filter**: Added new "Test Cases" filter to puzzle browser enabling users to find puzzles requiring multiple predicted outputs
+  - **Any**: All puzzles regardless of test case count
+  - **Single**: Puzzles with 1 test case (1 output required)
+  - **Multiple**: Puzzles with 2+ test cases (multiple outputs required)
+- **Backend Enhancement**: Added `testCaseCount` field to puzzle metadata tracking, extracted from puzzle JSON `test` array length
+- **Filter Integration**: Full stack implementation from puzzle loader through frontend UI
+- **Audit Results**: Verified examples like 20a9e565 (2 tests), 27a28665 (3 tests), a8610ef7 (1 test) are correctly identified
+
+### ✅ Technical Implementation
+- **PuzzleLoader**: Enhanced metadata analysis to count test cases from puzzle JSON
+- **Database Storage**: Confirmed multi-test predictions properly stored as `multiplePredictedOutputs` arrays
+- **Frontend Display**: Existing AnalysisResultCard already handles multi-test cases correctly with per-test validation
+- **API Filtering**: New `multiTestFilter` parameter propagated through all layers
+
+## Version 1.6.21 — Dynamic Page Titles & URL State Persistence (2025-08-24)
+
+### 🌟 User Experience Improvements (Code by Claude)
+- **Dynamic Page Titles**: Added proper page titles for all application pages to improve browser tab identification and bookmarking experience:
+  - PuzzleBrowser: "ARC Puzzle Browser"  
+  - PuzzleOverview: "Puzzle Database Overview"
+  - PuzzleExaminer: "ARC Puzzle {puzzleId}" (shows specific puzzle ID)
+  - SaturnVisualSolver: "Saturn Solver - {puzzleId}" (shows specific puzzle ID)
+  - NotFound: "404 - Page Not Found"
+- **URL State Persistence**: Implemented URL parameter persistence for PuzzleOverview filters, enabling users to bookmark and share specific filtered views
+- **Enhanced Navigation**: Browser history now properly reflects filter states, improving back/forward button behavior
+
+### ✅ Technical Details
+- **Title Management**: Added React useEffect hooks to update document.title dynamically based on page and context
+- **URL Synchronization**: Filter state automatically syncs with URL parameters for seamless bookmark/share functionality
+- **Backward Compatibility**: Maintains existing functionality while adding new URL persistence features
+
 ## Version 1.6.20 — Multi-Test Puzzle Extraction Fix (2025-08-24)
 
 ### 🎯 Critical Multi-Test Puzzle Fix (Code by Claude)
