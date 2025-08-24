@@ -8,7 +8,7 @@
 
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types";
-import { buildAnalysisPrompt, getDefaultPromptId, getStructuredOutputConfig, extractReasoningFromStructuredResponse } from "./promptBuilder";
+import { buildAnalysisPrompt, getDefaultPromptId, extractReasoningFromStructuredResponse } from "./promptBuilder";
 import type { PromptOptions, PromptPackage } from "./promptBuilder";
 import { calculateCost } from "../utils/costCalculator";
 import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";

@@ -22,10 +22,8 @@
  */
 
 import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types.js";
-import { getSystemPrompt, getStructuredOutputSystemPrompt, isAlienCommunicationMode, isSolverMode } from "./prompts/systemPrompts.js";
+import { getSystemPrompt, isAlienCommunicationMode, isSolverMode } from "./prompts/systemPrompts.js";
 import { buildUserPromptForTemplate, UserPromptOptions } from "./prompts/userTemplates.js";
-import { getSolverSchema } from "./schemas/solver.js";
-import { getExplanationSchema } from "./schemas/explanation.js";
 
 /**
  * Enhanced PromptOptions with new architecture support
@@ -44,8 +42,6 @@ export interface PromptPackage {
   systemPrompt: string;
   userPrompt: string;
   selectedTemplate: PromptTemplate | null;
-  jsonSchema?: any;
-  useStructuredOutput: boolean;
   isAlienMode: boolean;
   isSolver: boolean;
 }
@@ -78,7 +74,6 @@ export function buildAnalysisPrompt(
 
   // Build system prompt
   let systemPrompt: string;
-  let jsonSchema: any = undefined;
 
   if (systemPromptMode === 'None') {
     // Legacy mode: minimal system prompt
@@ -86,17 +81,8 @@ export function buildAnalysisPrompt(
   } else {
     // New ARC mode: structured system prompt
     if (isCustom) {
-      // Custom prompt mode - use basic system prompt since getCustomSystemPrompt was commented out
-      systemPrompt = "You are an expert at analyzing ARC-AGI puzzles. Follow the instructions provided by the user.";
-    } else if (useStructuredOutput) {
-      // Get appropriate schema
-      if (isSolver) {
-        jsonSchema = getSolverSchema(task.test.length);
-        systemPrompt = getStructuredOutputSystemPrompt(promptId, jsonSchema.name);
-      } else {
-        jsonSchema = getExplanationSchema(isAlien);
-        systemPrompt = getStructuredOutputSystemPrompt(promptId, jsonSchema.name);
-      }
+      // Custom prompt mode - completely blank system prompt as requested
+      systemPrompt = "";
     } else {
       systemPrompt = getSystemPrompt(promptId);
     }
@@ -124,14 +110,11 @@ export function buildAnalysisPrompt(
 
   console.log(`[PromptBuilder] Generated system prompt: ${systemPrompt.length} chars`);
   console.log(`[PromptBuilder] Generated user prompt: ${userPrompt.length} chars`);
-  console.log(`[PromptBuilder] Schema attached: ${!!jsonSchema}`);
 
   return {
     systemPrompt,
     userPrompt,
     selectedTemplate,
-    jsonSchema,
-    useStructuredOutput: useStructuredOutput && !!jsonSchema,
     isAlienMode: isAlien,
     isSolver
   };
@@ -175,23 +158,6 @@ function buildLegacyPrompt(
   };
 }
 
-/**
- * Get structured output configuration for OpenAI
- */
-export function getStructuredOutputConfig(promptPackage: PromptPackage) {
-  if (!promptPackage.useStructuredOutput || !promptPackage.jsonSchema) {
-    return undefined;
-  }
-
-  return {
-    type: "json_schema",
-    json_schema: {
-      name: promptPackage.jsonSchema.name,
-      strict: true,
-      schema: promptPackage.jsonSchema.schema
-    }
-  };
-}
 
 /**
  * Extract reasoning log from structured response
