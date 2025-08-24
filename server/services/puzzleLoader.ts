@@ -22,6 +22,7 @@ interface PuzzleInfo {
   outputSize: [number, number];
   hasExplanation: boolean;
   source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  testCaseCount: number;
 }
 
 interface DataSource {
@@ -173,7 +174,8 @@ export class PuzzleLoader {
       inputSize,
       outputSize,
       hasExplanation,
-      source
+      source,
+      testCaseCount: task.test ? task.test.length : 0
     };
   }
 
@@ -252,6 +254,7 @@ export class PuzzleLoader {
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
     source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
     
@@ -270,6 +273,7 @@ export class PuzzleLoader {
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
     source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     if (filters.maxGridSize !== undefined) {
       puzzles = puzzles.filter(p => p.maxGridSize <= filters.maxGridSize!);
@@ -283,6 +287,12 @@ export class PuzzleLoader {
 
     if (filters.source) {
       puzzles = puzzles.filter(p => p.source === filters.source);
+    }
+    if (filters.multiTestFilter === 'single') {
+      puzzles = puzzles.filter(p => p.testCaseCount === 1);
+    }
+    if (filters.multiTestFilter === 'multi') {
+      puzzles = puzzles.filter(p => p.testCaseCount > 1);
     }
     
     return puzzles;
