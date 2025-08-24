@@ -63,6 +63,12 @@ const MODELS_WITH_REASONING = new Set([
   "grok-4-0709",
 ]);
 
+// Helper function to check if model supports temperature using centralized config
+function modelSupportsTemperature(modelKey: string): boolean {
+  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+  return modelConfig?.supportsTemperature ?? false;
+}
+
 // Initialize xAI client with OpenAI SDK compatibility
 const xai = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -112,8 +118,8 @@ export class GrokService {
         requestOptions.messages = [{ role: "user", content: userPrompt }];
       }
 
-      // Grok 4 reasoning models don't support temperature, presence_penalty, frequency_penalty, or stop
-      if (!REASONING_MODELS.has(modelKey)) {
+      // Apply temperature only for models that support it according to centralized config
+      if (modelSupportsTemperature(modelKey)) {
         requestOptions.temperature = temperature;
       }
 
@@ -213,10 +219,10 @@ export class GrokService {
   }
 
   /**
-   * Check if model supports temperature parameter
+   * Check if model supports temperature parameter (using centralized config)
    */
   supportsTemperature(modelKey: keyof typeof MODELS): boolean {
-    return !REASONING_MODELS.has(modelKey);
+    return modelSupportsTemperature(modelKey);
   }
 
   /**
@@ -313,13 +319,13 @@ export class GrokService {
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: basePrompt.length,
-        wordCount: basePrompt.split(/\s+/).length,
-        lineCount: basePrompt.split('\n').length
+        characterCount: userPrompt.length,
+        wordCount: userPrompt.split(/\s+/).length,
+        lineCount: userPrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,
-      temperature: REASONING_MODELS.has(modelKey) ? "Not supported" : temperature,
+      temperature: modelSupportsTemperature(modelKey) ? temperature : "Not supported",
       isReasoningModel: REASONING_MODELS.has(modelKey)
     };
   }

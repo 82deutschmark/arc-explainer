@@ -7,6 +7,33 @@
 
 August 24, 2025
 
+## Version 1.6.19 — Research Dashboard & FeedbackModal Fixes (2025-08-23)
+
+### Fixed
+- PuzzleOverview component integration issues resolved without breaking existing functionality
+- Research dashboard props interface aligned with component requirements
+- FeedbackModal props corrected to use proper interface (open/onOpenChange)
+- Layout structure reorganized for better tab navigation and component organization
+
+## Version 1.6.18 — Saturn Filter Display Fix (2025-08-23)
+
+### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)
+- **Root Issue**: Saturn Visual Solver Results section incorrectly displayed ALL Saturn results regardless of active filter selection.
+- **Backend Enhancement**: Added missing `saturnFilter` parameter handling to `/api/puzzle/overview` endpoint with proper filtering logic for 'solved', 'failed', and 'attempted' states.
+- **Frontend Fix**: Updated `saturnResults` computation in PuzzleOverview.tsx to respect `saturnFilter` state instead of showing all results.
+- **Filter Alignment**: Synchronized backend Saturn filter values with frontend dropdown options ('solved', 'failed', 'attempted', 'all').
+- **Impact**: Saturn results card now properly filters and displays only the requested subset of results when specific Saturn filters are applied.
+
+## Version 1.6.17 — Temperature Parameter Fix (2025-08-23)
+
+### 🐛 Critical Temperature Parameter Handling Fix (Code by Cascade)
+- **Root Issue**: Temperature parameter was not being respected correctly across AI services due to inconsistent hardcoded model lists vs centralized model configuration.
+- **OpenAI Service**: Fixed hardcoded `MODELS_WITHOUT_TEMPERATURE` set that incorrectly excluded `gpt-5-mini-2025-08-07` and `gpt-5-nano-2025-08-07` which do support temperature.
+- **Centralized Logic**: All AI services (OpenAI, Anthropic, Gemini, Grok) now use unified `modelSupportsTemperature()` function that reads from `models.ts` configuration.
+- **Silent Handling**: Temperature is now gracefully ignored for reasoning models without errors, exactly as user requested.
+- **UI Consistency**: Temperature settings in UI now properly align with backend model capabilities defined in `models.ts`.
+- **Impact**: Fixes temperature being ignored on models like GPT-5 Mini/Nano that should support it, ensuring proper model behavior control.
+
 ## Version 1.6.16 — Multi-Test JSON Serialization Fix (2025-08-23)
 
 ### 🐛 Critical Database JSON Serialization Fix (Code by Cascade)
