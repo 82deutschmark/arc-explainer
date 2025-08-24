@@ -78,6 +78,7 @@ export function usePuzzleList(filters?: {
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
   source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  multiTestFilter?: 'single' | 'multi';
 }) {
   const queryParams = new URLSearchParams();
   if (filters?.maxGridSize) queryParams.set('maxGridSize', filters.maxGridSize.toString());
@@ -86,6 +87,7 @@ export function usePuzzleList(filters?: {
   if (filters?.gridSizeConsistent !== undefined) queryParams.set('gridSizeConsistent', filters.gridSizeConsistent.toString());
   if (filters?.prioritizeUnexplained) queryParams.set('prioritizeUnexplained', 'true');
   if (filters?.source) queryParams.set('source', filters.source);
+  if (filters?.multiTestFilter) queryParams.set('multiTestFilter', filters.multiTestFilter);
 
   const queryString = queryParams.toString();
   const url = `/api/puzzle/list${queryString ? `?${queryString}` : ''}`;

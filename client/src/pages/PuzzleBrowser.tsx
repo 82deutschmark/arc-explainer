@@ -27,10 +27,16 @@ export default function PuzzleBrowser() {
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained as requested
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
+  const [multiTestFilter, setMultiTestFilter] = useState<string>('any'); // 'any', 'single', 'multi'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Set page title
+  React.useEffect(() => {
+    document.title = 'ARC Puzzle Browser';
+  }, []);
 
   // Create filters object for the hook
   const filters = React.useMemo(() => {
@@ -40,8 +46,10 @@ export default function PuzzleBrowser() {
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     // Don't use prioritize flags anymore, as we'll filter the results ourselves
     if (arcVersion === 'ARC1' || arcVersion === 'ARC1-Eval' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval') result.source = arcVersion;
+    if (multiTestFilter === 'single') result.multiTestFilter = 'single';
+    if (multiTestFilter === 'multi') result.multiTestFilter = 'multi';
     return result;
-  }, [maxGridSize, gridSizeConsistent, arcVersion]);
+  }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
   
@@ -231,6 +239,20 @@ export default function PuzzleBrowser() {
                     <SelectItem value="ARC1-Eval">ARC1 Evaluation</SelectItem>
                     <SelectItem value="ARC2">ARC2 Training</SelectItem>
                     <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="multiTestFilter">Test Cases</Label>
+                <Select value={multiTestFilter} onValueChange={setMultiTestFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any number of test cases" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any number of test cases</SelectItem>
+                    <SelectItem value="single">Single test case (1 output required)</SelectItem>
+                    <SelectItem value="multi">Multiple test cases (2+ outputs required)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -793,7 +793,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
         try {
           return JSON.parse(jsonString);
         } catch (error) {
-          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          // Silently handle malformed JSON without logging to reduce noise
           return null;
         }
       };
@@ -881,7 +881,7 @@ const getExplanationById = async (explanationId: number) => {
         try {
           return JSON.parse(jsonString);
         } catch (error) {
-          logger.error(`Failed to parse JSON for ${fieldName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+          // Silently handle malformed JSON without logging to reduce noise
           return null;
         }
       };

@@ -7,6 +7,84 @@
 
 August 24, 2025
 
+## Version 1.6.23 — Code Cleanup: Commented Out Unused Structured Output Functions (2025-08-24)
+
+### 🔧 Code Maintenance (Code by Claude)
+- **Temporarily Disabled Code**: Commented out unused structured output functions in `systemPrompts.ts`
+  - `getStructuredOutputSystemPrompt()` and related code wrapped in block comments
+  - Code preserved for future reference with clear documentation of deprecation
+  - Follows best practices for code maintenance while preserving history
+
+## Version 1.6.22 — Multi-Test Case Filter for Puzzle Browser (2025-08-24)
+
+### 🎯 Enhanced Puzzle Discovery (Code by Claude)
+- **Multi-Test Case Filter**: Added new "Test Cases" filter to puzzle browser enabling users to find puzzles requiring multiple predicted outputs
+  - **Any**: All puzzles regardless of test case count
+  - **Single**: Puzzles with 1 test case (1 output required)
+  - **Multiple**: Puzzles with 2+ test cases (multiple outputs required)
+- **Backend Enhancement**: Added `testCaseCount` field to puzzle metadata tracking, extracted from puzzle JSON `test` array length
+- **Filter Integration**: Full stack implementation from puzzle loader through frontend UI
+- **Audit Results**: Verified examples like 20a9e565 (2 tests), 27a28665 (3 tests), a8610ef7 (1 test) are correctly identified
+
+### ✅ Technical Implementation
+- **PuzzleLoader**: Enhanced metadata analysis to count test cases from puzzle JSON
+- **Database Storage**: Confirmed multi-test predictions properly stored as `multiplePredictedOutputs` arrays
+- **Frontend Display**: Existing AnalysisResultCard already handles multi-test cases correctly with per-test validation
+- **API Filtering**: New `multiTestFilter` parameter propagated through all layers
+
+## Version 1.6.21 — Dynamic Page Titles & URL State Persistence (2025-08-24)
+
+### 🌟 User Experience Improvements (Code by Claude)
+- **Dynamic Page Titles**: Added proper page titles for all application pages to improve browser tab identification and bookmarking experience:
+  - PuzzleBrowser: "ARC Puzzle Browser"  
+  - PuzzleOverview: "Puzzle Database Overview"
+  - PuzzleExaminer: "ARC Puzzle {puzzleId}" (shows specific puzzle ID)
+  - SaturnVisualSolver: "Saturn Solver - {puzzleId}" (shows specific puzzle ID)
+  - NotFound: "404 - Page Not Found"
+- **URL State Persistence**: Implemented URL parameter persistence for PuzzleOverview filters, enabling users to bookmark and share specific filtered views
+- **Enhanced Navigation**: Browser history now properly reflects filter states, improving back/forward button behavior
+
+### ✅ Technical Details
+- **Title Management**: Added React useEffect hooks to update document.title dynamically based on page and context
+- **URL Synchronization**: Filter state automatically syncs with URL parameters for seamless bookmark/share functionality
+- **Backward Compatibility**: Maintains existing functionality while adding new URL persistence features
+
+## Version 1.6.20 — Multi-Test Puzzle Extraction Fix (2025-08-24)
+
+### 🎯 Critical Multi-Test Puzzle Fix (Code by Claude)
+- **Root Issue**: AI models return multi-test predictions in numbered field format (`{"multiplePredictedOutputs": true, "predictedOutput1": [...], "predictedOutput2": [...]}`) but extraction logic only handled array format, causing frontend to show empty multi-test results.
+- **Enhanced Extraction Logic**: Updated `extractPredictions` function in `server/services/schemas/solver.ts` to properly handle boolean `multiplePredictedOutputs: true` flag.
+- **Numbered Field Collection**: Now correctly collects `predictedOutput1`, `predictedOutput2`, etc. and converts them to proper array format for database storage.
+- **Debug Logging**: Added comprehensive logging to track extraction process and identify data structure issues.
+- **Backward Compatibility**: Maintains support for existing array format while adding support for numbered field format.
+- **Impact**: Fixes multi-test puzzles like 20a9e565 not displaying predictions properly - frontend will now show all test cases with proper predicted vs expected grid comparisons.
+
+### ✅ Technical Details
+- **Database Storage**: Multi-test data now properly stored as arrays in `multiplePredictedOutputs` field
+- **Frontend Integration**: Existing frontend display logic works correctly once proper data structure is provided
+- **AI Model Support**: Works with all AI providers that return numbered prediction fields
+- **Testing Focus**: Puzzle 20a9e565 (requires 2 test outputs) used as primary validation case
+
+## Version 1.6.19 — Database Logging & DeepSeek JSON Parsing Fixes (2025-08-24)
+
+### 🔧 Database Service Improvements (Code by Claude)
+- **Reduced Log Noise**: Eliminated excessive "[ERROR][database] Failed to parse JSON" logs for known corrupted data patterns like "[object Object]", comma-only strings, and empty strings.
+- **Silent Error Handling**: Modified `safeJsonParse` functions in `getExplanationsForPuzzle` and `getExplanationById` to handle malformed JSON gracefully without flooding server logs.
+- **Maintains Functionality**: Corrupted data patterns are still filtered out, but without generating log entries for every occurrence.
+- **Impact**: Significantly cleaner server logs while preserving all existing database functionality.
+
+### 🛠️ DeepSeek API Robustness (Code by Claude)
+- **Enhanced JSON Parsing**: Added comprehensive error handling to prevent "Unterminated string in JSON at position X" crashes from malformed API responses.
+- **Markdown Fallback Support**: Implemented JSON extraction from markdown code blocks (```json...```) for responses wrapped in formatting.
+- **Detailed Error Reporting**: Enhanced error messages with response content preview (first 500 chars) for better debugging.
+- **Variable Reference Fix**: Corrected undefined `basePrompt` reference to `userPrompt` in `generatePromptPreview` function.
+- **Impact**: DeepSeek API calls now handle malformed responses gracefully instead of crashing the analysis process.
+
+### ✅ Technical Improvements
+- **Backward Compatibility**: All changes maintain existing functionality while improving error resilience.
+- **Better Debugging**: Enhanced error messages provide more context when issues do occur.
+- **Production Stability**: Reduces both crash risk and log spam in production environments.
+
 ## Version 1.6.18 — Puzzle Organization & Filtering Fix (2025-08-23)
 
 ### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)

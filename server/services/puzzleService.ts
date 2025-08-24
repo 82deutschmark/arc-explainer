@@ -20,6 +20,7 @@ interface PuzzleFilters {
   prioritizeUnexplained?: boolean;
   prioritizeExplained?: boolean;
   source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  multiTestFilter?: 'single' | 'multi';
 }
 
 // Additional interface for enhanced puzzle metadata with feedback info

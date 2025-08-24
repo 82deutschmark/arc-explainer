@@ -45,6 +45,11 @@ export default function PuzzleExaminer() {
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
   // systemPromptMode is now hardcoded to 'ARC' - the new modular architecture replaces legacy {ARC}/{None} toggle
 
+  // Set page title with puzzle ID
+  React.useEffect(() => {
+    document.title = taskId ? `ARC Puzzle ${taskId}` : 'ARC Puzzle Examiner';
+  }, [taskId]);
+
   // Early return if no taskId
   if (!taskId) {
     return (

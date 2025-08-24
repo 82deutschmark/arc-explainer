@@ -45,7 +45,7 @@ export const promptController = {
     
     try {
       // Get the task data
-      const task = await puzzleService.getTaskById(taskId);
+      const task = await puzzleService.getPuzzleById(taskId);
       if (!task) {
         return res.status(404).json(formatResponse.error('Task not found', 'TASK_NOT_FOUND'));
       }
