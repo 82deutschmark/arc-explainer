@@ -7,6 +7,43 @@
 
 August 24, 2025
 
+## Version 1.6.23 — Comprehensive Puzzle Filtering System (2025-08-24)
+
+### 🎯 Enhanced Puzzle Discovery (Code by Claude)
+- **Grid Size Filters**: Added min/max grid size input filters (1-30 range) exposing existing backend support
+- **Grid Consistency Filter**: Added dropdown for "Consistent Sizes" vs "Variable Sizes" puzzle filtering
+- **Processing Time Filter**: Added range inputs for API processing time filtering in milliseconds
+- **Has Predictions Filter**: Filter puzzles by presence of solver mode predictions from AI models
+- **Prediction Accuracy Filter**: Filter by correct vs incorrect solver prediction results
+
+### ✅ Technical Implementation
+- **Expanded UI Layout**: Changed SearchFilters to 4-column grid (xl:grid-cols-4) for additional filters
+- **Complete State Management**: 5 new filter states with URL parameter persistence
+- **Backend Integration**: Grid size/consistency leverage existing puzzleLoader filters
+- **Database Filtering**: Processing time, predictions, and accuracy filters work on explanation data
+- **Comprehensive Logic**: Added filtering for `apiProcessingTimeMs`, `predictedOutputGrid`, `isPredictionCorrect`, and multi-test equivalents
+
+### 📊 Filter Categories Implemented
+**Tier 1 (Backend Ready)**: Grid Size Range, Grid Consistency  
+**Tier 2 (Database Fields)**: Processing Time Range, Has Predictions, Prediction Accuracy
+
+## Version 1.6.22 — Multi-Test Case Filter for Puzzle Browser (2025-08-24)
+
+### 🎯 Enhanced Puzzle Discovery (Code by Claude)
+- **Multi-Test Case Filter**: Added new "Test Cases" filter to puzzle browser enabling users to find puzzles requiring multiple predicted outputs
+  - **Any**: All puzzles regardless of test case count
+  - **Single**: Puzzles with 1 test case (1 output required)
+  - **Multiple**: Puzzles with 2+ test cases (multiple outputs required)
+- **Backend Enhancement**: Added `testCaseCount` field to puzzle metadata tracking, extracted from puzzle JSON `test` array length
+- **Filter Integration**: Full stack implementation from puzzle loader through frontend UI
+- **Audit Results**: Verified examples like 20a9e565 (2 tests), 27a28665 (3 tests), a8610ef7 (1 test) are correctly identified
+
+### ✅ Technical Implementation
+- **PuzzleLoader**: Enhanced metadata analysis to count test cases from puzzle JSON
+- **Database Storage**: Confirmed multi-test predictions properly stored as `multiplePredictedOutputs` arrays
+- **Frontend Display**: Existing AnalysisResultCard already handles multi-test cases correctly with per-test validation
+- **API Filtering**: New `multiTestFilter` parameter propagated through all layers
+
 ## Version 1.6.21 — Multi-Test Database Storage Serialization Fix (2025-08-24)
 
 ### 🔧 Database Serialization & Validation Fixes (Code by Claude)
