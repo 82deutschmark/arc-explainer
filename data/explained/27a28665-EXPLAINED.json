@@ -247,27 +247,265 @@
     ]
   },
   "explanations": {
-    "grok-3-mini": {
-      "model": "grok-3-mini",
-      "reasoningLog": null,
-      "hasReasoningLog": false,
-      "patternDescription": "The transformation involves recognizing a specific grid pattern where certain cells are filled in a symmetrical way, similar to pattern recognition or rule inference in ARC-AGI puzzles.",
-      "solvingStrategy": "First, look at the puzzle as emojis: the grid is [[☄️, ☄️, ⬛], [☄️, ⬛, ☄️], [⬛, ☄️, ⬛]]. Notice how the ☄️ (danger) symbols are placed in a cross-like shape, but not in the very center. To understand this, switch to thinking of it as numbers for a moment: it's [[7,7,0],[7,0,7],[0,7,0]]. Compare this to the training examples, like [[4,4,0],[4,0,4],[0,4,0]] which also outputs [[1]]. The key is that this exact arrangement (non-empty in the first two of the first row, first and third of the second row, and second of the third row) always leads to outputting [[1]], which is ✅. So, spot this pattern and know it means the answer is ✅ every time.",
-      "hints": [
-        "The grid has a symmetrical pattern where ☄️ symbols are in specific spots, like the edges of a plus sign.",
-        "Check the training examples; grids with this same shape always result in ✅ as the output.",
-        "It's not about counting ☄️ symbols, but about their exact positions matching a rule from the examples."
+    "gpt-4.1-mini-2025-04-14": {
+      "model": "gpt-4.1-mini-2025-04-14",
+      "reasoningLog": "The training examples provide a set of 3x3 input grids with numeric values and an associated single-value output inside a single cell list. I analyzed the data by comparing each input grid's pattern and the corresponding output. The inputs contain blocks of similar numbers arranged in somewhat symmetric patterns. The outputs appear to relate directly to counting occurrences of a particular key number in specific spatial arrangements. For example, when a pattern forms a cross or plus shape of a color/value, the output reflects how many of those key color cells participate in the cross shape. For example, in example 3, the plus shape of '5's yields output 6, which matches the count of '5's forming the cross plus center. In another set, patterns around the center or diagonal produce smaller counts representing a subset of the blocks. The general pattern is: The output is the count of cells equal to the dominant color/value forming a specific repeated symmetric shape in the grid. In test 1: input [[7,7,0],[7,0,7],[0,7,0]] matches the pattern of example 6 and 7 where the design of repeated number diagonals and edges gives an output of 1. In test 2: input [[0,8,0],[8,8,8],[0,8,0]] matches exactly example 3 and presumably yields output 6 as the central cross of 8's is a known pattern. In test 3: input [[2,0,2],[0,2,0],[2,0,2]] forms a pattern similar to examples 4 and 5, which were symmetric diagonals of a color with output 2. Thus test 3 yields output 2. Key steps were identifying dominant color patterns, matching shapes formed by the color, then verifying counts of those color blocks to output. The confidence is high given direct pattern matches.",
+      "hasReasoningLog": true,
+      "providerResponseId": "resp_68aa62e623c48190812d4882111b6e160804914d37b30f33",
+      "providerRawResponse": {
+        "id": "resp_68aa62e623c48190812d4882111b6e160804914d37b30f33",
+        "object": "response",
+        "created_at": 1755996902,
+        "status": "completed",
+        "background": false,
+        "error": null,
+        "incomplete_details": null,
+        "instructions": null,
+        "max_output_tokens": 128000,
+        "max_tool_calls": null,
+        "model": "gpt-4.1-mini-2025-04-14",
+        "output": [
+          {
+            "id": "msg_68aa62e69e388190b8f1af9e79d8b9c60804914d37b30f33",
+            "type": "message",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "annotations": [],
+                "logprobs": [],
+                "text": "{\n  \"multiplePredictedOutputs\": true,\n  \"predictedOutput1\": [[1]],\n  \"predictedOutput2\": [[6]],\n  \"predictedOutput3\": [[2]],\n  \"solvingStrategy\": \"The training examples provide a set of 3x3 input grids with numeric values and an associated single-value output inside a single cell list. I analyzed the data by comparing each input grid's pattern and the corresponding output. The inputs contain blocks of similar numbers arranged in somewhat symmetric patterns. The outputs appear to relate directly to counting occurrences of a particular key number in specific spatial arrangements. For example, when a pattern forms a cross or plus shape of a color/value, the output reflects how many of those key color cells participate in the cross shape. For example, in example 3, the plus shape of '5's yields output 6, which matches the count of '5's forming the cross plus center. In another set, patterns around the center or diagonal produce smaller counts representing a subset of the blocks. The general pattern is: The output is the count of cells equal to the dominant color/value forming a specific repeated symmetric shape in the grid. In test 1: input [[7,7,0],[7,0,7],[0,7,0]] matches the pattern of example 6 and 7 where the design of repeated number diagonals and edges gives an output of 1. In test 2: input [[0,8,0],[8,8,8],[0,8,0]] matches exactly example 3 and presumably yields output 6 as the central cross of 8's is a known pattern. In test 3: input [[2,0,2],[0,2,0],[2,0,2]] forms a pattern similar to examples 4 and 5, which were symmetric diagonals of a color with output 2. Thus test 3 yields output 2. Key steps were identifying dominant color patterns, matching shapes formed by the color, then verifying counts of those color blocks to output. The confidence is high given direct pattern matches.\",\n  \"keySteps\": [\n    \"Noticed that input grids are 3x3 with repeated or symmetric patterns of a color.\",\n    \"Observed outputs are single values, always integers, possibly counts of shape elements.\",\n    \"Compared example 3's plus shape of '5' yielding 6 outputs, indicating count of blocks forming the shape.\",\n    \"Looked at example 4 and 5 with diagonal cross pattern yielding output 2.\",\n    \"Looked at example 6 and 7 with less symmetrical pattern with output 1.\",\n    \"Matched test inputs against known pattern groups to predict outputs by correspondence.\",\n    \"Confirmed output mapping by counting number of dominant color blocks forming key shape.\"\n  ],\n  \"patternDescription\": \"For each input 3x3 grid, the output is the count of cells matching the dominant number forming a specific spatial pattern resembling a cross or diagonal shape. Plus shapes typically resolve to counts like 6; diagonal crosses to counts like 2; and sparse or asymmetric diagonal designs to 1.\",\n  \"hints\": [\n    \"Training outputs correspond to counting the number of dominant color blocks in distinct spatial shapes.\",\n    \"Plus-shaped patterns yield count 6, diagonal crosses yield count 2, sparse arrangements yield count 1.\",\n    \"Test inputs resemble known shape patterns from training, allowing direct mapping.\"\n  ],\n  \"confidence\": 95\n}"
+              }
+            ],
+            "role": "assistant"
+          }
+        ],
+        "parallel_tool_calls": true,
+        "previous_response_id": null,
+        "prompt_cache_key": null,
+        "reasoning": {
+          "effort": null,
+          "summary": null
+        },
+        "safety_identifier": null,
+        "service_tier": "default",
+        "store": true,
+        "temperature": 1,
+        "text": {
+          "format": {
+            "type": "text"
+          },
+          "verbosity": "medium"
+        },
+        "tool_choice": "auto",
+        "tools": [],
+        "top_logprobs": 0,
+        "top_p": 1,
+        "truncation": "disabled",
+        "usage": {
+          "input_tokens": 826,
+          "input_tokens_details": {
+            "cached_tokens": 0
+          },
+          "output_tokens": 715,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 1541
+        },
+        "user": null,
+        "metadata": {}
+      },
+      "reasoningItems": [
+        "Noticed that input grids are 3x3 with repeated or symmetric patterns of a color.",
+        "Observed outputs are single values, always integers, possibly counts of shape elements.",
+        "Compared example 3's plus shape of '5' yielding 6 outputs, indicating count of blocks forming the shape.",
+        "Looked at example 4 and 5 with diagonal cross pattern yielding output 2.",
+        "Looked at example 6 and 7 with less symmetrical pattern with output 1.",
+        "Matched test inputs against known pattern groups to predict outputs by correspondence.",
+        "Confirmed output mapping by counting number of dominant color blocks forming key shape."
       ],
-      "alienMeaning": "The aliens might be using this puzzle to confirm or agree that there's a danger (☄️) in a specific pattern, perhaps signaling they're aware of a problem on Earth and not angry, but instead offering a peaceful acknowledgment or alliance against it. This could mean they're not hostile, just communicating a 'yes' to our concerns about threats.",
-      "confidence": "85",
-      "alienMeaningConfidence": "60",
-      "apiProcessingTimeMs": 22334,
-      "modelKey": "grok-3-mini",
-      "actualProcessingTime": 22
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 826,
+      "outputTokens": 715,
+      "reasoningTokens": null,
+      "totalTokens": 1541,
+      "estimatedCost": 0.0014744,
+      "multiplePredictedOutputs": [
+        [
+          [
+            1
+          ]
+        ],
+        [
+          [
+            6
+          ]
+        ],
+        [
+          [
+            2
+          ]
+        ]
+      ],
+      "predictedOutput1": [
+        [
+          1
+        ]
+      ],
+      "predictedOutput2": [
+        [
+          6
+        ]
+      ],
+      "predictedOutput3": [
+        [
+          2
+        ]
+      ],
+      "solvingStrategy": "The training examples provide a set of 3x3 input grids with numeric values and an associated single-value output inside a single cell list. I analyzed the data by comparing each input grid's pattern and the corresponding output. The inputs contain blocks of similar numbers arranged in somewhat symmetric patterns. The outputs appear to relate directly to counting occurrences of a particular key number in specific spatial arrangements. For example, when a pattern forms a cross or plus shape of a color/value, the output reflects how many of those key color cells participate in the cross shape. For example, in example 3, the plus shape of '5's yields output 6, which matches the count of '5's forming the cross plus center. In another set, patterns around the center or diagonal produce smaller counts representing a subset of the blocks. The general pattern is: The output is the count of cells equal to the dominant color/value forming a specific repeated symmetric shape in the grid. In test 1: input [[7,7,0],[7,0,7],[0,7,0]] matches the pattern of example 6 and 7 where the design of repeated number diagonals and edges gives an output of 1. In test 2: input [[0,8,0],[8,8,8],[0,8,0]] matches exactly example 3 and presumably yields output 6 as the central cross of 8's is a known pattern. In test 3: input [[2,0,2],[0,2,0],[2,0,2]] forms a pattern similar to examples 4 and 5, which were symmetric diagonals of a color with output 2. Thus test 3 yields output 2. Key steps were identifying dominant color patterns, matching shapes formed by the color, then verifying counts of those color blocks to output. The confidence is high given direct pattern matches.",
+      "keySteps": [
+        "Noticed that input grids are 3x3 with repeated or symmetric patterns of a color.",
+        "Observed outputs are single values, always integers, possibly counts of shape elements.",
+        "Compared example 3's plus shape of '5' yielding 6 outputs, indicating count of blocks forming the shape.",
+        "Looked at example 4 and 5 with diagonal cross pattern yielding output 2.",
+        "Looked at example 6 and 7 with less symmetrical pattern with output 1.",
+        "Matched test inputs against known pattern groups to predict outputs by correspondence.",
+        "Confirmed output mapping by counting number of dominant color blocks forming key shape."
+      ],
+      "patternDescription": "For each input 3x3 grid, the output is the count of cells matching the dominant number forming a specific spatial pattern resembling a cross or diagonal shape. Plus shapes typically resolve to counts like 6; diagonal crosses to counts like 2; and sparse or asymmetric diagonal designs to 1.",
+      "hints": [
+        "Training outputs correspond to counting the number of dominant color blocks in distinct spatial shapes.",
+        "Plus-shaped patterns yield count 6, diagonal crosses yield count 2, sparse arrangements yield count 1.",
+        "Test inputs resemble known shape patterns from training, allowing direct mapping."
+      ],
+      "confidence": 95,
+      "apiProcessingTimeMs": 8708,
+      "predictedOutputGrids": [
+        [
+          [
+            1
+          ]
+        ],
+        [
+          [
+            6
+          ]
+        ],
+        [
+          [
+            2
+          ]
+        ]
+      ],
+      "multiValidation": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              1
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              6
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        },
+        {
+          "index": 2,
+          "predictedGrid": [
+            [
+              2
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        }
+      ],
+      "allPredictionsCorrect": true,
+      "averagePredictionAccuracyScore": 0.975,
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              1
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              6
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        },
+        {
+          "index": 2,
+          "predictedGrid": [
+            [
+              2
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        }
+      ],
+      "multiTestAllCorrect": true,
+      "multiTestAverageAccuracy": 0.975,
+      "extractionMethod": "direct_predicted_outputs_field",
+      "modelKey": "gpt-4.1-mini-2025-04-14",
+      "actualProcessingTime": 9
     }
   },
-  "exportedAt": "2025-08-01T04:12:28.689Z",
+  "exportedAt": "2025-08-24T00:55:10.428Z",
   "models": [
-    "grok-3-mini"
+    "gpt-4.1-mini-2025-04-14"
   ]
 }

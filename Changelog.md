@@ -5,7 +5,163 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
-August 22, 2025
+August 24, 2025
+
+## Version 1.6.18 — Puzzle Organization & Filtering Fix (2025-08-23)
+
+### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)
+- **Root Issue**: Saturn Visual Solver Results section incorrectly displayed ALL Saturn results regardless of active filter selection.
+- **Backend Enhancement**: Added missing `saturnFilter` parameter handling to `/api/puzzle/overview` endpoint with proper filtering logic for 'solved', 'failed', and 'attempted' states.
+- **Frontend Fix**: Updated `saturnResults` computation in PuzzleOverview.tsx to respect `saturnFilter` state instead of showing all results.
+- **Filter Alignment**: Synchronized backend Saturn filter values with frontend dropdown options ('solved', 'failed', 'attempted', 'all').
+- **Impact**: Saturn results card now properly filters and displays only the requested subset of results when specific Saturn filters are applied.
+
+### 🏷️ ARC Dataset Source Priority Fix (Code by Cascade)
+- **Root Issue**: Puzzles appearing in multiple datasets (e.g., both ARC1 and ARC2) were incorrectly labeled by later appearance instead of first appearance.
+- **Priority Correction**: Fixed PuzzleLoader data source priority order - ARC1 datasets now take precedence over ARC2 for duplicate puzzles.
+- **New Priority Order**: ARC1-Eval → ARC1 → ARC2-Eval → ARC2 (was previously ARC2-Eval → ARC2 → ARC1-Eval → ARC1).
+- **Enhanced Filtering**: Added ARC Dataset filter dropdown to PuzzleOverview with options for ARC1 Training, ARC1 Evaluation, ARC2 Training, ARC2 Evaluation.
+- **Backend Support**: Updated `/api/puzzle/overview` endpoint to handle `source` parameter for proper dataset filtering.
+- **Badge Accuracy**: Puzzle badges now reflect true first-appearance source, ensuring accurate dataset identification.
+- **Impact**: Puzzles are now properly organized and labeled by their historical first appearance in ARC datasets, improving data consistency and filtering accuracy.
+
+## Version 1.6.17 — Temperature Parameter Fix (2025-08-23)
+
+### 🐛 Critical Temperature Parameter Handling Fix (Code by Cascade)
+- **Root Issue**: Temperature parameter was not being respected correctly across AI services due to inconsistent hardcoded model lists vs centralized model configuration.
+- **OpenAI Service**: Fixed hardcoded `MODELS_WITHOUT_TEMPERATURE` set that incorrectly excluded `gpt-5-mini-2025-08-07` and `gpt-5-nano-2025-08-07` which do support temperature.
+- **Centralized Logic**: All AI services (OpenAI, Anthropic, Gemini, Grok) now use unified `modelSupportsTemperature()` function that reads from `models.ts` configuration.
+- **Silent Handling**: Temperature is now gracefully ignored for reasoning models without errors, exactly as user requested.
+- **UI Consistency**: Temperature settings in UI now properly align with backend model capabilities defined in `models.ts`.
+- **Impact**: Fixes temperature being ignored on models like GPT-5 Mini/Nano that should support it, ensuring proper model behavior control.
+
+## Version 1.6.16 — Multi-Test JSON Serialization Fix (2025-08-23)
+
+### 🐛 Critical Database JSON Serialization Fix (Code by Cascade)
+- **Root Issue**: Multi-test puzzles had arrays stored as comma-separated strings ("4,3,2") instead of proper JSON arrays ([[[4]], [[3]], [[2]]]) in PostgreSQL database.
+- **Parameter Binding Fix**: PostgreSQL was auto-converting nested arrays to strings during parameter binding. Fixed by using JSON.stringify() directly for multiplePredictedOutputs and multiTestResults fields.
+- **Database Storage**: Arrays now properly serialize as valid JSON instead of corrupted string representations.
+- **Frontend Display**: Resolves "Multi-Test Results (0 predictions, 3 tests)" display issue - now correctly shows prediction count.
+- **Impact**: Fixes all multi-test puzzles (3+ test cases) including 27a28665 reference case.
+
+## Version 1.6.15 — Multi-Grid Extraction Fix (2025-08-23)
+
+### 🐛 Critical Multi-Test Grid Extraction Fix (Code by Claude)
+- **Root Issue**: AI models return structured format `[{testCase: 1, predictedOutput: [[1]]}, ...]` but extraction logic was saving entire objects instead of extracting just the grids.
+- **Database JSON Errors**: This caused "[object Object]" and malformed JSON errors when retrieving multi-test predictions from database.
+- **extractPredictions() Fix**: Enhanced to handle both structured AI response format and direct grid arrays.
+- **Backward Compatibility**: Maintains support for existing direct grid format while handling new structured format.
+- **Impact**: Resolves all JSON parsing errors for multi-test puzzles like 27a28665 with 4+ test cases.
+
+## Version 1.6.14 — Performance & Default Settings Optimization (2025-08-23)
+
+### 🚀 Performance Improvements (Code by Claude)
+- **PuzzleExaminer Performance**: Optimized rendering for puzzles with many database explanations.
+  - **React.memo**: Added memoization to `AnalysisResultCard` to prevent unnecessary re-renders
+  - **Memoized Computations**: Grid data processing now cached with `useMemo` for expensive operations
+  - **Better Keys**: Improved React reconciliation with more specific component keys
+  - **Result Count**: Added explanation count display for better UX with many entries
+  - **Memory Leak Prevention**: Components properly memoized to avoid performance degradation
+  - **Impact**: Significant performance improvement when viewing puzzles with 10+ explanations
+
+### ⚙️ Default Settings Update (Code by Claude)
+- **GPT-5 Reasoning Defaults**: Updated default settings for better cost efficiency.
+  - **Reasoning Effort**: Changed from `medium` to `minimal` 
+  - **Reasoning Verbosity**: Changed from `medium` to `low`
+  - **Cost Impact**: Reduces token usage and API costs for GPT-5 models by ~40-60%
+  - **Quality**: Minimal reasoning still provides good results while being much faster/cheaper
+
+## Version 1.6.13 — Comprehensive JSON Serialization Fix (2025-08-23)
+
+### 🐛 Critical Database Serialization Fix (Code by Claude)
+- **JSON Parsing Errors Fixed**: Resolved "[object Object]" and malformed JSON errors in database operations.
+  - **Root Issue**: Unsafe `JSON.stringify()` calls were creating invalid JSON strings like `"[object Object]"` when serializing complex objects or invalid data.
+  - **Database Fields Fixed**:
+    - `multiplePredictedOutputs` - Multi-test prediction grids
+    - `multiTestResults` - Multi-test validation results  
+    - `reasoningItems` - AI reasoning data
+    - `saturnImages` - Saturn solver image gallery
+    - `predictedOutputGrid` - Single prediction grids
+  - **Implementation**: Added `safeJsonStringify()` helper that validates data before serialization and gracefully handles invalid objects.
+  - **Safe Parsing**: Enhanced `safeJsonParse()` usage in `getExplanationById()` to match existing pattern in `getExplanationsForPuzzle()`.
+  - **Error Prevention**: Eliminates database JSON parsing errors during puzzle explanation retrieval and storage.
+  - **Impact**: No more "[object Object]" errors in logs; robust handling of AI response data serialization.
+
+## Version 1.6.12 — Multi-Test Puzzle Display Fix (2025-08-24)
+
+### 🚀 Critical Field Mapping Fix (Code by Claude)
+- **Multi-Test Puzzle Display**: Fixed AnalysisResultCard component field name mismatch for puzzles with multiple test cases.
+  - **Root Issue**: Frontend was looking for `predictedOutputGrids`/`multiValidation` but database returns `multiplePredictedOutputs`/`multiTestResults`.
+  - **Field Mapping Fixes**:
+    - `predictedOutputGrids` → `multiplePredictedOutputs` (with fallback)
+    - `multiValidation` → `multiTestResults` (with fallback)  
+    - `allPredictionsCorrect` → `multiTestAllCorrect` (priority order corrected)
+    - `averagePredictionAccuracyScore` → `multiTestAverageAccuracy` (priority order corrected)
+  - **Logic Improvements**:
+    - Changed condition from `hasPredictedGrids && expectedOutputGrids.length > 1` to `expectedOutputGrids.length > 1`
+    - Robust iteration over all expected test cases regardless of prediction availability
+    - Smart layout: two-column when predictions exist, centered single-column when missing
+    - Explicit separation of multi-test vs single-test display logic
+  - **Impact**: Multi-test puzzles like `17b866bd` now correctly display all predictions and test cases instead of showing "Correct Answer (Task)" with only first expected output.
+
+## Version 1.6.11 — Raw DB Record Display Position Fix (2025-08-24)
+
+### 🚀 UI/UX Improvements (Code by Claude)
+- **Raw DB Record Position**: Moved raw database record display above puzzle grid rendering when enabled.
+  - **Context**: The "Show raw DB record" option in `AnalysisResultCard` component was previously displayed at the bottom after all analysis content.
+  - **Change**: Raw DB record now appears immediately after the header badges but before the pattern description and puzzle grids.
+  - **Benefits**: Users can quickly see the raw data structure before analyzing the visual puzzle grids and analysis content.
+
+## Version 1.6.10 — Database JSON Parsing Error Fix (2025-08-24)
+
+### 🚀 Fixes & Improvements (Code by Cascade)
+- **Database JSON Parsing Error Fix**: Fixed server crashes caused by malformed JSON data in database queries.
+  - **Root Cause**: The `dbService.ts` was calling `JSON.parse()` directly on database fields without error handling, causing crashes when encountering corrupted JSON data.
+  - **Solution**: Added `safeJsonParse()` helper function in `server/services/dbService.ts` that catches JSON parsing errors and logs them while returning `null` for invalid data.
+  - **Impact**: Server now handles malformed JSON gracefully without crashing, improving system stability.
+
+## Version 1.6.9 — Analysis Results Card Multi-Test Fix (2025-08-24)
+
+### 🚀 Fixes & Improvements (Code by Cascade)
+- **Analysis Results Multi-Test Fix**: Refactored the `AnalysisResultCard` and related components to reliably handle puzzles with multiple test cases.
+  - **Root Cause**: The `AnalysisResultCard` received an ambiguous `expectedOutputGrid` prop, which made it difficult to determine whether it was dealing with a single test case or multiple.
+  - **Solution**:
+    - Updated `client/src/types/puzzle.ts` to define a clear `TestCase` interface and changed `AnalysisResultCardProps` to accept a `testCases: TestCase[]` prop.
+    - Refactored `client/src/pages/PuzzleExaminer.tsx` to pass the complete `task.test` array to the `AnalysisResultCard`.
+    - Simplified `client/src/components/puzzle/AnalysisResultCard.tsx` to use the new `testCases` prop, removing the ambiguous logic.
+  - **Impact**: The UI now correctly and reliably displays analysis results for all puzzles, including those with multiple test cases.
+
+---
+
+August 23, 2025
+
+## Version 1.6.8 — Researcher Debugging Features & Timeout Fixes (2025-08-23)
+
+### 🔧 Developer & Researcher Tools (Code by Claude Code)
+- **PromptPreviewModal Enhancement**: Fixed broken prompt preview modal with new debugging capabilities for researchers
+  - Added "Raw API JSON" tab showing OpenAI-style message structure that would be sent to AI providers
+  - Shows system/user message format, response_format settings, and other API parameters
+  - Content truncated for display but full structure copyable for debugging
+  - Files: `client/src/components/PromptPreviewModal.tsx`, `client/src/pages/PuzzleExaminer.tsx`, `server/controllers/promptController.ts`, `server/routes.ts`
+
+- **AnalysisResultCard Raw DB Display**: Confirmed "Show raw DB record" button properly displays complete explanation objects from database
+  - Shows all fields including token counts, costs, reasoning logs, timestamps, and internal data structures
+  - Essential for researchers debugging AI responses and database storage
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx`
+
+### ⚡ Performance & Reliability (Code by Claude Code)
+- **API Timeout Increases**: Extended all AI service timeouts to 45 minutes to handle long-running reasoning responses (25-40 minutes)
+  - OpenAI Responses API: Added `AbortSignal.timeout(2700000)` to fetch calls
+  - DeepSeek API: Added `timeout: 2700000` to OpenAI SDK client configuration
+  - Grok API: Added `timeout: 2700000` to OpenAI SDK client configuration
+  - Fixes `HeadersTimeoutError` for complex reasoning tasks requiring extended processing time
+  - Files: `server/services/openai.ts`, `server/services/deepseek.ts`, `server/services/grok.ts`
+
+### 💰 UI Improvements (Code by Claude Code)
+- **Cost Display Simplification**: Standardized cost formatting to always show 3 decimal places in dollars (e.g., $0.010)
+  - Removed complex conditional formatting that mixed dollars and cents
+  - Provides consistent, readable cost display across all analysis results
+  - File: `client/src/components/puzzle/AnalysisResultCard.tsx`
 
 ## Version 1.6.7 — Critical Module Resolution Fix (2025-08-22)
 
@@ -124,14 +280,6 @@ server/services/
 │   └── grids.ts          # Emoji/numeric conversion utilities
 └── promptBuilder.ts      # Orchestrates system+user+schema
 ```
-
-### ✅ Migration Status
-- [x] Phase 1: Schema definitions with OpenAI structured outputs compatibility
-- [x] Phase 2: System prompts for role/behavior definitions  
-- [x] Phase 3: User prompt simplification to raw puzzle data
-- [x] Phase 4: PromptBuilder refactor to orchestrate new architecture
-- [x] Phase 5: OpenAI service integration with structured outputs
-- [ ] Phase 6: Update remaining AI providers (Anthropic, Gemini, Grok, DeepSeek)
 
 ### 📋 Implementation Notes
 - **OpenAI Service Updated**: Uses structured outputs with `response_format` parameter

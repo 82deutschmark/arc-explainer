@@ -25,7 +25,9 @@
       "Bash(git checkout:*)",
       "Bash(find:*)",
       "WebSearch",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": [],

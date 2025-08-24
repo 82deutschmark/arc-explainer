@@ -45,25 +45,18 @@ const formatProcessingTime = (milliseconds: number): string => {
   }
 };
 
-// Format cost for display with safe type checking
+// Format cost for display with safe type checking - always show in dollars with consistent decimal places
 const formatCost = (cost: any): string => {
   // Convert to number and validate
   const numCost = typeof cost === 'number' ? cost : parseFloat(cost);
   
   // Return fallback if not a valid number
   if (isNaN(numCost) || numCost < 0) {
-    return '$0.00';
+    return '$0.000';
   }
   
-  if (numCost < 0.001) {
-    return `$${(numCost * 1000).toFixed(2)}¢`;
-  } else if (numCost < 0.01) {
-    return `$${numCost.toFixed(4)}`;
-  } else if (numCost < 1.0) {
-    return `$${numCost.toFixed(3)}`;
-  } else {
-    return `$${numCost.toFixed(2)}`;
-  }
+  // Always show in dollars with 3 decimal places for consistency
+  return `$${numCost.toFixed(3)}`;
 };
 
 // Format token count for display
@@ -77,7 +70,9 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
+  // Get the expected output grids directly from the test cases prop
+  const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
@@ -96,8 +91,25 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   // Check if this is a Saturn solver result (align with ExplanationData fields)
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
-  // Normalized predicted grid (single answer expected; if array provided, take first)
-  const predictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutputGrids?.[0];
+  // Handle both single and multiple predicted outputs - memoize expensive computations
+  const gridData = useMemo(() => {
+    const predictedGrids: number[][][] | undefined = (result as any)?.multiplePredictedOutputs || (result as any)?.predictedOutputGrids;
+    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
+    const multiValidation = (result as any)?.multiTestResults || (result as any)?.multiValidation;
+    
+    // For backwards compatibility, use single grid if no multi-grid data
+    const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
+    
+    return {
+      predictedGrids,
+      singlePredictedGrid,
+      multiValidation,
+      hasPredictedGrids
+    };
+  }, [result]);
+  
+  const { predictedGrids, singlePredictedGrid, multiValidation, hasPredictedGrids } = gridData;
+  const predictedGrid: number[][] | undefined = hasPredictedGrids ? predictedGrids[0] : singlePredictedGrid;
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
@@ -133,12 +145,12 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
   const diffMask = useMemo(() => {
     if (!showDiff) return undefined;
     try {
-      return buildDiffMask(predictedGrid, expectedOutputGrid);
+      return buildDiffMask(predictedGrid, expectedOutputGrids.length > 0 ? expectedOutputGrids[0] : undefined);
     } catch (error) {
       console.warn('Error in diff mask useMemo:', error);
       return undefined;
     }
-  }, [showDiff, predictedGrid, expectedOutputGrid]);
+  }, [showDiff, predictedGrid, expectedOutputGrids]);
 
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
@@ -309,6 +321,24 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
           )}
         </Button>
       </div>
+      
+      {/* Raw DB record viewer - moved above puzzle grid rendering */}
+      {showRawDb && (
+        <div className="bg-gray-50 border border-gray-200 rounded">
+          <div className="p-3 border-b border-gray-200 flex items-center justify-between">
+            <h5 className="font-semibold text-gray-800">Raw DB record</h5>
+            <Badge variant="outline" className="text-xs bg-gray-50">
+              {result.id ? `id: ${result.id}` : 'unsaved'}
+            </Badge>
+          </div>
+          <div className="p-3 max-h-64 overflow-y-auto">
+            <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+{JSON.stringify(result, null, 2)}
+            </pre>
+          </div>
+          <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
+        </div>
+      )}
       
       {/* Handle empty response case */}
       {isEmptyResult && (
@@ -528,8 +558,113 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
             </div>
           )}
 
-          {/* Answers display: side-by-side if both available, else single */}
-          {predictedGrid && expectedOutputGrid ? (
+          {/* Multi-test answer display */}
+          {expectedOutputGrids.length > 1 ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-3">
+                <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests)</h5>
+                {/* Support both field name variants */}
+                {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                  >
+                    {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All predictions correct' : 'Some predictions incorrect'}
+                  </Badge>
+                )}
+                {(result.multiTestAverageAccuracy !== undefined || result.averagePredictionAccuracyScore !== undefined) && (
+                  <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                    Avg Score: {Math.round((result.multiTestAverageAccuracy ?? result.averagePredictionAccuracyScore ?? 0) * 100)}%
+                  </Badge>
+                )}
+              </div>
+              {/* Iterate over all test cases, whether predictions exist or not */}
+              {Array.from({ length: expectedOutputGrids.length }).map((_, testIndex) => {
+                const predGrid = predictedGrids?.[testIndex];
+                const expectedGrid = expectedOutputGrids[testIndex];
+                const validation = multiValidation?.[testIndex];
+                const isCorrect = validation?.isPredictionCorrect;
+                const testDiffMask = useMemo(() => {
+                  if (!showDiff || !predGrid || !expectedGrid) return undefined;
+                  return buildDiffMask(predGrid, expectedGrid);
+                }, [showDiff, predGrid, expectedGrid]);
+                
+                return (
+                  <div key={testIndex} className="border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <h6 className="font-medium text-gray-700">Test {testIndex + 1}</h6>
+                      {isCorrect !== undefined && (
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${isCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                        >
+                          {isCorrect ? 'CORRECT' : 'INCORRECT'}
+                        </Badge>
+                      )}
+                      {validation?.predictionAccuracyScore !== undefined && (
+                        <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                          Score: {Math.round(validation.predictionAccuracyScore * 100)}%
+                        </Badge>
+                      )}
+                    </div>
+                    {predGrid ? (
+                      // Show both prediction and expected when prediction exists
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h6 className="font-semibold text-emerald-800">Predicted</h6>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <PuzzleGrid grid={predGrid} title={`Test ${testIndex + 1} Predicted`} showEmojis={false} diffMask={showDiff ? testDiffMask : undefined} />
+                          </div>
+                        </div>
+                        <div className="bg-green-50 border border-green-200 rounded p-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h6 className="font-semibold text-green-800">Expected</h6>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Show only expected output centered when no prediction
+                      <div className="flex justify-center">
+                        <div className="bg-green-50 border border-green-200 rounded p-3 max-w-md">
+                          <div className="flex items-center gap-2 mb-2 justify-center">
+                            <h6 className="font-semibold text-green-800">Expected Answer</h6>
+                            <Badge variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
+                              No prediction
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <PuzzleGrid grid={expectedGrid} title={`Test ${testIndex + 1} Expected`} showEmojis={false} highlight={true} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <div className="flex items-center gap-2 mt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDiff(!showDiff)}
+                  className="h-auto p-1 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  title="Toggle diff overlay for all tests"
+                >
+                  Diff overlay: {showDiff ? 'On' : 'Off'}
+                </Button>
+                {result.extractionMethod && (
+                  <Badge variant="outline" className="text-xs bg-gray-50 border-gray-200 text-gray-700">
+                    Extracted via: {result.extractionMethod}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ) : predictedGrid && expectedOutputGrids.length === 1 ? (
+            /* Single test case display */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="bg-emerald-50 border border-emerald-200 rounded p-3">
                 <div className="flex items-center gap-2 mb-2">
@@ -566,7 +701,7 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                   <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
                 </div>
                 <div className="flex items-center justify-center">
-                  <PuzzleGrid grid={expectedOutputGrid} title="Correct" showEmojis={false} highlight={true} />
+                  <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct" showEmojis={false} highlight={true} />
                 </div>
               </div>
             </div>
@@ -601,34 +736,16 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
                 <PuzzleGrid grid={predictedGrid} title="Predicted Answer" showEmojis={false} diffMask={showDiff ? diffMask : undefined} />
               </div>
             </div>
-          ) : expectedOutputGrid ? (
+          ) : expectedOutputGrids.length === 1 ? (
             <div className="bg-green-50 border border-green-200 rounded p-3">
               <div className="flex items-center gap-2 mb-2">
                 <h5 className="font-semibold text-green-800">Correct Answer (Task)</h5>
               </div>
               <div className="flex items-center justify-center">
-                <PuzzleGrid grid={expectedOutputGrid} title="Correct Answer" showEmojis={false} highlight={true} />
+                <PuzzleGrid grid={expectedOutputGrids[0]} title="Correct Answer" showEmojis={false} highlight={true} />
               </div>
             </div>
           ) : null}
-
-          {/* Raw DB record viewer */}
-          {showRawDb && (
-            <div className="bg-gray-50 border border-gray-200 rounded">
-              <div className="p-3 border-b border-gray-200 flex items-center justify-between">
-                <h5 className="font-semibold text-gray-800">Raw DB record</h5>
-                <Badge variant="outline" className="text-xs bg-gray-50">
-                  {result.id ? `id: ${result.id}` : 'unsaved'}
-                </Badge>
-              </div>
-              <div className="p-3 max-h-64 overflow-y-auto">
-                <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
-{JSON.stringify(result, null, 2)}
-                </pre>
-              </div>
-              <p className="text-xs text-gray-500 px-3 pb-3">This shows the raw explanation object as stored/returned by the backend.</p>
-            </div>
-          )}
         </div>
       )}
       
@@ -676,4 +793,4 @@ export function AnalysisResultCard({ modelKey, result, model, expectedOutputGrid
       )}
     </div>
   );
-}
+});

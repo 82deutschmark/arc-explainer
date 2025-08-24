@@ -122,6 +122,23 @@ export interface ExplanationData {
   isPredictionCorrect?: boolean; // Whether prediction matches correct answer
   predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
   extractionMethod?: string; // Method used to extract the grid
+  // Multi-test validation fields (set by backend controller for multi-test cases)
+  predictedOutputGrids?: (number[][] | null)[]; // Array of predicted grids from validateSolverResponseMulti
+  multiValidation?: Array<{ // Individual validation results from itemResults
+    index: number;
+    predictedGrid: number[][] | null;
+    isPredictionCorrect: boolean;
+    predictionAccuracyScore: number; // Trustworthiness score (0-1) for this specific test
+    extractionMethod?: string;
+    expectedDimensions?: { rows: number; cols: number };
+  }>;
+  allPredictionsCorrect?: boolean; // Whether all test predictions are correct (from allCorrect)
+  averagePredictionAccuracyScore?: number; // Average trustworthiness across all tests (from averageAccuracyScore)
+  // Database field names for multi-test data (raw storage format)
+  multiplePredictedOutputs?: number[][][] | null; // Raw database field: array of predicted grids
+  multiTestResults?: Array<any> | null; // Raw database field: validation results
+  multiTestAllCorrect?: boolean | null; // Raw database field: all predictions correct flag
+  multiTestAverageAccuracy?: number | null; // Raw database field: average accuracy score
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
@@ -136,11 +153,19 @@ export interface ExplanationData {
 }
 
 /**
+ * A single test case for a puzzle, with an input and an output grid.
+ */
+export interface TestCase {
+  input: number[][];
+  output: number[][];
+}
+
+/**
  * Props for the AnalysisResultCard component
  */
 export interface AnalysisResultCardProps {
   modelKey: string;
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
-  expectedOutputGrid?: number[][]; // Correct answer grid from the original task (first test by default)
+  testCases: TestCase[]; // Pass the full test array, ensuring the card has all necessary data
 }

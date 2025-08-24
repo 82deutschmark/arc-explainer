@@ -257,7 +257,7 @@ const showReasoningControls = currentModelKey && isGPT5ReasoningModel(currentMod
 ## Risk Mitigation
 
 ### Primary Risks
-1. **Breaking existing temperature controls** - Mitigation: Thorough testing of existing flows
+1. **Breaking existing temperature controls** - Mitigation: Thorough testing of existing flows  
 2. **API parameter conflicts** - Mitigation: Careful parameter naming and validation  
 3. **UI/UX inconsistency** - Mitigation: Follow existing design patterns strictly
 4. **Performance degradation** - Mitigation: Efficient conditional rendering and state management

@@ -120,6 +120,12 @@ const MODELS_WITH_REASONING = new Set([
   "gemini-2.0-flash-lite",
 ]);
 
+// Helper function to check if model supports temperature using centralized config
+function modelSupportsTemperature(modelKey: string): boolean {
+  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+  return modelConfig?.supportsTemperature ?? false;
+}
+
 // Initialize Google GenAI client
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -210,7 +216,7 @@ Then provide your final structured JSON response.` : promptPackage.userPrompt;
       const modelConfig: any = { 
         model: modelName,
         generationConfig: {
-          temperature: temperature,
+          ...(modelSupportsTemperature(modelKey) && { temperature: temperature }),
           maxOutputTokens: 65536, // Increased from 4096 based on models.yml (most models support 65,536)
         }
       };
@@ -312,11 +318,10 @@ Then provide your final structured JSON response.` : promptPackage.userPrompt;
   }
 
   /**
-   * Check if model supports temperature parameter
+   * Check if model supports temperature parameter (using centralized config)
    */
   supportsTemperature(modelKey: keyof typeof MODELS): boolean {
-    // Most Gemini models support temperature, deprecated models may have limitations
-    return true;
+    return modelSupportsTemperature(modelKey);
   }
 
   /**
@@ -433,7 +438,7 @@ Then provide your final structured JSON response.` : basePrompt;
         parts: [{ text: prompt }]
       }],
       generationConfig: {
-        temperature: temperature,
+        ...(modelSupportsTemperature(modelKey) && { temperature: temperature }),
         maxOutputTokens: 65536, // Updated from 4000 based on models.yml
         responseMimeType: "application/json"
       }

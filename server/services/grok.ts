@@ -63,10 +63,17 @@ const MODELS_WITH_REASONING = new Set([
   "grok-4-0709",
 ]);
 
+// Helper function to check if model supports temperature using centralized config
+function modelSupportsTemperature(modelKey: string): boolean {
+  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+  return modelConfig?.supportsTemperature ?? false;
+}
+
 // Initialize xAI client with OpenAI SDK compatibility
 const xai = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
   baseURL: "https://api.x.ai/v1",
+  timeout: 2700000, // 45 minutes timeout for long-running responses
 });
 
 export class GrokService {
@@ -88,18 +95,31 @@ export class GrokService {
 
     // Build prompt using shared prompt builder (refactored)
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     try {
       const requestOptions: any = {
         model: modelName,
-        messages: [{ role: "user", content: basePrompt }],
         response_format: { type: "json_object" },
       };
 
-      // Grok 4 reasoning models don't support temperature, presence_penalty, frequency_penalty, or stop
-      if (!REASONING_MODELS.has(modelKey)) {
+      // Create message array with proper system/user prompt structure
+      if (systemPromptMode === 'ARC' && systemPrompt) {
+        // ARC mode: use proper system/user message structure
+        requestOptions.messages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ];
+      } else {
+        // Legacy mode: combine prompts in user message
+        requestOptions.messages = [{ role: "user", content: userPrompt }];
+      }
+
+      // Apply temperature only for models that support it according to centralized config
+      if (modelSupportsTemperature(modelKey)) {
         requestOptions.temperature = temperature;
       }
 
@@ -199,10 +219,10 @@ export class GrokService {
   }
 
   /**
-   * Check if model supports temperature parameter
+   * Check if model supports temperature parameter (using centralized config)
    */
   supportsTemperature(modelKey: keyof typeof MODELS): boolean {
-    return !REASONING_MODELS.has(modelKey);
+    return modelSupportsTemperature(modelKey);
   }
 
   /**
@@ -243,15 +263,26 @@ export class GrokService {
 
     // Build prompt using shared builder
     const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
+    const systemPrompt = promptPackage.systemPrompt;
+    const userPrompt = promptPackage.userPrompt;
     const selectedTemplate = promptPackage.selectedTemplate;
+    const systemPromptMode = options?.systemPromptMode || 'ARC';
 
     // Grok uses OpenAI-compatible messages format
     const messageFormat: any = {
       model: modelName,
-      messages: [{ role: "user", content: basePrompt }],
       response_format: { type: "json_object" }
     };
+
+    // Show correct message structure based on system prompt mode
+    if (systemPromptMode === 'ARC' && systemPrompt) {
+      messageFormat.messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ];
+    } else {
+      messageFormat.messages = [{ role: "user", content: userPrompt }];
+    }
 
     const providerSpecificNotes = [
       "Uses xAI API with OpenAI SDK compatibility",
@@ -279,21 +310,22 @@ export class GrokService {
     return {
       provider: "xAI Grok",
       modelName,
-      promptText: basePrompt,
+      promptText: systemPromptMode === 'ARC' ? `SYSTEM: ${systemPrompt}\n\nUSER: ${userPrompt}` : userPrompt,
       messageFormat,
+      systemPromptMode,
       templateInfo: {
         id: selectedTemplate?.id || "custom",
         name: selectedTemplate?.name || "Custom Prompt",
         usesEmojis: selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: basePrompt.length,
-        wordCount: basePrompt.split(/\s+/).length,
-        lineCount: basePrompt.split('\n').length
+        characterCount: userPrompt.length,
+        wordCount: userPrompt.split(/\s+/).length,
+        lineCount: userPrompt.split('\n').length
       },
       providerSpecificNotes,
       captureReasoning,
-      temperature: REASONING_MODELS.has(modelKey) ? "Not supported" : temperature,
+      temperature: modelSupportsTemperature(modelKey) ? temperature : "Not supported",
       isReasoningModel: REASONING_MODELS.has(modelKey)
     };
   }
