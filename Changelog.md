@@ -7,36 +7,6 @@
 
 August 24, 2025
 
-## Version 1.7.5 — Critical Multi-Test Data Corruption Fix (2025-08-24)
-
-**CRITICAL BUG FIX**: Fixed systematic data corruption in multi-test puzzle storage where 3D prediction arrays were being converted to comma-separated strings (e.g., `[[[1]], [[6]], [[2]]]` became `"1,6,2"`).
-
-**Root Cause**: PostgreSQL JSONB columns were receiving pre-stringified JSON via `safeJsonStringify()` instead of native JavaScript arrays. 
-
-**Solution**: Pass raw JavaScript objects directly to JSONB columns, allowing PostgreSQL to handle serialization automatically.
-
-**Impact**: 
-- Fixes complete failure of multi-test functionality for puzzles requiring 2+ predictions
-- Resolves frontend display issues for complex ARC puzzles
-- Affects all historical multi-test data (requires re-analysis for full fix)
-
-**Files Modified**: `server/services/dbService.ts:517-518`
-
-## Version 1.7.4 — Multi-Test Performance Optimization (2025-08-24)
-
-### 🚀 UI Performance & Stability (Code by Cascade)
-- **Collapsible Multi-Test Results**: Implemented a collapsible section for multi-test results in `AnalysisResultCard.tsx` to improve performance by deferring the rendering of predicted output grids until the user explicitly expands the section.
-  - **Impact**: Significantly improves initial render performance when dealing with a large number of test cases and enhances user experience by reducing clutter.
-- **Type Safety Fix**: Resolved related TypeScript errors by adding conditional checks to ensure grid data is defined before being passed to the `PuzzleGrid` component, enhancing stability for both single and multi-test cases.
-  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
-
-## Version 1.7.3 — UI Bug Fix (2025-08-24)
-
-### 🐛 Bug Fix (Code by Cascade)
-- **Corrupted JSX Fix**: Corrected a corrupted JSX section in `AnalysisResultCard.tsx` that was causing multiple syntax errors and preventing the component from rendering.
-  - **Impact**: This fix restores the collapsible prediction grid functionality for single-test puzzles, which was broken by a previous malformed edit.
-  - **File**: `client/src/components/puzzle/AnalysisResultCard.tsx`
-
 ## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
 
 ### 🛠️ Refactor (Code by Cascade)
