@@ -3,13 +3,14 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Common Commands
+You need to Git add and commit any changes you make to the codebase.  Be detailed in your commit messages.
 
 ### Database Management
 - `npm run db:push` - Push database schema changes using Drizzle
 - Database tables auto-create on startup if using PostgreSQL
 
 ### Testing and Validation
--  You may not run the dev server or do any testing on your own.  You need to ask the user if you 100% need the dev server started right this instant, then they will do it. The user will test the app for you.
+-  You may not run the dev server or do any testing on your own.  You may write scripts for automated tests if the user asks. You need to ask the user if you 100% need the dev server started right this instant, then they will do it. The user will test the app for you.
 
 
 ## Architecture Overview

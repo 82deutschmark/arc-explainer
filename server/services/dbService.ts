@@ -448,6 +448,15 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       multiTestAverageAccuracy
     } = explanation;
     
+    // Debug logging for multi-test data
+    if (multiplePredictedOutputs !== undefined || multiTestResults !== undefined) {
+      logger.info(`[DB-DEBUG] Multi-test data for puzzle ${puzzleId}:`, 'database');
+      logger.info(`  multiplePredictedOutputs type: ${typeof multiplePredictedOutputs}, isArray: ${Array.isArray(multiplePredictedOutputs)}`, 'database');
+      logger.info(`  multiplePredictedOutputs: ${JSON.stringify(multiplePredictedOutputs)}`, 'database');
+      logger.info(`  multiTestResults type: ${typeof multiTestResults}, isArray: ${Array.isArray(multiTestResults)}`, 'database');
+      logger.info(`  multiTestResults: ${JSON.stringify(multiTestResults)}`, 'database');
+    }
+    
     // Ensure hints is always an array of strings
     const hints = Array.isArray(rawHints) 
       ? rawHints.filter(hint => typeof hint === 'string')

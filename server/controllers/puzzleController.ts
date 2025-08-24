@@ -140,7 +140,9 @@ export const puzzleController = {
         
         // Store in database-compatible field names for multi-output prediction edge case
         console.log('[CONTROLLER-DEBUG] About to store multi-test data:');
+        console.log('  multi.predictedGrids type:', typeof multi.predictedGrids, 'isArray:', Array.isArray(multi.predictedGrids));
         console.log('  multi.predictedGrids:', multi.predictedGrids);
+        console.log('  multi.itemResults type:', typeof multi.itemResults, 'isArray:', Array.isArray(multi.itemResults));
         console.log('  multi.itemResults:', multi.itemResults);
         result.multiplePredictedOutputs = multi.predictedGrids;
         result.multiTestResults = multi.itemResults;
