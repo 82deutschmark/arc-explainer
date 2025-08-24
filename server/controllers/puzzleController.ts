@@ -134,6 +134,7 @@ export const puzzleController = {
 
         // Attach multi-test validation summary and details
         result.predictedOutputGrids = multi.predictedGrids;
+        result.predictedOutputGrid = null; // Multi-test doesn't use single grid field for DB
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
