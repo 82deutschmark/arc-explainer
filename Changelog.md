@@ -7,14 +7,6 @@
 
 August 24, 2025
 
-## Version 1.6.19 — Research Dashboard & FeedbackModal Fixes (2025-08-23)
-
-### Fixed
-- PuzzleOverview component integration issues resolved without breaking existing functionality
-- Research dashboard props interface aligned with component requirements
-- FeedbackModal props corrected to use proper interface (open/onOpenChange)
-- Layout structure reorganized for better tab navigation and component organization
-
 ## Version 1.6.18 — Saturn Filter Display Fix (2025-08-23)
 
 ### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)
