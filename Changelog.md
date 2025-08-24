@@ -7,6 +7,42 @@
 
 August 24, 2025
 
+## Version 1.6.20 — Multi-Test Puzzle Extraction Fix (2025-08-24)
+
+### 🎯 Critical Multi-Test Puzzle Fix (Code by Claude)
+- **Root Issue**: AI models return multi-test predictions in numbered field format (`{"multiplePredictedOutputs": true, "predictedOutput1": [...], "predictedOutput2": [...]}`) but extraction logic only handled array format, causing frontend to show empty multi-test results.
+- **Enhanced Extraction Logic**: Updated `extractPredictions` function in `server/services/schemas/solver.ts` to properly handle boolean `multiplePredictedOutputs: true` flag.
+- **Numbered Field Collection**: Now correctly collects `predictedOutput1`, `predictedOutput2`, etc. and converts them to proper array format for database storage.
+- **Debug Logging**: Added comprehensive logging to track extraction process and identify data structure issues.
+- **Backward Compatibility**: Maintains support for existing array format while adding support for numbered field format.
+- **Impact**: Fixes multi-test puzzles like 20a9e565 not displaying predictions properly - frontend will now show all test cases with proper predicted vs expected grid comparisons.
+
+### ✅ Technical Details
+- **Database Storage**: Multi-test data now properly stored as arrays in `multiplePredictedOutputs` field
+- **Frontend Integration**: Existing frontend display logic works correctly once proper data structure is provided
+- **AI Model Support**: Works with all AI providers that return numbered prediction fields
+- **Testing Focus**: Puzzle 20a9e565 (requires 2 test outputs) used as primary validation case
+
+## Version 1.6.19 — Database Logging & DeepSeek JSON Parsing Fixes (2025-08-24)
+
+### 🔧 Database Service Improvements (Code by Claude)
+- **Reduced Log Noise**: Eliminated excessive "[ERROR][database] Failed to parse JSON" logs for known corrupted data patterns like "[object Object]", comma-only strings, and empty strings.
+- **Silent Error Handling**: Modified `safeJsonParse` functions in `getExplanationsForPuzzle` and `getExplanationById` to handle malformed JSON gracefully without flooding server logs.
+- **Maintains Functionality**: Corrupted data patterns are still filtered out, but without generating log entries for every occurrence.
+- **Impact**: Significantly cleaner server logs while preserving all existing database functionality.
+
+### 🛠️ DeepSeek API Robustness (Code by Claude)
+- **Enhanced JSON Parsing**: Added comprehensive error handling to prevent "Unterminated string in JSON at position X" crashes from malformed API responses.
+- **Markdown Fallback Support**: Implemented JSON extraction from markdown code blocks (```json...```) for responses wrapped in formatting.
+- **Detailed Error Reporting**: Enhanced error messages with response content preview (first 500 chars) for better debugging.
+- **Variable Reference Fix**: Corrected undefined `basePrompt` reference to `userPrompt` in `generatePromptPreview` function.
+- **Impact**: DeepSeek API calls now handle malformed responses gracefully instead of crashing the analysis process.
+
+### ✅ Technical Improvements
+- **Backward Compatibility**: All changes maintain existing functionality while improving error resilience.
+- **Better Debugging**: Enhanced error messages provide more context when issues do occur.
+- **Production Stability**: Reduces both crash risk and log spam in production environments.
+
 ## Version 1.6.18 — Puzzle Organization & Filtering Fix (2025-08-23)
 
 ### 🐛 Saturn Visual Solver Results Filtering Fix (Code by Cascade)
