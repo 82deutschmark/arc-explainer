@@ -98,7 +98,6 @@ export class OpenAIService {
     });
     
     console.log(`[OpenAI] Using system prompt mode: ${systemPromptMode}`);
-    console.log(`[OpenAI] Structured output enabled: ${promptPackage.useStructuredOutput}`);
     
     // Extract system and user prompts from prompt package
     const systemMessage = promptPackage.systemPrompt;
@@ -214,9 +213,8 @@ export class OpenAIService {
       
       // Handle reasoning items with proper validation
       let reasoningItems: string[] = [];
-      if (promptPackage.useStructuredOutput) {
-        // For structured outputs, extract keySteps with validation
-        if (result.keySteps) {
+      if (result.keySteps) {
+        // Extract keySteps with validation
           if (Array.isArray(result.keySteps)) {
             reasoningItems = result.keySteps;
           } else if (typeof result.keySteps === 'string') {
