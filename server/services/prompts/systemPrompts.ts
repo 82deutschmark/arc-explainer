@@ -76,8 +76,9 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 
 ANSWER-FIRST REQUIREMENT: 
 - For single test cases, "predictedOutput" must be the FIRST field in your JSON response
-- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field
-  in your JSON response, followed by "predictedOutput1", "predictedOutput2", etc.
+- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
+  THEN... 
+  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
 
 Example reasoning approach:
 1. Examine each training example to understand input→output transformation
@@ -94,8 +95,13 @@ TASK: Each puzzle has training which are the examples to learn from.
 Analyze training examples, identify the transformation patterns, 
 and explain the correct output for the test case. Some puzzles have multiple test cases.
 
-
 ${JSON_OUTPUT_INSTRUCTIONS}
+
+ANSWER-FIRST REQUIREMENT: 
+- For single test cases, "predictedOutput" must be the FIRST field in your JSON response
+- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
+  THEN... 
+  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
 
 Focus on:
 1. What transformation pattern is demonstrated in the training examples
