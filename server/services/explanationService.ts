@@ -74,9 +74,26 @@ export const explanationService = {
     const savedExplanationIds: number[] = [];
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
-        const explanationData = explanations[modelKey];
+        const { multiplePredictedOutputs, ...restOfExplanationData } = explanations[modelKey];
+
+        let hasMultiplePredictions: boolean | null = null;
+        let multiplePredictedOutputsArray: any[] | null = null;
+
+        if (typeof multiplePredictedOutputs === 'boolean') {
+          hasMultiplePredictions = multiplePredictedOutputs;
+          multiplePredictedOutputsArray = null;
+        } else if (Array.isArray(multiplePredictedOutputs)) {
+          hasMultiplePredictions = multiplePredictedOutputs.length > 0;
+          multiplePredictedOutputsArray = multiplePredictedOutputs;
+        } else {
+          hasMultiplePredictions = false;
+          multiplePredictedOutputsArray = null;
+        }
+
         const explanationId = await dbService.saveExplanation(puzzleId, {
-          ...explanationData,
+          ...restOfExplanationData,
+          hasMultiplePredictions,
+          multiplePredictedOutputs: multiplePredictedOutputsArray,
           modelName: modelKey, // Ensure modelKey is passed as modelName
         });
         if (explanationId) {

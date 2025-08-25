@@ -109,11 +109,3 @@ export const processHints = (rawHints: any): string[] => {
       ? [rawHints] 
       : [];
 };
-
-/**
- * Safely handles multiplePredictedOutputs field which can be boolean or array
- */
-export const processMultiplePredictedOutputs = (multiplePredictedOutputs: any) => {
-  // Handle both boolean flag and array data for JSONB storage
-  return (typeof multiplePredictedOutputs === 'boolean') ? null : (multiplePredictedOutputs ?? null);
-};
