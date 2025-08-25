@@ -7,6 +7,31 @@
 
 August 25, 2025
 
+## Version 1.8.3 — CRITICAL FIX: Multi-Test JSON Serialization (2025-08-25)
+
+### 🎯 **ARCHITECTURAL FIX** - Dual-Purpose Field Anti-Pattern Resolved (Code by Cascade)
+**Eliminated the root cause of multi-test puzzle database save failures**
+
+#### **The Smoking Gun**
+- **Critical Design Flaw**: `multiplePredictedOutputs` field served dual purposes causing database type confusion
+- **Boolean Detection** (AI response): `multiplePredictedOutputs: true` → "I have multiple predictions"
+- **Array Storage** (Controller): `multiplePredictedOutputs: [[grids]]` → overwrote boolean with arrays
+- **Database Corruption**: PostgreSQL JSONB column received inconsistent types → "invalid input syntax for type json"
+
+#### **Solution Implemented**
+- **Separated Concerns**: Added `hasMultiplePredictions` boolean detection flag
+- **Schema Enhancement**: Added `has_multiple_predictions BOOLEAN` column to explanations table
+- **Controller Fix**: `result.hasMultiplePredictions = true` (detection) + `result.multiplePredictedOutputs = arrays` (storage)
+- **Database Consistency**: Updated all SQL queries to include new boolean field
+
+#### **Technical Impact**
+- ✅ **Multi-test puzzles**: Now save to database without JSON syntax errors
+- ✅ **Type Safety**: Consistent data types across AI → Controller → Database pipeline  
+- ✅ **Architecture**: Clean separation between logic flags and data storage
+- ✅ **Performance**: No regression for single-test puzzles
+
+---
+
 ## Version 1.8.2 — Database Service Architectural Refactor (2025-08-25)
 
 ### 🏗️ **MAJOR ARCHITECTURAL REFACTOR** - Clean Database Service Rewrite (Code by Cascade)
