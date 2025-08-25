@@ -152,6 +152,14 @@ const createTablesIfNotExist = async () => {
             PRIMARY KEY (session_id, puzzle_id)
           );
         END IF;
+
+        -- Migration: Add has_multiple_predictions column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                     WHERE table_name = 'explanations'
+                     AND column_name = 'has_multiple_predictions') THEN
+          ALTER TABLE explanations ADD COLUMN has_multiple_predictions BOOLEAN DEFAULT NULL;
+        END IF;
+
       END $$;
     `);
 
