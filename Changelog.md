@@ -7,6 +7,18 @@
 
 August 24, 2025
 
+## Version 1.7.3 — Multi-Test Database Fix (2025-08-24)
+
+### 🐛 Bug Fix (Code by Cascade)
+- **Database Save Errors and Multi-Prediction Detection**: Fixed critical issues causing analysis save failures and incorrect multi-prediction routing.
+  - **Root Cause**: `reasoningItems` field causing JSON syntax errors, and controller incorrectly detecting single predictions as multiple predictions.
+  - **Solution**: 
+    - Added null check for `reasoningItems` before JSON serialization to prevent database errors
+    - Simplified multi-prediction detection to only check `multiplePredictedOutputs === true`
+    - Handles real AI format: `{"multiplePredictedOutputs": true, "predictedOutput1": [...], "predictedOutput2": [...]}`
+  - **Impact**: Analysis saves successfully and multi-prediction routing works correctly for actual AI responses.
+  - **Files**: `server/services/dbService.ts`, `server/controllers/puzzleController.ts`
+
 ## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
 
 ### 🛠️ Refactor (Code by Cascade)
