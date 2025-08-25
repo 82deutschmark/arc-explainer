@@ -149,6 +149,12 @@ export default function PuzzleExaminer() {
         </div>
         
         <div className="flex items-center gap-3 flex-wrap">
+          <Link href="/model-examiner">
+            <Button variant="ghost" size="sm" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              Model Examiner
+            </Button>
+          </Link>
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
