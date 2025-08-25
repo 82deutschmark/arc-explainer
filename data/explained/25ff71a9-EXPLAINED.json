@@ -223,20 +223,188 @@
     ]
   },
   "explanations": {
-    "gemini-2.0-flash-lite": {
-      "model": "gemini-2.0-flash-lite",
+    "gpt-5-mini-2025-08-07": {
+      "model": "gpt-5-mini-2025-08-07",
       "reasoningLog": null,
       "hasReasoningLog": false,
+      "providerResponseId": "resp_68aca2f352ec8190a087694e39a30e8f0ad3f7077fc53c94",
+      "providerRawResponse": {
+        "id": "resp_68aca2f352ec8190a087694e39a30e8f0ad3f7077fc53c94",
+        "object": "response",
+        "created_at": 1756144371,
+        "status": "completed",
+        "background": false,
+        "error": null,
+        "incomplete_details": null,
+        "instructions": null,
+        "max_output_tokens": 128000,
+        "max_tool_calls": null,
+        "model": "gpt-5-mini-2025-08-07",
+        "output": [
+          {
+            "id": "rs_68aca2f3efec8190977639551d764e8a0ad3f7077fc53c94",
+            "type": "reasoning",
+            "summary": []
+          },
+          {
+            "id": "msg_68aca2f44f9881908e480a66e1f6b6ec0ad3f7077fc53c94",
+            "type": "message",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "annotations": [],
+                "logprobs": [],
+                "text": "{\"multiplePredictedOutputs\":true,\"predictedOutput\":[],\"predictedOutput1\":[[0,0,0],[2,0,0],[2,0,0]],\"predictedOutput2\":[[0,0,0],[0,0,0],[0,1,0]],\"predictedOutput3\":[],\"solvingStrategy\":\"Observe training pairs: each output appears to be the input shifted down by one row (i.e., every colored cell moves one row lower), preserving column positions and colors. Cells that fall off the bottom are removed; new top row becomes zeros. This applies per color independently. Verify with examples: Example1 row1 of ones moves from row0 to row1; Example2 row1 moves to row2; Example3 two colored cells at (0,1) and (1,1) move to (1,1) and (2,1) respectively; Example4 similarly moves each '2' down by one row. Apply to test inputs: for Test1, two '2's at (0,0) and (1,0) move to (1,0) and (2,0). For Test2, single '1' at (1,1) moves to (2,1).\",\"keySteps\":[\"Noted that every example's colored pixels shift exactly one row downward.\",\"Confirmed color and column preserved; top row becomes zeros; bottommost pixels may be new if previously second row existed.\",\"Applied same single-row downward translation to each test input to produce outputs.\"],\"patternDescription\":\"Translation down by one row: every non-zero cell in the input moves down exactly one row, keeping its column and color. The top row becomes zeros; any cells that would move past the last row are discarded.\",\"hints\":[\"Look at position changes: compare coordinates of each colored cell between input and output — row index increases by 1 consistently.\",\"No horizontal movement or color change occurs; only vertical shift downward.\"],\"confidence\":95}"
+              }
+            ],
+            "role": "assistant"
+          }
+        ],
+        "parallel_tool_calls": false,
+        "previous_response_id": null,
+        "prompt_cache_key": null,
+        "reasoning": {
+          "effort": "minimal",
+          "summary": "detailed"
+        },
+        "safety_identifier": null,
+        "service_tier": "default",
+        "store": true,
+        "temperature": 1,
+        "text": {
+          "format": {
+            "type": "json_schema",
+            "description": null,
+            "name": "arc_analysis",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "multiplePredictedOutputs": {
+                  "type": "boolean",
+                  "description": "True if providing multiple predictions"
+                },
+                "predictedOutput": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "description": "Single predicted output grid (2D array of integers)"
+                },
+                "predictedOutput1": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "description": "First predicted output grid"
+                },
+                "predictedOutput2": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "description": "Second predicted output grid"
+                },
+                "predictedOutput3": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "description": "Third predicted output grid"
+                },
+                "solvingStrategy": {
+                  "type": "string",
+                  "description": "Detailed explanation of the solving approach"
+                },
+                "keySteps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Key steps in the solution process"
+                },
+                "patternDescription": {
+                  "type": "string",
+                  "description": "Description of the pattern identified"
+                },
+                "hints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Hints for understanding the pattern"
+                },
+                "confidence": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Confidence level in the solution (0-100)"
+                }
+              },
+              "required": [
+                "multiplePredictedOutputs",
+                "predictedOutput",
+                "predictedOutput1",
+                "predictedOutput2",
+                "predictedOutput3",
+                "solvingStrategy",
+                "keySteps",
+                "patternDescription",
+                "hints",
+                "confidence"
+              ],
+              "additionalProperties": false
+            },
+            "strict": true
+          },
+          "verbosity": "medium"
+        },
+        "tool_choice": "auto",
+        "tools": [],
+        "top_logprobs": 0,
+        "top_p": 1,
+        "truncation": "auto",
+        "usage": {
+          "input_tokens": 1053,
+          "input_tokens_details": {
+            "cached_tokens": 0
+          },
+          "output_tokens": 416,
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "total_tokens": 1469
+        },
+        "user": null,
+        "metadata": {}
+      },
+      "reasoningItems": [
+        "Noted that every example's colored pixels shift exactly one row downward.",
+        "Confirmed color and column preserved; top row becomes zeros; bottommost pixels may be new if previously second row existed.",
+        "Applied same single-row downward translation to each test input to produce outputs."
+      ],
       "temperature": 0.2,
-      "reasoningEffort": null,
-      "reasoningVerbosity": null,
-      "reasoningSummaryType": null,
-      "inputTokens": 435,
-      "outputTokens": 182,
+      "reasoningEffort": "minimal",
+      "reasoningVerbosity": "low",
+      "reasoningSummaryType": "auto",
+      "inputTokens": 1053,
+      "outputTokens": 416,
       "reasoningTokens": null,
-      "totalTokens": 617,
-      "estimatedCost": 0.0000981,
-      "predictedOutputs": [
+      "totalTokens": 1469,
+      "estimatedCost": 0.0010952499999999999,
+      "multiplePredictedOutputs": [
         [
           [
             0,
@@ -272,26 +440,216 @@
           ]
         ]
       ],
-      "patternDescription": "The pattern involves shifting the non-zero elements in each column to the bottom row. The order of the non-zero elements in each column is preserved.",
-      "solvingStrategy": "1. Identify the non-zero elements in each column. 2. Move these elements to the bottom row, maintaining their original order within the column. 3. Fill the remaining cells with zeros.",
-      "hints": [
-        "Focus on columns.",
-        "Identify non-zero elements.",
-        "Shift non-zero elements to the bottom."
+      "predictedOutput": [],
+      "predictedOutput1": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
       ],
-      "confidence": 100,
-      "apiProcessingTimeMs": 1747,
-      "hasMultiplePredictions": false,
+      "predictedOutput2": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "predictedOutput3": [],
+      "solvingStrategy": "Observe training pairs: each output appears to be the input shifted down by one row (i.e., every colored cell moves one row lower), preserving column positions and colors. Cells that fall off the bottom are removed; new top row becomes zeros. This applies per color independently. Verify with examples: Example1 row1 of ones moves from row0 to row1; Example2 row1 moves to row2; Example3 two colored cells at (0,1) and (1,1) move to (1,1) and (2,1) respectively; Example4 similarly moves each '2' down by one row. Apply to test inputs: for Test1, two '2's at (0,0) and (1,0) move to (1,0) and (2,0). For Test2, single '1' at (1,1) moves to (2,1).",
+      "keySteps": [
+        "Noted that every example's colored pixels shift exactly one row downward.",
+        "Confirmed color and column preserved; top row becomes zeros; bottommost pixels may be new if previously second row existed.",
+        "Applied same single-row downward translation to each test input to produce outputs."
+      ],
+      "patternDescription": "Translation down by one row: every non-zero cell in the input moves down exactly one row, keeping its column and color. The top row becomes zeros; any cells that would move past the last row are discarded.",
+      "hints": [
+        "Look at position changes: compare coordinates of each colored cell between input and output — row index increases by 1 consistently.",
+        "No horizontal movement or color change occurs; only vertical shift downward."
+      ],
+      "confidence": 95,
+      "apiProcessingTimeMs": 7850,
+      "predictedOutputGrids": [
+        [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ]
+      ],
       "predictedOutputGrid": null,
-      "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0,
-      "extractionMethod": "not_found",
-      "modelKey": "gemini-2.0-flash-lite",
-      "actualProcessingTime": 2
+      "multiValidation": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 3,
+            "cols": 3
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 3,
+            "cols": 3
+          }
+        }
+      ],
+      "allPredictionsCorrect": true,
+      "averagePredictionAccuracyScore": 0.975,
+      "hasMultiplePredictions": true,
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 3,
+            "cols": 3
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.975,
+          "extractionMethod": "direct_predicted_outputs_field",
+          "expectedDimensions": {
+            "rows": 3,
+            "cols": 3
+          }
+        }
+      ],
+      "multiTestAllCorrect": true,
+      "multiTestAverageAccuracy": 0.975,
+      "extractionMethod": "direct_predicted_outputs_field",
+      "modelKey": "gpt-5-mini-2025-08-07",
+      "actualProcessingTime": 8
     }
   },
-  "exportedAt": "2025-08-25T17:41:58.229Z",
+  "exportedAt": "2025-08-25T17:52:59.506Z",
   "models": [
-    "gemini-2.0-flash-lite"
+    "gpt-5-mini-2025-08-07"
   ]
 }
