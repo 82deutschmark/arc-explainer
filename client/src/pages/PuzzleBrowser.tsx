@@ -364,7 +364,7 @@ export default function PuzzleBrowser() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredPuzzles.map((puzzle: PuzzleMetadata) => (
+                {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="space-y-3">
@@ -388,7 +388,7 @@ export default function PuzzleBrowser() {
                               }`}>
                                 {puzzle.source.replace('-Eval', ' Eval')}
                               </Badge>
-                            }
+                            )}
                           </div>
                         </div>
                         
@@ -419,7 +419,7 @@ export default function PuzzleBrowser() {
                                   {formatCost(puzzle.estimatedCost)}
                                 </Badge>
                               )}
-                              {puzzle.feedbackCount > 0 && (
+                              {(puzzle.feedbackCount || 0) > 0 && (
                                 <Badge variant="outline" className="bg-pink-50 text-pink-700 flex items-center gap-1 text-xs">
                                   <MessageCircle className="h-3 w-3" />
                                   {puzzle.feedbackCount}
