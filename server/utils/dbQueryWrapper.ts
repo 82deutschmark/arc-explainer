@@ -34,14 +34,20 @@ export function toTextJSON(v: any): string | null {
 }
 
 /**
- * Prepares a value for a native JSONB column.
- * Coerces undefined to null.
+ * Prepares a value for a JSONB column by JSON stringifying.
+ * PostgreSQL JSONB columns may require JSON strings from the driver.
  * @param v The value to process.
- * @returns The original value or null if it was undefined.
+ * @returns JSON string or null for JSONB column.
  */
-export function toJsonbParam(v: any): any | null {
-  if (v === undefined) return null;
-  return v;
+export function toJsonbParam(v: any): string | null {
+  if (v === undefined || v === null) return null;
+  
+  try {
+    return JSON.stringify(v);
+  } catch (e) {
+    console.warn(`[toJsonbParam] Failed to stringify value, returning null:`, v);
+    return null;
+  }
 }
 
 /**
