@@ -81,13 +81,20 @@ export async function safeQuery(
  * Specialized function for JSONB parameter preparation
  * Ensures consistent handling of objects vs strings for JSONB columns
  */
-export function prepareJsonbParam(value: any): any {
-  if (value === undefined) return null;
-  if (value === null) return null;
-  
-  // For JSONB columns, pass objects/arrays directly
-  // Let PostgreSQL's JSONB input function handle the conversion
-  return value;
+export function prepareJsonbParam(value: any): string | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  // The database columns are currently TEXT, so they expect a JSON string.
+  // If the value is an object (but not null), stringify it.
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+
+  // If it's already a string or another primitive, return it as is.
+  // The database will handle casting for other types if necessary.
+  return String(value);
 }
 
 /**
