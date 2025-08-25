@@ -149,6 +149,7 @@ export const puzzleController = {
 
         // Add validation results to response (single prediction)
         result.hasMultiplePredictions = false; // Boolean detection flag
+        result.multiTestPredictionGrids = null; // No multi-test grids for single predictions
         result.predictedOutputGrid = validation.predictedGrid;
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
