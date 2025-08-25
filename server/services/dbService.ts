@@ -250,7 +250,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
                $31, $32, $33, $34, $35)
        RETURNING id`;
 
-    const queryParams = [
+    queryParams = [
       puzzleId,
       patternDescription || '',
       solvingStrategy || '',
@@ -288,7 +288,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       multiTestAverageAccuracy ?? null
     ];
 
-    const paramMap = {
+    paramMap = {
       1: 'puzzle_id', 2: 'pattern_description', 3: 'solving_strategy', 4: 'hints',
       5: 'confidence', 6: 'alien_meaning_confidence', 7: 'alien_meaning', 8: 'model_name',
       9: 'reasoning_log', 10: 'has_reasoning_log', 11: 'provider_response_id', 12: 'provider_raw_response',
@@ -305,13 +305,15 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
     logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
     return result.rows[0].id;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    let errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(`Error saving explanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
     
     if (errorMessage.includes('invalid input syntax for type json') || errorMessage.includes('undefined parameter')) {
-      logger.error(`[Debug] Problematic data for puzzle ${puzzleId}:`, 'database');
-      logger.error(`- multiple_predicted_outputs: ${typeof explanation.multiplePredictedOutputs} | ${JSON.stringify(explanation.multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
-      logger.error(`- multi_test_results: ${typeof explanation.multiTestResults} | ${JSON.stringify(explanation.multiTestResults)?.substring(0, 200)}`, 'database');
+      logger.error(`[Debug] Detailed parameter analysis for puzzle ${puzzleId}:`, 'database');
+      queryParams.forEach((param: any, index: number) => {
+        let paramName = paramMap[index + 1] || `param_${index + 1}`;
+        logger.error(`- Param ${index + 1} (${paramName}): [${typeof param}] ${String(param)?.substring(0, 100)}`, 'database');
+      });
     }
     
     return null;
@@ -437,23 +439,7 @@ const getExplanationById = async (explanationId: number) => {
 
     const explanation = result.rows[0];
 
-    // Symmetric Read Path: Safely parse TEXT columns that store JSON strings.
-    // Based on the schema, these are now JSONB, but this handles any legacy TEXT data.
-    const columnsToParse = [
-      'hints', 'reasoning_items', 'saturn_images', 'saturn_log', 'saturn_events',
-      'predicted_output_grid', 'multiple_predicted_outputs', 'multi_test_results', 'provider_raw_response'
-    ];
-
-    for (const col of columnsToParse) {
-      if (typeof explanation[col] === 'string') {
-        try {
-          explanation[col] = JSON.parse(explanation[col]);
-        } catch (e) {
-          logger.warn(`Failed to parse JSON for column ${col} in explanation ${explanationId}. Leaving as string.`, 'database');
-        }
-      }
-    }
-
+    // JSONB columns are automatically parsed by the driver. No manual parsing is needed.
     return explanation;
   } catch (error) {
     logger.error(`Error getting explanation by ID ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
@@ -493,13 +479,13 @@ const getBulkExplanationStatus = async (puzzleIds: string[]) => {
   const client = await pool.connect();
   
   try {
-    const resultMap = new Map();
+    let resultMap = new Map();
     
     // Initialize all as false
     puzzleIds.forEach(id => resultMap.set(id, false));
     
     // Check which ones exist
-    const placeholders = puzzleIds.map((_, index) => `$${index + 1}`).join(',');
+    let placeholders = puzzleIds.map((_, index) => `$${index + 1}`).join(',');
     const result = await client.query(
       `SELECT DISTINCT puzzle_id FROM explanations WHERE puzzle_id IN (${placeholders})`,
       puzzleIds
@@ -610,8 +596,8 @@ const getAllFeedback = async (filters: FeedbackFilters = {}): Promise<DetailedFe
       JOIN explanations e ON f.explanation_id = e.id
     `;
     
-    const conditions: string[] = [];
-    const queryParams: any[] = [];
+    let conditions: string[] = [];
+    let queryParams: any[] = [];
     
     if (filters.voteType) {
       conditions.push(`f.vote_type = $${queryParams.length + 1}`);
