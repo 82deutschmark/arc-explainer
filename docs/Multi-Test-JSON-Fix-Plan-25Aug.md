@@ -137,9 +137,51 @@ Add entry for v1.7.x documenting the multi-test JSON serialization fix
 3. No regression in single-test puzzle functionality
 4. All test cases pass validation checklist
 
-## Notes for Implementation
-- This is a hobby project, not enterprise-grade
-- Focus on simple, effective solution
-- Test thoroughly but don't over-engineer
-- The immediate fix (Option 1) is sufficient for now
-- Consider database migration later if needed
+## UPDATED IMPLEMENTATION NOTES - POST-REWRITE ANALYSIS
+
+### **RUSHED REWRITE ATTEMPT - LESSONS LEARNED**
+- **Phase 1**: ✅ Created `dataTransformers.ts` utility module
+- **Phase 2**: ✅ Complete dbService.ts rewrite (1400+ → 880 lines)  
+- **Phase 3**: ✅ Fixed backward compatibility issues (init export)
+- **Phase 4**: ❌ **FAILED** - JSON error still occurring: "invalid input syntax for type json"
+
+### **ROOT CAUSE STILL UNKNOWN**
+**The Problem**: Despite comprehensive rewrite, database INSERT still fails with same error
+**Key Insight**: The validator is working correctly, but database column/parameter mismatch persists
+
+### **NEW METHODICAL STRATEGY - PostgreSQL-Native Solutions**
+
+#### **Philosophy Shift**: Make Database Flexible, Not JavaScript Strict
+- ✅ **Validator works**: Don't touch the working validation logic
+- ✅ **Database should adapt**: Use PostgreSQL's flexibility for type conversion  
+- ✅ **Frontend can parse**: As long as data is stored, we can retrieve/parse it
+
+#### **PostgreSQL-Native Solutions**:
+```sql
+-- For TEXT columns expecting JSON strings
+COALESCE($param, 'null')
+
+-- For JSONB columns expecting objects
+COALESCE($param, 'null'::jsonb)
+
+-- With explicit casting when PostgreSQL needs help
+$param::jsonb
+```
+
+#### **Methodical Debugging Plan**:
+1. **Identify Failing Field**: Add PostgreSQL error detail logging to find exact column
+2. **Minimal Fix**: Apply PostgreSQL-level NULL/type handling to that specific field only  
+3. **Test Single Case**: Verify with actual multi-test puzzle
+4. **No Other Changes**: Don't touch working validator/controller logic
+
+#### **Success Criteria - REVISED**:
+- ✅ Multi-test puzzles save to database without "invalid input syntax" error
+- ✅ Data retrieval works (frontend can parse stored data)
+- ✅ Single-test puzzles continue working (no regression)
+- ✅ Minimal, surgical fix rather than architectural overhaul
+
+### **LESSONS LEARNED**:
+- **Don't rush**: Architectural rewrites without understanding root cause create new problems
+- **Trust working code**: Validator/controller logic was fine - database was the real issue
+- **PostgreSQL flexibility**: Database can handle type conversion better than JavaScript pre-processing  
+- **One thing at a time**: Fix the specific failing field, not the entire architecture
