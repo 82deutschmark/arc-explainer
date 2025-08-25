@@ -203,20 +203,6 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     }
   }, [showDiff, predictedGrid, expectedOutputGrids]);
 
-  // Log the result to see what we're getting
-  console.log('AnalysisResultCard DEBUG:', { 
-    modelName: result.modelName || 'Unknown',
-    // Badge field values and their types
-    apiProcessingTimeMs: result.apiProcessingTimeMs, apiProcessingTimeMsType: typeof result.apiProcessingTimeMs,
-    estimatedCost: result.estimatedCost, estimatedCostType: typeof result.estimatedCost,
-    totalTokens: result.totalTokens, totalTokensType: typeof result.totalTokens,
-    temperature: result.temperature, temperatureType: typeof result.temperature,
-    reasoningEffort: result.reasoningEffort, reasoningEffortType: typeof result.reasoningEffort,
-    reasoningVerbosity: result.reasoningVerbosity, reasoningVerbosityType: typeof result.reasoningVerbosity,
-    reasoningSummaryType: result.reasoningSummaryType, reasoningSummaryTypeType: typeof result.reasoningSummaryType,
-    // Model support check
-    modelSupportsTemperature: model?.supportsTemperature
-  });
 
   // Handle empty or error states - fix for the "0" display issue
   const isEmptyResult = !result || (!result.patternDescription && !result.solvingStrategy && !result.alienMeaning && (!result.hints || result.hints.length === 0));
@@ -248,19 +234,20 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
           </Badge>
         )}
 
-        {/* Solver mode validation indicator */}
-        {result.isPredictionCorrect !== undefined && (
+        {/* Solver mode validation indicator - use multiTestAllCorrect for multi-test puzzles */}
+        {(result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined) && (
           <Badge 
             variant="outline" 
             className={`flex items-center gap-1 ${
-              result.isPredictionCorrect 
+              // For multi-test: use multiTestAllCorrect, for single: use isPredictionCorrect
+              (result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect)
                 ? 'bg-green-50 border-green-200 text-green-700' 
                 : result.predictedOutputGrid 
                   ? 'bg-red-50 border-red-200 text-red-700'
                   : 'bg-yellow-50 border-yellow-200 text-yellow-700'
             }`}
           >
-            {result.isPredictionCorrect ? (
+            {(result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect) ? (
               <CheckCircle className="h-3 w-3" />
             ) : result.predictedOutputGrid ? (
               <XCircle className="h-3 w-3" />
@@ -268,7 +255,9 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
               <XCircle className="h-3 w-3" />
             )}
             <span className="text-xs font-medium">
-              {result.isPredictionCorrect ? 'CORRECT' : result.predictedOutputGrid ? 'INCORRECT' : 'NOT FOUND'}
+              {(result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect) 
+                ? 'CORRECT' 
+                : result.predictedOutputGrid ? 'INCORRECT' : 'NOT FOUND'}
             </span>
           </Badge>
         )}
