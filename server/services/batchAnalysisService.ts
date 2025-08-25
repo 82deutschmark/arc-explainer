@@ -389,18 +389,13 @@ class BatchAnalysisService extends EventEmitter {
         }
       };
       
-      const saveResponse = await fetch(`http://localhost:5000/api/puzzle/save-explained/${puzzleId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ explanations: explanationToSave })
-      });
-
-      if (!saveResponse.ok) {
-        return { success: false, error: `Failed to save explanation: ${saveResponse.statusText}` };
+      // Save explanation directly to database
+      const { dbService } = await import('./dbService');
+      const explanationId = await dbService.saveExplanation(puzzleId, result);
+      
+      if (!explanationId) {
+        return { success: false, error: 'Failed to save explanation to database' };
       }
-
-      const saveData = await saveResponse.json();
-      const explanationId = saveData.data?.explanationId;
 
       return {
         success: true,

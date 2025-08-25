@@ -76,10 +76,6 @@ export const ARC_JSON_SCHEMA = {
       }
     },
     required: [
-      "solvingStrategy",
-      "keySteps", 
-      "patternDescription",
-      "hints",
       "confidence"
     ],
     additionalProperties: false
