@@ -16,7 +16,7 @@ import {
   safeJsonParse, 
   processHints,
 } from '../utils/dataTransformers';
-import { q, toTextJSON } from '../utils/dbQueryWrapper';
+import { q, toTextJSON, toJsonbParam } from '../utils/dbQueryWrapper';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -272,14 +272,14 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       reasoningLog || null,
       hasReasoningLog || false,
       providerResponseId || null,
-      shouldPersistRaw ? toTextJSON(providerRawResponse) : null,
-      toTextJSON(reasoningItems),
+      shouldPersistRaw ? toJsonbParam(providerRawResponse) : null,
+      toJsonbParam(reasoningItems),
       apiProcessingTimeMs || null,
-      toTextJSON(saturnImages),
-      toTextJSON(saturnLog),
-      toTextJSON(saturnEvents),
+      toJsonbParam(saturnImages),
+      toJsonbParam(saturnLog),
+      toJsonbParam(saturnEvents),
       saturnSuccess ?? null,
-      toTextJSON(predictedOutputGrid),
+      toJsonbParam(predictedOutputGrid),
       isPredictionCorrect ?? null,
       predictionAccuracyScore ?? null,
       temperature ?? null,
@@ -292,9 +292,9 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       totalTokens ?? null,
       estimatedCost ?? null,
       hasMultiplePredictions ?? null,
-      toTextJSON(multiplePredictedOutputs),
-      toTextJSON(multiTestPredictionGrids),
-      toTextJSON(multiTestResults),
+      toJsonbParam(multiplePredictedOutputs),
+      toJsonbParam(multiTestPredictionGrids),
+      toJsonbParam(multiTestResults),
       multiTestAllCorrect ?? null,
       multiTestAverageAccuracy ?? null
     ];
