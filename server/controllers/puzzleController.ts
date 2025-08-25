@@ -118,13 +118,6 @@ export const puzzleController = {
     
     console.log(`[Controller] API processing time for ${model}: ${apiProcessingTimeMs}ms`);
     
-    // Debug: Log the raw AI response structure
-    console.log(`[CONTROLLER-DEBUG] AI Response structure for ${model}:`);
-    console.log(`  Keys: ${Object.keys(result)}`);
-    console.log(`  solvingStrategy: "${result.solvingStrategy}"`);
-    console.log(`  patternDescription: "${result.patternDescription}"`);
-    console.log(`  hints: ${JSON.stringify(result.hints)}`);
-    console.log(`  predictedOutput type: ${typeof result.predictedOutput}, isArray: ${Array.isArray(result.predictedOutput)}`);
     
     // Log reasoning capture status
     if (result.hasReasoningLog) {
@@ -152,11 +145,6 @@ export const puzzleController = {
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         
         // Store in database-compatible field names for multi-output predictions
-        console.log('[CONTROLLER-DEBUG] About to store multi-prediction data:');
-        console.log('  multi.predictedGrids type:', typeof multi.predictedGrids, 'isArray:', Array.isArray(multi.predictedGrids));
-        console.log('  multi.predictedGrids:', multi.predictedGrids);
-        console.log('  multi.itemResults type:', typeof multi.itemResults, 'isArray:', Array.isArray(multi.itemResults));
-        console.log('  multi.itemResults:', multi.itemResults);
         result.multiplePredictedOutputs = multi.predictedGrids;
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;

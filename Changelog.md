@@ -7,6 +7,17 @@
 
 August 25, 2025
 
+## Version 1.8.1 — Multi-Test JSON Serialization Fix (2025-08-25)
+
+### 🐛 Critical Bug Fix (Code by Cascade)
+- **Multi-Test Database Saves**: Fixed "invalid input syntax for type json" error preventing multi-test puzzles from saving
+  - **Root Cause**: `safeJsonStringify()` returned `null` for null values, but PostgreSQL TEXT columns expecting JSON needed the string `"null"`
+  - **Solution**: Updated `safeJsonStringify()` to properly handle null, false, 0, and empty string values for JSON compatibility
+  - **Impact**: Multi-test puzzles (2+ predictions) now save correctly to database and display properly in frontend
+  - **Files**: `server/services/dbService.ts`
+- **Debug Cleanup**: Removed temporary debug logging from controller and database service
+  - **Files**: `server/controllers/puzzleController.ts`, `server/services/dbService.ts`
+
 ## Version 1.8.0 — ModelExaminer: Batch Analysis System (2025-08-25)
 
 ### 🚀 Major Feature (Code by Claude Code Assistant)
