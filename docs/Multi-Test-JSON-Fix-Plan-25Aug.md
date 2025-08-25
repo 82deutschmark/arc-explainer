@@ -185,3 +185,113 @@ $param::jsonb
 - **Trust working code**: Validator/controller logic was fine - database was the real issue
 - **PostgreSQL flexibility**: Database can handle type conversion better than JavaScript pre-processing  
 - **One thing at a time**: Fix the specific failing field, not the entire architecture
+
+---
+
+## **🎯 CRITICAL ROOT CAUSE DISCOVERED - August 25, 2025**
+
+**DUAL-PURPOSE FIELD DESIGN ERROR**: The `multiplePredictedOutputs` field serves **TWO COMPLETELY DIFFERENT PURPOSES**, causing data corruption!
+
+### **The Design Anti-Pattern**
+
+```javascript
+// 1. AI Response Format (CORRECT):
+{
+  "multiplePredictedOutputs": true,        // Boolean flag - "I have multiple predictions"
+  "predictedOutput1": [[1,0,0],[0,1,0]], // Actual grid data  
+  "predictedOutput2": [[1,0,0],[0,0,1]]  // Actual grid data
+}
+
+// 2. Controller Processing (BROKEN):
+const hasMultiplePredictions = result.multiplePredictedOutputs === true; // ✅ Works: detects boolean
+if (hasMultiplePredictions) {
+  result.multiplePredictedOutputs = multi.predictedGrids; // ❌ OVERWRITES boolean with arrays!
+}
+
+// 3. Database Storage (CONFUSED):
+// Same field expected to store EITHER boolean flags OR array data
+// PostgreSQL JSONB column receives inconsistent data types → corruption
+```
+
+### **Evidence of the Problem**
+
+**Raw OpenAI Response** (WORKING):
+```json
+{
+  "multiplePredictedOutputs": true,
+  "predictedOutput1": [[1,0,0],[0,1,0],[0,0,0]], 
+  "predictedOutput2": [[1,0,0],[0,1,0],[0,0,1]]
+}
+```
+
+**Database Log** (BROKEN):
+```json
+{
+  "multiplePredictedOutputs": false,        // Should be arrays!
+  "multiTestResults": null,                 // Should have validation data!
+  "predictedOutputGrid": [[2,0,0],[2,0,0]] // Should be null for multi-test!
+}
+```
+
+**Proof**: AI correctly sends `true` + grid data, but database receives `false` + single grid.
+
+### **Why This Causes the Bug**
+
+1. **AI Response**: `multiplePredictedOutputs: true` (boolean) + separate grid fields
+2. **Controller Detection**: `hasMultiplePredictions = result.multiplePredictedOutputs === true` ✅ Works
+3. **Controller Storage**: `result.multiplePredictedOutputs = multi.predictedGrids` ❌ Type corruption
+4. **Later Code**: May check boolean again, but field is now array → conditions fail
+5. **Database**: JSONB column gets inconsistent types, PostgreSQL confused
+
+### **The Fix Strategy**
+
+**SEPARATE CONCERNS**: Use different fields for different purposes
+
+**Option A: Add Detection Field**
+```javascript
+// Step 1: Preserve boolean detection
+result.hasMultiplePredictions = result.multiplePredictedOutputs === true;
+
+// Step 2: Store arrays in separate field  
+result.multiplePredictedOutputs = multi.predictedGrids; // Now safe to overwrite
+
+// Step 3: Use hasMultiplePredictions for all logic checks
+if (result.hasMultiplePredictions) { ... }
+```
+
+**Option B: Rename Storage Field**
+```javascript  
+// Keep original boolean field
+result.multiplePredictedOutputs = boolean; // Detection only
+
+// Store arrays in purpose-built field
+result.multiTestPredictionGrids = multi.predictedGrids; // Storage only
+```
+
+**Option C: Use Existing Multi-Test Fields**
+```javascript
+// Keep: multiplePredictedOutputs (boolean detection)
+// Use existing: multiTestResults (array storage) 
+// Avoid field name collision entirely
+```
+
+### **Database Schema Impact**
+
+**Current (BROKEN)**:
+- `multiple_predicted_outputs JSONB` - receives boolean OR arrays randomly
+
+**Fixed**:  
+- `has_multiple_predictions BOOLEAN` - detection flag
+- `multiple_predicted_outputs JSONB` - array storage only
+- OR reuse existing `multi_test_results JSONB` for storage
+
+### **Critical Insight for Next Developer**
+
+**THE PROBLEM**: Same field name for boolean detection AND array storage  
+**THE SOLUTION**: Separate fields for separate purposes  
+**THE IMPACT**: This single design flaw caused all multi-test JSON serialization failures
+
+**Field naming convention should be**:
+- `hasXyz` or `isXyz` → Boolean flags for logic
+- `xyzData` or `xyzResults` → Data storage
+- **NEVER mix detection flags with storage data**
