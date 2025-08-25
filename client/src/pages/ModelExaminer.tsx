@@ -52,7 +52,7 @@ export default function ModelExaminer() {
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('auto');
 
   // UI state
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
 
   // Set page title
   useEffect(() => {
@@ -265,8 +265,11 @@ export default function ModelExaminer() {
                 onChange={(e) => setBatchSize(parseInt(e.target.value) || 10)}
                 className="w-full"
               />
-              <div className="text-xs text-gray-600">
-                Concurrent puzzles processed at once (1-50)
+              <div className="text-xs text-gray-600 space-y-1">
+                <div className="font-medium">Concurrent puzzles processed simultaneously</div>
+                <div>• Higher values = faster completion but more API load</div>
+                <div>• Lower values = slower but more stable for rate limits</div>
+                <div>• Recommended: 5-15 for premium models, 3-8 for free tiers</div>
               </div>
             </div>
           </div>
