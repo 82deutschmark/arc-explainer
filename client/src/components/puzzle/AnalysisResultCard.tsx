@@ -212,7 +212,17 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     hasReasoningLog: result.hasReasoningLog,
     reasoningLogLength: result.reasoningLog ? result.reasoningLog.length : 0,
     reasoningLogPreview: result.reasoningLog ? result.reasoningLog.substring(0, 100) + '...' : 'None',
-    modelName: result.modelName || 'Unknown'
+    modelName: result.modelName || 'Unknown',
+    // Badge data debugging
+    apiProcessingTimeMs: result.apiProcessingTimeMs,
+    estimatedCost: result.estimatedCost,
+    totalTokens: result.totalTokens,
+    inputTokens: result.inputTokens,
+    outputTokens: result.outputTokens,
+    temperature: result.temperature,
+    reasoningEffort: result.reasoningEffort,
+    reasoningVerbosity: result.reasoningVerbosity,
+    reasoningSummaryType: result.reasoningSummaryType
   });
 
   // Handle empty or error states - fix for the "0" display issue
