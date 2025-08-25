@@ -865,7 +865,7 @@ const getBatchResults = async (sessionId: string) => {
 
 // Export clean database service
 export const dbService = {
-  initDb,
+  init: initDb, // Maintain backward compatibility
   saveExplanation,
   getExplanationForPuzzle,
   getExplanationsForPuzzle,
