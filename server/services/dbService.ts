@@ -250,7 +250,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
                $31, $32, $33, $34, $35)
        RETURNING id`;
 
-    queryParams = [
+    const queryParams = [
       puzzleId,
       patternDescription || '',
       solvingStrategy || '',
@@ -288,7 +288,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       multiTestAverageAccuracy ?? null
     ];
 
-    paramMap = {
+    const paramMap = {
       1: 'puzzle_id', 2: 'pattern_description', 3: 'solving_strategy', 4: 'hints',
       5: 'confidence', 6: 'alien_meaning_confidence', 7: 'alien_meaning', 8: 'model_name',
       9: 'reasoning_log', 10: 'has_reasoning_log', 11: 'provider_response_id', 12: 'provider_raw_response',
