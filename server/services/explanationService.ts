@@ -100,7 +100,17 @@ export const explanationService = {
           multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
           multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
           providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          actualProcessingTime: restOfExplanationData.actualProcessingTime ?? null,
+          // Badge fields that were being dropped
+          apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
+          inputTokens: restOfExplanationData.inputTokens ?? null,
+          outputTokens: restOfExplanationData.outputTokens ?? null,
+          reasoningTokens: restOfExplanationData.reasoningTokens ?? null,
+          totalTokens: restOfExplanationData.totalTokens ?? null,
+          estimatedCost: restOfExplanationData.estimatedCost ?? null,
+          temperature: restOfExplanationData.temperature ?? null,
+          reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
+          reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
+          reasoningSummaryType: restOfExplanationData.reasoningSummaryType ?? null,
         };
 
         console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
