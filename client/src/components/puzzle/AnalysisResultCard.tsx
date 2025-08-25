@@ -95,12 +95,70 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   // Handle both single and multiple predicted outputs - memoize expensive computations
   const gridData = useMemo(() => {
-    const predictedGrids: number[][][] | undefined = (result as any)?.multiplePredictedOutputs || (result as any)?.predictedOutputGrids;
-    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
-    const multiValidation = (result as any)?.multiTestResults || (result as any)?.multiValidation;
+    console.log('AnalysisResultCard: Full result object:', result);
     
-    // For backwards compatibility, use single grid if no multi-grid data
+    // Try multiple possible field names for predicted grids
+    let predictedGrids: number[][][] | undefined;
+    let multiValidation: any;
+    
+    // Check for multiple prediction formats
+    if (result?.multiplePredictedOutputs) {
+      // If it's stored as JSONB, it might be a string that needs parsing
+      if (typeof result.multiplePredictedOutputs === 'string') {
+        try {
+          const parsed = JSON.parse(result.multiplePredictedOutputs);
+          if (Array.isArray(parsed)) {
+            predictedGrids = parsed;
+          } else if (parsed.predictedOutput1 && parsed.predictedOutput2) {
+            // Handle format: {predictedOutput1: [[...]], predictedOutput2: [[...]]}
+            predictedGrids = [parsed.predictedOutput1, parsed.predictedOutput2];
+          }
+        } catch (e) {
+          console.warn('Failed to parse multiplePredictedOutputs:', e);
+        }
+      } else if (Array.isArray(result.multiplePredictedOutputs)) {
+        predictedGrids = result.multiplePredictedOutputs;
+      } else if (typeof result.multiplePredictedOutputs === 'object') {
+        // Handle format: {predictedOutput1: [[...]], predictedOutput2: [[...]]}
+        const obj = result.multiplePredictedOutputs as any;
+        if (obj.predictedOutput1 && obj.predictedOutput2) {
+          predictedGrids = [obj.predictedOutput1, obj.predictedOutput2];
+        }
+      }
+    }
+    
+    // Try alternate field names
+    if (!predictedGrids && (result as any)?.predictedOutputGrids) {
+      predictedGrids = (result as any).predictedOutputGrids;
+    }
+    
+    // Handle multi-test results
+    if (result?.multiTestResults) {
+      if (typeof result.multiTestResults === 'string') {
+        try {
+          multiValidation = JSON.parse(result.multiTestResults);
+        } catch (e) {
+          console.warn('Failed to parse multiTestResults:', e);
+        }
+      } else {
+        multiValidation = result.multiTestResults;
+      }
+    }
+    
+    // Fallback to alternate names
+    if (!multiValidation && (result as any)?.multiValidation) {
+      multiValidation = (result as any).multiValidation;
+    }
+    
+    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
     const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
+    
+    console.log('AnalysisResultCard: Processed grid data:', {
+      hasPredictedGrids,
+      predictedGridsLength: predictedGrids?.length,
+      multiValidationLength: Array.isArray(multiValidation) ? multiValidation.length : 'not array',
+      singlePredictedGrid: !!singlePredictedGrid
+    });
     
     return {
       predictedGrids,

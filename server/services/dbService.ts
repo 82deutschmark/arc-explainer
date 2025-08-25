@@ -652,11 +652,21 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
-         (SELECT json_agg(json_build_object('id', f.id, 'vote_type', f.vote_type, 'comment', f.comment, 'created_at', f.created_at))
-          FROM feedback f
-          WHERE f.explanation_id = e.id AND f.comment IS NOT NULL
-          ORDER BY f.created_at DESC
-          LIMIT 5)
+         (SELECT json_agg(
+            json_build_object(
+              'id', f.id, 
+              'vote_type', f.vote_type, 
+              'comment', f.comment, 
+              'created_at', f.created_at
+            ) ORDER BY f.created_at DESC
+          )
+          FROM (
+            SELECT id, vote_type, comment, created_at
+            FROM feedback f2
+            WHERE f2.explanation_id = e.id AND f2.comment IS NOT NULL
+            ORDER BY f2.created_at DESC
+            LIMIT 5
+          ) f)
          AS "recent_comments"
        FROM explanations e
        WHERE e.puzzle_id = $1
