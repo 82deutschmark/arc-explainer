@@ -274,7 +274,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       providerResponseId || null,
       shouldPersistRaw ? toJsonbParam(providerRawResponse) : null,
       toJsonbParam(reasoningItems),
-      apiProcessingTimeMs || null,
+      apiProcessingTimeMs ?? null,
       toJsonbParam(saturnImages),
       toJsonbParam(saturnLog),
       toJsonbParam(saturnEvents),
