@@ -12,6 +12,7 @@ import { buildAnalysisPrompt, getDefaultPromptId, extractReasoningFromStructured
 import type { PromptOptions, PromptPackage } from "./promptBuilder";
 import { calculateCost } from "../utils/costCalculator";
 import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
+import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema";
 
 const MODELS = {
   "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
@@ -182,9 +183,15 @@ export class OpenAIService {
       }
       if (!parsedResponse) throw lastErr || new Error('Responses call failed');
 
-      // Parse JSON response
-      const rawJson = parsedResponse.output_text || '';
-      result = await this.parseJsonWithFallback(rawJson);
+      // Parse JSON response - prefer structured output_parsed over regex scraping
+      if (parsedResponse.output_parsed) {
+        console.log('[OpenAI] Using structured output_parsed from JSON schema');
+        result = parsedResponse.output_parsed;
+      } else {
+        console.log('[OpenAI] Falling back to regex JSON parsing from output_text');
+        const rawJson = parsedResponse.output_text || '';
+        result = await this.parseJsonWithFallback(rawJson);
+      }
 
       // Extract reasoning log  
       if (captureReasoning) {
@@ -404,15 +411,25 @@ export class OpenAIService {
 
     try {
       // Prepare the request for OpenAI's Responses API
-      const responsesRequest: any = {
+      const body = {
         model: request.model,
-        input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }], // Support both message array and string
+        input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }],
+        text: {
+          format: {
+            type: "json_schema",
+            name: ARC_JSON_SCHEMA.name,
+            strict: ARC_JSON_SCHEMA.strict,
+            json_schema: ARC_JSON_SCHEMA.schema
+          }
+        },
+        reasoning: request.reasoning,
+        temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
+        top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
+        parallel_tool_calls: false, // Deterministic parsing
+        truncation: "auto",
+        previous_response_id: request.previous_response_id,
         max_output_tokens: Math.max(256, request.max_output_tokens ?? 128000),
-        store: true,
-        ...(request.reasoning && { reasoning: request.reasoning }),
-        // REMOVED: max_steps - not supported in Responses API
-        ...(request.previous_response_id && { previous_response_id: request.previous_response_id })
-        // REMOVED: temperature - not supported in Responses API
+        store: true
       };
 
       // Make the API call to OpenAI's Responses endpoint
@@ -423,7 +440,7 @@ export class OpenAIService {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(responsesRequest),
+        body: JSON.stringify(body),
         signal: AbortSignal.timeout(2700000) // 45 minutes timeout
       });
 
@@ -444,10 +461,15 @@ export class OpenAIService {
       let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
       
       if (result.usage) {
+        // Defensive token usage calculation with reasoning_tokens support
+        const inputTokens = result.usage.input_tokens ?? 0;
+        const outputTokens = result.usage.output_tokens ?? 0;
+        const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
+        
         tokenUsage = {
-          input: result.usage.input_tokens,
-          output: result.usage.output_tokens,
-          // OpenAI doesn't provide separate reasoning tokens yet in Responses API
+          input: inputTokens,
+          output: outputTokens,
+          reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
         };
 
         // Find the model config to get pricing
@@ -470,6 +492,7 @@ export class OpenAIService {
       const parsedResponse = {
         id: result.id,
         output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
+        output_parsed: result.output_parsed, // Structured output from JSON schema
         output_reasoning: {
           summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
           items: result.output_reasoning?.items || []
