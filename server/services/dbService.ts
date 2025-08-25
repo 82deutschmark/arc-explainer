@@ -160,39 +160,6 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN has_multiple_predictions BOOLEAN DEFAULT NULL;
         END IF;
 
-        -- Migration: Clear corrupted data and convert TEXT columns to JSONB
-        -- Simple approach: clear all existing data in these columns, then convert
-        IF EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name = 'explanations'
-                  AND column_name = 'saturn_images'
-                  AND data_type = 'text') THEN
-          UPDATE explanations SET saturn_images = NULL;
-          ALTER TABLE explanations ALTER COLUMN saturn_images TYPE JSONB USING NULL;
-        END IF;
-
-        IF EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name = 'explanations'
-                  AND column_name = 'saturn_log'
-                  AND data_type = 'text') THEN
-          UPDATE explanations SET saturn_log = NULL;
-          ALTER TABLE explanations ALTER COLUMN saturn_log TYPE JSONB USING NULL;
-        END IF;
-
-        IF EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name = 'explanations'
-                  AND column_name = 'saturn_events'
-                  AND data_type = 'text') THEN
-          UPDATE explanations SET saturn_events = NULL;
-          ALTER TABLE explanations ALTER COLUMN saturn_events TYPE JSONB USING NULL;
-        END IF;
-
-        IF EXISTS (SELECT 1 FROM information_schema.columns
-                  WHERE table_name = 'explanations'
-                  AND column_name = 'predicted_output_grid'
-                  AND data_type = 'text') THEN
-          UPDATE explanations SET predicted_output_grid = NULL;
-          ALTER TABLE explanations ALTER COLUMN predicted_output_grid TYPE JSONB USING NULL;
-        END IF;
 
       END $$;
     `);
