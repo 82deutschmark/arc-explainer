@@ -6,7 +6,7 @@
 
 ## Problem Summary
 
-Multi-test puzzles (3+ test cases) have a critical database serialization bug where predicted grid arrays are stored as comma-separated strings instead of proper JSON arrays, causing frontend display issues.
+Multi-test puzzles (2+ test cases) have a critical database serialization bug where predicted grid arrays are stored as comma-separated strings instead of proper JSON arrays, causing frontend display issues.
 
 ### Symptoms
 - UI shows "Multi-Test Results (0 predictions, 3 tests)" despite having valid predictions
