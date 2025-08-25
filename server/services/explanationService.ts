@@ -115,12 +115,17 @@ export const explanationService = {
         };
 
         console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
-        const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
-        if (explanationId) {
-          console.log(`[MULTIPLE-OPS] SUCCESS saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}, ID: ${explanationId})`);
-          savedExplanationIds.push(explanationId);
-        } else {
-          console.log(`[MULTIPLE-OPS] FAILED saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+        try {
+          const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
+          if (explanationId) {
+            console.log(`[MULTIPLE-OPS] SUCCESS saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}, ID: ${explanationId})`);
+            savedExplanationIds.push(explanationId);
+          } else {
+            console.log(`[MULTIPLE-OPS] FAILED saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - no ID returned`);
+          }
+        } catch (error) {
+          console.log(`[MULTIPLE-OPS] ERROR saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - ${error instanceof Error ? error.message : String(error)}`);
+          // Continue with other models instead of failing completely
         }
       }
     }
