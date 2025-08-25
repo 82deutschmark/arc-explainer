@@ -201,7 +201,10 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
         total_tokens, estimated_cost, multiple_predicted_outputs, multi_test_results,
         multi_test_all_correct, multi_test_average_accuracy)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
+               COALESCE($15, 'null'), $16, $17, $18, 
+               COALESCE($19, 'null'), $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
+               COALESCE($31::jsonb, 'null'::jsonb), $32, $33, $34)
        RETURNING id`,
       [
         puzzleId,
@@ -234,7 +237,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        processMultiplePredictedOutputs(multiplePredictedOutputs), // JSONB - handle boolean/array
+        multiplePredictedOutputs ?? null, // JSONB column - pass directly, let PostgreSQL handle it
         multiTestResults ?? null, // JSONB column - pass array directly
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
@@ -244,7 +247,19 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
     logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
     return result.rows[0].id;
   } catch (error) {
-    logger.error(`Error saving explanation: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    // Enhanced error logging for JSON syntax errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error(`Error saving explanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
+    
+    // Log the problematic data for debugging
+    if (errorMessage.includes('invalid input syntax for type json')) {
+      logger.error(`JSON syntax error details:`, 'database');
+      logger.error(`- predictedOutputGrid type: ${typeof predictedOutputGrid}, value: ${JSON.stringify(predictedOutputGrid)?.substring(0, 200)}`, 'database');
+      logger.error(`- multiplePredictedOutputs type: ${typeof multiplePredictedOutputs}, value: ${JSON.stringify(multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
+      logger.error(`- reasoningItems type: ${typeof reasoningItems}, value: ${JSON.stringify(reasoningItems)?.substring(0, 200)}`, 'database');
+      logger.error(`- saturnImages type: ${typeof saturnImages}, value: ${JSON.stringify(saturnImages)?.substring(0, 200)}`, 'database');
+    }
+    
     return null;
   } finally {
     client.release();
