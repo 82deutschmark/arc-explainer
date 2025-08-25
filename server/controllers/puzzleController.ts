@@ -135,8 +135,8 @@ export const puzzleController = {
         
         // ARCHITECTURAL FIX: Separate boolean flag from array storage
         result.hasMultiplePredictions = true; // Boolean detection flag
+        result.multiplePredictedOutputs = true; // Explicit boolean (Option B)
         result.multiTestPredictionGrids = multi.predictedGrids; // Dedicated array storage
-        // Keep multiplePredictedOutputs as boolean (don't overwrite with arrays)
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
@@ -149,6 +149,7 @@ export const puzzleController = {
 
         // Add validation results to response (single prediction)
         result.hasMultiplePredictions = false; // Boolean detection flag
+        result.multiplePredictedOutputs = false; // Explicit boolean (Option B)
         result.multiTestPredictionGrids = null; // No multi-test grids for single predictions
         result.predictedOutputGrid = validation.predictedGrid;
         result.isPredictionCorrect = validation.isPredictionCorrect;
