@@ -15,9 +15,8 @@ import {
   normalizeConfidence, 
   safeJsonParse, 
   processHints,
-  processMultiplePredictedOutputs 
 } from '../utils/dataTransformers';
-import { safeQuery, prepareJsonbParam, prepareSaturnImagesParam } from '../utils/dbQueryWrapper';
+import { q, toTextJSON } from '../utils/dbQueryWrapper';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -58,6 +57,28 @@ const initDb = async () => {
  */
 const createTablesIfNotExist = async () => {
   if (!pool) return;
+
+  try {
+    // Phase 0: Snapshot reality - Log the actual schema of key columns
+    const schemaCheckQuery = `
+      SELECT column_name, data_type
+      FROM information_schema.columns
+      WHERE table_name = 'explanations'
+        AND column_name IN (
+          'predicted_output_grid',
+          'reasoning_items',
+          'saturn_images',
+          'multiple_predicted_outputs',
+          'multi_test_results'
+        )
+      ORDER BY column_name;
+    `;
+    const schemaResult = await pool.query(schemaCheckQuery);
+    console.info('[DB Schema Snapshot] Actual data types for `explanations` table:', schemaResult.rows);
+  } catch (error) {
+    console.error('[DB Schema Snapshot] Failed to retrieve schema for `explanations` table:', error);
+    // Proceed even if snapshot fails, but log the error.
+  }
   
   const client = await pool.connect();
   
@@ -160,7 +181,6 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN has_multiple_predictions BOOLEAN DEFAULT NULL;
         END IF;
 
-
       END $$;
     `);
 
@@ -196,13 +216,11 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       hasMultiplePredictions, multiplePredictedOutputs, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
     } = explanation;
 
-    // Process data using utilities
     const hints = processHints(rawHints);
     const shouldPersistRaw = process.env.RAW_RESPONSE_PERSIST !== 'false';
 
-    const result = await safeQuery(
-      client,
-      `INSERT INTO explanations 
+    const queryText = `
+      INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
         reasoning_log, has_reasoning_log, provider_response_id, provider_raw_response,
@@ -215,61 +233,58 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
                $31, $32, $33, $34, $35)
-       RETURNING id`,
-      [
-        puzzleId,
-        patternDescription || '',
-        solvingStrategy || '',
-        hints,
-        normalizeConfidence(confidence),
-        alienMeaningConfidence ? normalizeConfidence(alienMeaningConfidence) : null,
-        alienMeaning || '',
-        modelName || 'unknown',
-        reasoningLog || null,
-        hasReasoningLog || false,
-        providerResponseId || null,
-        shouldPersistRaw ? prepareJsonbParam(providerRawResponse) : null,
-        prepareJsonbParam(reasoningItems), // JSONB - safe parameter handling
-        apiProcessingTimeMs || null,
-        prepareSaturnImagesParam(saturnImages), // JSONB - extra-safe edge case handling 
-        prepareJsonbParam(saturnLog), // JSONB - safe parameter handling
-        prepareJsonbParam(saturnEvents), // JSONB - safe parameter handling
-        saturnSuccess ?? null,
-        prepareJsonbParam(predictedOutputGrid), // JSONB - safe parameter handling
-        isPredictionCorrect ?? null,
-        predictionAccuracyScore ?? null,
-        temperature ?? null,
-        reasoningEffort || null,
-        reasoningVerbosity || null,
-        reasoningSummaryType || null,
-        inputTokens ?? null,
-        outputTokens ?? null,
-        reasoningTokens ?? null,
-        totalTokens ?? null,
-        estimatedCost ?? null,
-        hasMultiplePredictions ?? null,
-        prepareJsonbParam(multiplePredictedOutputs), // JSONB - safe parameter handling
-        prepareJsonbParam(multiTestResults), // JSONB - safe parameter handling
-        multiTestAllCorrect ?? null,
-        multiTestAverageAccuracy ?? null
-      ],
-      'explanations.insert'
-    );
+       RETURNING id`;
+
+    const queryParams = [
+      puzzleId,
+      patternDescription || '',
+      solvingStrategy || '',
+      hints, // Already an array of strings
+      normalizeConfidence(confidence),
+      alienMeaningConfidence ? normalizeConfidence(alienMeaningConfidence) : null,
+      alienMeaning || '',
+      modelName || 'unknown',
+      reasoningLog || null,
+      hasReasoningLog || false,
+      providerResponseId || null,
+      shouldPersistRaw ? toTextJSON(providerRawResponse) : null,
+      toTextJSON(reasoningItems),
+      apiProcessingTimeMs || null,
+      toTextJSON(saturnImages),
+      toTextJSON(saturnLog),
+      toTextJSON(saturnEvents),
+      saturnSuccess ?? null,
+      toTextJSON(predictedOutputGrid),
+      isPredictionCorrect ?? null,
+      predictionAccuracyScore ?? null,
+      temperature ?? null,
+      reasoningEffort || null,
+      reasoningVerbosity || null,
+      reasoningSummaryType || null,
+      inputTokens ?? null,
+      outputTokens ?? null,
+      reasoningTokens ?? null,
+      totalTokens ?? null,
+      estimatedCost ?? null,
+      hasMultiplePredictions ?? null,
+      toTextJSON(multiplePredictedOutputs),
+      toTextJSON(multiTestResults),
+      multiTestAllCorrect ?? null,
+      multiTestAverageAccuracy ?? null
+    ];
+
+    const result = await q(client, queryText, queryParams, 'explanations.insert');
     
     logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
     return result.rows[0].id;
   } catch (error) {
-    // Enhanced error logging for JSON syntax errors
     const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(`Error saving explanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
     
-    // Log the problematic data for debugging
-    if (errorMessage.includes('invalid input syntax for type json')) {
-      logger.error(`JSON syntax error details:`, 'database');
-      logger.error(`- predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)?.substring(0, 200)}`, 'database');
-      logger.error(`- multiplePredictedOutputs type: ${typeof explanation.multiplePredictedOutputs}, value: ${JSON.stringify(explanation.multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
-      logger.error(`- reasoningItems type: ${typeof explanation.reasoningItems}, value: ${JSON.stringify(explanation.reasoningItems)?.substring(0, 200)}`, 'database');
-      logger.error(`- saturnImages type: ${typeof explanation.saturnImages}, value: ${JSON.stringify(explanation.saturnImages)?.substring(0, 200)}`, 'database');
+    if (errorMessage.includes('invalid input syntax for type json') || errorMessage.includes('undefined parameter')) {
+      logger.error(`[Debug] Problematic data for puzzle ${puzzleId}:`, 'database');
+      logger.error(`- multiple_predicted_outputs: ${typeof explanation.multiplePredictedOutputs} | ${JSON.stringify(explanation.multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
+      logger.error(`- multi_test_results: ${typeof explanation.multiTestResults} | ${JSON.stringify(explanation.multiTestResults)?.substring(0, 200)}`, 'database');
     }
     
     return null;

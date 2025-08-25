@@ -7,6 +7,38 @@
 
 August 25, 2025
 
+## Version 1.8.6 — Comprehensive JSON Serialization and Data Structure Refactor (2025-08-25)
+
+### 🛠️ **ARCHITECTURAL REFACTOR** - End-to-End JSON Stability (Code by Cascade)
+**Eliminated all remaining JSON serialization errors and fixed critical data type collisions through a multi-phased, systematic refactor.**
+
+#### **The Problem**
+- Persistent "invalid input syntax for type json" errors were occurring despite previous fixes, particularly in multi-test scenarios.
+- `undefined` parameters were still reaching the database layer, causing query failures.
+- A critical design flaw was identified where the `multiplePredictedOutputs` field was used ambiguously as both a boolean flag and a data array, leading to type collisions.
+
+#### **Solution Implemented (Multi-Phase Fix)**
+
+**Phase 1: Strict Query Parameter Validation**
+- **Strict Query Wrapper**: Introduced a new `dbQueryWrapper.ts` with a strict `q()` function that validates every query parameter.
+- **Undefined Prevention**: The wrapper now throws a descriptive error if any parameter is `undefined`, preventing invalid data from reaching PostgreSQL.
+- **Enhanced Logging**: Added detailed logging of parameter types and values for easier debugging.
+
+**Phase 2: Database Service Refactor**
+- **Standardized Serialization**: Refactored `dbService.ts` to exclusively use the new `q()` wrapper and a `toTextJSON` helper.
+- **Removed Unsafe Utilities**: Eliminated all old, unsafe query functions (`safeQuery`, `prepareJsonbParam`, etc.).
+- **Schema Alignment**: Ensured all data passed to the database strictly conforms to the expected column types (TEXT vs. JSONB).
+
+**Phase 3: Data Structure Correction**
+- **Separated Concerns**: Refactored `explanationService.ts` to resolve the ambiguous `multiplePredictedOutputs` field.
+- **Distinct Fields**: The logic now correctly derives and passes two separate fields to the database: `hasMultiplePredictions` (boolean) and `multiplePredictedOutputs` (array), aligning with the schema.
+- **Removed Workarounds**: Deleted the temporary `processMultiplePredictedOutputs` data transformer.
+
+#### **Technical Impact**
+- ✅ **Error Elimination**: The strict wrapper and serialization helpers prevent all known JSON-related database errors.
+- ✅ **Type Safety**: The data structure is now consistent and type-safe from the service layer to the database.
+- ✅ **Improved Architecture**: The fix addresses the root cause of the issues, resulting in a more robust and maintainable backend.
+
 ## Version 1.8.5 — PostgreSQL JSON Parameter Validation (2025-08-25)
 
 ### 🛠️ **CRITICAL FIX** - Undefined Parameter Protection (Code by Cascade)
