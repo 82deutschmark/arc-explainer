@@ -135,10 +135,14 @@ export class AnthropicService {
       let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
       
       if (response.usage) {
+        // Defensive token usage calculation like OpenAI
+        const inputTokens = response.usage.input_tokens ?? 0;
+        const outputTokens = response.usage.output_tokens ?? 0;
+        
         tokenUsage = {
-          input: response.usage.input_tokens,
-          output: response.usage.output_tokens,
-          // For Anthropic, we don't have separate reasoning tokens, but we could estimate from reasoning content length
+          input: inputTokens,
+          output: outputTokens,
+          // Anthropic doesn't provide separate reasoning tokens
         };
 
         // Find the model config to get pricing

@@ -272,9 +272,13 @@ Then provide your final structured JSON response.` : promptPackage.userPrompt;
       let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
       
       if (result.response.usageMetadata) {
+        // Defensive token usage calculation like OpenAI
+        const inputTokens = result.response.usageMetadata.promptTokenCount ?? 0;
+        const outputTokens = result.response.usageMetadata.candidatesTokenCount ?? 0;
+        
         tokenUsage = {
-          input: result.response.usageMetadata.promptTokenCount || 0,
-          output: result.response.usageMetadata.candidatesTokenCount || 0,
+          input: inputTokens,
+          output: outputTokens,
           // Gemini doesn't provide separate reasoning tokens currently
         };
 

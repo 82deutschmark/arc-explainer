@@ -3,7 +3,7 @@
   What: A step-by-step trace of the data flow for puzzle analysis.
   How: Explains the process from a user click to the result display.
   Author: Cascade
-  Last Updated: August 23, 2025
+  Last Updated: August 24, 2025
 -->
 
 # Analysis Data Flow Trace
@@ -82,6 +82,11 @@ The process is broken down into two main parts: the Frontend (what happens in th
 4.  **Calling the AI Model**
     *   **Where**: `server/services/openai.ts` (or other provider services).
     *   **What**: The controller determines the correct AI provider based on the `modelKey` and calls its `analyzePuzzleWithModel` function. This service is responsible for making the actual API call to the external AI provider (e.g., OpenAI's API).
+    *   **Model Configuration**: All AI model configurations are now centralized in `server/config/models.ts` which provides:
+        - Single source of truth for model capabilities (temperature support, reasoning support)
+        - Helper functions: `getModelConfig()`, `modelSupportsTemperature()`, `modelSupportsReasoning()`
+        - API model name mapping via `getApiModelName()`
+        - Eliminates scattered hardcoded model lists across codebase
 
 5.  **Validating the AI's Answer**
     *   **Where**: `server/services/responseValidator.ts`.

@@ -19,6 +19,10 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
+import { batchAnalysisController } from "./controllers/batchAnalysisController";
+
+// Import route modules
+import modelsRouter from "./routes/models.js";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -36,6 +40,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
 
   // Routes with consistent naming and error handling
+  
+  // Models API routes
+  app.use("/api/models", modelsRouter);
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
@@ -73,6 +80,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
+  
+  // Batch analysis routes
+  app.post("/api/model/batch-analyze", asyncHandler(batchAnalysisController.startBatch));
+  app.get("/api/model/batch-status/:sessionId", asyncHandler(batchAnalysisController.getBatchStatus));
+  app.post("/api/model/batch-control/:sessionId", asyncHandler(batchAnalysisController.controlBatch));
+  app.get("/api/model/batch-results/:sessionId", asyncHandler(batchAnalysisController.getBatchResults));
+  app.get("/api/model/batch-sessions", asyncHandler(batchAnalysisController.getAllSessions));
   
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {
