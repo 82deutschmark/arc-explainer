@@ -582,12 +582,13 @@ const getAllFeedback = async (filters: FeedbackFilters = {}): Promise<DetailedFe
  */
 const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
   const defaultStats: FeedbackStats = {
-    total: 0,
-    helpful: 0,
-    notHelpful: 0,
+    totalFeedback: 0,
+    helpfulCount: 0,
+    notHelpfulCount: 0,
     helpfulPercentage: 0,
-    byModel: [],
-    byDay: []
+    notHelpfulPercentage: 0,
+    feedbackByModel: {},
+    feedbackByDay: []
   };
 
   if (!pool) return defaultStats;
@@ -606,6 +607,7 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
     
     const { total, helpful, not_helpful: notHelpful } = totalResult.rows[0];
     const helpfulPercentage = total > 0 ? (helpful / total) * 100 : 0;
+    const notHelpfulPercentage = total > 0 ? (notHelpful / total) * 100 : 0;
 
     // Get stats by model
     const modelResult = await client.query(`
@@ -619,12 +621,13 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
       ORDER BY total DESC
     `);
     
-    const byModel = modelResult.rows.map(row => ({
-      model: row.model_name,
-      total: parseInt(row.total),
-      helpful: parseInt(row.helpful),
-      helpfulPercentage: row.total > 0 ? (row.helpful / row.total) * 100 : 0
-    }));
+    const feedbackByModel: Record<string, { helpful: number; notHelpful: number }> = {};
+    modelResult.rows.forEach(row => {
+      feedbackByModel[row.model_name] = {
+        helpful: parseInt(row.helpful),
+        notHelpful: parseInt(row.total) - parseInt(row.helpful)
+      };
+    });
 
     // Get daily stats for last 30 days
     const dailyResult = await client.query(`
@@ -638,19 +641,20 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
       ORDER BY date DESC
     `);
     
-    const byDay = dailyResult.rows.map(row => ({
+    const feedbackByDay = dailyResult.rows.map(row => ({
       date: row.date.toISOString().split('T')[0],
-      total: parseInt(row.total),
-      helpful: parseInt(row.helpful)
+      helpful: parseInt(row.helpful),
+      notHelpful: parseInt(row.total) - parseInt(row.helpful)
     }));
 
     return {
-      total: parseInt(total),
-      helpful: parseInt(helpful),
-      notHelpful: parseInt(notHelpful),
+      totalFeedback: parseInt(total),
+      helpfulCount: parseInt(helpful),
+      notHelpfulCount: parseInt(notHelpful),
       helpfulPercentage: Math.round(helpfulPercentage * 10) / 10,
-      byModel,
-      byDay
+      notHelpfulPercentage: Math.round(notHelpfulPercentage * 10) / 10,
+      feedbackByModel,
+      feedbackByDay
     };
   } catch (error) {
     logger.error(`Error getting feedback stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
