@@ -119,9 +119,11 @@ export default function PuzzleBrowser() {
   };
 
   // Format cost for display
-  const formatCost = (cost: number | null | undefined) => {
+  const formatCost = (cost: number | string | null | undefined) => {
     if (!cost) return null;
-    return `$${cost.toFixed(3)}`;
+    const numCost = typeof cost === 'string' ? parseFloat(cost) : cost;
+    if (isNaN(numCost)) return null;
+    return `$${numCost.toFixed(3)}`;
   };
 
   // Handle puzzle search by ID
