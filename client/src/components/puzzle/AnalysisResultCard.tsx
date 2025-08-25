@@ -204,16 +204,18 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [showDiff, predictedGrid, expectedOutputGrids]);
 
   // Log the result to see what we're getting
-  console.log('AnalysisResultCard result:', { 
+  console.log('AnalysisResultCard DEBUG:', { 
     modelName: result.modelName || 'Unknown',
-    // Badge fields - THESE should show if data exists
-    apiProcessingTimeMs: result.apiProcessingTimeMs,
-    estimatedCost: result.estimatedCost,
-    totalTokens: result.totalTokens,
-    temperature: result.temperature,
-    reasoningEffort: result.reasoningEffort,
-    // All available fields in result object
-    allFields: Object.keys(result)
+    // Badge field values and their types
+    apiProcessingTimeMs: result.apiProcessingTimeMs, apiProcessingTimeMsType: typeof result.apiProcessingTimeMs,
+    estimatedCost: result.estimatedCost, estimatedCostType: typeof result.estimatedCost,
+    totalTokens: result.totalTokens, totalTokensType: typeof result.totalTokens,
+    temperature: result.temperature, temperatureType: typeof result.temperature,
+    reasoningEffort: result.reasoningEffort, reasoningEffortType: typeof result.reasoningEffort,
+    reasoningVerbosity: result.reasoningVerbosity, reasoningVerbosityType: typeof result.reasoningVerbosity,
+    reasoningSummaryType: result.reasoningSummaryType, reasoningSummaryTypeType: typeof result.reasoningSummaryType,
+    // Model support check
+    modelSupportsTemperature: model?.supportsTemperature
   });
 
   // Handle empty or error states - fix for the "0" display issue
