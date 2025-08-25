@@ -16,10 +16,15 @@ import type { PuzzleMetadata } from '@shared/types';
 import { useHasExplanation } from '@/hooks/useExplanation';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
 
-// Extended type to include feedback counts from our enhanced API
+// Extended type to include feedback counts and processing metadata from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   explanationId?: number;
   feedbackCount?: number;
+  apiProcessingTimeMs?: number;
+  modelName?: string;
+  createdAt?: string;
+  confidence?: number;
+  estimatedCost?: number;
 }
 
 export default function PuzzleBrowser() {
@@ -28,6 +33,7 @@ export default function PuzzleBrowser() {
   const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained as requested
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
   const [multiTestFilter, setMultiTestFilter] = useState<string>('any'); // 'any', 'single', 'multi'
+  const [sortBy, setSortBy] = useState<string>('default'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [, setLocation] = useLocation();
@@ -53,26 +59,71 @@ export default function PuzzleBrowser() {
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
   
-  // Apply explanation filtering after getting puzzles from the hook
-  // Cast to enhanced metadata type to access the feedbackCount property
+  // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
     const allPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
     
     // Apply explanation filter
+    let filtered = allPuzzles;
     if (explanationFilter === 'unexplained') {
-      return allPuzzles.filter(puzzle => !puzzle.hasExplanation);
+      filtered = allPuzzles.filter(puzzle => !puzzle.hasExplanation);
     } else if (explanationFilter === 'explained') {
-      return allPuzzles.filter(puzzle => puzzle.hasExplanation);
+      filtered = allPuzzles.filter(puzzle => puzzle.hasExplanation);
     }
     
-    // Default: return all puzzles
-    return allPuzzles;
-  }, [puzzles, explanationFilter]);
+    // Apply sorting
+    if (sortBy !== 'default') {
+      filtered = [...filtered].sort((a, b) => {
+        switch (sortBy) {
+          case 'processing_time':
+            // Longest processing time first (nulls last)
+            const aTime = a.apiProcessingTimeMs || 0;
+            const bTime = b.apiProcessingTimeMs || 0;
+            return bTime - aTime;
+          case 'confidence':
+            // Highest confidence first (nulls last)
+            const aConf = a.confidence || 0;
+            const bConf = b.confidence || 0;
+            return bConf - aConf;
+          case 'cost':
+            // Highest cost first (nulls last)
+            const aCost = a.estimatedCost || 0;
+            const bCost = b.estimatedCost || 0;
+            return bCost - aCost;
+          case 'created_at':
+            // Most recent first (nulls last)
+            const aDate = a.createdAt || '1970-01-01';
+            const bDate = b.createdAt || '1970-01-01';
+            return bDate.localeCompare(aDate);
+          default:
+            return 0;
+        }
+      });
+    }
+    
+    return filtered;
+  }, [puzzles, explanationFilter, sortBy]);
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (size <= 10) return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
     return 'bg-red-100 text-red-800 hover:bg-red-200';
+  };
+
+  // Format processing time for display
+  const formatProcessingTime = (ms: number | null | undefined) => {
+    if (!ms) return null;
+    if (ms < 1000) return `${ms}ms`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+    return `${(ms / 60000).toFixed(1)}m`;
+  };
+
+  // Format cost for display
+  const formatCost = (cost: number | string | null | undefined) => {
+    if (!cost) return null;
+    const numCost = typeof cost === 'string' ? parseFloat(cost) : cost;
+    if (isNaN(numCost)) return null;
+    return `$${numCost.toFixed(3)}`;
   };
 
   // Handle puzzle search by ID
@@ -264,6 +315,22 @@ export default function PuzzleBrowser() {
                   </SelectContent>
                 </Select>
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="sortBy">Sort By</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Default sorting" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">Default (puzzle order)</SelectItem>
+                    <SelectItem value="processing_time">Processing Time (longest first)</SelectItem>
+                    <SelectItem value="confidence">Confidence (highest first)</SelectItem>
+                    <SelectItem value="cost">Cost (highest first)</SelectItem>
+                    <SelectItem value="created_at">Analysis Date (newest first)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -299,7 +366,7 @@ export default function PuzzleBrowser() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredPuzzles.map((puzzle: PuzzleMetadata) => (
+                {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="space-y-3">
@@ -325,23 +392,44 @@ export default function PuzzleBrowser() {
                               </Badge>
                             )}
                           </div>
-                          {puzzle.hasExplanation && (
-                            <div className="flex flex-col gap-1">
-                              <Badge variant="outline" className="bg-green-50 text-green-700">
+                        </div>
+                        
+                        {/* Analysis Status and Metadata */}
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {puzzle.hasExplanation ? (
+                            <>
+                              <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
                                 ✓ Explained
                               </Badge>
-                              {/* @ts-ignore - feedbackCount is added by our enhanced API */}
-                              {puzzle.feedbackCount > 0 && (
-                                <Badge variant="outline" className="bg-purple-50 text-purple-700 flex items-center gap-1">
-                                  <MessageCircle className="h-3 w-3" />
-                                  {/* @ts-ignore - feedbackCount is added by our enhanced API */}
-                                  {puzzle.feedbackCount} {puzzle.feedbackCount === 1 ? 'comment' : 'comments'}
+                              {puzzle.modelName && (
+                                <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
+                                  {puzzle.modelName}
                                 </Badge>
                               )}
-                            </div>
-                          )}
-                          {!puzzle.hasExplanation && (
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                              {formatProcessingTime(puzzle.apiProcessingTimeMs) && (
+                                <Badge variant="outline" className="bg-orange-50 text-orange-700 text-xs">
+                                  {formatProcessingTime(puzzle.apiProcessingTimeMs)}
+                                </Badge>
+                              )}
+                              {puzzle.confidence && (
+                                <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
+                                  {puzzle.confidence}% conf
+                                </Badge>
+                              )}
+                              {formatCost(puzzle.estimatedCost) && (
+                                <Badge variant="outline" className="bg-green-50 text-green-600 text-xs">
+                                  {formatCost(puzzle.estimatedCost)}
+                                </Badge>
+                              )}
+                              {(puzzle.feedbackCount || 0) > 0 && (
+                                <Badge variant="outline" className="bg-pink-50 text-pink-700 flex items-center gap-1 text-xs">
+                                  <MessageCircle className="h-3 w-3" />
+                                  {puzzle.feedbackCount}
+                                </Badge>
+                              )}
+                            </>
+                          ) : (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
                               📝 Needs Analysis
                             </Badge>
                           )}
