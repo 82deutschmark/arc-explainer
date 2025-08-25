@@ -295,3 +295,127 @@ result.multiTestPredictionGrids = multi.predictedGrids; // Storage only
 - `hasXyz` or `isXyz` → Boolean flags for logic
 - `xyzData` or `xyzResults` → Data storage
 - **NEVER mix detection flags with storage data**
+
+---
+
+## **💥 FINAL FAILURE ANALYSIS - August 25, 2025 3:04 PM**
+
+### **COMPLETE FAILURE STATUS: UNRESOLVED**
+
+After multiple failed attempts, the core issue remains: **DATABASE COLUMNS ARE STILL TEXT FORMAT EXPECTING JSON STRINGS, BUT CODE IS PASSING RAW OBJECTS**
+
+### **What Was Attempted (ALL FAILED)**
+
+#### **Attempt 1: Parameter Validation Wrapper**
+- **Action**: Created `dbQueryWrapper.ts` with `safeQuery()` and `prepareJsonbParam()`
+- **Theory**: Add parameter validation to catch undefined values
+- **Result**: ❌ **FAILED** - Still passing objects to TEXT columns
+- **Files**: `server/utils/dbQueryWrapper.ts`, `server/services/dbService.ts`
+
+#### **Attempt 2: Database Migration with Safe Conversion**
+- **Action**: Added complex SQL migration with CASE statements to convert TEXT→JSONB
+- **Theory**: Convert corrupted data safely during migration
+- **Result**: ❌ **FAILED** - Migration SQL itself failed with "invalid input syntax for type json"
+- **Files**: `server/services/dbService.ts` (lines 163-195)
+
+#### **Attempt 3: Simplified Migration - Clear Data First**
+- **Action**: Simplified migration to `UPDATE SET column = NULL` then `ALTER TYPE JSONB`
+- **Theory**: Clear corrupted data first, then simple type conversion
+- **Result**: ❌ **UNKNOWN** - Migration appears to not run at all during server startup
+- **Files**: `server/services/dbService.ts` (lines 163-195, simplified version)
+
+#### **Attempt 4: Fix safeJsonParse for Mixed Types**  
+- **Action**: Modified `safeJsonParse` to handle both objects (JSONB) and strings (TEXT)
+- **Theory**: Handle mixed column types during transition
+- **Result**: ❌ **FAILED** - Still getting "jsonString?.substring is not a function" 
+- **Files**: `server/utils/dataTransformers.ts`
+
+#### **Attempt 5: Multiple prepareJsonbParam Approaches**
+- **Action**: Switched between object-passing and JSON-stringifying in `prepareJsonbParam`
+- **Theory**: Match what database columns expect
+- **Result**: ❌ **FAILED** - User reverted changes because we kept going in circles
+- **Files**: `server/utils/dbQueryWrapper.ts` (multiple reverts)
+
+### **ROOT CAUSE ANALYSIS: THE ACTUAL PROBLEM**
+
+**FACT 1**: Database migration **NEVER SUCCESSFULLY RAN**
+- Server startup still fails with "invalid input syntax for type json" during table creation
+- Columns remain TEXT format expecting JSON strings
+- Migration SQL in `createTablesIfNotExist()` function is failing
+
+**FACT 2**: Code assumes JSONB columns but database has TEXT columns
+- `prepareJsonbParam()` passes objects directly (correct for JSONB)
+- Database columns are TEXT expecting JSON strings (require stringification)
+- **MISMATCH**: Objects → TEXT columns = "invalid input syntax for type json"
+
+**FACT 3**: No actual database column type verification
+- All attempts assumed migration worked
+- Never verified what column types actually exist
+- Debug attempts to check schema failed due to Windows/psql issues
+
+### **THE REAL SOLUTION (FOR NEXT DEVELOPER)**
+
+#### **Step 1: Fix Database Migration First**
+The migration SQL is preventing server startup. Fix the `createTablesIfNotExist()` function:
+
+1. **Remove failing migration code** (lines 163-195 in `server/services/dbService.ts`)
+2. **Start server successfully** (database in TEXT column mode)  
+3. **Manually verify column types** with proper database client
+4. **Write working migration** once you know the actual database state
+
+#### **Step 2: Match Code to Database Reality**
+- **IF columns are TEXT**: Use `JSON.stringify()` for objects in `prepareJsonbParam()`
+- **IF columns are JSONB**: Pass objects directly in `prepareJsonbParam()`
+- **Don't assume**: Verify actual column types first
+
+#### **Step 3: One Thing at a Time**
+- Fix **ONE parameter** that's failing (likely `predictedOutputGrid`)
+- Test with **ONE puzzle**
+- Don't change multiple functions simultaneously
+
+### **FAILED TOOLS/APPROACHES TO AVOID**
+
+❌ **Complex migration SQL with CASE statements** - PostgreSQL rejects during startup
+❌ **Parameter validation wrappers** - Adds complexity without fixing root cause  
+❌ **Mixed object/string handling** - Creates inconsistent behavior
+❌ **Multiple simultaneous changes** - Makes debugging impossible
+❌ **Assuming migration worked** - Always verify database schema first
+
+### **DIAGNOSTIC COMMANDS THAT FAILED**
+
+```bash
+# Tried but failed on Windows:
+psql $env:DATABASE_URL -c "SELECT column_name, data_type FROM information_schema.columns..."
+
+# ES module issues:
+node debug-schema.js  # "require is not defined in ES module scope"
+```
+
+### **EVIDENCE OF CONTINUED FAILURE**
+
+**Latest Error Output (3:02 PM)**:
+```
+[ERROR][database] Query failed (explanations.insert): invalid input syntax for type json
+[ERROR][database] - predictedOutputGrid type: object, value: [[2,2,2],[0,2,0]...]
+[ERROR][database] - reasoningItems type: object, value: ["Examined each training example...]
+[ERROR][database] - saturnImages type: undefined, value: undefined
+```
+
+**Proof**: Still passing objects to TEXT columns that expect JSON strings.
+
+### **FINAL RECOMMENDATION**
+
+**STOP ALL MIGRATION ATTEMPTS**. Focus on:
+
+1. **Remove failing migration code** to get server starting
+2. **Use JSON.stringify()** for objects going to database (assume TEXT columns)
+3. **Test with one simple puzzle** 
+4. **THEN** worry about proper JSONB migration
+
+**Time Investment**: 6+ hours of failed attempts  
+**Result**: Zero progress, same error persists  
+**Status**: Complete failure, needs fresh approach from next developer
+
+---
+
+**Cascade's Note**: I apologize for the repeated failed attempts and circular solutions. The core issue is database schema mismatch that was never properly diagnosed due to environment limitations. Next developer should start with basic database column type verification before any code changes.
