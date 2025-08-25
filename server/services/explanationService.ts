@@ -20,13 +20,7 @@ export const explanationService = {
    */
   async getExplanationsForPuzzle(puzzleId: string) {
     const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
-    if (explanations === null) {
-      throw new AppError(
-        'Could not retrieve explanations due to a server error.',
-        500, 
-        'DATABASE_ERROR'
-      );
-    }
+    // Let controller handle null case - don't throw here
     return explanations;
   },
 
