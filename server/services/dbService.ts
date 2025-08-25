@@ -17,7 +17,7 @@ import {
   processHints,
   processMultiplePredictedOutputs 
 } from '../utils/dataTransformers';
-import { safeQuery, prepareJsonbParam } from '../utils/dbQueryWrapper';
+import { safeQuery, prepareJsonbParam, prepareSaturnImagesParam } from '../utils/dbQueryWrapper';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -160,37 +160,57 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN has_multiple_predictions BOOLEAN DEFAULT NULL;
         END IF;
 
-        -- Migration: Convert TEXT columns to JSONB for robust JSON handling
-        -- saturn_images
+        -- Migration: Convert TEXT columns to JSONB with safe fallback handling
+        -- saturn_images (edge case - clear corrupted data)
         IF EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name = 'explanations'
                   AND column_name = 'saturn_images'
                   AND data_type = 'text') THEN
-          ALTER TABLE explanations ALTER COLUMN saturn_images TYPE JSONB USING saturn_images::jsonb;
+          ALTER TABLE explanations ALTER COLUMN saturn_images TYPE JSONB 
+          USING CASE 
+            WHEN saturn_images IS NULL OR saturn_images = '' OR saturn_images = 'null' THEN NULL
+            WHEN saturn_images::text ~ '^[\s]*[\[\{]' THEN saturn_images::jsonb
+            ELSE NULL
+          END;
         END IF;
 
-        -- saturn_log
+        -- saturn_log (safe conversion with fallback)
         IF EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name = 'explanations'
                   AND column_name = 'saturn_log'
                   AND data_type = 'text') THEN
-          ALTER TABLE explanations ALTER COLUMN saturn_log TYPE JSONB USING saturn_log::jsonb;
+          ALTER TABLE explanations ALTER COLUMN saturn_log TYPE JSONB 
+          USING CASE 
+            WHEN saturn_log IS NULL OR saturn_log = '' OR saturn_log = 'null' THEN NULL
+            WHEN saturn_log::text ~ '^[\s]*[\[\{]' THEN saturn_log::jsonb
+            ELSE NULL
+          END;
         END IF;
 
-        -- saturn_events
+        -- saturn_events (safe conversion with fallback)
         IF EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name = 'explanations'
                   AND column_name = 'saturn_events'
                   AND data_type = 'text') THEN
-          ALTER TABLE explanations ALTER COLUMN saturn_events TYPE JSONB USING saturn_events::jsonb;
+          ALTER TABLE explanations ALTER COLUMN saturn_events TYPE JSONB 
+          USING CASE 
+            WHEN saturn_events IS NULL OR saturn_events = '' OR saturn_events = 'null' THEN NULL
+            WHEN saturn_events::text ~ '^[\s]*[\[\{]' THEN saturn_events::jsonb
+            ELSE NULL
+          END;
         END IF;
 
-        -- predicted_output_grid
+        -- predicted_output_grid (safe conversion with fallback)
         IF EXISTS (SELECT 1 FROM information_schema.columns
                   WHERE table_name = 'explanations'
                   AND column_name = 'predicted_output_grid'
                   AND data_type = 'text') THEN
-          ALTER TABLE explanations ALTER COLUMN predicted_output_grid TYPE JSONB USING predicted_output_grid::jsonb;
+          ALTER TABLE explanations ALTER COLUMN predicted_output_grid TYPE JSONB 
+          USING CASE 
+            WHEN predicted_output_grid IS NULL OR predicted_output_grid = '' OR predicted_output_grid = 'null' THEN NULL
+            WHEN predicted_output_grid::text ~ '^[\s]*[\[\{]' THEN predicted_output_grid::jsonb
+            ELSE NULL
+          END;
         END IF;
 
       END $$;
@@ -263,7 +283,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         shouldPersistRaw ? prepareJsonbParam(providerRawResponse) : null,
         prepareJsonbParam(reasoningItems), // JSONB - safe parameter handling
         apiProcessingTimeMs || null,
-        prepareJsonbParam(saturnImages), // JSONB - safe parameter handling 
+        prepareSaturnImagesParam(saturnImages), // JSONB - extra-safe edge case handling 
         prepareJsonbParam(saturnLog), // JSONB - safe parameter handling
         prepareJsonbParam(saturnEvents), // JSONB - safe parameter handling
         saturnSuccess ?? null,
