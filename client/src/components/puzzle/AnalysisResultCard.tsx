@@ -205,14 +205,15 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   // Log the result to see what we're getting
   console.log('AnalysisResultCard result:', { 
-    alienMeaning: result.alienMeaning,
-    alienMeaningConfidence: result.alienMeaningConfidence,
-    confidence: result.confidence,
-    // Reasoning log debugging
-    hasReasoningLog: result.hasReasoningLog,
-    reasoningLogLength: result.reasoningLog ? result.reasoningLog.length : 0,
-    reasoningLogPreview: result.reasoningLog ? result.reasoningLog.substring(0, 100) + '...' : 'None',
-    modelName: result.modelName || 'Unknown'
+    modelName: result.modelName || 'Unknown',
+    // Badge fields - THESE should show if data exists
+    apiProcessingTimeMs: result.apiProcessingTimeMs,
+    estimatedCost: result.estimatedCost,
+    totalTokens: result.totalTokens,
+    temperature: result.temperature,
+    reasoningEffort: result.reasoningEffort,
+    // All available fields in result object
+    allFields: Object.keys(result)
   });
 
   // Handle empty or error states - fix for the "0" display issue
