@@ -1355,8 +1355,8 @@ const updateBatchSession = async (sessionId: string, updates: {
 
   const client = await pool.connect();
   try {
-    const setParts = [];
-    const values = [];
+    const setParts: string[] = [];
+    const values: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -1441,13 +1441,14 @@ const updateBatchResult = async (sessionId: string, puzzleId: string, updates: {
   isCorrect?: boolean;
   errorMessage?: string;
   completedAt?: Date;
+  startedAt?: Date;
 }) => {
   if (!pool) return false;
 
   const client = await pool.connect();
   try {
-    const setParts = [];
-    const values = [];
+    const setParts: string[] = [];
+    const values: any[] = [];
     let paramIndex = 1;
 
     Object.entries(updates).forEach(([key, value]) => {
