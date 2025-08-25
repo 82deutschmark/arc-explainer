@@ -185,6 +185,21 @@ const createTablesIfNotExist = async () => {
     `);
 
     logger.info('Database tables created/verified successfully', 'database');
+
+    // Log schema snapshot for key columns to verify alignment
+    const schemaQuery = `
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'explanations' 
+      AND column_name IN (
+        'predicted_output_grid', 'reasoning_items', 'saturn_images', 
+        'multiple_predicted_outputs', 'multi_test_results', 'has_multiple_predictions'
+      )
+      ORDER BY column_name;
+    `;
+    const schemaResult = await client.query(schemaQuery);
+    logger.info('[Schema Snapshot] Explanations table column types:', 'database');
+    logger.info(JSON.stringify(schemaResult.rows, null, 2), 'database');
   } catch (error) {
     logger.error(`Failed to create tables: ${error instanceof Error ? error.message : String(error)}`, 'database');
     throw error;
@@ -273,7 +288,19 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       multiTestAverageAccuracy ?? null
     ];
 
-    const result = await q(client, queryText, queryParams, 'explanations.insert');
+    const paramMap = {
+      1: 'puzzle_id', 2: 'pattern_description', 3: 'solving_strategy', 4: 'hints',
+      5: 'confidence', 6: 'alien_meaning_confidence', 7: 'alien_meaning', 8: 'model_name',
+      9: 'reasoning_log', 10: 'has_reasoning_log', 11: 'provider_response_id', 12: 'provider_raw_response',
+      13: 'reasoning_items', 14: 'api_processing_time_ms', 15: 'saturn_images', 16: 'saturn_log',
+      17: 'saturn_events', 18: 'saturn_success', 19: 'predicted_output_grid', 20: 'is_prediction_correct',
+      21: 'prediction_accuracy_score', 22: 'temperature', 23: 'reasoning_effort', 24: 'reasoning_verbosity',
+      25: 'reasoning_summary_type', 26: 'input_tokens', 27: 'output_tokens', 28: 'reasoning_tokens',
+      29: 'total_tokens', 30: 'estimated_cost', 31: 'has_multiple_predictions', 32: 'multiple_predicted_outputs',
+      33: 'multi_test_results', 34: 'multi_test_all_correct', 35: 'multi_test_average_accuracy'
+    };
+
+    const result = await q(client, queryText, queryParams, 'explanations.insert', paramMap);
     
     logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
     return result.rows[0].id;
@@ -406,32 +433,32 @@ const getExplanationById = async (explanationId: number) => {
   const client = await pool.connect();
   
   try {
-    const result = await client.query(
-      `SELECT 
-         e.id, e.puzzle_id AS "puzzleId", e.pattern_description AS "patternDescription",
-         e.solving_strategy AS "solvingStrategy", e.hints, e.confidence,
-         e.model_name AS "modelName", e.reasoning_log AS "reasoningLog",
-         e.predicted_output_grid AS "predictedOutputGrid",
-         e.is_prediction_correct AS "isPredictionCorrect",
-         e.prediction_accuracy_score AS "predictionAccuracyScore",
-         e.has_multiple_predictions AS "hasMultiplePredictions",
-         e.multiple_predicted_outputs AS "multiplePredictedOutputs",
-         e.multi_test_results AS "multiTestResults",
-         e.multi_test_all_correct AS "multiTestAllCorrect",
-         e.multi_test_average_accuracy AS "multiTestAverageAccuracy",
-         e.created_at AS "createdAt"
-       FROM explanations e
-       WHERE e.id = $1`,
-      [explanationId]
-    );
+    const result = await client.query('SELECT * FROM explanations WHERE id = $1', [explanationId]);
 
-    if (result.rows.length === 0) return null;
+    if (result.rows.length === 0) {
+      return null;
+    }
 
-    const row = result.rows[0];
-    return {
-      ...row,
-      predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid')
-    };
+    const explanation = result.rows[0];
+
+    // Symmetric Read Path: Safely parse TEXT columns that store JSON strings.
+    // Based on the schema, these are now JSONB, but this handles any legacy TEXT data.
+    const columnsToParse = [
+      'hints', 'reasoning_items', 'saturn_images', 'saturn_log', 'saturn_events',
+      'predicted_output_grid', 'multiple_predicted_outputs', 'multi_test_results', 'provider_raw_response'
+    ];
+
+    for (const col of columnsToParse) {
+      if (typeof explanation[col] === 'string') {
+        try {
+          explanation[col] = JSON.parse(explanation[col]);
+        } catch (e) {
+          logger.warn(`Failed to parse JSON for column ${col} in explanation ${explanationId}. Leaving as string.`, 'database');
+        }
+      }
+    }
+
+    return explanation;
   } catch (error) {
     logger.error(`Error getting explanation by ID ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     return null;
@@ -447,15 +474,14 @@ const hasExplanation = async (puzzleId: string): Promise<boolean> => {
   if (!pool) return false;
 
   const client = await pool.connect();
-  
   try {
     const result = await client.query(
-      `SELECT 1 FROM explanations WHERE puzzle_id = $1 LIMIT 1`,
+      'SELECT 1 FROM explanations WHERE puzzle_id = $1 LIMIT 1',
       [puzzleId]
     );
     return result.rows.length > 0;
   } catch (error) {
-    logger.error(`Error checking explanation existence: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    logger.error(`Error checking for explanation for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     return false;
   } finally {
     client.release();

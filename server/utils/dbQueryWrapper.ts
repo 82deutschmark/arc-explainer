@@ -10,108 +10,78 @@
  */
 
 import { Pool, PoolClient } from 'pg';
-import { logger } from './logger.js';
+import { logger } from './logger';
 
 /**
- * Safe parameter transformer for database queries
+ * Prepares a value for a TEXT column that is expected to hold a JSON string.
+ * Throws an error if the value is undefined.
+ * @param v The value to process.
+ * @returns A JSON string or null.
  */
-function safeParam(value: any, paramIndex: number, context: string): any {
-  if (value === undefined) {
-    throw new Error(`Undefined parameter at $${paramIndex} (${context})`);
+export function toTextJSON(v: any): string | null {
+  if (v === undefined) throw new Error('undefined parameter cannot be sent to the database');
+  if (v === null) return null;
+  if (typeof v === 'string') {
+    // It might already be a JSON string. If not, stringify it.
+    try {
+      JSON.parse(v);
+      return v; // It's a valid JSON string
+    } catch (e) {
+      return JSON.stringify(v); // It's a plain string, so stringify it
+    }
   }
-  
-  // Convert undefined to null, keep everything else as-is for JSONB columns
-  return value === null ? null : value;
+  return JSON.stringify(v);
 }
 
 /**
- * Extract parameter placeholders from SQL text for debugging
+ * Prepares a value for a native JSONB column.
+ * Coerces undefined to null.
+ * @param v The value to process.
+ * @returns The original value or null if it was undefined.
  */
-function extractParams(sqlText: string, values: any[]): Array<{ n: number; type: string; value: any }> {
-  return [...sqlText.matchAll(/\$(\d+)/g)].map(match => {
-    const paramNum = Number(match[1]);
-    const value = values[paramNum - 1];
-    return {
-      n: paramNum,
-      type: typeof value,
-      value: value === null ? 'null' : (typeof value === 'object' ? `${Array.isArray(value) ? 'array' : 'object'}(${JSON.stringify(value).length} chars)` : String(value).substring(0, 50))
-    };
+export function toJsonbParam(v: any): any | null {
+  if (v === undefined) return null;
+  return v;
+}
+
+/**
+ * A strict wrapper around pool.query that provides:
+ * 1.  Strict undefined parameter checking to prevent DB errors.
+ * 2.  Enhanced debugging logs with parameter type mapping.
+ * 3.  A centralized chokepoint for all database queries.
+ *
+ * @author Cascade, guided by senior dev feedback
+ */
+export async function q(
+  pool: Pool | PoolClient, 
+  text: string, 
+  values: any[], 
+  ctx: string = 'unknown',
+  paramMap: { [key: number]: string } = {}
+) {
+  // 1) Assert no undefined values.
+  values.forEach((v, i) => {
+    if (v === undefined) {
+      throw new Error(`Query parameter $${i + 1} is undefined in context: ${ctx}`);
+    }
   });
-}
 
-/**
- * Enhanced query wrapper with parameter validation and logging
- */
-export async function safeQuery(
-  client: Pool | PoolClient, 
-  sqlText: string, 
-  values: any[] = [], 
-  context: string = 'unknown'
-): Promise<any> {
-  // Pre-flight validation: reject any undefined parameters
-  const safeValues = values.map((value, index) => 
-    safeParam(value, index + 1, context)
-  );
-  
-  // Debug logging for parameter analysis
-  if (process.env.NODE_ENV !== 'production') {
-    const paramMapping = extractParams(sqlText, safeValues);
-    logger.debug(`[SQL] ${context} - ${safeValues.length} params: ${paramMapping.map(p => `$${p.n}:${p.type}`).join(', ')}`, 'database');
-  }
-  
+  // 2) Log mapping
   try {
-    return await client.query(sqlText, safeValues);
-  } catch (error) {
-    logger.error(`Query failed (${context}): ${error instanceof Error ? error.message : String(error)}`, 'database');
-    
-    // Enhanced error reporting for JSON syntax issues
-    if (error instanceof Error && error.message.includes('invalid input syntax for type json')) {
-      logger.error(`JSON parameter analysis for ${context}:`, 'database');
-      const paramMapping = extractParams(sqlText, safeValues);
-      paramMapping.forEach(param => {
-        logger.error(`  $${param.n}: ${param.type} = ${param.value}`, 'database');
-      });
-    }
-    
-    throw error;
-  }
-}
-
-/**
- * Specialized function for JSONB parameter preparation
- * Ensures consistent handling of objects vs strings for JSONB columns
- */
-export function prepareJsonbParam(value: any): string | null {
-  if (value === undefined || value === null) {
-    return null;
+    const paramDetails = values.map((v, i) => {
+      const paramNum = i + 1;
+      const colName = paramMap[paramNum] || 'unknown';
+      return {
+        p: `$${paramNum}`,
+        col: colName,
+        type: typeof v,
+        valuePreview: JSON.stringify(v)?.substring(0, 70) || 'null'
+      };
+    });
+    logger.debug(`[SQL Map] Context: ${ctx} ${JSON.stringify(paramDetails, null, 2)}`, 'database');
+  } catch (e) {
+    logger.warn(`[SQL] Could not parse parameters for logging in context: ${ctx}`, 'database');
   }
 
-  // The database columns are currently TEXT, so they expect a JSON string.
-  // If the value is an object (but not null), stringify it.
-  if (typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-
-  // If it's already a string or another primitive, return it as is.
-  // The database will handle casting for other types if necessary.
-  return String(value);
-}
-
-/**
- * Extra-safe handler for Saturn images (edge case)
- * These are rarely used but shouldn't break normal DB operations
- */
-export function prepareSaturnImagesParam(saturnImages: any): any {
-  // Saturn images are a total edge case - be extremely conservative
-  if (!saturnImages || saturnImages === undefined) return null;
-  
-  try {
-    // Only allow proper arrays or objects
-    if (Array.isArray(saturnImages) || (typeof saturnImages === 'object')) {
-      return saturnImages;
-    }
-    return null; // Reject anything else
-  } catch {
-    return null; // Any error = null (don't break normal flow)
-  }
+  return pool.query(text, values);
 }
