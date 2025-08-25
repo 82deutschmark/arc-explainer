@@ -5,7 +5,79 @@
  Author (docs): GPT-5 (low reasoning)
 -->
 
+August 25, 2025
+
+## Version 1.8.1 — Multi-Test JSON Serialization Fix (2025-08-25)
+
+### 🐛 Critical Bug Fix (Code by Cascade)
+- **Multi-Test Database Saves**: Fixed "invalid input syntax for type json" error preventing multi-test puzzles from saving
+  - **Root Cause**: `safeJsonStringify()` returned `null` for null values, but PostgreSQL TEXT columns expecting JSON needed the string `"null"`
+  - **Solution**: Updated `safeJsonStringify()` to properly handle null, false, 0, and empty string values for JSON compatibility
+  - **Impact**: Multi-test puzzles (2+ predictions) now save correctly to database and display properly in frontend
+  - **Files**: `server/services/dbService.ts`
+- **Debug Cleanup**: Removed temporary debug logging from controller and database service
+  - **Files**: `server/controllers/puzzleController.ts`, `server/services/dbService.ts`
+
+## Version 1.8.0 — ModelExaminer: Batch Analysis System (2025-08-25)
+
+### 🚀 Major Feature (Code by Claude Code Assistant)
+- **ModelExaminer Page**: Complete inverse of PuzzleExaminer - batch test any AI model against entire datasets
+  - **Comprehensive UI**: Model selection with provider grouping, dataset configuration (ARC1, ARC1-Eval, ARC2, ARC2-Eval, All), and advanced parameter controls
+  - **Real-time Progress**: Live progress tracking with accuracy metrics, processing times, and ETA calculations
+  - **Session Management**: Start, pause, resume, and cancel operations with persistent session state
+  - **Results Analysis**: Detailed results grid with individual puzzle outcomes and performance statistics
+  - **Advanced Settings**: Temperature control and GPT-5 reasoning parameters (effort, verbosity, summary type)
+  - **Navigation Integration**: Added links from PuzzleBrowser and PuzzleExaminer for easy access
+  - **Files**: `client/src/pages/ModelExaminer.tsx`, `client/src/hooks/useBatchAnalysis.ts`, routing updates
+
+### 🛠️ Backend Infrastructure (Code by Claude Code Assistant)
+- **Batch Analysis Service**: Complete backend system for managing concurrent puzzle processing
+  - **Database Schema**: New tables for batch sessions and individual results with comprehensive tracking
+  - **Queue Management**: Intelligent batching with configurable concurrency and rate limiting
+  - **Progress Tracking**: Real-time statistics with accuracy calculations and timing metrics
+  - **Error Handling**: Robust retry logic and graceful degradation for API failures
+  - **Event System**: Event-driven architecture for progress updates and status changes
+  - **Files**: `server/services/batchAnalysisService.ts`, `server/controllers/batchAnalysisController.ts`, database migrations
+
+### 📡 API Endpoints (Code by Claude Code Assistant)
+- **5 New Endpoints**: Complete RESTful API for batch analysis operations
+  - `POST /api/model/batch-analyze` - Start batch analysis session
+  - `GET /api/model/batch-status/:sessionId` - Real-time progress status
+  - `POST /api/model/batch-control/:sessionId` - Pause/resume/cancel controls
+  - `GET /api/model/batch-results/:sessionId` - Detailed results with pagination
+  - `GET /api/model/batch-sessions` - Administrative session overview
+  - **Validation**: Comprehensive parameter validation and error responses
+  - **Files**: `server/routes.ts`, `server/controllers/batchAnalysisController.ts`
+
+### 🎯 User Experience Enhancement
+- **Workflow Integration**: Seamless connection between individual puzzle analysis and batch model testing
+- **Performance Insights**: Comprehensive metrics for model comparison and evaluation
+- **Scalable Architecture**: Designed to handle large datasets (1000+ puzzles) efficiently
+- **Responsive Design**: Optimized UI for both analysis configuration and results visualization
+
 August 24, 2025
+
+## Version 1.7.3 — Multi-Test Database Fix (2025-08-24)
+
+### 🛠️ Major Refactor (Code by Cascade)
+- **OpenAI Architecture Overhaul**: Major refactor addressing architectural issues identified by advisor assessment.
+  - **Structured Output Schema**: Created proper JSON Schema (`arcJsonSchema.ts`) with strict validation, replacing fragile regex JSON scraping.
+  - **Request Parameters**: Now properly passes temperature, top_p, parallel_tool_calls=false, and truncation settings to API.
+  - **Token Usage**: Defensive calculation handling `reasoning_tokens` from `output_tokens_details` to prevent NaN totals.
+  - **Response Processing**: Prefers structured `output_parsed` over regex parsing when JSON schema is used.
+  - **Impact**: Robust, reliable JSON parsing and proper API parameter handling eliminate brittle response processing.
+  - **Files**: `server/services/openai.ts`, `server/services/schemas/arcJsonSchema.ts`
+
+### 🐛 Bug Fix (Code by Cascade)
+- **Database Save Errors and Multi-Prediction Detection**: Fixed critical issues causing analysis save failures and incorrect multi-prediction routing.
+  - **Root Cause**: `reasoningItems` field causing JSON syntax errors, controller incorrectly detecting single predictions as multiple, and empty reasoning blocks causing database issues.
+  - **Solution**: 
+    - Added null check for `reasoningItems` before JSON serialization to prevent database errors
+    - Simplified multi-prediction detection to only check `multiplePredictedOutputs === true`
+    - Added filtering for empty/placeholder reasoning content like "Empty reasoning item"
+    - Handles real AI format: `{"multiplePredictedOutputs": true, "predictedOutput1": [...], "predictedOutput2": [...]}`
+  - **Impact**: Analysis saves successfully, multi-prediction routing works correctly, and placeholder reasoning blocks don't corrupt database.
+  - **Files**: `server/services/dbService.ts`, `server/controllers/puzzleController.ts`, `server/services/openai.ts`
 
 ## Version 1.7.2 — Educational Prompt Refactor (2025-08-24)
 

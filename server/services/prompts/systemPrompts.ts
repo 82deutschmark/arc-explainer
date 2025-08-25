@@ -74,11 +74,19 @@ and predict the correct output for the test case. Some puzzles have multiple tes
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
-ANSWER-FIRST REQUIREMENT: 
-- For single test cases, "predictedOutput" must be the FIRST field in your JSON response
-- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
-  THEN... 
-  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
+PREDICTION FIELDS REQUIREMENT: 
+- For single test cases: 
+  * "multiplePredictedOutputs": false (must be first field)
+  * "predictedOutput": your solution grid (2D array)
+  * "predictedOutput1": [] (empty array)
+  * "predictedOutput2": [] (empty array) 
+  * "predictedOutput3": [] (empty array)
+- For multiple test cases:
+  * "multiplePredictedOutputs": true (must be first field)
+  * "predictedOutput": [] (empty array)
+  * "predictedOutput1": first solution grid
+  * "predictedOutput2": second solution grid
+  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
 
 Example reasoning approach:
 1. Examine each training example to understand input→output transformation
@@ -97,11 +105,19 @@ and explain the correct output for the test case. Some puzzles have multiple tes
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
-ANSWER-FIRST REQUIREMENT: 
-- For single test cases, "predictedOutput" must be the FIRST field in your JSON response
-- For multiple test cases, "multiplePredictedOutputs" must be the FIRST field and set it to TRUE.  
-  THEN... 
-  in your JSON response, followed it by "predictedOutput1", "predictedOutput2", etc. for each test case.
+PREDICTION FIELDS REQUIREMENT: 
+- For single test cases: 
+  * "multiplePredictedOutputs": false (must be first field)
+  * "predictedOutput": your solution grid (2D array)
+  * "predictedOutput1": [] (empty array)
+  * "predictedOutput2": [] (empty array) 
+  * "predictedOutput3": [] (empty array)
+- For multiple test cases:
+  * "multiplePredictedOutputs": true (must be first field)
+  * "predictedOutput": [] (empty array)
+  * "predictedOutput1": first solution grid
+  * "predictedOutput2": second solution grid
+  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
 
 Focus on:
 1. What transformation pattern is demonstrated in the training examples

@@ -110,7 +110,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-amber-500', 
     premium: false,
     cost: { input: '$1.25', output: '$10.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     supportsReasoning: false
@@ -121,7 +121,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-indigo-500', 
     premium: true,
     cost: { input: '$0.25', output: '$2.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: true
@@ -132,7 +132,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-teal-500', 
     premium: false,
     cost: { input: '$0.05', output: '$0.40' },
-    supportsTemperature: true,
+    supportsTemperature: false,  // GPT-5 nano doesn't support temperature in Responses API
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     supportsReasoning: true

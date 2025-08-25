@@ -30,7 +30,25 @@ const normalizeConfidence = (confidence: any): number => {
 
 // Safe JSON serialization helper to prevent "[object Object]" errors
 const safeJsonStringify = (value: any): string | null => {
-  if (!value) return null;
+  // Handle null/undefined explicitly - return JSON string "null" for TEXT columns
+  if (value === null || value === undefined) {
+    return 'null'; // Return the string "null" for JSON null value
+  }
+  
+  // Handle false explicitly (previously caught by !value check)
+  if (value === false) {
+    return 'false';
+  }
+  
+  // Handle 0 explicitly (previously caught by !value check)
+  if (value === 0) {
+    return '0';
+  }
+  
+  // Handle empty string
+  if (value === '') {
+    return '""';
+  }
   
   // If already a string, try to parse it first to validate it's proper JSON
   if (typeof value === 'string') {
@@ -55,7 +73,8 @@ const safeJsonStringify = (value: any): string | null => {
     }
   }
   
-  return null;
+  // For numbers and booleans not caught above
+  return JSON.stringify(value);
 };
 
 /**
@@ -390,6 +409,49 @@ const createTablesIfNotExist = async () => {
       )
     `);
     
+    // Batch analysis sessions table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS batch_analysis_sessions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(36) UNIQUE NOT NULL,
+        model_key VARCHAR(100) NOT NULL,
+        dataset VARCHAR(20) NOT NULL,
+        prompt_id VARCHAR(50),
+        custom_prompt TEXT,
+        temperature DECIMAL(3,2),
+        reasoning_effort VARCHAR(20),
+        reasoning_verbosity VARCHAR(20),
+        reasoning_summary_type VARCHAR(20),
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        total_puzzles INTEGER NOT NULL DEFAULT 0,
+        completed_puzzles INTEGER NOT NULL DEFAULT 0,
+        successful_puzzles INTEGER NOT NULL DEFAULT 0,
+        failed_puzzles INTEGER NOT NULL DEFAULT 0,
+        average_processing_time DECIMAL(10,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        started_at TIMESTAMP,
+        completed_at TIMESTAMP,
+        error_message TEXT
+      )
+    `);
+    
+    // Batch analysis results table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS batch_analysis_results (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(36) NOT NULL REFERENCES batch_analysis_sessions(session_id),
+        puzzle_id VARCHAR(50) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        explanation_id INTEGER REFERENCES explanations(id),
+        processing_time_ms INTEGER,
+        accuracy_score DECIMAL(5,4),
+        is_correct BOOLEAN,
+        error_message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMP
+      )
+    `);
+    
     await client.query('COMMIT');
     logger.info('Database tables created or confirmed', 'database');
   } catch (error) {
@@ -486,7 +548,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         hasReasoningLog || false,
         providerResponseId || null,
         shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        safeJsonStringify(reasoningItems),
+        reasoningItems ? safeJsonStringify(reasoningItems) : null,
         apiProcessingTimeMs || null,
         safeJsonStringify(saturnImages),
         explanation.saturnLog || null,
@@ -504,9 +566,9 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields - use safeJsonStringify for consistency
-        safeJsonStringify(multiplePredictedOutputs),
-        safeJsonStringify(multiTestResults),
+        // Multi-output prediction fields - pass raw arrays to JSONB columns
+        multiplePredictedOutputs ?? null,
+        multiTestResults ?? null,
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
       ]
@@ -599,11 +661,21 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          e.created_at              AS "createdAt",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'helpful')      AS "helpful_votes",
          (SELECT COUNT(*) FROM feedback WHERE explanation_id = e.id AND vote_type = 'not_helpful') AS "not_helpful_votes",
-         (SELECT json_agg(json_build_object('id', f.id, 'vote_type', f.vote_type, 'comment', f.comment, 'created_at', f.created_at))
-          FROM feedback f
-          WHERE f.explanation_id = e.id AND f.comment IS NOT NULL
-          ORDER BY f.created_at DESC
-          LIMIT 5)
+         (SELECT json_agg(
+            json_build_object(
+              'id', f.id, 
+              'vote_type', f.vote_type, 
+              'comment', f.comment, 
+              'created_at', f.created_at
+            ) ORDER BY f.created_at DESC
+          )
+          FROM (
+            SELECT id, vote_type, comment, created_at
+            FROM feedback f2
+            WHERE f2.explanation_id = e.id AND f2.comment IS NOT NULL
+            ORDER BY f2.created_at DESC
+            LIMIT 5
+          ) f)
          AS "recent_comments"
        FROM explanations e
        WHERE e.puzzle_id = $1
@@ -1215,6 +1287,219 @@ const getAccuracyStats = async () => {
   }
 };
 
+/**
+ * Create a new batch analysis session
+ */
+const createBatchSession = async (sessionData: {
+  sessionId: string;
+  modelKey: string;
+  dataset: string;
+  promptId?: string;
+  customPrompt?: string;
+  temperature?: number;
+  reasoningEffort?: string;
+  reasoningVerbosity?: string;
+  reasoningSummaryType?: string;
+  totalPuzzles: number;
+}) => {
+  if (!pool) {
+    logger.info('No database connection. Cannot create batch session.', 'database');
+    return false;
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO batch_analysis_sessions 
+       (session_id, model_key, dataset, prompt_id, custom_prompt, temperature, 
+        reasoning_effort, reasoning_verbosity, reasoning_summary_type, total_puzzles)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        sessionData.sessionId,
+        sessionData.modelKey,
+        sessionData.dataset,
+        sessionData.promptId || null,
+        sessionData.customPrompt || null,
+        sessionData.temperature || null,
+        sessionData.reasoningEffort || null,
+        sessionData.reasoningVerbosity || null,
+        sessionData.reasoningSummaryType || null,
+        sessionData.totalPuzzles
+      ]
+    );
+    
+    logger.info(`Created batch analysis session: ${sessionData.sessionId}`, 'database');
+    return true;
+  } catch (error) {
+    logger.error(`Error creating batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return false;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Update batch session status and statistics
+ */
+const updateBatchSession = async (sessionId: string, updates: {
+  status?: string;
+  completedPuzzles?: number;
+  successfulPuzzles?: number;
+  failedPuzzles?: number;
+  averageProcessingTime?: number;
+  startedAt?: Date;
+  completedAt?: Date;
+  errorMessage?: string;
+}) => {
+  if (!pool) return false;
+
+  const client = await pool.connect();
+  try {
+    const setParts: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const dbColumn = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        setParts.push(`${dbColumn} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+    });
+
+    if (setParts.length === 0) return true;
+
+    values.push(sessionId);
+    await client.query(
+      `UPDATE batch_analysis_sessions SET ${setParts.join(', ')} WHERE session_id = $${paramIndex}`,
+      values
+    );
+
+    return true;
+  } catch (error) {
+    logger.error(`Error updating batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return false;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get batch session details
+ */
+const getBatchSession = async (sessionId: string) => {
+  if (!pool) return null;
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT * FROM batch_analysis_sessions WHERE session_id = $1`,
+      [sessionId]
+    );
+
+    return result.rows[0] || null;
+  } catch (error) {
+    logger.error(`Error getting batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return null;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Create batch analysis result record
+ */
+const createBatchResult = async (sessionId: string, puzzleId: string) => {
+  if (!pool) return false;
+
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO batch_analysis_results (session_id, puzzle_id, status)
+       VALUES ($1, $2, 'pending')`,
+      [sessionId, puzzleId]
+    );
+
+    return true;
+  } catch (error) {
+    logger.error(`Error creating batch result: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return false;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Update batch analysis result
+ */
+const updateBatchResult = async (sessionId: string, puzzleId: string, updates: {
+  status?: string;
+  explanationId?: number;
+  processingTimeMs?: number;
+  accuracyScore?: number;
+  isCorrect?: boolean;
+  errorMessage?: string;
+  completedAt?: Date;
+  startedAt?: Date;
+}) => {
+  if (!pool) return false;
+
+  const client = await pool.connect();
+  try {
+    const setParts: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const dbColumn = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        setParts.push(`${dbColumn} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+    });
+
+    if (setParts.length === 0) return true;
+
+    values.push(sessionId, puzzleId);
+    await client.query(
+      `UPDATE batch_analysis_results SET ${setParts.join(', ')} 
+       WHERE session_id = $${paramIndex} AND puzzle_id = $${paramIndex + 1}`,
+      values
+    );
+
+    return true;
+  } catch (error) {
+    logger.error(`Error updating batch result: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return false;
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Get batch analysis results for a session
+ */
+const getBatchResults = async (sessionId: string) => {
+  if (!pool) return [];
+
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `SELECT * FROM batch_analysis_results WHERE session_id = $1 ORDER BY created_at`,
+      [sessionId]
+    );
+
+    return result.rows;
+  } catch (error) {
+    logger.error(`Error getting batch results: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return [];
+  } finally {
+    client.release();
+  }
+};
+
 // Export the database service
 export const dbService = {
   init: initDb,
@@ -1232,6 +1517,13 @@ export const dbService = {
   getFeedbackSummaryStats,
   // Solver mode accuracy stats
   getAccuracyStats,
+  // Batch analysis functions
+  createBatchSession,
+  updateBatchSession,
+  getBatchSession,
+  createBatchResult,
+  updateBatchResult,
+  getBatchResults,
   // Helpers
   isConnected: () => !!pool,
 };

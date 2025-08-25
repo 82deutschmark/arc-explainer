@@ -5,6 +5,114 @@
       {
         "input": [
           [
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
             0,
             2,
             2
@@ -35,114 +143,6 @@
             0,
             0,
             2
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1
-          ],
-          [
-            0,
-            0,
-            0
-          ]
-        ],
-        "output": [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            1,
-            1,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ]
-        ],
-        "output": [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            1,
-            1,
-            0
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            1,
-            1,
-            1
-          ],
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ]
-        ],
-        "output": [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            1,
-            1,
-            1
-          ],
-          [
-            0,
-            0,
-            0
           ]
         ]
       }
@@ -151,13 +151,13 @@
       {
         "input": [
           [
-            0,
+            2,
             0,
             0
           ],
           [
+            2,
             0,
-            1,
             0
           ],
           [
@@ -173,13 +173,13 @@
             0
           ],
           [
-            0,
+            2,
             0,
             0
           ],
           [
+            2,
             0,
-            1,
             0
           ]
         ]
@@ -187,13 +187,13 @@
       {
         "input": [
           [
-            2,
+            0,
             0,
             0
           ],
           [
-            2,
             0,
+            1,
             0
           ],
           [
@@ -209,13 +209,13 @@
             0
           ],
           [
-            2,
+            0,
             0,
             0
           ],
           [
-            2,
             0,
+            1,
             0
           ]
         ]
@@ -223,17 +223,17 @@
     ]
   },
   "explanations": {
-    "deepseek-chat": {
-      "model": "deepseek-chat",
+    "deepseek-reasoner": {
+      "model": "deepseek-reasoner",
       "temperature": 0.2,
       "reasoningEffort": null,
       "reasoningVerbosity": null,
       "reasoningSummaryType": null,
-      "inputTokens": 799,
-      "outputTokens": 1568,
+      "inputTokens": 815,
+      "outputTokens": 4410,
       "reasoningTokens": null,
-      "totalTokens": 2367,
-      "estimatedCost": 0.0005509,
+      "totalTokens": 5225,
+      "estimatedCost": 0.01010615,
       "multiplePredictedOutputs": [
         [
           [
@@ -242,13 +242,13 @@
             0
           ],
           [
-            0,
+            2,
             0,
             0
           ],
           [
+            2,
             0,
-            1,
             0
           ]
         ],
@@ -264,13 +264,31 @@
             0
           ],
           [
-            2,
             0,
+            1,
             0
           ]
         ]
       ],
+      "predictedOutput": [],
       "predictedOutput1": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "predictedOutput2": [
         [
           0,
           0,
@@ -287,51 +305,40 @@
           0
         ]
       ],
-      "predictedOutput2": [
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          2,
-          0,
-          0
-        ]
+      "predictedOutput3": [],
+      "solvingStrategy": "I analyzed the training examples and found that each output is generated by shifting the input rows down by one position, with the top row set to all zeros. Specifically, for a 3x3 grid, output row 0 is always [0,0,0], output row 1 is identical to input row 0, and output row 2 is identical to input row 1. The input row 2 is discarded and not used in the output. This pattern is consistent across all training examples, regardless of the values (1 or 2).",
+      "keySteps": [
+        "Examined Example 1: input [[1,1,1],[0,0,0],[0,0,0]] -> output [[0,0,0],[1,1,1],[0,0,0]], indicating input row 0 moves to output row 1, and output row 0 is zeros.",
+        "Examined Example 2: input [[0,0,0],[1,1,1],[0,0,0]] -> output [[0,0,0],[0,0,0],[1,1,1]], showing input row 1 moves to output row 2, and output rows 0 and 1 are zeros or shifted.",
+        "Examined Example 3: input [[0,1,0],[1,1,0],[0,0,0]] -> output [[0,0,0],[0,1,0],[1,1,0]], confirming input row 0 moves to output row 1 and input row 1 moves to output row 2.",
+        "Examined Example 4: input [[0,2,2],[0,0,2],[0,0,0]] -> output [[0,0,0],[0,2,2],[0,0,2]], same pattern with value 2, reinforcing the downward shift.",
+        "Applied the pattern to Test 1 input [[2,0,0],[2,0,0],[0,0,0]]: output row 0 is [0,0,0], row 1 is input row 0 [2,0,0], row 2 is input row 1 [2,0,0], resulting in [[0,0,0],[2,0,0],[2,0,0]].",
+        "Applied the pattern to Test 2 input [[0,0,0],[0,1,0],[0,0,0]]: output row 0 is [0,0,0], row 1 is input row 0 [0,0,0], row 2 is input row 1 [0,1,0], resulting in [[0,0,0],[0,0,0],[0,1,0]]."
       ],
-      "solvingStrategy": {
-        "keySteps": [
-          "Examined all training examples to identify the transformation pattern from input to output grids.",
-          "Noticed that in each example, the output grid is a shifted version of the input grid, specifically moving the non-zero elements downward by one row, with the bottom row wrapping around to the top if necessary, but in these examples, no wrapping occurs as the bottom row is all zeros or handled by shifting.",
-          "In Example 1: Input [[0,2,2],[0,0,2],[0,0,0]] → Output [[0,0,0],[0,2,2],[0,0,2]] – The non-zero elements (2s) are shifted down; the top row becomes all zeros, middle row has the original top row's non-zeros, bottom row has the original middle row's non-zero.",
-          "In Example 2: Input [[0,0,0],[1,1,1],[0,0,0]] → Output [[0,0,0],[0,0,0],[1,1,1]] – The row with 1s is moved from the middle to the bottom, with zeros above.",
-          "In Example 3: Input [[0,1,0],[1,1,0],[0,0,0]] → Output [[0,0,0],[0,1,0],[1,1,0]] – Non-zero elements are shifted down; top row zeros, middle row has the original top's non-zero (1), bottom row has the original middle's non-zeros (1,1).",
-          "In Example 4: Input [[1,1,1],[0,0,0],[0,0,0]] → Output [[0,0,0],[1,1,1],[0,0,0]] – The top row with 1s is moved to the middle row, with zeros above and below.",
-          "Generalized the pattern: For a 3x3 grid, the transformation shifts the entire grid downward by one row. The new top row is all zeros (or could be the original bottom row if it had non-zeros, but in these cases, the original bottom row is all zeros, so it becomes zeros). Specifically, output row i is: for i=0 (top), it's all zeros; for i=1, it's the input row 0; for i=2, it's the input row 1. The original input row 2 is lost or becomes the new bottom if not zeros, but in training, row 2 is often zeros, so it's effectively a downward shift with the bottom row zeroed or handled.",
-          "Applied this pattern to Test 1 Input: [[0,0,0],[0,1,0],[0,0,0]]. Shift down: new row 0 (top) = all zeros [0,0,0], new row 1 = input row 0 [0,0,0], new row 2 = input row 1 [0,1,0]. So output should be [[0,0,0],[0,0,0],[0,1,0]].",
-          "Applied to Test 2 Input: [[2,0,0],[2,0,0],[0,0,0]]. Shift down: new row 0 = zeros [0,0,0], new row 1 = input row 0 [2,0,0], new row 2 = input row 1 [2,0,0]. But input row 2 is [0,0,0], which is not used. So output should be [[0,0,0],[2,0,0],[2,0,0]]. However, comparing to training, in Example 1, a similar shift occurred, but in that case, the non-zeros were preserved. Re-checked: In Example 1, input row 2 is [0,0,0], output row 2 is [0,0,2] which is input row 1's non-zero. So pattern is consistent: output row i = input row (i-1) for i>0, and row 0 is zeros. For i=0: output[0] = [0,0,0]; i=1: output[1] = input[0]; i=2: output[2] = input[1]. Input[2] is ignored if it has values, but in training, it's often zeros. For Test 2, output should be [[0,0,0], [2,0,0], [2,0,0]].",
-          "Noticed that in all outputs, the bottom row of the input is not carried over; instead, the shift is downward with the top row becoming zeros. This matches the training examples where the input's bottom row is all zeros or not present in output.",
-          "Confirmed pattern: The transformation is a downward shift by one row, with the new top row set to zeros. So for any input grid, output[row][col] = 0 if row=0, else input[row-1][col].",
-          "For Test 1: Input has non-zero at [1,1] (value 1). After shift, it should be at output[2,1]. Output: [[0,0,0],[0,0,0],[0,1,0]].",
-          "For Test 2: Input has non-zeros at [0,0] and [1,0] (value 2). After shift, they should be at output[1,0] and [2,0]. Output: [[0,0,0],[2,0,0],[2,0,0]].",
-          "Double-checked with training: In Example 3, input [0,1,0] at row0 becomes output row1 [0,1,0], and input [1,1,0] at row1 becomes output row2 [1,1,0]. Perfect match.",
-          "No other transformations like color changes or logical operations observed; it's purely a spatial shift."
-        ],
-        "patternDescription": "The transformation shifts the entire grid downward by one row. Specifically, for a 3x3 grid, the output's top row (row 0) is always all zeros, the middle row (row 1) is the input's top row (row 0), and the bottom row (row 2) is the input's middle row (row 1). The input's bottom row (row 2) is not used in the output and is effectively replaced or lost, which is consistent across all training examples where the input's bottom row is all zeros or not contributing.",
-        "hints": [
-          "Focus on the movement of non-zero elements: they always move down by one row.",
-          "The new top row is invariably filled with zeros.",
-          "The pattern does not involve color changes or other operations; it's a simple downward shift."
-        ],
-        "confidence": 95
-      },
-      "apiProcessingTimeMs": 64045,
+      "patternDescription": "The transformation shifts the input grid down by one row. The top row of the output is always set to all zeros (0). For a 3x3 grid, output row 0 is [0,0,0], output row 1 is a copy of input row 0, and output row 2 is a copy of input row 1. Input row 2 is ignored and not included in the output.",
+      "hints": "Key insight: In each training example, observe that the values move downward, and the first row becomes zero, indicating a vertical shift operation without wrapping or other modifications.",
+      "confidence": 100,
+      "reasoningLog": "First, I need to analyze the training examples to understand the transformation pattern. Each example shows an input grid and an output grid.\n\nLet's look at the training examples:\n\n- Example 1:\n  Input: [[1,1,1],[0,0,0],[0,0,0]]\n  Output: [[0,0,0],[1,1,1],[0,0,0]]\n\n- Example 2:\n  Input: [[0,0,0],[1,1,1],[0,0,0]]\n  Output: [[0,0,0],[0,0,0],[1,1,1]]\n\n- Example 3:\n  Input: [[0,1,0],[1,1,0],[0,0,0]]\n  Output: [[0,0,0],[0,1,0],[1,1,0]]\n\n- Example 4:\n  Input: [[0,2,2],[0,0,2],[0,0,0]]\n  Output: [[0,0,0],[0,2,2],[0,0,2]]\n\nI notice that in all outputs, the non-zero elements seem to be shifted down by one row. But let's check carefully.\n\nIn Example 1: Input has [1,1,1] in row 0, output has it in row 1. So it moved down.\n\nIn Example 2: Input has [1,1,1] in row 1, output has it in row 2. So again, moved down.\n\nIn Example 3: Input has some 1s: row 0 has [0,1,0], row 1 has [1,1,0]. Output: row 1 has [0,1,0], row 2 has [1,1,0]. So the pattern from row 0 and 1 moved down to row 1 and 2.\n\nSimilarly, in Example 4: Input has [0,2,2] in row 0? Wait, input is [[0,2,2],[0,0,2],[0,0,0]], so row 0: [0,2,2], row 1: [0,0,2], row 2: [0,0,0]. Output: [[0,0,0],[0,2,2],[0,0,2]], so row 1 has [0,2,2] which was row 0, and row 2 has [0,0,2] which was row 1. So again, everything shifted down by one row.\n\nBut in the shifting, what about the bottom row? In all cases, the bottom row of input becomes all zeros in output, or something is added.\n\nIn Example 1: Input bottom row is [0,0,0], output bottom row is [0,0,0] – same.\n\nIn Example 2: Input bottom row is [0,0,0], output bottom row is [1,1,1] – no, output has [1,1,1] in row 2, which was row 1 in input? Input row 1 is [1,1,1], output row 2 is [1,1,1], so shifted down.\n\nBut in terms of the grid, it seems like the entire grid is shifted downward, and the top row becomes all zeros or something.\n\nLet's think in terms of rows.\n\nPerhaps it's a vertical shift down by one row. But in the output, the top row is always all zeros in these examples.\n\nIn Example 1 output: top row [0,0,0]\n\nExample 2 output: top row [0,0,0]\n\nExample 3 output: top row [0,0,0]\n\nExample 4 output: top row [0,0,0]\n\nAnd the content is shifted down.\n\nBut in Example 3 input: [[0,1,0],[1,1,0],[0,0,0]] – row 0 and 1 have data, row 2 is zero.\n\nOutput: [[0,0,0],[0,1,0],[1,1,0]] – so row 1 of output is row 0 of input, but row 0 of input is [0,1,0], and output row 1 is [0,1,0], yes. Output row 2 is [1,1,0], which is row 1 of input.\n\nInput row 1 is [1,1,0], output row 2 is [1,1,0], yes.\n\nAnd output row 0 is all zeros.\n\nSimilarly for Example 4.\n\nSo the pattern seems to be: shift all rows down by one, and the new top row is all zeros. But in the shifting, the bottom row of input is lost or becomes the new bottom, but in Example 2, input bottom row is [0,0,0], output bottom row is [1,1,1], which is from input row 1.\n\nActually, it's like the grid is shifted down, and the top is filled with zeros.\n\nBut let's confirm with the values.\n\nAnother thing: the numbers are consistent; 1s and 2s are preserved, just moved.\n\nIn Example 4, there are 2s, and they are shifted down.\n\nSo the transformation is: for each row i in input, it becomes row i+1 in output, and row 0 in output is all zeros.\n\nBut in a 3x3 grid, rows are 0,1,2.\n\nInput row 0 -> output row 1\n\nInput row 1 -> output row 2\n\nInput row 2 -> what? In output, row 2 is from input row 1 in some cases, but in Example 1, input row 2 is [0,0,0], output row 2 is [0,0,0] – same, but it was shifted from row 1? No.\n\nLet's index the rows.\n\nDefine rows from top to bottom: row 0, row 1, row 2.\n\nIn Example 1:\n\nInput: row0: [1,1,1], row1: [0,0,0], row2: [0,0,0]\n\nOutput: row0: [0,0,0], row1: [1,1,1], row2: [0,0,0]\n\nSo, output row1 is input row0.\n\nOutput row2 is input row1? Input row1 is [0,0,0], output row2 is [0,0,0], yes.\n\nBut output row0 is new zeros.\n\nIn Example 2:\n\nInput: row0: [0,0,0], row1: [1,1,1], row2: [0,0,0]\n\nOutput: row0: [0,0,0], row1: [0,0,0], row2: [1,1,1]\n\nSo, output row2 is input row1.\n\nOutput row1 is input row0? Input row0 is [0,0,0], output row1 is [0,0,0], yes.\n\nOutput row0 is zeros.\n\nIn Example 3:\n\nInput: row0: [0,1,0], row1: [1,1,0], row2: [0,0,0]\n\nOutput: row0: [0,0,0], row1: [0,1,0], row2: [1,1,0]\n\nSo, output row1 is input row0.\n\nOutput row2 is input row1.\n\nOutput row0 is zeros.\n\nInput row2 is [0,0,0], and it's not directly used, but in output, row2 is from input row1, so input row2 is lost or overwritten.\n\nSimilarly in Example 4:\n\nInput: row0: [0,2,2], row1: [0,0,2], row2: [0,0,0]\n\nOutput: row0: [0,0,0], row1: [0,2,2], row2: [0,0,2]\n\nSo, output row1 is input row0.\n\nOutput row2 is input row1.\n\nOutput row0 is zeros.\n\nInput row2 is [0,0,0], and in output, it's not present; instead, output row2 is input row1.\n\nSo the pattern is: the output grid is formed by shifting the input rows down by one, meaning row i of input becomes row i+1 of output for i=0,1, and row 0 of output is all zeros. Since it's a 3x3 grid, row 2 of input is not used or discarded.\n\nIn other words, for a grid of size n x m (here 3x3), the transformation is:\n\nOutput row 0: all zeros\n\nOutput row i: input row i-1 for i=1 to n-1\n\nIn this case, n=3, so output row 0: zeros\n\nOutput row 1: input row 0\n\nOutput row 2: input row 1\n\nInput row 2 is ignored.\n\nIn all training examples, input row 2 is all zeros or has data, but in output, it's replaced by input row 1.\n\nIn Example 2, input row 2 is [0,0,0], output row 2 is [1,1,1] from input row 1.\n\nSimilarly, in Example 4, input row 2 is [0,0,0], output row 2 is [0,0,2] from input row 1.\n\nSo yes, input row 2 is not used; it's overwritten.\n\nNow, for the test cases.\n\nThere are two test cases.\n\nTest 1 Input: [[2,0,0],[2,0,0],[0,0,0]]\n\nSo, row0: [2,0,0], row1: [2,0,0], row2: [0,0,0]\n\nApplying the pattern:\n\nOutput row0: all zeros, so [0,0,0]\n\nOutput row1: input row0, which is [2,0,0]\n\nOutput row2: input row1, which is [2,0,0]\n\nSo output should be: [[0,0,0],[2,0,0],[2,0,0]]\n\nNow, Test 2 Input: [[0,0,0],[0,1,0],[0,0,0]]\n\nRow0: [0,0,0], row1: [0,1,0], row2: [0,0,0]\n\nOutput row0: [0,0,0] (zeros)\n\nOutput row1: input row0, which is [0,0,0]\n\nOutput row2: input row1, which is [0,1,0]\n\nSo output should be: [[0,0,0],[0,0,0],[0,1,0]]\n\nI should verify if this matches the training examples.\n\nIn training, when input has all zeros in some rows, it works, like in Example 2 input row0 is zeros, output row1 is zeros.\n\nSimilarly here.\n\nAlso, in Test 2, input row0 is zeros, so output row1 is zeros, which is fine.\n\nNow, the JSON structure.\n\nSince there are two test cases, I need to set \"multiplePredictedOutputs\": true\n\nAnd then \"predictedOutput1\" for first test, \"predictedOutput2\" for second test.\n\n\"predictedOutput\" should be empty array.\n\nAlso, \"predictedOutput3\" should be empty array since only two tests.\n\nNow, for the reasoning fields.\n\nI need to provide:\n\n- solvingStrategy: my complete reasoning\n\n- keySteps: step-by-step analysis\n\n- patternDescription: the transformation rules\n\n- hints: key insights\n\n- confidence: I'm pretty sure, say 100\n\nFirst, patternDescription: The transformation shifts all rows of the input grid down by one position. The top row of the output is always all zeros. Specifically, for a 3x3 grid, output row 0 is [0,0,0], output row 1 is input row 0, and output row 2 is input row 1. The input row 2 is discarded.\n\nSolvingStrategy: I examined each training example and noticed that in each case, the non-zero elements are moved down by one row, and the top row becomes zeros. This is consistent across all examples, regardless of the values (1 or 2).\n\nKeySteps: \n\n1. Compared input and output of Example 1: input row 0 moves to output row 1, output row 0 is zeros.\n\n2. Same for Example 2: input row 1 moves to output row 2, output row 0 and 1 are zeros or shifted.\n\n3. Example 3 and 4 confirm the pattern: input row i becomes output row i+1 for i=0,1, output row 0 is zeros.\n\n4. Applied this to test cases.\n\nHints: The key insight is the downward shift of rows with the top row set to zero.\n\nConfidence: 100, as it's consistent across all training examples.\n\nNow, for JSON, I need to output only JSON, no extra text.\n\nSo, the JSON should be:\n\n{\n\n\"multiplePredictedOutputs\": true,\n\n\"predictedOutput\": [],\n\n\"predictedOutput1\": [[0,0,0],[2,0,0],[2,0,0]],\n\n\"predictedOutput2\": [[0,0,0],[0,0,0],[0,1,0]],\n\n\"predictedOutput3\": [],\n\n\"solvingStrategy\": \"I analyzed the training examples and found that each output is generated by shifting the input rows down by one position, with the top row set to all zeros. Specifically, for a 3x3 grid, output row 0 is [0,0,0], output row 1 is input row 0, and output row 2 is input row 1.\",\n\n\"keySteps\": [\n\n\"Examined Example 1: input [[1,1,1],[0,0,0],[0,0,0]] -> output [[0,0,0],[1,1,1],[0,0,0]], showing row 0 input moves to row 1 output.\",\n\n\"Examined Example 2: input [[0,0,0],[1,1,1],[0,0,0]] -> output [[0,0,0],[0,0,0],[1,1,1]], showing row 1 input moves to row 2 output.\",\n\n\"Examined Example 3: input [[0,1,0],[1,1,0],[0,0,0]] -> output [[0,0,0],[0,1,0],[1,1,0]], confirming row 0 and 1 input shift down.\",\n\n\"Examined Example 4: input [[0,2,2],[0,0,2],[0,0,0]] -> output [[0,0,0],[0,2,2],[0,0,2]], same pattern with different values.\",\n\n\"Applied the pattern to Test 1: input [[2,0,0],[2,0,0],[0,0,0]] -> output row 0: [0,0,0], row 1: input row 0 [2,0,0], row 2: input row 1 [2,0,0], so [[0,0,0],[2,0,0],[2,0,0]].\",\n\n\"Applied to Test 2: input [[0,0,0],[0,1,0],[0,0,0]] -> output row 0: [0,0,0], row 1: input row 0 [0,0,0], row 2: input row 1 [0,1,0], so [[0,0,0],[0,0,0],[0,1,0]].\"\n\n],\n\n\"patternDescription\": \"The transformation involves shifting the entire grid down by one row. The top row of the output is always set to all zeros (0). For a 3x3 grid, output row 0 is [0,0,0], output row 1 is identical to input row 0, and output row 2 is identical to input row 1. The input row 2 is not used in the output.\",\n\n\"hints\": \"Notice that in each training example, the values move downward, and the first row becomes zero. This is a vertical shift operation.\",\n\n\"confidence\": 100\n\n}\n\nI need to make sure the arrays are correctly formatted.\n\nAlso, in keySteps, I have a list of strings.\n\nAnd predictedOutput3 is empty array.\n\nNow, for the response, I must output only JSON, so no other text.",
+      "hasReasoningLog": true,
+      "apiProcessingTimeMs": 202537,
       "predictedOutputGrids": [
+        [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
         [
           [
             0,
@@ -348,25 +355,9 @@
             1,
             0
           ]
-        ],
-        [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ]
         ]
       ],
+      "predictedOutputGrid": null,
       "multiValidation": [
         {
           "index": 0,
@@ -377,18 +368,18 @@
               0
             ],
             [
-              0,
+              2,
               0,
               0
             ],
             [
+              2,
               0,
-              1,
               0
             ]
           ],
           "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.75,
+          "predictionAccuracyScore": 1,
           "extractionMethod": "direct_predicted_outputs_field",
           "expectedDimensions": {
             "rows": 3,
@@ -409,13 +400,13 @@
               0
             ],
             [
-              2,
               0,
+              1,
               0
             ]
           ],
-          "isPredictionCorrect": false,
-          "predictionAccuracyScore": 0.5,
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 1,
           "extractionMethod": "direct_predicted_outputs_field",
           "expectedDimensions": {
             "rows": 3,
@@ -423,8 +414,8 @@
           }
         }
       ],
-      "allPredictionsCorrect": false,
-      "averagePredictionAccuracyScore": 0.625,
+      "allPredictionsCorrect": true,
+      "averagePredictionAccuracyScore": 1,
       "multiTestResults": [
         {
           "index": 0,
@@ -435,18 +426,18 @@
               0
             ],
             [
-              0,
+              2,
               0,
               0
             ],
             [
+              2,
               0,
-              1,
               0
             ]
           ],
           "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.75,
+          "predictionAccuracyScore": 1,
           "extractionMethod": "direct_predicted_outputs_field",
           "expectedDimensions": {
             "rows": 3,
@@ -467,13 +458,13 @@
               0
             ],
             [
-              2,
               0,
+              1,
               0
             ]
           ],
-          "isPredictionCorrect": false,
-          "predictionAccuracyScore": 0.5,
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 1,
           "extractionMethod": "direct_predicted_outputs_field",
           "expectedDimensions": {
             "rows": 3,
@@ -481,15 +472,15 @@
           }
         }
       ],
-      "multiTestAllCorrect": false,
-      "multiTestAverageAccuracy": 0.625,
+      "multiTestAllCorrect": true,
+      "multiTestAverageAccuracy": 1,
       "extractionMethod": "direct_predicted_outputs_field",
-      "modelKey": "deepseek-chat",
-      "actualProcessingTime": 64
+      "modelKey": "deepseek-reasoner",
+      "actualProcessingTime": 203
     }
   },
-  "exportedAt": "2025-08-24T00:01:02.886Z",
+  "exportedAt": "2025-08-25T05:18:24.027Z",
   "models": [
-    "deepseek-chat"
+    "deepseek-reasoner"
   ]
 }

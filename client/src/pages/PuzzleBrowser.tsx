@@ -126,12 +126,20 @@ export default function PuzzleBrowser() {
                 Colorblindness Aid & AI Reasoning Analysis
               </p>
             </div>
-            <Link href="/overview">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                Database Overview
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/model-examiner">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Grid3X3 className="h-4 w-4" />
+                  Model Examiner
+                </Button>
+              </Link>
+              <Link href="/overview">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Database className="h-4 w-4" />
+                  Database Overview
+                </Button>
+              </Link>
+            </div>
           </div>
           
           {/* Collapsible Mission Statement */}
