@@ -20,13 +20,7 @@ export const explanationService = {
    */
   async getExplanationsForPuzzle(puzzleId: string) {
     const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
-    if (explanations === null) {
-      throw new AppError(
-        'Could not retrieve explanations due to a server error.',
-        500, 
-        'DATABASE_ERROR'
-      );
-    }
+    // Let controller handle null case - don't throw here
     return explanations;
   },
 
@@ -106,7 +100,17 @@ export const explanationService = {
           multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
           multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
           providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          actualProcessingTime: restOfExplanationData.actualProcessingTime ?? null,
+          // Badge fields that were being dropped
+          apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
+          inputTokens: restOfExplanationData.inputTokens ?? null,
+          outputTokens: restOfExplanationData.outputTokens ?? null,
+          reasoningTokens: restOfExplanationData.reasoningTokens ?? null,
+          totalTokens: restOfExplanationData.totalTokens ?? null,
+          estimatedCost: restOfExplanationData.estimatedCost ?? null,
+          temperature: restOfExplanationData.temperature ?? null,
+          reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
+          reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
+          reasoningSummaryType: restOfExplanationData.reasoningSummaryType ?? null,
         };
 
         console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
