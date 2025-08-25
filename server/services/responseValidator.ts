@@ -497,6 +497,9 @@ export function validateSolverResponseMulti(
     };
   }
 
+  // Use confidence from response if available, fallback to parameter
+  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
+
   // Validate required fields first
   if (!response?.solvingStrategy) {
     logger.warn('No solving strategy found in multi-test solver response', 'validator');
@@ -508,9 +511,6 @@ export function validateSolverResponseMulti(
       extractionMethodSummary: 'no_solving_strategy'
     };
   }
-
-  // Use confidence from response if available, fallback to parameter
-  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
 
   // Collect candidate predicted grids
   let predictedGrids: (number[][] | null)[] = [];

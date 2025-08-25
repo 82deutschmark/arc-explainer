@@ -7,57 +7,25 @@
  */
 
 import OpenAI from "openai";
-import { ARCTask } from "../../shared/types";
-import { buildAnalysisPrompt, getDefaultPromptId, extractReasoningFromStructuredResponse } from "./promptBuilder";
-import type { PromptOptions, PromptPackage } from "./promptBuilder";
-import { calculateCost } from "../utils/costCalculator";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
-import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema";
+import { ARCTask } from "../../shared/types.js";
+import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder.js";
+import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
+import { calculateCost } from "../utils/costCalculator.js";
+import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
+import { dbService } from "./dbService.js";
 
-const MODELS = {
-  "gpt-4.1-nano-2025-04-14": "gpt-4.1-nano-2025-04-14",
-  "gpt-4.1-mini-2025-04-14": "gpt-4.1-mini-2025-04-14",
-  "gpt-4o-mini-2024-07-18": "gpt-4o-mini-2024-07-18",
-  "o3-mini-2025-01-31": "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16": "o4-mini-2025-04-16",
-  "o3-2025-04-16": "o3-2025-04-16",
-  "gpt-4.1-2025-04-14": "gpt-4.1-2025-04-14",
-  "gpt-5-2025-08-07": "gpt-5-2025-08-07",
-  "gpt-5-chat-latest": "gpt-5-chat-latest",
-  "gpt-5-mini-2025-08-07": "gpt-5-mini-2025-08-07",
-  "gpt-5-nano-2025-08-07": "gpt-5-nano-2025-08-07",
-} as const;
-
-// Helper function to check if model supports temperature using centralized config
-function modelSupportsTemperature(modelKey: string): boolean {
-  const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-  return modelConfig?.supportsTemperature ?? false;
-}
-
-// Older models that support reasoning logs (o3/o4 series)
-const O3_O4_REASONING_MODELS = new Set([
-  "o3-mini-2025-01-31",
-  "o4-mini-2025-04-16", 
-  "o3-2025-04-16",
-]);
-
-// Newest GPT-5 models that support advanced reasoning parameters
-const GPT5_REASONING_MODELS = new Set([
-  "gpt-5-2025-08-07",
-  "gpt-5-mini-2025-08-07",
-  "gpt-5-nano-2025-08-07",
-]);
-
-// GPT-5 Chat models (support temperature, no reasoning)
-const GPT5_CHAT_MODELS = new Set([
-  "gpt-5-chat-latest",
-]);
-
-// All models that support reasoning
-const MODELS_WITH_REASONING = new Set([
-  ...O3_O4_REASONING_MODELS,
-  ...GPT5_REASONING_MODELS,
-]);
+// Import centralized model configuration
+import { 
+  MODELS, 
+  getModelConfig, 
+  modelSupportsTemperature, 
+  modelSupportsReasoning, 
+  getApiModelName,
+  O3_O4_REASONING_MODELS,
+  GPT5_REASONING_MODELS,
+  GPT5_CHAT_MODELS,
+  MODELS_WITH_REASONING
+} from '../config/models.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -66,7 +34,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export class OpenAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
+    modelKey: string,
     temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
@@ -86,7 +54,7 @@ export class OpenAIService {
       systemPromptMode?: 'ARC' | 'None';
     }
   ) {
-    const modelName = MODELS[modelKey];
+    const modelName = getApiModelName(modelKey);
 
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
@@ -287,7 +255,7 @@ export class OpenAIService {
    */
   async generatePromptPreview(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
+    modelKey: string,
     temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
@@ -300,7 +268,7 @@ export class OpenAIService {
       systemPromptMode?: 'ARC' | 'None';
     }
   ) {
-    const modelName = MODELS[modelKey];
+    const modelName = getApiModelName(modelKey);
 
     // Determine system prompt mode (default to ARC for better results)
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
@@ -419,7 +387,7 @@ export class OpenAIService {
             type: "json_schema",
             name: ARC_JSON_SCHEMA.name,
             strict: ARC_JSON_SCHEMA.strict,
-            json_schema: ARC_JSON_SCHEMA.schema
+            schema: ARC_JSON_SCHEMA.schema
           }
         },
         reasoning: request.reasoning,
@@ -473,7 +441,7 @@ export class OpenAIService {
         };
 
         // Find the model config to get pricing
-        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+        const modelConfig = getModelConfig(modelKey);
         if (modelConfig && tokenUsage) {
           cost = calculateCost(modelConfig.cost, tokenUsage);
         }
