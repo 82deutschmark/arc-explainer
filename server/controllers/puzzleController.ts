@@ -83,12 +83,6 @@ export const puzzleController = {
       systemPromptMode = 'ARC'
     } = req.body;
     
-    // Log the request with custom prompt handling
-    if (customPrompt) {
-      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model} using custom prompt (${customPrompt.length} chars), captureReasoning: ${captureReasoning}`);
-    } else {
-      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, promptId: ${promptId}, captureReasoning: ${captureReasoning}`);
-    }
     
     // Track server processing time
     const apiStartTime = Date.now();
@@ -116,13 +110,8 @@ export const puzzleController = {
     // Add timing to result
     result.apiProcessingTimeMs = apiProcessingTimeMs;
     
-    console.log(`[Controller] API processing time for ${model}: ${apiProcessingTimeMs}ms`);
     
     
-    // Log reasoning capture status
-    if (result.hasReasoningLog) {
-      console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
-    }
     
     // Validate solver mode responses
     if (promptId === "solver") {
