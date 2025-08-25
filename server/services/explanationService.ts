@@ -74,28 +74,40 @@ export const explanationService = {
     const savedExplanationIds: number[] = [];
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
-        const { multiplePredictedOutputs, ...restOfExplanationData } = explanations[modelKey];
+        const sourceData = explanations[modelKey];
+        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
-        let hasMultiplePredictions: boolean | null = null;
+        // Logic to handle the ambiguous 'multiplePredictedOutputs' field
+        let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsArray: any[] | null = null;
 
         if (typeof multiplePredictedOutputs === 'boolean') {
           hasMultiplePredictions = multiplePredictedOutputs;
-          multiplePredictedOutputsArray = null;
         } else if (Array.isArray(multiplePredictedOutputs)) {
           hasMultiplePredictions = multiplePredictedOutputs.length > 0;
           multiplePredictedOutputsArray = multiplePredictedOutputs;
-        } else {
-          hasMultiplePredictions = false;
-          multiplePredictedOutputsArray = null;
         }
 
-        const explanationId = await dbService.saveExplanation(puzzleId, {
-          ...restOfExplanationData,
+        // Create a well-defined object, ensuring no 'undefined' values are passed.
+        const explanationData = {
+          patternDescription: restOfExplanationData.patternDescription ?? null,
+          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
+          hints: restOfExplanationData.hints ?? null,
+          confidence: restOfExplanationData.confidence ?? 0,
+          modelName: modelKey,
+          reasoningLog: restOfExplanationData.reasoningLog ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
+          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
+          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
           multiplePredictedOutputs: multiplePredictedOutputsArray,
-          modelName: modelKey, // Ensure modelKey is passed as modelName
-        });
+          multiTestResults: restOfExplanationData.multiTestResults ?? null,
+          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
+          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
+          providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
+        };
+
+        const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
         if (explanationId) {
           savedExplanationIds.push(explanationId);
         }
