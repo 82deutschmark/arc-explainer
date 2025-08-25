@@ -135,7 +135,8 @@ export const puzzleController = {
         
         // ARCHITECTURAL FIX: Separate boolean flag from array storage
         result.hasMultiplePredictions = true; // Boolean detection flag
-        result.multiplePredictedOutputs = multi.predictedGrids; // Array storage (safe to overwrite now)
+        result.multiTestPredictionGrids = multi.predictedGrids; // Dedicated array storage
+        // Keep multiplePredictedOutputs as boolean (don't overwrite with arrays)
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;

@@ -80,12 +80,14 @@ export const explanationService = {
         // Logic to handle the ambiguous 'multiplePredictedOutputs' field
         let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsArray: any[] | null = null;
+        let multiTestPredictionGrids: any[] | null = null;
 
         if (typeof multiplePredictedOutputs === 'boolean') {
           hasMultiplePredictions = multiplePredictedOutputs;
         } else if (Array.isArray(multiplePredictedOutputs)) {
           hasMultiplePredictions = multiplePredictedOutputs.length > 0;
           multiplePredictedOutputsArray = multiplePredictedOutputs;
+          multiTestPredictionGrids = multiplePredictedOutputs; // Store in dedicated field
         }
 
         // Create a well-defined object, ensuring no 'undefined' values are passed.
@@ -101,10 +103,12 @@ export const explanationService = {
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
           multiplePredictedOutputs: multiplePredictedOutputsArray,
+          multiTestPredictionGrids,
           multiTestResults: restOfExplanationData.multiTestResults ?? null,
           multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
           multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
           providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
+          actualProcessingTime: restOfExplanationData.actualProcessingTime ?? null,
         };
 
         const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
