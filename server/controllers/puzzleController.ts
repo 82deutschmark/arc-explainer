@@ -118,44 +118,41 @@ export const puzzleController = {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
       
-      // Check if AI provided multiple predictions (regardless of test count)
-      const hasMultiplePredictions = result.multiplePredictedOutputs === true;
-
-      if (hasMultiplePredictions) {
-        // Handle multiple predictions from AI (can happen for single or multi-test puzzles)
+      // Simple logic: Check if AI provided multiple predictions
+      if (result.multiplePredictedOutputs === true) {
+        // Multi-test case: AI provided multiple grids
         const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-        // Attach multi-prediction validation summary and details
+        // Simple storage: predictedOutputGrid = null, multiplePredictedOutputs = array of grids
+        result.predictedOutputGrid = null;
+        result.multiplePredictedOutputs = multi.predictedGrids;
+        result.hasMultiplePredictions = true;
+        
+        // Attach validation results for UI
         result.predictedOutputGrids = multi.predictedGrids;
-        result.predictedOutputGrid = null; // Multiple predictions don't use single grid field
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
-        
-        // ARCHITECTURAL FIX: Separate boolean flag from array storage
-        result.hasMultiplePredictions = true; // Boolean detection flag
-        result.multiplePredictedOutputs = true; // Explicit boolean (Option B)
-        result.multiTestPredictionGrids = multi.predictedGrids; // Dedicated array storage
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
       } else {
-        // Handle single prediction from AI
+        // Single-test case: AI provided one grid
         const correctAnswer = puzzle.test[0].output;
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
-        // Add validation results to response (single prediction)
-        result.hasMultiplePredictions = false; // Boolean detection flag
-        result.multiplePredictedOutputs = false; // Explicit boolean (Option B)
-        result.multiTestPredictionGrids = null; // No multi-test grids for single predictions
+        // Simple storage: predictedOutputGrid = single grid, multiplePredictedOutputs = null
         result.predictedOutputGrid = validation.predictedGrid;
+        result.multiplePredictedOutputs = null;
+        result.hasMultiplePredictions = false;
+        
+        // Attach validation results for UI
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
         result.extractionMethod = validation.extractionMethod;
-
       }
     }
     

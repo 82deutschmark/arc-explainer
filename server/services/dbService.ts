@@ -16,7 +16,7 @@ import {
   safeJsonParse, 
   processHints,
 } from '../utils/dataTransformers';
-import { q, toTextJSON, toJsonbParam } from '../utils/dbQueryWrapper';
+import { q, safeJsonStringify } from '../utils/dbQueryWrapper';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -283,7 +283,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       predictedOutputGrid, isPredictionCorrect, predictionAccuracyScore,
       temperature, reasoningEffort, reasoningVerbosity, reasoningSummaryType,
       inputTokens, outputTokens, reasoningTokens, totalTokens, estimatedCost,
-      hasMultiplePredictions, multiplePredictedOutputs, multiTestPredictionGrids, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
+      hasMultiplePredictions, multiplePredictedOutputs, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
     } = explanation;
 
     const hints = processHints(rawHints);
@@ -298,11 +298,11 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         saturn_events, saturn_success, predicted_output_grid, is_prediction_correct,
         prediction_accuracy_score, temperature, reasoning_effort, reasoning_verbosity,
         reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
-        total_tokens, estimated_cost, has_multiple_predictions, multiple_predicted_outputs, multi_test_prediction_grids,
+        total_tokens, estimated_cost, has_multiple_predictions, multiple_predicted_outputs,
         multi_test_results, multi_test_all_correct, multi_test_average_accuracy)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
-               $31, $32, $33, $34, $35, $36)
+               $31, $32, $33, $34, $35)
        RETURNING id`;
 
     const queryParams = [
@@ -317,14 +317,14 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       reasoningLog || null,
       hasReasoningLog || false,
       providerResponseId || null,
-      shouldPersistRaw ? toJsonbParam(providerRawResponse) : null,
-      toJsonbParam(reasoningItems),
+      shouldPersistRaw ? safeJsonStringify(providerRawResponse) : null,
+      safeJsonStringify(reasoningItems),
       apiProcessingTimeMs || null,
-      toJsonbParam(saturnImages),
-      toJsonbParam(saturnLog),
-      toJsonbParam(saturnEvents),
+      safeJsonStringify(saturnImages),
+      safeJsonStringify(saturnLog),
+      safeJsonStringify(saturnEvents),
       saturnSuccess ?? null,
-      toJsonbParam(predictedOutputGrid),
+      safeJsonStringify(predictedOutputGrid),
       isPredictionCorrect ?? null,
       predictionAccuracyScore || null,
       temperature || null,
@@ -337,9 +337,8 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       totalTokens || null,
       estimatedCost || null,
       hasMultiplePredictions ?? null,
-      toJsonbParam(multiplePredictedOutputs),
-      toJsonbParam(multiTestPredictionGrids),
-      toJsonbParam(multiTestResults),
+      safeJsonStringify(multiplePredictedOutputs),
+      safeJsonStringify(multiTestResults),
       multiTestAllCorrect ?? null,
       multiTestAverageAccuracy ?? null
     ];
@@ -353,7 +352,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       21: 'prediction_accuracy_score', 22: 'temperature', 23: 'reasoning_effort', 24: 'reasoning_verbosity',
       25: 'reasoning_summary_type', 26: 'input_tokens', 27: 'output_tokens', 28: 'reasoning_tokens',
       29: 'total_tokens', 30: 'estimated_cost', 31: 'has_multiple_predictions', 32: 'multiple_predicted_outputs',
-      33: 'multi_test_prediction_grids', 34: 'multi_test_results', 35: 'multi_test_all_correct', 36: 'multi_test_average_accuracy'
+      33: 'multi_test_results', 34: 'multi_test_all_correct', 35: 'multi_test_average_accuracy'
     };
 
     // GRANULAR ERROR ISOLATION: Wrap the critical INSERT operation
@@ -433,7 +432,6 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          prediction_accuracy_score AS "predictionAccuracyScore",
          has_multiple_predictions AS "hasMultiplePredictions",
          multiple_predicted_outputs AS "multiplePredictedOutputs",
-         multi_test_prediction_grids AS "multiTestPredictionGrids",
          multi_test_results AS "multiTestResults",
          multi_test_all_correct AS "multiTestAllCorrect",
          multi_test_average_accuracy AS "multiTestAverageAccuracy",
@@ -488,7 +486,6 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          prediction_accuracy_score AS "predictionAccuracyScore",
          has_multiple_predictions AS "hasMultiplePredictions",
          multiple_predicted_outputs AS "multiplePredictedOutputs",
-         multi_test_prediction_grids AS "multiTestPredictionGrids",
          multi_test_results AS "multiTestResults",
          multi_test_all_correct AS "multiTestAllCorrect",
          multi_test_average_accuracy AS "multiTestAverageAccuracy",

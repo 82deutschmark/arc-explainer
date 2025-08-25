@@ -75,22 +75,18 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
-        const { multiplePredictedOutputs, multiTestPredictionGrids: sourceMultiTestPredictionGrids, ...restOfExplanationData } = sourceData;
+        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
-        // Logic to handle the ambiguous 'multiplePredictedOutputs' field
+        // Simple logic: detect if we have multiple predictions
         let hasMultiplePredictions: boolean = false;
-        let multiplePredictedOutputsArray: any[] | null = null;
-        let multiTestPredictionGrids: any[] | null = sourceMultiTestPredictionGrids ?? null;
+        let multiplePredictedOutputsForStorage: any = null;
 
         if (typeof multiplePredictedOutputs === 'boolean') {
           hasMultiplePredictions = multiplePredictedOutputs;
+          multiplePredictedOutputsForStorage = null; // Boolean case, no array data
         } else if (Array.isArray(multiplePredictedOutputs)) {
           hasMultiplePredictions = multiplePredictedOutputs.length > 0;
-          multiplePredictedOutputsArray = multiplePredictedOutputs;
-          // Use the dedicated field if available, otherwise fallback to the legacy approach
-          if (!multiTestPredictionGrids) {
-            multiTestPredictionGrids = multiplePredictedOutputs;
-          }
+          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
         }
 
         // Create a well-defined object, ensuring no 'undefined' values are passed.
@@ -105,8 +101,7 @@ export const explanationService = {
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
-          multiplePredictedOutputs: hasMultiplePredictions, // Option B: Always boolean
-          multiTestPredictionGrids,
+          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
           multiTestResults: restOfExplanationData.multiTestResults ?? null,
           multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
           multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
