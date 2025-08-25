@@ -254,10 +254,10 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
     // Log the problematic data for debugging
     if (errorMessage.includes('invalid input syntax for type json')) {
       logger.error(`JSON syntax error details:`, 'database');
-      logger.error(`- predictedOutputGrid type: ${typeof predictedOutputGrid}, value: ${JSON.stringify(predictedOutputGrid)?.substring(0, 200)}`, 'database');
-      logger.error(`- multiplePredictedOutputs type: ${typeof multiplePredictedOutputs}, value: ${JSON.stringify(multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
-      logger.error(`- reasoningItems type: ${typeof reasoningItems}, value: ${JSON.stringify(reasoningItems)?.substring(0, 200)}`, 'database');
-      logger.error(`- saturnImages type: ${typeof saturnImages}, value: ${JSON.stringify(saturnImages)?.substring(0, 200)}`, 'database');
+      logger.error(`- predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)?.substring(0, 200)}`, 'database');
+      logger.error(`- multiplePredictedOutputs type: ${typeof explanation.multiplePredictedOutputs}, value: ${JSON.stringify(explanation.multiplePredictedOutputs)?.substring(0, 200)}`, 'database');
+      logger.error(`- reasoningItems type: ${typeof explanation.reasoningItems}, value: ${JSON.stringify(explanation.reasoningItems)?.substring(0, 200)}`, 'database');
+      logger.error(`- saturnImages type: ${typeof explanation.saturnImages}, value: ${JSON.stringify(explanation.saturnImages)?.substring(0, 200)}`, 'database');
     }
     
     return null;
