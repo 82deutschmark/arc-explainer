@@ -32,10 +32,15 @@ import {
   XCircle,
   BarChart3,
   Settings,
-  Loader2
+  Loader2,
+  FileText,
+  Eye
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
+import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import type { ExplanationData } from '@/types/puzzle';
+import { apiRequest } from '@/lib/queryClient';
 
 export default function ModelExaminer() {
   // Model configuration state
@@ -53,15 +58,56 @@ export default function ModelExaminer() {
 
   // UI state
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
+  const [latestExplanation, setLatestExplanation] = useState<ExplanationData | null>(null);
+  const [latestPuzzle, setLatestPuzzle] = useState<any>(null);
 
   // Set page title
   useEffect(() => {
     document.title = 'Model Examiner - Batch Analysis';
   }, []);
 
+  // Watch for new completed results and fetch latest explanation
+  useEffect(() => {
+    if (results && results.length > 0) {
+      // Find the most recently completed result with an explanation
+      const completedResults = results
+        .filter(r => r.status === 'completed' && r.explanation_id)
+        .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime());
+      
+      if (completedResults.length > 0 && completedResults[0].explanation_id) {
+        const latest = completedResults[0];
+        // Only fetch if it's different from current
+        if (!latestExplanation || latestExplanation.id !== latest.explanation_id) {
+          fetchLatestExplanation(latest.puzzle_id, latest.explanation_id);
+        }
+      }
+    }
+  }, [results, latestExplanation]);
+
   // Get selected model details
   const currentModel = MODELS.find(model => model.key === selectedModel);
   const isGPT5ReasoningModel = selectedModel && ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(selectedModel);
+
+  // Function to fetch latest explanation for display
+  const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
+    try {
+      // Fetch explanation
+      const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
+      if (explanationResponse.ok) {
+        const explanationData = await explanationResponse.json();
+        setLatestExplanation(explanationData.data);
+      }
+
+      // Fetch puzzle data
+      const puzzleResponse = await apiRequest('GET', `/api/puzzle/task/${puzzleId}`);
+      if (puzzleResponse.ok) {
+        const puzzleData = await puzzleResponse.json();
+        setLatestPuzzle(puzzleData.data);
+      }
+    } catch (error) {
+      console.error('Error fetching latest explanation:', error);
+    }
+  };
 
   // Use batch analysis hook
   const {
@@ -554,40 +600,97 @@ export default function ModelExaminer() {
         </Card>
       )}
 
-      {/* Results Preview */}
-      {results && results.length > 0 && (
+      {/* Latest Analysis Result */}
+      {latestExplanation && latestPuzzle && currentModel && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent Results</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Latest Analysis Result
+            </CardTitle>
             <p className="text-sm text-gray-600">
-              Latest completed puzzle analyses
+              Most recent completed puzzle analysis from this batch
             </p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {results.slice(0, 10).map((result, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <div className="flex items-center gap-2">
+            <AnalysisResultCard
+              modelKey={selectedModel}
+              result={latestExplanation}
+              model={currentModel}
+              testCases={latestPuzzle.test || []}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Completed Puzzles List */}
+      {results && results.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Completed Puzzles
+            </CardTitle>
+            <p className="text-sm text-gray-600">
+              Puzzles that have been processed in this batch analysis
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {results
+                .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
+                .map((result, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
+                  <div className="flex items-center gap-3">
                     <Badge variant="outline" className="font-mono text-xs">
                       {result.puzzle_id}
                     </Badge>
-                    <span className="text-sm">
-                      {result.status === 'completed' ? 'Completed' : 
-                       result.status === 'failed' ? 'Failed' : 'Pending'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    {result.processing_time_ms && (
-                      <span>{Math.round(result.processing_time_ms / 1000)}s</span>
-                    )}
-                    {result.accuracy_score && (
-                      <Badge variant="secondary">
-                        {Math.round(result.accuracy_score * 100)}%
+                    <div className="flex items-center gap-2">
+                      {result.status === 'completed' ? (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      ) : result.status === 'failed' ? (
+                        <XCircle className="h-4 w-4 text-red-600" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-gray-400" />
+                      )}
+                      <span className="text-sm capitalize">{result.status}</span>
+                    </div>
+                    {result.error_message && (
+                      <Badge variant="destructive" className="text-xs max-w-48 truncate" title={result.error_message}>
+                        Error: {result.error_message}
                       </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      {result.processing_time_ms && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {Math.round(result.processing_time_ms / 1000)}s
+                        </span>
+                      )}
+                      {result.accuracy_score && (
+                        <Badge variant={result.is_correct ? "default" : "secondary"} className="text-xs">
+                          {Math.round(result.accuracy_score * 100)}%
+                        </Badge>
+                      )}
+                    </div>
+                    {result.status === 'completed' && (
+                      <Link href={`/puzzle/${result.puzzle_id}`}>
+                        <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          View
+                        </Button>
+                      </Link>
                     )}
                   </div>
                 </div>
               ))}
+              {results.filter(r => r.status === 'pending').length > 0 && (
+                <div className="text-center text-sm text-gray-500 mt-4 pt-4 border-t">
+                  {results.filter(r => r.status === 'pending').length} puzzles remaining...
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
