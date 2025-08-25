@@ -95,8 +95,6 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   // Handle both single and multiple predicted outputs - memoize expensive computations
   const gridData = useMemo(() => {
-    console.log('AnalysisResultCard: Full result object:', result);
-    
     // Try multiple possible field names for predicted grids
     let predictedGrids: number[][][] | undefined;
     let multiValidation: any;
@@ -114,11 +112,11 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
             predictedGrids = [parsed.predictedOutput1, parsed.predictedOutput2];
           }
         } catch (e) {
-          console.warn('Failed to parse multiplePredictedOutputs:', e);
+          // Silent fallback - don't break the UI
         }
       } else if (Array.isArray(result.multiplePredictedOutputs)) {
         predictedGrids = result.multiplePredictedOutputs;
-      } else if (typeof result.multiplePredictedOutputs === 'object') {
+      } else if (typeof result.multiplePredictedOutputs === 'object' && result.multiplePredictedOutputs !== null) {
         // Handle format: {predictedOutput1: [[...]], predictedOutput2: [[...]]}
         const obj = result.multiplePredictedOutputs as any;
         if (obj.predictedOutput1 && obj.predictedOutput2) {
@@ -138,7 +136,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         try {
           multiValidation = JSON.parse(result.multiTestResults);
         } catch (e) {
-          console.warn('Failed to parse multiTestResults:', e);
+          // Silent fallback
         }
       } else {
         multiValidation = result.multiTestResults;
@@ -152,13 +150,6 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     
     const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
     const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
-    
-    console.log('AnalysisResultCard: Processed grid data:', {
-      hasPredictedGrids,
-      predictedGridsLength: predictedGrids?.length,
-      multiValidationLength: Array.isArray(multiValidation) ? multiValidation.length : 'not array',
-      singlePredictedGrid: !!singlePredictedGrid
-    });
     
     return {
       predictedGrids,
