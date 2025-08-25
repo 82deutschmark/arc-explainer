@@ -83,12 +83,6 @@ export const puzzleController = {
       systemPromptMode = 'ARC'
     } = req.body;
     
-    // Log the request with custom prompt handling
-    if (customPrompt) {
-      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model} using custom prompt (${customPrompt.length} chars), captureReasoning: ${captureReasoning}`);
-    } else {
-      console.log(`[Controller] Analyzing puzzle ${taskId} with model ${model}, promptId: ${promptId}, captureReasoning: ${captureReasoning}`);
-    }
     
     // Track server processing time
     const apiStartTime = Date.now();
@@ -116,54 +110,49 @@ export const puzzleController = {
     // Add timing to result
     result.apiProcessingTimeMs = apiProcessingTimeMs;
     
-    console.log(`[Controller] API processing time for ${model}: ${apiProcessingTimeMs}ms`);
     
     
-    // Log reasoning capture status
-    if (result.hasReasoningLog) {
-      console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
-    }
     
     // Validate solver mode responses
     if (promptId === "solver") {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
       
-      // Check if AI provided multiple predictions (regardless of test count)
-      const hasMultiplePredictions = result.multiplePredictedOutputs === true;
-
-      if (hasMultiplePredictions) {
-        // Handle multiple predictions from AI (can happen for single or multi-test puzzles)
+      // Simple logic: Check if AI provided multiple predictions
+      if (result.multiplePredictedOutputs === true) {
+        // Multi-test case: AI provided multiple grids
         const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-        // Attach multi-prediction validation summary and details
+        // Simple storage: predictedOutputGrid = null, multiplePredictedOutputs = array of grids
+        result.predictedOutputGrid = null;
+        result.multiplePredictedOutputs = multi.predictedGrids;
+        result.hasMultiplePredictions = true;
+        
+        // Attach validation results for UI
         result.predictedOutputGrids = multi.predictedGrids;
-        result.predictedOutputGrid = null; // Multiple predictions don't use single grid field
         result.multiValidation = multi.itemResults;
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
-        
-        // Store in database-compatible field names for multi-output predictions
-        result.multiplePredictedOutputs = multi.predictedGrids;
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
-        console.log(`[Controller] Solver multi-prediction: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
       } else {
-        // Handle single prediction from AI
+        // Single-test case: AI provided one grid
         const correctAnswer = puzzle.test[0].output;
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
-        // Add validation results to response (single prediction)
+        // Simple storage: predictedOutputGrid = single grid, multiplePredictedOutputs = null
         result.predictedOutputGrid = validation.predictedGrid;
+        result.multiplePredictedOutputs = null;
+        result.hasMultiplePredictions = false;
+        
+        // Attach validation results for UI
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
         result.extractionMethod = validation.extractionMethod;
-
-        console.log(`[Controller] Solver single-prediction: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
       }
     }
     

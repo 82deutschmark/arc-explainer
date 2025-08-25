@@ -74,13 +74,53 @@ export const explanationService = {
     const savedExplanationIds: number[] = [];
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
-        const explanationData = explanations[modelKey];
-        const explanationId = await dbService.saveExplanation(puzzleId, {
-          ...explanationData,
-          modelName: modelKey, // Ensure modelKey is passed as modelName
-        });
-        if (explanationId) {
-          savedExplanationIds.push(explanationId);
+        const sourceData = explanations[modelKey];
+        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
+
+        // Simple logic: detect if we have multiple predictions
+        let hasMultiplePredictions: boolean = false;
+        let multiplePredictedOutputsForStorage: any = null;
+
+        if (typeof multiplePredictedOutputs === 'boolean') {
+          hasMultiplePredictions = multiplePredictedOutputs;
+          multiplePredictedOutputsForStorage = null; // Boolean case, no array data
+        } else if (Array.isArray(multiplePredictedOutputs)) {
+          hasMultiplePredictions = multiplePredictedOutputs.length > 0;
+          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
+        }
+
+        // Create a well-defined object, ensuring no 'undefined' values are passed.
+        const explanationData = {
+          patternDescription: restOfExplanationData.patternDescription ?? null,
+          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
+          hints: restOfExplanationData.hints ?? null,
+          confidence: restOfExplanationData.confidence ?? 0,
+          modelName: modelKey,
+          reasoningLog: restOfExplanationData.reasoningLog ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
+          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
+          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
+          hasMultiplePredictions,
+          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
+          multiTestResults: restOfExplanationData.multiTestResults ?? null,
+          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
+          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
+          providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
+          actualProcessingTime: restOfExplanationData.actualProcessingTime ?? null,
+        };
+
+        console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+        try {
+          const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
+          if (explanationId) {
+            console.log(`[MULTIPLE-OPS] SUCCESS saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}, ID: ${explanationId})`);
+            savedExplanationIds.push(explanationId);
+          } else {
+            console.log(`[MULTIPLE-OPS] FAILED saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - no ID returned`);
+          }
+        } catch (error) {
+          console.log(`[MULTIPLE-OPS] ERROR saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - ${error instanceof Error ? error.message : String(error)}`);
+          // Continue with other models instead of failing completely
         }
       }
     }
