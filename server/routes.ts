@@ -20,6 +20,9 @@ import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 
+// Import route modules
+import modelsRouter from "./routes/models.js";
+
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
 import { asyncHandler } from "./middleware/asyncHandler";
@@ -36,6 +39,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
 
   // Routes with consistent naming and error handling
+  
+  // Models API routes
+  app.use("/api/models", modelsRouter);
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));

@@ -7,7 +7,7 @@
 
 export const ARC_JSON_SCHEMA = {
   name: "arc_analysis",
-  strict: true,
+  strict: false, // Disable strict mode for flexibility
   schema: {
     type: "object",
     properties: {
