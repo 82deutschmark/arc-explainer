@@ -7,6 +7,15 @@
 
 August 25, 2025
 
+## Version 1.8.7 — TypeScript Variable Declaration Fix (2025-08-25)
+
+### 🔧 **FIX** - dbService Variable Declaration Errors (Code by Cascade)
+**Fixed TypeScript compilation errors in dbService.ts by adding proper variable declarations.**
+
+- **Fixed:** Added `const` declarations to `queryParams` and `paramMap` variables to eliminate TypeScript errors
+- **Impact:** Resolves compilation issues preventing proper database service functionality
+- **Files:** `server/services/dbService.ts`
+
 ## Version 1.8.6 — Comprehensive JSON Serialization and Data Structure Refactor (2025-08-25)
 
 ### 🛠️ **ARCHITECTURAL REFACTOR** - End-to-End JSON Stability (Code by Cascade)
