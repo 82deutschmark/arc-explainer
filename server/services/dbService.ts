@@ -513,15 +513,8 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
       [puzzleId]
     );
 
-    // Apply same data transformation as getExplanationForPuzzle for consistency
-    return result.rows.map(row => ({
-      ...row,
-      saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
-      predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
-      // JSONB fields come back as objects automatically
-      multiplePredictedOutputs: row.multiplePredictedOutputs,
-      multiTestResults: row.multiTestResults
-    }));
+    // JSONB columns are automatically parsed by the driver, so no extra parsing is needed.
+    return result.rows;
   } catch (error) {
     logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     return null;
