@@ -12,7 +12,7 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'Google' | 'xAI' | 'DeepSeek';
+  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   supportsReasoning?: boolean;
   // Server-only properties
@@ -61,20 +61,20 @@ export const MODELS: ModelConfig[] = [
     cost: { input: '$0.15', output: '$0.60' },
     supportsTemperature: true,
     provider: 'OpenAI',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4o-mini-2024-07-18',
     modelType: 'gpt5_chat',
     maxOutputTokens: 65536
   },
   { 
     key: 'o3-mini-2025-01-31', 
-    name: 'o3 Mini', 
+    name: 'o3-mini', 
     color: 'bg-red-500', 
     premium: true,
-    cost: { input: '$1.50', output: '$6.00' },
-    supportsTemperature: false, // Responses API doesn't support temperature for o3/o4
+    cost: { input: '$1.10', output: '$4.40' },
+    supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: true,
     apiModelName: 'o3-mini-2025-01-31',
     modelType: 'o3_o4',
@@ -82,13 +82,13 @@ export const MODELS: ModelConfig[] = [
   },
   { 
     key: 'o4-mini-2025-04-16', 
-    name: 'o4 Mini', 
+    name: 'o4-mini', 
     color: 'bg-pink-500', 
     premium: true,
-    cost: { input: '$2.50', output: '$10.00' },
-    supportsTemperature: false, // Responses API doesn't support temperature for o3/o4
+    cost: { input: '$1.10', output: '$4.40' },
+    supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
     supportsReasoning: true,
     apiModelName: 'o4-mini-2025-04-16',
     modelType: 'o3_o4',
@@ -96,13 +96,13 @@ export const MODELS: ModelConfig[] = [
   },
   { 
     key: 'o3-2025-04-16', 
-    name: 'o3 Pro', 
-    color: 'bg-gray-700', 
+    name: 'o3-2025-04-16', 
+    color: 'bg-green-500', 
     premium: true,
-    cost: { input: '$15.00', output: '$60.00' },
-    supportsTemperature: false, // Responses API doesn't support temperature for o3/o4
+    cost: { input: '$2', output: '$8' },
+    supportsTemperature: false,
     provider: 'OpenAI',
-    responseTime: { speed: 'slow', estimate: '5-15 min' },
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
     supportsReasoning: true,
     apiModelName: 'o3-2025-04-16',
     modelType: 'o3_o4',
@@ -111,13 +111,12 @@ export const MODELS: ModelConfig[] = [
   { 
     key: 'gpt-4.1-2025-04-14', 
     name: 'GPT-4.1', 
-    color: 'bg-sky-500', 
+    color: 'bg-yellow-500', 
     premium: true,
-    cost: { input: '$2.50', output: '$10.00' },
-    supportsTemperature: false, // Based on your temperature error fix
+    cost: { input: '$2.00', output: '$8.00' },
+    supportsTemperature: true,
     provider: 'OpenAI',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: false,
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
     apiModelName: 'gpt-4.1-2025-04-14',
     modelType: 'gpt5_chat',
     maxOutputTokens: 100000
@@ -125,14 +124,42 @@ export const MODELS: ModelConfig[] = [
   { 
     key: 'gpt-5-2025-08-07', 
     name: 'GPT-5', 
+    color: 'bg-emerald-500', 
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    provider: 'OpenAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true,
+    apiModelName: 'gpt-5-2025-08-07',
+    modelType: 'gpt5',
+    maxOutputTokens: 128000
+  },
+  { 
+    key: 'gpt-5-chat-latest', 
+    name: 'GPT-5 Chat', 
+    color: 'bg-amber-500', 
+    premium: false,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    provider: 'OpenAI',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false,
+    apiModelName: 'gpt-5-chat-latest',
+    modelType: 'gpt5_chat',
+    maxOutputTokens: 100000
+  },
+  { 
+    key: 'gpt-5-mini-2025-08-07', 
+    name: 'GPT-5 Mini', 
     color: 'bg-indigo-500', 
     premium: true,
     cost: { input: '$0.25', output: '$2.00' },
-    supportsTemperature: false, // Based on your temperature error fix
+    supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: true,
-    apiModelName: 'gpt-5-2025-08-07',
+    apiModelName: 'gpt-5-mini-2025-08-07',
     modelType: 'gpt5',
     maxOutputTokens: 128000
   },
@@ -142,7 +169,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-teal-500', 
     premium: false,
     cost: { input: '$0.05', output: '$0.40' },
-    supportsTemperature: false, // GPT-5 nano doesn't support temperature in Responses API
+    supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     supportsReasoning: true,
@@ -150,45 +177,18 @@ export const MODELS: ModelConfig[] = [
     modelType: 'gpt5',
     maxOutputTokens: 128000
   },
-  { 
-    key: 'gpt-5-mini-2025-08-07', 
-    name: 'GPT-5 Mini', 
-    color: 'bg-emerald-500', 
-    premium: false,
-    cost: { input: '$0.10', output: '$0.40' },
-    supportsTemperature: false,
-    provider: 'OpenAI',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true,
-    apiModelName: 'gpt-5-mini-2025-08-07',
-    modelType: 'gpt5',
-    maxOutputTokens: 128000
-  },
-  { 
-    key: 'gpt-5-chat-latest', 
-    name: 'GPT-5 Chat', 
-    color: 'bg-cyan-500', 
-    premium: true,
-    cost: { input: '$1.00', output: '$4.00' },
-    supportsTemperature: true, // GPT-5 Chat supports temperature
-    provider: 'OpenAI',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: false,
-    apiModelName: 'gpt-5-chat-latest',
-    modelType: 'gpt5_chat',
-    maxOutputTokens: 100000
-  },
 
   // Anthropic Models
   { 
     key: 'claude-sonnet-4-20250514', 
     name: 'Claude Sonnet 4', 
-    color: 'bg-orange-600', 
+    color: 'bg-indigo-500', 
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '45-90 sec' },
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    supportsReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
     maxOutputTokens: 20000
@@ -196,32 +196,220 @@ export const MODELS: ModelConfig[] = [
   { 
     key: 'claude-3-7-sonnet-20250219', 
     name: 'Claude 3.7 Sonnet', 
-    color: 'bg-amber-600', 
-    premium: true,
+    color: 'bg-indigo-400', 
+    premium: false,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'Anthropic',
-    responseTime: { speed: 'moderate', estimate: '45-90 sec' },
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true,
     apiModelName: 'claude-3-7-sonnet-20250219',
     modelType: 'claude',
     maxOutputTokens: 20000
   },
-
-  // Google Gemini Models  
   { 
-    key: 'gemini-2.5-pro', 
-    name: 'Gemini 2.5 Pro', 
-    color: 'bg-blue-600', 
-    premium: true,
-    cost: { input: '$1.25', output: '$5.00' },
+    key: 'claude-3-5-sonnet-20241022', 
+    name: 'Claude 3.5 Sonnet', 
+    color: 'bg-violet-500', 
+    premium: false,
+    cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
-    provider: 'Google',
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true,
+    apiModelName: 'claude-3-5-sonnet-20241022',
+    modelType: 'claude',
+    maxOutputTokens: 20000
+  },
+  { 
+    key: 'claude-3-5-haiku-20241022', 
+    name: 'Claude 3.5 Haiku', 
+    color: 'bg-violet-400', 
+    premium: false,
+    cost: { input: '$0.80', output: '$4.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true,
+    apiModelName: 'claude-3-5-haiku-20241022',
+    modelType: 'claude',
+    maxOutputTokens: 20000
+  },
+  { 
+    key: 'claude-3-haiku-20240307', 
+    name: 'Claude 3 Haiku', 
+    color: 'bg-purple-400', 
+    premium: false,
+    cost: { input: '$0.25', output: '$1.25' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'fast', estimate: '<60 sec' },
+    supportsReasoning: true,
+    apiModelName: 'claude-3-haiku-20240307',
+    modelType: 'claude',
+    maxOutputTokens: 20000
+  },
+
+  // xAI Grok Models
+  {
+    key: 'grok-4-0709',
+    name: 'Grok 4 (July 2025)',
+    color: 'bg-gray-900',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: false,
+    provider: 'xAI',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    supportsReasoning: true,
+    apiModelName: 'grok-4-0709',
+    modelType: 'grok',
+    maxOutputTokens: 65536
+  },
+  {
+    key: 'grok-3',
+    name: 'Grok 3',
+    color: 'bg-gray-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'xAI',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    apiModelName: 'grok-3',
+    modelType: 'grok',
+    maxOutputTokens: 65536
+  },
+  {
+    key: 'grok-3-mini',
+    name: 'Grok 3 Mini',
+    color: 'bg-gray-500',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.50' },
+    supportsTemperature: true,
+    provider: 'xAI',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    apiModelName: 'grok-3-mini',
+    modelType: 'grok',
+    maxOutputTokens: 65536
+  },
+  {
+    key: 'grok-3-mini-fast',
+    name: 'Grok 3 Mini Fast',
+    color: 'bg-gray-600',
+    premium: false,
+    cost: { input: '$0.60', output: '$4.00' },
+    supportsTemperature: true,
+    provider: 'xAI',
+    responseTime: { speed: 'fast', estimate: '30-60 sec' },
+    apiModelName: 'grok-3-mini-fast',
+    modelType: 'grok',
+    maxOutputTokens: 65536
+  },
+
+  // Google Gemini Models
+  {
+    key: 'gemini-2.5-pro',
+    name: 'Gemini 2.5 Pro',
+    color: 'bg-teal-600',
+    premium: true,
+    cost: { input: '$2.50', output: '$8.00' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
     maxOutputTokens: 65536,
     contextWindow: 1000000
+  },
+  {
+    key: 'gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash',
+    color: 'bg-teal-500',
+    premium: false,
+    cost: { input: '$0.70', output: '$2.10' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true,
+    apiModelName: 'models/gemini-2.5-flash',
+    modelType: 'gemini',
+    maxOutputTokens: 65536,
+    contextWindow: 1000000
+  },
+  {
+    key: 'gemini-2.5-flash-lite',
+    name: 'Gemini 2.5 Flash-Lite',
+    color: 'bg-teal-400',
+    premium: false,
+    cost: { input: '$0.35', output: '$1.05' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true,
+    apiModelName: 'models/gemini-2.5-flash-lite',
+    modelType: 'gemini',
+    maxOutputTokens: 65536,
+    contextWindow: 1000000
+  },
+  {
+    key: 'gemini-2.0-flash',
+    name: 'Gemini 2.0 Flash',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.20', output: '$0.60' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true,
+    apiModelName: 'models/gemini-2.0-flash',
+    modelType: 'gemini',
+    maxOutputTokens: 65536,
+    contextWindow: 1000000
+  },
+  {
+    key: 'gemini-2.0-flash-lite',
+    name: 'Gemini 2.0 Flash-Lite',
+    color: 'bg-teal-200',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'Gemini',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: true,
+    apiModelName: 'models/gemini-2.0-flash-lite',
+    modelType: 'gemini',
+    maxOutputTokens: 65536,
+    contextWindow: 1000000
+  },
+  
+  // DeepSeek Models
+  {
+    key: 'deepseek-chat',
+    name: 'DeepSeek Chat',
+    color: 'bg-cyan-600',
+    premium: false,
+    cost: { input: '$0.14', output: '$0.28' },
+    supportsTemperature: true,
+    provider: 'DeepSeek',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    supportsReasoning: true,
+    apiModelName: 'deepseek-chat',
+    modelType: 'deepseek',
+    maxOutputTokens: 65536
+  },
+  {
+    key: 'deepseek-reasoner',
+    name: 'DeepSeek Reasoner',
+    color: 'bg-cyan-800',
+    premium: true,
+    cost: { input: '$0.55', output: '$2.19' },
+    supportsTemperature: false,
+    provider: 'DeepSeek',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    supportsReasoning: true,
+    apiModelName: 'deepseek-reasoner',
+    modelType: 'deepseek',
+    maxOutputTokens: 65536
   }
 ];
 
