@@ -548,7 +548,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         hasReasoningLog || false,
         providerResponseId || null,
         shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        reasoningItems ? safeJsonStringify(reasoningItems) : null,
+        reasoningItems ?? null,
         apiProcessingTimeMs || null,
         safeJsonStringify(saturnImages),
         explanation.saturnLog || null,
@@ -566,8 +566,8 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        // Multi-output prediction fields - pass raw arrays to JSONB columns
-        multiplePredictedOutputs ?? null,
+        // Multi-output prediction fields - handle both boolean flag and array data
+        (typeof multiplePredictedOutputs === 'boolean') ? null : (multiplePredictedOutputs ?? null),
         multiTestResults ?? null,
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
