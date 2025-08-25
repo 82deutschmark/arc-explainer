@@ -151,7 +151,6 @@ export const puzzleController = {
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
         result.extractionMethod = multi.extractionMethodSummary;
 
-        console.log(`[Controller] Solver multi-prediction: allCorrect=${multi.allCorrect}, avgScore=${(multi.averageAccuracyScore * 100).toFixed(1)}%`);
       } else {
         // Handle single prediction from AI
         const correctAnswer = puzzle.test[0].output;
@@ -163,7 +162,6 @@ export const puzzleController = {
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
         result.extractionMethod = validation.extractionMethod;
 
-        console.log(`[Controller] Solver single-prediction: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'}, accuracy score: ${(validation.predictionAccuracyScore * 100).toFixed(1)}%`);
       }
     }
     
