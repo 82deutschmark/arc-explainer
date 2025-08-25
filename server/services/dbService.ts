@@ -201,10 +201,11 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
         total_tokens, estimated_cost, multiple_predicted_outputs, multi_test_results,
         multi_test_all_correct, multi_test_average_accuracy)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
+               COALESCE($13, 'null'::jsonb), $14, 
                COALESCE($15, 'null'), $16, $17, $18, 
                COALESCE($19, 'null'), $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
-               COALESCE($31::jsonb, 'null'::jsonb), $32, $33, $34)
+               COALESCE($31, 'null'::jsonb), COALESCE($32, 'null'::jsonb), $33, $34)
        RETURNING id`,
       [
         puzzleId,
