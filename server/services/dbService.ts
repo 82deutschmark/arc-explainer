@@ -448,14 +448,14 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       multiTestAverageAccuracy
     } = explanation;
     
-    // Debug logging for multi-test data
+    // Debug logging for all JSON fields that could cause syntax errors
+    logger.info(`[DB-DEBUG] All JSON fields for puzzle ${puzzleId}:`, 'database');
+    logger.info(`  reasoningItems type: ${typeof reasoningItems}, value: ${reasoningItems ? 'present' : 'null'}`, 'database');
+    logger.info(`  saturnImages type: ${typeof saturnImages}, value: ${saturnImages ? 'present' : 'null'}`, 'database');
+    logger.info(`  predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)}`, 'database');
     if (multiplePredictedOutputs !== undefined || multiTestResults !== undefined) {
-      logger.info(`[DB-DEBUG] Multi-test data for puzzle ${puzzleId}:`, 'database');
       logger.info(`  multiplePredictedOutputs type: ${typeof multiplePredictedOutputs}, isArray: ${Array.isArray(multiplePredictedOutputs)}`, 'database');
-      logger.info(`  multiplePredictedOutputs: ${JSON.stringify(multiplePredictedOutputs)}`, 'database');
       logger.info(`  multiTestResults type: ${typeof multiTestResults}, isArray: ${Array.isArray(multiTestResults)}`, 'database');
-      logger.info(`  multiTestResults: ${JSON.stringify(multiTestResults)}`, 'database');
-      logger.info(`  predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)}`, 'database');
     }
     
     // Ensure hints is always an array of strings
@@ -496,7 +496,7 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
         hasReasoningLog || false,
         providerResponseId || null,
         shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        safeJsonStringify(reasoningItems),
+        reasoningItems ? safeJsonStringify(reasoningItems) : null,
         apiProcessingTimeMs || null,
         safeJsonStringify(saturnImages),
         explanation.saturnLog || null,
