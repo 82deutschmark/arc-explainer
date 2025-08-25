@@ -22,6 +22,8 @@ August 25, 2025
 - **Parameter Validation**: Created `dbQueryWrapper.ts` with `safeQuery()` function
 - **Undefined Protection**: Pre-flight validation throws error on any undefined parameter
 - **JSONB Standardization**: `prepareJsonbParam()` function for consistent JSON handling
+- **Saturn Images Safety**: `prepareSaturnImagesParam()` for edge case protection
+- **Safe Migration**: TEXT→JSONB conversion with corrupted data fallback to NULL
 - **Enhanced Debugging**: Parameter mapping diagnostics with type analysis
 - **Convention B Adoption**: Native JS objects to JSONB columns (no ::json casts)
 

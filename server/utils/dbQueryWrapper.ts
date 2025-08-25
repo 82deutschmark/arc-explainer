@@ -56,10 +56,7 @@ export async function safeQuery(
   // Debug logging for parameter analysis
   if (process.env.NODE_ENV !== 'production') {
     const paramMapping = extractParams(sqlText, safeValues);
-    logger.debug(`[SQL] ${context}`, {
-      paramCount: safeValues.length,
-      params: paramMapping
-    });
+    logger.debug(`[SQL] ${context} - ${safeValues.length} params: ${paramMapping.map(p => `$${p.n}:${p.type}`).join(', ')}`, 'database');
   }
   
   try {
@@ -91,4 +88,23 @@ export function prepareJsonbParam(value: any): any {
   // For JSONB columns, pass objects/arrays directly
   // Let PostgreSQL's JSONB input function handle the conversion
   return value;
+}
+
+/**
+ * Extra-safe handler for Saturn images (edge case)
+ * These are rarely used but shouldn't break normal DB operations
+ */
+export function prepareSaturnImagesParam(saturnImages: any): any {
+  // Saturn images are a total edge case - be extremely conservative
+  if (!saturnImages || saturnImages === undefined) return null;
+  
+  try {
+    // Only allow proper arrays or objects
+    if (Array.isArray(saturnImages) || (typeof saturnImages === 'object')) {
+      return saturnImages;
+    }
+    return null; // Reject anything else
+  } catch {
+    return null; // Any error = null (don't break normal flow)
+  }
 }
