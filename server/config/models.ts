@@ -68,7 +68,7 @@ export const MODELS: ModelConfig[] = [
   },
   { 
     key: 'o3-mini-2025-01-31', 
-    name: 'o3 Mini', 
+    name: 'o3-mini-2025-01-31', 
     color: 'bg-red-500', 
     premium: true,
     cost: { input: '$1.50', output: '$6.00' },
@@ -82,7 +82,7 @@ export const MODELS: ModelConfig[] = [
   },
   { 
     key: 'o4-mini-2025-04-16', 
-    name: 'o4 Mini', 
+    name: 'o4-mini-2025-04-16', 
     color: 'bg-pink-500', 
     premium: true,
     cost: { input: '$2.50', output: '$10.00' },
@@ -96,7 +96,7 @@ export const MODELS: ModelConfig[] = [
   },
   { 
     key: 'o3-2025-04-16', 
-    name: 'o3 Pro', 
+    name: 'o3-2025-04-16', 
     color: 'bg-gray-700', 
     premium: true,
     cost: { input: '$15.00', output: '$60.00' },
@@ -114,7 +114,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-sky-500', 
     premium: true,
     cost: { input: '$2.50', output: '$10.00' },
-    supportsTemperature: false, // Based on your temperature error fix
+    supportsTemperature: true, // Based on your temperature error fix
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: false,
@@ -170,7 +170,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-cyan-500', 
     premium: true,
     cost: { input: '$1.00', output: '$4.00' },
-    supportsTemperature: true, // GPT-5 Chat supports temperature
+    supportsTemperature: false, // GPT-5 Chat does NOT support temperature
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: false,
