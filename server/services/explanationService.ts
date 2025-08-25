@@ -114,9 +114,13 @@ export const explanationService = {
           actualProcessingTime: restOfExplanationData.actualProcessingTime ?? null,
         };
 
+        console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
         if (explanationId) {
+          console.log(`[MULTIPLE-OPS] SUCCESS saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}, ID: ${explanationId})`);
           savedExplanationIds.push(explanationId);
+        } else {
+          console.log(`[MULTIPLE-OPS] FAILED saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         }
       }
     }

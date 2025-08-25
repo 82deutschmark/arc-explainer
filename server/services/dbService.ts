@@ -194,20 +194,65 @@ const createTablesIfNotExist = async () => {
 
     logger.info('Database tables created/verified successfully', 'database');
 
-    // Log schema snapshot for key columns to verify alignment
+    // COMPREHENSIVE schema verification to debug JSON syntax errors
     const schemaQuery = `
-      SELECT column_name, data_type 
+      SELECT column_name, data_type, is_nullable, column_default
       FROM information_schema.columns 
       WHERE table_name = 'explanations' 
       AND column_name IN (
-        'predicted_output_grid', 'reasoning_items', 'saturn_images', 
-        'multiple_predicted_outputs', 'multi_test_results', 'has_multiple_predictions', 'multi_test_prediction_grids'
+        'predicted_output_grid', 'reasoning_items', 'saturn_images', 'saturn_log', 'saturn_events',
+        'multiple_predicted_outputs', 'multi_test_results', 'has_multiple_predictions', 'multi_test_prediction_grids',
+        'provider_raw_response', 'api_processing_time_ms', 'input_tokens', 'output_tokens', 'reasoning_tokens',
+        'total_tokens', 'estimated_cost', 'temperature', 'reasoning_effort', 'reasoning_verbosity', 'reasoning_summary_type'
       )
       ORDER BY column_name;
     `;
     const schemaResult = await client.query(schemaQuery);
-    logger.info('[Schema Snapshot] Explanations table column types:', 'database');
-    logger.info(JSON.stringify(schemaResult.rows, null, 2), 'database');
+    logger.info(`[SCHEMA-VERIFICATION] Database column types for JSON error investigation:`, 'database');
+    schemaResult.rows.forEach(row => {
+      logger.info(`[SCHEMA-VERIFICATION] ${row.column_name}: ${row.data_type} (nullable: ${row.is_nullable})`, 'database');
+    });
+    
+    // Check specifically for our new Option B column
+    const optionBQuery = `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'explanations' AND column_name = 'multi_test_prediction_grids'`;
+    const optionBResult = await client.query(optionBQuery);
+    if (optionBResult.rows.length === 0) {
+      logger.error('[SCHEMA-ERROR] multi_test_prediction_grids column MISSING - migration may have failed!', 'database');
+    } else {
+      logger.info(`[SCHEMA-SUCCESS] multi_test_prediction_grids exists: ${optionBResult.rows[0].data_type}`, 'database');
+    }
+    
+    // INVESTIGATE BACKGROUND OPERATIONS: Check for triggers that might cause ERROR vs 201 success contradiction
+    const triggersQuery = `
+      SELECT trigger_name, event_manipulation, action_timing, action_statement 
+      FROM information_schema.triggers 
+      WHERE event_object_table = 'explanations'
+    `;
+    const triggersResult = await client.query(triggersQuery);
+    if (triggersResult.rows.length > 0) {
+      logger.warn(`[TRIGGERS-FOUND] Database triggers on explanations table (potential source of JSON errors):`, 'database');
+      triggersResult.rows.forEach(trigger => {
+        logger.warn(`[TRIGGERS-FOUND] ${trigger.trigger_name}: ${trigger.action_timing} ${trigger.event_manipulation}`, 'database');
+      });
+    } else {
+      logger.info(`[TRIGGERS-NONE] No database triggers on explanations table`, 'database');
+    }
+    
+    // Check for foreign key constraints that might cause secondary operations
+    const constraintsQuery = `
+      SELECT constraint_name, constraint_type, table_name 
+      FROM information_schema.table_constraints 
+      WHERE table_name = 'explanations' AND constraint_type = 'FOREIGN KEY'
+    `;
+    const constraintsResult = await client.query(constraintsQuery);
+    if (constraintsResult.rows.length > 0) {
+      logger.info(`[CONSTRAINTS-FOUND] Foreign key constraints on explanations:`, 'database');
+      constraintsResult.rows.forEach(constraint => {
+        logger.info(`[CONSTRAINTS-FOUND] ${constraint.constraint_name}`, 'database');
+      });
+    } else {
+      logger.info(`[CONSTRAINTS-NONE] No foreign key constraints on explanations table`, 'database');
+    }
   } catch (error) {
     logger.error(`Failed to create tables: ${error instanceof Error ? error.message : String(error)}`, 'database');
     throw error;
@@ -311,13 +356,44 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       33: 'multi_test_prediction_grids', 34: 'multi_test_results', 35: 'multi_test_all_correct', 36: 'multi_test_average_accuracy'
     };
 
-    const result = await q(client, queryText, queryParams, 'explanations.insert', paramMap);
+    // GRANULAR ERROR ISOLATION: Wrap the critical INSERT operation
+    logger.info(`[OPERATION-START] Beginning INSERT for puzzle ${puzzleId}`, 'database');
     
-    logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
+    let result;
+    try {
+      result = await q(client, queryText, queryParams, 'explanations.insert', paramMap);
+      logger.info(`[OPERATION-SUCCESS] INSERT completed for puzzle ${puzzleId}`, 'database');
+    } catch (insertError) {
+      logger.error(`[OPERATION-FAILURE] INSERT failed for puzzle ${puzzleId}: ${insertError instanceof Error ? insertError.message : String(insertError)}`, 'database');
+      
+      // Detailed JSON error analysis
+      if (String(insertError).includes('invalid input syntax for type json')) {
+        logger.error(`[JSON-ERROR-ANALYSIS] Investigating JSON syntax error for puzzle ${puzzleId}:`, 'database');
+        logger.error(`[JSON-ERROR-ANALYSIS] Query: ${queryText.substring(0, 200)}...`, 'database');
+        logger.error(`[JSON-ERROR-ANALYSIS] Parameter count: ${queryParams.length}`, 'database');
+        
+        // Log suspect JSONB parameters
+        const jsonbParams = [
+          { name: 'multiplePredictedOutputs', value: queryParams[31], index: 32 },
+          { name: 'multiTestPredictionGrids', value: queryParams[32], index: 33 },
+          { name: 'multiTestResults', value: queryParams[33], index: 34 },
+          { name: 'predictedOutputGrid', value: queryParams[18], index: 19 },
+          { name: 'reasoningItems', value: queryParams[12], index: 13 },
+        ];
+        
+        jsonbParams.forEach(param => {
+          logger.error(`[JSON-ERROR-ANALYSIS] ${param.name} ($${param.index}): ${typeof param.value} = ${JSON.stringify(param.value)}`, 'database');
+        });
+      }
+      
+      throw insertError; // Re-throw to maintain error flow
+    }
+    
+    logger.info(`[OPERATION-COMPLETE] Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
     return result.rows[0].id;
   } catch (error) {
     let errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error(`Error saving explanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
+    logger.error(`[OUTER-ERROR] Error in saveExplanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
     
     if (errorMessage.includes('invalid input syntax for type json') || errorMessage.includes('undefined parameter')) {
       logger.error(`[Debug] Detailed parameter analysis for puzzle ${puzzleId}:`, 'database');
