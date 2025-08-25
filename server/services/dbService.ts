@@ -30,7 +30,25 @@ const normalizeConfidence = (confidence: any): number => {
 
 // Safe JSON serialization helper to prevent "[object Object]" errors
 const safeJsonStringify = (value: any): string | null => {
-  if (!value) return null;
+  // Handle null/undefined explicitly - return JSON string "null" for TEXT columns
+  if (value === null || value === undefined) {
+    return 'null'; // Return the string "null" for JSON null value
+  }
+  
+  // Handle false explicitly (previously caught by !value check)
+  if (value === false) {
+    return 'false';
+  }
+  
+  // Handle 0 explicitly (previously caught by !value check)
+  if (value === 0) {
+    return '0';
+  }
+  
+  // Handle empty string
+  if (value === '') {
+    return '""';
+  }
   
   // If already a string, try to parse it first to validate it's proper JSON
   if (typeof value === 'string') {
@@ -55,7 +73,8 @@ const safeJsonStringify = (value: any): string | null => {
     }
   }
   
-  return null;
+  // For numbers and booleans not caught above
+  return JSON.stringify(value);
 };
 
 /**
@@ -490,16 +509,6 @@ const saveExplanation = async (puzzleId: string, explanation: PuzzleExplanation)
       multiTestAllCorrect,
       multiTestAverageAccuracy
     } = explanation;
-    
-    // Debug logging for all JSON fields that could cause syntax errors
-    logger.info(`[DB-DEBUG] All JSON fields for puzzle ${puzzleId}:`, 'database');
-    logger.info(`  reasoningItems type: ${typeof reasoningItems}, value: ${reasoningItems ? 'present' : 'null'}`, 'database');
-    logger.info(`  saturnImages type: ${typeof saturnImages}, value: ${saturnImages ? 'present' : 'null'}`, 'database');
-    logger.info(`  predictedOutputGrid type: ${typeof explanation.predictedOutputGrid}, value: ${JSON.stringify(explanation.predictedOutputGrid)}`, 'database');
-    if (multiplePredictedOutputs !== undefined || multiTestResults !== undefined) {
-      logger.info(`  multiplePredictedOutputs type: ${typeof multiplePredictedOutputs}, isArray: ${Array.isArray(multiplePredictedOutputs)}`, 'database');
-      logger.info(`  multiTestResults type: ${typeof multiTestResults}, isArray: ${Array.isArray(multiTestResults)}`, 'database');
-    }
     
     // Ensure hints is always an array of strings
     const hints = Array.isArray(rawHints) 
