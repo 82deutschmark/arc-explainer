@@ -7,6 +7,54 @@
 
 August 25, 2025
 
+## Version 1.8.5 — PostgreSQL JSON Parameter Validation (2025-08-25)
+
+### 🛠️ **CRITICAL FIX** - Undefined Parameter Protection (Code by Cascade)
+**Eliminated PostgreSQL "invalid input syntax for type json" errors through parameter validation**
+
+#### **Root Cause Identified**
+- `undefined` values reaching JSONB database columns (specifically `saturnImages: undefined`)
+- PostgreSQL rejecting undefined parameters in JSON contexts
+- Runtime type mismatches: objects/arrays passed where strings expected
+- No validation preventing undefined from crossing DB boundary
+
+#### **Solution Implemented**
+- **Parameter Validation**: Created `dbQueryWrapper.ts` with `safeQuery()` function
+- **Undefined Protection**: Pre-flight validation throws error on any undefined parameter
+- **JSONB Standardization**: `prepareJsonbParam()` function for consistent JSON handling
+- **Enhanced Debugging**: Parameter mapping diagnostics with type analysis
+- **Convention B Adoption**: Native JS objects to JSONB columns (no ::json casts)
+
+#### **Technical Impact**
+- ✅ **Error Prevention**: Undefined parameters blocked at wrapper level
+- ✅ **Consistent Handling**: All JSONB parameters processed uniformly
+- ✅ **Enhanced Diagnostics**: Detailed parameter logging for debugging
+- ✅ **Future-Proof**: Centralized validation prevents similar issues
+
+## Version 1.8.4 — System-Wide JSONB Migration (2025-01-08)
+
+### 🔧 **SYSTEM-WIDE FIX** - Native PostgreSQL JSON Handling (Code by Cascade)
+**Eliminated all JSON serialization errors through native JSONB column usage**
+
+#### **The Problem**
+- TEXT columns with manual JSON stringification caused persistent type conflicts
+- `safeJsonStringify` fixes not taking effect due to outdated compiled JavaScript
+- PostgreSQL rejecting null/undefined values passed as objects
+- Both single-test and multi-test puzzles failing to save
+
+#### **Solution Implemented**
+- **Database Migration**: Converted `saturn_images`, `saturn_log`, `saturn_events`, `predicted_output_grid` from TEXT to JSONB
+- **Native JSON**: Removed all `safeJsonStringify` calls - PostgreSQL handles JSON natively
+- **Direct Object Passing**: JavaScript objects now passed directly to JSONB columns
+- **Automatic Migration**: Added safe column type conversions for existing databases
+- **Simplified SQL**: Removed complex COALESCE workarounds for JSON handling
+
+#### **Technical Impact**
+- ✅ **Robust Storage**: PostgreSQL's JSONB validates and stores JSON natively
+- ✅ **Type Safety**: No more string/object/null type conflicts
+- ✅ **Simplified Code**: Removed brittle serialization layer
+- ✅ **Future-Proof**: All JSON data handled consistently by database
+
 ## Version 1.8.3 — CRITICAL FIX: Multi-Test JSON Serialization (2025-08-25)
 
 ### 🎯 **ARCHITECTURAL FIX** - Dual-Purpose Field Anti-Pattern Resolved (Code by Cascade)

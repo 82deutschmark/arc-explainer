@@ -13,11 +13,11 @@ import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
 import { 
   normalizeConfidence, 
-  safeJsonStringify, 
   safeJsonParse, 
   processHints,
   processMultiplePredictedOutputs 
 } from '../utils/dataTransformers';
+import { safeQuery, prepareJsonbParam } from '../utils/dbQueryWrapper';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -84,11 +84,11 @@ const createTablesIfNotExist = async () => {
             provider_raw_response JSONB DEFAULT NULL,
             reasoning_items JSONB DEFAULT NULL,
             api_processing_time_ms INTEGER DEFAULT NULL,
-            saturn_images TEXT DEFAULT NULL,
-            saturn_log TEXT DEFAULT NULL,
-            saturn_events TEXT DEFAULT NULL,
+            saturn_images JSONB DEFAULT NULL,
+            saturn_log JSONB DEFAULT NULL,
+            saturn_events JSONB DEFAULT NULL,
             saturn_success BOOLEAN DEFAULT NULL,
-            predicted_output_grid TEXT DEFAULT NULL,
+            predicted_output_grid JSONB DEFAULT NULL,
             is_prediction_correct BOOLEAN DEFAULT NULL,
             prediction_accuracy_score FLOAT DEFAULT NULL,
             temperature FLOAT DEFAULT NULL,
@@ -160,6 +160,39 @@ const createTablesIfNotExist = async () => {
           ALTER TABLE explanations ADD COLUMN has_multiple_predictions BOOLEAN DEFAULT NULL;
         END IF;
 
+        -- Migration: Convert TEXT columns to JSONB for robust JSON handling
+        -- saturn_images
+        IF EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name = 'explanations'
+                  AND column_name = 'saturn_images'
+                  AND data_type = 'text') THEN
+          ALTER TABLE explanations ALTER COLUMN saturn_images TYPE JSONB USING saturn_images::jsonb;
+        END IF;
+
+        -- saturn_log
+        IF EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name = 'explanations'
+                  AND column_name = 'saturn_log'
+                  AND data_type = 'text') THEN
+          ALTER TABLE explanations ALTER COLUMN saturn_log TYPE JSONB USING saturn_log::jsonb;
+        END IF;
+
+        -- saturn_events
+        IF EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name = 'explanations'
+                  AND column_name = 'saturn_events'
+                  AND data_type = 'text') THEN
+          ALTER TABLE explanations ALTER COLUMN saturn_events TYPE JSONB USING saturn_events::jsonb;
+        END IF;
+
+        -- predicted_output_grid
+        IF EXISTS (SELECT 1 FROM information_schema.columns
+                  WHERE table_name = 'explanations'
+                  AND column_name = 'predicted_output_grid'
+                  AND data_type = 'text') THEN
+          ALTER TABLE explanations ALTER COLUMN predicted_output_grid TYPE JSONB USING predicted_output_grid::jsonb;
+        END IF;
+
       END $$;
     `);
 
@@ -199,7 +232,8 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
     const hints = processHints(rawHints);
     const shouldPersistRaw = process.env.RAW_RESPONSE_PERSIST !== 'false';
 
-    const result = await client.query(
+    const result = await safeQuery(
+      client,
       `INSERT INTO explanations 
        (puzzle_id, pattern_description, solving_strategy, hints,
         confidence, alien_meaning_confidence, alien_meaning, model_name,
@@ -210,11 +244,9 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
         total_tokens, estimated_cost, has_multiple_predictions, multiple_predicted_outputs, multi_test_results,
         multi_test_all_correct, multi_test_average_accuracy)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-               COALESCE($13, 'null'::jsonb), $14, 
-               COALESCE($15, 'null'), $16, $17, $18, 
-               COALESCE($19, 'null'), $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
-               $31, COALESCE($32, 'null'::jsonb), COALESCE($33, 'null'::jsonb), $34, $35)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
+               $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
+               $31, $32, $33, $34, $35)
        RETURNING id`,
       [
         puzzleId,
@@ -228,14 +260,14 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoningLog || null,
         hasReasoningLog || false,
         providerResponseId || null,
-        shouldPersistRaw ? (providerRawResponse ?? null) : null,
-        reasoningItems ?? null, // JSONB column - pass object directly
+        shouldPersistRaw ? prepareJsonbParam(providerRawResponse) : null,
+        prepareJsonbParam(reasoningItems), // JSONB - safe parameter handling
         apiProcessingTimeMs || null,
-        safeJsonStringify(saturnImages), // TEXT column - stringify
-        saturnLog || null,
-        saturnEvents || null,
+        prepareJsonbParam(saturnImages), // JSONB - safe parameter handling 
+        prepareJsonbParam(saturnLog), // JSONB - safe parameter handling
+        prepareJsonbParam(saturnEvents), // JSONB - safe parameter handling
         saturnSuccess ?? null,
-        safeJsonStringify(predictedOutputGrid), // TEXT column - stringify
+        prepareJsonbParam(predictedOutputGrid), // JSONB - safe parameter handling
         isPredictionCorrect ?? null,
         predictionAccuracyScore ?? null,
         temperature ?? null,
@@ -247,12 +279,13 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
-        hasMultiplePredictions ?? null, // Boolean detection flag
-        multiplePredictedOutputs ?? null, // JSONB column - pass directly, let PostgreSQL handle it
-        multiTestResults ?? null, // JSONB column - pass array directly
+        hasMultiplePredictions ?? null,
+        prepareJsonbParam(multiplePredictedOutputs), // JSONB - safe parameter handling
+        prepareJsonbParam(multiTestResults), // JSONB - safe parameter handling
         multiTestAllCorrect ?? null,
         multiTestAverageAccuracy ?? null
-      ]
+      ],
+      'explanations.insert'
     );
     
     logger.info(`Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
