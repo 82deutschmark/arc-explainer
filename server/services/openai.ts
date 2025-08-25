@@ -378,18 +378,23 @@ export class OpenAIService {
     });
 
     try {
+      // Check if model supports structured JSON schema
+      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest');
+      
       // Prepare the request for OpenAI's Responses API
       const body = {
         model: request.model,
         input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }],
-        text: {
-          format: {
-            type: "json_schema",
-            name: ARC_JSON_SCHEMA.name,
-            strict: ARC_JSON_SCHEMA.strict,
-            schema: ARC_JSON_SCHEMA.schema
+        ...(supportsStructuredOutput && {
+          text: {
+            format: {
+              type: "json_schema",
+              name: ARC_JSON_SCHEMA.name,
+              strict: ARC_JSON_SCHEMA.strict,
+              schema: ARC_JSON_SCHEMA.schema
+            }
           }
-        },
+        }),
         reasoning: request.reasoning,
         temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
         top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
