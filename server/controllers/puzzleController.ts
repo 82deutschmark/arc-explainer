@@ -118,6 +118,14 @@ export const puzzleController = {
     
     console.log(`[Controller] API processing time for ${model}: ${apiProcessingTimeMs}ms`);
     
+    // Debug: Log the raw AI response structure
+    console.log(`[CONTROLLER-DEBUG] AI Response structure for ${model}:`);
+    console.log(`  Keys: ${Object.keys(result)}`);
+    console.log(`  solvingStrategy: "${result.solvingStrategy}"`);
+    console.log(`  patternDescription: "${result.patternDescription}"`);
+    console.log(`  hints: ${JSON.stringify(result.hints)}`);
+    console.log(`  predictedOutput type: ${typeof result.predictedOutput}, isArray: ${Array.isArray(result.predictedOutput)}`);
+    
     // Log reasoning capture status
     if (result.hasReasoningLog) {
       console.log(`[Controller] Successfully captured reasoning log for ${model} (${result.reasoningLog?.length || 0} characters)`);
@@ -130,7 +138,10 @@ export const puzzleController = {
       
       // Check if AI provided multiple predictions (regardless of test count)
       const hasMultiplePredictions = result.multiplePredictedOutputs === true || 
-                                   (Array.isArray(result.predictedOutput) && result.predictedOutput.length > 1);
+                                   (Array.isArray(result.predictedOutput) && 
+                                    result.predictedOutput.length > 0 && 
+                                    typeof result.predictedOutput[0] === 'object' && 
+                                    'TestCase' in result.predictedOutput[0]);
 
       if (hasMultiplePredictions) {
         // Handle multiple predictions from AI (can happen for single or multi-test puzzles)
