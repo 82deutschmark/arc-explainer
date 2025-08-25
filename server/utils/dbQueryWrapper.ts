@@ -13,39 +13,17 @@ import { Pool, PoolClient } from 'pg';
 import { logger } from './logger';
 
 /**
- * Prepares a value for a TEXT column that is expected to hold a JSON string.
- * Throws an error if the value is undefined.
- * @param v The value to process.
- * @returns A JSON string or null.
+ * Simple JSON stringification for database storage.
+ * Works for both JSONB and TEXT columns that store JSON data.
+ * Replaces the over-engineered toTextJSON/toJsonbParam functions.
  */
-export function toTextJSON(v: any): string | null {
-  if (v === undefined) throw new Error('undefined parameter cannot be sent to the database');
-  if (v === null) return null;
-  if (typeof v === 'string') {
-    // It might already be a JSON string. If not, stringify it.
-    try {
-      JSON.parse(v);
-      return v; // It's a valid JSON string
-    } catch (e) {
-      return JSON.stringify(v); // It's a plain string, so stringify it
-    }
-  }
-  return JSON.stringify(v);
-}
-
-/**
- * Prepares a value for a JSONB column by JSON stringifying.
- * PostgreSQL JSONB columns may require JSON strings from the driver.
- * @param v The value to process.
- * @returns JSON string or null for JSONB column.
- */
-export function toJsonbParam(v: any): string | null {
-  if (v === undefined || v === null) return null;
+export function safeJsonStringify(value: any): string | null {
+  if (value === undefined || value === null) return null;
   
   try {
-    return JSON.stringify(v);
+    return JSON.stringify(value);
   } catch (e) {
-    console.warn(`[toJsonbParam] Failed to stringify value, returning null:`, v);
+    console.warn(`[safeJsonStringify] Failed to stringify value, returning null:`, value);
     return null;
   }
 }
