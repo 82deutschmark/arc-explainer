@@ -9,6 +9,15 @@ August 24, 2025
 
 ## Version 1.7.3 — Multi-Test Database Fix (2025-08-24)
 
+### 🛠️ Major Refactor (Code by Cascade)
+- **OpenAI Architecture Overhaul**: Major refactor addressing architectural issues identified by advisor assessment.
+  - **Structured Output Schema**: Created proper JSON Schema (`arcJsonSchema.ts`) with strict validation, replacing fragile regex JSON scraping.
+  - **Request Parameters**: Now properly passes temperature, top_p, parallel_tool_calls=false, and truncation settings to API.
+  - **Token Usage**: Defensive calculation handling `reasoning_tokens` from `output_tokens_details` to prevent NaN totals.
+  - **Response Processing**: Prefers structured `output_parsed` over regex parsing when JSON schema is used.
+  - **Impact**: Robust, reliable JSON parsing and proper API parameter handling eliminate brittle response processing.
+  - **Files**: `server/services/openai.ts`, `server/services/schemas/arcJsonSchema.ts`
+
 ### 🐛 Bug Fix (Code by Cascade)
 - **Database Save Errors and Multi-Prediction Detection**: Fixed critical issues causing analysis save failures and incorrect multi-prediction routing.
   - **Root Cause**: `reasoningItems` field causing JSON syntax errors, controller incorrectly detecting single predictions as multiple, and empty reasoning blocks causing database issues.
