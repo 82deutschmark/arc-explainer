@@ -572,7 +572,7 @@ const hasExplanation = async (puzzleId: string): Promise<boolean> => {
 };
 
 /**
- * Get bulk explanation status for multiple puzzles
+ * Get bulk explanation status for multiple puzzles with detailed metadata
  */
 const getBulkExplanationStatus = async (puzzleIds: string[]) => {
   if (!pool || puzzleIds.length === 0) return new Map();
@@ -582,18 +582,54 @@ const getBulkExplanationStatus = async (puzzleIds: string[]) => {
   try {
     let resultMap = new Map();
     
-    // Initialize all as false
-    puzzleIds.forEach(id => resultMap.set(id, false));
+    // Initialize all as no explanation
+    puzzleIds.forEach(id => resultMap.set(id, {
+      hasExplanation: false,
+      explanationId: null,
+      feedbackCount: 0,
+      apiProcessingTimeMs: null,
+      modelName: null,
+      createdAt: null,
+      confidence: null,
+      estimatedCost: null
+    }));
     
-    // Check which ones exist
+    // Get detailed explanation data for puzzles that have explanations
     let placeholders = puzzleIds.map((_, index) => `$${index + 1}`).join(',');
     const result = await client.query(
-      `SELECT DISTINCT puzzle_id FROM explanations WHERE puzzle_id IN (${placeholders})`,
+      `SELECT 
+         e.puzzle_id,
+         e.id as explanation_id,
+         e.api_processing_time_ms,
+         e.model_name,
+         e.created_at,
+         e.confidence,
+         e.estimated_cost,
+         COUNT(f.id) as feedback_count
+       FROM explanations e
+       LEFT JOIN feedback f ON e.id = f.explanation_id
+       WHERE e.puzzle_id IN (${placeholders})
+       GROUP BY e.puzzle_id, e.id, e.api_processing_time_ms, e.model_name, e.created_at, e.confidence, e.estimated_cost
+       ORDER BY e.puzzle_id, e.created_at DESC`,
       puzzleIds
     );
     
-    // Mark existing ones as true
-    result.rows.forEach(row => resultMap.set(row.puzzle_id, true));
+    // Update map with detailed data (most recent explanation per puzzle)
+    result.rows.forEach(row => {
+      const existingStatus = resultMap.get(row.puzzle_id);
+      if (!existingStatus.hasExplanation) { // Only take the first (most recent) explanation
+        resultMap.set(row.puzzle_id, {
+          hasExplanation: true,
+          explanationId: row.explanation_id,
+          feedbackCount: parseInt(row.feedback_count) || 0,
+          apiProcessingTimeMs: row.api_processing_time_ms,
+          modelName: row.model_name,
+          createdAt: row.created_at,
+          confidence: row.confidence,
+          estimatedCost: row.estimated_cost
+        });
+      }
+    });
     
     return resultMap;
   } catch (error) {
@@ -819,6 +855,13 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
 };
 
 /**
+ * Check if database is connected
+ */
+const isConnected = () => {
+  return pool !== null;
+};
+
+/**
  * Get accuracy statistics for solver mode
  */
 const getAccuracyStats = async () => {
@@ -1038,5 +1081,5 @@ export const dbService = {
   createBatchResult,
   updateBatchResult,
   getBatchResults,
-  isConnected: () => !!pool,
+  isConnected
 };

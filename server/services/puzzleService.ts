@@ -27,6 +27,11 @@ interface PuzzleFilters {
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   explanationId?: number;
   feedbackCount?: number;
+  apiProcessingTimeMs?: number;
+  modelName?: string;
+  createdAt?: string;
+  confidence?: number;
+  estimatedCost?: number;
 }
 
 // Remove local interface and use the imported one from shared types
@@ -63,7 +68,12 @@ export const puzzleService = {
       hasExplanation: false, // Will update this with accurate data
       source: puzzle.source,
       explanationId: undefined,
-      feedbackCount: 0
+      feedbackCount: 0,
+      apiProcessingTimeMs: undefined,
+      modelName: undefined,
+      createdAt: undefined,
+      confidence: undefined,
+      estimatedCost: undefined
     }));
     
     try {
@@ -71,13 +81,18 @@ export const puzzleService = {
       const puzzleIds = enhancedPuzzles.map(p => p.id);
       const explanationStatusMap = await dbService.getBulkExplanationStatus(puzzleIds);
       
-      // Update each puzzle with its explanation status
+      // Update each puzzle with its explanation status and metadata
       enhancedPuzzles.forEach(puzzle => {
         const status = explanationStatusMap.get(puzzle.id);
         if (status) {
           puzzle.hasExplanation = status.hasExplanation;
           puzzle.explanationId = status.explanationId;
           puzzle.feedbackCount = status.feedbackCount;
+          puzzle.apiProcessingTimeMs = status.apiProcessingTimeMs;
+          puzzle.modelName = status.modelName;
+          puzzle.createdAt = status.createdAt;
+          puzzle.confidence = status.confidence;
+          puzzle.estimatedCost = status.estimatedCost;
         }
       });
       
