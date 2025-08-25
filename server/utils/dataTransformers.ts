@@ -25,7 +25,7 @@ export const normalizeConfidence = (confidence: any): number => {
 /**
  * Safely converts values to JSON strings for TEXT database columns
  */
-export const safeJsonStringify = (value: any): string | null => {
+export const safeJsonStringify = (value: any): string => {
   // Handle null/undefined explicitly - return JSON string "null" for TEXT columns
   if (value === null || value === undefined) {
     return 'null'; // Return the string "null" for JSON null value
@@ -52,8 +52,8 @@ export const safeJsonStringify = (value: any): string | null => {
       JSON.parse(value); // Validate it's proper JSON
       return value;
     } catch {
-      // If not valid JSON, treat as invalid and return null
-      return null;
+      // If not valid JSON, treat as invalid and return string "null"
+      return 'null';
     }
   }
   
@@ -65,7 +65,7 @@ export const safeJsonStringify = (value: any): string | null => {
       return JSON.stringify(value);
     } catch (error) {
       logger.error(`Failed to stringify value: ${error instanceof Error ? error.message : String(error)}`, 'database');
-      return null;
+      return 'null';
     }
   }
   
