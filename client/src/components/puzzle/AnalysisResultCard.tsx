@@ -596,10 +596,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                     const expectedGrid = expectedOutputGrids[testIndex];
                     const validation = multiValidation?.[testIndex];
                     const isCorrect = validation?.isPredictionCorrect;
-                    const testDiffMask = useMemo(() => {
-                      if (!showDiff || !predGrid || !expectedGrid) return undefined;
-                      return buildDiffMask(predGrid, expectedGrid);
-                    }, [showDiff, predGrid, expectedGrid]);
+                    const testDiffMask = (showDiff && predGrid && expectedGrid) ? buildDiffMask(predGrid, expectedGrid) : undefined;
                     
                     return (
                       <div key={testIndex} className="border border-gray-200 rounded-lg p-3">
