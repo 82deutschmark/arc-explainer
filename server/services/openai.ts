@@ -622,7 +622,7 @@ export class OpenAIService {
       (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
     );
     
-    return reasoningBlocks
+    const reasoningText = reasoningBlocks
       .map(block => {
         if (Array.isArray(block.content)) {
           const textContent = block.content.find((c: any) => c.type === 'text');
@@ -632,6 +632,15 @@ export class OpenAIService {
       })
       .filter(Boolean)
       .join('\n');
+    
+    // Filter out empty or placeholder reasoning content
+    if (!reasoningText || 
+        reasoningText.toLowerCase().includes('empty reasoning') ||
+        reasoningText.trim() === '') {
+      return '';
+    }
+    
+    return reasoningText;
   }
 }
 
