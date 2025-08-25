@@ -75,19 +75,22 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
-        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
+        const { multiplePredictedOutputs, multiTestPredictionGrids: sourceMultiTestPredictionGrids, ...restOfExplanationData } = sourceData;
 
         // Logic to handle the ambiguous 'multiplePredictedOutputs' field
         let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsArray: any[] | null = null;
-        let multiTestPredictionGrids: any[] | null = null;
+        let multiTestPredictionGrids: any[] | null = sourceMultiTestPredictionGrids ?? null;
 
         if (typeof multiplePredictedOutputs === 'boolean') {
           hasMultiplePredictions = multiplePredictedOutputs;
         } else if (Array.isArray(multiplePredictedOutputs)) {
           hasMultiplePredictions = multiplePredictedOutputs.length > 0;
           multiplePredictedOutputsArray = multiplePredictedOutputs;
-          multiTestPredictionGrids = multiplePredictedOutputs; // Store in dedicated field
+          // Use the dedicated field if available, otherwise fallback to the legacy approach
+          if (!multiTestPredictionGrids) {
+            multiTestPredictionGrids = multiplePredictedOutputs;
+          }
         }
 
         // Create a well-defined object, ensuring no 'undefined' values are passed.
