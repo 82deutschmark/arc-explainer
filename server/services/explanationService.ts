@@ -105,7 +105,7 @@ export const explanationService = {
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
-          multiplePredictedOutputs: multiplePredictedOutputsArray,
+          multiplePredictedOutputs: hasMultiplePredictions, // Option B: Always boolean
           multiTestPredictionGrids,
           multiTestResults: restOfExplanationData.multiTestResults ?? null,
           multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
