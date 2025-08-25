@@ -100,6 +100,7 @@ const createTablesIfNotExist = async () => {
             reasoning_tokens INTEGER DEFAULT NULL,
             total_tokens INTEGER DEFAULT NULL,
             estimated_cost FLOAT DEFAULT NULL,
+            has_multiple_predictions BOOLEAN DEFAULT NULL,
             multiple_predicted_outputs JSONB DEFAULT NULL,
             multi_test_results JSONB DEFAULT NULL,
             multi_test_all_correct BOOLEAN DEFAULT NULL,
@@ -183,7 +184,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
       predictedOutputGrid, isPredictionCorrect, predictionAccuracyScore,
       temperature, reasoningEffort, reasoningVerbosity, reasoningSummaryType,
       inputTokens, outputTokens, reasoningTokens, totalTokens, estimatedCost,
-      multiplePredictedOutputs, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
+      hasMultiplePredictions, multiplePredictedOutputs, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
     } = explanation;
 
     // Process data using utilities
@@ -199,13 +200,13 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         saturn_events, saturn_success, predicted_output_grid, is_prediction_correct,
         prediction_accuracy_score, temperature, reasoning_effort, reasoning_verbosity,
         reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
-        total_tokens, estimated_cost, multiple_predicted_outputs, multi_test_results,
+        total_tokens, estimated_cost, has_multiple_predictions, multiple_predicted_outputs, multi_test_results,
         multi_test_all_correct, multi_test_average_accuracy)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
                COALESCE($13, 'null'::jsonb), $14, 
                COALESCE($15, 'null'), $16, $17, $18, 
                COALESCE($19, 'null'), $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, 
-               COALESCE($31, 'null'::jsonb), COALESCE($32, 'null'::jsonb), $33, $34)
+               $31, COALESCE($32, 'null'::jsonb), COALESCE($33, 'null'::jsonb), $34, $35)
        RETURNING id`,
       [
         puzzleId,
@@ -238,6 +239,7 @@ const saveExplanation = async (puzzleId: string, explanation: any): Promise<numb
         reasoningTokens ?? null,
         totalTokens ?? null,
         estimatedCost ?? null,
+        hasMultiplePredictions ?? null, // Boolean detection flag
         multiplePredictedOutputs ?? null, // JSONB column - pass directly, let PostgreSQL handle it
         multiTestResults ?? null, // JSONB column - pass array directly
         multiTestAllCorrect ?? null,
@@ -289,6 +291,7 @@ const getExplanationForPuzzle = async (puzzleId: string) => {
          predicted_output_grid AS "predictedOutputGrid",
          is_prediction_correct AS "isPredictionCorrect",
          prediction_accuracy_score AS "predictionAccuracyScore",
+         has_multiple_predictions AS "hasMultiplePredictions",
          multiple_predicted_outputs AS "multiplePredictedOutputs",
          multi_test_results AS "multiTestResults",
          multi_test_all_correct AS "multiTestAllCorrect",
@@ -342,6 +345,7 @@ const getExplanationsForPuzzle = async (puzzleId: string) => {
          predicted_output_grid AS "predictedOutputGrid",
          is_prediction_correct AS "isPredictionCorrect",
          prediction_accuracy_score AS "predictionAccuracyScore",
+         has_multiple_predictions AS "hasMultiplePredictions",
          multiple_predicted_outputs AS "multiplePredictedOutputs",
          multi_test_results AS "multiTestResults",
          multi_test_all_correct AS "multiTestAllCorrect",
@@ -386,6 +390,7 @@ const getExplanationById = async (explanationId: number) => {
          e.predicted_output_grid AS "predictedOutputGrid",
          e.is_prediction_correct AS "isPredictionCorrect",
          e.prediction_accuracy_score AS "predictionAccuracyScore",
+         e.has_multiple_predictions AS "hasMultiplePredictions",
          e.multiple_predicted_outputs AS "multiplePredictedOutputs",
          e.multi_test_results AS "multiTestResults",
          e.multi_test_all_correct AS "multiTestAllCorrect",

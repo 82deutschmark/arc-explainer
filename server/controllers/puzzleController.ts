@@ -144,8 +144,9 @@ export const puzzleController = {
         result.allPredictionsCorrect = multi.allCorrect;
         result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         
-        // Store in database-compatible field names for multi-output predictions
-        result.multiplePredictedOutputs = multi.predictedGrids;
+        // ARCHITECTURAL FIX: Separate boolean flag from array storage
+        result.hasMultiplePredictions = true; // Boolean detection flag
+        result.multiplePredictedOutputs = multi.predictedGrids; // Array storage (safe to overwrite now)
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
@@ -157,6 +158,7 @@ export const puzzleController = {
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
         // Add validation results to response (single prediction)
+        result.hasMultiplePredictions = false; // Boolean detection flag
         result.predictedOutputGrid = validation.predictedGrid;
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
