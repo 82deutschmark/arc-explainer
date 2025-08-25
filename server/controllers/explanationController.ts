@@ -75,10 +75,26 @@ export const explanationController = {
    * @param res - Express response object
    */
   async create(req: Request, res: Response) {
-    const { puzzleId } = req.params;
-    const { explanations } = req.body;
-    
-    const result = await explanationService.saveExplanation(puzzleId, explanations);
-    res.json(formatResponse.success(result, result.message));
+    try {
+      const { puzzleId } = req.params;
+      const { explanations } = req.body;
+      
+      const result = await explanationService.saveExplanation(puzzleId, explanations);
+
+      if (result.success) {
+        res.status(201).json(formatResponse.success({ explanationIds: result.explanationIds }, 'Explanation saved successfully.'));
+      } else {
+        // Handle controlled failures, e.g., validation errors from the service
+        res.status(400).json(formatResponse.error('SAVE_FAILED', result.message || 'Failed to save explanation due to invalid data.'));
+      }
+    } catch (error) {
+      const { puzzleId } = req.params;
+      console.error(`Error in explanationController.create for puzzle ${puzzleId}:`, error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR',
+        'An unexpected error occurred while saving the explanation.',
+        { error: error instanceof Error ? error.message : 'Unknown database error' }
+      ));
+    }
   }
 };
