@@ -6,8 +6,8 @@
  */
 
 export const ARC_JSON_SCHEMA = {
-  name: "arc_analysis",
-  strict: false, // Disable strict mode for flexibility
+  name: "arc_analysis", 
+  strict: true,
   schema: {
     type: "object",
     properties: {
@@ -75,7 +75,13 @@ export const ARC_JSON_SCHEMA = {
         description: "Confidence level in the solution (0-100)"
       }
     },
-    required: ["confidence"],
+    required: [
+      "solvingStrategy",
+      "keySteps", 
+      "patternDescription",
+      "hints",
+      "confidence"
+    ],
     additionalProperties: false
   }
 } as const;
