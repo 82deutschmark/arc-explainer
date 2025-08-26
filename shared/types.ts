@@ -125,41 +125,41 @@ export interface FeedbackStats {
 
 /**
  * Available prompt templates for puzzle analysis
- * These templates allow users to choose different approaches to puzzle explanation
+ * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */
 export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   alienCommunication: {
     id: "alienCommunication",
-    name: "Alien Communication",
-    description: "Our app frames the puzzles from the ARC-AGI prize as alien communication puzzles.",
+    name: "🛸 Alien Communication",
+    description: "Fun creative approach - AI interprets puzzles as alien messages using emoji symbols. Makes complex patterns more intuitive and engaging.",
     content: `Our app frames the puzzles from the ARC-AGI prize as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
     emojiMapIncluded: true
   },
   standardExplanation: {
     id: "standardExplanation", 
-    name: "Standard Explanation",
-    description: "Explain the transformation rules observed in the {train} examples and applied to the {test} case. Your job is to explain in very simple terms what transformations were used.",
+    name: "📝 Standard Analysis",
+    description: "Clear, straightforward analysis of puzzle patterns. AI explains the transformation rules step-by-step using simple language and logical reasoning.",
     content: `Explain the transformation rules observed in the {train} examples and applied to the {test} case. Your job is to explain in very simple terms what transformations were used.`,
     emojiMapIncluded: false
   },
   educationalApproach: {
     id: "educationalApproach",
-    name: "Educational Approach", 
-    description: "Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.",
-    content: `Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.`,
+    name: "🧠 Educational Approach", 
+    description: "Algorithmic thinking approach - AI teaches problem-solving methodology using step-by-step algorithms, computational processes, and learning-focused explanations.",
+    content: `Help students understand the step-by-step algorithms and logical patterns in this puzzle. Explain transformations as computational processes and rules, focusing on algorithmic thinking and problem-solving methodology.`,
     emojiMapIncluded: false
   },
   solver: {
     id: "solver",
-    name: "Solver Mode",
-    description: "Ask the AI to predict the correct answer based on training examples (no correct answer provided).",
+    name: "🎯 Solver Mode",
+    description: "AI becomes a puzzle solver - predicts the correct answer without seeing the solution. Tests the AI's reasoning abilities in a challenge format.",
     content: `Given these training examples, what do you predict the correct answer to the test case should be? Explain your reasoning step by step, identifying the transformation pattern and applying it to solve the test case.`,
     emojiMapIncluded: false
   },
   custom: {
     id: "custom",
-    name: "Custom Prompt",
-    description: "Use a custom prompt to override built-in templates per analysis run.",
+    name: "⚙️ Custom Prompt",
+    description: "Full control over AI instructions - write your own custom prompt to guide the AI's analysis approach and output style exactly as you want.",
     content: "",
     emojiMapIncluded: false
   }
