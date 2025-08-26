@@ -25,25 +25,8 @@ import { FeedbackViewer } from '@/components/feedback/FeedbackViewer';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
 import { formatConfidence } from '@/constants/models';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 
-// Format processing time from milliseconds to minutes:seconds format
-const formatProcessingTime = (milliseconds: number): string => {
-  // For very small times, show milliseconds
-  if (milliseconds < 1000) {
-    return `${milliseconds}ms`;
-  }
-  
-  const totalSeconds = Math.round(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  
-  // Format: 1m 23s or just 45s if under a minute
-  if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
-  } else {
-    return `${seconds}s`;
-  }
-};
 
 // Format cost for display with safe type checking - always show in dollars with consistent decimal places
 const formatCost = (cost: any): string => {
@@ -277,7 +260,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         {result.apiProcessingTimeMs && (
           <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
             <span className="text-xs text-blue-600">
-              {formatProcessingTime(result.apiProcessingTimeMs)}
+              {formatProcessingTimeDetailed(result.apiProcessingTimeMs)}
             </span>
           </Badge>
         )}
