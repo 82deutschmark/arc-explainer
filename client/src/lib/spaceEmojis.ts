@@ -48,6 +48,9 @@ export const SPACE_EMOJIS = {
 
   // Alien Language - For the hardest tasks (filled to length-10)
   alien_language: ['⬛', '👽', '👤', '🪐', '🌍', '🛸', '☄️', '♥️', '⚠️', '🌎'],
+
+  // Birds - For the hardest tasks (filled to length-10)
+  birds: ['🐦', '🦃', '🦆', '🦉', '🐤', '🦅', '🦜', '🦢', '🐓', '🦩'],
 } as const;
 
 // Emoji set metadata for UI display
@@ -110,6 +113,11 @@ export const EMOJI_SET_INFO = {
   alien_language: {
     name: 'Alien Language',
     description: 'Alien language',
+    theme: 'Officer Candidate'
+  },
+  birds: {
+    name: 'Birds',
+    description: 'Birds',
     theme: 'Officer Candidate'
   }
 } as const;
