@@ -93,7 +93,14 @@ export const batchAnalysisController = {
         batchSize
       });
 
+      logger.info(`Batch analysis service returned:`, 'batch-controller', { 
+        sessionId: result.sessionId, 
+        hasError: !!result.error, 
+        errorMessage: result.error 
+      });
+
       if (result.error) {
+        logger.error(`Batch analysis failed: ${result.error}`, 'batch-controller');
         return res.status(400).json(formatResponse.error(
           'Failed to start batch analysis',
           result.error
