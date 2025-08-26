@@ -159,18 +159,6 @@ function buildLegacyPrompt(
 }
 
 
-/**
- * Extract reasoning log from structured response
- */
-export function extractReasoningFromStructuredResponse(response: any): {
-  reasoningLog: string;
-  reasoningItems: string[];
-} {
-  return {
-    reasoningLog: response.solvingStrategy || '',
-    reasoningItems: response.keySteps || []
-  };
-}
 
 /**
  * Backwards compatibility function - returns old format
