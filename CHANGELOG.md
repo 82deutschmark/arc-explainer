@@ -1,5 +1,16 @@
 ###   August 26 2025
 
+## v2.0.6
+- **Fix**: Correct badge display logic for both single and multi-test puzzles in AnalysisResultCard
+- Fix single puzzles showing incorrect badges when answer is actually correct
+- Prioritize multiTestAllCorrect over isPredictionCorrect for multi-test puzzles
+- Add consistent check/X circle icons to all correctness badges  
+- Handle field name variations (multiTestAllCorrect vs allPredictionsCorrect)
+- Fix color class application in multi-test section badges
+- Update temperature control text: "GPT-4.1 & older only!!!" in PuzzleExaminer
+- Fix time badges to always display in seconds/minutes format (no more milliseconds)
+- Author: Cascade
+
 ## v2.0.5
 - Docs: Add Grid Rendering Guide for `AnalysisResultCard` explaining `PuzzleGrid` and `GridCell` usage.
 - Author: Cascade
