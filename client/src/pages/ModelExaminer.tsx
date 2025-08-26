@@ -66,27 +66,19 @@ export default function ModelExaminer() {
     document.title = 'Model Examiner - Batch Analysis';
   }, []);
 
-  // Watch for new completed results and fetch latest explanation
-  useEffect(() => {
-    if (results && results.length > 0) {
-      // Find the most recently completed result with an explanation
-      const completedResults = results
-        .filter(r => r.status === 'completed' && r.explanation_id)
-        .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime());
-      
-      if (completedResults.length > 0 && completedResults[0].explanation_id) {
-        const latest = completedResults[0];
-        // Only fetch if it's different from current
-        if (!latestExplanation || latestExplanation.id !== latest.explanation_id) {
-          fetchLatestExplanation(latest.puzzle_id, latest.explanation_id);
-        }
-      }
-    }
-  }, [results, latestExplanation]);
-
-  // Get selected model details
-  const currentModel = MODELS.find(model => model.key === selectedModel);
-  const isGPT5ReasoningModel = selectedModel && ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(selectedModel);
+  // Use batch analysis hook
+  const {
+    sessionId,
+    progress,
+    isRunning,
+    error,
+    results,
+    startAnalysis,
+    pauseAnalysis,
+    resumeAnalysis,
+    cancelAnalysis,
+    clearSession
+  } = useBatchAnalysis();
 
   // Function to fetch latest explanation for display
   const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
@@ -109,19 +101,27 @@ export default function ModelExaminer() {
     }
   };
 
-  // Use batch analysis hook
-  const {
-    sessionId,
-    progress,
-    isRunning,
-    error,
-    results,
-    startAnalysis,
-    pauseAnalysis,
-    resumeAnalysis,
-    cancelAnalysis,
-    clearSession
-  } = useBatchAnalysis();
+  // Watch for new completed results and fetch latest explanation
+  useEffect(() => {
+    if (results && results.length > 0) {
+      // Find the most recently completed result with an explanation
+      const completedResults = results
+        .filter(r => r.status === 'completed' && r.explanation_id)
+        .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime());
+      
+      if (completedResults.length > 0 && completedResults[0].explanation_id) {
+        const latest = completedResults[0];
+        // Only fetch if it's different from current
+        if (!latestExplanation || latestExplanation.id !== latest.explanation_id) {
+          fetchLatestExplanation(latest.puzzle_id, latest.explanation_id!);
+        }
+      }
+    }
+  }, [results, latestExplanation]);
+
+  // Get selected model details
+  const currentModel = MODELS.find(model => model.key === selectedModel);
+  const isGPT5ReasoningModel = selectedModel && ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(selectedModel);
 
   // Handle start analysis
   const handleStartAnalysis = async () => {
