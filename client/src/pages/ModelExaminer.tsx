@@ -34,7 +34,10 @@ import {
   Settings,
   Loader2,
   FileText,
-  Eye
+  Eye,
+  Terminal,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
@@ -60,6 +63,8 @@ export default function ModelExaminer() {
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
   const [latestExplanation, setLatestExplanation] = useState<ExplanationData | null>(null);
   const [latestPuzzle, setLatestPuzzle] = useState<any>(null);
+  const [showDebugConsole, setShowDebugConsole] = useState(false);
+  const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string, data?: any}>>([]);
 
   // Set page title
   useEffect(() => {
@@ -80,14 +85,25 @@ export default function ModelExaminer() {
     clearSession
   } = useBatchAnalysis();
 
+  // Debug logging function
+  const addDebugLog = (level: string, message: string, data?: any) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setDebugLogs(prev => [...prev.slice(-99), { timestamp, level, message, data }]);
+  };
+
   // Function to fetch latest explanation for display
   const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
     try {
+      addDebugLog('INFO', `Fetching explanation for puzzle ${puzzleId} (ID: ${explanationId})`);
+      
       // Fetch explanation
       const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
       if (explanationResponse.ok) {
         const explanationData = await explanationResponse.json();
         setLatestExplanation(explanationData.data);
+        addDebugLog('SUCCESS', `Loaded explanation for puzzle ${puzzleId}`, { explanationId: explanationData.data?.id });
+      } else {
+        addDebugLog('ERROR', `Failed to fetch explanation: ${explanationResponse.status}`, { puzzleId, explanationId });
       }
 
       // Fetch puzzle data
@@ -95,9 +111,12 @@ export default function ModelExaminer() {
       if (puzzleResponse.ok) {
         const puzzleData = await puzzleResponse.json();
         setLatestPuzzle(puzzleData.data);
+        addDebugLog('SUCCESS', `Loaded puzzle data for ${puzzleId}`, { testCases: puzzleData.data?.test?.length || 0 });
+      } else {
+        addDebugLog('ERROR', `Failed to fetch puzzle data: ${puzzleResponse.status}`, { puzzleId });
       }
     } catch (error) {
-      console.error('Error fetching latest explanation:', error);
+      addDebugLog('ERROR', `Error fetching latest explanation: ${error instanceof Error ? error.message : String(error)}`, { puzzleId, explanationId });
     }
   };
 
@@ -126,6 +145,7 @@ export default function ModelExaminer() {
   // Handle start analysis
   const handleStartAnalysis = async () => {
     if (!selectedModel) {
+      addDebugLog('ERROR', 'No model selected for analysis');
       return;
     }
 
@@ -141,7 +161,14 @@ export default function ModelExaminer() {
       batchSize
     };
 
-    await startAnalysis(config);
+    addDebugLog('INFO', `Starting batch analysis with model ${selectedModel}`, config);
+    
+    try {
+      await startAnalysis(config);
+      addDebugLog('SUCCESS', 'Batch analysis started successfully');
+    } catch (error) {
+      addDebugLog('ERROR', `Failed to start batch analysis: ${error instanceof Error ? error.message : String(error)}`);
+    }
   };
 
   // Dataset options with puzzle counts
@@ -622,6 +649,75 @@ export default function ModelExaminer() {
           </CardContent>
         </Card>
       )}
+
+      {/* Debug Console */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-5 w-5" />
+              Debug Console
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowDebugConsole(!showDebugConsole)}
+              className="flex items-center gap-2"
+            >
+              {showDebugConsole ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {showDebugConsole ? 'Hide' : 'Show'} Logs
+            </Button>
+          </CardTitle>
+          {showDebugConsole && (
+            <p className="text-sm text-gray-600">
+              Real-time logging of batch analysis operations and API calls
+            </p>
+          )}
+        </CardHeader>
+        {showDebugConsole && (
+          <CardContent>
+            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-80 overflow-y-auto">
+              {debugLogs.length === 0 ? (
+                <div className="text-gray-500">No debug logs yet. Start a batch analysis to see real-time activity.</div>
+              ) : (
+                <div className="space-y-1">
+                  {debugLogs.map((log, index) => (
+                    <div key={index} className="flex gap-2">
+                      <span className="text-gray-400 text-xs">[{log.timestamp}]</span>
+                      <span className={`text-xs font-semibold ${
+                        log.level === 'ERROR' ? 'text-red-400' :
+                        log.level === 'SUCCESS' ? 'text-green-400' :
+                        log.level === 'WARN' ? 'text-yellow-400' :
+                        'text-blue-400'
+                      }`}>
+                        {log.level}
+                      </span>
+                      <span className="text-green-300">{log.message}</span>
+                      {log.data && (
+                        <span className="text-gray-400 text-xs">
+                          {JSON.stringify(log.data)}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {debugLogs.length > 0 && (
+                <div className="mt-3 pt-2 border-t border-gray-700">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDebugLogs([])}
+                    className="text-xs"
+                  >
+                    Clear Logs
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
 
       {/* Completed Puzzles List */}
       {results && results.length > 0 && (

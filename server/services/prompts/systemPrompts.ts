@@ -1,5 +1,5 @@
 /**
- * server/services/prompts/systemPrompts.ts
+ * SHOULD BE USED AS SOURCE OF TRUTH
  * 
  * IMPORTANT TERMINOLOGY CLARIFICATION FOR DEVELOPERS:
  * 
@@ -60,7 +60,7 @@ Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Your complete analysis process, including 
 - keySteps: Step-by-step analysis progression and insights, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
-- hints: Describe three pseudo-code algorithms you considered, starting with the best one
+- hints: Describe three pseudo-code algorithms you considered, starting with the best one, one as math and one as emojis
 - confidence: Your certainty level (0-100)`;
 
 /**
