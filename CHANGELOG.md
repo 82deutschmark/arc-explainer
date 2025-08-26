@@ -1,5 +1,9 @@
 ###   August 26 2025
 
+## v2.0.5
+- Docs: Add Grid Rendering Guide for `AnalysisResultCard` explaining `PuzzleGrid` and `GridCell` usage.
+- Author: Cascade
+
 ## v2.0.4
 - **Fix**: Resolve feedback endpoint connectivity issues by adding Vite proxy configuration
 - Frontend can now properly communicate with backend API server (port 5000) during development
@@ -9,19 +13,21 @@
 ## v2.0.3
 - Fix client timeout issues for long-running AI API calls (Grok/DeepSeek 25+ minutes)
 - Client now supports 50-minute timeout for AI analysis requests
-- Non-AI requests still use 30-second timeout
+- Non-AI requests still use 30-second timeout  // THIS IS TROUBLING!!! THERE ARE NO NON-AI REQUESTS!!!!
 - Update Educational Approach UI text to emphasize algorithmic thinking and computational processes
 - Major UI enhancement: Transform "Explanation Style" to "🎯 Prompt Style" with emojis and visual improvements
 - Add emojis to all prompt templates (📝 Standard, 🧠 Educational, 🎯 Solver, 🛸 Alien, ⚙️ Custom)
 - Improve prompt descriptions to be clearer and more action-oriented
-- Enhanced PromptPicker with gradients, shadows, and themed color sections
+- Enhanced PromptPicker UI
 
 ###   August 25 2025
 
 ## v2.0.2
-- UI Improvements
+- UI Improvements - Multi-test puzzle support has reached full feature parity with single-test puzzles.
 
 ## v2.0.1
-- Updated release to support multi-test puzzles
+- Updated release to support multi-test puzzles.  This was a major hurdle and took a long time to implement.
+- We are now ready to accept synthetic puzzle data sets for analysis as described in docs\24AugImport.md
+
 
 
