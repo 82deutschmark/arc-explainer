@@ -323,15 +323,59 @@ export function StatisticsCards({
         </Card>
       </div>
 
-      {/* Priority 3: Model Rankings (Bottom Section) - Only if solver data exists */}
-      {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top Solver Models */}
+      {/* Priority 3: Model Rankings (Bottom Section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Feedback-based Model Leaderboard */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5 text-blue-500" />
+              Community Feedback Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {modelRankings.slice(0, 10).map((model, index) => (
+                <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
+                  <div className="flex items-center gap-3">
+                    {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
+                    <div>
+                      <div className="text-sm font-medium text-blue-700">
+                        {model.displayName}
+                      </div>
+                      <div className="text-xs text-blue-600">
+                        {model.total} feedback entries
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge className="text-xs bg-blue-100 text-blue-800">
+                      {model.helpfulPercentage}% helpful
+                    </Badge>
+                    <div className="text-xs text-gray-500">
+                      {model.helpful}👍 {model.notHelpful}👎
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {modelRankings.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Star className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p>No feedback data available</p>
+                  <p className="text-xs">Community feedback will appear here</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Solver Performance Leaderboard - Only if solver data exists */}
+        {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-green-500" />
-                Top Solver Models
+                <Award className="h-5 w-5 text-green-500" />
+                Solver Performance Leaderboard
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -349,7 +393,7 @@ export function StatisticsCards({
                             {displayName}
                           </div>
                           <div className="text-xs text-green-600">
-                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
+                            {model.totalAttempts} attempts
                           </div>
                         </div>
                       </div>
@@ -367,49 +411,24 @@ export function StatisticsCards({
               </div>
             </CardContent>
           </Card>
-
-          {/* Solver Models Needing Improvement */}
+        ) : (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-                Solver Models - Needs Improvement
+                <Award className="h-5 w-5 text-gray-400" />
+                Solver Performance Leaderboard
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-80 overflow-y-auto">
-                {accuracyStats.accuracyByModel.slice().reverse().map((model) => {
-                  const modelInfo = MODELS.find(m => m.key === model.modelName);
-                  const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                  
-                  return (
-                    <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <div className="text-sm font-medium text-red-700">
-                            {displayName}
-                          </div>
-                          <div className="text-xs text-red-600">
-                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <Badge className="text-xs bg-red-100 text-red-800">
-                          {model.accuracyPercentage}% accuracy
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {Math.round(model.avgAccuracyScore * 100)}% trust
-                        </Badge>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="text-center py-8 text-gray-500">
+                <Award className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No solver performance data</p>
+                <p className="text-xs">Run analyses in solver mode to see performance metrics</p>
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
