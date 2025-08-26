@@ -1,5 +1,14 @@
 ###   August 26 2025
 
+## v2.0.7
+- **Fix**: Resolve batch analysis "Failed to create database session" error in ModelExaminer
+- Fix parameter mismatch between batchAnalysisService and dbService layers
+- Update batch_analysis_sessions table schema with all required columns (dataset, temperature, reasoning parameters)
+- Add database migration logic for existing installations  
+- Properly map configuration parameters: modelKey -> model_key, add successful_puzzles column
+- ModelExaminer batch analysis functionality now works correctly
+- Author: Claude
+
 ## v2.0.6
 - **Fix**: Correct badge display logic for both single and multi-test puzzles in AnalysisResultCard
 - Fix single puzzles showing incorrect badges when answer is actually correct
