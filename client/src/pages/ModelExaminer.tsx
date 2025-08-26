@@ -73,19 +73,27 @@ export default function ModelExaminer() {
     omitAnswer: true
   });
 
-  // Get current model configuration
+  // Get current model configuration for UI display and validation
   const currentModel = selectedModel ? MODELS.find(m => m.key === selectedModel) : null;
 
-  // Handle start batch analysis using existing system
+  /**
+   * Initiates batch analysis using the existing useBatchAnalysis hook
+   * Constructs configuration object and delegates to the batch analysis system
+   * Only includes relevant parameters based on model capabilities
+   */
   const handleStartAnalysis = async () => {
     if (!selectedModel) return;
 
+    // Build configuration object with conditional parameters
     const config = {
       modelKey: selectedModel,
       dataset,
+      // Use custom prompt if selected, otherwise use predefined promptId
       promptId: promptId === 'custom' ? undefined : promptId,
       customPrompt: promptId === 'custom' ? customPrompt : undefined,
+      // Only include temperature if model supports it
       temperature: currentModel?.supportsTemperature ? temperature : undefined,
+      // GPT-5 reasoning parameters only for compatible models
       reasoningEffort: isGPT5ReasoningModel(selectedModel) ? reasoningEffort : undefined,
       reasoningVerbosity: isGPT5ReasoningModel(selectedModel) ? reasoningVerbosity : undefined,
       reasoningSummaryType: isGPT5ReasoningModel(selectedModel) ? reasoningSummaryType : undefined,
@@ -93,13 +101,14 @@ export default function ModelExaminer() {
     };
 
     try {
+      // Delegate to existing batch analysis system
       await startAnalysis(config);
     } catch (error) {
       console.error('Failed to start batch analysis:', error);
     }
   };
 
-  // Dataset options
+  // Configuration options for UI dropdowns
   const datasetOptions = [
     { value: 'ARC2-Eval', label: 'ARC2 Evaluation Set', count: '~400 puzzles' },
     { value: 'ARC2', label: 'ARC2 Training Set', count: '~800 puzzles' },
@@ -116,7 +125,7 @@ export default function ModelExaminer() {
 
   return (
     <div className="container mx-auto p-3 max-w-6xl space-y-4">
-      {/* Header */}
+      {/* Header with navigation and title */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/">
@@ -131,6 +140,7 @@ export default function ModelExaminer() {
           </div>
         </div>
         
+        {/* Link to existing batch results dashboard */}
         <div className="flex items-center gap-2">
           <Link href="/batch">
             <Button variant="outline" size="sm">
@@ -382,7 +392,7 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
-      {/* Control Panel */}
+      {/* Control Panel - delegates to existing batch analysis system */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -395,6 +405,7 @@ export default function ModelExaminer() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
+            {/* Show start button when no active session */}
             {!sessionId ? (
               <Button
                 onClick={handleStartAnalysis}
@@ -406,6 +417,7 @@ export default function ModelExaminer() {
               </Button>
             ) : (
               <>
+                {/* Session management buttons based on current status */}
                 {progress?.status === 'running' && (
                   <Button
                     onClick={pauseAnalysis}
@@ -450,6 +462,7 @@ export default function ModelExaminer() {
               </>
             )}
 
+            {/* Running indicator */}
             {isRunning && (
               <div className="flex items-center gap-2 text-sm text-blue-600">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -458,6 +471,7 @@ export default function ModelExaminer() {
             )}
           </div>
 
+          {/* Error display from batch analysis hook */}
           {error && (
             <Alert className="mt-3">
               <XCircle className="h-4 w-4" />
@@ -467,7 +481,7 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
-      {/* Progress Display */}
+      {/* Progress Display - real-time updates from batch analysis hook */}
       {progress && (
         <Card>
           <CardHeader>
@@ -477,7 +491,7 @@ export default function ModelExaminer() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Progress Bar */}
+            {/* Progress Bar with completion percentage */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Progress</span>
@@ -489,7 +503,7 @@ export default function ModelExaminer() {
               </div>
             </div>
 
-            {/* Statistics Grid */}
+            {/* Statistics Grid - success/failure rates and performance metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
@@ -532,14 +546,14 @@ export default function ModelExaminer() {
               </div>
             </div>
 
-            {/* ETA */}
+            {/* ETA display when analysis is running */}
             {progress.stats.eta > 0 && progress.progress.percentage < 100 && (
               <div className="text-center text-sm text-gray-600">
                 Estimated time remaining: {Math.round(progress.stats.eta / 60)} minutes
               </div>
             )}
 
-            {/* Status Badge */}
+            {/* Status Badge with color coding */}
             <div className="flex justify-center">
               <Badge 
                 variant={
@@ -557,7 +571,7 @@ export default function ModelExaminer() {
         </Card>
       )}
 
-      {/* Results Display */}
+      {/* Results Display - shows completed puzzles from batch analysis */}
       {results && results.length > 0 && (
         <Card>
           <CardHeader>
@@ -572,13 +586,16 @@ export default function ModelExaminer() {
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {results
+                // Sort by completion time, newest first
                 .sort((a: any, b: any) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
                 .map((result: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                   <div className="flex items-center gap-3">
+                    {/* Puzzle ID badge */}
                     <Badge variant="outline" className="font-mono text-xs">
                       {result.puzzle_id}
                     </Badge>
+                    {/* Status indicator */}
                     <div className="flex items-center gap-2">
                       {result.status === 'completed' ? (
                         <CheckCircle className="h-4 w-4 text-green-600" />
@@ -589,6 +606,7 @@ export default function ModelExaminer() {
                       )}
                       <span className="text-sm capitalize">{result.status}</span>
                     </div>
+                    {/* Error message if failed */}
                     {result.error_message && (
                       <Badge variant="destructive" className="text-xs max-w-48 truncate" title={result.error_message}>
                         Error: {result.error_message}
@@ -596,6 +614,7 @@ export default function ModelExaminer() {
                     )}
                   </div>
                   <div className="flex items-center gap-3">
+                    {/* Performance metrics */}
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       {result.processing_time_ms && (
                         <span className="flex items-center gap-1">
@@ -609,6 +628,7 @@ export default function ModelExaminer() {
                         </Badge>
                       )}
                     </div>
+                    {/* Link to individual puzzle view */}
                     {result.status === 'completed' && (
                       <Link href={`/puzzle/${result.puzzle_id}`}>
                         <Button variant="ghost" size="sm" className="flex items-center gap-1">
