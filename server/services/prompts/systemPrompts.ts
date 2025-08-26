@@ -54,7 +54,7 @@ Key transformation types include:
  */
 const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
 
-JSON STRUCTURE REQUIREMENT: For solver mode, the predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
+JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
 
 Put all your raw reasoning and analysis in the structured JSON fields:
 - solvingStrategy: Your complete reasoning process, including 
@@ -149,18 +149,16 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
  */
 export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
 
-TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. Your entire output must be a single JSON object that repurposes the standard solver fields for this task.
+TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. 
+
 
 ${JSON_OUTPUT_INSTRUCTIONS}
 
---- EDUCATIONAL CONTENT REQUIREMENTS ---
+--- EDUCATIONAL CONTENT Specificalities ---
 
-You must populate the standard JSON fields with the following specific content:
-
-- **predictedOutput / multiplePredictedOutputs**: The final grid solution(s), derived from your chosen algorithm. This MUST be the first field in your JSON.
 - **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
-- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, evaluating them, and selecting the best one.
-- **keySteps**: Detail the pros and cons for each of the three algorithms you considered.
+- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, reasoning, evaluating them, and selecting the best one.
+- **keySteps**: A short song that captures the essence of your approach.
 - **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
 - **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
 
