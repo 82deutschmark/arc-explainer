@@ -244,30 +244,32 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
           </Badge>
         )}
 
-        {/* Solver mode validation indicator - use multiTestAllCorrect for multi-test puzzles */}
-        {(result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined) && (
+        {/* Solver mode validation indicator - prioritize multi-test results */}
+        {(result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
           <Badge 
             variant="outline" 
             className={`flex items-center gap-1 ${
-              // For multi-test: use multiTestAllCorrect, for single: use isPredictionCorrect
-              (result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect)
-                ? 'bg-green-50 border-green-200 text-green-700' 
-                : result.predictedOutputGrid 
-                  ? 'bg-red-50 border-red-200 text-red-700'
-                  : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+              // Priority: multiTestAllCorrect > allPredictionsCorrect > isPredictionCorrect
+              (() => {
+                const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
+                if (isCorrect) return 'bg-green-50 border-green-200 text-green-700';
+                if (result.predictedOutputGrid || result.multiplePredictedOutputs) return 'bg-red-50 border-red-200 text-red-700';
+                return 'bg-yellow-50 border-yellow-200 text-yellow-700';
+              })()
             }`}
           >
-            {(result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect) ? (
-              <CheckCircle className="h-3 w-3" />
-            ) : result.predictedOutputGrid ? (
-              <XCircle className="h-3 w-3" />
-            ) : (
-              <XCircle className="h-3 w-3" />
-            )}
+            {(() => {
+              const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
+              if (isCorrect) return <CheckCircle className="h-3 w-3" />;
+              return <XCircle className="h-3 w-3" />;
+            })()}
             <span className="text-xs font-medium">
-              {(result.multiTestAllCorrect !== undefined ? result.multiTestAllCorrect : result.isPredictionCorrect) 
-                ? 'CORRECT' 
-                : result.predictedOutputGrid ? 'INCORRECT' : 'NOT FOUND'}
+              {(() => {
+                const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
+                if (isCorrect) return 'CORRECT';
+                if (result.predictedOutputGrid || result.multiplePredictedOutputs) return 'INCORRECT';
+                return 'NOT FOUND';
+              })()}
             </span>
           </Badge>
         )}
@@ -643,8 +645,17 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                   {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
                     <Badge 
                       variant="outline" 
-                      className={`text-xs ${(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                      className={`flex items-center gap-1 text-xs ${
+                        (result.multiTestAllCorrect ?? result.allPredictionsCorrect) 
+                          ? 'bg-green-50 border-green-200 text-green-700' 
+                          : 'bg-red-50 border-red-200 text-red-700'
+                      }`}
                     >
+                      {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? (
+                        <CheckCircle className="h-3 w-3" />
+                      ) : (
+                        <XCircle className="h-3 w-3" />
+                      )}
                       {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All Correct' : 'Some Incorrect'}
                     </Badge>
                   )}
@@ -676,8 +687,13 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                           {isCorrect !== undefined && (
                             <Badge 
                               variant="outline" 
-                              className={`text-xs ${isCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
+                              className={`flex items-center gap-1 text-xs ${isCorrect ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}
                             >
+                              {isCorrect ? (
+                                <CheckCircle className="h-3 w-3" />
+                              ) : (
+                                <XCircle className="h-3 w-3" />
+                              )}
                               {isCorrect ? 'CORRECT' : 'INCORRECT'}
                             </Badge>
                           )}
