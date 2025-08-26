@@ -93,12 +93,12 @@ export class OpenAIService {
         if (isGPT5Model) {
           // GPT-5 models support advanced reasoning parameters
           reasoningConfig = {
-            effort: serviceOpts?.reasoningEffort || 'medium',
-            summary: serviceOpts?.reasoningSummaryType || serviceOpts?.reasoningSummary || 'auto'
+            effort: serviceOpts?.reasoningEffort || 'low',
+            summary: serviceOpts?.reasoningSummaryType || serviceOpts?.reasoningSummary || 'detailed'
           };
           // Text config is separate for GPT-5 models
           textConfig = {
-            verbosity: serviceOpts?.reasoningVerbosity || 'medium'
+            verbosity: serviceOpts?.reasoningVerbosity || 'high'
           };
         } else if (isO3O4Model) {
           // o3/o4 models use simpler reasoning config
