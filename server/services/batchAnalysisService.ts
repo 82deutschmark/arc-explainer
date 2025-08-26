@@ -72,12 +72,17 @@ class BatchAnalysisService extends EventEmitter {
       logger.info(`Starting batch analysis session ${sessionId} for model ${config.modelKey} on dataset ${config.dataset}`, 'batch-analysis');
 
       // Get puzzles for the selected dataset
+      logger.info(`Fetching puzzles for dataset: ${config.dataset}`, 'batch-analysis');
       const puzzles = await this.getPuzzlesForDataset(config.dataset);
+      logger.info(`Found ${puzzles.length} puzzles for dataset ${config.dataset}`, 'batch-analysis');
+      
       if (puzzles.length === 0) {
+        logger.warn(`No puzzles found for dataset ${config.dataset}`, 'batch-analysis');
         return { sessionId, error: 'No puzzles found for selected dataset' };
       }
 
       // Create database session record
+      logger.info(`Creating database session for ${sessionId}`, 'batch-analysis');
       const sessionCreated = await dbService.createBatchSession({
         sessionId,
         modelKey: config.modelKey,
@@ -92,8 +97,10 @@ class BatchAnalysisService extends EventEmitter {
       });
 
       if (!sessionCreated) {
+        logger.error(`Failed to create database session for ${sessionId}`, 'batch-analysis');
         return { sessionId, error: 'Failed to create database session' };
       }
+      logger.info(`Database session created successfully for ${sessionId}`, 'batch-analysis');
 
       // Initialize progress tracking
       const progress: BatchProgress = {
@@ -352,10 +359,13 @@ class BatchAnalysisService extends EventEmitter {
       }
 
       // Get AI service
+      logger.info(`Getting AI service for model: ${config.modelKey}`, 'batch-analysis');
       const aiService = aiServiceFactory.getService(config.modelKey);
       if (!aiService) {
+        logger.error(`AI service for model ${config.modelKey} not available`, 'batch-analysis');
         return { success: false, error: `AI service for ${config.modelKey} not available` };
       }
+      logger.info(`AI service retrieved successfully for ${config.modelKey}`, 'batch-analysis');
 
       // Build options for prompt
       const options: PromptOptions = {};
@@ -367,6 +377,7 @@ class BatchAnalysisService extends EventEmitter {
       if (config.reasoningSummaryType) serviceOpts.reasoningSummaryType = config.reasoningSummaryType;
 
       // Analyze puzzle
+      logger.info(`Starting AI analysis for puzzle ${puzzleId} with model ${config.modelKey}`, 'batch-analysis');
       const result = await aiService.analyzePuzzleWithModel(
         puzzle,
         config.modelKey,
@@ -377,6 +388,7 @@ class BatchAnalysisService extends EventEmitter {
         options,
         serviceOpts
       );
+      logger.info(`AI analysis completed for puzzle ${puzzleId}`, 'batch-analysis');
 
       const processingTime = Date.now() - startTime;
 
