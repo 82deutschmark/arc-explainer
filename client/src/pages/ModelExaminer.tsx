@@ -65,6 +65,22 @@ export default function ModelExaminer() {
   const [latestPuzzle, setLatestPuzzle] = useState<any>(null);
   const [showDebugConsole, setShowDebugConsole] = useState(false);
   const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string, data?: any}>>([]);
+  
+  // Real-time activity tracking
+  const [currentActivity, setCurrentActivity] = useState<{
+    puzzleId?: string;
+    status: 'idle' | 'sending_request' | 'waiting_response' | 'processing_response';
+    startTime?: number;
+    apiCallCount: number;
+  }>({ status: 'idle', apiCallCount: 0 });
+  
+  const [recentActivity, setRecentActivity] = useState<Array<{
+    timestamp: string;
+    puzzleId: string;
+    action: string;
+    duration?: number;
+    success: boolean;
+  }>>([]);
 
   // Set page title
   useEffect(() => {
@@ -91,19 +107,48 @@ export default function ModelExaminer() {
     setDebugLogs(prev => [...prev.slice(-99), { timestamp, level, message, data }]);
   };
 
+  // Activity tracking functions
+  const updateActivity = (status: typeof currentActivity.status, puzzleId?: string) => {
+    setCurrentActivity(prev => ({
+      ...prev,
+      status,
+      puzzleId: puzzleId || prev.puzzleId,
+      startTime: status !== 'idle' ? (prev.startTime || Date.now()) : undefined,
+      apiCallCount: status === 'sending_request' ? prev.apiCallCount + 1 : prev.apiCallCount
+    }));
+  };
+
+  const addRecentActivity = (puzzleId: string, action: string, success: boolean, startTime?: number) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const duration = startTime ? Date.now() - startTime : undefined;
+    setRecentActivity(prev => [...prev.slice(-19), {
+      timestamp,
+      puzzleId,
+      action,
+      duration,
+      success
+    }]);
+  };
+
   // Function to fetch latest explanation for display
   const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
+    const fetchStartTime = Date.now();
     try {
+      updateActivity('sending_request', puzzleId);
       addDebugLog('INFO', `Fetching explanation for puzzle ${puzzleId} (ID: ${explanationId})`);
       
       // Fetch explanation
+      updateActivity('waiting_response', puzzleId);
       const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
       if (explanationResponse.ok) {
+        updateActivity('processing_response', puzzleId);
         const explanationData = await explanationResponse.json();
         setLatestExplanation(explanationData.data);
         addDebugLog('SUCCESS', `Loaded explanation for puzzle ${puzzleId}`, { explanationId: explanationData.data?.id });
+        addRecentActivity(puzzleId, 'Fetch Explanation', true, fetchStartTime);
       } else {
         addDebugLog('ERROR', `Failed to fetch explanation: ${explanationResponse.status}`, { puzzleId, explanationId });
+        addRecentActivity(puzzleId, 'Fetch Explanation', false, fetchStartTime);
       }
 
       // Fetch puzzle data
@@ -115,8 +160,12 @@ export default function ModelExaminer() {
       } else {
         addDebugLog('ERROR', `Failed to fetch puzzle data: ${puzzleResponse.status}`, { puzzleId });
       }
+      
+      updateActivity('idle');
     } catch (error) {
       addDebugLog('ERROR', `Error fetching latest explanation: ${error instanceof Error ? error.message : String(error)}`, { puzzleId, explanationId });
+      addRecentActivity(puzzleId, 'Fetch Explanation', false, fetchStartTime);
+      updateActivity('idle');
     }
   };
 
@@ -455,6 +504,42 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
+      {/* Current Activity Status */}
+      {(isRunning || currentActivity.status !== 'idle') && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  {currentActivity.status === 'idle' ? (
+                    <div className="w-3 h-3 rounded-full bg-gray-400" />
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+                  )}
+                  <span className="font-medium text-blue-800">
+                    {currentActivity.status === 'idle' && 'Idle'}
+                    {currentActivity.status === 'sending_request' && 'Sending API Request'}
+                    {currentActivity.status === 'waiting_response' && 'Waiting for Response'}
+                    {currentActivity.status === 'processing_response' && 'Processing Response'}
+                  </span>
+                </div>
+                {currentActivity.puzzleId && (
+                  <Badge variant="outline" className="font-mono text-xs">
+                    Puzzle: {currentActivity.puzzleId}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-sm text-blue-600">
+                <span>API Calls: {currentActivity.apiCallCount}</span>
+                {currentActivity.startTime && (
+                  <span>Duration: {Math.round((Date.now() - currentActivity.startTime) / 1000)}s</span>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Control Panel */}
       <Card>
         <CardHeader>
@@ -646,6 +731,47 @@ export default function ModelExaminer() {
               model={currentModel}
               testCases={latestPuzzle.test || []}
             />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Activity Feed */}
+      {recentActivity.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Recent Activity
+            </CardTitle>
+            <p className="text-sm text-gray-600">
+              Latest puzzle processing events and API calls
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {recentActivity.slice().reverse().map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-2 border rounded-lg text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      activity.success ? 'bg-green-500' : 'bg-red-500'
+                    }`} />
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {activity.puzzleId}
+                    </Badge>
+                    <span className="text-gray-700">{activity.action}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span>{activity.timestamp}</span>
+                    {activity.duration && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {Math.round(activity.duration / 1000)}s
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}
