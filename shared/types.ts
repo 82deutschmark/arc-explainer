@@ -145,8 +145,8 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   educationalApproach: {
     id: "educationalApproach",
     name: "Educational Approach", 
-    description: "Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.",
-    content: `Help students understand complex reasoning problems. Explain in very simple terms what transformations were used, focusing on educational value.`,
+    description: "Algorithmic thinking approach - Help students understand the step-by-step algorithms and logical patterns. Explain transformations as computational processes and rules.",
+    content: `Help students understand the step-by-step algorithms and logical patterns in this puzzle. Explain transformations as computational processes and rules, focusing on algorithmic thinking and problem-solving methodology.`,
     emojiMapIncluded: false
   },
   solver: {
