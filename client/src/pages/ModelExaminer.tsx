@@ -1,12 +1,13 @@
 /**
  * ModelExaminer.tsx
  * 
- * @author Claude Code Assistant
+ * @author Cascade modelID
  * @description The inverse of PuzzleExaminer - batch test a specific model and settings 
  * against all puzzles in a selected dataset. Provides real-time progress tracking
  * and comprehensive results analysis for model performance evaluation.
+ * Includes manual batch debugging with individual puzzle cards.
  */
-
+ 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +21,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Play, Pause, Square, 
+import { 
+  ArrowLeft, 
+  Play, 
+  Pause, 
+  Square, 
   Brain, 
   Database, 
   Clock, 
@@ -83,7 +88,7 @@ export default function ModelExaminer() {
     action: string;
     duration?: number;
     success: boolean;
-  }>>([]);
+  }>>([]);}
 
   // Set page title
   useEffect(() => {
@@ -955,10 +960,7 @@ export default function ModelExaminer() {
         </Card>
       )}
 
-      {/* Show batch results if any exist */}
-      {results && results.length > 0 && (
-
-      {/* Recent Activity Feed */}
+      {/* Recent Activity Feed */
       {recentActivity.length > 0 && (
         <Card>
           <CardHeader>
