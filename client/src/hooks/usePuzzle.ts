@@ -100,6 +100,10 @@ export function usePuzzleList(filters?: {
   
   const { data: responseData, isLoading, error } = useQuery<APIResponse>({
     queryKey: [url],
+    queryFn: async () => {
+      const response = await apiRequest('GET', url);
+      return await response.json();
+    },
   });
 
   // Extract puzzles from the response format { success: boolean, data: [...] }
