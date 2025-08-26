@@ -20,11 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  ArrowLeft, 
-  Play, 
-  Pause, 
-  Square, 
+import { ArrowLeft, Play, Pause, Square, 
   Brain, 
   Database, 
   Clock, 
@@ -41,8 +37,12 @@ import {
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
+import { usePuzzleList } from '@/hooks/usePuzzle';
+import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import type { ExplanationData } from '@/types/puzzle';
+import type { ARCTask } from '@shared/types';
 import { apiRequest } from '@/lib/queryClient';
 
 export default function ModelExaminer() {
@@ -61,10 +61,13 @@ export default function ModelExaminer() {
 
   // UI state
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
-  const [latestExplanation, setLatestExplanation] = useState<ExplanationData | null>(null);
-  const [latestPuzzle, setLatestPuzzle] = useState<any>(null);
   const [showDebugConsole, setShowDebugConsole] = useState(false);
   const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string, data?: any}>>([]);
+  
+  // Individual puzzle state
+  const [analyzingPuzzles, setAnalyzingPuzzles] = useState<Set<string>>(new Set());
+  const [completedPuzzles, setCompletedPuzzles] = useState<Set<string>>(new Set());
+  const [puzzleResults, setPuzzleResults] = useState<Map<string, ExplanationData>>(new Map());
   
   // Real-time activity tracking
   const [currentActivity, setCurrentActivity] = useState<{
@@ -87,7 +90,15 @@ export default function ModelExaminer() {
     document.title = 'Model Examiner - Batch Analysis';
   }, []);
 
-  // Use batch analysis hook
+  // Load puzzles based on dataset and batch size
+  const { puzzles, isLoading: puzzlesLoading } = usePuzzleList({
+    source: dataset as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval',
+  });
+
+  // Get the first N puzzles based on batch size
+  const displayedPuzzles = puzzles.slice(0, batchSize);
+
+  // Use batch analysis hook (main functionality)
   const {
     sessionId,
     progress,
@@ -100,6 +111,9 @@ export default function ModelExaminer() {
     cancelAnalysis,
     clearSession
   } = useBatchAnalysis();
+
+  // Use analysis results hook for manual debugging
+  const { explanations, refetchExplanations } = useAnalysisResults();
 
   // Debug logging function
   const addDebugLog = (level: string, message: string, data?: any) => {
@@ -130,68 +144,99 @@ export default function ModelExaminer() {
     }]);
   };
 
-  // Function to fetch latest explanation for display
-  const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
+  // Individual puzzle analysis function - same as PuzzleExaminer
+  const analyzeIndividualPuzzle = async (puzzleId: string) => {
+    if (!selectedModel) {
+      addDebugLog('ERROR', 'No model selected for analysis');
+      return;
+    }
+
     const fetchStartTime = Date.now();
     try {
+      setAnalyzingPuzzles(prev => new Set(prev).add(puzzleId));
       updateActivity('sending_request', puzzleId);
-      addDebugLog('INFO', `Fetching explanation for puzzle ${puzzleId} (ID: ${explanationId})`);
+      addDebugLog('INFO', `Starting analysis for puzzle ${puzzleId} with model ${selectedModel}`);
       
-      // Fetch explanation
-      updateActivity('waiting_response', puzzleId);
-      const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
-      if (explanationResponse.ok) {
-        updateActivity('processing_response', puzzleId);
-        const explanationData = await explanationResponse.json();
-        setLatestExplanation(explanationData.data);
-        addDebugLog('SUCCESS', `Loaded explanation for puzzle ${puzzleId}`, { explanationId: explanationData.data?.id });
-        addRecentActivity(puzzleId, 'Fetch Explanation', true, fetchStartTime);
-      } else {
-        addDebugLog('ERROR', `Failed to fetch explanation: ${explanationResponse.status}`, { puzzleId, explanationId });
-        addRecentActivity(puzzleId, 'Fetch Explanation', false, fetchStartTime);
-      }
+      const config = {
+        puzzleId,
+        modelKey: selectedModel,
+        promptId: promptId === 'custom' ? undefined : promptId,
+        customPrompt: promptId === 'custom' ? customPrompt : undefined,
+        temperature: currentModel?.supportsTemperature ? temperature : undefined,
+        reasoningEffort: isGPT5ReasoningModel ? reasoningEffort : undefined,
+        reasoningVerbosity: isGPT5ReasoningModel ? reasoningVerbosity : undefined,
+        reasoningSummaryType: isGPT5ReasoningModel ? reasoningSummaryType : undefined,
+      };
 
-      // Fetch puzzle data
-      const puzzleResponse = await apiRequest('GET', `/api/puzzle/task/${puzzleId}`);
-      if (puzzleResponse.ok) {
-        const puzzleData = await puzzleResponse.json();
-        setLatestPuzzle(puzzleData.data);
-        addDebugLog('SUCCESS', `Loaded puzzle data for ${puzzleId}`, { testCases: puzzleData.data?.test?.length || 0 });
+      updateActivity('waiting_response', puzzleId);
+      const response = await apiRequest('POST', '/api/puzzle/analyze', config);
+      
+      if (response.ok) {
+        updateActivity('processing_response', puzzleId);
+        const result = await response.json();
+        addDebugLog('SUCCESS', `Analysis completed for puzzle ${puzzleId}`, { explanationId: result.data?.id });
+        addRecentActivity(puzzleId, 'Individual Analysis', true, fetchStartTime);
+        
+        // Fetch the saved explanation
+        const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
+        if (explanationResponse.ok) {
+          const explanationData = await explanationResponse.json();
+          setPuzzleResults(prev => new Map(prev).set(puzzleId, explanationData.data));
+          setCompletedPuzzles(prev => new Set(prev).add(puzzleId));
+        }
+        
+        // Refresh explanations for the card display
+        refetchExplanations();
       } else {
-        addDebugLog('ERROR', `Failed to fetch puzzle data: ${puzzleResponse.status}`, { puzzleId });
+        addDebugLog('ERROR', `Analysis failed for puzzle ${puzzleId}: ${response.status}`);
+        addRecentActivity(puzzleId, 'Individual Analysis', false, fetchStartTime);
       }
       
       updateActivity('idle');
     } catch (error) {
-      addDebugLog('ERROR', `Error fetching latest explanation: ${error instanceof Error ? error.message : String(error)}`, { puzzleId, explanationId });
-      addRecentActivity(puzzleId, 'Fetch Explanation', false, fetchStartTime);
+      addDebugLog('ERROR', `Error analyzing puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`);
+      addRecentActivity(puzzleId, 'Individual Analysis', false, fetchStartTime);
       updateActivity('idle');
+    } finally {
+      setAnalyzingPuzzles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(puzzleId);
+        return newSet;
+      });
     }
   };
 
-  // Watch for new completed results and fetch latest explanation
+  // Load puzzle results on puzzle list change
   useEffect(() => {
-    if (results && results.length > 0) {
-      // Find the most recently completed result with an explanation
-      const completedResults = results
-        .filter(r => r.status === 'completed' && r.explanation_id)
-        .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime());
-      
-      if (completedResults.length > 0 && completedResults[0].explanation_id) {
-        const latest = completedResults[0];
-        // Only fetch if it's different from current
-        if (!latestExplanation || latestExplanation.id !== latest.explanation_id) {
-          fetchLatestExplanation(latest.puzzle_id, latest.explanation_id!);
-        }
-      }
+    if (displayedPuzzles.length > 0) {
+      addDebugLog('INFO', `Loaded ${displayedPuzzles.length} puzzles for display`, { 
+        dataset, 
+        batchSize,
+        puzzleIds: displayedPuzzles.map(p => p.taskId).slice(0, 5) // Show first 5 IDs
+      });
     }
-  }, [results, latestExplanation]);
+  }, [displayedPuzzles.length, dataset, batchSize]);
 
   // Get selected model details
   const currentModel = MODELS.find(model => model.key === selectedModel);
   const isGPT5ReasoningModel = selectedModel && ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(selectedModel);
+  
+  // Statistics
+  const totalPuzzles = displayedPuzzles.length;
+  const analyzedCount = completedPuzzles.size;
+  const analyzingCount = analyzingPuzzles.size;
+  const remainingCount = totalPuzzles - analyzedCount - analyzingCount;
 
-  // Handle start analysis
+  // Clear all results
+  const handleClearResults = () => {
+    setCompletedPuzzles(new Set());
+    setPuzzleResults(new Map());
+    setDebugLogs([]);
+    setRecentActivity([]);
+    addDebugLog('INFO', 'Cleared all analysis results and logs');
+  };
+  
+  // Handle start batch analysis (main functionality)
   const handleStartAnalysis = async () => {
     if (!selectedModel) {
       addDebugLog('ERROR', 'No model selected for analysis');
@@ -217,6 +262,24 @@ export default function ModelExaminer() {
       addDebugLog('SUCCESS', 'Batch analysis started successfully');
     } catch (error) {
       addDebugLog('ERROR', `Failed to start batch analysis: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+  
+  // Manual batch analysis - analyze all displayed puzzles individually for debugging
+  const handleAnalyzeManualBatch = async () => {
+    if (!selectedModel) {
+      addDebugLog('ERROR', 'No model selected for manual analysis');
+      return;
+    }
+    
+    addDebugLog('INFO', `Starting manual analysis of ${displayedPuzzles.length} puzzles with model ${selectedModel}`);
+    
+    for (const puzzle of displayedPuzzles) {
+      if (!completedPuzzles.has(puzzle.taskId) && !analyzingPuzzles.has(puzzle.taskId)) {
+        await analyzeIndividualPuzzle(puzzle.taskId);
+        // Small delay between puzzles to avoid overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
   };
 
@@ -547,6 +610,9 @@ export default function ModelExaminer() {
             <Play className="h-5 w-5" />
             Batch Analysis Controls
           </CardTitle>
+          <p className="text-sm text-gray-600">
+            Main batch processing with session management and progress tracking
+          </p>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
@@ -712,28 +778,185 @@ export default function ModelExaminer() {
         </Card>
       )}
 
-      {/* Latest Analysis Result */}
-      {latestExplanation && latestPuzzle && currentModel && (
+      {/* Manual Puzzle Cards for Debugging */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            Manual Batch Analysis (Debugging)
+          </CardTitle>
+          <p className="text-sm text-gray-600">
+            Analyze individual puzzles manually for debugging session issues. Shows first {batchSize} puzzles from {dataset}.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Manual batch controls */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleAnalyzeManualBatch}
+                disabled={!selectedModel || analyzingCount > 0}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                Analyze All {displayedPuzzles.length} Puzzles Manually
+              </Button>
+              <Button
+                onClick={handleClearResults}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                Clear Results
+              </Button>
+              <div className="text-sm text-gray-600">
+                {analyzedCount} completed, {analyzingCount} analyzing, {remainingCount} remaining
+              </div>
+            </div>
+
+            {/* Puzzle cards grid */}
+            {displayedPuzzles.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {displayedPuzzles.map((puzzle) => {
+                  const isAnalyzing = analyzingPuzzles.has(puzzle.taskId);
+                  const isCompleted = completedPuzzles.has(puzzle.taskId);
+                  const result = puzzleResults.get(puzzle.taskId);
+                  
+                  return (
+                    <Card key={puzzle.taskId} className={`transition-colors ${
+                      isCompleted ? 'border-green-200 bg-green-50' :
+                      isAnalyzing ? 'border-blue-200 bg-blue-50' :
+                      'border-gray-200'
+                    }`}>
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="font-mono text-xs">
+                              {puzzle.taskId}
+                            </Badge>
+                            <div className="flex items-center gap-1">
+                              {isCompleted && <CheckCircle className="h-4 w-4 text-green-600" />}
+                              {isAnalyzing && <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />}
+                            </div>
+                          </div>
+                          
+                          {/* Puzzle preview */}
+                          {puzzle.train && puzzle.train[0] && (
+                            <div className="space-y-2">
+                              <div className="text-xs text-gray-600">Training Example:</div>
+                              <div className="flex gap-2">
+                                <PuzzleGrid 
+                                  grid={puzzle.train[0].input} 
+                                  size="xs" 
+                                  className="max-w-20"
+                                />
+                                <div className="text-xs text-gray-400 self-center">→</div>
+                                <PuzzleGrid 
+                                  grid={puzzle.train[0].output} 
+                                  size="xs" 
+                                  className="max-w-20"
+                                />
+                              </div>
+                            </div>
+                          )}
+                          
+                          <Button
+                            onClick={() => analyzeIndividualPuzzle(puzzle.taskId)}
+                            disabled={!selectedModel || isAnalyzing || isCompleted}
+                            size="sm"
+                            className="w-full"
+                            variant={isCompleted ? "outline" : "default"}
+                          >
+                            {isAnalyzing ? (
+                              <>
+                                <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                                Analyzing...
+                              </>
+                            ) : isCompleted ? (
+                              <>
+                                <CheckCircle className="h-3 w-3 mr-2" />
+                                Completed
+                              </>
+                            ) : (
+                              <>
+                                <Play className="h-3 w-3 mr-2" />
+                                Analyze
+                              </>
+                            )}
+                          </Button>
+                          
+                          {/* Show result if completed */}
+                          {result && (
+                            <div className="text-xs space-y-1 pt-2 border-t">
+                              <div className="flex justify-between">
+                                <span>Accuracy:</span>
+                                <Badge variant={result.is_correct ? "default" : "secondary"}>
+                                  {Math.round((result.accuracy_score || 0) * 100)}%
+                                </Badge>
+                              </div>
+                              {result.is_correct !== undefined && (
+                                <div className="flex justify-between">
+                                  <span>Correct:</span>
+                                  <span className={result.is_correct ? 'text-green-600' : 'text-red-600'}>
+                                    {result.is_correct ? 'Yes' : 'No'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : puzzlesLoading ? (
+              <div className="text-center text-gray-500">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                Loading puzzles...
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                No puzzles found for the selected dataset.
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Latest Analysis Result - show latest from manual analysis */}
+      {Array.from(puzzleResults.values()).length > 0 && currentModel && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
-              Latest Analysis Result
+              Latest Manual Analysis Result
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Most recent completed puzzle analysis from this batch
+              Most recent completed manual puzzle analysis
             </p>
           </CardHeader>
           <CardContent>
-            <AnalysisResultCard
-              modelKey={selectedModel}
-              result={latestExplanation}
-              model={currentModel}
-              testCases={latestPuzzle.test || []}
-            />
+            {(() => {
+              const latestResult = Array.from(puzzleResults.entries())
+                .sort(([,a], [,b]) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+              const [puzzleId, explanation] = latestResult;
+              const puzzle = displayedPuzzles.find(p => p.taskId === puzzleId);
+              
+              return (
+                <AnalysisResultCard
+                  modelKey={selectedModel}
+                  result={explanation}
+                  model={currentModel}
+                  testCases={puzzle?.test || []}
+                />
+              );
+            })()}
           </CardContent>
         </Card>
       )}
+
+      {/* Show batch results if any exist */}
+      {results && results.length > 0 && (
 
       {/* Recent Activity Feed */}
       {recentActivity.length > 0 && (
@@ -845,7 +1068,7 @@ export default function ModelExaminer() {
         )}
       </Card>
 
-      {/* Completed Puzzles List */}
+      {/* Completed Batch Puzzles List */}
       {results && results.length > 0 && (
         <Card>
           <CardHeader>
@@ -860,8 +1083,8 @@ export default function ModelExaminer() {
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {results
-                .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
-                .map((result, index) => (
+                .sort((a: any, b: any) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
+                .map((result: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                   <div className="flex items-center gap-3">
                     <Badge variant="outline" className="font-mono text-xs">
@@ -908,9 +1131,9 @@ export default function ModelExaminer() {
                   </div>
                 </div>
               ))}
-              {results.filter(r => r.status === 'pending').length > 0 && (
+              {results.filter((r: any) => r.status === 'pending').length > 0 && (
                 <div className="text-center text-sm text-gray-500 mt-4 pt-4 border-t">
-                  {results.filter(r => r.status === 'pending').length} puzzles remaining...
+                  {results.filter((r: any) => r.status === 'pending').length} puzzles remaining...
                 </div>
               )}
             </div>
