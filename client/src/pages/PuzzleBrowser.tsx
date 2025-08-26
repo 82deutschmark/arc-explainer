@@ -15,6 +15,7 @@ import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
 import { useHasExplanation } from '@/hooks/useExplanation';
 import { CollapsibleMission } from '@/components/ui/collapsible-mission';
+import { formatProcessingTime } from '@/utils/timeFormatters';
 
 // Extended type to include feedback counts and processing metadata from our enhanced API
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
@@ -110,13 +111,6 @@ export default function PuzzleBrowser() {
     return 'bg-red-100 text-red-800 hover:bg-red-200';
   };
 
-  // Format processing time for display
-  const formatProcessingTime = (ms: number | null | undefined) => {
-    if (!ms) return null;
-    if (ms < 1000) return `${ms}ms`;
-    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-    return `${(ms / 60000).toFixed(1)}m`;
-  };
 
   // Format cost for display
   const formatCost = (cost: number | string | null | undefined) => {
