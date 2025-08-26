@@ -181,6 +181,17 @@ const createTablesIfNotExist = async () => {
       )
     `);
 
+    // Add missing columns to existing tables if they don't exist
+    try {
+      await client.query(`
+        ALTER TABLE batch_analysis_sessions 
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      `);
+      logger.info('Added missing updated_at column to batch_analysis_sessions', 'database');
+    } catch (error) {
+      logger.warn(`Could not add updated_at column: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    }
+
     logger.info('Database tables created/verified successfully', 'database');
 
     // COMPREHENSIVE schema verification to debug JSON syntax errors
