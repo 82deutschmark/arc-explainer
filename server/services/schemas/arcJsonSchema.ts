@@ -66,7 +66,7 @@ export const ARC_JSON_SCHEMA = {
       hints: {
         type: "array",
         items: { type: "string" },
-        description: "Hints for understanding the pattern"
+        description: "Three hints for understanding the transformation rules, one as an algorithm, one as a description, and one as only emojis"
       },
       confidence: {
         type: "integer",
