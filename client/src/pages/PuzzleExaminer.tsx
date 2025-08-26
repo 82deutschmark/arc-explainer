@@ -295,6 +295,15 @@ export default function PuzzleExaminer() {
               </div>
             )}
           </div>
+          
+          {/* Error Message */}
+          {analyzerError && (
+            <Alert className="mt-2 mb-4 border-red-200 bg-red-50">
+              <AlertDescription className="text-red-700">
+                <strong>API Error:</strong> {analyzerError.message}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardHeader>
         <CardContent>
           {/* Prompt Picker */}
