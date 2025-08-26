@@ -512,6 +512,7 @@ export default function PuzzleExaminer() {
         onClose={() => setShowPromptPreview(false)}
         task={task}
         taskId={taskId}
+
         promptId={promptId}
         customPrompt={customPrompt}
         options={{
