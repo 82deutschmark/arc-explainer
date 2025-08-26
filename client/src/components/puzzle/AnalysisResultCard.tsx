@@ -650,7 +650,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                   )}
                   {(result.multiTestAverageAccuracy !== undefined || result.averagePredictionAccuracyScore !== undefined) && (
                     <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                      Avg Score: {Math.round((result.multiTestAverageAccuracy ?? result.averagePredictionAccuracyScore ?? 0) * 100)}%
+                      Avg Trustworthiness: {Math.round((result.multiTestAverageAccuracy ?? result.averagePredictionAccuracyScore ?? 0) * 100)}%
                     </Badge>
                   )}
                 </div>
@@ -683,7 +683,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                           )}
                           {validation?.predictionAccuracyScore !== undefined && (
                             <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                              Score: {Math.round(validation.predictionAccuracyScore * 100)}%
+                              Trustworthiness: {Math.round(validation.predictionAccuracyScore * 100)}%
                             </Badge>
                           )}
                         </div>

@@ -161,9 +161,8 @@ export class OpenAIService {
         result = await this.parseJsonWithFallback(rawJson);
       }
 
-      // Extract reasoning log  
+      // Extract reasoning log from API only
       if (captureReasoning) {
-        // Legacy reasoning extraction from OpenAI's output_reasoning
         const summary = parsedResponse.output_reasoning?.summary;
         if (summary) {
           if (Array.isArray(summary)) {
@@ -186,26 +185,8 @@ export class OpenAIService {
       // Extract structured response metadata
       const providerResponseId = parsedResponse.id ?? null;
       
-      // Handle reasoning items with proper validation
-      let reasoningItems: string[] = [];
-      if (result.keySteps) {
-        // For structured outputs, extract keySteps with validation
-        if (result.keySteps) {
-          if (Array.isArray(result.keySteps)) {
-            reasoningItems = result.keySteps;
-          } else if (typeof result.keySteps === 'string') {
-            // If keySteps comes as string, try to split it into steps
-            console.warn(`[OpenAI] keySteps received as string instead of array, attempting to parse`);
-            reasoningItems = result.keySteps.split(/\d+\)\s+/).filter((step: string) => step.trim().length > 0);
-          } else {
-            console.warn(`[OpenAI] keySteps has unexpected type:`, typeof result.keySteps);
-            reasoningItems = [];
-          }
-        }
-      } else {
-        // Legacy reasoning extraction
-        reasoningItems = parsedResponse.output_reasoning?.items ?? [];
-      }
+      // Extract reasoning items from API only (not from structured JSON)
+      let reasoningItems: string[] = parsedResponse.output_reasoning?.items ?? [];
       
       const providerRawResponse = parsedResponse.raw_response;
 
