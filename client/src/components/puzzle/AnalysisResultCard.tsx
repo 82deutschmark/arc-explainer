@@ -590,10 +590,30 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                   </h5>
                   <div className="text-xs text-blue-600">
                     <div className="bg-white p-2 rounded border font-mono max-h-32 overflow-y-auto">
-                      {result.saturnEvents.slice(0, 500)}{result.saturnEvents.length > 500 ? '...' : ''}
+                      {(() => {
+                        const events = result.saturnEvents as string | string[] | any;
+                        if (typeof events === 'string') {
+                          return `${events.slice(0, 500)}${events.length > 500 ? '...' : ''}`;
+                        } else if (Array.isArray(events)) {
+                          return `${events.slice(0, 10).join('\n')}${events.length > 10 ? '\n...' : ''}`;
+                        } else if (events) {
+                          return JSON.stringify(events).slice(0, 500);
+                        } else {
+                          return 'No events';
+                        }
+                      })()}
                     </div>
                     <p className="mt-1 text-blue-500">
-                      Contains {result.saturnEvents.split('\n').length} events ({(result.saturnEvents.length / 1024).toFixed(1)}KB)
+                      {(() => {
+                        const events = result.saturnEvents;
+                        if (Array.isArray(events)) {
+                          return `Contains ${events.length} events (${(JSON.stringify(events).length / 1024).toFixed(1)}KB)`;
+                        } else if (typeof events === 'string') {
+                          return `Contains ${events.split('\n').length} events (${(events.length / 1024).toFixed(1)}KB)`;
+                        } else {
+                          return 'Contains 0 events (0KB)';
+                        }
+                      })()}
                     </p>
                   </div>
                 </div>
