@@ -8,6 +8,7 @@ import { Link } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { formatProcessingTime } from '@/utils/timeFormatters';
 import { 
   Loader2, 
   Database, 
@@ -204,7 +205,7 @@ export function PuzzleList({
                               <div>
                                 <span className="text-gray-500">Processing:</span>
                                 <span className="ml-2 text-xs">
-                                  {puzzle.latestExplanation.apiProcessingTimeMs}ms
+                                  {formatProcessingTime(puzzle.latestExplanation.apiProcessingTimeMs)}
                                 </span>
                               </div>
                             )}
