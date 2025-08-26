@@ -14,7 +14,7 @@ export async function apiRequest(
 ): Promise<Response> {
   // Set 50-minute timeout for AI analysis requests (server has 45-minute timeout)
   const isAIAnalysis = url.includes('/analyze/');
-  const timeoutMs = isAIAnalysis ? 50 * 60 * 1000 : 30000; // 50 minutes for AI, 30s for others
+  const timeoutMs = isAIAnalysis ? 50 * 60 * 1000 : 50 * 60 * 1000; // 50 minutes for AI replies!!
   
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);

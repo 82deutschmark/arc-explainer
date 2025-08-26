@@ -77,15 +77,15 @@ class BatchAnalysisService extends EventEmitter {
       logger.info(`Found ${puzzles.length} puzzles for dataset ${config.dataset}`, 'batch-analysis');
       
       if (puzzles.length === 0) {
-        logger.warn(`No puzzles found for dataset ${config.dataset}`, 'batch-analysis');
-        return { sessionId, error: 'No puzzles found for selected dataset' };
+        logger.error(`FAILED: No puzzles found for dataset ${config.dataset} - NOT adding session to activeSessions`, 'batch-analysis');
+        return { sessionId: '', error: 'No puzzles found for selected dataset' };
       }
 
       // Check database connection before creating session
       logger.info(`Checking database connection status`, 'batch-analysis');
       if (!dbService.isConnected()) {
-        logger.error(`Database not connected when trying to create session ${sessionId}`, 'batch-analysis');
-        return { sessionId, error: 'Database connection not available' };
+        logger.error(`FAILED: Database not connected when trying to create session ${sessionId} - NOT adding session to activeSessions`, 'batch-analysis');
+        return { sessionId: '', error: 'Database connection not available' };
       }
 
       // Create database session record
@@ -104,8 +104,8 @@ class BatchAnalysisService extends EventEmitter {
       });
 
       if (!sessionCreated) {
-        logger.error(`Failed to create database session for ${sessionId} - database operation returned false`, 'batch-analysis');
-        return { sessionId, error: 'Failed to create database session' };
+        logger.error(`FAILED: Failed to create database session for ${sessionId} - database operation returned false - NOT adding session to activeSessions`, 'batch-analysis');
+        return { sessionId: '', error: 'Failed to create database session' };
       }
       logger.info(`Database session created successfully for ${sessionId}`, 'batch-analysis');
 
@@ -129,6 +129,7 @@ class BatchAnalysisService extends EventEmitter {
 
       this.activeSessions.set(sessionId, progress);
       this.sessionQueues.set(sessionId, puzzles.map(p => p.id));
+      logger.info(`SUCCESS: Session ${sessionId} added to activeSessions with ${puzzles.length} puzzles`, 'batch-analysis');
 
       // Create batch result records for all puzzles
       for (const puzzle of puzzles) {
@@ -140,10 +141,11 @@ class BatchAnalysisService extends EventEmitter {
         this.processBatchSession(sessionId, config);
       }
 
+      logger.info(`SUCCESS: Batch analysis session ${sessionId} fully initialized and ready`, 'batch-analysis');
       return { sessionId };
 
     } catch (error) {
-      logger.error(`Error starting batch analysis: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
+      logger.error(`EXCEPTION: Error starting batch analysis: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
       return { sessionId: '', error: 'Failed to start batch analysis' };
     }
   }
