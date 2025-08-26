@@ -56,9 +56,9 @@ const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No markdown 
 
 JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
 
-Put all your raw reasoning and analysis in the structured JSON fields:
-- solvingStrategy: Your complete reasoning process, including 
-- keySteps: Step-by-step analysis progression and reasoning, including incorrect approaches and reasoning 
+Put all your analysis and insights in the structured JSON fields:
+- solvingStrategy: Your complete analysis process, including 
+- keySteps: Step-by-step analysis progression and insights, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
 - hints: Describe three pseudo-code algorithms you considered, starting with the best one
 - confidence: Your certainty level (0-100)`;
@@ -88,7 +88,7 @@ PREDICTION FIELDS REQUIREMENT:
   * "predictedOutput2": second solution grid
   * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
 
-Example reasoning approach:
+Example analysis approach:
 1. Examine each training example to understand input→output transformation
 2. Identify consistent patterns across all training examples
 3. Apply the discovered pattern to the test case input
@@ -157,7 +157,7 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 --- EDUCATIONAL CONTENT Specificalities ---
 
 - **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
-- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, reasoning, evaluating them, and selecting the best one.
+- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
 - **keySteps**: A short song that captures the essence of your approach.
 - **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
 - **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
@@ -238,7 +238,7 @@ The user will provide a custom analysis request along with puzzle data (training
 
 STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "Custom". 
 All fields marked as required must be present. Do not include any additional properties.
-Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
+Put your complete analysis in the solvingStrategy field - this is where OpenAI and other models should place their detailed insights.`;
 
 /**
  * Get system prompt for custom prompt mode
