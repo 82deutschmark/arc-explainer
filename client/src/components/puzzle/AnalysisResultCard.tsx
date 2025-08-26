@@ -28,6 +28,11 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 
 // Format processing time from milliseconds to minutes:seconds format
 const formatProcessingTime = (milliseconds: number): string => {
+  // For very small times, show milliseconds
+  if (milliseconds < 1000) {
+    return `${milliseconds}ms`;
+  }
+  
   const totalSeconds = Math.round(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
