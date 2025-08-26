@@ -298,46 +298,6 @@ export default function PuzzleOverview() {
       .slice(0, 20); // Keep more items for the scrollable list
   }, [data]);
 
-  // Generate Saturn results separately - filtered by saturnFilter state
-  const saturnResults = useMemo(() => {
-    if (!data?.puzzles) return [];
-    
-    const results: Array<{
-      puzzleId: string;
-      solved: boolean;
-      createdAt: string;
-    }> = [];
-    
-    // Extract Saturn results from all puzzles
-    data.puzzles.forEach(puzzle => {
-      puzzle.explanations.forEach(explanation => {
-        // Only include Saturn results
-        if (explanation.saturnSuccess !== undefined) {
-          // Apply Saturn filter
-          let includeResult = false;
-          if (saturnFilter === 'all' || saturnFilter === 'attempted') {
-            includeResult = true;
-          } else if (saturnFilter === 'solved') {
-            includeResult = explanation.saturnSuccess === true;
-          } else if (saturnFilter === 'failed') {
-            includeResult = explanation.saturnSuccess === false;
-          }
-          
-          if (includeResult) {
-            results.push({
-              puzzleId: puzzle.id,
-              solved: explanation.saturnSuccess,
-              createdAt: explanation.createdAt
-            });
-          }
-        }
-      });
-    });
-    
-    // Sort by creation date (newest first)
-    return results
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [data, saturnFilter]);
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -390,7 +350,6 @@ export default function PuzzleOverview() {
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
           recentActivity={recentActivity}
-          saturnResults={saturnResults}
         />
 
         {/* Search and Filters */}
