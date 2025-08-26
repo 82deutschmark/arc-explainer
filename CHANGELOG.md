@@ -1,5 +1,18 @@
 ###   August 26 2025
 
+## v2.0.9  
+- **Fix**: Repair JSX structure in `client/src/pages/PuzzleExaminer.tsx`  
+- Removed a stray closing `</div>` inside `CardHeader` of the "AI Model Analysis" card that caused parser errors: unclosed `CardHeader`/`Card`, unexpected `')'`, and trailing `div`/expression errors.  
+- Ensures the page compiles and renders correctly.  
+- Author: Cascade
+
+## v2.0.8  
+- **Enhancement**: Add basic error message display when AI model API calls fail
+- Show API error messages to users instead of only logging to console
+- Helps identify when Grok, DeepSeek, or other models fail or timeout during analysis
+- Red alert box appears below model analysis section when API requests fail
+- Author: Claude
+
 ## v2.0.7
 - **Fix**: Resolve batch analysis "Failed to create database session" error in ModelExaminer
 - Fix parameter mismatch between batchAnalysisService and dbService layers
