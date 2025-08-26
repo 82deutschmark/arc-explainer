@@ -148,15 +148,67 @@ const createTablesIfNotExist = async () => {
             session_id VARCHAR(255) PRIMARY KEY,
             total_puzzles INTEGER NOT NULL DEFAULT 0,
             completed_puzzles INTEGER NOT NULL DEFAULT 0,
+            successful_puzzles INTEGER NOT NULL DEFAULT 0,
             failed_puzzles INTEGER NOT NULL DEFAULT 0,
             status VARCHAR(50) NOT NULL DEFAULT 'pending',
-            model_name VARCHAR(100) DEFAULT NULL,
+            model_key VARCHAR(100) DEFAULT NULL,
+            dataset VARCHAR(50) DEFAULT NULL,
             prompt_id VARCHAR(255) DEFAULT NULL,
-            capture_reasoning BOOLEAN DEFAULT FALSE,
+            custom_prompt TEXT DEFAULT NULL,
+            temperature FLOAT DEFAULT NULL,
+            reasoning_effort VARCHAR(20) DEFAULT NULL,
+            reasoning_verbosity VARCHAR(20) DEFAULT NULL,
+            reasoning_summary_type VARCHAR(20) DEFAULT NULL,
+            average_processing_time INTEGER DEFAULT NULL,
+            started_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+            error_message TEXT DEFAULT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             completed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
           );
+        ELSE
+          -- Migrate existing batch_analysis_sessions table if needed
+          DO $$
+          BEGIN
+            -- Add new columns if they don't exist
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'successful_puzzles') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN successful_puzzles INTEGER NOT NULL DEFAULT 0;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'model_key') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN model_key VARCHAR(100) DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'dataset') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN dataset VARCHAR(50) DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'custom_prompt') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN custom_prompt TEXT DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'temperature') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN temperature FLOAT DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'reasoning_effort') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN reasoning_effort VARCHAR(20) DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'reasoning_verbosity') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN reasoning_verbosity VARCHAR(20) DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'reasoning_summary_type') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN reasoning_summary_type VARCHAR(20) DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'average_processing_time') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN average_processing_time INTEGER DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'started_at') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN started_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'error_message') THEN
+              ALTER TABLE batch_analysis_sessions ADD COLUMN error_message TEXT DEFAULT NULL;
+            END IF;
+            -- Copy model_name to model_key if model_key is NULL and model_name exists
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'batch_analysis_sessions' AND column_name = 'model_name') THEN
+              UPDATE batch_analysis_sessions SET model_key = model_name WHERE model_key IS NULL;
+            END IF;
+          END $$;
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'batch_analysis_results') THEN
@@ -920,10 +972,21 @@ const createBatchSession = async (sessionData: any) => {
   try {
     await client.query(
       `INSERT INTO batch_analysis_sessions 
-       (session_id, total_puzzles, model_name, prompt_id, capture_reasoning)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [sessionData.sessionId, sessionData.totalPuzzles, sessionData.modelName, 
-       sessionData.promptId, sessionData.captureReasoning]
+       (session_id, total_puzzles, model_key, dataset, prompt_id, custom_prompt, 
+        temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [
+        sessionData.sessionId, 
+        sessionData.totalPuzzles, 
+        sessionData.modelKey, 
+        sessionData.dataset,
+        sessionData.promptId,
+        sessionData.customPrompt,
+        sessionData.temperature,
+        sessionData.reasoningEffort,
+        sessionData.reasoningVerbosity,
+        sessionData.reasoningSummaryType
+      ]
     );
     return true;
   } catch (error) {
