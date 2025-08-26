@@ -204,6 +204,16 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [showDiff, predictedGrid, expectedOutputGrids]);
 
 
+  // Handle empty or error states -  // Debug trustworthiness score
+  console.log('AnalysisResultCard TRUSTWORTHINESS DEBUG:', { 
+    modelName: result.modelName || 'Unknown',
+    predictionAccuracyScore: result.predictionAccuracyScore,
+    predictionAccuracyScoreType: typeof result.predictionAccuracyScore,
+    isPredictionCorrect: result.isPredictionCorrect,
+    confidence: result.confidence,
+    isSaturnResult
+  });
+
   // Handle empty or error states - fix for the "0" display issue
   const isEmptyResult = !result || (!result.patternDescription && !result.solvingStrategy && !result.alienMeaning && (!result.hints || result.hints.length === 0));
   
@@ -407,7 +417,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                   </Badge>
                 )}
                 {/* Show prediction accuracy score for solver mode (but not for Saturn) */}
-                {!isSaturnResult && result.predictionAccuracyScore !== undefined && (
+                {!isSaturnResult && (result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null) && (
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${
