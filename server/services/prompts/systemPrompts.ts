@@ -60,7 +60,7 @@ Put all your raw reasoning and analysis in the structured JSON fields:
 - solvingStrategy: Your complete reasoning process, including 
 - keySteps: Step-by-step analysis progression, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
-- hints: Key insights that led to your conclusion
+- hints: Describe three pseudo-code algorithms you considered, starting with the best one
 - confidence: Your certainty level (0-100)`;
 
 /**
