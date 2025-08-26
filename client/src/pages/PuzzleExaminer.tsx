@@ -395,7 +395,7 @@ export default function PuzzleExaminer() {
                 />
               </div>
               <div className="text-xs text-gray-600 flex-shrink-0">
-                <div>Controls creativity • GPT-4.1 & GPT-5 only</div>
+                <div>Controls creativity • GPT-4.1 & older only!!!</div>
                 <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive</div>
               </div>
             </div>
