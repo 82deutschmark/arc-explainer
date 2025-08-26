@@ -81,6 +81,13 @@ class BatchAnalysisService extends EventEmitter {
         return { sessionId, error: 'No puzzles found for selected dataset' };
       }
 
+      // Check database connection before creating session
+      logger.info(`Checking database connection status`, 'batch-analysis');
+      if (!dbService.isConnected()) {
+        logger.error(`Database not connected when trying to create session ${sessionId}`, 'batch-analysis');
+        return { sessionId, error: 'Database connection not available' };
+      }
+
       // Create database session record
       logger.info(`Creating database session for ${sessionId}`, 'batch-analysis');
       const sessionCreated = await dbService.createBatchSession({
@@ -97,7 +104,7 @@ class BatchAnalysisService extends EventEmitter {
       });
 
       if (!sessionCreated) {
-        logger.error(`Failed to create database session for ${sessionId}`, 'batch-analysis');
+        logger.error(`Failed to create database session for ${sessionId} - database operation returned false`, 'batch-analysis');
         return { sessionId, error: 'Failed to create database session' };
       }
       logger.info(`Database session created successfully for ${sessionId}`, 'batch-analysis');
@@ -239,7 +246,7 @@ class BatchAnalysisService extends EventEmitter {
       
       // Process batch concurrently
       const batchPromises = batch.map(puzzleId => 
-        this.processSinglePuzzle(sessionId, puzzleId, config)
+        this.processSinglePuzzle(sessionId, puzzleId, config!)
       );
 
       try {
