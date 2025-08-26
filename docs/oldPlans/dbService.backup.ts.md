@@ -1,4 +1,4 @@
-/**
+/**BACKUP FILE FROM BEFORE DBSERVICE REFACTORING!!  This was done on August 24th, 2025
  * Database service for Railway PostgreSQL integration
  * Handles database operations for storing puzzle explanations and user feedback
  * Now supports reasoning log storage for AI models that provide step-by-step reasoning
