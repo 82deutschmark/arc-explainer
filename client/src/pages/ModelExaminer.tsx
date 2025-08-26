@@ -52,9 +52,9 @@ export default function ModelExaminer() {
   const [batchSize, setBatchSize] = useState<number>(10);
   
   // GPT-5 reasoning parameters
-  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('minimal');
-  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('low');
-  const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('auto');
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
+  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
+  const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
   // UI state
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
