@@ -10,6 +10,7 @@
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from '../../utils/logger.js';
+import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } from '../../utils/CommonUtilities.js';
 
 // Database connection pool - shared across all repositories
 let pool: Pool | null = null;
@@ -127,66 +128,30 @@ export abstract class BaseRepository {
   }
 
   /**
-   * Safe JSON parsing with fallback
+   * Safe JSON parsing with fallback - delegates to CommonUtilities
    */
   protected safeJsonParse<T>(value: any, fieldName?: string, fallback: T | null = null): T | null {
-    if (!value) return fallback;
-    if (typeof value === 'object') return value as T;
-    
-    try {
-      return JSON.parse(value) as T;
-    } catch (error) {
-      if (fieldName) {
-        logger.warn(`Failed to parse JSON for ${fieldName}: ${value}`, 'database');
-      }
-      return fallback;
-    }
+    return safeJsonParse<T>(value, fieldName, fallback);
   }
 
   /**
-   * Safe JSON stringification
+   * Safe JSON stringification - delegates to CommonUtilities
    */
   protected safeJsonStringify(value: any): string | null {
-    if (!value) return null;
-    if (typeof value === 'string') return value;
-    
-    try {
-      return JSON.stringify(value);
-    } catch (error) {
-      logger.warn(`Failed to stringify JSON: ${value}`, 'database');
-      return null;
-    }
+    return safeJsonStringify(value);
   }
 
   /**
-   * Normalize confidence score to 0-100 range
+   * Normalize confidence score - delegates to CommonUtilities
    */
   protected normalizeConfidence(confidence: any): number {
-    if (typeof confidence === 'number') {
-      return Math.max(0, Math.min(100, Math.round(confidence)));
-    }
-    if (typeof confidence === 'string') {
-      const parsed = parseFloat(confidence);
-      return isNaN(parsed) ? 50 : Math.max(0, Math.min(100, Math.round(parsed)));
-    }
-    return 50; // Default confidence
+    return normalizeConfidence(confidence);
   }
 
   /**
-   * Process hints array with validation
+   * Process hints array - delegates to CommonUtilities
    */
   protected processHints(hints: any): string[] {
-    if (Array.isArray(hints)) {
-      return hints.filter(hint => typeof hint === 'string' && hint.trim().length > 0);
-    }
-    if (typeof hints === 'string') {
-      try {
-        const parsed = JSON.parse(hints);
-        return Array.isArray(parsed) ? parsed.filter(hint => typeof hint === 'string') : [];
-      } catch {
-        return [hints]; // Single hint as string
-      }
-    }
-    return [];
+    return processHints(hints);
   }
 }
