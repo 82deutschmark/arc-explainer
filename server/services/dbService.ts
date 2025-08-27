@@ -175,7 +175,7 @@ const getAllBatchSessions = async () => {
  * REFACTORED: Now delegates to repositoryService
  */
 const createBatchResult = async (sessionId: string, puzzleId: string) => {
-  return await repositoryService.batchAnalysis.createBatchResult(sessionId, puzzleId);
+  return await repositoryService.batchAnalysis.createBatchResult({ sessionId, puzzleId });
 };
 
 /**
