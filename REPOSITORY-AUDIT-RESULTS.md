@@ -136,4 +136,4 @@ alien_meaning AS "alienMeaning", model_name AS "modelName"
 
 ## Overall Status: 🔴 REFACTORING FAILED
 
-The repository pattern was added ON TOP of the old code, not as a replacement. You now have **double the code** instead of cleaner architecture. The `dbService.ts` should be ~100 lines max as a thin wrapper, not 1000+ lines of duplicated logic.
+The repository pattern was added ON TOP of the old code, not as a replacement. You now have **double the code** instead of cleaner architecture. The `dbService.ts` should be ~300 lines max as a thin wrapper, not 1000+ lines of duplicated logic.
