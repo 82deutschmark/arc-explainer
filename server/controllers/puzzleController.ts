@@ -457,7 +457,7 @@ export const puzzleController = {
 
       // Get explanation status and populate puzzle map
       const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(filteredPuzzleIds);
-      explanationStatusMap.forEach((status, puzzleId) => {
+      Object.entries(explanationStatusMap).forEach(([puzzleId, status]) => {
         const puzzle = puzzleMap.get(puzzleId);
         if (puzzle) {
           puzzle.hasExplanation = status.hasExplanation;
@@ -473,7 +473,7 @@ export const puzzleController = {
         processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
       };
 
-      for (const [puzzleId, status] of explanationStatusMap) {
+      for (const [puzzleId, status] of Object.entries(explanationStatusMap)) {
         if (status.hasExplanation && status.explanationId) {
           try {
             const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);

@@ -57,7 +57,7 @@ export const puzzleService = {
     
     
     // Create a base puzzle list with metadata
-    const enhancedPuzzles = puzzleList.map(puzzle => ({
+    const enhancedPuzzles: EnhancedPuzzleMetadata[] = puzzleList.map(puzzle => ({
       id: puzzle.id,
       gridSizeConsistent: puzzle.gridSizeConsistent,
       patternType: puzzle.patternType,
@@ -66,13 +66,13 @@ export const puzzleService = {
       outputSize: puzzle.outputSize,
       hasExplanation: false, // Will update this with accurate data
       source: puzzle.source,
-      explanationId: null,
+      explanationId: null as number | null,
       feedbackCount: 0,
-      apiProcessingTimeMs: null,
-      modelName: null,
-      createdAt: null,
-      confidence: null,
-      estimatedCost: null
+      apiProcessingTimeMs: null as number | null,
+      modelName: null as string | null,
+      createdAt: null as Date | null,
+      confidence: null as number | null,
+      estimatedCost: null as number | null
     }));
     
     try {
