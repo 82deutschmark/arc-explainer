@@ -290,12 +290,12 @@ class SaturnVisualService {
 
               let explanationId: number | null = null;
               try {
-                const explanationWithTaskId = {
-                  ...explanation,
-                  taskId: taskId
-                };
-                const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithTaskId);
-                explanationId = savedExplanation.id;
+                // Use service layer for consistent save handling and validation
+                const { explanationService } = await import('./explanationService');
+                const saveResult = await explanationService.saveExplanation(taskId, {
+                  saturn: explanation
+                });
+                explanationId = saveResult.explanationIds[0];
               } catch (saveErr) {
                 broadcast(sessionId, {
                   status: 'error',
