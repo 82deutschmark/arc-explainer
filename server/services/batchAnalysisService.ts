@@ -473,8 +473,7 @@ class BatchAnalysisService extends EventEmitter {
               hasMultiplePredictions: true,
               multiTestResults: multi.itemResults,
               multiTestAllCorrect: multi.allCorrect,
-              multiTestAverageAccuracy: multi.averageAccuracyScore,
-              extractionMethod: multi.extractionMethodSummary
+              multiTestAverageAccuracy: multi.averageAccuracyScore
             };
           } else {
             // Single-test case
@@ -485,8 +484,7 @@ class BatchAnalysisService extends EventEmitter {
               predictedOutputGrid: validation.predictedGrid,
               hasMultiplePredictions: false,
               isPredictionCorrect: validation.isPredictionCorrect,
-              predictionAccuracyScore: validation.predictionAccuracyScore,
-              extractionMethod: validation.extractionMethod
+              predictionAccuracyScore: validation.predictionAccuracyScore
             };
           }
         } catch (validationError) {
