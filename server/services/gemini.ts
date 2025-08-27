@@ -1,485 +1,236 @@
 /**
  * Google Gemini Service Integration for ARC-AGI Puzzle Analysis
- * Supports reasoning log capture through structured prompting with <thinking> tags
- * Since Gemini doesn't provide built-in reasoning logs, we prompt it to show its reasoning WHICH CAN BE PROBLEMATIC
- *    * Switched to modular and clean code to avoid issues with Gemini's response format
- * @author Cascade / Gemini Pro 2.5
+ * Refactored to extend BaseAIService for code consolidation
  * 
- * This service provides integration with Google's Gemini models for analyzing ARC-AGI puzzles.
- * It leverages Gemini's advanced reasoning capabilities to explain puzzle solutions in the
- * context of alien communication patterns, making abstract reasoning more accessible.
- * 
- * Key Features:
- * - Full compatibility with Google's GenAI SDK (@google/genai)
- * - Support for multiple Gemini models (2.5 Pro, 2.5 Flash, 2.0 Flash, etc.)
- * - Intelligent handling of thinking vs non-thinking model limitations
- * - Structured JSON output for consistent puzzle explanations
- * - Emoji-based interpretation for accessibility and engagement
- * - Creative alien communication framing for educational purposes
- * 
- * Model Capabilities:
- * - Gemini 2.5 Pro: State-of-the-art thinking model for complex reasoning
- * - Gemini 2.5 Flash: Best price-performance with thinking capabilities
- * - Gemini 2.5 Flash-Lite: Most cost-efficient model with high throughput
- * - Gemini 2.0 Flash: General purpose multimodal model with enhanced features
- * - Gemini 2.0 Flash-Lite: Optimized for cost efficiency and low latency
- * 
- * API Integration:
- * - Uses Google GenAI SDK (@google/genai) with automatic endpoint management
- * - Requires GEMINI_API_KEY environment variable
- * - Fully compatible with existing puzzle analysis pipeline
- * - Maintains same interface as OpenAI/Grok services for seamless integration
- * 
- * Educational Context:
- * The service frames ARC-AGI puzzles as alien communication challenges, where:
- * - Numbers 0-9 are mapped to meaningful emojis
- * - Transformations represent alien logical concepts
- * - Solutions reveal the "meaning" of alien messages
- * - Explanations focus on WHY answers work, not just HOW to solve
- * 
- * This approach makes abstract reasoning more intuitive and accessible,
- * especially for users with colorblindness or neurodivergent thinking patterns.
+ * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { ARCTask } from "../../shared/types";
-import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
-import type { PromptOptions } from "./promptBuilder"; // Cascade using GPT-5 (medium reasoning): thread emojiSetKey/omitAnswer options
-import { calculateCost } from "../utils/costCalculator";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
+import { ARCTask } from "../../shared/types.js";
+import { getDefaultPromptId } from "./promptBuilder.js";
+import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
 
-// JSON-structure-enforcing system prompts (same format as other services)
-const SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
-
-{
-  "predictedOutput": [[0,1,2],[3,4,5],[6,7,8]],
-  "patternDescription": "Clear description of what you learned from the training examples",
-  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grid as a 2D array",
-  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
-}
-
-CRITICAL: The "predictedOutput" field MUST be first and contain a 2D array of integers matching the expected output grid dimensions. No other format accepted.`;
-
-const MULTI_SOLVER_SYSTEM_PROMPT = `You are a puzzle solver. Respond with ONLY valid JSON in this exact format:
-
-{
-  "predictedOutputs": [[[0,1],[2,3]], [[4,5],[6,7]]],
-  "patternDescription": "Clear description of what you learned from the training examples", 
-  "solvingStrategy": "Step-by-step reasoning used to predict the answer, including the predicted output grids as 2D arrays",
-  "hints": ["Key reasoning insight 1", "Key reasoning insight 2", "Key reasoning insight 3"],
-  "confidence": [INTEGER 0-100: Your honest assessment of solution accuracy]
-}
-
-CRITICAL: The "predictedOutputs" field MUST be first and contain an array of 2D integer arrays, one for each test case in order. No other format accepted.`;
-
-const EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
-
-{
-  "patternDescription": "Clear description of the rules learned from the training examples",
-  "solvingStrategy": "Explain the thinking and reasoning required to solve this puzzle, not specific steps", 
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"],
-  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality]
-}
-
-CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
-
-const ALIEN_EXPLANATION_SYSTEM_PROMPT = `You are a puzzle analysis expert. Respond with ONLY valid JSON in this exact format:
-
-{
-  "patternDescription": "What the aliens are trying to communicate to us through this puzzle, based on the ARC-AGI transformation types",
-  "solvingStrategy": "Step-by-step explain the thinking and reasoning required to solve this puzzle, for novices. If they need to switch to thinking of the puzzle as numbers and not emojis, then mention that!",
-  "hints": ["Key insight 1", "Key insight 2", "Key insight 3"], 
-  "confidence": [INTEGER 0-100: Your honest assessment of analysis quality],
-  "alienMeaning": "The aliens' message",
-  "alienMeaningConfidence": [INTEGER 0-100: Your honest confidence in alien interpretation]
-}
-
-CRITICAL: Return ONLY valid JSON with these exact field names and types. No additional text.`;
-
-const MODELS = {
-  "gemini-2.5-pro": "gemini-2.5-pro",
-  "gemini-2.5-flash": "gemini-2.5-flash",
-  "gemini-2.5-flash-lite": "gemini-2.5-flash-lite", 
-  "gemini-2.0-flash": "gemini-2.0-flash",
-  "gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
-} as const;
-
-// Thinking models that may have different parameter support or behavior
-const THINKING_MODELS = new Set([
-  "gemini-2.5-pro",
-  "gemini-2.5-flash",
-]);
-
-// All Gemini models can be prompted to show reasoning through structured prompting
-const MODELS_WITH_REASONING = new Set([
-  "gemini-2.5-pro",
-  "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-]);
-
-// Helper function to check if model supports temperature using centralized config
+// Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
   const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-  return modelConfig?.supportsTemperature ?? false;
+  return modelConfig?.supportsTemperature ?? true; // Most Gemini models support temperature
 }
 
-// Initialize Google GenAI client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-// A mapping from the model keys in your app to the model names expected by the Gemini API
-const MODEL_NAME_MAP: { [key: string]: string } = {
-  "gemini-2.5-pro": "models/gemini-2.5-pro",
-  "gemini-2.5-flash": "models/gemini-2.5-flash",
-  "gemini-2.5-flash-lite": "models/gemini-2.5-flash-lite-preview-06-17",
-  "gemini-2.0-flash": "models/gemini-2.0-flash",
-  "gemini-2.0-flash-lite": "models/gemini-2.0-flash-lite",
-};
+export class GeminiService extends BaseAIService {
+  protected provider = "Gemini";
+  protected models = {
+    "gemini-2.5-pro": "gemini-2.5-pro",
+    "gemini-2.5-flash": "gemini-2.5-flash",
+    "gemini-2.5-flash-lite": "gemini-2.5-flash-lite",
+    "gemini-2.0-flash": "gemini-2.0-flash",
+    "gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
+    "gemini-1.5-pro": "gemini-1.5-pro",
+    "gemini-1.5-flash": "gemini-1.5-flash",
+  };
 
-export class GeminiService {
   async analyzePuzzleWithModel(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
+    modelKey: string,
     temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
-    options?: PromptOptions, // Cascade: optional prompt options forwarded to builder
-    serviceOpts?: {
-      systemPromptMode?: 'ARC' | 'None';
-      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
-      reasoningVerbosity?: 'low' | 'medium' | 'high';
-      reasoningSummaryType?: 'auto' | 'detailed';
-    }
-  ) {
-    const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
-
-    // Determine system prompt mode (default to ARC for better results)
-    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // Build prompt package using inherited method
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
-    // Build prompt package using new modular architecture
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: false // Gemini doesn't support structured output yet
-    });
-    
-    console.log(`[Gemini] Using modular system prompt architecture`);
-    console.log(`[Gemini] System prompt mode: ${systemPromptMode}`);
-    
-    // Prepare system instruction and user prompt based on mode
-    let systemInstruction: string | undefined;
-    let userPrompt: string;
-    
-    if (systemPromptMode === 'ARC') {
-      // ARC Mode: Select appropriate system prompt based on context
-      const isSolverMode = promptId === "solver";
-      const isAlienMode = promptPackage.selectedTemplate?.emojiMapIncluded || false;
-      const hasMultipleTests = task.test.length > 1;
-      
-      if (isSolverMode && hasMultipleTests) {
-        systemInstruction = MULTI_SOLVER_SYSTEM_PROMPT;
-        console.log(`[Gemini] Using multi-test solver system instruction (${task.test.length} tests)`);
-      } else if (isSolverMode) {
-        systemInstruction = SOLVER_SYSTEM_PROMPT;
-        console.log(`[Gemini] Using single-test solver system instruction`);
-      } else if (isAlienMode) {
-        systemInstruction = ALIEN_EXPLANATION_SYSTEM_PROMPT;
-        console.log(`[Gemini] Using alien explanation system instruction`);
-      } else {
-        systemInstruction = EXPLANATION_SYSTEM_PROMPT;
-        console.log(`[Gemini] Using standard explanation system instruction`);
-      }
-      
-      userPrompt = promptPackage.userPrompt;
-    } else {
-      // None Mode: Current behavior with reasoning wrapper
-      systemInstruction = undefined;
-      userPrompt = captureReasoning ? 
-        `${promptPackage.userPrompt}
-
-IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
-If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
-
-<thinking>
-[Your detailed step-by-step analysis will go here]
-</thinking>
-
-Then provide your final structured JSON response.` : promptPackage.userPrompt;
-      console.log(`[Gemini] Using None mode (current behavior) with model ${modelKey}`);
-    }
+    // Log analysis start using inherited method
+    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // Create model with optional system instruction (Gemini's systemInstruction parameter)
-      const modelConfig: any = { 
-        model: modelName,
-        generationConfig: {
-          ...(modelSupportsTemperature(modelKey) && { temperature: temperature }),
-          maxOutputTokens: 65536, // Increased from 4096 based on models.yml (most models support 65,536)
-        }
-      };
+      // Call provider-specific API
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
-      // Add system instruction if in ARC mode
-      if (systemInstruction) {
-        modelConfig.systemInstruction = {
-          parts: [{ text: systemInstruction }]
-        };
-      }
-      
-      const model = genAI.getGenerativeModel(modelConfig);
-      const result = await model.generateContent(userPrompt);
+      // Parse response using provider-specific method
+      const { result, tokenUsage, reasoningLog, reasoningItems } = 
+        this.parseProviderResponse(response, modelKey, captureReasoning);
 
-      const rawText: string = result.response.text() ?? "";
-      
-      // Extract reasoning log if requested and available
-      let reasoningLog = null;
-      let hasReasoningLog = false;
-      let cleanedContent = rawText;
-      
-      if (captureReasoning && MODELS_WITH_REASONING.has(modelKey)) {
-        const thinkingMatch = rawText.match(/<thinking>([\s\S]*?)<\/thinking>/);
-        if (thinkingMatch) {
-          reasoningLog = thinkingMatch[1].trim();
-          hasReasoningLog = true;
-          // Remove thinking tags from content for JSON parsing
-          cleanedContent = rawText.replace(/<thinking>[\s\S]*?<\/thinking>/, '').trim();
-          console.log(`[Gemini] Captured reasoning log for model ${modelKey} (${reasoningLog.length} characters)`);
-        } else {
-          console.log(`[Gemini] No reasoning log found for model ${modelKey}`);
-        }
-      }
-
-      const firstBrace = cleanedContent.indexOf('{');
-      const lastBrace = cleanedContent.lastIndexOf('}');
-      
-      let cleanText = "";
-      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-        cleanText = cleanedContent.substring(firstBrace, lastBrace + 1);
-      }
-
-      let jsonResult: any;
-      try {
-        jsonResult = JSON.parse(cleanText);
-      } catch (parseErr) {
-        console.warn("[GeminiService] JSON parse failed, returning raw text", parseErr);
-        jsonResult = { explanation: cleanText };
-      }
-
-      // Extract token usage from Gemini response
-      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
-      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
-      
-      if (result.response.usageMetadata) {
-        // Defensive token usage calculation like OpenAI
-        const inputTokens = result.response.usageMetadata.promptTokenCount ?? 0;
-        const outputTokens = result.response.usageMetadata.candidatesTokenCount ?? 0;
-        
-        tokenUsage = {
-          input: inputTokens,
-          output: outputTokens,
-          // Gemini doesn't provide separate reasoning tokens currently
-        };
-
-        // Find the model config to get pricing
-        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-        if (modelConfig && tokenUsage) {
-          cost = calculateCost(modelConfig.cost, tokenUsage);
-        }
-      }
-
-      return {
-        model: modelKey,
-        reasoningLog,
-        hasReasoningLog,
-        // Include analysis parameters for database storage
+      // Build standard response using inherited method
+      return this.buildStandardResponse(
+        modelKey,
         temperature,
-        reasoningEffort: serviceOpts?.reasoningEffort || null,
-        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
-        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
-        // Token usage and cost data
-        inputTokens: tokenUsage?.input || null,
-        outputTokens: tokenUsage?.output || null,
-        reasoningTokens: tokenUsage?.reasoning || null,
-        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
-        estimatedCost: cost?.total || null,
-        ...jsonResult,
-      };
+        result,
+        tokenUsage,
+        serviceOpts,
+        reasoningLog,
+        !!reasoningLog,
+        reasoningItems
+      );
+
     } catch (error) {
-      console.error(`Error with Gemini model ${modelKey}:`, error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Gemini model ${modelKey} failed: ${errorMessage}`);
+      this.handleAnalysisError(error, modelKey, task);
     }
   }
 
-  /**
-   * Get available Gemini models
-   */
-  getAvailableModels(): string[] {
-    return Object.keys(MODELS);
-  }
-
-  /**
-   * Check if model supports temperature parameter (using centralized config)
-   */
-  supportsTemperature(modelKey: keyof typeof MODELS): boolean {
-    return modelSupportsTemperature(modelKey);
-  }
-
-  /**
-   * Check if model uses thinking capabilities
-   */
-  isThinkingModel(modelKey: keyof typeof MODELS): boolean {
-    return THINKING_MODELS.has(modelKey);
-  }
-
-  /**
-   * Get model capabilities and limitations
-   */
-  getModelInfo(modelKey: keyof typeof MODELS) {
-    const modelName = MODELS[modelKey];
-    const isThinking = THINKING_MODELS.has(modelKey);
-      
+  getModelInfo(modelKey: string): ModelInfo {
+    const modelName = this.models[modelKey] || modelKey;
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    
+    // Check if it's a thinking model (Gemini 2.5 Pro/Flash have thinking capabilities)
+    const isThinking = modelName.includes('2.5');
+    
     return {
       name: modelName,
-      isThinking,
-      supportsTemperature: true,
-      contextWindow: this.getContextWindow(modelKey),
+      isReasoning: isThinking, // Gemini 2.5+ models have thinking capabilities
+      supportsTemperature: modelSupportsTemperature(modelKey),
+      contextWindow: modelConfig?.maxTokens || 2000000, // Gemini typically has large context windows
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
-      supportsStructuredOutput: true,
-      supportsMultimodal: true,
-      supportsAudio: modelKey.includes("2.5") || modelKey.includes("2.0"),
-      supportsVideo: modelKey.includes("2.5") || modelKey.includes("2.0"),
+      supportsStructuredOutput: false, // Gemini doesn't support structured output format
+      supportsVision: true // Most Gemini models support vision
     };
   }
 
-  /**
-   * Get context window size for different models
-   */
-  private getContextWindow(modelKey: keyof typeof MODELS): number {
-    if (modelKey.includes("2.5")) {
-      return 1000000; // 1M tokens for Gemini 2.5 models
-    } else if (modelKey.includes("2.0")) {
-      return 1000000; // 1M tokens for Gemini 2.0 models
-    } else if (modelKey.includes("1.5")) {
-      return 1000000; // 1M tokens for Gemini 1.5 models
-    }
-    return 128000; // Default fallback
-  }
-
-  /**
-   * Get pricing tier information
-   */
-  getPricingTier(modelKey: keyof typeof MODELS): 'free' | 'paid' | 'premium' {
-    if (modelKey.includes("lite")) {
-      return 'free'; // Flash-Lite models are most cost-efficient
-    } else if (modelKey.includes("flash")) {
-      return 'paid'; // Flash models are mid-tier pricing
-    } else if (modelKey.includes("pro")) {
-      return 'premium'; // Pro models are highest tier
-    }
-    return 'paid'; // Default to paid tier
-  }
-
-  /**
-   * Get model description for UI
-   */
-  getModelDescription(modelKey: keyof typeof MODELS): string {
-    const descriptions = {
-      "gemini-2.5-pro": "State-of-the-art thinking model for complex reasoning",
-      "gemini-2.5-flash": "Best price-performance with thinking capabilities", 
-      "gemini-2.5-flash-lite": "Most cost-efficient model with high throughput",
-      "gemini-2.0-flash": "General purpose multimodal model with enhanced features",
-      "gemini-2.0-flash-lite": "Optimized for cost efficiency and low latency",
-
-    };
-    return descriptions[modelKey] || "Google Gemini model";
-  }
-
-  /**
-   * Generate a preview of the exact prompt that will be sent to Gemini
-   * Shows the provider-specific message format and structure
-   * 
-   * @author Claude 4 Sonnet
-   */
-  async generatePromptPreview(
+  generatePromptPreview(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
-    temperature: number = 0.2,
-    captureReasoning: boolean = true,
+    modelKey: string,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
-    options?: PromptOptions, // Cascade: ensure preview uses same options as analysis
-  ) {
-    const modelName = MODEL_NAME_MAP[modelKey] || MODELS[modelKey];
-
-    // Build prompt using shared prompt builder
-    // Cascade: forward PromptOptions to keep preview in sync with analysis
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const basePrompt = promptPackage.userPrompt;
-    const selectedTemplate = promptPackage.selectedTemplate;
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): PromptPreview {
+    const modelName = this.models[modelKey] || modelKey;
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
-    // Add reasoning prompt wrapper for Gemini if captureReasoning is enabled
-    const prompt = captureReasoning ? 
-      `${basePrompt}
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
-IMPORTANT: Prioritize token use by first replying My predicticed grid is [...]. with the exact correctly formatted output grid for validation
-If possible, explicitly show your step-by-step reasoning process inside <thinking> tags. Think through the puzzle systematically, analyzing patterns, transformations, and logical connections. This reasoning will help users understand your thought process.
-
-<thinking>
-[Your detailed step-by-step analysis will go here]
-</thinking>
-
-Then provide your final structured JSON response.` : basePrompt;
-
-    // Gemini uses parts array format with text content
-    const messageFormat = {
+    // Build request format for Gemini API
+    const messageFormat: any = {
       model: modelName,
-      contents: [{
-        parts: [{ text: prompt }]
-      }],
       generationConfig: {
-        ...(modelSupportsTemperature(modelKey) && { temperature: temperature }),
-        maxOutputTokens: 65536, // Updated from 4000 based on models.yml
-        responseMimeType: "application/json"
-      }
+        maxOutputTokens: 8000,
+        ...(modelSupportsTemperature(modelKey) && { temperature })
+      },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}` }]
+        }
+      ],
+      ...(systemMessage && systemPromptMode === 'ARC' && {
+        systemInstruction: { parts: [{ text: systemMessage }] }
+      })
     };
 
     const providerSpecificNotes = [
-      "Uses Google GenerativeAI SDK",
-      "Supports reasoning capture via <thinking> tags",
-      "Temperature parameter supported",
-      "JSON response format enforced via responseMimeType",
-      "Max output tokens set to 65536",
-      `Context window: ${this.getContextWindow(modelKey).toLocaleString()} tokens`
+      "Uses Google GenAI SDK",
+      "Supports system instructions (separate from user content)",
+      systemPromptMode === 'ARC' 
+        ? "System Prompt Mode: {ARC} - Using systemInstruction parameter"
+        : "System Prompt Mode: {None} - All content in user message",
+      "JSON extraction via regex parsing (no structured output support)",
+      modelName.includes('2.5') ? "Thinking model - supports internal reasoning" : "Standard model"
     ];
 
-    if (THINKING_MODELS.has(modelKey)) {
-      providerSpecificNotes.push("Advanced thinking model with enhanced reasoning capabilities");
+    const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
+
+    return {
+      provider: this.provider,
+      modelName,
+      promptText: previewText,
+      messageFormat,
+      systemPromptMode,
+      templateInfo: {
+        id: promptPackage.selectedTemplate?.id || "custom",
+        name: promptPackage.selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: promptPackage.selectedTemplate?.emojiMapIncluded || false
+      },
+      promptStats: {
+        characterCount: previewText.length,
+        wordCount: previewText.split(/\s+/).length,
+        lineCount: previewText.split('\n').length
+      },
+      providerSpecificNotes: providerSpecificNotes.join('; ')
+    };
+  }
+
+  protected async callProviderAPI(
+    promptPackage: PromptPackage,
+    modelKey: string,
+    temperature: number,
+    serviceOpts: ServiceOptions
+  ): Promise<any> {
+    const modelName = this.models[modelKey] || modelKey;
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+
+    const model = genai.getGenerativeModel({ 
+      model: modelName,
+      generationConfig: {
+        maxOutputTokens: 8000,
+        ...(modelSupportsTemperature(modelKey) && { temperature })
+      },
+      ...(systemMessage && systemPromptMode === 'ARC' && {
+        systemInstruction: { parts: [{ text: systemMessage }] }
+      })
+    });
+
+    // Combine system and user messages if not using ARC mode
+    const finalPrompt = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
+
+    const result = await model.generateContent(finalPrompt);
+    return result.response;
+  }
+
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean
+  ): {
+    result: any;
+    tokenUsage: TokenUsage;
+    reasoningLog?: any;
+    reasoningItems?: any[];
+  } {
+    // Extract text content from Gemini response
+    const textContent = response.text() || '';
+    
+    // Extract JSON using inherited method
+    const result = this.extractJsonFromResponse(textContent, modelKey);
+
+    // Extract token usage (Gemini provides usage info)
+    const tokenUsage: TokenUsage = {
+      input: response.usageMetadata?.promptTokenCount || 0,
+      output: response.usageMetadata?.candidatesTokenCount || 0,
+      // Gemini doesn't provide separate reasoning tokens
+    };
+
+    // For thinking models, try to extract reasoning from response
+    let reasoningLog = null;
+    if (captureReasoning && modelKey.includes('2.5')) {
+      // Thinking models may include reasoning in the response
+      // Look for <thinking> tags or similar patterns
+      const thinkingMatch = textContent.match(/<thinking>(.*?)<\/thinking>/s);
+      if (thinkingMatch) {
+        reasoningLog = thinkingMatch[1].trim();
+      } else if (textContent.includes('Let me think')) {
+        // Extract reasoning sections that start with "Let me think"
+        const reasoningParts = textContent.split(/Let me think|I need to|First,|Looking at/);
+        if (reasoningParts.length > 1) {
+          reasoningLog = reasoningParts.slice(0, -1).join('\n\n').trim();
+        }
+      }
     }
 
     return {
-      provider: "Google Gemini",
-      modelName,
-      promptText: prompt,
-      messageFormat,
-      templateInfo: {
-        id: selectedTemplate?.id || "custom",
-        name: selectedTemplate?.name || "Custom Prompt",
-        usesEmojis: selectedTemplate?.emojiMapIncluded || false
-      },
-      promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
-      },
-      providerSpecificNotes,
-      captureReasoning,
-      temperature,
-      pricingTier: this.getPricingTier(modelKey)
+      result,
+      tokenUsage,
+      reasoningLog,
+      reasoningItems: []
     };
   }
 }
