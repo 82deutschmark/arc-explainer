@@ -168,16 +168,36 @@ export function useBatchAnalysis() {
       console.log('Starting batch analysis with config:', config);
 
       const response = await apiRequest('POST', '/api/model/batch-analyze', config);
+      console.log('📡 Batch analyze API response:', { 
+        ok: response.ok, 
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to start batch analysis');
+        const errorText = await response.text();
+        console.error('❌ Batch analyze API error response:', errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        throw new Error(errorData.error || errorData.message || 'Failed to start batch analysis');
       }
 
       const data = await response.json();
-      const newSessionId = data.data.sessionId;
+      console.log('📊 Batch analyze API success response:', data);
+      
+      const newSessionId = data.data?.sessionId || data.sessionId;
+      if (!newSessionId) {
+        console.error('❌ No sessionId in response:', data);
+        throw new Error('No session ID returned from API');
+      }
 
-      console.log('Batch analysis started:', newSessionId);
+      console.log('✅ Batch analysis started with session:', newSessionId);
 
       setSessionId(newSessionId);
       setResults([]);
@@ -200,22 +220,36 @@ export function useBatchAnalysis() {
 
   // Pause analysis
   const pauseAnalysis = useCallback(async () => {
-    if (!sessionId) return { success: false, error: 'No active session' };
+    console.log('⏸️ Attempting to pause batch analysis for session:', sessionId);
+    if (!sessionId) {
+      console.error('❌ No active session to pause');
+      return { success: false, error: 'No active session' };
+    }
 
     try {
       const response = await apiRequest('POST', `/api/model/batch-control/${sessionId}`, {
         action: 'pause'
       });
+      console.log('📡 Pause API response:', { ok: response.ok, status: response.status });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorText = await response.text();
+        console.error('❌ Pause API error response:', errorText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
         throw new Error(errorData.error || 'Failed to pause analysis');
       }
 
+      console.log('✅ Batch analysis paused successfully');
       return { success: true };
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to pause analysis';
+      console.error('💥 Error pausing batch analysis:', errorMessage);
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
@@ -250,23 +284,37 @@ export function useBatchAnalysis() {
 
   // Cancel analysis
   const cancelAnalysis = useCallback(async () => {
-    if (!sessionId) return { success: false, error: 'No active session' };
+    console.log('🛑 Attempting to cancel batch analysis for session:', sessionId);
+    if (!sessionId) {
+      console.error('❌ No active session to cancel');
+      return { success: false, error: 'No active session' };
+    }
 
     try {
       const response = await apiRequest('POST', `/api/model/batch-control/${sessionId}`, {
         action: 'cancel'
       });
+      console.log('📡 Cancel API response:', { ok: response.ok, status: response.status });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorText = await response.text();
+        console.error('❌ Cancel API error response:', errorText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
         throw new Error(errorData.error || 'Failed to cancel analysis');
       }
 
+      console.log('✅ Batch analysis cancelled successfully');
       stopPolling();
       return { success: true };
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to cancel analysis';
+      console.error('💥 Error cancelling batch analysis:', errorMessage);
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }
