@@ -1,3 +1,34 @@
+###   August 27 2025
+
+## v2.1.1
+- **New Feature**: Added OpenRouter API integration for unified access to multiple AI providers
+- **Models Added**: 
+  - Llama 3.2 90B Vision through OpenRouter
+  - Claude 3.5 Sonnet (OpenRouter)
+  - Gemini 2.5 Flash Experimental (OpenRouter)
+  - GPT-4o Mini (OpenRouter)
+  - Qwen 2.5 Coder 32B through OpenRouter
+- **Configuration**: Added OPENROUTER_API_KEY environment variable support
+- **Service Factory**: Updated to route OpenRouter models to dedicated service
+- **Documentation**: Updated CLAUDE.md with OpenRouter integration details
+- Author: Claude
+
+## v2.1.0
+- **Code Audit**: Comprehensive codebase audit completed for routes, controllers, services, and utilities
+- **Major Issues Found**:
+  - 90%+ code duplication across 5 AI provider services (openai.ts, anthropic.ts, gemini.ts, grok.ts, deepseek.ts)
+  - DbService.ts violates Single Responsibility Principle with 1096 lines and 15+ responsibilities
+  - Complex methods need decomposition (puzzleController.overview() with 262 lines)
+  - Duplicate functions: safeJsonStringify in dataTransformers.ts and dbQueryWrapper.ts
+  - Inconsistent route naming patterns (singular vs plural)
+- **Infrastructure Health**: 
+  - ✅ No circular dependencies found
+  - ✅ Clean layered architecture (Routes → Controllers → Services → Utils)
+  - ⚠️ Missing asyncHandler on health check route
+  - ⚠️ Missing validation middleware on several POST endpoints
+- **Recommendations**: Create BaseAIService abstract class, refactor dbService into Repository pattern, consolidate duplicate utilities
+- Author: Claude
+
 ###   August 26 2025
 
 ## v2.0.9  

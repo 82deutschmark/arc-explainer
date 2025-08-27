@@ -12,12 +12,12 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek';
+  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek' | 'OpenRouter';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   supportsReasoning?: boolean;
   // Server-only properties
   apiModelName?: string; // Actual API model name if different from key
-  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek';
+  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek' | 'openrouter';
   maxOutputTokens?: number;
   contextWindow?: number;
 }
@@ -410,6 +410,78 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
     maxOutputTokens: 65536
+  },
+
+  // OpenRouter Models (accessing various providers through OpenRouter)
+  {
+    key: 'meta-llama/llama-3.2-90b-vision-instruct',
+    name: 'Llama 3.2 90B Vision',
+    color: 'bg-orange-600',
+    premium: false,
+    cost: { input: '$0.90', output: '$0.90' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'meta-llama/llama-3.2-90b-vision-instruct',
+    modelType: 'openrouter',
+    maxOutputTokens: 8192
+  },
+  {
+    key: 'anthropic/claude-3.5-sonnet:beta',
+    name: 'Claude 3.5 Sonnet (OpenRouter)',
+    color: 'bg-violet-600',
+    premium: false,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'anthropic/claude-3.5-sonnet:beta',
+    modelType: 'openrouter',
+    maxOutputTokens: 8192
+  },
+  {
+    key: 'google/gemini-2.5-flash-exp',
+    name: 'Gemini 2.5 Flash Exp (OpenRouter)',
+    color: 'bg-teal-700',
+    premium: false,
+    cost: { input: '$0.35', output: '$1.05' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false,
+    apiModelName: 'google/gemini-2.5-flash-exp',
+    modelType: 'openrouter',
+    maxOutputTokens: 8192
+  },
+  {
+    key: 'openai/gpt-4o-mini',
+    name: 'GPT-4o Mini (OpenRouter)',
+    color: 'bg-orange-400',
+    premium: false,
+    cost: { input: '$0.15', output: '$0.60' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false,
+    apiModelName: 'openai/gpt-4o-mini',
+    modelType: 'openrouter',
+    maxOutputTokens: 16384
+  },
+  {
+    key: 'qwen/qwen-2.5-coder-32b-instruct',
+    name: 'Qwen 2.5 Coder 32B',
+    color: 'bg-red-600',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: false,
+    apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
+    modelType: 'openrouter',
+    maxOutputTokens: 8192
   }
 ];
 

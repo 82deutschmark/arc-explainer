@@ -37,7 +37,7 @@ Whenever you run tests you need to wait at least 10 seconds to read the output. 
 ### Backend Architecture (Express + TypeScript)
 - **Server**: Express.js with ESM modules
 - **Database**: PostgreSQL via Drizzle ORM (with in-memory fallback)
-- **AI Services**: Multi-provider support (OpenAI, Anthropic, Gemini, Grok, DeepSeek)
+- **AI Services**: Multi-provider support (OpenAI, Anthropic, Gemini, Grok, DeepSeek, OpenRouter)
 - **WebSockets**: Saturn solver progress streaming
 - **Python Integration**: Saturn Visual Solver subprocess execution
 
@@ -93,7 +93,7 @@ ARC-AGI datasets loaded in priority order:
 
 ### Environment Variables
 Required for AI analysis (at least one):
-- `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`
+- `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
 
 Optional:
 - `DATABASE_URL` - PostgreSQL connection (fallback to memory storage)
