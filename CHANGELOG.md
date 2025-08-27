@@ -2,12 +2,12 @@
 
 ## v2.1.1
 - **New Feature**: Added OpenRouter API integration for unified access to multiple AI providers
-- **Models Added**: 
-  - Llama 3.2 90B Vision through OpenRouter
-  - Claude 3.5 Sonnet (OpenRouter)
-  - Gemini 2.5 Flash Experimental (OpenRouter)
-  - GPT-4o Mini (OpenRouter)
-  - Qwen 2.5 Coder 32B through OpenRouter
+- **Models Added** (unique models not available via direct APIs): 
+  - Llama 3.3 70B Instruct (Meta)
+  - Qwen 2.5 Coder 32B (Alibaba)
+  - Phi 3.5 Mini Instruct (Microsoft)
+  - Mistral Large (Mistral AI)
+  - Command R+ (Cohere)
 - **Configuration**: Added OPENROUTER_API_KEY environment variable support
 - **Service Factory**: Updated to route OpenRouter models to dedicated service
 - **Documentation**: Updated CLAUDE.md with OpenRouter integration details
