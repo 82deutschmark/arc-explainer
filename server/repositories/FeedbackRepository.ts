@@ -97,6 +97,7 @@ export class FeedbackRepository extends BaseRepository {
         f.*,
         e.puzzle_id,
         e.model_name,
+        e.confidence,
         e.pattern_description
       FROM feedback f
       JOIN explanations e ON f.explanation_id = e.id
@@ -114,6 +115,7 @@ export class FeedbackRepository extends BaseRepository {
       sessionId: row.session_id,
       puzzleId: row.puzzle_id,
       modelName: row.model_name,
+      confidence: parseFloat(row.confidence) || 0,
       patternDescription: row.pattern_description?.substring(0, 100) || ''
     }));
   }
@@ -128,6 +130,7 @@ export class FeedbackRepository extends BaseRepository {
         f.*,
         e.puzzle_id,
         e.model_name,
+        e.confidence,
         e.pattern_description
       FROM feedback f
       JOIN explanations e ON f.explanation_id = e.id
@@ -181,6 +184,7 @@ export class FeedbackRepository extends BaseRepository {
       sessionId: row.session_id,
       puzzleId: row.puzzle_id,
       modelName: row.model_name,
+      confidence: parseFloat(row.confidence) || 0,
       patternDescription: row.pattern_description?.substring(0, 100) || ''
     }));
   }
@@ -192,12 +196,15 @@ export class FeedbackRepository extends BaseRepository {
         helpfulCount: 0,
         notHelpfulCount: 0,
         helpfulPercentage: 0,
+        notHelpfulPercentage: 0,
         averageCommentLength: 0,
         topModels: [],
         feedbackTrends: {
           daily: [],
           weekly: []
-        }
+        },
+        feedbackByModel: {},
+        feedbackByDay: []
       };
     }
 
@@ -249,6 +256,7 @@ export class FeedbackRepository extends BaseRepository {
         helpfulCount,
         notHelpfulCount,
         helpfulPercentage: totalFeedback > 0 ? Math.round((helpfulCount / totalFeedback) * 100) : 0,
+        notHelpfulPercentage: totalFeedback > 0 ? Math.round((notHelpfulCount / totalFeedback) * 100) : 0,
         averageCommentLength: Math.round(parseFloat(stats.avg_comment_length) || 0),
         topModels: topModels.rows.map(row => ({
           modelName: row.model_name,
@@ -262,12 +270,14 @@ export class FeedbackRepository extends BaseRepository {
         feedbackTrends: {
           daily: dailyTrends.rows.map(row => ({
             date: row.date,
-            totalCount: parseInt(row.count),
-            helpfulCount: parseInt(row.helpful_count),
-            notHelpfulCount: parseInt(row.count) - parseInt(row.helpful_count)
+            count: parseInt(row.count),
+            helpful: parseInt(row.helpful_count),
+            notHelpful: parseInt(row.count) - parseInt(row.helpful_count)
           })),
           weekly: [] // Could be implemented if needed
-        }
+        },
+        feedbackByModel: {},
+        feedbackByDay: []
       };
     } catch (error) {
       logger.error(`Error getting feedback summary stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
