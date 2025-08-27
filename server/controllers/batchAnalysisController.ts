@@ -10,6 +10,7 @@
 import { Request, Response } from 'express';
 import { batchAnalysisService } from '../services/batchAnalysisService';
 import { formatResponse } from '../utils/responseFormatter';
+import { repositoryService } from '../repositories/RepositoryService.js';
 import { logger } from '../utils/logger';
 
 export const batchAnalysisController = {
@@ -289,8 +290,7 @@ export const batchAnalysisController = {
       logger.info('Getting all batch sessions with filters', 'batch-controller');
 
       // Query database for all batch sessions
-      const { dbService } = await import('../services/dbService');
-      const allSessions = await dbService.getAllBatchSessions();
+      const allSessions = await repositoryService.batchAnalysis.getAllBatchSessions();
 
       let filteredSessions = allSessions;
 
