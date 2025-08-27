@@ -61,7 +61,7 @@ export const feedbackController = {
         ));
       }
 
-      // Use feedback repository instead of dbService
+      // Get feedback from repository
       const feedback = await repositoryService.feedback.getFeedbackForExplanation(explanationIdNum);
       res.json(formatResponse.success(feedback));
     } catch (error) {
@@ -90,7 +90,7 @@ export const feedbackController = {
         ));
       }
 
-      // Use feedback repository instead of dbService
+      // Get feedback from repository
       const feedback = await repositoryService.feedback.getFeedbackForPuzzle(puzzleId);
       res.json(formatResponse.success(feedback));
     } catch (error) {
@@ -113,7 +113,7 @@ export const feedbackController = {
       // Build filters object from query parameters
       const filters: FeedbackFilters = this.buildFiltersFromQuery(req.query);
 
-      // Use feedback repository instead of dbService
+      // Get feedback from repository
       const feedback = await repositoryService.feedback.getAllFeedback(filters);
       res.json(formatResponse.success(feedback));
     } catch (error) {
@@ -133,7 +133,7 @@ export const feedbackController = {
    */
   async getStats(req: Request, res: Response) {
     try {
-      // Use feedback repository instead of dbService
+      // Get feedback from repository
       const stats = await repositoryService.feedback.getFeedbackSummaryStats();
       res.json(formatResponse.success(stats));
     } catch (error) {
@@ -153,7 +153,7 @@ export const feedbackController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      // Use feedback repository instead of dbService
+      // Get feedback from repository
       const stats = await repositoryService.feedback.getAccuracyStats();
       res.json(formatResponse.success(stats));
     } catch (error) {
