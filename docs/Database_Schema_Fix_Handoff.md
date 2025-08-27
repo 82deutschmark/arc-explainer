@@ -96,7 +96,7 @@ According to `docs/Service_Layer_Migration_Handoff.md`, these files still need m
 1. **Test Database Operations**
    ```bash
    # Start the server and test puzzle analysis
-   npm start
+   npm run test
    # Try analyzing a puzzle to see if database errors are resolved
    ```
 
