@@ -106,12 +106,20 @@ export default function ModelExaminer() {
     console.log(`📂 Dataset: ${dataset}`);
     console.log(`🔢 Batch Size: ${batchSize}`);
 
-    const result = await startAnalysis(config);
-    
-    if (result.success) {
-      console.log('✅ Batch analysis started successfully:', result.sessionId);
-    } else {
-      console.error('❌ Failed to start batch analysis:', result.error);
+    try {
+      const result = await startAnalysis(config);
+      
+      console.log('🔄 StartAnalysis result:', result);
+      
+      if (result.success) {
+        console.log('✅ Batch analysis started successfully:', result.sessionId);
+      } else {
+        console.error('❌ Failed to start batch analysis:', result.error);
+        alert(`Failed to start batch analysis: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('💥 Exception in handleStartAnalysis:', error);
+      alert(`Exception starting batch analysis: ${error}`);
     }
   };
 

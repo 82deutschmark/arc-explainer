@@ -168,16 +168,36 @@ export function useBatchAnalysis() {
       console.log('Starting batch analysis with config:', config);
 
       const response = await apiRequest('POST', '/api/model/batch-analyze', config);
+      console.log('📡 Batch analyze API response:', { 
+        ok: response.ok, 
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to start batch analysis');
+        const errorText = await response.text();
+        console.error('❌ Batch analyze API error response:', errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText };
+        }
+        throw new Error(errorData.error || errorData.message || 'Failed to start batch analysis');
       }
 
       const data = await response.json();
-      const newSessionId = data.data.sessionId;
+      console.log('📊 Batch analyze API success response:', data);
+      
+      const newSessionId = data.data?.sessionId || data.sessionId;
+      if (!newSessionId) {
+        console.error('❌ No sessionId in response:', data);
+        throw new Error('No session ID returned from API');
+      }
 
-      console.log('Batch analysis started:', newSessionId);
+      console.log('✅ Batch analysis started with session:', newSessionId);
 
       setSessionId(newSessionId);
       setResults([]);
