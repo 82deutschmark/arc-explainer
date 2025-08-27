@@ -1,5 +1,19 @@
 ###   August 27 2025
 
+## v2.2.0 - BaseAIService Refactor (Major Code Reduction)
+- **MAJOR REFACTOR**: Created BaseAIService abstract class to eliminate 90% code duplication across AI providers
+- **Code Consolidation**: 
+  - server/services/base/BaseAIService.ts - Abstract base class with shared utilities
+  - OpenAI service refactored: 625→538 lines (14% reduction)
+  - Anthropic service refactored: ~300→210 lines (30% reduction)
+  - Standardized interface: analyzePuzzleWithModel(), getModelInfo(), generatePromptPreview()
+- **Enhanced Error Handling**: Consistent error handling and logging across all providers
+- **Improved Incomplete Response Detection**: Better handling of partial/incomplete AI responses
+- **Database Corruption Prevention**: Added validation to prevent "objectObject" storage in reasoning logs
+- **Strategic Planning**: docs/Strategic_Refactoring_Plan_2025-08-27.md with 3-phase implementation plan
+- **Next Phase**: Migrate remaining services (Gemini, Grok, DeepSeek) and fix OpenAI reasoning model gaps
+- Author: Claude
+
 ## v2.1.1
 - **New Feature**: Added OpenRouter API integration for unified access to multiple AI providers
 - **Models Added** (unique models not available via direct APIs): 
