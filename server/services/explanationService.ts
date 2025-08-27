@@ -84,14 +84,15 @@ export const explanationService = {
         }
 
         // Create a well-defined object, ensuring no 'undefined' values are passed.
+        // Map snake_case (AI service) to camelCase (repository)
         const explanationData = {
-          patternDescription: restOfExplanationData.patternDescription ?? null,
-          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
+          patternDescription: restOfExplanationData.patternDescription ?? restOfExplanationData.pattern_description ?? null,
+          solvingStrategy: restOfExplanationData.solvingStrategy ?? restOfExplanationData.solving_strategy ?? null,
           hints: restOfExplanationData.hints ?? null,
           confidence: restOfExplanationData.confidence ?? 0,
           modelName: modelKey,
-          reasoningLog: restOfExplanationData.reasoningLog ?? null,
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
+          reasoningLog: restOfExplanationData.reasoningLog ?? restOfExplanationData.reasoning_log ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? restOfExplanationData.predicted_output ?? null,
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,

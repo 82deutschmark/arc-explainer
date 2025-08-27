@@ -328,7 +328,7 @@ export abstract class BaseAIService {
   /**
    * Handle and log errors consistently across providers
    */
-  protected handleAnalysisError(error: any, modelKey: string, task: ARCTask): never {
+  protected handleAnalysisError(error: any, modelKey: string, task?: ARCTask): never {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(`[${this.provider}] Analysis failed for model ${modelKey}:`, errorMessage);
     
