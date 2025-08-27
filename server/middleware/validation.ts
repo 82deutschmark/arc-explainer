@@ -193,17 +193,25 @@ export const validation = {
    */
   explanationCreate: (req: Request, res: Response, next: NextFunction) => {
     const { puzzleId } = req.params;
-    const { patternDescription, solvingStrategy } = req.body;
+    const { explanations } = req.body;
 
     if (!puzzleId || puzzleId.trim() === '') {
       throw new AppError('Missing required parameter: puzzleId', 400, 'VALIDATION_ERROR');
     }
 
-    if (!patternDescription || typeof patternDescription !== 'string' || patternDescription.trim().length < 10) {
+    if (!explanations || typeof explanations !== 'object') {
+      throw new AppError('Missing explanations data in request body', 400, 'VALIDATION_ERROR');
+    }
+
+    // Check for either camelCase or snake_case variants
+    const patternDesc = explanations.patternDescription || explanations.pattern_description;
+    const solvingStrat = explanations.solvingStrategy || explanations.solving_strategy;
+
+    if (!patternDesc || typeof patternDesc !== 'string' || patternDesc.trim().length < 10) {
       throw new AppError('patternDescription must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
     }
 
-    if (!solvingStrategy || typeof solvingStrategy !== 'string' || solvingStrategy.trim().length < 10) {
+    if (!solvingStrat || typeof solvingStrat !== 'string' || solvingStrat.trim().length < 10) {
       throw new AppError('solvingStrategy must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
     }
 

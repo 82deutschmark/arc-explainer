@@ -9,7 +9,7 @@
  * @author Cascade
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 const BASE_URL = process.argv[2] || 'http://localhost:5000';
 const TEST_PUZZLE_ID = '007bbfb7'; // Known puzzle from training data

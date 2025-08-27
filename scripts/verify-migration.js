@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 const BASE_URL = process.env.RAILWAY_PUBLIC_URL || 'http://localhost:5000';
 
 async function verifyRepository(name, testFn) {
