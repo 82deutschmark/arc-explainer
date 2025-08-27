@@ -318,49 +318,16 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: true
   },
 
-  // OpenRouter Models (accessing various providers through OpenRouter)
+  // OpenRouter Models (unique models not available through direct APIs)
   {
-    key: 'meta-llama/llama-3.2-90b-vision-instruct',
-    name: 'Llama 3.2 90B Vision',
+    key: 'meta-llama/llama-3.3-70b-instruct',
+    name: 'Llama 3.3 70B Instruct',
     color: 'bg-orange-600',
     premium: false,
-    cost: { input: '$0.90', output: '$0.90' },
+    cost: { input: '$0.59', output: '$0.79' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false
-  },
-  {
-    key: 'anthropic/claude-3.5-sonnet:beta',
-    name: 'Claude 3.5 Sonnet (OpenRouter)',
-    color: 'bg-violet-600',
-    premium: false,
-    cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false
-  },
-  {
-    key: 'google/gemini-2.5-flash-exp',
-    name: 'Gemini 2.5 Flash Exp (OpenRouter)',
-    color: 'bg-teal-700',
-    premium: false,
-    cost: { input: '$0.35', output: '$1.05' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false
-  },
-  {
-    key: 'openai/gpt-4o-mini',
-    name: 'GPT-4o Mini (OpenRouter)',
-    color: 'bg-orange-400',
-    premium: false,
-    cost: { input: '$0.15', output: '$0.60' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
     supportsReasoning: false
   },
   {
@@ -372,6 +339,39 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'microsoft/phi-3.5-mini-instruct',
+    name: 'Phi 3.5 Mini Instruct',
+    color: 'bg-blue-600',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.10' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'mistralai/mistral-large',
+    name: 'Mistral Large',
+    color: 'bg-purple-600',
+    premium: true,
+    cost: { input: '$2.00', output: '$6.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false
+  },
+  {
+    key: 'cohere/command-r-plus',
+    name: 'Command R+',
+    color: 'bg-green-600',
+    premium: false,
+    cost: { input: '$2.50', output: '$10.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: false
   }
 ];
