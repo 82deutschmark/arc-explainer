@@ -445,18 +445,19 @@ class BatchAnalysisService extends EventEmitter {
 
       const processingTime = Date.now() - startTime;
 
-      // Save explanation to database
+      // Save explanation using proper service (ensures correct model name handling)
       const explanationToSave = {
         [config.modelKey]: { 
-          ...result, 
+          ...result.result, 
           modelKey: config.modelKey,
           actualProcessingTime: Math.round(processingTime / 1000)
         }
       };
       
-      // Save explanation directly to database
-      const { dbService } = await import('./dbService');
-      const explanationId = await dbService.saveExplanation(puzzleId, result);
+      // Use explanationService to ensure proper model name recording
+      const { explanationService } = await import('./explanationService');
+      const saveResult = await explanationService.saveExplanation(puzzleId, explanationToSave);
+      const explanationId = saveResult.explanationId;
       
       if (!explanationId) {
         return { success: false, error: 'Failed to save explanation to database' };
