@@ -16,6 +16,7 @@ import { formatResponse } from '../utils/responseFormatter';
 import { dbService } from '../services/dbService';
 import type { PromptOptions } from '../services/promptBuilder';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
+import { logger } from '../utils/logger.js';
 
 export const puzzleController = {
   /**
@@ -27,7 +28,7 @@ export const puzzleController = {
   async list(req: Request, res: Response) {
     const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, prioritizeExplained, source, multiTestFilter } = req.query;
     
-    console.log('DEBUG: Puzzle list request with query params:', req.query);
+    logger.debug('Puzzle list request with query params: ' + JSON.stringify(req.query), 'puzzle-controller');
     
     const filters: any = {};
     if (maxGridSize) filters.maxGridSize = parseInt(maxGridSize as string);
@@ -39,10 +40,10 @@ export const puzzleController = {
     if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
     if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) filters.multiTestFilter = multiTestFilter as 'single' | 'multi';
     
-    console.log('DEBUG: Using filters:', filters);
+    logger.debug('Using filters: ' + JSON.stringify(filters), 'puzzle-controller');
     
     const puzzles = await puzzleService.getPuzzleList(filters);
-    console.log(`DEBUG: Found ${puzzles.length} puzzles, first few:`, puzzles.slice(0, 3));
+    logger.debug(`Found ${puzzles.length} puzzles, first few: ` + JSON.stringify(puzzles.slice(0, 3)), 'puzzle-controller');
     
     res.json(formatResponse.success(puzzles));
   },
@@ -198,7 +199,7 @@ export const puzzleController = {
         systemPromptMode = 'ARC'
       } = req.body;
 
-      console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
+      logger.info(`Generating prompt preview for ${provider} with puzzle ${taskId}`, 'puzzle-controller');
 
       // Get the puzzle data
       const puzzle = await puzzleService.getPuzzleById(taskId);
@@ -238,7 +239,7 @@ export const puzzleController = {
 
       res.json(formatResponse.success(previewData));
     } catch (error) {
-      console.error('[Controller] Error generating prompt preview:', error);
+      logger.error('Error generating prompt preview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to generate prompt preview', 'An error occurred while generating the prompt preview'));
     }
   },
@@ -422,7 +423,7 @@ export const puzzleController = {
         sortBy = 'createdAt', sortOrder = 'desc'
       } = req.query;
 
-      console.log('[Controller] Puzzle overview request with filters:', req.query);
+      logger.debug('Puzzle overview request with filters: ' + JSON.stringify(req.query), 'puzzle-controller');
 
       // Build puzzle filters using helper method
       const puzzleFilters = this.buildOverviewFilters(req.query);
@@ -495,7 +496,7 @@ export const puzzleController = {
               }
             }
           } catch (error) {
-            console.error(`Error getting explanations for puzzle ${puzzleId}:`, error);
+            logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
           }
         }
       }
@@ -522,7 +523,7 @@ export const puzzleController = {
       res.json(formatResponse.success(finalResults));
 
     } catch (error) {
-      console.error('[Controller] Error in puzzle overview:', error);
+      logger.error('Error in puzzle overview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to get puzzle overview', 'An error occurred while fetching puzzle overview data'));
     }
   },
@@ -534,7 +535,7 @@ export const puzzleController = {
       puzzleLoader.forceReinitialize();
       res.json(formatResponse.success({ message: 'Puzzle loader reinitialized successfully' }));
     } catch (error) {
-      console.error('[Controller] Error reinitializing puzzle loader:', error);
+      logger.error('Error reinitializing puzzle loader: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to reinitialize puzzle loader', 'An error occurred while reinitializing the puzzle loader'));
     }
   },
@@ -550,7 +551,7 @@ export const puzzleController = {
       const accuracyStats = await dbService.getAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
-      console.error('[Controller] Error fetching accuracy stats:', error);
+      logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
     }
   }
