@@ -32,7 +32,7 @@ Whenever you run tests you need to wait at least 10 seconds to read the output. 
 - **Routing**: Wouter (lightweight client-side routing)
 - **State Management**: TanStack Query for server state
 - **UI Components**: shadcn/ui + TailwindCSS
-- **Key Pages**: PuzzleBrowser, PuzzleExaminer, SaturnVisualSolver, PuzzleOverview
+- **Key Pages**: PuzzleBrowser, PuzzleExaminer, ModelExaminer, PuzzleOverview, SaturnVisualSolver
 
 ### Backend Architecture (Express + TypeScript)
 - **Server**: Express.js with ESM modules
@@ -58,10 +58,10 @@ Two main tables with Drizzle ORM:
 Centralized prompt building system (`server/services/promptBuilder.ts`):
 - Template-based prompts with dynamic selection
 - Custom prompt support for research workflows
-- Consistent behavior across all 5 AI providers
-- Emoji mapping only for "Alien Communication" template
+- Consistent behavior across all providers and OpenRouter (INCOMPLETE)
 
-### Saturn Visual Solver Integration
+
+### Saturn Visual Solver Integration  (Can be ignored)
 - Python-based visual reasoning solver
 - Streams progress via WebSockets and NDJSON events
 - Requires OPENAI_API_KEY for image analysis
@@ -95,8 +95,8 @@ ARC-AGI datasets loaded in priority order:
 Required for AI analysis (at least one):
 - `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
 
-Optional:
-- `DATABASE_URL` - PostgreSQL connection (fallback to memory storage)
+Required for database (Present and working):
+- `DATABASE_URL` - PostgreSQL connection (Present and working)
 - `PYTHON_BIN` - Override Python binary (auto-detects: 'python' on Windows, 'python3' on Linux)
 
 ## Important Implementation Notes
@@ -118,14 +118,15 @@ app.get("*", (req, res) => {
 
 ### Prompt System Architecture
 - Single source of truth in `promptBuilder.ts`
-- Provider-agnostic prompt handling
+- Provider-agnostic prompt handling, important differentiation between chat completions and responses API and system messages and prompts "user" and "assistant"
 - Template selection with custom prompt override capability
 - Numeric grids by default, emoji mapping only for specific templates
 
-### WebSocket Integration
+### WebSocket Integration  (POTENTIALLY BREAKING OTHER THINGS AND CAN BE DEPRECATED)
 Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
-- Endpoint difference
 
+### Endpoint difference
+All OpenAI models should be using Responses API, but some providers still use Chat Completions.
 Chat Completions: /v1/chat/completions
 
 Responses API: /v1/responses
