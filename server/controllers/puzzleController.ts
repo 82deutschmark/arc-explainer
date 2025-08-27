@@ -244,6 +244,169 @@ export const puzzleController = {
   },
 
   /**
+   * Build overview filters from query parameters
+   */
+  buildOverviewFilters(query: any) {
+    const puzzleFilters: any = {};
+    const { source, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistency } = query;
+    
+    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
+      puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    }
+    if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
+      puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
+    }
+    if (gridSizeMin) {
+      puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
+    }
+    if (gridSizeMax) {
+      puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
+    }
+    if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
+      puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
+    }
+    
+    return puzzleFilters;
+  },
+
+  /**
+   * Create basic puzzle overview structure
+   */
+  createBasicOverview(allPuzzles: any[], offset: string, limit: string) {
+    const basicResults = allPuzzles.map(puzzle => ({
+      ...puzzle,
+      explanations: [],
+      totalExplanations: 0,
+      latestExplanation: null,
+      hasExplanation: false
+    }));
+    
+    const offsetNum = parseInt(offset);
+    const limitNum = parseInt(limit);
+    
+    return {
+      puzzles: basicResults.slice(offsetNum, offsetNum + limitNum),
+      total: basicResults.length,
+      hasMore: basicResults.length > offsetNum + limitNum
+    };
+  },
+
+  /**
+   * Apply explanation filters to explanation list
+   */
+  applyExplanationFilters(explanations: any[], filters: any) {
+    const {
+      modelName, saturnFilter, confidenceMin, confidenceMax,
+      processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+    } = filters;
+    
+    let filtered = explanations;
+    
+    // Filter by model
+    if (modelName) {
+      filtered = filtered.filter(exp => exp.modelName === modelName);
+    }
+    
+    // Filter by Saturn status
+    if (saturnFilter) {
+      if (saturnFilter === 'solved') {
+        filtered = filtered.filter(exp => exp.saturnSuccess === true);
+      } else if (saturnFilter === 'failed') {
+        filtered = filtered.filter(exp => exp.saturnSuccess === false);
+      } else if (saturnFilter === 'attempted') {
+        filtered = filtered.filter(exp => exp.saturnSuccess !== undefined);
+      }
+    }
+    
+    // Filter by confidence range
+    if (confidenceMin || confidenceMax) {
+      filtered = filtered.filter(exp => {
+        const confidence = exp.confidence || 0;
+        if (confidenceMin && confidence < parseInt(confidenceMin)) return false;
+        if (confidenceMax && confidence > parseInt(confidenceMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by processing time
+    if (processingTimeMin || processingTimeMax) {
+      filtered = filtered.filter(exp => {
+        const processingTime = exp.apiProcessingTimeMs || 0;
+        if (processingTimeMin && processingTime < parseInt(processingTimeMin)) return false;
+        if (processingTimeMax && processingTime > parseInt(processingTimeMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by predictions
+    if (hasPredictions === 'true') {
+      filtered = filtered.filter(exp => exp.predictedOutputGrid || exp.multiplePredictedOutputs);
+    } else if (hasPredictions === 'false') {
+      filtered = filtered.filter(exp => !exp.predictedOutputGrid && !exp.multiplePredictedOutputs);
+    }
+    
+    // Filter by prediction accuracy
+    if (predictionAccuracy === 'correct') {
+      filtered = filtered.filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true);
+    } else if (predictionAccuracy === 'incorrect') {
+      filtered = filtered.filter(exp => exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false);
+    }
+    
+    return filtered;
+  },
+
+  /**
+   * Sort overview results based on sort parameters
+   */
+  sortOverviewResults(results: any[], sortBy: string, sortOrder: string) {
+    return results.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'puzzleId':
+          aValue = a.id;
+          bValue = b.id;
+          break;
+        case 'explanationCount':
+          aValue = a.totalExplanations;
+          bValue = b.totalExplanations;
+          break;
+        case 'latestConfidence':
+          aValue = a.latestExplanation?.confidence || 0;
+          bValue = b.latestExplanation?.confidence || 0;
+          break;
+        case 'createdAt':
+        default:
+          aValue = a.latestExplanation?.createdAt || '1970-01-01';
+          bValue = b.latestExplanation?.createdAt || '1970-01-01';
+          break;
+      }
+      
+      if (sortOrder === 'desc') {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      } else {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      }
+    });
+  },
+
+  /**
+   * Apply pagination to results
+   */
+  applyPagination(results: any[], offset: string, limit: string) {
+    const offsetNum = parseInt(offset);
+    const limitNum = parseInt(limit);
+    const total = results.length;
+    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
+    
+    return {
+      puzzles: paginatedResults,
+      total: total,
+      hasMore: total > offsetNum + limitNum
+    };
+  },
+
+  /**
    * Get all puzzles with their explanation details for overview page
    * Supports search and filtering by various parameters
    * 
@@ -253,69 +416,25 @@ export const puzzleController = {
   async overview(req: Request, res: Response) {
     try {
       const { 
-        search, 
-        hasExplanation, 
-        hasFeedback,
-        modelName, 
-        saturnFilter,
-        source,
-        multiTestFilter,
-        gridSizeMin,
-        gridSizeMax,
-        gridConsistency,
-        processingTimeMin,
-        processingTimeMax,
-        hasPredictions,
-        predictionAccuracy,
-        confidenceMin, 
-        confidenceMax,
-        limit = 50,
-        offset = 0,
-        sortBy = 'createdAt',
-        sortOrder = 'desc'
+        search, hasExplanation, hasFeedback, modelName, saturnFilter,
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
+        confidenceMin, confidenceMax, limit = 50, offset = 0,
+        sortBy = 'createdAt', sortOrder = 'desc'
       } = req.query;
 
       console.log('[Controller] Puzzle overview request with filters:', req.query);
 
-      // Build filters for puzzle service
-      const puzzleFilters: any = {};
-      if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
-        puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
-      }
-      if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
-        puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
-      }
-      if (gridSizeMin) {
-        puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
-      }
-      if (gridSizeMax) {
-        puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
-      }
-      if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
-        puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
-      }
-
-      // Get all puzzles from the puzzle service
+      // Build puzzle filters using helper method
+      const puzzleFilters = this.buildOverviewFilters(req.query);
       const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
-      // If no database connection, return basic puzzle list
+      // If no database connection, return basic overview
       if (!dbService.isConnected()) {
-        const basicResults = allPuzzles.map(puzzle => ({
-          ...puzzle,
-          explanations: [],
-          totalExplanations: 0,
-          latestExplanation: null,
-          hasExplanation: false
-        }));
-        
-        return res.json(formatResponse.success({
-          puzzles: basicResults.slice(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string)),
-          total: basicResults.length,
-          hasMore: basicResults.length > parseInt(offset as string) + parseInt(limit as string)
-        }));
+        const basicOverview = this.createBasicOverview(allPuzzles, offset as string, limit as string);
+        return res.json(formatResponse.success(basicOverview));
       }
 
-      // Build a map of puzzle IDs for faster lookup
+      // Initialize puzzle map
       const puzzleMap = new Map();
       allPuzzles.forEach(puzzle => {
         puzzleMap.set(puzzle.id, {
@@ -327,35 +446,32 @@ export const puzzleController = {
         });
       });
 
-      // For now, let's use a simpler approach and get explanations for each puzzle
-      // This is less efficient but will work with the existing dbService methods
-      
-      // Get puzzle IDs to check for explanations
-      const puzzleIds = allPuzzles.map(p => p.id);
-      
-      // Apply search filter early if provided
-      let filteredPuzzleIds = puzzleIds;
+      // Apply search filter to puzzle IDs
+      let filteredPuzzleIds = allPuzzles.map(p => p.id);
       if (search && typeof search === 'string') {
-        filteredPuzzleIds = puzzleIds.filter(id => 
+        filteredPuzzleIds = filteredPuzzleIds.filter(id => 
           id.toLowerCase().includes(search.toLowerCase())
         );
       }
 
-      // Get bulk explanation status for all filtered puzzles
+      // Get explanation status and populate puzzle map
       const explanationStatusMap = await dbService.getBulkExplanationStatus(filteredPuzzleIds);
-
-      // Build results by merging puzzle data with explanation status
       explanationStatusMap.forEach((status, puzzleId) => {
         const puzzle = puzzleMap.get(puzzleId);
         if (puzzle) {
           puzzle.hasExplanation = status.hasExplanation;
-          puzzle.totalExplanations = status.hasExplanation ? 1 : 0; // For now, assume 1 explanation per puzzle
+          puzzle.totalExplanations = status.hasExplanation ? 1 : 0;
           puzzle.explanationId = status.explanationId;
           puzzle.feedbackCount = status.feedbackCount;
         }
       });
 
-      // For puzzles with explanations, get detailed explanation data if needed
+      // Process detailed explanation data with filters
+      const explanationFilters = {
+        modelName, saturnFilter, confidenceMin, confidenceMax,
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+      };
+
       for (const [puzzleId, status] of explanationStatusMap) {
         if (status.hasExplanation && status.explanationId) {
           try {
@@ -363,77 +479,14 @@ export const puzzleController = {
             if (explanations && explanations.length > 0) {
               const puzzle = puzzleMap.get(puzzleId);
               if (puzzle) {
-                // Filter explanations by model if specified
-                let filteredExplanations = explanations;
-                if (modelName) {
-                  filteredExplanations = explanations.filter(exp => exp.modelName === modelName);
-                }
-
-                // Filter by Saturn status if specified
-                if (saturnFilter) {
-                  if (saturnFilter === 'solved') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === true);
-                  } else if (saturnFilter === 'failed') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === false);
-                  } else if (saturnFilter === 'attempted') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess !== undefined);
-                  }
-                  // saturnFilter === 'all' shows all results (no filtering)
-                }
-
-                // Filter by confidence if specified
-                if (confidenceMin || confidenceMax) {
-                  filteredExplanations = filteredExplanations.filter(exp => {
-                    const confidence = exp.confidence || 0;
-                    if (confidenceMin && confidence < parseInt(confidenceMin as string)) return false;
-                    if (confidenceMax && confidence > parseInt(confidenceMax as string)) return false;
-                    return true;
-                  });
-                }
-
-                // Filter by processing time if specified
-                if (processingTimeMin || processingTimeMax) {
-                  filteredExplanations = filteredExplanations.filter(exp => {
-                    const processingTime = exp.apiProcessingTimeMs || 0;
-                    if (processingTimeMin && processingTime < parseInt(processingTimeMin as string)) return false;
-                    if (processingTimeMax && processingTime > parseInt(processingTimeMax as string)) return false;
-                    return true;
-                  });
-                }
-
-                // Filter by has predictions if specified
-                if (hasPredictions) {
-                  if (hasPredictions === 'true') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.predictedOutputGrid || exp.multiplePredictedOutputs
-                    );
-                  } else if (hasPredictions === 'false') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      !exp.predictedOutputGrid && !exp.multiplePredictedOutputs
-                    );
-                  }
-                }
-
-                // Filter by prediction accuracy if specified
-                if (predictionAccuracy) {
-                  if (predictionAccuracy === 'correct') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true
-                    );
-                  } else if (predictionAccuracy === 'incorrect') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false
-                    );
-                  }
-                }
-
+                const filteredExplanations = this.applyExplanationFilters(explanations, explanationFilters);
+                
                 if (filteredExplanations.length > 0) {
                   puzzle.explanations = filteredExplanations;
                   puzzle.totalExplanations = filteredExplanations.length;
                   puzzle.latestExplanation = filteredExplanations[0];
                   puzzle.hasExplanation = true;
                 } else {
-                  // No explanations match the filters
                   puzzle.explanations = [];
                   puzzle.totalExplanations = 0;
                   puzzle.latestExplanation = null;
@@ -447,66 +500,26 @@ export const puzzleController = {
         }
       }
 
-      // Convert map back to array
+      // Apply final filters and sorting
       let results = Array.from(puzzleMap.values());
 
-        // Apply hasExplanation filter
-        if (hasExplanation === 'true') {
-          results = results.filter(puzzle => puzzle.hasExplanation);
-        } else if (hasExplanation === 'false') {
-          results = results.filter(puzzle => !puzzle.hasExplanation);
-        }
+      if (hasExplanation === 'true') {
+        results = results.filter(puzzle => puzzle.hasExplanation);
+      } else if (hasExplanation === 'false') {
+        results = results.filter(puzzle => !puzzle.hasExplanation);
+      }
 
-        // Apply hasFeedback filter
-        if (hasFeedback === 'true') {
-          results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
-        } else if (hasFeedback === 'false') {
-          results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
-        }
+      if (hasFeedback === 'true') {
+        results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
+      } else if (hasFeedback === 'false') {
+        results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
+      }
 
-        // Apply sorting
-        results.sort((a, b) => {
-          let aValue, bValue;
-          
-          switch (sortBy) {
-            case 'puzzleId':
-              aValue = a.id;
-              bValue = b.id;
-              break;
-            case 'explanationCount':
-              aValue = a.totalExplanations;
-              bValue = b.totalExplanations;
-              break;
-            case 'latestConfidence':
-              aValue = a.latestExplanation?.confidence || 0;
-              bValue = b.latestExplanation?.confidence || 0;
-              break;
-            case 'createdAt':
-            default:
-              aValue = a.latestExplanation?.createdAt || '1970-01-01';
-              bValue = b.latestExplanation?.createdAt || '1970-01-01';
-              break;
-          }
-          
-          if (sortOrder === 'desc') {
-            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-          } else {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-          }
-        });
+      // Sort and paginate results
+      const sortedResults = this.sortOverviewResults(results, sortBy as string, sortOrder as string);
+      const finalResults = this.applyPagination(sortedResults, offset as string, limit as string);
 
-        // Apply pagination
-        const total = results.length;
-        const paginatedResults = results.slice(
-          parseInt(offset as string), 
-          parseInt(offset as string) + parseInt(limit as string)
-        );
-
-        res.json(formatResponse.success({
-          puzzles: paginatedResults,
-          total: total,
-          hasMore: total > parseInt(offset as string) + parseInt(limit as string)
-        }));
+      res.json(formatResponse.success(finalResults));
 
     } catch (error) {
       console.error('[Controller] Error in puzzle overview:', error);
