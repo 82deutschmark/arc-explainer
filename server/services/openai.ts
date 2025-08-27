@@ -22,7 +22,7 @@ import {
   GPT5_REASONING_MODELS,
   GPT5_CHAT_MODELS,
   MODELS_WITH_REASONING
-} from '../config/models.js';
+} from '../config/models.ts';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

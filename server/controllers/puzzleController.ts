@@ -13,10 +13,10 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
-import { repositoryService } from '../repositories/RepositoryService.js';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import type { PromptOptions } from '../services/promptBuilder';
-import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
-import { logger } from '../utils/logger.js';
+import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
+import { logger } from '../utils/logger.ts';
 
 export const puzzleController = {
   /**

@@ -8,7 +8,7 @@
  * @date 2025-08-27
  */
 
-import { logger } from './logger.js';
+import { logger } from './logger.ts';
 
 /**
  * Safe JSON parsing with fallback support

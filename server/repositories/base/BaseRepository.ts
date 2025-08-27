@@ -9,7 +9,7 @@
  */
 
 import { Pool, PoolClient } from 'pg';
-import { logger } from '../../utils/logger.js';
+import { logger } from '../../utils/logger.ts';
 import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } from '../../utils/CommonUtilities.ts';
 
 // Database connection pool - shared across all repositories

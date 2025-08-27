@@ -10,7 +10,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler';
-import { logger } from '../utils/logger.js';
+import { logger } from '../utils/logger.ts';
 
 export const validation = {
   /**

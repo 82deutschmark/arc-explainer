@@ -3,8 +3,8 @@
  * Extracts predicted grids from AI responses and validates them against correct answers
  */
 
-import { logger } from '../utils/logger.js';
-import { extractPredictions } from './schemas/solver.js';
+import { logger } from '../utils/logger.ts';
+import { extractPredictions } from './schemas/solver.ts';
 
 export interface ValidationResult {
   predictedGrid: number[][] | null;

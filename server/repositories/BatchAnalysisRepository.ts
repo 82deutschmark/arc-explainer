@@ -8,8 +8,8 @@
  * @date 2025-08-27
  */
 
-import { BaseRepository } from './base/BaseRepository.js';
-import { logger } from '../utils/logger.js';
+import { BaseRepository } from './base/BaseRepository.ts';
+import { logger } from '../utils/logger.ts';
 
 export interface BatchSessionData {
   sessionId: string;

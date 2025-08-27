@@ -19,7 +19,7 @@ import {
   COMMON_PROPERTIES,
   PREDICTION_PROPERTIES,
   createSchema
-} from './common.js';
+} from './common.ts';
 
 /**
  * JSON schema for single test case solver responses

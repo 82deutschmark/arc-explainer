@@ -7,8 +7,8 @@
  * @author Cascade
  */
 
-import { logger } from './logger.js';
-import { safeJsonStringify, safeJsonParse, normalizeConfidence, processHints } from './CommonUtilities.js';
+import { logger } from './logger.ts';
+import { safeJsonStringify, safeJsonParse, normalizeConfidence, processHints } from './CommonUtilities.ts';
 
 // Re-export utility functions from CommonUtilities for backward compatibility
-export { normalizeConfidence, safeJsonStringify, safeJsonParse, processHints } from './CommonUtilities.js';
+export { normalizeConfidence, safeJsonStringify, safeJsonParse, processHints } from './CommonUtilities.ts';
