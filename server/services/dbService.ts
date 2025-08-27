@@ -8,155 +8,19 @@
  * @author Cascade
  */
 
-import { Pool } from 'pg';
 import { logger } from '../utils/logger';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types';
-import { 
-  normalizeConfidence, 
-  safeJsonParse, 
-  processHints,
-} from '../utils/dataTransformers';
-import { q, safeJsonStringify } from '../utils/dbQueryWrapper';
 import { repositoryService } from '../repositories/RepositoryService.ts';
-
-// PostgreSQL connection pool
-let pool: Pool | null = null;
 
 /**
  * Initialize database connection and create tables
+ * REFACTORED: Now delegates to repositoryService
  */
 const initDb = async () => {
-  const databaseUrl = process.env.DATABASE_URL;
-  
-  if (!databaseUrl) {
-    logger.warn('DATABASE_URL not provided, using in-memory storage only', 'database');
-    return false;
-  }
-
-  try {
-    pool = new Pool({ connectionString: databaseUrl });
-    
-    // Test connection
-    const client = await pool.connect();
-    await client.query('SELECT NOW()');
-    client.release();
-    
-    // Create tables if they don't exist
-    await createTablesIfNotExist();
-    
-    logger.info('Database connection established and tables verified', 'database');
-    return true;
-  } catch (error) {
-    logger.error(`Database initialization failed: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    pool = null;
-    return false;
-  }
+  return await repositoryService.initialize();
 };
 
-/**
- * Create database tables with proper schema
- */
-const createTablesIfNotExist = async () => {
-  if (!pool) return;
-
-  try {
-    // Phase 0: Snapshot reality - Log the actual schema of key columns
-    const schemaCheckQuery = `
-      SELECT column_name, data_type
-      FROM information_schema.columns
-      WHERE table_name = 'explanations'
-        AND column_name IN (
-          'predicted_output_grid',
-          'reasoning_items',
-          'saturn_images',
-          'multiple_predicted_outputs',
-          'multi_test_results'
-        )
-      ORDER BY column_name;
-    `;
-    const schemaResult = await pool.query(schemaCheckQuery);
-    console.info('[DB Schema Snapshot] Actual data types for `explanations` table:', schemaResult.rows);
-  } catch (error) {
-    console.error('[DB Schema Snapshot] Failed to retrieve schema for `explanations` table:', error);
-    // Proceed even if snapshot fails, but log the error.
-  }
-  
-  const client = await pool.connect();
-  
-  try {
-    // REMOVED: All table creation moved to DatabaseSchema.ts to prevent duplication
-    // Use centralized schema management instead
-    const { DatabaseSchema } = await import('../repositories/database/DatabaseSchema.js');
-    await DatabaseSchema.createTablesIfNotExist(pool);
-
-    logger.info('Database tables created/verified successfully', 'database');
-
-    // COMPREHENSIVE schema verification to debug JSON syntax errors
-    const schemaQuery = `
-      SELECT column_name, data_type, is_nullable, column_default
-      FROM information_schema.columns 
-      WHERE table_name = 'explanations' 
-      AND column_name IN (
-        'predicted_output_grid', 'reasoning_items', 'saturn_images', 'saturn_log', 'saturn_events',
-        'multiple_predicted_outputs', 'multi_test_results', 'has_multiple_predictions', 'multi_test_prediction_grids',
-        'provider_raw_response', 'api_processing_time_ms', 'input_tokens', 'output_tokens', 'reasoning_tokens',
-        'total_tokens', 'estimated_cost', 'temperature', 'reasoning_effort', 'reasoning_verbosity', 'reasoning_summary_type'
-      )
-      ORDER BY column_name;
-    `;
-    const schemaResult = await client.query(schemaQuery);
-    logger.info(`[SCHEMA-VERIFICATION] Database column types for JSON error investigation:`, 'database');
-    schemaResult.rows.forEach(row => {
-      logger.info(`[SCHEMA-VERIFICATION] ${row.column_name}: ${row.data_type} (nullable: ${row.is_nullable})`, 'database');
-    });
-    
-    // Check specifically for our new Option B column
-    const optionBQuery = `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'explanations' AND column_name = 'multi_test_prediction_grids'`;
-    const optionBResult = await client.query(optionBQuery);
-    if (optionBResult.rows.length === 0) {
-      logger.error('[SCHEMA-ERROR] multi_test_prediction_grids column MISSING - migration may have failed!', 'database');
-    } else {
-      logger.info(`[SCHEMA-SUCCESS] multi_test_prediction_grids exists: ${optionBResult.rows[0].data_type}`, 'database');
-    }
-    
-    // INVESTIGATE BACKGROUND OPERATIONS: Check for triggers that might cause ERROR vs 201 success contradiction
-    const triggersQuery = `
-      SELECT trigger_name, event_manipulation, action_timing, action_statement 
-      FROM information_schema.triggers 
-      WHERE event_object_table = 'explanations'
-    `;
-    const triggersResult = await client.query(triggersQuery);
-    if (triggersResult.rows.length > 0) {
-      logger.warn(`[TRIGGERS-FOUND] Database triggers on explanations table (potential source of JSON errors):`, 'database');
-      triggersResult.rows.forEach(trigger => {
-        logger.warn(`[TRIGGERS-FOUND] ${trigger.trigger_name}: ${trigger.action_timing} ${trigger.event_manipulation}`, 'database');
-      });
-    } else {
-      logger.info(`[TRIGGERS-NONE] No database triggers on explanations table`, 'database');
-    }
-    
-    // Check for foreign key constraints that might cause secondary operations
-    const constraintsQuery = `
-      SELECT constraint_name, constraint_type, table_name 
-      FROM information_schema.table_constraints 
-      WHERE table_name = 'explanations' AND constraint_type = 'FOREIGN KEY'
-    `;
-    const constraintsResult = await client.query(constraintsQuery);
-    if (constraintsResult.rows.length > 0) {
-      logger.info(`[CONSTRAINTS-FOUND] Foreign key constraints on explanations:`, 'database');
-      constraintsResult.rows.forEach(constraint => {
-        logger.info(`[CONSTRAINTS-FOUND] ${constraint.constraint_name}`, 'database');
-      });
-    } else {
-      logger.info(`[CONSTRAINTS-NONE] No foreign key constraints on explanations table`, 'database');
-    }
-  } catch (error) {
-    logger.error(`Failed to create tables: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    throw error;
-  } finally {
-    client.release();
-  }
-};
+// Table creation now handled by repositoryService.initialize() → DatabaseSchema.ts
 
 /**
  * Save puzzle explanation to database
@@ -268,9 +132,10 @@ const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
 
 /**
  * Check if database is connected
+ * REFACTORED: Now delegates to repositoryService
  */
 const isConnected = () => {
-  return pool !== null;
+  return repositoryService.isConnected();
 };
 
 /**
@@ -281,7 +146,7 @@ const getAccuracyStats = async () => {
   return await repositoryService.feedback.getAccuracyStats();
 };
 
-// Batch Analysis Functions (simplified implementations)
+// Batch Analysis Functions - All delegate to repositoryService
 
 /**
  * REFACTORED: Now delegates to repositoryService
