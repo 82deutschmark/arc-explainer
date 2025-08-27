@@ -17,6 +17,7 @@ import {
   processHints,
 } from '../utils/dataTransformers';
 import { q, safeJsonStringify } from '../utils/dbQueryWrapper';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 
 // PostgreSQL connection pool
 let pool: Pool | null = null;
@@ -159,595 +160,110 @@ const createTablesIfNotExist = async () => {
 
 /**
  * Save puzzle explanation to database
+ * REFACTORED: Now delegates to repositoryService
  */
 const saveExplanation = async (puzzleId: string, explanation: any): Promise<number | null> => {
-  if (!pool) {
-    logger.warn('No database connection, explanation not saved', 'database');
-    return null;
-  }
-
-  const client = await pool.connect();
-  let queryParams: any[] = [];
-  let paramMap: { [key: number]: string } = {};
-  
   try {
-    const {
-      patternDescription, solvingStrategy, hints: rawHints, confidence,
-      alienMeaningConfidence, alienMeaning, modelName, reasoningLog, hasReasoningLog,
-      providerResponseId, providerRawResponse, reasoningItems, apiProcessingTimeMs,
-      saturnImages, saturnLog, saturnEvents, saturnSuccess,
-      predictedOutputGrid, isPredictionCorrect, predictionAccuracyScore,
-      temperature, reasoningEffort, reasoningVerbosity, reasoningSummaryType,
-      inputTokens, outputTokens, reasoningTokens, totalTokens, estimatedCost,
-      hasMultiplePredictions, multiplePredictedOutputs, multiTestResults, multiTestAllCorrect, multiTestAverageAccuracy
-    } = explanation;
-
-    const hints = processHints(rawHints);
-    const shouldPersistRaw = process.env.RAW_RESPONSE_PERSIST !== 'false';
-
-    const queryText = `
-      INSERT INTO explanations 
-       (puzzle_id, pattern_description, solving_strategy, hints,
-        confidence, alien_meaning_confidence, alien_meaning, model_name,
-        reasoning_log, has_reasoning_log, provider_response_id, provider_raw_response,
-        reasoning_items, api_processing_time_ms, saturn_images, saturn_log,
-        saturn_events, saturn_success, predicted_output_grid, is_prediction_correct,
-        prediction_accuracy_score, temperature, reasoning_effort, reasoning_verbosity,
-        reasoning_summary_type, input_tokens, output_tokens, reasoning_tokens,
-        total_tokens, estimated_cost, has_multiple_predictions, multiple_predicted_outputs,
-        multi_test_results, multi_test_all_correct, multi_test_average_accuracy)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-               $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
-               $31, $32, $33, $34, $35)
-       RETURNING id`;
-
-    const queryParams = [
-      puzzleId,
-      patternDescription || '',
-      solvingStrategy || '',
-      hints, // Already an array of strings
-      normalizeConfidence(confidence),
-      alienMeaningConfidence ? normalizeConfidence(alienMeaningConfidence) : null,
-      alienMeaning || '',
-      modelName || 'unknown',
-      reasoningLog || null,
-      hasReasoningLog || false,
-      providerResponseId || null,
-      shouldPersistRaw ? safeJsonStringify(providerRawResponse) : null,
-      safeJsonStringify(reasoningItems),
-      apiProcessingTimeMs || null,
-      safeJsonStringify(saturnImages),
-      safeJsonStringify(saturnLog),
-      safeJsonStringify(saturnEvents),
-      saturnSuccess ?? null,
-      safeJsonStringify(predictedOutputGrid),
-      isPredictionCorrect ?? null,
-      predictionAccuracyScore || null,
-      temperature || null,
-      reasoningEffort || null,
-      reasoningVerbosity || null,
-      reasoningSummaryType || null,
-      inputTokens || null,
-      outputTokens || null,
-      reasoningTokens || null,
-      totalTokens || null,
-      estimatedCost || null,
-      hasMultiplePredictions ?? null,
-      safeJsonStringify(multiplePredictedOutputs),
-      safeJsonStringify(multiTestResults),
-      multiTestAllCorrect ?? null,
-      multiTestAverageAccuracy ?? null
-    ];
-
-    const paramMap = {
-      1: 'puzzle_id', 2: 'pattern_description', 3: 'solving_strategy', 4: 'hints',
-      5: 'confidence', 6: 'alien_meaning_confidence', 7: 'alien_meaning', 8: 'model_name',
-      9: 'reasoning_log', 10: 'has_reasoning_log', 11: 'provider_response_id', 12: 'provider_raw_response',
-      13: 'reasoning_items', 14: 'api_processing_time_ms', 15: 'saturn_images', 16: 'saturn_log',
-      17: 'saturn_events', 18: 'saturn_success', 19: 'predicted_output_grid', 20: 'is_prediction_correct',
-      21: 'prediction_accuracy_score', 22: 'temperature', 23: 'reasoning_effort', 24: 'reasoning_verbosity',
-      25: 'reasoning_summary_type', 26: 'input_tokens', 27: 'output_tokens', 28: 'reasoning_tokens',
-      29: 'total_tokens', 30: 'estimated_cost', 31: 'has_multiple_predictions', 32: 'multiple_predicted_outputs',
-      33: 'multi_test_results', 34: 'multi_test_all_correct', 35: 'multi_test_average_accuracy'
-    };
-
-    // GRANULAR ERROR ISOLATION: Wrap the critical INSERT operation
-    logger.info(`[OPERATION-START] Beginning INSERT for puzzle ${puzzleId}`, 'database');
-    
-    let result;
-    try {
-      result = await q(client, queryText, queryParams, 'explanations.insert', paramMap);
-      logger.info(`[OPERATION-SUCCESS] INSERT completed for puzzle ${puzzleId}`, 'database');
-    } catch (insertError) {
-      logger.error(`[OPERATION-FAILURE] INSERT failed for puzzle ${puzzleId}: ${insertError instanceof Error ? insertError.message : String(insertError)}`, 'database');
-      
-      // Detailed JSON error analysis
-      if (String(insertError).includes('invalid input syntax for type json')) {
-        logger.error(`[JSON-ERROR-ANALYSIS] Investigating JSON syntax error for puzzle ${puzzleId}:`, 'database');
-        logger.error(`[JSON-ERROR-ANALYSIS] Query: ${queryText.substring(0, 200)}...`, 'database');
-        logger.error(`[JSON-ERROR-ANALYSIS] Parameter count: ${queryParams.length}`, 'database');
-        
-        // Log suspect JSONB parameters
-        const jsonbParams = [
-          { name: 'multiplePredictedOutputs', value: queryParams[31], index: 32 },
-          { name: 'multiTestPredictionGrids', value: queryParams[32], index: 33 },
-          { name: 'multiTestResults', value: queryParams[33], index: 34 },
-          { name: 'predictedOutputGrid', value: queryParams[18], index: 19 },
-          { name: 'reasoningItems', value: queryParams[12], index: 13 },
-        ];
-        
-        jsonbParams.forEach(param => {
-          logger.error(`[JSON-ERROR-ANALYSIS] ${param.name} ($${param.index}): ${typeof param.value} = ${JSON.stringify(param.value)}`, 'database');
-        });
-      }
-      
-      throw insertError; // Re-throw to maintain error flow
-    }
-    
-    logger.info(`[OPERATION-COMPLETE] Saved explanation for puzzle ${puzzleId} with ID ${result.rows[0].id}`, 'database');
-    return result.rows[0].id;
+    // Add puzzleId to explanation data for repository
+    const explanationData = { ...explanation, puzzleId };
+    const result = await repositoryService.explanations.saveExplanation(explanationData);
+    return result.id;
   } catch (error) {
-    let errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error(`[OUTER-ERROR] Error in saveExplanation for puzzle ${puzzleId}: ${errorMessage}`, 'database');
-    
-    if (errorMessage.includes('invalid input syntax for type json') || errorMessage.includes('undefined parameter')) {
-      logger.error(`[Debug] Detailed parameter analysis for puzzle ${puzzleId}:`, 'database');
-      queryParams.forEach((param: any, index: number) => {
-        let paramName = paramMap[index + 1] || `param_${index + 1}`;
-        logger.error(`- Param ${index + 1} (${paramName}): [${typeof param}] ${String(param)?.substring(0, 100)}`, 'database');
-      });
-    }
-    
+    logger.error(`Error in dbService.saveExplanation for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
     return null;
-  } finally {
-    client.release();
   }
 };
 
 /**
  * Get single explanation for a puzzle
+ * REFACTORED: Now delegates to repositoryService
  */
 const getExplanationForPuzzle = async (puzzleId: string) => {
-  if (!pool) return null;
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT 
-         id, puzzle_id AS "puzzleId", pattern_description AS "patternDescription",
-         solving_strategy AS "solvingStrategy", hints, confidence,
-         alien_meaning_confidence AS "alienMeaningConfidence",
-         alien_meaning AS "alienMeaning", model_name AS "modelName",
-         reasoning_log AS "reasoningLog", has_reasoning_log AS "hasReasoningLog",
-         provider_response_id AS "providerResponseId",
-         api_processing_time_ms AS "apiProcessingTimeMs",
-         input_tokens AS "inputTokens", output_tokens AS "outputTokens",
-         reasoning_tokens AS "reasoningTokens", total_tokens AS "totalTokens",
-         estimated_cost AS "estimatedCost", temperature,
-         reasoning_effort AS "reasoningEffort", reasoning_verbosity AS "reasoningVerbosity",
-         reasoning_summary_type AS "reasoningSummaryType",
-         saturn_images AS "saturnImages", saturn_log AS "saturnLog",
-         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
-         predicted_output_grid AS "predictedOutputGrid",
-         is_prediction_correct AS "isPredictionCorrect",
-         prediction_accuracy_score AS "predictionAccuracyScore",
-         has_multiple_predictions AS "hasMultiplePredictions",
-         multiple_predicted_outputs AS "multiplePredictedOutputs",
-         multi_test_results AS "multiTestResults",
-         multi_test_all_correct AS "multiTestAllCorrect",
-         multi_test_average_accuracy AS "multiTestAverageAccuracy",
-         created_at AS "createdAt",
-         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'helpful') AS "helpful_votes",
-         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
-       FROM explanations 
-       WHERE puzzle_id = $1 
-       ORDER BY created_at DESC 
-       LIMIT 1`,
-      [puzzleId]
-    );
-
-    if (result.rows.length === 0) return null;
-
-    // Parse JSON fields using utility
-    const row = result.rows[0];
-    return {
-      ...row,
-      saturnImages: safeJsonParse(row.saturnImages, 'saturnImages'),
-      predictedOutputGrid: safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
-      // JSONB fields come back as objects automatically
-      multiplePredictedOutputs: row.multiplePredictedOutputs,
-      multiTestResults: row.multiTestResults
-    };
-  } catch (error) {
-    logger.error(`Error getting explanation for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return null;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.explanations.getExplanationForPuzzle(puzzleId);
 };
 
 /**
  * Get all explanations for a puzzle
+ * REFACTORED: Now delegates to repositoryService
  */
 const getExplanationsForPuzzle = async (puzzleId: string) => {
-  if (!pool) return null;
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT 
-         id, puzzle_id AS "puzzleId", pattern_description AS "patternDescription",
-         solving_strategy AS "solvingStrategy", hints, confidence,
-         alien_meaning_confidence AS "alienMeaningConfidence",
-         alien_meaning AS "alienMeaning", model_name AS "modelName",
-         reasoning_log AS "reasoningLog", has_reasoning_log AS "hasReasoningLog",
-         provider_response_id AS "providerResponseId",
-         api_processing_time_ms AS "apiProcessingTimeMs",
-         input_tokens AS "inputTokens", output_tokens AS "outputTokens",
-         reasoning_tokens AS "reasoningTokens", total_tokens AS "totalTokens",
-         estimated_cost AS "estimatedCost", temperature,
-         reasoning_effort AS "reasoningEffort", reasoning_verbosity AS "reasoningVerbosity",
-         reasoning_summary_type AS "reasoningSummaryType",
-         saturn_images AS "saturnImages", saturn_log AS "saturnLog",
-         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
-         predicted_output_grid AS "predictedOutputGrid",
-         is_prediction_correct AS "isPredictionCorrect",
-         prediction_accuracy_score AS "predictionAccuracyScore",
-         has_multiple_predictions AS "hasMultiplePredictions",
-         multiple_predicted_outputs AS "multiplePredictedOutputs",
-         multi_test_results AS "multiTestResults",
-         multi_test_all_correct AS "multiTestAllCorrect",
-         multi_test_average_accuracy AS "multiTestAverageAccuracy",
-         created_at AS "createdAt",
-         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'helpful') AS "helpful_votes",
-         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'not_helpful') AS "not_helpful_votes"
-       FROM explanations 
-       WHERE puzzle_id = $1 
-       ORDER BY created_at DESC`,
-      [puzzleId]
-    );
-
-    // JSONB columns are automatically parsed by the driver, so no extra parsing is needed.
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return null;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
 };
 
 /**
  * Get explanation by ID
+ * REFACTORED: Now delegates to repositoryService
  */
 const getExplanationById = async (explanationId: number) => {
-  if (!pool) return null;
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query('SELECT * FROM explanations WHERE id = $1', [explanationId]);
-
-    if (result.rows.length === 0) {
-      return null;
-    }
-
-    const explanation = result.rows[0];
-
-    // JSONB columns are automatically parsed by the driver. No manual parsing is needed.
-    return explanation;
-  } catch (error) {
-    logger.error(`Error getting explanation by ID ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return null;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.explanations.getExplanationById(explanationId);
 };
 
 /**
  * Check if explanation exists for puzzle
+ * REFACTORED: Now delegates to repositoryService
  */
 const hasExplanation = async (puzzleId: string): Promise<boolean> => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  try {
-    const result = await client.query(
-      'SELECT 1 FROM explanations WHERE puzzle_id = $1 LIMIT 1',
-      [puzzleId]
-    );
-    return result.rows.length > 0;
-  } catch (error) {
-    logger.error(`Error checking for explanation for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return false;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.explanations.hasExplanation(puzzleId);
 };
 
 /**
  * Get bulk explanation status for multiple puzzles with detailed metadata
+ * REFACTORED: Now delegates to repositoryService
  */
 const getBulkExplanationStatus = async (puzzleIds: string[]) => {
-  if (!pool || puzzleIds.length === 0) return new Map();
-
-  const client = await pool.connect();
-  
-  try {
-    let resultMap = new Map();
-    
-    // Initialize all as no explanation
-    puzzleIds.forEach(id => resultMap.set(id, {
-      hasExplanation: false,
-      explanationId: null,
-      feedbackCount: 0,
-      apiProcessingTimeMs: null,
-      modelName: null,
-      createdAt: null,
-      confidence: null,
-      estimatedCost: null
-    }));
-    
-    // Get detailed explanation data for puzzles that have explanations
-    let placeholders = puzzleIds.map((_, index) => `$${index + 1}`).join(',');
-    const result = await client.query(
-      `SELECT 
-         e.puzzle_id,
-         e.id as explanation_id,
-         e.api_processing_time_ms,
-         e.model_name,
-         e.created_at,
-         e.confidence,
-         e.estimated_cost,
-         COUNT(f.id) as feedback_count
-       FROM explanations e
-       LEFT JOIN feedback f ON e.id = f.explanation_id
-       WHERE e.puzzle_id IN (${placeholders})
-       GROUP BY e.puzzle_id, e.id, e.api_processing_time_ms, e.model_name, e.created_at, e.confidence, e.estimated_cost
-       ORDER BY e.puzzle_id, e.created_at DESC`,
-      puzzleIds
-    );
-    
-    // Update map with detailed data (most recent explanation per puzzle)
-    result.rows.forEach(row => {
-      const existingStatus = resultMap.get(row.puzzle_id);
-      if (!existingStatus.hasExplanation) { // Only take the first (most recent) explanation
-        resultMap.set(row.puzzle_id, {
-          hasExplanation: true,
-          explanationId: row.explanation_id,
-          feedbackCount: parseInt(row.feedback_count) || 0,
-          apiProcessingTimeMs: row.api_processing_time_ms,
-          modelName: row.model_name,
-          createdAt: row.created_at,
-          confidence: row.confidence,
-          estimatedCost: row.estimated_cost
-        });
-      }
-    });
-    
-    return resultMap;
-  } catch (error) {
-    logger.error(`Error getting bulk explanation status: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return new Map();
-  } finally {
-    client.release();
-  }
+  const statusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
+  // Convert object to Map for backward compatibility
+  const resultMap = new Map();
+  Object.entries(statusMap).forEach(([puzzleId, status]) => {
+    resultMap.set(puzzleId, status);
+  });
+  return resultMap;
 };
 
 /**
  * Add feedback for an explanation
+ * REFACTORED: Now delegates to repositoryService
  */
 const addFeedback = async (explanationId: number, voteType: 'helpful' | 'not_helpful', comment: string): Promise<boolean> => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  
   try {
-    await client.query(
-      `INSERT INTO feedback (explanation_id, vote_type, comment) VALUES ($1, $2, $3)`,
-      [explanationId, voteType, comment]
-    );
-    return true;
+    const result = await repositoryService.feedback.addFeedback({ explanationId, voteType, comment });
+    return result.success;
   } catch (error) {
-    logger.error(`Error adding feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    logger.error(`Error in dbService.addFeedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
     return false;
-  } finally {
-    client.release();
   }
 };
 
 /**
  * Get feedback for an explanation
+ * REFACTORED: Now delegates to repositoryService
  */
 const getFeedbackForExplanation = async (explanationId: number): Promise<Feedback[]> => {
-  if (!pool) return [];
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT id, explanation_id AS "explanationId", vote_type AS "voteType", 
-              comment, created_at AS "createdAt"
-       FROM feedback 
-       WHERE explanation_id = $1 
-       ORDER BY created_at DESC`,
-      [explanationId]
-    );
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return [];
-  } finally {
-    client.release();
-  }
+  return await repositoryService.feedback.getFeedbackForExplanation(explanationId);
 };
 
 /**
  * Get feedback for a puzzle
+ * REFACTORED: Now delegates to repositoryService
  */
 const getFeedbackForPuzzle = async (puzzleId: string): Promise<DetailedFeedback[]> => {
-  if (!pool) return [];
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT f.id, f.explanation_id AS "explanationId", f.vote_type AS "voteType",
-              f.comment, f.created_at AS "createdAt",
-              e.puzzle_id AS "puzzleId", e.model_name AS "modelName"
-       FROM feedback f
-       JOIN explanations e ON f.explanation_id = e.id
-       WHERE e.puzzle_id = $1
-       ORDER BY f.created_at DESC`,
-      [puzzleId]
-    );
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting puzzle feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return [];
-  } finally {
-    client.release();
-  }
+  return await repositoryService.feedback.getFeedbackForPuzzle(puzzleId);
 };
 
 /**
  * Get all feedback with optional filters
+ * REFACTORED: Now delegates to repositoryService
  */
 const getAllFeedback = async (filters: FeedbackFilters = {}): Promise<DetailedFeedback[]> => {
-  if (!pool) return [];
-
-  const client = await pool.connect();
-  
-  try {
-    let query = `
-      SELECT f.id, f.explanation_id AS "explanationId", f.vote_type AS "voteType",
-             f.comment, f.created_at AS "createdAt",
-             e.puzzle_id AS "puzzleId", e.model_name AS "modelName"
-      FROM feedback f
-      JOIN explanations e ON f.explanation_id = e.id
-    `;
-    
-    let conditions: string[] = [];
-    let queryParams: any[] = [];
-    
-    if (filters.voteType) {
-      conditions.push(`f.vote_type = $${queryParams.length + 1}`);
-      queryParams.push(filters.voteType);
-    }
-    
-    if (filters.modelName) {
-      conditions.push(`e.model_name = $${queryParams.length + 1}`);
-      queryParams.push(filters.modelName);
-    }
-    
-    if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
-    }
-    
-    query += ' ORDER BY f.created_at DESC';
-    
-    if (filters.limit) {
-      query += ` LIMIT $${queryParams.length + 1}`;
-      queryParams.push(filters.limit);
-    }
-    
-    const result = await client.query(query, queryParams);
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting all feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return [];
-  } finally {
-    client.release();
-  }
+  return await repositoryService.feedback.getAllFeedback(filters);
 };
 
 /**
  * Get feedback summary statistics
+ * REFACTORED: Now delegates to repositoryService
  */
 const getFeedbackSummaryStats = async (): Promise<FeedbackStats> => {
-  const defaultStats: FeedbackStats = {
-    totalFeedback: 0,
-    helpfulCount: 0,
-    notHelpfulCount: 0,
-    helpfulPercentage: 0,
-    notHelpfulPercentage: 0,
-    feedbackByModel: {},
-    feedbackByDay: []
-  };
-
-  if (!pool) return defaultStats;
-
-  const client = await pool.connect();
-  
-  try {
-    // Get overall stats
-    const totalResult = await client.query(`
-      SELECT 
-        COUNT(*) as total,
-        COUNT(CASE WHEN vote_type = 'helpful' THEN 1 END) as helpful,
-        COUNT(CASE WHEN vote_type = 'not_helpful' THEN 1 END) as not_helpful
-      FROM feedback
-    `);
-    
-    const { total, helpful, not_helpful: notHelpful } = totalResult.rows[0];
-    const helpfulPercentage = total > 0 ? (helpful / total) * 100 : 0;
-    const notHelpfulPercentage = total > 0 ? (notHelpful / total) * 100 : 0;
-
-    // Get stats by model
-    const modelResult = await client.query(`
-      SELECT 
-        e.model_name,
-        COUNT(*) as total,
-        COUNT(CASE WHEN f.vote_type = 'helpful' THEN 1 END) as helpful
-      FROM feedback f
-      JOIN explanations e ON f.explanation_id = e.id
-      GROUP BY e.model_name
-      ORDER BY total DESC
-    `);
-    
-    const feedbackByModel: Record<string, { helpful: number; notHelpful: number }> = {};
-    modelResult.rows.forEach(row => {
-      feedbackByModel[row.model_name] = {
-        helpful: parseInt(row.helpful),
-        notHelpful: parseInt(row.total) - parseInt(row.helpful)
-      };
-    });
-
-    // Get daily stats for last 30 days
-    const dailyResult = await client.query(`
-      SELECT 
-        DATE(f.created_at) as date,
-        COUNT(*) as total,
-        COUNT(CASE WHEN f.vote_type = 'helpful' THEN 1 END) as helpful
-      FROM feedback f
-      WHERE f.created_at >= NOW() - INTERVAL '30 days'
-      GROUP BY DATE(f.created_at)
-      ORDER BY date DESC
-    `);
-    
-    const feedbackByDay = dailyResult.rows.map(row => ({
-      date: row.date.toISOString().split('T')[0],
-      helpful: parseInt(row.helpful),
-      notHelpful: parseInt(row.total) - parseInt(row.helpful)
-    }));
-
-    return {
-      totalFeedback: parseInt(total),
-      helpfulCount: parseInt(helpful),
-      notHelpfulCount: parseInt(notHelpful),
-      helpfulPercentage: Math.round(helpfulPercentage * 10) / 10,
-      notHelpfulPercentage: Math.round(notHelpfulPercentage * 10) / 10,
-      feedbackByModel,
-      feedbackByDay
-    };
-  } catch (error) {
-    logger.error(`Error getting feedback stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return defaultStats;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.feedback.getFeedbackSummaryStats();
 };
 
 /**
@@ -759,57 +275,10 @@ const isConnected = () => {
 
 /**
  * Get accuracy statistics for solver mode
+ * REFACTORED: Now delegates to repositoryService
  */
 const getAccuracyStats = async () => {
-  if (!pool) return null;
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(`
-      SELECT 
-        model_name,
-        COUNT(*) as total_predictions,
-        COUNT(CASE WHEN is_prediction_correct = true THEN 1 END) as correct_predictions,
-        ROUND(AVG(CASE WHEN prediction_accuracy_score IS NOT NULL THEN prediction_accuracy_score ELSE 0 END)::numeric, 3) as avg_accuracy_score,
-        ROUND(AVG(CASE WHEN confidence IS NOT NULL THEN confidence ELSE 50 END)::numeric, 1) as avg_confidence,
-        COUNT(CASE WHEN predicted_output_grid IS NOT NULL THEN 1 END) as successful_extractions
-      FROM explanations 
-      WHERE is_prediction_correct IS NOT NULL
-      GROUP BY model_name
-      ORDER BY correct_predictions DESC, total_predictions DESC
-    `);
-
-    const totalResult = await client.query(`
-      SELECT COUNT(*) as total FROM explanations WHERE is_prediction_correct IS NOT NULL
-    `);
-
-    const accuracyByModel = result.rows.map(row => {
-      const totalAttempts = parseInt(row.total_predictions);
-      const successfulExtractions = parseInt(row.successful_extractions);
-      
-      return {
-        modelName: row.model_name,
-        totalAttempts,
-        correctPredictions: parseInt(row.correct_predictions),
-        accuracyPercentage: parseFloat(((row.correct_predictions / row.total_predictions) * 100).toFixed(1)),
-        avgAccuracyScore: parseFloat(row.avg_accuracy_score),
-        avgConfidence: parseFloat(row.avg_confidence),
-        successfulExtractions,
-        extractionSuccessRate: parseFloat(((successfulExtractions / totalAttempts) * 100).toFixed(1))
-      };
-    });
-
-    return {
-      totalSolverAttempts: parseInt(totalResult.rows[0].total),
-      accuracyByModel
-    };
-  } catch (error) {
-    logger.error(`Error getting accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return null;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.feedback.getAccuracyStats();
 };
 
 // Batch Analysis Functions (simplified implementations)
