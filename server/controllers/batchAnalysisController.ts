@@ -93,11 +93,7 @@ export const batchAnalysisController = {
         batchSize
       });
 
-      logger.info(`Batch analysis service returned:`, 'batch-controller', { 
-        sessionId: result.sessionId, 
-        hasError: !!result.error, 
-        errorMessage: result.error 
-      });
+      logger.info(`Batch analysis service returned: sessionId=${result.sessionId}, hasError=${!!result.error}`, 'batch-controller');
 
       if (result.error) {
         logger.error(`Batch analysis failed: ${result.error}`, 'batch-controller');
@@ -228,13 +224,16 @@ export const batchAnalysisController = {
         ));
       }
 
-      logger.info(`Getting batch results for session ${sessionId}`, 'batch-controller');
-
       let results = await batchAnalysisService.getBatchResults(sessionId);
+
+      // Reduced logging - only log on errors or first request
+      if (!results || results.length === 0) {
+        logger.info(`Getting batch results for session ${sessionId}`, 'batch-controller');
+      }
 
       // Apply status filter if provided
       if (status && typeof status === 'string') {
-        const validStatuses = ['pending', 'completed', 'failed'];
+        const validStatuses = ['pending', 'completed', 'failed', 'skipped'];
         if (validStatuses.includes(status)) {
           results = results.filter(result => result.status === status);
         }
