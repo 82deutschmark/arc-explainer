@@ -1004,6 +1004,24 @@ const getBatchSession = async (sessionId: string) => {
   }
 };
 
+const getAllBatchSessions = async () => {
+  if (!pool) return [];
+
+  const client = await pool.connect();
+  
+  try {
+    const result = await client.query(
+      `SELECT * FROM batch_analysis_sessions ORDER BY created_at DESC`
+    );
+    return result.rows;
+  } catch (error) {
+    logger.error(`Error getting all batch sessions: ${error instanceof Error ? error.message : String(error)}`, 'database');
+    return [];
+  } finally {
+    client.release();
+  }
+};
+
 const createBatchResult = async (sessionId: string, puzzleId: string) => {
   if (!pool) return false;
 
@@ -1095,6 +1113,7 @@ export const dbService = {
   createBatchSession,
   updateBatchSession,
   getBatchSession,
+  getAllBatchSessions,
   createBatchResult,
   updateBatchResult,
   getBatchResults,

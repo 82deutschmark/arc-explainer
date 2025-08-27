@@ -21,10 +21,26 @@ export function safeJsonStringify(value: any): string | null {
   if (value === undefined || value === null) return null;
   
   try {
-    return JSON.stringify(value);
+    const stringified = JSON.stringify(value);
+    // Validate the stringified result is valid JSON
+    JSON.parse(stringified);
+    return stringified;
   } catch (e) {
-    console.warn(`[safeJsonStringify] Failed to stringify value, returning null:`, value);
-    return null;
+    console.error(`[safeJsonStringify] CRITICAL: Failed to stringify value for database save:`, {
+      valueType: typeof value,
+      valueConstructor: value?.constructor?.name,
+      error: e instanceof Error ? e.message : String(e),
+      valueSample: String(value).substring(0, 200)
+    });
+    
+    // Try to salvage the data by converting to safe format
+    try {
+      const safeFallback = typeof value === 'object' ? '{}' : '""';
+      console.warn(`[safeJsonStringify] Using fallback value: ${safeFallback}`);
+      return safeFallback;
+    } catch {
+      return null;
+    }
   }
 }
 
