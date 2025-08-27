@@ -87,34 +87,27 @@ export class OpenRouterService {
       
       const responseText = response.choices[0]?.message?.content || "";
       
-      // Parse JSON response - similar to other services
+      // Parse JSON response - we request structured format so should be clean JSON
       let result;
       try {
         result = JSON.parse(responseText);
+        console.log(`[OpenRouter] Successfully parsed structured JSON response`);
       } catch (parseError) {
-        // Look for JSON anywhere in the text
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            result = JSON.parse(jsonMatch[0]);
-          } catch (secondError) {
-            // If no JSON found, treat as natural language response
-            result = {
-              patternDescription: responseText.length > 0 ? responseText : "No response received",
-              solvingStrategy: "",
-              hints: [],
-              confidence: 50
-            };
-          }
-        } else {
-          // If no JSON found, treat as natural language response
-          result = {
-            patternDescription: responseText.length > 0 ? responseText : "No response received",
-            solvingStrategy: "",
-            hints: [],
-            confidence: 50
-          };
-        }
+        console.error(`[OpenRouter] JSON parse failed, preserving raw response for debugging:`, {
+          model: openRouterModelName,
+          responseLength: responseText.length,
+          responseSample: responseText.substring(0, 200),
+          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+        });
+        
+        // Simple fallback - preserve original response as text
+        result = {
+          patternDescription: `Raw response (parse failed): ${responseText}`,
+          solvingStrategy: "JSON parsing failed - raw response preserved",
+          hints: ["Check response format", "Verify model supports structured output"],
+          confidence: 0,
+          rawResponse: responseText // Preserve for debugging
+        };
       }
 
       // Extract token usage from OpenRouter response

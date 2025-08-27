@@ -170,35 +170,30 @@ export function extractPredictions(response: any, testCaseCount: number): {
   predictedOutput?: number[][];
   predictedOutputs?: number[][][];
 } {
+  console.log(`[EXTRACT] Extracting predictions for ${testCaseCount} test cases from response keys:`, Object.keys(response || {}));
+  
   // Handle new multi-output format - check for boolean true flag or array
   if (response?.multiplePredictedOutputs === true || (response?.multiplePredictedOutputs && Array.isArray(response.multiplePredictedOutputs))) {
     const collectedGrids = [];
     let i = 1;
-    console.log(`[EXTRACT-DEBUG] Looking for individual predictedOutput fields, expected testCaseCount: ${testCaseCount}`);
-    console.log(`[EXTRACT-DEBUG] multiplePredictedOutputs value:`, response.multiplePredictedOutputs);
     
     // First try to collect individual numbered fields (predictedOutput1, predictedOutput2, etc.)
     while (`predictedOutput${i}` in response) {
       const grid = response[`predictedOutput${i}`];
-      console.log(`[EXTRACT-DEBUG] Found predictedOutput${i}, validating...`);
       if (validateGrid(grid)) {
-        console.log(`[EXTRACT-DEBUG] predictedOutput${i} is valid, adding to collection`);
         collectedGrids.push(grid);
-      } else {
-        console.log(`[EXTRACT-DEBUG] predictedOutput${i} failed validation:`, grid);
       }
       i++;
     }
-    console.log(`[EXTRACT-DEBUG] Collected ${collectedGrids.length} grids from individual numbered fields`);
     
     // If we found numbered fields, return them
     if (collectedGrids.length > 0) {
+      console.log(`[EXTRACT] Found ${collectedGrids.length} grids from numbered fields`);
       return { predictedOutputs: collectedGrids };
     }
     
     // Fallback to the main array if individual keys are missing and it's an array
     if (Array.isArray(response.multiplePredictedOutputs)) {
-        // Check if it's structured format with testCase/predictedOutput objects
         const extractedGrids = [];
         for (const item of response.multiplePredictedOutputs) {
           if (item && typeof item === 'object' && item.predictedOutput) {
@@ -211,10 +206,11 @@ export function extractPredictions(response: any, testCaseCount: number): {
             extractedGrids.push(item);
           }
         }
+        console.log(`[EXTRACT] Found ${extractedGrids.length} grids from array format`);
         return { predictedOutputs: extractedGrids };
     }
     
-    // If multiplePredictedOutputs is true but we found no numbered fields or array, return empty
+    console.log(`[EXTRACT] No valid grids found in multiplePredictedOutputs format`);
     return { predictedOutputs: [] };
   }
 
