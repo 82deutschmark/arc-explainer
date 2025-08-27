@@ -73,6 +73,10 @@ export class OpenRouterService {
       // Fix common JSON formatting issues
       .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
       .replace(/([{,]\s*)(\w+):/g, '$1"$2":') // Quote unquoted keys
+      // Fix bracket type mismatches - array brackets containing object syntax
+      .replace(/\[\s*("[^"]+"\s*:\s*[^,\]]+(?:\s*,\s*"[^"]+"\s*:\s*[^,\]]+)*)\s*\]/g, '{$1}')
+      // Fix unquoted object keys that use colons
+      .replace(/\[\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*/g, '{"$1": ')
       .trim();
   }
 
