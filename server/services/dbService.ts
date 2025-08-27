@@ -1,11 +1,6 @@
 /**
- * Clean Database Service - Pure Database Operations
- * 
- * Focused exclusively on PostgreSQL database operations for ARC-AGI Explainer.
- * Uses dataTransformers utilities for all parsing/serialization logic.
- * Maintains backward compatibility with existing API surface.
- * 
- * @author Cascade
+ * Thin Database Service Wrapper
+ * All methods delegate to repositoryService for clean architecture.
  */
 
 import { logger } from '../utils/logger';
