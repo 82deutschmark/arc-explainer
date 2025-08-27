@@ -14,84 +14,95 @@ import { logger } from '../utils/logger';
 
 export const batchAnalysisController = {
   /**
+   * Validate batch analysis request parameters
+   */
+  validateBatchRequest(body: any) {
+    const { modelKey, dataset, promptId, customPrompt, temperature, batchSize } = body;
+    
+    // Validate required parameters
+    if (!modelKey) {
+      return { valid: false, error: 'Missing model key', details: 'modelKey is required to start batch analysis' };
+    }
+    
+    if (!dataset) {
+      return { valid: false, error: 'Missing dataset', details: 'dataset is required to start batch analysis' };
+    }
+    
+    // Validate dataset value
+    const validDatasets = ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'All'];
+    if (!validDatasets.includes(dataset)) {
+      return { 
+        valid: false, 
+        error: 'Invalid dataset', 
+        details: `dataset must be one of: ${validDatasets.join(', ')}` 
+      };
+    }
+    
+    // Validate custom prompt usage
+    if (promptId === 'custom' && !customPrompt) {
+      return { 
+        valid: false, 
+        error: 'Missing custom prompt', 
+        details: 'customPrompt is required when promptId is "custom"' 
+      };
+    }
+    
+    // Validate temperature range
+    if (temperature !== undefined && (temperature < 0 || temperature > 2)) {
+      return { 
+        valid: false, 
+        error: 'Invalid temperature', 
+        details: 'temperature must be between 0 and 2' 
+      };
+    }
+    
+    // Validate batch size
+    if (batchSize !== undefined && (batchSize < 1 || batchSize > 50)) {
+      return { 
+        valid: false, 
+        error: 'Invalid batch size', 
+        details: 'batchSize must be between 1 and 50' 
+      };
+    }
+    
+    return { valid: true };
+  },
+
+  /**
+   * Extract and prepare batch analysis parameters
+   */
+  prepareBatchParams(body: any) {
+    const {
+      modelKey, dataset, promptId, customPrompt, temperature,
+      reasoningEffort, reasoningVerbosity, reasoningSummaryType, batchSize
+    } = body;
+    
+    return {
+      modelKey, dataset, promptId, customPrompt, temperature,
+      reasoningEffort, reasoningVerbosity, reasoningSummaryType, batchSize
+    };
+  },
+  /**
    * Start a new batch analysis session
    * POST /api/model/batch-analyze
    */
   async startBatch(req: Request, res: Response) {
     try {
-      const {
-        modelKey,
-        dataset,
-        promptId,
-        customPrompt,
-        temperature,
-        reasoningEffort,
-        reasoningVerbosity,
-        reasoningSummaryType,
-        batchSize
-      } = req.body;
-
-      // Validate required parameters
-      if (!modelKey) {
+      // Validate request parameters using helper method
+      const validation = this.validateBatchRequest(req.body);
+      if (!validation.valid) {
         return res.status(400).json(formatResponse.error(
-          'Missing model key',
-          'modelKey is required to start batch analysis'
+          validation.error!,
+          validation.details!
         ));
       }
 
-      if (!dataset) {
-        return res.status(400).json(formatResponse.error(
-          'Missing dataset',
-          'dataset is required to start batch analysis'
-        ));
-      }
+      // Prepare parameters for batch service
+      const params = this.prepareBatchParams(req.body);
+      
+      logger.info(`Starting batch analysis: model=${params.modelKey}, dataset=${params.dataset}`, 'batch-controller');
 
-      // Validate dataset value
-      const validDatasets = ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'All'];
-      if (!validDatasets.includes(dataset)) {
-        return res.status(400).json(formatResponse.error(
-          'Invalid dataset',
-          `dataset must be one of: ${validDatasets.join(', ')}`
-        ));
-      }
-
-      // Validate custom prompt usage
-      if (promptId === 'custom' && !customPrompt) {
-        return res.status(400).json(formatResponse.error(
-          'Missing custom prompt',
-          'customPrompt is required when promptId is "custom"'
-        ));
-      }
-
-      // Validate temperature range
-      if (temperature !== undefined && (temperature < 0 || temperature > 2)) {
-        return res.status(400).json(formatResponse.error(
-          'Invalid temperature',
-          'temperature must be between 0 and 2'
-        ));
-      }
-
-      // Validate batch size
-      if (batchSize !== undefined && (batchSize < 1 || batchSize > 50)) {
-        return res.status(400).json(formatResponse.error(
-          'Invalid batch size',
-          'batchSize must be between 1 and 50'
-        ));
-      }
-
-      logger.info(`Starting batch analysis: model=${modelKey}, dataset=${dataset}`, 'batch-controller');
-
-      const result = await batchAnalysisService.startBatchAnalysis({
-        modelKey,
-        dataset,
-        promptId,
-        customPrompt,
-        temperature,
-        reasoningEffort,
-        reasoningVerbosity,
-        reasoningSummaryType,
-        batchSize
-      });
+      const result = await batchAnalysisService.startBatchAnalysis(params);
 
       logger.info(`Batch analysis service returned: sessionId=${result.sessionId}, hasError=${!!result.error}`, 'batch-controller');
 
