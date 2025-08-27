@@ -223,441 +223,48 @@
     ]
   },
   "explanations": {
-    "gpt-5-2025-08-07": {
-      "model": "gpt-5-2025-08-07",
-      "reasoningLog": null,
-      "hasReasoningLog": false,
-      "providerResponseId": "resp_68aca74e5f308194b4f2b21bfef61f2800c6eea51c42e62f",
-      "providerRawResponse": {
-        "id": "resp_68aca74e5f308194b4f2b21bfef61f2800c6eea51c42e62f",
-        "object": "response",
-        "created_at": 1756145486,
-        "status": "completed",
-        "background": false,
-        "error": null,
-        "incomplete_details": null,
-        "instructions": null,
-        "max_output_tokens": 128000,
-        "max_tool_calls": null,
-        "model": "gpt-5-2025-08-07",
-        "output": [
-          {
-            "id": "rs_68aca74ee2a08194a18111cc5d6300d800c6eea51c42e62f",
-            "type": "reasoning",
-            "summary": []
-          },
-          {
-            "id": "msg_68aca74f304c8194b1c59d698ae0435700c6eea51c42e62f",
-            "type": "message",
-            "status": "completed",
-            "content": [
-              {
-                "type": "output_text",
-                "annotations": [],
-                "logprobs": [],
-                "text": "{\"multiplePredictedOutputs\":true,\"predictedOutput\":[],\"predictedOutput1\":[[0,0,0],[2,0,0],[2,0,0]],\"predictedOutput2\":[[0,0,0],[0,0,0],[0,1,0]],\"predictedOutput3\":[],\"solvingStrategy\":\"Observe each training pair: the output is the input grid shifted down by exactly one row, with the bottom row dropped and a new all-zero row inserted at the top. Colors and column positions are preserved; only a vertical translation occurs. This is consistent across examples with different colored cells and distributions. Apply the same one-row downward shift to each test input.\",\"keySteps\":[\"Compare input→output in Ex1: the row of 1s moves from row0 to row1; top becomes zeros.\",\"Ex2: row of 1s moves from row1 to row2; top becomes zeros.\",\"Ex3: all rows move down one: original row0 goes to row1, row1 to row2, new zero row at top.\",\"Ex4: same: rows shift down one.\",\"Derive rule: shift entire grid down by one row; insert zero row at top; drop bottom row.\",\"Apply to Test 1 by moving each row down one: output rows become [0,0,0], then previous row0 [2,0,0], then previous row1 [2,0,0].\",\"Apply to Test 2: move middle 1 down to bottom center; top row zeros.\"],\"patternDescription\":\"Uniform vertical translation: shift the entire grid down by one row, discard the last row, and insert an all-zero row at the top.\",\"hints\":[\"Track row indices: output[i] = input[i-1] for i>0; output[0] = all zeros.\",\"No horizontal movement or color change; solely a vertical shift.\"],\"confidence\":96}"
-              }
-            ],
-            "role": "assistant"
-          }
+    "baidu/ernie-4.5-vl-28b-a3b": {
+      "success": true,
+      "result": {
+        "patternDescription": "Model baidu/ernie-4.5-vl-28b-a3b response parsing failed. The model provided a response but it contained formatting issues or non-standard characters that prevented JSON parsing. Original error: Unterminated string in JSON at position 24725 (line 12 column 24096).",
+        "solvingStrategy": "Unable to extract structured strategy from baidu/ernie-4.5-vl-28b-a3b due to response format issues. The model may have provided insights in natural language that couldn't be parsed into the expected JSON structure.",
+        "hints": [
+          "Try using a different model that supports structured output better",
+          "Check if the model requires specific prompt formatting",
+          "Consider using OpenAI or Anthropic models for more reliable JSON responses"
         ],
-        "parallel_tool_calls": false,
-        "previous_response_id": null,
-        "prompt_cache_key": null,
-        "reasoning": {
-          "effort": "minimal",
-          "summary": "detailed"
-        },
-        "safety_identifier": null,
-        "service_tier": "auto",
-        "store": true,
-        "temperature": 1,
-        "text": {
-          "format": {
-            "type": "json_schema",
-            "description": null,
-            "name": "arc_analysis",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "multiplePredictedOutputs": {
-                  "type": "boolean",
-                  "description": "True if providing multiple predictions"
-                },
-                "predictedOutput": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "description": "Single predicted output grid (2D array of integers)"
-                },
-                "predictedOutput1": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "description": "First predicted output grid"
-                },
-                "predictedOutput2": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "description": "Second predicted output grid"
-                },
-                "predictedOutput3": {
-                  "type": "array",
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "integer"
-                    }
-                  },
-                  "description": "Third predicted output grid"
-                },
-                "solvingStrategy": {
-                  "type": "string",
-                  "description": "Detailed explanation of the solving approach"
-                },
-                "keySteps": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Key steps in the solution process"
-                },
-                "patternDescription": {
-                  "type": "string",
-                  "description": "Description of the pattern identified"
-                },
-                "hints": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "Hints for understanding the pattern"
-                },
-                "confidence": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 100,
-                  "description": "Confidence level in the solution (0-100)"
-                }
-              },
-              "required": [
-                "multiplePredictedOutputs",
-                "predictedOutput",
-                "predictedOutput1",
-                "predictedOutput2",
-                "predictedOutput3",
-                "solvingStrategy",
-                "keySteps",
-                "patternDescription",
-                "hints",
-                "confidence"
-              ],
-              "additionalProperties": false
-            },
-            "strict": true
-          },
-          "verbosity": "medium"
-        },
-        "tool_choice": "auto",
-        "tools": [],
-        "top_logprobs": 0,
-        "top_p": 1,
-        "truncation": "auto",
-        "usage": {
-          "input_tokens": 1053,
-          "input_tokens_details": {
-            "cached_tokens": 0
-          },
-          "output_tokens": 406,
-          "output_tokens_details": {
-            "reasoning_tokens": 0
-          },
-          "total_tokens": 1459
-        },
-        "user": null,
-        "metadata": {}
+        "confidence": 0,
+        "multiplePredictedOutputs": false,
+        "rawResponse": "{\n  \"multiplePredictedOutputs\": false,\n  \"predictedOutput\": [\n    [0, 0, 0],\n    [2, 0, 0],\n    [0, 0, 0]\n  ],\n  \"solvingStrategy\": \"Analyzed training examples to identify vertical flipping pattern. Each input grid has non-zero elements in top-middle row; output moves these elements to bottom-middle row. Applied same transformation to test cases.\",\n  \"keySteps\": [\n    \"Observed Example 1: Input top-middle row [1,1,1] → Output bottom-middle row [1,1,1]\",\n    \"Observed Example 2: Input bottom-midd",
+        "parsingError": "Unterminated string in JSON at position 24725 (line 12 column 24096)",
+        "modelUsed": "baidu/ernie-4.5-vl-28b-a3b",
+        "recoveryMethod": "validation-compliant-fallback"
       },
-      "reasoningItems": [
-        "Compare input→output in Ex1: the row of 1s moves from row0 to row1; top becomes zeros.",
-        "Ex2: row of 1s moves from row1 to row2; top becomes zeros.",
-        "Ex3: all rows move down one: original row0 goes to row1, row1 to row2, new zero row at top.",
-        "Ex4: same: rows shift down one.",
-        "Derive rule: shift entire grid down by one row; insert zero row at top; drop bottom row.",
-        "Apply to Test 1 by moving each row down one: output rows become [0,0,0], then previous row0 [2,0,0], then previous row1 [2,0,0].",
-        "Apply to Test 2: move middle 1 down to bottom center; top row zeros."
-      ],
-      "temperature": 0.2,
-      "reasoningEffort": "minimal",
-      "reasoningVerbosity": "low",
-      "reasoningSummaryType": "auto",
-      "inputTokens": 1053,
-      "outputTokens": 406,
-      "reasoningTokens": null,
-      "totalTokens": 1459,
-      "estimatedCost": 0.00537625,
-      "multiplePredictedOutputs": [
-        [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ]
-        ],
-        [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ]
-        ]
-      ],
-      "predictedOutput": [],
-      "predictedOutput1": [
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          2,
-          0,
-          0
-        ],
-        [
-          2,
-          0,
-          0
-        ]
-      ],
-      "predictedOutput2": [
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          1,
-          0
-        ]
-      ],
-      "predictedOutput3": [],
-      "solvingStrategy": "Observe each training pair: the output is the input grid shifted down by exactly one row, with the bottom row dropped and a new all-zero row inserted at the top. Colors and column positions are preserved; only a vertical translation occurs. This is consistent across examples with different colored cells and distributions. Apply the same one-row downward shift to each test input.",
-      "keySteps": [
-        "Compare input→output in Ex1: the row of 1s moves from row0 to row1; top becomes zeros.",
-        "Ex2: row of 1s moves from row1 to row2; top becomes zeros.",
-        "Ex3: all rows move down one: original row0 goes to row1, row1 to row2, new zero row at top.",
-        "Ex4: same: rows shift down one.",
-        "Derive rule: shift entire grid down by one row; insert zero row at top; drop bottom row.",
-        "Apply to Test 1 by moving each row down one: output rows become [0,0,0], then previous row0 [2,0,0], then previous row1 [2,0,0].",
-        "Apply to Test 2: move middle 1 down to bottom center; top row zeros."
-      ],
-      "patternDescription": "Uniform vertical translation: shift the entire grid down by one row, discard the last row, and insert an all-zero row at the top.",
-      "hints": [
-        "Track row indices: output[i] = input[i-1] for i>0; output[0] = all zeros.",
-        "No horizontal movement or color change; solely a vertical shift."
-      ],
-      "confidence": 96,
-      "apiProcessingTimeMs": 6075,
-      "predictedOutputGrids": [
-        [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ]
-        ],
-        [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ]
-        ]
-      ],
+      "tokenUsage": {
+        "input": 884,
+        "output": 8000
+      },
+      "cost": {
+        "input": 0.001326,
+        "output": 0.024,
+        "total": 0.025326
+      },
+      "processingTimeMs": 1756335270808,
+      "modelName": "baidu/ernie-4.5-vl-28b-a3b",
+      "reasoning": null,
+      "reasoningLog": null,
+      "apiProcessingTimeMs": 88989,
       "predictedOutputGrid": null,
-      "multiValidation": [
-        {
-          "index": 0,
-          "predictedGrid": [
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              2,
-              0,
-              0
-            ],
-            [
-              2,
-              0,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.98,
-          "extractionMethod": "direct_predicted_outputs_field",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        },
-        {
-          "index": 1,
-          "predictedGrid": [
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.98,
-          "extractionMethod": "direct_predicted_outputs_field",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        }
-      ],
-      "allPredictionsCorrect": true,
-      "averagePredictionAccuracyScore": 0.98,
-      "hasMultiplePredictions": true,
-      "multiTestResults": [
-        {
-          "index": 0,
-          "predictedGrid": [
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              2,
-              0,
-              0
-            ],
-            [
-              2,
-              0,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.98,
-          "extractionMethod": "direct_predicted_outputs_field",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        },
-        {
-          "index": 1,
-          "predictedGrid": [
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              0,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.98,
-          "extractionMethod": "direct_predicted_outputs_field",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        }
-      ],
-      "multiTestAllCorrect": true,
-      "multiTestAverageAccuracy": 0.98,
-      "extractionMethod": "direct_predicted_outputs_field",
-      "modelKey": "gpt-5-2025-08-07",
-      "actualProcessingTime": 6
+      "multiplePredictedOutputs": null,
+      "hasMultiplePredictions": false,
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0.5,
+      "modelKey": "baidu/ernie-4.5-vl-28b-a3b",
+      "actualProcessingTime": 89
     }
   },
-  "exportedAt": "2025-08-25T18:11:33.022Z",
+  "exportedAt": "2025-08-27T22:54:30.818Z",
   "models": [
-    "gpt-5-2025-08-07"
+    "baidu/ernie-4.5-vl-28b-a3b"
   ]
 }
