@@ -19,6 +19,7 @@ import {
   ALIEN_PROPERTIES,
   createSchema
 } from './common.js';
+import { normalizeConfidence as normalizeConfidenceUtil } from '../../utils/CommonUtilities.js';
 
 /**
  * JSON schema for standard explanation responses
@@ -178,21 +179,8 @@ export function hasAlienFields(response: any): boolean {
 
 /**
  * Normalize confidence values to integers 0-100
- * Handles both decimal (0-1) and percentage (0-100) formats from different AI models
+ * Uses CommonUtilities for consistent behavior across the codebase
  */
 export function normalizeConfidence(confidence: any): number {
-  if (typeof confidence === 'string') {
-    const parsed = parseFloat(confidence);
-    if (!isNaN(parsed)) {
-      // If decimal (0-1), convert to percentage; if already 0-100, use as-is
-      const normalized = parsed <= 1 ? parsed * 100 : parsed;
-      return Math.round(Math.max(0, Math.min(100, normalized)));
-    }
-  }
-  if (typeof confidence === 'number') {
-    // If decimal (0-1), convert to percentage; if already 0-100, use as-is
-    const normalized = confidence <= 1 ? confidence * 100 : confidence;
-    return Math.round(Math.max(0, Math.min(100, normalized)));
-  }
-  return 50; // Default fallback
+  return normalizeConfidenceUtil(confidence);
 }
