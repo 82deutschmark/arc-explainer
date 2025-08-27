@@ -73,23 +73,40 @@ export function useBatchAnalysis() {
     // Poll for progress updates every 2 seconds
     pollingInterval.current = setInterval(async () => {
       try {
+        console.log(`🔄 Polling batch status for session: ${id}`);
         const response = await apiRequest('GET', `/api/model/batch-status/${id}`);
+        console.log(`📡 Batch status response:`, { 
+          ok: response.ok, 
+          status: response.status,
+          statusText: response.statusText 
+        });
+        
         if (response.ok) {
           const data = await response.json();
-          setProgress(data.data);
+          console.log(`📊 Batch progress data received:`, data);
           
-          // Stop polling if session is complete
-          if (['completed', 'cancelled', 'error'].includes(data.data.status)) {
-            if (pollingInterval.current) {
-              clearInterval(pollingInterval.current);
-              pollingInterval.current = null;
+          // Validate response structure
+          if (data && data.data) {
+            setProgress(data.data);
+            console.log(`✅ Progress state updated:`, data.data.status, `${data.data.progress?.percentage || 0}%`);
+            
+            // Stop polling if session is complete
+            if (['completed', 'cancelled', 'error'].includes(data.data.status)) {
+              console.log(`🏁 Session ${data.data.status}, stopping progress polling`);
+              if (pollingInterval.current) {
+                clearInterval(pollingInterval.current);
+                pollingInterval.current = null;
+              }
             }
+          } else {
+            console.warn('⚠️ Invalid batch status response structure:', data);
           }
         } else {
-          console.error('Failed to fetch batch status');
+          const errorText = await response.text();
+          console.error(`❌ Failed to fetch batch status: ${response.status} ${response.statusText}`, errorText);
         }
       } catch (error) {
-        console.error('Error polling batch status:', error);
+        console.error('💥 Error polling batch status:', error);
       }
     }, 2000);
   }, []);
@@ -104,13 +121,21 @@ export function useBatchAnalysis() {
     // Poll for results updates every 5 seconds
     resultsPollingInterval.current = setInterval(async () => {
       try {
+        console.log(`📝 Polling batch results for session: ${id}`);
         const response = await apiRequest('GET', `/api/model/batch-results/${id}?limit=50&status=completed`);
+        
         if (response.ok) {
           const data = await response.json();
-          setResults(data.data.results || []);
+          console.log(`📋 Batch results data received:`, data);
+          const results = data.data?.results || data.data || [];
+          console.log(`✅ Setting ${results.length} results`);
+          setResults(results);
+        } else {
+          const errorText = await response.text();
+          console.error(`❌ Failed to fetch batch results: ${response.status} ${response.statusText}`, errorText);
         }
       } catch (error) {
-        console.error('Error polling batch results:', error);
+        console.error('💥 Error polling batch results:', error);
       }
     }, 5000);
   }, []);

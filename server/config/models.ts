@@ -12,12 +12,12 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek';
+  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek' | 'OpenRouter';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   supportsReasoning?: boolean;
   // Server-only properties
   apiModelName?: string; // Actual API model name if different from key
-  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek';
+  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek' | 'openrouter';
   maxOutputTokens?: number;
   contextWindow?: number;
 }
@@ -410,6 +410,106 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
     maxOutputTokens: 65536
+  },
+
+  // OpenRouter Models (unique models not available through direct APIs)
+  {
+    key: 'meta-llama/llama-3.3-70b-instruct',
+    name: 'Llama 3.3 70B Instruct',
+    color: 'bg-orange-600',
+    premium: false,
+    cost: { input: '$0.59', output: '$0.79' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'meta-llama/llama-3.3-70b-instruct',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768
+  },
+  {
+    key: 'qwen/qwen-2.5-coder-32b-instruct',
+    name: 'Qwen 2.5 Coder 32B',
+    color: 'bg-red-600',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: false,
+    apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768
+  },
+  {
+    key: 'microsoft/phi-3.5-mini-instruct',
+    name: 'Phi 3.5 Mini Instruct',
+    color: 'bg-blue-600',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.10' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false,
+    apiModelName: 'microsoft/phi-3.5-mini-instruct',
+    modelType: 'openrouter',
+    maxOutputTokens: 16384
+  },
+  {
+    key: 'mistralai/mistral-large',
+    name: 'Mistral Large',
+    color: 'bg-purple-600',
+    premium: true,
+    cost: { input: '$2.00', output: '$6.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'mistralai/mistral-large',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768
+  },
+  {
+    key: 'cohere/command-r-plus',
+    name: 'Command R+',
+    color: 'bg-green-600',
+    premium: false,
+    cost: { input: '$2.50', output: '$10.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'cohere/command-r-plus',
+    modelType: 'openrouter',
+    maxOutputTokens: 16384
+  },
+  {
+    key: 'baidu/ernie-4.5-vl-28b-a3b',
+    name: 'Ernie 4.5 VL 28B',
+    color: 'bg-blue-700',
+    premium: false,
+    cost: { input: '$1.50', output: '$3.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false,
+    apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
+    modelType: 'openrouter',
+    maxOutputTokens: 16384
+  },
+  {
+    key: 'deepseek/deepseek-chat-v3.1',
+    name: 'DeepSeek Chat v3.1',
+    color: 'bg-cyan-700',
+    premium: false,
+    cost: { input: '$0.27', output: '$1.10' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    supportsReasoning: false,
+    apiModelName: 'deepseek/deepseek-chat-v3.1',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768
   }
 ];
 

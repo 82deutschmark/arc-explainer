@@ -42,6 +42,7 @@ export default function ModelExaminer() {
     sessionId,
     progress,
     isRunning,
+    isLoading,
     error,
     results,
     startAnalysis,
@@ -100,11 +101,17 @@ export default function ModelExaminer() {
       batchSize
     };
 
-    try {
-      // Delegate to existing batch analysis system
-      await startAnalysis(config);
-    } catch (error) {
-      console.error('Failed to start batch analysis:', error);
+    console.log('🚀 Starting batch analysis with configuration:', config);
+    console.log(`📊 Model: ${currentModel?.name} (${selectedModel})`);
+    console.log(`📂 Dataset: ${dataset}`);
+    console.log(`🔢 Batch Size: ${batchSize}`);
+
+    const result = await startAnalysis(config);
+    
+    if (result.success) {
+      console.log('✅ Batch analysis started successfully:', result.sessionId);
+    } else {
+      console.error('❌ Failed to start batch analysis:', result.error);
     }
   };
 
@@ -409,11 +416,15 @@ export default function ModelExaminer() {
             {!sessionId ? (
               <Button
                 onClick={handleStartAnalysis}
-                disabled={!selectedModel}
+                disabled={!selectedModel || isLoading}
                 className="flex items-center gap-2"
               >
-                <Play className="h-4 w-4" />
-                Start Batch Analysis
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+                {isLoading ? 'Starting Analysis...' : 'Start Batch Analysis'}
               </Button>
             ) : (
               <>
@@ -462,14 +473,31 @@ export default function ModelExaminer() {
               </>
             )}
 
-            {/* Running indicator */}
-            {isRunning && (
+            {/* Loading/Running indicators */}
+            {isLoading && !sessionId && (
               <div className="flex items-center gap-2 text-sm text-blue-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Initializing batch analysis...
+              </div>
+            )}
+            
+            {isRunning && sessionId && (
+              <div className="flex items-center gap-2 text-sm text-green-600">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Analysis running...
               </div>
             )}
           </div>
+
+          {/* Success message for session start */}
+          {sessionId && !isLoading && !error && !progress && (
+            <Alert className="mt-3 border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                Batch analysis session started successfully! Session ID: <code className="font-mono text-xs bg-green-100 px-1 rounded">{sessionId}</code>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Error display from batch analysis hook */}
           {error && (
@@ -478,6 +506,21 @@ export default function ModelExaminer() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          {/* Debug Information Panel */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+            <h6 className="text-xs font-semibold text-gray-700 mb-2">Debug Information</h6>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-600">
+              <div><strong>Selected Model Key:</strong> <code>{selectedModel || 'none'}</code></div>
+              <div><strong>Model Name:</strong> {currentModel?.name || 'none'}</div>
+              <div><strong>Provider:</strong> {currentModel?.provider || 'none'}</div>
+              <div><strong>Session ID:</strong> <code>{sessionId || 'none'}</code></div>
+              <div><strong>Hook Loading:</strong> {isLoading ? '✅' : '❌'}</div>
+              <div><strong>Hook Running:</strong> {isRunning ? '✅' : '❌'}</div>
+              <div><strong>Progress Status:</strong> {progress?.status || 'none'}</div>
+              <div><strong>Error State:</strong> {error ? '❌' : '✅'}</div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -489,6 +532,9 @@ export default function ModelExaminer() {
               <Database className="h-5 w-5" />
               Analysis Progress
             </CardTitle>
+            <p className="text-sm text-gray-600">
+              Running <strong>{currentModel?.name || selectedModel}</strong> on <strong>{dataset}</strong> dataset
+            </p>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Progress Bar with completion percentage */}
