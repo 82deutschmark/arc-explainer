@@ -269,7 +269,7 @@ export class OpenRouterService {
         tokenUsage,
         cost,
         processingTimeMs: Date.now(),
-        modelUsed: openRouterModelName,
+        modelName: openRouterModelName, // Fixed: use modelName to match repository expectations
         reasoning: null, // OpenRouter doesn't provide separate reasoning logs
         reasoningLog: null
       };
@@ -292,7 +292,7 @@ export class OpenRouterService {
         tokenUsage: undefined,
         cost: undefined,
         processingTimeMs: Date.now(),
-        modelUsed: openRouterModelName
+        modelName: openRouterModelName // Fixed: use modelName to match repository expectations
       };
     }
   }
