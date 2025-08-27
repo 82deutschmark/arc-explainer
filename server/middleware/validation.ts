@@ -39,12 +39,7 @@ export const validation = {
    * Validates feedback submission
    */
   feedback: (req: Request, res: Response, next: NextFunction) => {
-    logger.debug('Received feedback request: ' + JSON.stringify({ 
-      body: req.body, 
-      params: req.params,
-      query: req.query,
-      path: req.path
-    }), 'validation');
+    logger.debug(`Feedback validation for explanation ${req.body.explanationId || req.params.explanationId}`, 'validation');
     
     // Extract explanationId from either body or params
     // This makes the API more flexible - it can accept the ID from either source
@@ -54,7 +49,6 @@ export const validation = {
     // If explanationId is missing from body but present in params, use that one
     if ((!explanationId && explanationId !== 0) && req.params.explanationId) {
       explanationId = parseInt(req.params.explanationId, 10);
-      logger.debug('Using explanationId from params: ' + explanationId, 'validation');
       // Add it to the body for the controller
       req.body.explanationId = explanationId;
     }
@@ -63,7 +57,6 @@ export const validation = {
     
     // Final validation check
     if ((!explanationId && explanationId !== 0)) {
-      logger.warn('explanationId validation failed. Not found in body or params', 'validation');
       throw new AppError('Missing required field: explanationId', 400, 'VALIDATION_ERROR');
     }
     
@@ -195,18 +188,6 @@ export const validation = {
     const { puzzleId } = req.params;
     const { explanations } = req.body;
 
-    // DEBUG: Log exact request structure
-    console.log('[VALIDATION-DEBUG] Request structure:', {
-      puzzleId,
-      bodyKeys: Object.keys(req.body),
-      explanationsType: typeof explanations,
-      explanationsKeys: explanations ? Object.keys(explanations) : 'null',
-      patternDescriptionExists: !!explanations?.patternDescription,
-      patternDescriptionType: typeof explanations?.patternDescription,
-      patternDescriptionLength: explanations?.patternDescription?.length || 0,
-      patternDescriptionSample: explanations?.patternDescription?.substring(0, 50) || 'none'
-    });
-
     if (!puzzleId || puzzleId.trim() === '') {
       throw new AppError('Missing required parameter: puzzleId', 400, 'VALIDATION_ERROR');
     }
@@ -228,21 +209,17 @@ export const validation = {
       explanationData = explanationData.result;
     }
     
-    // Check for either camelCase or snake_case variants
+    // Validate required fields with flexible field name support
     const patternDesc = explanationData.patternDescription || explanationData.pattern_description;
     const solvingStrat = explanationData.solvingStrategy || explanationData.solving_strategy;
 
     if (!patternDesc || typeof patternDesc !== 'string' || patternDesc.trim().length < 10) {
-      console.error('[VALIDATION-ERROR] patternDescription validation failed:', {
-        patternDesc,
-        type: typeof patternDesc,
-        length: patternDesc?.length || 0,
-        explanationsData: explanations
-      });
+      logger.warn(`Validation failed for puzzleId ${puzzleId}: patternDescription invalid or too short (${patternDesc?.length || 0} chars)`, 'validation');
       throw new AppError('patternDescription must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
     }
 
     if (!solvingStrat || typeof solvingStrat !== 'string' || solvingStrat.trim().length < 10) {
+      logger.warn(`Validation failed for puzzleId ${puzzleId}: solvingStrategy invalid or too short (${solvingStrat?.length || 0} chars)`, 'validation');
       throw new AppError('solvingStrategy must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
     }
 
