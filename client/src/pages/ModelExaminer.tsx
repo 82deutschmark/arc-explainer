@@ -42,6 +42,7 @@ export default function ModelExaminer() {
     sessionId,
     progress,
     isRunning,
+    isLoading,
     error,
     results,
     startAnalysis,
