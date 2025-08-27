@@ -55,7 +55,6 @@ export interface PuzzleAnalysis {
   predictedOutputGrid?: number[][];
   isPredictionCorrect?: boolean;
   predictionAccuracyScore?: number;
-  extractionMethod?: string;
 }
 
 export interface SolutionValidation {
