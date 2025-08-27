@@ -8,14 +8,14 @@
  * @date 2025-08-27
  */
 
-import { BaseRepository } from './base/BaseRepository.js';
+import { BaseRepository } from './base/BaseRepository.ts';
 import { 
   IExplanationRepository, 
   ExplanationData, 
   ExplanationResponse, 
   BulkExplanationStatus 
-} from './interfaces/IExplanationRepository.js';
-import { logger } from '../utils/logger.js';
+} from './interfaces/IExplanationRepository.ts';
+import { logger } from '../utils/logger.ts';
 
 export class ExplanationRepository extends BaseRepository implements IExplanationRepository {
   

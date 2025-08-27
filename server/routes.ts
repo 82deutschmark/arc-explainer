@@ -31,8 +31,8 @@ import { validation } from "./middleware/validation";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";
-import { repositoryService } from './repositories/RepositoryService.js';
-import { logger } from "./utils/logger.js";
+import { repositoryService } from './repositories/RepositoryService.ts';
+import { logger } from "./utils/logger.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services

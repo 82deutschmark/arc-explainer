@@ -6,7 +6,7 @@
  */
 
 import { Router } from 'express';
-import { MODELS, getModelConfig, getModelsByProvider } from '../config/models.js';
+import { MODELS, getModelConfig, getModelsByProvider } from '../config/models.ts';
 
 const router = Router();
 

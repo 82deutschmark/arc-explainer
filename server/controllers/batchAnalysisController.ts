@@ -10,7 +10,7 @@
 import { Request, Response } from 'express';
 import { batchAnalysisService } from '../services/batchAnalysisService';
 import { formatResponse } from '../utils/responseFormatter';
-import { repositoryService } from '../repositories/RepositoryService.js';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger';
 
 export const batchAnalysisController = {

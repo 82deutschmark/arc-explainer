@@ -11,10 +11,10 @@
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from './logger';
-import { safeJsonStringify } from './CommonUtilities.js';
+import { safeJsonStringify } from './CommonUtilities.ts';
 
 // Re-export safeJsonStringify from CommonUtilities for consistency
-export { safeJsonStringify } from './CommonUtilities.js';
+export { safeJsonStringify } from './CommonUtilities.ts';
 
 /**
  * A strict wrapper around pool.query that provides:

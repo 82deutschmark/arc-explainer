@@ -6,8 +6,8 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { attach as attachWs } from './services/wsService';
-import { repositoryService } from './repositories/RepositoryService.js';
-import { logger } from './utils/logger.js';
+import { repositoryService } from './repositories/RepositoryService.ts';
+import { logger } from './utils/logger.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);

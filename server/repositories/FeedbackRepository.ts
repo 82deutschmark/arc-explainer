@@ -8,9 +8,9 @@
  * @date 2025-08-27
  */
 
-import { BaseRepository } from './base/BaseRepository.js';
-import { logger } from '../utils/logger.js';
-import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types.js';
+import { BaseRepository } from './base/BaseRepository.ts';
+import { logger } from '../utils/logger.ts';
+import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types.ts';
 
 export interface AddFeedbackData {
   explanationId: number;

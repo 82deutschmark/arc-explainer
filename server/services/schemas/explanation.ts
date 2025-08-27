@@ -18,8 +18,8 @@ import {
   COMMON_PROPERTIES,
   ALIEN_PROPERTIES,
   createSchema
-} from './common.js';
-import { normalizeConfidence as normalizeConfidenceUtil } from '../../utils/CommonUtilities.js';
+} from './common.ts';
+import { normalizeConfidence as normalizeConfidenceUtil } from '../../utils/CommonUtilities.ts';
 
 /**
  * JSON schema for standard explanation responses

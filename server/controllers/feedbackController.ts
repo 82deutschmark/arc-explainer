@@ -9,10 +9,10 @@
  */
 
 import { Request, Response } from 'express';
-import { feedbackService } from '../services/feedbackService.js';
-import { formatResponse } from '../utils/responseFormatter.js';
-import { repositoryService } from '../repositories/RepositoryService.js';
-import type { FeedbackFilters } from '../../shared/types.js';
+import { feedbackService } from '../services/feedbackService.ts';
+import { formatResponse } from '../utils/responseFormatter.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
+import type { FeedbackFilters } from '../../shared/types.ts';
 
 export const feedbackController = {
   /**
