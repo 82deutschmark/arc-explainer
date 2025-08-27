@@ -152,9 +152,53 @@ class BatchAnalysisService extends EventEmitter {
 
   /**
    * Get status of a batch analysis session
+   * Queries database as primary source of truth
    */
-  getBatchStatus(sessionId: string): BatchProgress | null {
-    return this.activeSessions.get(sessionId) || null;
+  async getBatchStatus(sessionId: string): Promise<BatchProgress | null> {
+    logger.info(`Fetching batch status for session ${sessionId} from database`, 'batch-analysis');
+    
+    try {
+      const sessionData = await dbService.getBatchSession(sessionId);
+      if (!sessionData) {
+        logger.warn(`Session ${sessionId} not found in database`, 'batch-analysis');
+        return null;
+      }
+
+      // Build progress from database data
+      const totalPuzzles = sessionData.total_puzzles || 0;
+      const successfulPuzzles = sessionData.successful_puzzles || 0;
+      const failedPuzzles = sessionData.failed_puzzles || 0;
+      const completedPuzzles = successfulPuzzles + failedPuzzles;
+
+      const progress: BatchProgress = {
+        sessionId,
+        status: sessionData.status as any || 'pending',
+        progress: {
+          total: totalPuzzles,
+          completed: completedPuzzles,
+          successful: successfulPuzzles, 
+          failed: failedPuzzles,
+          percentage: totalPuzzles > 0 
+            ? Math.round((completedPuzzles / totalPuzzles) * 100)
+            : 0
+        },
+        stats: {
+          averageProcessingTime: sessionData.avg_processing_time || 0,
+          overallAccuracy: successfulPuzzles > 0 
+            ? Math.round((successfulPuzzles / Math.max(completedPuzzles, 1)) * 100)
+            : 0,
+          eta: 0 // ETA calculation would need in-memory processing state
+        },
+        startTime: sessionData.created_at ? new Date(sessionData.created_at).getTime() : Date.now(),
+        endTime: sessionData.completed_at ? new Date(sessionData.completed_at).getTime() : undefined
+      };
+
+      logger.info(`Database session ${sessionId}: ${progress.status} - ${progress.progress.completed}/${progress.progress.total} puzzles (${progress.progress.percentage}%)`, 'batch-analysis');
+      return progress;
+    } catch (error) {
+      logger.error(`Error fetching session ${sessionId} from database: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
+      return null;
+    }
   }
 
   /**

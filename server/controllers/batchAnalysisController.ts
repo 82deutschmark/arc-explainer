@@ -136,12 +136,12 @@ export const batchAnalysisController = {
         ));
       }
 
-      const status = batchAnalysisService.getBatchStatus(sessionId);
+      const status = await batchAnalysisService.getBatchStatus(sessionId);
       
       if (!status) {
         return res.status(404).json(formatResponse.error(
           'Session not found',
-          `Batch analysis session ${sessionId} not found`
+          `Batch analysis session ${sessionId} not found or expired`
         ));
       }
 
