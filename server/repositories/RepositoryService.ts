@@ -8,12 +8,11 @@
  * @date 2025-08-27
  */
 
-import { initializeDatabase, isDatabaseConnected } from './base/BaseRepository.js';
+import { initializeDatabase, isDatabaseConnected, getPool } from './base/BaseRepository.js';
 import { ExplanationRepository } from './ExplanationRepository.js';
 import { FeedbackRepository } from './FeedbackRepository.js';
 import { BatchAnalysisRepository } from './BatchAnalysisRepository.js';
 import { DatabaseSchema } from './database/DatabaseSchema.js';
-import { getPool } from './base/BaseRepository.js';
 import { logger } from '../utils/logger.js';
 
 export class RepositoryService {
