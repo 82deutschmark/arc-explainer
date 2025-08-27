@@ -373,6 +373,28 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     supportsReasoning: false
+  },
+  {
+    key: 'baidu/ernie-4.5-vl-28b-a3b',
+    name: 'Ernie 4.5 VL 28B',
+    color: 'bg-blue-700',
+    premium: false,
+    cost: { input: '$1.50', output: '$3.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false
+  },
+  {
+    key: 'deepseek/deepseek-chat-v3.1',
+    name: 'DeepSeek Chat v3.1',
+    color: 'bg-cyan-700',
+    premium: false,
+    cost: { input: '$0.27', output: '$1.10' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-90 sec' },
+    supportsReasoning: false
   }
 ];
 
