@@ -283,37 +283,11 @@ const getAccuracyStats = async () => {
 
 // Batch Analysis Functions (simplified implementations)
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const createBatchSession = async (sessionData: any) => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  
-  try {
-    await client.query(
-      `INSERT INTO batch_analysis_sessions 
-       (session_id, total_puzzles, model_key, dataset, prompt_id, custom_prompt, 
-        temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [
-        sessionData.sessionId, 
-        sessionData.totalPuzzles, 
-        sessionData.modelKey, 
-        sessionData.dataset,
-        sessionData.promptId,
-        sessionData.customPrompt,
-        sessionData.temperature,
-        sessionData.reasoningEffort,
-        sessionData.reasoningVerbosity,
-        sessionData.reasoningSummaryType
-      ]
-    );
-    return true;
-  } catch (error) {
-    logger.error(`Error creating batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return false;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.createBatchSession(sessionData);
 };
 
 const updateBatchSession = async (sessionId: string, updates: any) => {
