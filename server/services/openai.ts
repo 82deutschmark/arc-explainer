@@ -272,6 +272,16 @@ export class OpenAIService extends BaseAIService {
     let reasoningLog = null;
     let reasoningItems: any[] = [];
 
+    // DEBUG: Log full response structure to understand GPT-5-nano format
+    console.log(`[${this.provider}] RESPONSE DEBUG for ${modelKey}:`, {
+      hasOutputParsed: !!response.output_parsed,
+      hasOutputText: !!response.output_text,
+      responseKeys: Object.keys(response),
+      outputParsedType: typeof response.output_parsed,
+      outputTextLength: response.output_text?.length || 0,
+      outputTextSample: response.output_text?.substring(0, 100) || 'none'
+    });
+
     // Parse JSON response - prefer structured output_parsed over regex scraping
     if (response.output_parsed) {
       console.log(`[${this.provider}] Using structured output_parsed from JSON schema`);
@@ -349,7 +359,8 @@ export class OpenAIService extends BaseAIService {
 
     try {
       // Check if model supports structured JSON schema
-      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest');
+      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest') && 
+                                       !request.model.includes('gpt-5-nano');
       
       // Prepare the request for OpenAI's Responses API
       const body = {
