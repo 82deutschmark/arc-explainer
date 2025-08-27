@@ -116,6 +116,24 @@ alien_meaning AS "alienMeaning", model_name AS "modelName"
 **Repository Integration**: ✅ `puzzleController.ts` uses `repositoryService.explanations.saveExplanation()` 
 **Field Mapping**: ✅ SQL aliases properly convert database fields for frontend
 
-## Overall Status: 🔴 CRITICAL API ISSUE
+## 🚨 MAJOR REFACTORING FAILURE DISCOVERED
 
-Repository implementation is complete, but **API inconsistency breaks reasoning capture** for most models. This explains why OpenRouter shows `"native_tokens_reasoning": 0`.
+**CRITICAL ISSUE**: `dbService.ts` is still **1017 lines** - the refactoring is **INCOMPLETE**!
+
+**What Actually Happened**:
+- ✅ Repository classes implemented properly
+- ✅ Controllers updated to use repositories  
+- ❌ **OLD dbService methods NEVER REMOVED**
+- ❌ **Still duplicated code everywhere**
+
+**dbService.ts Still Contains**:
+- `saveExplanation` (163-305) - **142 lines**
+- `getExplanationForPuzzle` (310-368) - **58 lines** 
+- All feedback methods (542-751) - **200+ lines**
+- Batch methods (817-992) - **175+ lines**
+
+**This means you have DUPLICATE implementations** - repositories AND the old monolithic service!
+
+## Overall Status: 🔴 REFACTORING FAILED
+
+The repository pattern was added ON TOP of the old code, not as a replacement. You now have **double the code** instead of cleaner architecture. The `dbService.ts` should be ~100 lines max as a thin wrapper, not 1000+ lines of duplicated logic.
