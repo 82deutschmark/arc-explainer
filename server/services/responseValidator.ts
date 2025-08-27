@@ -399,11 +399,15 @@ export function validateSolverResponse(
     };
   }
 
-  // Use clean confidence from arcJsonSchema response
-  const actualConfidence = response.confidence ?? confidence;
+  // Handle nested response structure from OpenRouter services
+  // OpenRouter returns: { result: { predictedOutput, confidence, ... }, tokenUsage, cost, ... }
+  const analysisData = response.result || response;
+
+  // Use clean confidence from arcJsonSchema response or nested structure
+  const actualConfidence = analysisData.confidence ?? confidence;
 
   // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
-  const predictedGrid = response.predictedOutput;
+  const predictedGrid = analysisData.predictedOutput;
   
   if (!predictedGrid || !Array.isArray(predictedGrid)) {
     return {
@@ -448,14 +452,18 @@ export function validateSolverResponseMulti(
     };
   }
 
-  // Use clean confidence from arcJsonSchema response
-  const actualConfidence = response.confidence ?? confidence;
+  // Handle nested response structure from OpenRouter services
+  // OpenRouter returns: { result: { predictedOutput1, predictedOutput2, confidence, ... }, tokenUsage, cost, ... }
+  const analysisData = response.result || response;
+
+  // Use clean confidence from arcJsonSchema response or nested structure
+  const actualConfidence = analysisData.confidence ?? confidence;
 
   // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
   const predictedGrids: (number[][] | null)[] = [
-    response.predictedOutput1 || null,
-    response.predictedOutput2 || null, 
-    response.predictedOutput3 || null
+    analysisData.predictedOutput1 || null,
+    analysisData.predictedOutput2 || null, 
+    analysisData.predictedOutput3 || null
   ].slice(0, correctAnswers.length);
 
   // Pad or trim to match expected count
