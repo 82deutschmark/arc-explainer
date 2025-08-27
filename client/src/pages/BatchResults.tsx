@@ -70,7 +70,7 @@ export default function BatchResults() {
         throw new Error('Failed to fetch batch sessions');
       }
       const data = await response.json();
-      return data.data || [];
+      return data.data?.sessions || [];
     },
     refetchInterval: 5000, // Auto-refresh every 5 seconds
   });
@@ -96,8 +96,8 @@ export default function BatchResults() {
     refetchInterval: selectedSessionId ? 3000 : false, // Auto-refresh results
   });
 
-  const sessions: BatchSession[] = sessionsData || [];
-  const results: BatchResult[] = resultsData || [];
+  const sessions: BatchSession[] = Array.isArray(sessionsData) ? sessionsData : [];
+  const results: BatchResult[] = Array.isArray(resultsData) ? resultsData : [];
 
   // Get model info for display
   const getModelInfo = (modelKey: string) => {
