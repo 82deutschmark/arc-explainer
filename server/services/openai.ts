@@ -98,7 +98,7 @@ export class OpenAIService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxTokens || 128000,
+      contextWindow: modelConfig?.contextWindow || 128000,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: !modelName.includes('gpt-5-chat-latest'),
