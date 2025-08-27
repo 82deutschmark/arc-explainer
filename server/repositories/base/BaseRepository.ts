@@ -10,7 +10,7 @@
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from '../../utils/logger.js';
-import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } from '../../utils/CommonUtilities.js';
+import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } from '../../utils/CommonUtilities.ts';
 
 // Database connection pool - shared across all repositories
 let pool: Pool | null = null;
