@@ -401,77 +401,47 @@ export function validateSolverResponse(
   // Use confidence from response if available, fallback to parameter
   const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
 
-  if (!response?.solvingStrategy) {
-    logger.warn('No solving strategy found in solver response', 'validator');
-    return {
-      predictedGrid: null,
-      isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethod: 'no_solving_strategy'
-    };
-  }
-
-  // Try to extract grid from predictedOutput field first, then fall back to solvingStrategy text
-  let predictedGrid: number[][] | null = null;
-  let method = '';
-  
-  // First, check if there's a direct predictedOutput field
+  // Modern AI providers (GPT-5, Claude, etc.) return clean structured data
+  // No parsing needed - use predictedOutput directly
   if (response.predictedOutput && Array.isArray(response.predictedOutput)) {
-    // Validate it's a proper numeric grid
-    const isValidNumericGrid = response.predictedOutput.every((row: any) => 
-      Array.isArray(row) && row.every((cell: any) => typeof cell === 'number' && Number.isInteger(cell))
-    );
-    
-    if (isValidNumericGrid) {
-      predictedGrid = response.predictedOutput;
-      method = 'direct_predicted_output_field';
-      logger.info(`Successfully extracted grid from predictedOutput field: ${JSON.stringify(predictedGrid)}`, 'validator');
+    const predictedGrid = response.predictedOutput;
+    const method = 'clean_structured_output';
+
+    // Validate dimensions
+    if (!validateGridDimensions(predictedGrid, correctAnswer)) {
+      logger.warn('Predicted grid dimensions do not match expected output', 'validator');
+      return {
+        predictedGrid,
+        isPredictionCorrect: false,
+        predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
+        extractionMethod: method + '_wrong_dimensions'
+      };
     }
-  }
-  
-  // Fall back to extracting from solving strategy text if no direct field found
-  if (!predictedGrid) {
-    const extractionResult = extractGridFromText(response.solvingStrategy);
-    predictedGrid = extractionResult.grid;
-    method = extractionResult.method;
-  }
-  
-  if (!predictedGrid) {
-    logger.warn('Could not extract predicted grid from response', 'validator');
+
+    // Check if prediction is correct
+    const isCorrect = gridsAreEqual(predictedGrid, correctAnswer);
+    const accuracyScore = calculateAccuracyScore(isCorrect, actualConfidence);
+
+    logger.info(
+      `Validation result: ${isCorrect ? 'CORRECT' : 'INCORRECT'}, ` +
+      `confidence: ${actualConfidence}%, score: ${(accuracyScore * 100).toFixed(1)}%`,
+      'validator'
+    );
+
     return {
-      predictedGrid: null,
-      isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
+      predictedGrid,
+      isPredictionCorrect: isCorrect,
+      predictionAccuracyScore: accuracyScore,
       extractionMethod: method
     };
   }
 
-  // Validate dimensions
-  if (!validateGridDimensions(predictedGrid, correctAnswer)) {
-    logger.warn('Predicted grid dimensions do not match expected output', 'validator');
-    return {
-      predictedGrid,
-      isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethod: method + '_wrong_dimensions'
-    };
-  }
-
-  // Check if prediction is correct
-  const isCorrect = gridsAreEqual(predictedGrid, correctAnswer);
-  const accuracyScore = calculateAccuracyScore(isCorrect, actualConfidence);
-
-  logger.info(
-    `Validation result: ${isCorrect ? 'CORRECT' : 'INCORRECT'}, ` +
-    `confidence: ${actualConfidence}%, score: ${(accuracyScore * 100).toFixed(1)}%`,
-    'validator'
-  );
-
+  // Fallback for legacy providers that don't return clean structured data
   return {
-    predictedGrid,
-    isPredictionCorrect: isCorrect,
-    predictionAccuracyScore: accuracyScore,
-    extractionMethod: method
+    predictedGrid: null,
+    isPredictionCorrect: false,
+    predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
+    extractionMethod: 'no_clean_output_fallback'
   };
 }
 
