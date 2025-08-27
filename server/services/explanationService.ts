@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-import { dbService } from './dbService';
+import { repositoryService } from '../repositories/RepositoryService';
 import { AppError } from '../middleware/errorHandler';
 
 export const explanationService = {
@@ -19,7 +19,7 @@ export const explanationService = {
    * @throws AppError if explanations cannot be retrieved
    */
   async getExplanationsForPuzzle(puzzleId: string) {
-    const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+    const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
     // Let controller handle null case - don't throw here
     return explanations;
   },
@@ -32,7 +32,7 @@ export const explanationService = {
    * @throws AppError if explanation cannot be retrieved
    */
   async getExplanationForPuzzle(puzzleId: string) {
-    const explanation = await dbService.getExplanationForPuzzle(puzzleId);
+    const explanation = await repositoryService.explanations.getExplanationForPuzzle(puzzleId);
     if (explanation === null) {
       return null; // No explanation found is not an error
     }
@@ -71,6 +71,10 @@ export const explanationService = {
         const sourceData = explanations[modelKey];
         const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
+        // Handle nested result structure from OpenRouter services
+        // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
+        const analysisData = restOfExplanationData.result || restOfExplanationData;
+        
         // Simple logic: detect if we have multiple predictions
         let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsForStorage: any = null;
@@ -83,30 +87,34 @@ export const explanationService = {
           multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
         }
 
-        // Create a well-defined object, ensuring no 'undefined' values are passed.
+        // Extract token usage from nested structure for OpenRouter
+        const tokenUsage = restOfExplanationData.tokenUsage;
+        const costData = restOfExplanationData.cost;
+
+        // Handle both flat and nested response structures
         const explanationData = {
-          patternDescription: restOfExplanationData.patternDescription ?? null,
-          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
-          hints: restOfExplanationData.hints ?? null,
-          confidence: restOfExplanationData.confidence ?? 0,
-          modelName: modelKey,
-          reasoningLog: restOfExplanationData.reasoningLog ?? null,
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
-          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
-          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
+          patternDescription: analysisData.patternDescription ?? null,
+          solvingStrategy: analysisData.solvingStrategy ?? null,
+          hints: analysisData.hints ?? null,
+          confidence: analysisData.confidence ?? 0,
+          modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
+          reasoningLog: restOfExplanationData.reasoningLog ?? analysisData.reasoningLog ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
           multiplePredictedOutputs: multiplePredictedOutputsForStorage,
-          multiTestResults: restOfExplanationData.multiTestResults ?? null,
-          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
-          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
+          multiTestResults: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
           providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          // Badge fields that were being dropped
+          // Badge fields - handle both nested token structure and flat structure
           apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
-          inputTokens: restOfExplanationData.inputTokens ?? null,
-          outputTokens: restOfExplanationData.outputTokens ?? null,
-          reasoningTokens: restOfExplanationData.reasoningTokens ?? null,
-          totalTokens: restOfExplanationData.totalTokens ?? null,
-          estimatedCost: restOfExplanationData.estimatedCost ?? null,
+          inputTokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
+          outputTokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
+          reasoningTokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
+          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
+          estimatedCost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
           temperature: restOfExplanationData.temperature ?? null,
           reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
           reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
@@ -115,10 +123,14 @@ export const explanationService = {
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
-          const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
-          if (explanationId) {
-            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${explanationId})`);
-            savedExplanationIds.push(explanationId);
+          const explanationWithPuzzleId = {
+            ...explanationData,
+            puzzleId: puzzleId
+          };
+          const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
+          if (savedExplanation && savedExplanation.id) {
+            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
+            savedExplanationIds.push(savedExplanation.id);
           } else {
             const errorMsg = `Database save returned null for model ${modelKey} (puzzle: ${puzzleId}) - likely validation or JSON serialization failure`;
             console.error(`[SAVE-CRITICAL-ERROR] ${errorMsg}`);
@@ -194,12 +206,15 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
     }
 
     // Save the new explanation as a separate attempt
-    const explanationId = await dbService.saveExplanation(puzzleId, {
+    const explanationData = {
+      puzzleId: puzzleId,
       ...newExplanation,
       modelName,
       retryReason: userFeedback, // Store the feedback that triggered this retry
       isRetry: true // Mark as retry attempt
-    });
+    };
+    const savedExplanation = await repositoryService.explanations.saveExplanation(explanationData);
+    const explanationId = savedExplanation.id;
 
     return {
       success: true,

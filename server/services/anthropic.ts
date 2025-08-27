@@ -1,33 +1,16 @@
 /**
  * Anthropic Claude service for analyzing ARC puzzles using Claude models
- * Simplified to focus on clean, direct responses without complex reasoning capture
+ * Refactored to extend BaseAIService for code consolidation
  * 
- * Supports dynamic prompt template selection via promptId parameter.
- * Uses PROMPT_TEMPLATES from shared/types to allow different explanation approaches:
- * - alienCommunication: Frames puzzles as alien communication (includes emoji map)
- * - standardExplanation: Direct puzzle explanations without thematic framing
- * - educationalApproach: Teaching-focused explanations for learning
- * 
- * The emoji map and JSON response format adapt automatically based on template selection.
- * 
- * @author Cascade / Gemini Pro 2.5
+ * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import { ARCTask } from "../../shared/types";
-import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder";
-import type { PromptOptions } from "./promptBuilder"; // Cascade: modular prompt options
-import { calculateCost } from "../utils/costCalculator";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models";
-
-// Latest Anthropic models - updated with current model names from official documentation
-const MODELS = {
-  "claude-sonnet-4-20250514": "claude-sonnet-4-20250514",
-  "claude-3-7-sonnet-20250219": "claude-3-7-sonnet-20250219",
-  "claude-3-5-sonnet-20241022": "claude-3-5-sonnet-20241022",
-  "claude-3-5-haiku-20241022": "claude-3-5-haiku-20241022",
-  "claude-3-haiku-20240307": "claude-3-haiku-20240307",
-} as const;
+import { ARCTask } from "../../shared/types.js";
+import { getDefaultPromptId } from "./promptBuilder.js";
+import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
 
 // Helper function to check if model supports temperature using centralized config
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -37,200 +20,191 @@ function modelSupportsTemperature(modelKey: string): boolean {
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// System prompts are now handled by the modular promptBuilder architecture
-// No hardcoded system prompts needed here - they come from prompts/systemPrompts.ts
+export class AnthropicService extends BaseAIService {
+  protected provider = "Anthropic";
+  protected models = {
+    "claude-sonnet-4-20250514": "claude-sonnet-4-20250514",
+    "claude-3-7-sonnet-20250219": "claude-3-7-sonnet-20250219",
+    "claude-3-5-sonnet-20241022": "claude-3-5-sonnet-20241022",
+    "claude-3-5-haiku-20241022": "claude-3-5-haiku-20241022",
+    "claude-3-haiku-20240307": "claude-3-haiku-20240307",
+  };
 
-export class AnthropicService {
   async analyzePuzzleWithModel(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
+    modelKey: string,
     temperature: number = 0.2,
     captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: {
-      systemPromptMode?: 'ARC' | 'None';
-      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
-      reasoningVerbosity?: 'low' | 'medium' | 'high';
-      reasoningSummaryType?: 'auto' | 'detailed';
-    }
-  ) {
-    const modelName = MODELS[modelKey];
-
-    // Determine system prompt mode (default to ARC for better results)
-    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // Build prompt package using inherited method
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
-    // Build prompt package using new modular architecture
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: false // Anthropic doesn't support structured output yet
-    });
-    
-    console.log(`[Anthropic] Using modular system prompt architecture`);
-    console.log(`[Anthropic] System prompt mode: ${systemPromptMode}`);
-    console.log(`[Anthropic] Template: ${promptId}${promptPackage.isSolver ? ' (solver mode)' : ''}${promptPackage.isAlienMode ? ' (alien mode)' : ''}`);
-    
-    // Use system and user prompts from the modular architecture
-    const systemMessage = systemPromptMode === 'ARC' ? promptPackage.systemPrompt : undefined;
-    const userMessage = promptPackage.userPrompt;
+    // Log analysis start using inherited method
+    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // Build request options with proper Anthropic system parameter
-      const requestOptions: any = {
-        model: modelName,
-        max_tokens: 20000, // Increased from 4000 based on models.yml capabilities
-        messages: [{ role: "user", content: userMessage }],
-      };
+      // Call provider-specific API
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
-      // Add system prompt if in ARC mode (Anthropic supports dedicated system parameter)
-      if (systemMessage) {
-        requestOptions.system = systemMessage;
-      }
+      // Parse response using provider-specific method
+      const { result, tokenUsage, reasoningLog, reasoningItems } = 
+        this.parseProviderResponse(response, modelKey, captureReasoning);
 
-      // Only add temperature for models that support it
-      if (modelSupportsTemperature(modelKey)) {
-        requestOptions.temperature = temperature;
-      }
-
-      const response = await anthropic.messages.create(requestOptions);
-      
-      // Simple response parsing
-      const content = response.content[0];
-      const textContent = content.type === 'text' ? content.text : '';
-      
-      // Simple JSON extraction - try direct parse first, then look for JSON in text
-      let result;
-      try {
-        result = JSON.parse(textContent);
-      } catch (parseError) {
-        // Look for JSON anywhere in the text
-        const jsonMatch = textContent.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            result = JSON.parse(jsonMatch[0]);
-          } catch (secondError) {
-            // If no JSON found, treat as natural language response
-            result = {
-              patternDescription: textContent.length > 0 ? textContent : "No response received",
-              solvingStrategy: "",
-              hints: [],
-              confidence: 50
-            };
-          }
-        } else {
-          // If no JSON found, treat as natural language response
-          result = {
-            patternDescription: textContent.length > 0 ? textContent : "No response received",
-            solvingStrategy: "",
-            hints: [],
-            confidence: 50
-          };
-        }
-      }
-
-      // Extract token usage from Anthropic response
-      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
-      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
-      
-      if (response.usage) {
-        // Defensive token usage calculation like OpenAI
-        const inputTokens = response.usage.input_tokens ?? 0;
-        const outputTokens = response.usage.output_tokens ?? 0;
-        
-        tokenUsage = {
-          input: inputTokens,
-          output: outputTokens,
-          // Anthropic doesn't provide separate reasoning tokens
-        };
-
-        // Find the model config to get pricing
-        const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-        if (modelConfig && tokenUsage) {
-          cost = calculateCost(modelConfig.cost, tokenUsage);
-        }
-      }
-      
-      return {
-        model: modelKey,
-        reasoningLog: null,
-        hasReasoningLog: false,
-        // Include analysis parameters for database storage
+      // Build standard response using inherited method
+      return this.buildStandardResponse(
+        modelKey,
         temperature,
-        reasoningEffort: serviceOpts?.reasoningEffort || null,
-        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
-        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
-        // Token usage and cost data
-        inputTokens: tokenUsage?.input || null,
-        outputTokens: tokenUsage?.output || null,
-        reasoningTokens: tokenUsage?.reasoning || null,
-        totalTokens: tokenUsage ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : null,
-        estimatedCost: cost?.total || null,
-        ...result,
-      };
+        result,
+        tokenUsage,
+        serviceOpts,
+        reasoningLog,
+        !!reasoningLog,
+        reasoningItems
+      );
+
     } catch (error) {
-      console.error(`Error with model ${modelKey}:`, error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Model ${modelKey} failed: ${errorMessage}`);
+      this.handleAnalysisError(error, modelKey, task);
     }
   }
 
-  /**
-   * Generate a preview of the exact prompt that will be sent to Anthropic
-   * Shows the provider-specific message format and structure
-   */
-  async generatePromptPreview(
+  getModelInfo(modelKey: string): ModelInfo {
+    const modelName = this.models[modelKey] || modelKey;
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    
+    return {
+      name: modelName,
+      isReasoning: false, // Anthropic models don't have built-in reasoning mode
+      supportsTemperature: modelSupportsTemperature(modelKey),
+      contextWindow: modelConfig?.maxTokens || 200000,
+      supportsFunctionCalling: true,
+      supportsSystemPrompts: true,
+      supportsStructuredOutput: false, // Anthropic doesn't support structured output yet
+      supportsVision: modelName.includes('claude-3') // Most Claude 3+ models support vision
+    };
+  }
+
+  generatePromptPreview(
     task: ARCTask,
-    modelKey: keyof typeof MODELS,
-    temperature: number = 0.2,
-    captureReasoning: boolean = true,
+    modelKey: string,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-  ) {
-    const modelName = MODELS[modelKey];
+    serviceOpts: ServiceOptions = {}
+  ): PromptPreview {
+    const modelName = this.models[modelKey] || modelKey;
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
-    // Build prompt using shared prompt builder - keep it simple
-    const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
-    const prompt = promptPackage.userPrompt;
-    const selectedTemplate = promptPackage.selectedTemplate;
-
-    // Anthropic uses messages array format
-    const messageFormat = {
+    // Build message format for Anthropic API
+    const messageFormat: any = {
       model: modelName,
-      max_tokens: 20000, // Updated from 4000 based on models.yml
-      messages: [{ role: "user", content: prompt }],
-      temperature: temperature
+      max_tokens: 20000,
+      messages: [{ role: "user", content: userMessage }],
+      ...(systemMessage && { system: systemMessage }),
+      ...(modelSupportsTemperature(modelKey) && { temperature })
     };
 
     const providerSpecificNotes = [
       "Uses Anthropic Messages API",
-      "Temperature parameter supported",
-      "Max tokens set to 20000"
+      "Supports dedicated system parameter",
+      systemPromptMode === 'ARC' 
+        ? "System Prompt Mode: {ARC} - Using dedicated system parameter"
+        : "System Prompt Mode: {None} - All content in user message",
+      "JSON extraction via regex parsing (no structured output support)"
     ];
 
+    const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
+
     return {
-      provider: "Anthropic",
+      provider: this.provider,
       modelName,
-      promptText: prompt,
+      promptText: previewText,
       messageFormat,
+      systemPromptMode,
       templateInfo: {
-        id: selectedTemplate?.id || "custom",
-        name: selectedTemplate?.name || "Custom Prompt",
-        usesEmojis: selectedTemplate?.emojiMapIncluded || false
+        id: promptPackage.selectedTemplate?.id || "custom",
+        name: promptPackage.selectedTemplate?.name || "Custom Prompt",
+        usesEmojis: promptPackage.selectedTemplate?.emojiMapIncluded || false
       },
       promptStats: {
-        characterCount: prompt.length,
-        wordCount: prompt.split(/\s+/).length,
-        lineCount: prompt.split('\n').length
+        characterCount: previewText.length,
+        wordCount: previewText.split(/\s+/).length,
+        lineCount: previewText.split('\n').length
       },
-      providerSpecificNotes,
-      captureReasoning,
-      temperature
+      providerSpecificNotes: providerSpecificNotes.join('; ')
+    };
+  }
+
+  protected async callProviderAPI(
+    promptPackage: PromptPackage,
+    modelKey: string,
+    temperature: number,
+    serviceOpts: ServiceOptions
+  ): Promise<any> {
+    const modelName = this.models[modelKey] || modelKey;
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+
+    // Build request options with proper Anthropic system parameter
+    const requestOptions: any = {
+      model: modelName,
+      max_tokens: 20000,
+      messages: [{ role: "user", content: userMessage }],
+    };
+    
+    // Add system prompt if in ARC mode (Anthropic supports dedicated system parameter)
+    if (systemMessage && systemPromptMode === 'ARC') {
+      requestOptions.system = systemMessage;
+    }
+
+    // Only add temperature for models that support it
+    if (modelSupportsTemperature(modelKey)) {
+      requestOptions.temperature = temperature;
+    }
+
+    return await anthropic.messages.create(requestOptions);
+  }
+
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean
+  ): {
+    result: any;
+    tokenUsage: TokenUsage;
+    reasoningLog?: any;
+    reasoningItems?: any[];
+  } {
+    // Extract text content from Anthropic response
+    const content = response.content[0];
+    const textContent = content.type === 'text' ? content.text : '';
+    
+    // Extract JSON using inherited method
+    const result = this.extractJsonFromResponse(textContent, modelKey);
+
+    // Extract token usage
+    const tokenUsage: TokenUsage = {
+      input: response.usage?.input_tokens || 0,
+      output: response.usage?.output_tokens || 0,
+      // Anthropic doesn't provide separate reasoning tokens
+    };
+
+    // Anthropic doesn't provide built-in reasoning logs
+    return {
+      result,
+      tokenUsage,
+      reasoningLog: null,
+      reasoningItems: []
     };
   }
 }
 
-export const anthropicService = new AnthropicService(); 
+export const anthropicService = new AnthropicService();

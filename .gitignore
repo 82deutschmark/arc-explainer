@@ -5,12 +5,6 @@ server/public
 vite.config.ts.*
 *.tar.gz
 .env
-/data/explained
-/data/explained
 *.pyc
-
-/data/explained
 nul
 /solver/img_tmp
-/data/explained
-/data/explained

@@ -7,7 +7,7 @@
  * @author Claude Code Assistant
  */
 
-import { dbService } from './dbService';
+import { repositoryService } from '../repositories/RepositoryService';
 import { puzzleService } from './puzzleService';
 import { aiServiceFactory } from './aiServiceFactory';
 import { logger } from '../utils/logger';
@@ -83,14 +83,16 @@ class BatchAnalysisService extends EventEmitter {
 
       // Check database connection before creating session
       logger.info(`Checking database connection status`, 'batch-analysis');
-      if (!dbService.isConnected()) {
+      try {
+        await repositoryService.batchAnalysis.getBatchSession('test-connection');
+      } catch (error) {
         logger.error(`FAILED: Database not connected when trying to create session ${sessionId} - NOT adding session to activeSessions`, 'batch-analysis');
         return { sessionId: '', error: 'Database connection not available' };
       }
 
       // Create database session record
       logger.info(`Creating database session for ${sessionId}`, 'batch-analysis');
-      const sessionCreated = await dbService.createBatchSession({
+      const sessionCreated = await repositoryService.batchAnalysis.createBatchSession({
         sessionId,
         modelKey: config.modelKey,
         dataset: config.dataset,
@@ -133,7 +135,11 @@ class BatchAnalysisService extends EventEmitter {
 
       // Create batch result records for all puzzles
       for (const puzzle of puzzles) {
-        await dbService.createBatchResult(sessionId, puzzle.id);
+        await repositoryService.batchAnalysis.createBatchResult({
+          sessionId,
+          puzzleId: puzzle.id,
+          status: 'pending'
+        });
       }
 
       // Start processing if we haven't hit concurrent limit
@@ -158,17 +164,18 @@ class BatchAnalysisService extends EventEmitter {
     logger.info(`Fetching batch status for session ${sessionId} from database`, 'batch-analysis');
     
     try {
-      const sessionData = await dbService.getBatchSession(sessionId);
+      const sessionData = await repositoryService.batchAnalysis.getBatchSession(sessionId);
       if (!sessionData) {
         logger.warn(`Session ${sessionId} not found in database`, 'batch-analysis');
         return null;
       }
 
-      // Build progress from database data
-      const totalPuzzles = sessionData.total_puzzles || 0;
-      const successfulPuzzles = sessionData.successful_puzzles || 0;
-      const failedPuzzles = sessionData.failed_puzzles || 0;
-      const completedPuzzles = successfulPuzzles + failedPuzzles;
+      // Get session stats from repository
+      const stats = await repositoryService.batchAnalysis.getBatchSessionStats(sessionId);
+      const totalPuzzles = sessionData.totalPuzzles || 0;
+      const completedPuzzles = stats.completedCount || 0;
+      const successfulPuzzles = stats.successCount || 0;
+      const failedPuzzles = stats.errorCount || 0;
 
       const progress: BatchProgress = {
         sessionId,
@@ -183,14 +190,14 @@ class BatchAnalysisService extends EventEmitter {
             : 0
         },
         stats: {
-          averageProcessingTime: sessionData.avg_processing_time || 0,
+          averageProcessingTime: stats.averageProcessingTime || 0,
           overallAccuracy: successfulPuzzles > 0 
             ? Math.round((successfulPuzzles / Math.max(completedPuzzles, 1)) * 100)
             : 0,
           eta: 0 // ETA calculation would need in-memory processing state
         },
-        startTime: sessionData.created_at ? new Date(sessionData.created_at).getTime() : Date.now(),
-        endTime: sessionData.completed_at ? new Date(sessionData.completed_at).getTime() : undefined
+        startTime: sessionData.createdAt ? new Date(sessionData.createdAt).getTime() : Date.now(),
+        endTime: sessionData.completedAt ? new Date(sessionData.completedAt).getTime() : undefined
       };
 
       logger.info(`Database session ${sessionId}: ${progress.status} - ${progress.progress.completed}/${progress.progress.total} puzzles (${progress.progress.percentage}%)`, 'batch-analysis');
@@ -217,7 +224,7 @@ class BatchAnalysisService extends EventEmitter {
       case 'pause':
         if (progress.status === 'running') {
           progress.status = 'paused';
-          await dbService.updateBatchSession(sessionId, { status: 'paused' });
+          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { status: 'paused' });
           this.emit('session-paused', sessionId);
           return true;
         }
@@ -226,7 +233,7 @@ class BatchAnalysisService extends EventEmitter {
       case 'resume':
         if (progress.status === 'paused') {
           progress.status = 'running';
-          await dbService.updateBatchSession(sessionId, { status: 'running' });
+          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { status: 'running' });
           // Resume processing
           this.processBatchSession(sessionId, await this.getSessionConfig(sessionId));
           this.emit('session-resumed', sessionId);
@@ -238,7 +245,7 @@ class BatchAnalysisService extends EventEmitter {
         if (['running', 'paused', 'pending'].includes(progress.status)) {
           progress.status = 'cancelled';
           progress.endTime = Date.now();
-          await dbService.updateBatchSession(sessionId, { 
+          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
             status: 'cancelled',
             completedAt: new Date()
           });
@@ -256,7 +263,7 @@ class BatchAnalysisService extends EventEmitter {
    * Get detailed results for a batch session
    */
   async getBatchResults(sessionId: string) {
-    return await dbService.getBatchResults(sessionId);
+    return await repositoryService.batchAnalysis.getBatchResults(sessionId);
   }
 
   /**
@@ -274,7 +281,7 @@ class BatchAnalysisService extends EventEmitter {
     progress.status = 'running';
     progress.startTime = Date.now();
     
-    await dbService.updateBatchSession(sessionId, { 
+    await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
       status: 'running',
       startedAt: new Date()
     });
@@ -311,12 +318,10 @@ class BatchAnalysisService extends EventEmitter {
               processingTimes.push(result.value.processingTime);
             }
             
-            await dbService.updateBatchResult(sessionId, puzzleId, {
+            await repositoryService.batchAnalysis.updateBatchResult(sessionId, puzzleId, {
               status: 'completed',
               explanationId: result.value.explanationId,
               processingTimeMs: result.value.processingTime,
-              accuracyScore: result.value.accuracy,
-              isCorrect: result.value.isCorrect,
               completedAt: new Date()
             });
             
@@ -324,9 +329,9 @@ class BatchAnalysisService extends EventEmitter {
             progress.progress.failed++;
             const error = result.status === 'rejected' ? result.reason.message : 'Unknown error';
             
-            await dbService.updateBatchResult(sessionId, puzzleId, {
+            await repositoryService.batchAnalysis.updateBatchResult(sessionId, puzzleId, {
               status: 'failed',
-              errorMessage: error,
+              error: error,
               completedAt: new Date()
             });
           }
@@ -348,7 +353,7 @@ class BatchAnalysisService extends EventEmitter {
         }
 
         // Update database with progress
-        await dbService.updateBatchSession(sessionId, {
+        await repositoryService.batchAnalysis.updateBatchSession(sessionId, {
           completedPuzzles: progress.progress.completed,
           successfulPuzzles: progress.progress.successful,
           failedPuzzles: progress.progress.failed,
@@ -366,9 +371,8 @@ class BatchAnalysisService extends EventEmitter {
       } catch (error) {
         logger.error(`Error processing batch for session ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
         progress.status = 'error';
-        await dbService.updateBatchSession(sessionId, { 
-          status: 'error',
-          errorMessage: error instanceof Error ? error.message : String(error)
+        await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
+          status: 'error'
         });
         break;
       }
@@ -379,7 +383,7 @@ class BatchAnalysisService extends EventEmitter {
       progress.status = 'completed';
       progress.endTime = Date.now();
       
-      await dbService.updateBatchSession(sessionId, { 
+      await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
         status: 'completed',
         completedAt: new Date()
       });
@@ -469,8 +473,7 @@ class BatchAnalysisService extends EventEmitter {
               hasMultiplePredictions: true,
               multiTestResults: multi.itemResults,
               multiTestAllCorrect: multi.allCorrect,
-              multiTestAverageAccuracy: multi.averageAccuracyScore,
-              extractionMethod: multi.extractionMethodSummary
+              multiTestAverageAccuracy: multi.averageAccuracyScore
             };
           } else {
             // Single-test case
@@ -481,8 +484,7 @@ class BatchAnalysisService extends EventEmitter {
               predictedOutputGrid: validation.predictedGrid,
               hasMultiplePredictions: false,
               isPredictionCorrect: validation.isPredictionCorrect,
-              predictionAccuracyScore: validation.predictionAccuracyScore,
-              extractionMethod: validation.extractionMethod
+              predictionAccuracyScore: validation.predictionAccuracyScore
             };
           }
         } catch (validationError) {
@@ -559,18 +561,18 @@ class BatchAnalysisService extends EventEmitter {
    * Get session configuration from database
    */
   private async getSessionConfig(sessionId: string): Promise<BatchSessionConfig | null> {
-    const session = await dbService.getBatchSession(sessionId);
+    const session = await repositoryService.batchAnalysis.getBatchSession(sessionId);
     if (!session) return null;
 
     return {
-      modelKey: session.model_key,
-      dataset: session.dataset,
-      promptId: session.prompt_id,
-      customPrompt: session.custom_prompt,
+      modelKey: session.modelKey,
+      dataset: session.dataset as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'All',
+      promptId: session.promptId,
+      customPrompt: session.customPrompt,
       temperature: session.temperature,
-      reasoningEffort: session.reasoning_effort,
-      reasoningVerbosity: session.reasoning_verbosity,
-      reasoningSummaryType: session.reasoning_summary_type
+      reasoningEffort: session.reasoningEffort,
+      reasoningVerbosity: session.reasoningVerbosity,
+      reasoningSummaryType: session.reasoningSummaryType
     };
   }
 

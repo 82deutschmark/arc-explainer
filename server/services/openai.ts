@@ -1,37 +1,42 @@
 /**
  * OpenAI service for analyzing ARC puzzles using OpenAI models
  * Supports reasoning log capture for OpenAI reasoning models (o3-mini, o4-mini, o3-2025-04-16)
- * These models automatically provide reasoning logs in response.choices[0].message.reasoning
+ * Refactored to extend BaseAIService for code consolidation
  * 
- * @author Cascade
+ * @author Cascade (original), Claude (refactor)
  */
 
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types.js";
-import { buildAnalysisPrompt, getDefaultPromptId } from "./promptBuilder.js";
+import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
-import { calculateCost } from "../utils/costCalculator.js";
 import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
-import { dbService } from "./dbService.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 
 // Import centralized model configuration
 import { 
-  MODELS, 
   getModelConfig, 
   modelSupportsTemperature, 
-  modelSupportsReasoning, 
   getApiModelName,
   O3_O4_REASONING_MODELS,
   GPT5_REASONING_MODELS,
   GPT5_CHAT_MODELS,
   MODELS_WITH_REASONING
-} from '../config/models.js';
+} from '../config/models.ts';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Legacy system prompts removed - now using modular system from prompts/systemPrompts.ts
+export class OpenAIService extends BaseAIService {
+  protected provider = "OpenAI";
+  protected models = {
+    "gpt-4": "gpt-4",
+    "gpt-4-turbo": "gpt-4-turbo",
+    "o3-mini": "o3-mini",
+    "o3-2025-04-16": "o3-2025-04-16",
+    "gpt-5-chat-latest": "gpt-5-chat-latest",
+    // Add other models as needed
+  };
 
-export class OpenAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
@@ -40,230 +45,81 @@ export class OpenAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: { 
-      previousResponseId?: string; 
-      maxSteps?: number; 
-      reasoningSummary?: 'auto' | 'none'; 
-      maxRetries?: number; 
-      maxOutputTokens?: number;
-      // GPT-5 reasoning parameters
-      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
-      reasoningVerbosity?: 'low' | 'medium' | 'high';
-      reasoningSummaryType?: 'auto' | 'detailed';
-      // System prompt mode
-      systemPromptMode?: 'ARC' | 'None';
-    }
-  ) {
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
     const modelName = getApiModelName(modelKey);
 
-    // Determine system prompt mode (default to ARC for better results)
-    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    // Build prompt package using inherited method
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
-    // Build prompt package using new architecture
-    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: true
-    });
-    
-    console.log(`[OpenAI] Using system prompt mode: ${systemPromptMode}`);
-    
-    // Extract system and user prompts from prompt package
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
-    
-    console.log(`[OpenAI] System prompt: ${systemMessage.length} chars`);
-    console.log(`[OpenAI] User prompt: ${userMessage.length} chars`);
+    // Log analysis start using inherited method
+    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      let reasoningLog = null;
-      let hasReasoningLog = false;
-      let result: any = {};
-
-      const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
-      const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
-      const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
-      const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
-      console.log(`[OpenAI] Using Responses API for model ${modelKey} (reasoning=${isReasoningModel}, gpt5=${isGPT5Model}, o3o4=${isO3O4Model}, gpt5chat=${isGPT5ChatModel})`);
-
-      // Build reasoning config based on model type
-      let reasoningConfig = undefined;
-      let textConfig = undefined;
-      if (captureReasoning && isReasoningModel) {
-        if (isGPT5Model) {
-          // GPT-5 models support advanced reasoning parameters
-          reasoningConfig = {
-            effort: serviceOpts?.reasoningEffort || 'low',
-            summary: serviceOpts?.reasoningSummaryType || serviceOpts?.reasoningSummary || 'detailed'
-          };
-          // Text config is separate for GPT-5 models
-          textConfig = {
-            verbosity: serviceOpts?.reasoningVerbosity || 'high'
-          };
-        } else if (isO3O4Model) {
-          // o3/o4 models use simpler reasoning config
-          reasoningConfig = {
-            summary: serviceOpts?.reasoningSummary || 'auto'
-          };
-        }
-      }
-
-      // Build request to Responses API via helper for consistent parsing
-      // Create message array based on system prompt mode
-      const messages: any[] = [];
-      if (systemMessage) {
-        messages.push({ role: "system", content: systemMessage });
-      }
-      messages.push({ role: "user", content: userMessage });
+      // Call provider-specific API
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
-      const request = {
-        model: modelName,
-        input: messages,
-        reasoning: reasoningConfig,
-        ...(textConfig && { text: textConfig }),
-        max_steps: serviceOpts?.maxSteps,
-        previous_response_id: serviceOpts?.previousResponseId,
-        // Apply temperature only for models that support it according to centralized config
-        ...(modelSupportsTemperature(modelKey) && {
-          temperature: temperature || 0.2,
-          ...(isGPT5ChatModel && { top_p: 1.00 })
-        }),
-        // pass through visible output token cap to avoid starvation - using high limits from models.yml
-        max_output_tokens: serviceOpts?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
-      } as const;
+      // Parse response using provider-specific method
+      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
+        this.parseProviderResponse(response, modelKey, captureReasoning);
 
-      const maxRetries = Math.max(0, serviceOpts?.maxRetries ?? 2);
-      let lastErr: any = null;
-      let parsedResponse: any = null;
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-          parsedResponse = await this.callResponsesAPI(request as any, modelKey);
-          lastErr = null;
-          break;
-        } catch (e) {
-          lastErr = e;
-          const backoffMs = 1000 * Math.pow(2, attempt);
-          console.warn(`[OpenAI] Responses call failed (attempt ${attempt + 1}/${maxRetries + 1}). Backing off ${backoffMs}ms`);
-          if (attempt < maxRetries) {
-            await new Promise(r => setTimeout(r, backoffMs));
-          }
-        }
-      }
-      if (!parsedResponse) throw lastErr || new Error('Responses call failed');
-
-      // Parse JSON response - prefer structured output_parsed over regex scraping
-      if (parsedResponse.output_parsed) {
-        console.log('[OpenAI] Using structured output_parsed from JSON schema');
-        result = parsedResponse.output_parsed;
-      } else {
-        console.log('[OpenAI] Falling back to regex JSON parsing from output_text');
-        const rawJson = parsedResponse.output_text || '';
-        result = await this.parseJsonWithFallback(rawJson);
+      // Validate response completeness
+      const completeness = this.validateResponseCompleteness(response, modelKey);
+      if (!completeness.isComplete) {
+        console.warn(`[${this.provider}] Incomplete response detected for ${modelKey}:`, completeness.suggestion);
       }
 
-      // Extract reasoning log from API only
-      if (captureReasoning) {
-        const summary = parsedResponse.output_reasoning?.summary;
-        if (summary) {
-          if (Array.isArray(summary)) {
-            // Extract text from objects in the summary array
-            reasoningLog = summary.map((s: any) => {
-              // Handle different summary object structures
-              if (typeof s === 'string') return s;
-              if (s && typeof s === 'object' && s.text) return s.text;
-              if (s && typeof s === 'object' && s.content) return s.content;
-              // Fallback to JSON stringify if the object structure is unknown
-              return typeof s === 'object' ? JSON.stringify(s) : String(s);
-            }).filter(Boolean).join('\n\n');
-          } else if (typeof summary === 'string') {
-            reasoningLog = summary;
-          }
-          hasReasoningLog = !!reasoningLog;
-        }
-      }
-
-      // Extract structured response metadata
-      const providerResponseId = parsedResponse.id ?? null;
-      
-      // Extract reasoning items from API only (not from structured JSON)
-      let reasoningItems: string[] = parsedResponse.output_reasoning?.items ?? [];
-      
-      const providerRawResponse = parsedResponse.raw_response;
-
-      // Debug logging to catch reasoning data type issues
-      if (reasoningLog && typeof reasoningLog !== 'string') {
-        console.error(`[OpenAI] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
-        reasoningLog = String(reasoningLog); // Force to string
-      }
-      
-      if (reasoningItems && !Array.isArray(reasoningItems)) {
-        console.error(`[OpenAI] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
-      }
-      
-      console.log(`[OpenAI] Returning reasoning data - reasoningLog type: ${typeof reasoningLog}, length: ${reasoningLog?.length || 0}`);
-
-      return {
-        model: modelKey,
-        reasoningLog,
-        hasReasoningLog,
-        providerResponseId,
-        providerRawResponse,
-        reasoningItems,
-        // Include analysis parameters for database storage
+      // Build standard response using inherited method
+      return this.buildStandardResponse(
+        modelKey,
         temperature,
-        reasoningEffort: serviceOpts?.reasoningEffort || null,
-        reasoningVerbosity: serviceOpts?.reasoningVerbosity || null,
-        reasoningSummaryType: serviceOpts?.reasoningSummaryType || null,
-        // Token usage and cost data from Responses API
-        inputTokens: parsedResponse?.tokenUsage?.input || null,
-        outputTokens: parsedResponse?.tokenUsage?.output || null,
-        reasoningTokens: parsedResponse?.tokenUsage?.reasoning || null,
-        totalTokens: parsedResponse?.tokenUsage ? (parsedResponse.tokenUsage.input + parsedResponse.tokenUsage.output + (parsedResponse.tokenUsage.reasoning || 0)) : null,
-        estimatedCost: parsedResponse?.cost?.total || null,
-        ...result,
-      };
+        result,
+        tokenUsage,
+        serviceOpts,
+        reasoningLog,
+        !!reasoningLog,
+        reasoningItems,
+        status || (completeness.isComplete ? 'complete' : 'incomplete'),
+        !completeness.isComplete,
+        incompleteReason || completeness.suggestion
+      );
+
     } catch (error) {
-      console.error(`Error with model ${modelKey}:`, error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      throw new Error(`Model ${modelKey} failed: ${errorMessage}`);
+      this.handleAnalysisError(error, modelKey, task);
     }
   }
 
-  /**
-   * Generate a preview of the exact prompt that will be sent to OpenAI
-   * Shows the provider-specific message format and structure
-   */
-  async generatePromptPreview(
+  getModelInfo(modelKey: string): ModelInfo {
+    const modelName = getApiModelName(modelKey);
+    const isReasoning = MODELS_WITH_REASONING.has(modelKey);
+    const modelConfig = getModelConfig(modelKey);
+    
+    return {
+      name: modelName,
+      isReasoning,
+      supportsTemperature: modelSupportsTemperature(modelKey),
+      contextWindow: modelConfig?.contextWindow || 128000,
+      supportsFunctionCalling: true,
+      supportsSystemPrompts: true,
+      supportsStructuredOutput: !modelName.includes('gpt-5-chat-latest'),
+      supportsVision: false // Update based on actual capabilities
+    };
+  }
+
+  generatePromptPreview(
     task: ARCTask,
     modelKey: string,
-    temperature: number = 0.2,
-    captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: { 
-      reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
-      reasoningVerbosity?: 'low' | 'medium' | 'high';
-      reasoningSummaryType?: 'auto' | 'detailed';
-      systemPromptMode?: 'ARC' | 'None';
-    }
-  ) {
+    serviceOpts: ServiceOptions = {}
+  ): PromptPreview {
     const modelName = getApiModelName(modelKey);
-
-    // Determine system prompt mode (default to ARC for better results)
-    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
-
-    // Build prompt package using new architecture
-    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: true
-    });
-
-    // Extract system and user messages from prompt package
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
+    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
     // Create message array for preview
     const messages: any[] = [];
@@ -272,54 +128,43 @@ export class OpenAIService {
     }
     messages.push({ role: "user", content: userMessage });
 
-    // Responses API format for all models
-    let messageFormat: any;
-    let providerSpecificNotes: string[] = [];
-
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
     const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
-    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
-    
-    messageFormat = {
+
+    // Build message format for Responses API
+    const messageFormat: any = {
       model: modelName,
       input: messages,
-      max_output_tokens: 100000, // Near maximum capacity for comprehensive analysis
-      ...(isReasoningModel
-        ? { 
-            reasoning: isGPT5Model 
-              ? { 
-                  effort: serviceOpts?.reasoningEffort || "medium",
-                  summary: serviceOpts?.reasoningSummaryType || "detailed" 
-                }
-              : { summary: "detailed" },
-            ...(isGPT5Model && {
-              text: { verbosity: serviceOpts?.reasoningVerbosity || "medium" }
-            })
-          }
-        : {})
+      max_output_tokens: 100000,
+      ...(isReasoningModel && {
+        reasoning: isGPT5Model 
+          ? { 
+              effort: serviceOpts.reasoningEffort || "medium",
+              summary: serviceOpts.reasoningSummaryType || "detailed" 
+            }
+          : { summary: "detailed" },
+        ...(isGPT5Model && {
+          text: { verbosity: serviceOpts.reasoningVerbosity || "medium" }
+        })
+      })
     };
-    providerSpecificNotes.push("Uses OpenAI Responses API");
-    providerSpecificNotes.push("Temperature/JSON response_format not used; JSON enforced via prompt");
-    
-    // Add system prompt mode notes
-    if (systemPromptMode === 'ARC') {
-      providerSpecificNotes.push("System Prompt Mode: {ARC} - Using structured system prompt for better parsing");
-      providerSpecificNotes.push(`System Message: "${systemMessage}"`);
-    } else {
-      providerSpecificNotes.push("System Prompt Mode: {None} - Old behavior (all content as user message)");
-    }
 
-    // Compose preview text; in ARC mode, system is separate so show user content; in None, show combined
-    const previewText = systemPromptMode === 'ARC'
-      ? userMessage
-      : `${systemMessage}\n\n${userMessage}`;
+    const providerSpecificNotes = [
+      "Uses OpenAI Responses API",
+      "Temperature/JSON response_format not used; JSON enforced via prompt",
+      systemPromptMode === 'ARC' 
+        ? "System Prompt Mode: {ARC} - Using structured system prompt for better parsing"
+        : "System Prompt Mode: {None} - Old behavior (all content as user message)"
+    ];
+
+    const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
 
     return {
-      provider: "OpenAI",
+      provider: this.provider,
       modelName,
       promptText: previewText,
-      systemPrompt: systemMessage,
       messageFormat,
+      systemPromptMode,
       templateInfo: {
         id: promptPackage.selectedTemplate?.id || "custom",
         name: promptPackage.selectedTemplate?.name || "Custom Prompt",
@@ -330,28 +175,181 @@ export class OpenAIService {
         wordCount: previewText.split(/\s+/).length,
         lineCount: previewText.split('\n').length
       },
-      providerSpecificNotes,
-      captureReasoning,
-      temperature: modelSupportsTemperature(modelKey) ? temperature : "Not supported"
+      providerSpecificNotes: providerSpecificNotes.join('; ')
     };
   }
 
-  async callResponsesAPI(request: {
-    model: string;
-    input: string | Array<{role: string, content: string}>;
-    reasoning?: { summary: 'auto' | 'none' };
-    max_steps?: number;
-    temperature?: number;
-    previous_response_id?: string;
-    max_output_tokens?: number;
-  }, modelKey: string): Promise<any> {
-    // Call OpenAI Responses API for structured reasoning
+  protected async callProviderAPI(
+    promptPackage: PromptPackage,
+    modelKey: string,
+    temperature: number,
+    serviceOpts: ServiceOptions
+  ): Promise<any> {
+    const modelName = getApiModelName(modelKey);
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+
+    // Build message array
+    const messages: any[] = [];
+    if (systemMessage) {
+      messages.push({ role: "system", content: systemMessage });
+    }
+    messages.push({ role: "user", content: userMessage });
+
+    // Build reasoning config based on model type
+    const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
+    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+
+    let reasoningConfig = undefined;
+    let textConfig = undefined;
+    
+    if (isReasoningModel) {
+      if (isGPT5Model) {
+        reasoningConfig = {
+          effort: serviceOpts.reasoningEffort || 'low',
+          summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || 'detailed'
+        };
+        textConfig = {
+          verbosity: serviceOpts.reasoningVerbosity || 'high'
+        };
+      } else if (isO3O4Model) {
+        reasoningConfig = {
+          summary: serviceOpts.reasoningSummary || 'auto'
+        };
+      }
+    }
+
+    const request = {
+      model: modelName,
+      input: messages,
+      reasoning: reasoningConfig,
+      ...(textConfig && { text: textConfig }),
+      max_steps: serviceOpts.maxSteps,
+      previous_response_id: serviceOpts.previousResponseId,
+      ...(modelSupportsTemperature(modelKey) && {
+        temperature: temperature || 0.2,
+        ...(isGPT5ChatModel && { top_p: 1.00 })
+      }),
+      max_output_tokens: serviceOpts.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
+    };
+
+    // Retry logic with exponential backoff
+    const maxRetries = Math.max(0, serviceOpts.maxRetries ?? 2);
+    let lastErr: any = null;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.callResponsesAPI(request, modelKey);
+      } catch (e) {
+        lastErr = e;
+        if (attempt < maxRetries) {
+          const backoffMs = 1000 * Math.pow(2, attempt);
+          console.warn(`[${this.provider}] API call failed (attempt ${attempt + 1}/${maxRetries + 1}). Backing off ${backoffMs}ms`);
+          await new Promise(r => setTimeout(r, backoffMs));
+        }
+      }
+    }
+    
+    throw lastErr || new Error('API call failed after retries');
+  }
+
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean = false
+  ): {
+    result: any;
+    tokenUsage: TokenUsage;
+    reasoningLog?: any;
+    reasoningItems?: any[];
+    status?: string;
+    incomplete?: boolean;
+    incompleteReason?: string;
+  } {
+    let result: any = {};
+    let reasoningLog = null;
+    let reasoningItems: any[] = [];
+
+    // GPT-5-nano returns clean structured data in different fields
+    if (response.output_parsed) {
+      result = response.output_parsed;
+    } else if (response.output_text) {
+      result = JSON.parse(response.output_text);
+    } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
+      // GPT-5-nano returns structured data in output array
+      const outputBlock = response.output[0];
+      if (outputBlock.type === 'text' && outputBlock.text) {
+        result = JSON.parse(outputBlock.text);
+      } else {
+        console.error(`[${this.provider}] Unexpected output format:`, outputBlock);
+        result = {};
+      }
+    } else {
+      console.error(`[${this.provider}] No structured output found in response`);
+      result = {};
+    }
+
+    // Extract reasoning log from API response
+    if (captureReasoning && response.output_reasoning?.summary) {
+      const summary = response.output_reasoning.summary;
+      if (Array.isArray(summary)) {
+        reasoningLog = summary.map((s: any) => {
+          if (typeof s === 'string') return s;
+          if (s && typeof s === 'object' && s.text) return s.text;
+          if (s && typeof s === 'object' && s.content) return s.content;
+          return typeof s === 'object' ? JSON.stringify(s) : String(s);
+        }).filter(Boolean).join('\n\n');
+      } else if (typeof summary === 'string') {
+        reasoningLog = summary;
+      }
+    }
+
+    // Extract reasoning items
+    reasoningItems = response.output_reasoning?.items ?? [];
+
+    // Validate reasoning data types and fix corruption
+    if (reasoningLog && typeof reasoningLog !== 'string') {
+      console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
+      reasoningLog = String(reasoningLog);
+    }
+    
+    if (reasoningItems && !Array.isArray(reasoningItems)) {
+      console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
+      reasoningItems = [];
+    }
+
+    // Extract token usage
+    const tokenUsage: TokenUsage = {
+      input: response.tokenUsage?.input || 0,
+      output: response.tokenUsage?.output || 0,
+      reasoning: response.tokenUsage?.reasoning
+    };
+
+    // Check for incomplete responses
+    const status = response.status;
+    const incomplete = status === 'incomplete';
+    const incompleteReason = response.incomplete_details?.reason;
+
+    return {
+      result,
+      tokenUsage,
+      reasoningLog,
+      reasoningItems,
+      status,
+      incomplete,
+      incompleteReason
+    };
+  }
+
+  private async callResponsesAPI(request: any, modelKey: string): Promise<any> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    console.log('[OPENAI-RESPONSES-DEBUG] Making Responses API call:', {
+    console.log(`[${this.provider}-RESPONSES-DEBUG] Making Responses API call:`, {
       model: request.model,
       maxSteps: request.max_steps,
       hasPreviousId: !!request.previous_response_id,
@@ -360,7 +358,8 @@ export class OpenAIService {
 
     try {
       // Check if model supports structured JSON schema
-      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest');
+      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest') && 
+                                       !request.model.includes('gpt-5-nano');
       
       // Prepare the request for OpenAI's Responses API
       const body = {
@@ -379,15 +378,14 @@ export class OpenAIService {
         reasoning: request.reasoning,
         temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
         top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
-        parallel_tool_calls: false, // Deterministic parsing
+        parallel_tool_calls: false,
         truncation: "auto",
         previous_response_id: request.previous_response_id,
         max_output_tokens: Math.max(256, request.max_output_tokens ?? 128000),
-        store: true
+        store: request.store !== false // Default to true unless explicitly set to false
       };
 
-      // Make the API call to OpenAI's Responses endpoint
-      // Set timeout to 45 minutes (2700000ms) for long-running responses
+      // Make the API call with 45-minute timeout
       const response = await fetch('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
@@ -400,7 +398,7 @@ export class OpenAIService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[OPENAI-RESPONSES-DEBUG] API Error:', {
+        console.error(`[${this.provider}-RESPONSES-DEBUG] API Error:`, {
           status: response.status,
           statusText: response.statusText,
           error: errorText
@@ -411,11 +409,10 @@ export class OpenAIService {
       const result = await response.json();
       
       // Extract token usage from OpenAI Responses API response
-      let tokenUsage: { input: number; output: number; reasoning?: number } | undefined;
-      let cost: { input: number; output: number; reasoning?: number; total: number } | undefined;
+      let tokenUsage: TokenUsage = { input: 0, output: 0 };
+      let cost: any = undefined;
       
       if (result.usage) {
-        // Defensive token usage calculation with reasoning_tokens support
         const inputTokens = result.usage.input_tokens ?? 0;
         const outputTokens = result.usage.output_tokens ?? 0;
         const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
@@ -426,33 +423,32 @@ export class OpenAIService {
           reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
         };
 
-        // Find the model config to get pricing
-        const modelConfig = getModelConfig(modelKey);
-        if (modelConfig && tokenUsage) {
-          cost = calculateCost(modelConfig.cost, tokenUsage);
-        }
+        // Calculate cost using inherited method
+        cost = this.calculateResponseCost(modelKey, tokenUsage);
       }
       
-      console.log('[OPENAI-RESPONSES-DEBUG] API Response:', {
+      console.log(`[${this.provider}-RESPONSES-DEBUG] API Response:`, {
         id: result.id,
+        status: result.status,
         hasOutputReasoning: !!result.output_reasoning,
         hasOutputText: !!result.output_text,
         hasOutput: !!result.output,
         reasoningItemsCount: result.output_reasoning?.items?.length || 0,
-        reasoningSummary: result.output_reasoning?.summary?.substring(0, 100)
+        incompleteDetails: result.incomplete_details
       });
 
-      // Enhanced response parsing - extract from output blocks if needed
+      // Enhanced response parsing with incomplete status handling
       const parsedResponse = {
         id: result.id,
+        status: result.status, // Include status for incomplete response handling
+        incomplete_details: result.incomplete_details, // Include incomplete details
         output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
-        output_parsed: result.output_parsed, // Structured output from JSON schema
+        output_parsed: result.output_parsed,
         output_reasoning: {
           summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
           items: result.output_reasoning?.items || []
         },
-        raw_response: result, // For debugging
-        // Include token usage and cost data
+        raw_response: result,
         usage: result.usage,
         tokenUsage,
         cost
@@ -461,24 +457,16 @@ export class OpenAIService {
       return parsedResponse;
 
     } catch (error) {
-      console.error('[OPENAI-RESPONSES-DEBUG] Error calling Responses API:', error);
+      console.error(`[${this.provider}-RESPONSES-DEBUG] Error calling Responses API:`, error);
       throw error;
     }
   }
 
-  // Helper method for parsing Responses API output blocks
+  // Helper methods extracted from original implementation
   private extractTextFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) {
-      console.log('[OPENAI-EXTRACT] Output is not an array:', typeof output);
       return '';
     }
-    
-    console.log('[OPENAI-EXTRACT] Processing', output.length, 'blocks:', output.map(b => ({
-      type: b.type,
-      role: b.role,
-      hasContent: !!b.content,
-      hasText: !!b.text
-    })));
     
     // Look for Assistant blocks first
     const assistantBlock = output.find(block => 
@@ -486,51 +474,29 @@ export class OpenAIService {
     );
     
     if (assistantBlock) {
-      console.log('[OPENAI-EXTRACT] Found Assistant block');
       if (Array.isArray(assistantBlock.content)) {
-        // Look for text or output_text content types
         const textContent = assistantBlock.content.find((c: any) => 
           c.type === 'text' || c.type === 'output_text'
         );
-        if (textContent?.text) {
-          console.log('[OPENAI-EXTRACT] Extracted from Assistant array:', textContent.text.substring(0, 200));
-          return textContent.text;
-        }
+        if (textContent?.text) return textContent.text;
       }
-      if (typeof assistantBlock.content === 'string') {
-        console.log('[OPENAI-EXTRACT] Extracted from Assistant string:', assistantBlock.content.substring(0, 200));
-        return assistantBlock.content;
-      }
-      if (assistantBlock.text) {
-        console.log('[OPENAI-EXTRACT] Extracted from Assistant text:', assistantBlock.text.substring(0, 200));
-        return assistantBlock.text;
-      }
+      if (typeof assistantBlock.content === 'string') return assistantBlock.content;
+      if (assistantBlock.text) return assistantBlock.text;
     }
     
     // Look for other message blocks
     for (const block of output) {
       if (block.type === 'message' && block.content) {
-        console.log('[OPENAI-EXTRACT] Processing message block');
         if (Array.isArray(block.content)) {
-          // Look for both text and output_text content types
           const textContent = block.content.find((c: any) => 
             c.type === 'text' || c.type === 'output_text'
           );
-          if (textContent?.text) {
-            console.log('[OPENAI-EXTRACT] Extracted from message array:', textContent.text.substring(0, 200));
-            return textContent.text;
-          }
+          if (textContent?.text) return textContent.text;
         }
-        if (typeof block.content === 'string') {
-          console.log('[OPENAI-EXTRACT] Extracted from message string:', block.content.substring(0, 200));
-          return block.content;
-        }
+        if (typeof block.content === 'string') return block.content;
       }
       
-      if (block.type === 'text' && block.text) {
-        console.log('[OPENAI-EXTRACT] Extracted from text block:', block.text.substring(0, 200));
-        return block.text;
-      }
+      if (block.type === 'text' && block.text) return block.text;
     }
     
     // Fallback: join all text-like content
@@ -538,7 +504,6 @@ export class OpenAIService {
       .filter(block => block.content || block.text)
       .map(block => {
         if (Array.isArray(block.content)) {
-          // Look for both text and output_text content types
           const textContent = block.content.find((c: any) => 
             c.type === 'text' || c.type === 'output_text'
           );
@@ -550,49 +515,9 @@ export class OpenAIService {
       .join('\n');
   }
 
-  /**
-   * Parse JSON with fallback strategies for robustness
-   */
-  private async parseJsonWithFallback(rawJson: string): Promise<any> {
-    if (!rawJson) return {};
-    
-    try {
-      return JSON.parse(rawJson);
-    } catch (e) {
-      console.warn('[OpenAI] Failed direct JSON parse, attempting markdown extraction...');
-      
-      // Try to extract JSON from markdown code blocks (fixes gpt-5-chat-latest and gpt-4.1-2025-04-14)
-      const codeBlockMatch = rawJson.match(/```(?:json\s*)?([^`]*?)```/s);
-      if (codeBlockMatch) {
-        try {
-          const cleanedJson = codeBlockMatch[1].trim();
-          console.log(`[OpenAI] Found JSON in markdown code block: ${cleanedJson.substring(0, 200)}...`);
-          return JSON.parse(cleanedJson);
-        } catch (markdownError) {
-          console.warn('[OpenAI] Failed to parse JSON from markdown code block, trying regex fallback...');
-        }
-      }
-      
-      // Fallback: Look for JSON anywhere in the text (similar to Anthropic service)
-      const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch (regexError) {
-          console.warn('[OpenAI] All JSON parsing attempts failed; returning empty result.');
-          return {};
-        }
-      } else {
-        console.warn('[OpenAI] No JSON structure found in response.');
-        return {};
-      }
-    }
-  }
-
   private extractReasoningFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) return '';
     
-    // Look for reasoning blocks
     const reasoningBlocks = output.filter(block => 
       block.type === 'reasoning' || 
       block.type === 'Reasoning' ||
@@ -610,7 +535,6 @@ export class OpenAIService {
       .filter(Boolean)
       .join('\n');
     
-    // Filter out empty or placeholder reasoning content
     if (!reasoningText || 
         reasoningText.toLowerCase().includes('empty reasoning') ||
         reasoningText.trim() === '') {

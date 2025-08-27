@@ -55,7 +55,6 @@ export interface PuzzleAnalysis {
   predictedOutputGrid?: number[][];
   isPredictionCorrect?: boolean;
   predictionAccuracyScore?: number;
-  extractionMethod?: string;
 }
 
 export interface SolutionValidation {
@@ -85,6 +84,8 @@ export interface Feedback {
   voteType: 'helpful' | 'not_helpful';
   comment: string | null;
   createdAt: string;
+  userAgent?: string;
+  sessionId?: string;
 }
 
 /**
@@ -107,6 +108,8 @@ export interface FeedbackFilters {
   limit?: number;
   offset?: number;
   startDate?: string;
+  fromDate?: Date;
+  toDate?: Date;
   endDate?: string;
 }
 
@@ -119,6 +122,12 @@ export interface FeedbackStats {
   notHelpfulCount: number;
   helpfulPercentage: number;
   notHelpfulPercentage: number;
+  averageCommentLength: number;
+  topModels: Array<{ modelName: string; feedbackCount: number; helpfulCount: number; avgConfidence: number }>;
+  feedbackTrends: {
+    daily: Array<{ date: string; count: number; helpful: number; notHelpful: number }>;
+    weekly: Array<{ date: string; count: number; helpful: number; notHelpful: number }>;
+  };
   feedbackByModel: Record<string, { helpful: number; notHelpful: number }>;
   feedbackByDay: Array<{ date: string; helpful: number; notHelpful: number }>;
 }

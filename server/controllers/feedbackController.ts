@@ -2,16 +2,17 @@
  * feedbackController.ts
  * 
  * Controller for feedback-related routes.
+ * Refactored to use Repository pattern instead of monolithic DbService.
  * Handles HTTP requests and responses for feedback operations.
  * 
- * @author Cascade
+ * @author Cascade (original), Claude (refactor)
  */
 
 import { Request, Response } from 'express';
-import { feedbackService } from '../services/feedbackService';
-import { formatResponse } from '../utils/responseFormatter';
-import { dbService } from '../services/dbService';
-import type { FeedbackFilters } from '../../shared/types';
+import { feedbackService } from '../services/feedbackService.ts';
+import { formatResponse } from '../utils/responseFormatter.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
+import type { FeedbackFilters } from '../../shared/types.ts';
 
 export const feedbackController = {
   /**
@@ -21,18 +22,25 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async create(req: Request, res: Response) {
-    const { explanationId, voteType, comment } = req.body;
+    try {
+      const { explanationId, voteType, comment } = req.body;
 
-    
-    // Validate feedback data
-    feedbackService.validateFeedback(explanationId, voteType, comment);
-    
-    // Add feedback to the database
-    const result = await feedbackService.addFeedback(explanationId, voteType, comment);
-    
-    res.json(formatResponse.success({
-      feedbackId: result.feedbackId
-    }, result.message));
+      // Validate feedback data
+      feedbackService.validateFeedback(explanationId, voteType, comment);
+      
+      // Add feedback using repository
+      const result = await feedbackService.addFeedback(explanationId, voteType, comment);
+      
+      res.json(formatResponse.success({
+        feedbackId: result.feedbackId
+      }, result.message));
+    } catch (error) {
+      console.error('Error creating feedback:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to create feedback',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
   },
 
   /**
@@ -42,15 +50,27 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async getByExplanation(req: Request, res: Response) {
-    const { explanationId } = req.params;
-    const explanationIdNum = parseInt(explanationId);
+    try {
+      const { explanationId } = req.params;
+      const explanationIdNum = parseInt(explanationId);
 
-    if (isNaN(explanationIdNum)) {
-      return res.status(400).json(formatResponse.error('Invalid explanation ID', 'The explanation ID must be a valid number'));
+      if (isNaN(explanationIdNum)) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid explanation ID', 
+          'The explanation ID must be a valid number'
+        ));
+      }
+
+      // Get feedback from repository
+      const feedback = await repositoryService.feedback.getFeedbackForExplanation(explanationIdNum);
+      res.json(formatResponse.success(feedback));
+    } catch (error) {
+      console.error('Error getting feedback by explanation:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve feedback',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
     }
-
-    const feedback = await dbService.getFeedbackForExplanation(explanationIdNum);
-    res.json(formatResponse.success(feedback));
   },
 
   /**
@@ -60,10 +80,26 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async getByPuzzle(req: Request, res: Response) {
-    const { puzzleId } = req.params;
+    try {
+      const { puzzleId } = req.params;
 
-    const feedback = await dbService.getFeedbackForPuzzle(puzzleId);
-    res.json(formatResponse.success(feedback));
+      if (!puzzleId) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid puzzle ID',
+          'Puzzle ID is required'
+        ));
+      }
+
+      // Get feedback from repository
+      const feedback = await repositoryService.feedback.getFeedbackForPuzzle(puzzleId);
+      res.json(formatResponse.success(feedback));
+    } catch (error) {
+      console.error('Error getting feedback by puzzle:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve feedback',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
   },
 
   /**
@@ -73,25 +109,20 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async getAll(req: Request, res: Response) {
-    const filters: FeedbackFilters = {
-      puzzleId: req.query.puzzleId as string,
-      modelName: req.query.modelName as string,
-      voteType: req.query.voteType as 'helpful' | 'not_helpful',
-      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-      offset: req.query.offset ? parseInt(req.query.offset as string) : undefined,
-      startDate: req.query.startDate as string,
-      endDate: req.query.endDate as string
-    };
+    try {
+      // Build filters object from query parameters
+      const filters: FeedbackFilters = this.buildFiltersFromQuery(req.query);
 
-    // Remove undefined values
-    Object.keys(filters).forEach(key => {
-      if (filters[key as keyof FeedbackFilters] === undefined) {
-        delete filters[key as keyof FeedbackFilters];
-      }
-    });
-
-    const feedback = await dbService.getAllFeedback(filters);
-    res.json(formatResponse.success(feedback));
+      // Get feedback from repository
+      const feedback = await repositoryService.feedback.getAllFeedback(filters);
+      res.json(formatResponse.success(feedback));
+    } catch (error) {
+      console.error('Error getting all feedback:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve feedback',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
   },
 
   /**
@@ -101,7 +132,119 @@ export const feedbackController = {
    * @param res - Express response object
    */
   async getStats(req: Request, res: Response) {
-    const stats = await dbService.getFeedbackSummaryStats();
-    res.json(formatResponse.success(stats));
+    try {
+      // Get feedback from repository
+      const stats = await repositoryService.feedback.getFeedbackSummaryStats();
+      res.json(formatResponse.success(stats));
+    } catch (error) {
+      console.error('Error getting feedback stats:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve feedback statistics',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Get accuracy statistics for models based on feedback
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getAccuracyStats(req: Request, res: Response) {
+    try {
+      // Get feedback from repository
+      const stats = await repositoryService.feedback.getAccuracyStats();
+      res.json(formatResponse.success(stats));
+    } catch (error) {
+      console.error('Error getting accuracy stats:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve accuracy statistics',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Health check endpoint for feedback system
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async healthCheck(req: Request, res: Response) {
+    try {
+      const healthStatus = await repositoryService.healthCheck();
+      
+      const status = healthStatus.status === 'healthy' ? 200 : 
+                    healthStatus.status === 'degraded' ? 207 : 503;
+      
+      res.status(status).json(formatResponse.success({
+        status: healthStatus.status,
+        message: healthStatus.message,
+        details: healthStatus.details,
+        timestamp: new Date().toISOString()
+      }));
+    } catch (error) {
+      console.error('Error in feedback health check:', error);
+      res.status(503).json(formatResponse.error(
+        'Health check failed',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Helper method to build filters from query parameters
+   * 
+   * @param query - Express query object
+   * @returns Cleaned FeedbackFilters object
+   */
+  buildFiltersFromQuery(query: any): FeedbackFilters {
+    const filters: FeedbackFilters = {};
+
+    // String filters
+    if (query.puzzleId && typeof query.puzzleId === 'string') {
+      filters.puzzleId = query.puzzleId;
+    }
+    if (query.modelName && typeof query.modelName === 'string') {
+      filters.modelName = query.modelName;
+    }
+
+    // Vote type filter with validation
+    if (query.voteType && ['helpful', 'not_helpful'].includes(query.voteType)) {
+      filters.voteType = query.voteType as 'helpful' | 'not_helpful';
+    }
+
+    // Numeric filters with validation
+    if (query.limit) {
+      const limit = parseInt(query.limit as string);
+      if (!isNaN(limit) && limit > 0 && limit <= 1000) {
+        filters.limit = limit;
+      }
+    }
+    
+    if (query.offset) {
+      const offset = parseInt(query.offset as string);
+      if (!isNaN(offset) && offset >= 0) {
+        filters.offset = offset;
+      }
+    }
+
+    // Date filters with validation
+    if (query.fromDate) {
+      const fromDate = new Date(query.fromDate as string);
+      if (!isNaN(fromDate.getTime())) {
+        filters.fromDate = fromDate;
+      }
+    }
+    
+    if (query.toDate) {
+      const toDate = new Date(query.toDate as string);
+      if (!isNaN(toDate.getTime())) {
+        filters.toDate = toDate;
+      }
+    }
+
+    return filters;
   }
 };

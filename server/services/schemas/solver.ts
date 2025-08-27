@@ -1,4 +1,4 @@
-/**
+/**THIS OLD FILE MAY BE CAUSING CONFLICTS!!!  NEEDS AUDITING!!!!
  * server/services/schemas/solver.ts
  * 
  * JSON schema for solver mode responses where AI predicts puzzle answers.
@@ -19,7 +19,7 @@ import {
   COMMON_PROPERTIES,
   PREDICTION_PROPERTIES,
   createSchema
-} from './common.js';
+} from './common.ts';
 
 /**
  * JSON schema for single test case solver responses

@@ -13,9 +13,10 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
-import { dbService } from '../services/dbService';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import type { PromptOptions } from '../services/promptBuilder';
-import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
+import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
+import { logger } from '../utils/logger.ts';
 
 export const puzzleController = {
   /**
@@ -27,7 +28,7 @@ export const puzzleController = {
   async list(req: Request, res: Response) {
     const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, prioritizeExplained, source, multiTestFilter } = req.query;
     
-    console.log('DEBUG: Puzzle list request with query params:', req.query);
+    logger.debug('Puzzle list request with query params: ' + JSON.stringify(req.query), 'puzzle-controller');
     
     const filters: any = {};
     if (maxGridSize) filters.maxGridSize = parseInt(maxGridSize as string);
@@ -39,10 +40,10 @@ export const puzzleController = {
     if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
     if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) filters.multiTestFilter = multiTestFilter as 'single' | 'multi';
     
-    console.log('DEBUG: Using filters:', filters);
+    logger.debug('Using filters: ' + JSON.stringify(filters), 'puzzle-controller');
     
     const puzzles = await puzzleService.getPuzzleList(filters);
-    console.log(`DEBUG: Found ${puzzles.length} puzzles, first few:`, puzzles.slice(0, 3));
+    logger.debug(`Found ${puzzles.length} puzzles, first few: ` + JSON.stringify(puzzles.slice(0, 3)), 'puzzle-controller');
     
     res.json(formatResponse.success(puzzles));
   },
@@ -134,12 +135,9 @@ export const puzzleController = {
         // Attach validation results for UI
         result.predictedOutputGrids = multi.predictedGrids;
         result.multiValidation = multi.itemResults;
-        result.allPredictionsCorrect = multi.allCorrect;
-        result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
-        result.extractionMethod = multi.extractionMethodSummary;
 
       } else {
         // Single-test case: AI provided one grid
@@ -154,9 +152,11 @@ export const puzzleController = {
         // Attach validation results for UI
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
-        result.extractionMethod = validation.extractionMethod;
       }
     }
+    
+    // NOTE: Database persistence is now handled exclusively through explanationController.create()
+    // This eliminates duplicate saves and allows frontend to control when explanations are saved
     
     res.json(formatResponse.success(result));
   },
@@ -198,7 +198,7 @@ export const puzzleController = {
         systemPromptMode = 'ARC'
       } = req.body;
 
-      console.log(`[Controller] Generating prompt preview for ${provider} with puzzle ${taskId}`);
+      logger.info(`Generating prompt preview for ${provider} with puzzle ${taskId}`, 'puzzle-controller');
 
       // Get the puzzle data
       const puzzle = await puzzleService.getPuzzleById(taskId);
@@ -238,9 +238,172 @@ export const puzzleController = {
 
       res.json(formatResponse.success(previewData));
     } catch (error) {
-      console.error('[Controller] Error generating prompt preview:', error);
+      logger.error('Error generating prompt preview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to generate prompt preview', 'An error occurred while generating the prompt preview'));
     }
+  },
+
+  /**
+   * Build overview filters from query parameters
+   */
+  buildOverviewFilters(query: any) {
+    const puzzleFilters: any = {};
+    const { source, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistency } = query;
+    
+    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
+      puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    }
+    if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
+      puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
+    }
+    if (gridSizeMin) {
+      puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
+    }
+    if (gridSizeMax) {
+      puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
+    }
+    if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
+      puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
+    }
+    
+    return puzzleFilters;
+  },
+
+  /**
+   * Create basic puzzle overview structure
+   */
+  createBasicOverview(allPuzzles: any[], offset: string, limit: string) {
+    const basicResults = allPuzzles.map(puzzle => ({
+      ...puzzle,
+      explanations: [],
+      totalExplanations: 0,
+      latestExplanation: null,
+      hasExplanation: false
+    }));
+    
+    const offsetNum = parseInt(offset);
+    const limitNum = parseInt(limit);
+    
+    return {
+      puzzles: basicResults.slice(offsetNum, offsetNum + limitNum),
+      total: basicResults.length,
+      hasMore: basicResults.length > offsetNum + limitNum
+    };
+  },
+
+  /**
+   * Apply explanation filters to explanation list
+   */
+  applyExplanationFilters(explanations: any[], filters: any) {
+    const {
+      modelName, saturnFilter, confidenceMin, confidenceMax,
+      processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+    } = filters;
+    
+    let filtered = explanations;
+    
+    // Filter by model
+    if (modelName) {
+      filtered = filtered.filter(exp => exp.modelName === modelName);
+    }
+    
+    // Filter by Saturn status
+    if (saturnFilter) {
+      if (saturnFilter === 'solved') {
+        filtered = filtered.filter(exp => exp.saturnSuccess === true);
+      } else if (saturnFilter === 'failed') {
+        filtered = filtered.filter(exp => exp.saturnSuccess === false);
+      } else if (saturnFilter === 'attempted') {
+        filtered = filtered.filter(exp => exp.saturnSuccess !== undefined);
+      }
+    }
+    
+    // Filter by confidence range
+    if (confidenceMin || confidenceMax) {
+      filtered = filtered.filter(exp => {
+        const confidence = exp.confidence || 0;
+        if (confidenceMin && confidence < parseInt(confidenceMin)) return false;
+        if (confidenceMax && confidence > parseInt(confidenceMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by processing time
+    if (processingTimeMin || processingTimeMax) {
+      filtered = filtered.filter(exp => {
+        const processingTime = exp.apiProcessingTimeMs || 0;
+        if (processingTimeMin && processingTime < parseInt(processingTimeMin)) return false;
+        if (processingTimeMax && processingTime > parseInt(processingTimeMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by predictions
+    if (hasPredictions === 'true') {
+      filtered = filtered.filter(exp => exp.predictedOutputGrid || exp.multiplePredictedOutputs);
+    } else if (hasPredictions === 'false') {
+      filtered = filtered.filter(exp => !exp.predictedOutputGrid && !exp.multiplePredictedOutputs);
+    }
+    
+    // Filter by prediction accuracy
+    if (predictionAccuracy === 'correct') {
+      filtered = filtered.filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true);
+    } else if (predictionAccuracy === 'incorrect') {
+      filtered = filtered.filter(exp => exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false);
+    }
+    
+    return filtered;
+  },
+
+  /**
+   * Sort overview results based on sort parameters
+   */
+  sortOverviewResults(results: any[], sortBy: string, sortOrder: string) {
+    return results.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'puzzleId':
+          aValue = a.id;
+          bValue = b.id;
+          break;
+        case 'explanationCount':
+          aValue = a.totalExplanations;
+          bValue = b.totalExplanations;
+          break;
+        case 'latestConfidence':
+          aValue = a.latestExplanation?.confidence || 0;
+          bValue = b.latestExplanation?.confidence || 0;
+          break;
+        case 'createdAt':
+        default:
+          aValue = a.latestExplanation?.createdAt || '1970-01-01';
+          bValue = b.latestExplanation?.createdAt || '1970-01-01';
+          break;
+      }
+      
+      if (sortOrder === 'desc') {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      } else {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      }
+    });
+  },
+
+  /**
+   * Apply pagination to results
+   */
+  applyPagination(results: any[], offset: string, limit: string) {
+    const offsetNum = parseInt(offset);
+    const limitNum = parseInt(limit);
+    const total = results.length;
+    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
+    
+    return {
+      puzzles: paginatedResults,
+      total: total,
+      hasMore: total > offsetNum + limitNum
+    };
   },
 
   /**
@@ -253,69 +416,25 @@ export const puzzleController = {
   async overview(req: Request, res: Response) {
     try {
       const { 
-        search, 
-        hasExplanation, 
-        hasFeedback,
-        modelName, 
-        saturnFilter,
-        source,
-        multiTestFilter,
-        gridSizeMin,
-        gridSizeMax,
-        gridConsistency,
-        processingTimeMin,
-        processingTimeMax,
-        hasPredictions,
-        predictionAccuracy,
-        confidenceMin, 
-        confidenceMax,
-        limit = 50,
-        offset = 0,
-        sortBy = 'createdAt',
-        sortOrder = 'desc'
+        search, hasExplanation, hasFeedback, modelName, saturnFilter,
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
+        confidenceMin, confidenceMax, limit = 50, offset = 0,
+        sortBy = 'createdAt', sortOrder = 'desc'
       } = req.query;
 
-      console.log('[Controller] Puzzle overview request with filters:', req.query);
+      logger.debug('Puzzle overview request with filters: ' + JSON.stringify(req.query), 'puzzle-controller');
 
-      // Build filters for puzzle service
-      const puzzleFilters: any = {};
-      if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
-        puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
-      }
-      if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
-        puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
-      }
-      if (gridSizeMin) {
-        puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
-      }
-      if (gridSizeMax) {
-        puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
-      }
-      if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
-        puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
-      }
-
-      // Get all puzzles from the puzzle service
+      // Build puzzle filters using helper method
+      const puzzleFilters = this.buildOverviewFilters(req.query);
       const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
-      // If no database connection, return basic puzzle list
-      if (!dbService.isConnected()) {
-        const basicResults = allPuzzles.map(puzzle => ({
-          ...puzzle,
-          explanations: [],
-          totalExplanations: 0,
-          latestExplanation: null,
-          hasExplanation: false
-        }));
-        
-        return res.json(formatResponse.success({
-          puzzles: basicResults.slice(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string)),
-          total: basicResults.length,
-          hasMore: basicResults.length > parseInt(offset as string) + parseInt(limit as string)
-        }));
+      // If no database connection, return basic overview
+      if (!repositoryService.isConnected()) {
+        const basicOverview = this.createBasicOverview(allPuzzles, offset as string, limit as string);
+        return res.json(formatResponse.success(basicOverview));
       }
 
-      // Build a map of puzzle IDs for faster lookup
+      // Initialize puzzle map
       const puzzleMap = new Map();
       allPuzzles.forEach(puzzle => {
         puzzleMap.set(puzzle.id, {
@@ -327,113 +446,47 @@ export const puzzleController = {
         });
       });
 
-      // For now, let's use a simpler approach and get explanations for each puzzle
-      // This is less efficient but will work with the existing dbService methods
-      
-      // Get puzzle IDs to check for explanations
-      const puzzleIds = allPuzzles.map(p => p.id);
-      
-      // Apply search filter early if provided
-      let filteredPuzzleIds = puzzleIds;
+      // Apply search filter to puzzle IDs
+      let filteredPuzzleIds = allPuzzles.map(p => p.id);
       if (search && typeof search === 'string') {
-        filteredPuzzleIds = puzzleIds.filter(id => 
+        filteredPuzzleIds = filteredPuzzleIds.filter(id => 
           id.toLowerCase().includes(search.toLowerCase())
         );
       }
 
-      // Get bulk explanation status for all filtered puzzles
-      const explanationStatusMap = await dbService.getBulkExplanationStatus(filteredPuzzleIds);
-
-      // Build results by merging puzzle data with explanation status
-      explanationStatusMap.forEach((status, puzzleId) => {
+      // Get explanation status and populate puzzle map
+      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(filteredPuzzleIds);
+      Object.entries(explanationStatusMap).forEach(([puzzleId, status]) => {
         const puzzle = puzzleMap.get(puzzleId);
         if (puzzle) {
           puzzle.hasExplanation = status.hasExplanation;
-          puzzle.totalExplanations = status.hasExplanation ? 1 : 0; // For now, assume 1 explanation per puzzle
+          puzzle.totalExplanations = status.hasExplanation ? 1 : 0;
           puzzle.explanationId = status.explanationId;
           puzzle.feedbackCount = status.feedbackCount;
         }
       });
 
-      // For puzzles with explanations, get detailed explanation data if needed
-      for (const [puzzleId, status] of explanationStatusMap) {
+      // Process detailed explanation data with filters
+      const explanationFilters = {
+        modelName, saturnFilter, confidenceMin, confidenceMax,
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+      };
+
+      for (const [puzzleId, status] of Object.entries(explanationStatusMap)) {
         if (status.hasExplanation && status.explanationId) {
           try {
-            const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+            const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
             if (explanations && explanations.length > 0) {
               const puzzle = puzzleMap.get(puzzleId);
               if (puzzle) {
-                // Filter explanations by model if specified
-                let filteredExplanations = explanations;
-                if (modelName) {
-                  filteredExplanations = explanations.filter(exp => exp.modelName === modelName);
-                }
-
-                // Filter by Saturn status if specified
-                if (saturnFilter) {
-                  if (saturnFilter === 'solved') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === true);
-                  } else if (saturnFilter === 'failed') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess === false);
-                  } else if (saturnFilter === 'attempted') {
-                    filteredExplanations = filteredExplanations.filter(exp => exp.saturnSuccess !== undefined);
-                  }
-                  // saturnFilter === 'all' shows all results (no filtering)
-                }
-
-                // Filter by confidence if specified
-                if (confidenceMin || confidenceMax) {
-                  filteredExplanations = filteredExplanations.filter(exp => {
-                    const confidence = exp.confidence || 0;
-                    if (confidenceMin && confidence < parseInt(confidenceMin as string)) return false;
-                    if (confidenceMax && confidence > parseInt(confidenceMax as string)) return false;
-                    return true;
-                  });
-                }
-
-                // Filter by processing time if specified
-                if (processingTimeMin || processingTimeMax) {
-                  filteredExplanations = filteredExplanations.filter(exp => {
-                    const processingTime = exp.apiProcessingTimeMs || 0;
-                    if (processingTimeMin && processingTime < parseInt(processingTimeMin as string)) return false;
-                    if (processingTimeMax && processingTime > parseInt(processingTimeMax as string)) return false;
-                    return true;
-                  });
-                }
-
-                // Filter by has predictions if specified
-                if (hasPredictions) {
-                  if (hasPredictions === 'true') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.predictedOutputGrid || exp.multiplePredictedOutputs
-                    );
-                  } else if (hasPredictions === 'false') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      !exp.predictedOutputGrid && !exp.multiplePredictedOutputs
-                    );
-                  }
-                }
-
-                // Filter by prediction accuracy if specified
-                if (predictionAccuracy) {
-                  if (predictionAccuracy === 'correct') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true
-                    );
-                  } else if (predictionAccuracy === 'incorrect') {
-                    filteredExplanations = filteredExplanations.filter(exp => 
-                      exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false
-                    );
-                  }
-                }
-
+                const filteredExplanations = this.applyExplanationFilters(explanations, explanationFilters);
+                
                 if (filteredExplanations.length > 0) {
                   puzzle.explanations = filteredExplanations;
                   puzzle.totalExplanations = filteredExplanations.length;
                   puzzle.latestExplanation = filteredExplanations[0];
                   puzzle.hasExplanation = true;
                 } else {
-                  // No explanations match the filters
                   puzzle.explanations = [];
                   puzzle.totalExplanations = 0;
                   puzzle.latestExplanation = null;
@@ -442,74 +495,34 @@ export const puzzleController = {
               }
             }
           } catch (error) {
-            console.error(`Error getting explanations for puzzle ${puzzleId}:`, error);
+            logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
           }
         }
       }
 
-      // Convert map back to array
+      // Apply final filters and sorting
       let results = Array.from(puzzleMap.values());
 
-        // Apply hasExplanation filter
-        if (hasExplanation === 'true') {
-          results = results.filter(puzzle => puzzle.hasExplanation);
-        } else if (hasExplanation === 'false') {
-          results = results.filter(puzzle => !puzzle.hasExplanation);
-        }
+      if (hasExplanation === 'true') {
+        results = results.filter(puzzle => puzzle.hasExplanation);
+      } else if (hasExplanation === 'false') {
+        results = results.filter(puzzle => !puzzle.hasExplanation);
+      }
 
-        // Apply hasFeedback filter
-        if (hasFeedback === 'true') {
-          results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
-        } else if (hasFeedback === 'false') {
-          results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
-        }
+      if (hasFeedback === 'true') {
+        results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
+      } else if (hasFeedback === 'false') {
+        results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
+      }
 
-        // Apply sorting
-        results.sort((a, b) => {
-          let aValue, bValue;
-          
-          switch (sortBy) {
-            case 'puzzleId':
-              aValue = a.id;
-              bValue = b.id;
-              break;
-            case 'explanationCount':
-              aValue = a.totalExplanations;
-              bValue = b.totalExplanations;
-              break;
-            case 'latestConfidence':
-              aValue = a.latestExplanation?.confidence || 0;
-              bValue = b.latestExplanation?.confidence || 0;
-              break;
-            case 'createdAt':
-            default:
-              aValue = a.latestExplanation?.createdAt || '1970-01-01';
-              bValue = b.latestExplanation?.createdAt || '1970-01-01';
-              break;
-          }
-          
-          if (sortOrder === 'desc') {
-            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-          } else {
-            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-          }
-        });
+      // Sort and paginate results
+      const sortedResults = this.sortOverviewResults(results, sortBy as string, sortOrder as string);
+      const finalResults = this.applyPagination(sortedResults, offset as string, limit as string);
 
-        // Apply pagination
-        const total = results.length;
-        const paginatedResults = results.slice(
-          parseInt(offset as string), 
-          parseInt(offset as string) + parseInt(limit as string)
-        );
-
-        res.json(formatResponse.success({
-          puzzles: paginatedResults,
-          total: total,
-          hasMore: total > parseInt(offset as string) + parseInt(limit as string)
-        }));
+      res.json(formatResponse.success(finalResults));
 
     } catch (error) {
-      console.error('[Controller] Error in puzzle overview:', error);
+      logger.error('Error in puzzle overview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to get puzzle overview', 'An error occurred while fetching puzzle overview data'));
     }
   },
@@ -521,7 +534,7 @@ export const puzzleController = {
       puzzleLoader.forceReinitialize();
       res.json(formatResponse.success({ message: 'Puzzle loader reinitialized successfully' }));
     } catch (error) {
-      console.error('[Controller] Error reinitializing puzzle loader:', error);
+      logger.error('Error reinitializing puzzle loader: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to reinitialize puzzle loader', 'An error occurred while reinitializing the puzzle loader'));
     }
   },
@@ -534,10 +547,10 @@ export const puzzleController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      const accuracyStats = await dbService.getAccuracyStats();
+      const accuracyStats = await repositoryService.feedback.getAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
-      console.error('[Controller] Error fetching accuracy stats:', error);
+      logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
     }
   }

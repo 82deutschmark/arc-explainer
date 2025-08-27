@@ -31,13 +31,14 @@ import { validation } from "./middleware/validation";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";
-import { dbService } from "./services/dbService";
+import { repositoryService } from './repositories/RepositoryService.ts';
+import { logger } from "./utils/logger.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await aiServiceFactory.initialize();
-  const dbInitialized = await dbService.init();
-  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
+  const dbInitialized = await repositoryService.initialize();
+  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);;
 
   // Routes with consistent naming and error handling
   
@@ -48,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
   app.get("/api/puzzle/overview", asyncHandler(puzzleController.overview));
   app.get("/api/puzzle/task/:taskId", asyncHandler(puzzleController.getById));
-  app.post("/api/puzzle/analyze/:taskId/:model", asyncHandler(puzzleController.analyze));
+  app.post("/api/puzzle/analyze/:taskId/:model", validation.puzzleAnalysis, asyncHandler(puzzleController.analyze));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
   
   // Debug route to force puzzle loader reinitialization
@@ -58,16 +59,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
   
   // Prompt preview route - shows exact prompt that will be sent to specific provider
-  app.post("/api/prompt/preview/:provider/:taskId", asyncHandler(puzzleController.previewPrompt));
+  app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
   
   // Prompt template routes
   app.get("/api/prompts", asyncHandler(promptController.getAll));
-  app.post("/api/prompt-preview", asyncHandler(promptController.preview));
+  app.post("/api/prompt-preview", validation.required(['provider', 'taskId']), asyncHandler(promptController.preview));
   
   // Explanation routes
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));
   app.get("/api/puzzle/:puzzleId/explanation", asyncHandler(explanationController.getOne));
-  app.post("/api/puzzle/save-explained/:puzzleId", asyncHandler(explanationController.create));
+  app.post("/api/puzzle/save-explained/:puzzleId", validation.explanationCreate, asyncHandler(explanationController.create));
   
   // Feedback routes
   app.post("/api/feedback", validation.feedback, asyncHandler(feedbackController.create));
@@ -77,21 +78,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/feedback/stats", asyncHandler(feedbackController.getStats));
 
   // Saturn analysis routes
-  app.post("/api/saturn/analyze/:taskId", asyncHandler(saturnController.analyze));
-  app.post("/api/saturn/analyze-with-reasoning/:taskId", asyncHandler(saturnController.analyzeWithReasoning));
+  app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));
+  app.post("/api/saturn/analyze-with-reasoning/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
   
   // Batch analysis routes
-  app.post("/api/model/batch-analyze", asyncHandler(batchAnalysisController.startBatch));
+  app.post("/api/model/batch-analyze", validation.batchAnalysis, asyncHandler(batchAnalysisController.startBatch));
   app.get("/api/model/batch-status/:sessionId", asyncHandler(batchAnalysisController.getBatchStatus));
-  app.post("/api/model/batch-control/:sessionId", asyncHandler(batchAnalysisController.controlBatch));
+  app.post("/api/model/batch-control/:sessionId", validation.batchControl, asyncHandler(batchAnalysisController.controlBatch));
   app.get("/api/model/batch-results/:sessionId", asyncHandler(batchAnalysisController.getBatchResults));
   app.get("/api/model/batch-sessions", asyncHandler(batchAnalysisController.getAllSessions));
   
   // Database health check endpoint for debugging
-  app.get("/api/health/database", async (req, res) => {
+  app.get("/api/health/database", asyncHandler(async (req: any, res: any) => {
     try {
-      const isConnected = dbService.isConnected();
+      const isConnected = repositoryService.isConnected();
       const hasUrl = !!process.env.DATABASE_URL;
       
       if (!hasUrl) {
@@ -114,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Test actual database query
       try {
-        const testResult = await dbService.hasExplanation('health-check-test');
+        const testResult = await repositoryService.explanations.getExplanationForPuzzle('health-check-test');
         res.json({
           status: 'ok',
           message: 'Database connection healthy',
@@ -133,13 +134,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
     } catch (error) {
+      logger.error('Health check failed: ' + (error instanceof Error ? error.message : String(error)), 'health-check');
       res.status(500).json({
         status: 'error',
         message: 'Health check failed',
         error: error instanceof Error ? error.message : String(error)
       });
     }
-  });
+  }));
 
   // Validation endpoint - return 501 Not Implemented (keeping for backward compatibility)
   app.post("/api/puzzle/validate", (req, res) => {
