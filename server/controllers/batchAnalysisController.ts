@@ -277,15 +277,15 @@ export const batchAnalysisController = {
 
       logger.info('Getting all batch sessions with filters', 'batch-controller');
 
-      // For now, return active sessions from memory
-      // In a full implementation, this would query the database
-      const activeSessions = Array.from(batchAnalysisService['activeSessions'].values());
+      // Query database for all batch sessions
+      const { dbService } = await import('../services/dbService');
+      const allSessions = await dbService.getAllBatchSessions();
 
-      let filteredSessions = activeSessions;
+      let filteredSessions = allSessions;
 
       // Apply filters
       if (status && typeof status === 'string') {
-        filteredSessions = filteredSessions.filter(session => session.status === status);
+        filteredSessions = filteredSessions.filter((session: any) => session.status === status);
       }
 
       // Apply pagination
