@@ -87,7 +87,9 @@ export function useAnalysisResults({
         requestBody.customPrompt = customPrompt.trim();
       }
       
-      const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${modelKey}`, requestBody);
+      // URL-encode model key to handle OpenRouter provider/model format (e.g., qwen/qwen-2.5-coder-32b-instruct)
+      const encodedModelKey = encodeURIComponent(modelKey);
+      const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${encodedModelKey}`, requestBody);
       if (!analysisResponse.ok) {
         throw new Error(`Analysis request failed: ${analysisResponse.statusText}`);
       }
