@@ -135,12 +135,9 @@ export const puzzleController = {
         // Attach validation results for UI
         result.predictedOutputGrids = multi.predictedGrids;
         result.multiValidation = multi.itemResults;
-        result.allPredictionsCorrect = multi.allCorrect;
-        result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
         result.multiTestResults = multi.itemResults;
         result.multiTestAllCorrect = multi.allCorrect;
         result.multiTestAverageAccuracy = multi.averageAccuracyScore;
-        result.extractionMethod = multi.extractionMethodSummary;
 
       } else {
         // Single-test case: AI provided one grid
@@ -155,7 +152,6 @@ export const puzzleController = {
         // Attach validation results for UI
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
-        result.extractionMethod = validation.extractionMethod;
       }
     }
     
@@ -192,11 +188,9 @@ export const puzzleController = {
         alienMeaningConfidence: result.alienMeaningConfidence,
         isPredictionCorrect: result.isPredictionCorrect,
         predictionAccuracyScore: result.predictionAccuracyScore,
-        extractionMethod: result.extractionMethod,
-        allPredictionsCorrect: result.allPredictionsCorrect,
-        averagePredictionAccuracyScore: result.averagePredictionAccuracyScore,
         multiTestAllCorrect: result.multiTestAllCorrect,
-        multiTestAverageAccuracy: result.multiTestAverageAccuracy
+        multiTestAverageAccuracy: result.multiTestAverageAccuracy,
+        hasMultiplePredictions: result.hasMultiplePredictions
       };
 
       // Save to database to persist validation results
