@@ -888,18 +888,24 @@ const getAccuracyStats = async () => {
       SELECT COUNT(*) as total FROM explanations WHERE is_prediction_correct IS NOT NULL
     `);
 
-    const accuracyByModel = result.rows.map(row => ({
-      model: row.model_name,
-      totalPredictions: parseInt(row.total_predictions),
-      correctPredictions: parseInt(row.correct_predictions),
-      accuracyPercentage: parseFloat(((row.correct_predictions / row.total_predictions) * 100).toFixed(1)),
-      avgAccuracyScore: parseFloat(row.avg_accuracy_score),
-      avgConfidence: parseFloat(row.avg_confidence),
-      successfulExtractions: parseInt(row.successful_extractions)
-    }));
+    const accuracyByModel = result.rows.map(row => {
+      const totalAttempts = parseInt(row.total_predictions);
+      const successfulExtractions = parseInt(row.successful_extractions);
+      
+      return {
+        modelName: row.model_name,
+        totalAttempts,
+        correctPredictions: parseInt(row.correct_predictions),
+        accuracyPercentage: parseFloat(((row.correct_predictions / row.total_predictions) * 100).toFixed(1)),
+        avgAccuracyScore: parseFloat(row.avg_accuracy_score),
+        avgConfidence: parseFloat(row.avg_confidence),
+        successfulExtractions,
+        extractionSuccessRate: parseFloat(((successfulExtractions / totalAttempts) * 100).toFixed(1))
+      };
+    });
 
     return {
-      totalPredictions: parseInt(totalResult.rows[0].total),
+      totalSolverAttempts: parseInt(totalResult.rows[0].total),
       accuracyByModel
     };
   } catch (error) {
