@@ -159,6 +159,54 @@ export const puzzleController = {
       }
     }
     
+    // CRITICAL FIX: Save the explanation with computed validation results to database
+    // This ensures that validation results (isPredictionCorrect, accuracy scores, etc.) are persisted
+    try {
+      const explanationData = {
+        puzzleId: taskId, // Note: route uses taskId but should be puzzleId
+        patternDescription: result.patternDescription || '',
+        solvingStrategy: result.solvingStrategy || '',
+        hints: result.hints || [],
+        confidence: result.confidence || 50,
+        modelName: model,
+        reasoningLog: result.reasoningLog || null,
+        apiProcessingTimeMs: result.apiProcessingTimeMs,
+        estimatedCost: result.estimatedCost,
+        temperature: temperature,
+        reasoningEffort: serviceOpts.reasoningEffort,
+        reasoningVerbosity: serviceOpts.reasoningVerbosity,
+        reasoningSummaryType: serviceOpts.reasoningSummaryType,
+        inputTokens: result.inputTokens,
+        outputTokens: result.outputTokens,
+        reasoningTokens: result.reasoningTokens,
+        totalTokens: result.totalTokens,
+        predictedOutputGrid: result.predictedOutputGrid,
+        multiplePredictedOutputs: result.multiplePredictedOutputs,
+        multiTestResults: result.multiTestResults,
+        saturnSuccess: result.saturnSuccess,
+        saturnImages: result.saturnImages,
+        saturnLog: result.saturnLog,
+        saturnEvents: result.saturnEvents,
+        // CRITICAL: Include computed validation fields
+        alienMeaning: result.alienMeaning || '',
+        alienMeaningConfidence: result.alienMeaningConfidence,
+        isPredictionCorrect: result.isPredictionCorrect,
+        predictionAccuracyScore: result.predictionAccuracyScore,
+        extractionMethod: result.extractionMethod,
+        allPredictionsCorrect: result.allPredictionsCorrect,
+        averagePredictionAccuracyScore: result.averagePredictionAccuracyScore,
+        multiTestAllCorrect: result.multiTestAllCorrect,
+        multiTestAverageAccuracy: result.multiTestAverageAccuracy
+      };
+
+      // Save to database to persist validation results
+      await repositoryService.explanations.saveExplanation(explanationData);
+      logger.info(`Auto-saved explanation for puzzle ${taskId} with model ${model}`, 'puzzle-controller');
+    } catch (saveError) {
+      // Don't fail the request if database save fails, but log the error
+      logger.error(`Failed to auto-save explanation for puzzle ${taskId}: ${saveError instanceof Error ? saveError.message : String(saveError)}`, 'puzzle-controller');
+    }
+    
     res.json(formatResponse.success(result));
   },
   

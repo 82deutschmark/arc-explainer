@@ -9,7 +9,8 @@
  */
 
 export interface ExplanationData {
-  taskId: string;
+  puzzleId: string; // PRIMARY: Match API parameter names
+  taskId?: string;  // DEPRECATED: Backward compatibility
   patternDescription: string;
   solvingStrategy?: string;
   hints?: string[];
@@ -34,11 +35,25 @@ export interface ExplanationData {
   saturnImages?: string[] | null;
   saturnLog?: string | null;
   saturnEvents?: string | null;
+  
+  // MISSING FIELDS: Alien communication features
+  alienMeaning?: string;
+  alienMeaningConfidence?: number | null;
+  
+  // MISSING FIELDS: Computed solver validation fields
+  isPredictionCorrect?: boolean | null;
+  predictionAccuracyScore?: number | null;
+  extractionMethod?: string | null;
+  allPredictionsCorrect?: boolean | null;
+  averagePredictionAccuracyScore?: number | null;
+  multiTestAllCorrect?: boolean | null;
+  multiTestAverageAccuracy?: number | null;
 }
 
 export interface ExplanationResponse {
   id: number;
-  taskId: string;
+  puzzleId: string; // PRIMARY: Frontend and API expect this field name
+  taskId?: string; // DEPRECATED: Backward compatibility alias
   patternDescription: string;
   solvingStrategy: string;
   hints: string[];
@@ -64,10 +79,40 @@ export interface ExplanationResponse {
   saturnImages?: string[] | null;
   saturnLog?: string | null;
   saturnEvents?: string | null;
+  
+  // MISSING FIELDS: Alien communication features
+  alienMeaning?: string;
+  alienMeaningConfidence?: number | null;
+  
+  // MISSING FIELDS: Feedback integration
+  helpfulVotes?: number;
+  notHelpfulVotes?: number;
+  
+  // MISSING FIELDS: Solver validation computed fields
+  isPredictionCorrect?: boolean | null;
+  predictionAccuracyScore?: number | null;
+  extractionMethod?: string | null;
+  
+  // MISSING FIELDS: Multi-test solver validation
+  predictedOutputGrids?: number[][][] | null;
+  multiValidation?: Array<{
+    index: number;
+    predictedGrid: number[][] | null;
+    isPredictionCorrect: boolean;
+    predictionAccuracyScore: number;
+    extractionMethod?: string;
+    expectedDimensions?: { rows: number; cols: number };
+  }> | null;
+  allPredictionsCorrect?: boolean | null;
+  averagePredictionAccuracyScore?: number | null;
+  
+  // MISSING FIELDS: Database raw multi-test fields (frontend compatibility)
+  multiTestAllCorrect?: boolean | null;
+  multiTestAverageAccuracy?: number | null;
 }
 
 export interface BulkExplanationStatus {
-  [taskId: string]: {
+  [puzzleId: string]: {
     hasExplanation: boolean;
     explanationId: number | null;
     feedbackCount: number;
@@ -91,12 +136,12 @@ export interface IExplanationRepository {
   /**
    * Get the most recent explanation for a puzzle
    */
-  getExplanationForPuzzle(taskId: string): Promise<ExplanationResponse | null>;
+  getExplanationForPuzzle(puzzleId: string): Promise<ExplanationResponse | null>;
 
   /**
    * Get all explanations for a puzzle (multiple models/attempts)
    */
-  getExplanationsForPuzzle(taskId: string): Promise<ExplanationResponse[]>;
+  getExplanationsForPuzzle(puzzleId: string): Promise<ExplanationResponse[]>;
 
   /**
    * Get explanation by ID
@@ -106,10 +151,10 @@ export interface IExplanationRepository {
   /**
    * Check if puzzle has any explanations
    */
-  hasExplanation(taskId: string): Promise<boolean>;
+  hasExplanation(puzzleId: string): Promise<boolean>;
 
   /**
    * Get bulk explanation status for multiple puzzles
    */
-  getBulkExplanationStatus(taskIds: string[]): Promise<BulkExplanationStatus>;
+  getBulkExplanationStatus(puzzleIds: string[]): Promise<BulkExplanationStatus>;
 }
