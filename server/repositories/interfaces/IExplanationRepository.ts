@@ -9,106 +9,13 @@
  */
 
 export interface ExplanationData {
-  puzzleId: string; // PRIMARY: Match API parameter names
-  taskId?: string;  // DEPRECATED: Backward compatibility
-  patternDescription: string;
-  solvingStrategy?: string;
-  hints?: string[];
-  confidence: number;
-  modelName?: string;
-  reasoningLog?: string | null;
-  hasReasoningLog?: boolean;
-  apiProcessingTimeMs?: number | null;
-  estimatedCost?: number | null;
-  temperature?: number;
-  reasoningEffort?: string | null;
-  reasoningVerbosity?: string | null;
-  reasoningSummaryType?: string | null;
-  inputTokens?: number | null;
-  outputTokens?: number | null;
-  reasoningTokens?: number | null;
-  totalTokens?: number | null;
-  predictedOutputGrid?: number[][] | null;
-  multiplePredictedOutputs?: number[][][] | null;
-  multiTestResults?: any[] | null;
-  saturnSuccess?: boolean | null;
-  saturnImages?: string[] | null;
-  saturnLog?: string | null;
-  saturnEvents?: string | null;
-  
-  // MISSING FIELDS: Alien communication features
-  alienMeaning?: string;
-  alienMeaningConfidence?: number | null;
-  
-  // MISSING FIELDS: Computed solver validation fields
-  isPredictionCorrect?: boolean | null;
-  predictionAccuracyScore?: number | null;
-  extractionMethod?: string | null;
-  allPredictionsCorrect?: boolean | null;
-  averagePredictionAccuracyScore?: number | null;
-  multiTestAllCorrect?: boolean | null;
-  multiTestAverageAccuracy?: number | null;
+  // Match what the database schema actually accepts
+  [key: string]: any;
 }
 
 export interface ExplanationResponse {
-  id: number;
-  puzzleId: string; // PRIMARY: Frontend and API expect this field name
-  taskId?: string; // DEPRECATED: Backward compatibility alias
-  patternDescription: string;
-  solvingStrategy: string;
-  hints: string[];
-  confidence: number;
-  modelName?: string;
-  reasoningLog?: string | null;
-  hasReasoningLog: boolean;
-  createdAt: Date;
-  apiProcessingTimeMs?: number | null;
-  estimatedCost?: number | null;
-  temperature?: number;
-  reasoningEffort?: string | null;
-  reasoningVerbosity?: string | null;
-  reasoningSummaryType?: string | null;
-  inputTokens?: number | null;
-  outputTokens?: number | null;
-  reasoningTokens?: number | null;
-  totalTokens?: number | null;
-  predictedOutputGrid?: number[][] | null;
-  multiplePredictedOutputs?: number[][][] | null;
-  multiTestResults?: any[] | null;
-  saturnSuccess?: boolean | null;
-  saturnImages?: string[] | null;
-  saturnLog?: string | null;
-  saturnEvents?: string | null;
-  
-  // MISSING FIELDS: Alien communication features
-  alienMeaning?: string;
-  alienMeaningConfidence?: number | null;
-  
-  // MISSING FIELDS: Feedback integration
-  helpfulVotes?: number;
-  notHelpfulVotes?: number;
-  
-  // MISSING FIELDS: Solver validation computed fields
-  isPredictionCorrect?: boolean | null;
-  predictionAccuracyScore?: number | null;
-  extractionMethod?: string | null;
-  
-  // MISSING FIELDS: Multi-test solver validation
-  predictedOutputGrids?: number[][][] | null;
-  multiValidation?: Array<{
-    index: number;
-    predictedGrid: number[][] | null;
-    isPredictionCorrect: boolean;
-    predictionAccuracyScore: number;
-    extractionMethod?: string;
-    expectedDimensions?: { rows: number; cols: number };
-  }> | null;
-  allPredictionsCorrect?: boolean | null;
-  averagePredictionAccuracyScore?: number | null;
-  
-  // MISSING FIELDS: Database raw multi-test fields (frontend compatibility)
-  multiTestAllCorrect?: boolean | null;
-  multiTestAverageAccuracy?: number | null;
+  // This should match what the database returns via SQL aliases
+  [key: string]: any;
 }
 
 export interface BulkExplanationStatus {
