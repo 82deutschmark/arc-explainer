@@ -31,14 +31,14 @@ import { validation } from "./middleware/validation";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";
-import { dbService } from "./services/dbService";
+import { repositoryService } from './repositories/RepositoryService.js';
 import { logger } from "./utils/logger.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await aiServiceFactory.initialize();
-  const dbInitialized = await dbService.init();
-  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);
+  const dbInitialized = await repositoryService.initialize();
+  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);;
 
   // Routes with consistent naming and error handling
   
@@ -90,9 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/model/batch-sessions", asyncHandler(batchAnalysisController.getAllSessions));
   
   // Database health check endpoint for debugging
-  app.get("/api/health/database", asyncHandler(async (req, res) => {
+  app.get("/api/health/database", asyncHandler(async (req: any, res: any) => {
     try {
-      const isConnected = dbService.isConnected();
+      const isConnected = repositoryService.isConnected();
       const hasUrl = !!process.env.DATABASE_URL;
       
       if (!hasUrl) {
@@ -115,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Test actual database query
       try {
-        const testResult = await dbService.hasExplanation('health-check-test');
+        const testResult = await repositoryService.explanations.getExplanationForPuzzle('health-check-test');
         res.json({
           status: 'ok',
           message: 'Database connection healthy',
