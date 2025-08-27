@@ -35,6 +35,11 @@ interface PuzzleOverviewData {
     apiProcessingTimeMs?: number;
     saturnSuccess?: boolean;
     createdAt: string;
+    // Accuracy and trustworthiness fields
+    isPredictionCorrect?: boolean;
+    predictionAccuracyScore?: number;
+    multiTestAllCorrect?: boolean;
+    multiTestAverageAccuracy?: number;
   }>;
   totalExplanations: number;
   latestExplanation?: any;
