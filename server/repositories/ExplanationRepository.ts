@@ -37,11 +37,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           saturn_success, saturn_images, saturn_log, saturn_events,
           alien_meaning, alien_meaning_confidence,
           is_prediction_correct, prediction_accuracy_score,
-          multi_test_all_correct, multi_test_average_accuracy,
-          all_predictions_correct, average_prediction_accuracy_score, extraction_method
+          multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25,
-          $26, $27, $28, $29, $30, $31, $32, $33, $34
+          $26, $27, $28, $29, $30, $31
         ) RETURNING *
       `, [
         data.puzzleId || data.taskId, // Support both field names during transition
@@ -78,10 +77,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         // Multi-test fields using actual schema column names
         data.multiTestAllCorrect || null,
         data.multiTestAverageAccuracy || null,
-        // Missing solver validation fields
-        data.allPredictionsCorrect || null,
-        data.averagePredictionAccuracyScore || null,
-        data.extractionMethod || null
+        data.hasMultiplePredictions || null
       ], client);
 
       if (result.rows.length === 0) {
@@ -126,9 +122,6 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
-        all_predictions_correct AS "allPredictionsCorrect",
-        average_prediction_accuracy_score AS "averagePredictionAccuracyScore",
-        extraction_method AS "extractionMethod",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'not_helpful') AS "notHelpfulVotes"
@@ -170,9 +163,6 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
-        all_predictions_correct AS "allPredictionsCorrect",
-        average_prediction_accuracy_score AS "averagePredictionAccuracyScore",
-        extraction_method AS "extractionMethod",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'not_helpful') AS "notHelpfulVotes"
@@ -213,9 +203,6 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
-        all_predictions_correct AS "allPredictionsCorrect",
-        average_prediction_accuracy_score AS "averagePredictionAccuracyScore",
-        extraction_method AS "extractionMethod",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND vote_type = 'not_helpful') AS "notHelpfulVotes"
