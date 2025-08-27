@@ -115,11 +115,11 @@ export const explanationService = {
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
-          const explanationWithTaskId = {
+          const explanationWithPuzzleId = {
             ...explanationData,
-            taskId: puzzleId
+            puzzleId: puzzleId
           };
-          const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithTaskId);
+          const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
             console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
             savedExplanationIds.push(savedExplanation.id);
@@ -199,7 +199,7 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
 
     // Save the new explanation as a separate attempt
     const explanationData = {
-      taskId: puzzleId,
+      puzzleId: puzzleId,
       ...newExplanation,
       modelName,
       retryReason: userFeedback, // Store the feedback that triggered this retry
