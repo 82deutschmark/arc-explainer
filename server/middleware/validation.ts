@@ -195,6 +195,18 @@ export const validation = {
     const { puzzleId } = req.params;
     const { explanations } = req.body;
 
+    // DEBUG: Log exact request structure
+    console.log('[VALIDATION-DEBUG] Request structure:', {
+      puzzleId,
+      bodyKeys: Object.keys(req.body),
+      explanationsType: typeof explanations,
+      explanationsKeys: explanations ? Object.keys(explanations) : 'null',
+      patternDescriptionExists: !!explanations?.patternDescription,
+      patternDescriptionType: typeof explanations?.patternDescription,
+      patternDescriptionLength: explanations?.patternDescription?.length || 0,
+      patternDescriptionSample: explanations?.patternDescription?.substring(0, 50) || 'none'
+    });
+
     if (!puzzleId || puzzleId.trim() === '') {
       throw new AppError('Missing required parameter: puzzleId', 400, 'VALIDATION_ERROR');
     }
@@ -203,11 +215,25 @@ export const validation = {
       throw new AppError('Missing explanations data in request body', 400, 'VALIDATION_ERROR');
     }
 
+    // Extract explanation data from nested model structure
+    const modelKeys = Object.keys(explanations);
+    if (modelKeys.length === 0) {
+      throw new AppError('No explanation data found in request', 400, 'VALIDATION_ERROR');
+    }
+    
+    const explanationData = explanations[modelKeys[0]]; // Get data from first model key
+    
     // Check for either camelCase or snake_case variants
-    const patternDesc = explanations.patternDescription || explanations.pattern_description;
-    const solvingStrat = explanations.solvingStrategy || explanations.solving_strategy;
+    const patternDesc = explanationData.patternDescription || explanationData.pattern_description;
+    const solvingStrat = explanationData.solvingStrategy || explanationData.solving_strategy;
 
     if (!patternDesc || typeof patternDesc !== 'string' || patternDesc.trim().length < 10) {
+      console.error('[VALIDATION-ERROR] patternDescription validation failed:', {
+        patternDesc,
+        type: typeof patternDesc,
+        length: patternDesc?.length || 0,
+        explanationsData: explanations
+      });
       throw new AppError('patternDescription must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
     }
 
