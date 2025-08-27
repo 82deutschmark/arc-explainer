@@ -10,6 +10,7 @@ import { ARCTask } from "../../../shared/types.js";
 import { buildAnalysisPrompt, getDefaultPromptId } from "../promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "../promptBuilder.js";
 import { calculateCost } from "../../utils/costCalculator.js";
+import { getModelConfig } from "../../config/models.js";
 
 // Common types for all AI services
 export interface ServiceOptions {
@@ -166,13 +167,19 @@ export abstract class BaseAIService {
     tokenUsage: TokenUsage
   ): { total: number; input: number; output: number; reasoning?: number } | null {
     try {
-      return calculateCost(
-        this.provider,
-        modelKey,
-        tokenUsage.input,
-        tokenUsage.output,
-        tokenUsage.reasoning
-      );
+      const modelConfig = getModelConfig(modelKey);
+      if (!modelConfig?.cost) {
+        console.warn(`[${this.provider}] No cost configuration found for model: ${modelKey}`);
+        return null;
+      }
+      
+      const costBreakdown = calculateCost(modelConfig.cost, tokenUsage);
+      return {
+        total: costBreakdown.total,
+        input: costBreakdown.input,
+        output: costBreakdown.output,
+        reasoning: costBreakdown.reasoning
+      };
     } catch (error) {
       console.warn(`[${this.provider}] Cost calculation failed:`, error);
       return null;
@@ -323,7 +330,7 @@ export abstract class BaseAIService {
    */
   protected handleAnalysisError(error: any, modelKey: string, task: ARCTask): never {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[${this.provider}] Analysis failed for model ${modelKey} on puzzle ${task.taskId}:`, errorMessage);
+    console.error(`[${this.provider}] Analysis failed for model ${modelKey}:`, errorMessage);
     
     // Enhance error with context
     const contextualError = new Error(
