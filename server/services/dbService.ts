@@ -290,148 +290,46 @@ const createBatchSession = async (sessionData: any) => {
   return await repositoryService.batchAnalysis.createBatchSession(sessionData);
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const updateBatchSession = async (sessionId: string, updates: any) => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  
-  try {
-    const setParts: string[] = [];
-    const values: any[] = [];
-    let paramIndex = 1;
-    
-    Object.entries(updates).forEach(([key, value]) => {
-      const dbColumn = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      setParts.push(`${dbColumn} = $${paramIndex}`);
-      values.push(value);
-      paramIndex++;
-    });
-    
-    if (setParts.length > 0) {
-      values.push(sessionId);
-      await client.query(
-        `UPDATE batch_analysis_sessions SET ${setParts.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE session_id = $${paramIndex}`,
-        values
-      );
-    }
-    
-    return true;
-  } catch (error) {
-    logger.error(`Error updating batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return false;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.updateBatchSession(sessionId, updates);
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const getBatchSession = async (sessionId: string) => {
-  if (!pool) return null;
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT * FROM batch_analysis_sessions WHERE session_id = $1`,
-      [sessionId]
-    );
-    return result.rows[0] || null;
-  } catch (error) {
-    logger.error(`Error getting batch session: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return null;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.getBatchSession(sessionId);
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const getAllBatchSessions = async () => {
-  if (!pool) return [];
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT * FROM batch_analysis_sessions ORDER BY created_at DESC`
-    );
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting all batch sessions: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return [];
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.getAllBatchSessions();
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const createBatchResult = async (sessionId: string, puzzleId: string) => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  
-  try {
-    await client.query(
-      `INSERT INTO batch_analysis_results (session_id, puzzle_id, status)
-       VALUES ($1, $2, 'pending')`,
-      [sessionId, puzzleId]
-    );
-    return true;
-  } catch (error) {
-    logger.error(`Error creating batch result: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return false;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.createBatchResult(sessionId, puzzleId);
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const updateBatchResult = async (sessionId: string, puzzleId: string, updates: any) => {
-  if (!pool) return false;
-
-  const client = await pool.connect();
-  
-  try {
-    const setParts: string[] = [];
-    const values: any[] = [];
-    let paramIndex = 1;
-    
-    Object.entries(updates).forEach(([key, value]) => {
-      const dbColumn = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      setParts.push(`${dbColumn} = $${paramIndex}`);
-      values.push(value);
-      paramIndex++;
-    });
-    
-    if (setParts.length > 0) {
-      values.push(sessionId, puzzleId);
-      await client.query(
-        `UPDATE batch_analysis_results SET ${setParts.join(', ')} WHERE session_id = $${paramIndex} AND puzzle_id = $${paramIndex + 1}`,
-        values
-      );
-    }
-    
-    return true;
-  } catch (error) {
-    logger.error(`Error updating batch result: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return false;
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.updateBatchResult(sessionId, puzzleId, updates);
 };
 
+/**
+ * REFACTORED: Now delegates to repositoryService
+ */
 const getBatchResults = async (sessionId: string) => {
-  if (!pool) return [];
-
-  const client = await pool.connect();
-  
-  try {
-    const result = await client.query(
-      `SELECT * FROM batch_analysis_results WHERE session_id = $1 ORDER BY completed_at DESC`,
-      [sessionId]
-    );
-    return result.rows;
-  } catch (error) {
-    logger.error(`Error getting batch results: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    return [];
-  } finally {
-    client.release();
-  }
+  return await repositoryService.batchAnalysis.getBatchResults(sessionId);
 };
 
 // Export clean database service
