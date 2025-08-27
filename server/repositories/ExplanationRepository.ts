@@ -45,7 +45,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         Array.isArray(data.hints) ? data.hints : [],
         this.normalizeConfidence(data.confidence),
         data.modelName || null,
-        data.reasoningLog || null,
+        data.reasoningLog ? this.safeJsonStringify(data.reasoningLog) : null,
         !!data.reasoningLog,
         data.apiProcessingTimeMs || null,
         data.estimatedCost || null,
