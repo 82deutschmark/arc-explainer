@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-import { dbService } from './dbService';
+import { repositoryService } from '../repositories/RepositoryService';
 import { AppError } from '../middleware/errorHandler';
 
 export const explanationService = {
@@ -19,7 +19,7 @@ export const explanationService = {
    * @throws AppError if explanations cannot be retrieved
    */
   async getExplanationsForPuzzle(puzzleId: string) {
-    const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+    const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
     // Let controller handle null case - don't throw here
     return explanations;
   },
@@ -32,7 +32,7 @@ export const explanationService = {
    * @throws AppError if explanation cannot be retrieved
    */
   async getExplanationForPuzzle(puzzleId: string) {
-    const explanation = await dbService.getExplanationForPuzzle(puzzleId);
+    const explanation = await repositoryService.explanations.getExplanationForPuzzle(puzzleId);
     if (explanation === null) {
       return null; // No explanation found is not an error
     }
@@ -115,10 +115,14 @@ export const explanationService = {
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
-          const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
-          if (explanationId) {
-            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${explanationId})`);
-            savedExplanationIds.push(explanationId);
+          const explanationWithTaskId = {
+            ...explanationData,
+            taskId: puzzleId
+          };
+          const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithTaskId);
+          if (savedExplanation && savedExplanation.id) {
+            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
+            savedExplanationIds.push(savedExplanation.id);
           } else {
             const errorMsg = `Database save returned null for model ${modelKey} (puzzle: ${puzzleId}) - likely validation or JSON serialization failure`;
             console.error(`[SAVE-CRITICAL-ERROR] ${errorMsg}`);
@@ -194,12 +198,15 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
     }
 
     // Save the new explanation as a separate attempt
-    const explanationId = await dbService.saveExplanation(puzzleId, {
+    const explanationData = {
+      taskId: puzzleId,
       ...newExplanation,
       modelName,
       retryReason: userFeedback, // Store the feedback that triggered this retry
       isRetry: true // Mark as retry attempt
-    });
+    };
+    const savedExplanation = await repositoryService.explanations.saveExplanation(explanationData);
+    const explanationId = savedExplanation.id;
 
     return {
       success: true,

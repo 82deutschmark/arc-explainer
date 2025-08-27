@@ -7,7 +7,7 @@
  * @author Cascade
  */
 
-import { dbService } from './dbService';
+import { repositoryService } from '../repositories/RepositoryService';
 import { AppError } from '../middleware/errorHandler';
 import { explanationService } from './explanationService';
 
@@ -28,22 +28,23 @@ export const feedbackService = {
     
     try {
       // First, record the feedback
-      const feedbackId = await dbService.addFeedback(
-        numericExplanationId,
-        voteType as 'helpful' | 'not_helpful',
+      const feedbackResult = await repositoryService.feedback.addFeedback({
+        explanationId: numericExplanationId,
+        voteType: voteType as 'helpful' | 'not_helpful',
         comment
-      );
+      });
+      const feedbackId = feedbackResult.feedback?.id;
       
       // If feedback is "not helpful", trigger retry analysis
       if (voteType === 'not_helpful') {
         try {
           // Get the original explanation to extract puzzle details
-          const originalExplanation = await dbService.getExplanationById(numericExplanationId);
+          const originalExplanation = await repositoryService.explanations.getExplanationById(numericExplanationId);
           if (originalExplanation) {
             // Trigger retry analysis with user feedback as guidance
             await explanationService.retryAnalysis(
-              originalExplanation.puzzleId,
-              originalExplanation.modelName,
+              originalExplanation.taskId,
+              originalExplanation.modelName || 'gpt-4',
               comment // User feedback as guidance for improvement
             );
           }

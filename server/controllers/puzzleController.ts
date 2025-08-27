@@ -13,7 +13,6 @@ import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
-import { dbService } from '../services/dbService';
 import { repositoryService } from '../repositories/RepositoryService.js';
 import type { PromptOptions } from '../services/promptBuilder';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
