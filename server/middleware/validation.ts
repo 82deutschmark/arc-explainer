@@ -221,7 +221,12 @@ export const validation = {
       throw new AppError('No explanation data found in request', 400, 'VALIDATION_ERROR');
     }
     
-    const explanationData = explanations[modelKeys[0]]; // Get data from first model key
+    let explanationData = explanations[modelKeys[0]]; // Get data from first model key
+    
+    // Handle non-OpenAI providers that nest data in 'result' field
+    if (explanationData.result && typeof explanationData.result === 'object') {
+      explanationData = explanationData.result;
+    }
     
     // Check for either camelCase or snake_case variants
     const patternDesc = explanationData.patternDescription || explanationData.pattern_description;
