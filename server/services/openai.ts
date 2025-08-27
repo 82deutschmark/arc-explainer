@@ -258,7 +258,7 @@ export class OpenAIService extends BaseAIService {
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean = false
   ): {
     result: any;
     tokenUsage: TokenUsage;
@@ -272,24 +272,15 @@ export class OpenAIService extends BaseAIService {
     let reasoningLog = null;
     let reasoningItems: any[] = [];
 
-    // DEBUG: Log full response structure to understand GPT-5-nano format
-    console.log(`[${this.provider}] RESPONSE DEBUG for ${modelKey}:`, {
-      hasOutputParsed: !!response.output_parsed,
-      hasOutputText: !!response.output_text,
-      responseKeys: Object.keys(response),
-      outputParsedType: typeof response.output_parsed,
-      outputTextLength: response.output_text?.length || 0,
-      outputTextSample: response.output_text?.substring(0, 100) || 'none'
-    });
-
-    // Parse JSON response - prefer structured output_parsed over regex scraping
+    // GPT-5-nano returns clean structured JSON directly - no parsing needed
     if (response.output_parsed) {
-      console.log(`[${this.provider}] Using structured output_parsed from JSON schema`);
       result = response.output_parsed;
+    } else if (response.output_text) {
+      // Clean parse - GPT-5-nano gives perfect JSON
+      result = JSON.parse(response.output_text);
     } else {
-      console.log(`[${this.provider}] Falling back to JSON extraction from output_text`);
-      const rawJson = response.output_text || '';
-      result = this.extractJsonFromResponse(rawJson, modelKey);
+      console.error(`[${this.provider}] No structured output found in response`);
+      result = {};
     }
 
     // Extract reasoning log from API response

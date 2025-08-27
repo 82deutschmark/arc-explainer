@@ -225,50 +225,6 @@ export abstract class BaseAIService {
     };
   }
 
-  /**
-   * Extract JSON from text response with robust error handling
-   */
-  protected extractJsonFromResponse(text: string, modelKey: string): any {
-    try {
-      // First try direct JSON parse
-      return JSON.parse(text);
-    } catch {
-      // Try to find JSON within the text
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch (innerError) {
-          console.warn(`[${this.provider}] JSON extraction failed for ${modelKey}:`, innerError);
-        }
-      }
-      
-      // Fall back to structured extraction attempt
-      try {
-        return this.attemptStructuredExtraction(text);
-      } catch (extractError) {
-        console.error(`[${this.provider}] All JSON extraction methods failed for ${modelKey}`);
-        throw new Error(`Failed to extract valid JSON response from ${this.provider} ${modelKey}`);
-      }
-    }
-  }
-
-  /**
-   * Attempt to extract structured data from unstructured text
-   */
-  private attemptStructuredExtraction(text: string): any {
-    // This is a fallback method to extract key information from unstructured responses
-    // Returns a minimal valid structure that won't break the pipeline
-    return {
-      pattern_description: "Unable to parse response - please try again",
-      solving_strategy: text.slice(0, 500), // Capture first 500 chars as strategy
-      hints: ["Response parsing failed", "Try a different model or prompt"],
-      confidence: 0.1,
-      predicted_output: [[0]], // Minimal valid grid
-      extraction_successful: false,
-      parsing_error: true
-    };
-  }
 
   /**
    * Validate response completeness and handle incomplete responses

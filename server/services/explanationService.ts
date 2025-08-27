@@ -83,16 +83,15 @@ export const explanationService = {
           multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
         }
 
-        // Create a well-defined object, ensuring no 'undefined' values are passed.
-        // Map snake_case (AI service) to camelCase (repository)
+        // Modern AI providers return clean camelCase field names - no mapping needed
         const explanationData = {
-          patternDescription: restOfExplanationData.patternDescription ?? restOfExplanationData.pattern_description ?? null,
-          solvingStrategy: restOfExplanationData.solvingStrategy ?? restOfExplanationData.solving_strategy ?? null,
+          patternDescription: restOfExplanationData.patternDescription ?? null,
+          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
           hints: restOfExplanationData.hints ?? null,
           confidence: restOfExplanationData.confidence ?? 0,
           modelName: modelKey,
-          reasoningLog: restOfExplanationData.reasoningLog ?? restOfExplanationData.reasoning_log ?? null,
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? restOfExplanationData.predicted_output ?? null,
+          reasoningLog: restOfExplanationData.reasoningLog ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
