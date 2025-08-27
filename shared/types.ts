@@ -107,6 +107,8 @@ export interface FeedbackFilters {
   limit?: number;
   offset?: number;
   startDate?: string;
+  fromDate?: Date;
+  toDate?: Date;
   endDate?: string;
 }
 
