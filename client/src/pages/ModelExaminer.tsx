@@ -217,7 +217,135 @@ export default function ModelExaminer() {
         </div>
       </div>
 
-      {/* Configuration Panel */}
+      {/* Analysis Progress - FRONT AND CENTER */}
+      {progress && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5 text-blue-600" />
+              Live Analysis Progress
+            </CardTitle>
+            <p className="text-sm text-blue-700">
+              Running <strong>{currentModel?.name || selectedModel}</strong> on <strong>{dataset}</strong> dataset
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Progress</span>
+                <span>{progress.progress.completed} / {progress.progress.total} puzzles</span>
+              </div>
+              <Progress value={progress.progress.percentage} className="w-full h-3" />
+              <div className="text-sm font-medium text-center text-blue-700">
+                {progress.progress.percentage}% complete
+              </div>
+            </div>
+
+            {/* Live Statistics */}
+            <div className="grid grid-cols-4 gap-3">
+              <div className="text-center p-3 bg-green-100 rounded-lg border border-green-200">
+                <div className="text-lg font-bold text-green-700">
+                  {progress.progress.successful}
+                </div>
+                <div className="text-xs text-green-600">✅ Successful</div>
+              </div>
+              <div className="text-center p-3 bg-red-100 rounded-lg border border-red-200">
+                <div className="text-lg font-bold text-red-700">
+                  {progress.progress.failed}
+                </div>
+                <div className="text-xs text-red-600">❌ Failed</div>
+              </div>
+              <div className="text-center p-3 bg-blue-100 rounded-lg border border-blue-200">
+                <div className="text-lg font-bold text-blue-700">
+                  {progress.stats.overallAccuracy}%
+                </div>
+                <div className="text-xs text-blue-600">🎯 Accuracy</div>
+              </div>
+              <div className="text-center p-3 bg-amber-100 rounded-lg border border-amber-200">
+                <div className="text-lg font-bold text-amber-700">
+                  {Math.round(progress.stats.averageProcessingTime / 1000)}s
+                </div>
+                <div className="text-xs text-amber-600">⏱️ Avg Time</div>
+              </div>
+            </div>
+
+            {/* Status and ETA */}
+            <div className="flex justify-between items-center">
+              <Badge 
+                variant={progress.status === 'completed' ? 'default' : progress.status === 'running' ? 'secondary' : 'destructive'}
+                className="capitalize text-sm px-3 py-1"
+              >
+                {progress.status === 'running' ? '🔄 Processing...' : progress.status}
+              </Badge>
+              {progress.stats.eta > 0 && progress.progress.percentage < 100 && (
+                <div className="text-sm text-gray-600">
+                  ETA: {Math.round(progress.stats.eta / 60)} min
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Real-time Activity Log */}
+      {results && results.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              Live Activity Log
+            </CardTitle>
+            <p className="text-sm text-gray-600">
+              Real-time feed of puzzle processing and DB validation results
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {results
+                .sort((a: any, b: any) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
+                .slice(0, 10) // Show only latest 10
+                .map((result: any, index: number) => (
+                <div key={result.id || index} className="flex items-center justify-between p-2 border rounded-lg text-sm">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {result.puzzle_id}
+                    </Badge>
+                    {result.status === 'completed' ? (
+                      <span className="text-green-600">✅ Reply received & validated</span>
+                    ) : result.status === 'failed' ? (
+                      <span className="text-red-600">❌ Failed: {result.error_message?.substring(0, 30)}...</span>
+                    ) : (
+                      <span className="text-blue-600">🔄 Waiting for reply...</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {result.processing_time_ms && (
+                      <span className="text-xs text-gray-500">
+                        {Math.round(result.processing_time_ms / 1000)}s
+                      </span>
+                    )}
+                    {result.accuracy_score !== undefined && (
+                      <Badge variant={result.is_correct ? "default" : "secondary"} className="text-xs">
+                        {Math.round(result.accuracy_score * 100)}%
+                      </Badge>
+                    )}
+                    {result.status === 'completed' && (
+                      <Link href={`/puzzle/${result.puzzle_id}`}>
+                        <Button variant="ghost" size="sm">
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Configuration Panel - moved below progress */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -583,172 +711,7 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
-      {/* Progress Display - real-time updates from batch analysis hook */}
-      {progress && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
-              Analysis Progress
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Running <strong>{currentModel?.name || selectedModel}</strong> on <strong>{dataset}</strong> dataset
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Progress Bar with completion percentage */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Progress</span>
-                <span>{progress.progress.completed} / {progress.progress.total} puzzles</span>
-              </div>
-              <Progress value={progress.progress.percentage} className="w-full" />
-              <div className="text-xs text-gray-600 text-center">
-                {progress.progress.percentage}% complete
-              </div>
-            </div>
 
-            {/* Statistics Grid - success/failure rates and performance metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="text-sm font-medium">Successful</span>
-                </div>
-                <div className="text-lg font-bold text-green-700">
-                  {progress.progress.successful}
-                </div>
-              </div>
-
-              <div className="text-center p-3 bg-red-50 rounded-lg">
-                <div className="flex items-center justify-center gap-1 text-red-600 mb-1">
-                  <XCircle className="h-4 w-4" />
-                  <span className="text-sm font-medium">Failed</span>
-                </div>
-                <div className="text-lg font-bold text-red-700">
-                  {progress.progress.failed}
-                </div>
-              </div>
-
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
-                  <BarChart3 className="h-4 w-4" />
-                  <span className="text-sm font-medium">Accuracy</span>
-                </div>
-                <div className="text-lg font-bold text-blue-700">
-                  {progress.stats.overallAccuracy}%
-                </div>
-              </div>
-
-              <div className="text-center p-3 bg-amber-50 rounded-lg">
-                <div className="flex items-center justify-center gap-1 text-amber-600 mb-1">
-                  <Clock className="h-4 w-4" />
-                  <span className="text-sm font-medium">Avg Time</span>
-                </div>
-                <div className="text-lg font-bold text-amber-700">
-                  {Math.round(progress.stats.averageProcessingTime / 1000)}s
-                </div>
-              </div>
-            </div>
-
-            {/* ETA display when analysis is running */}
-            {progress.stats.eta > 0 && progress.progress.percentage < 100 && (
-              <div className="text-center text-sm text-gray-600">
-                Estimated time remaining: {Math.round(progress.stats.eta / 60)} minutes
-              </div>
-            )}
-
-            {/* Status Badge with color coding */}
-            <div className="flex justify-center">
-              <Badge 
-                variant={
-                  progress.status === 'completed' ? 'default' :
-                  progress.status === 'running' ? 'secondary' :
-                  progress.status === 'error' ? 'destructive' :
-                  'outline'
-                }
-                className="capitalize"
-              >
-                {progress.status}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Results Display - shows completed puzzles from batch analysis */}
-      {results && results.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              Batch Results
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Completed puzzles from the current batch analysis
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 max-h-80 overflow-y-auto">
-              {results
-                // Sort by completion time, newest first
-                .sort((a: any, b: any) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
-                .map((result: any, index: number) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                  <div className="flex items-center gap-3">
-                    {/* Puzzle ID badge */}
-                    <Badge variant="outline" className="font-mono text-xs">
-                      {result.puzzle_id}
-                    </Badge>
-                    {/* Status indicator */}
-                    <div className="flex items-center gap-2">
-                      {result.status === 'completed' ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      ) : result.status === 'failed' ? (
-                        <XCircle className="h-4 w-4 text-red-600" />
-                      ) : (
-                        <Clock className="h-4 w-4 text-gray-400" />
-                      )}
-                      <span className="text-sm capitalize">{result.status}</span>
-                    </div>
-                    {/* Error message if failed */}
-                    {result.error_message && (
-                      <Badge variant="destructive" className="text-xs max-w-48 truncate" title={result.error_message}>
-                        Error: {result.error_message}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {/* Performance metrics */}
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      {result.processing_time_ms && (
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {Math.round(result.processing_time_ms / 1000)}s
-                        </span>
-                      )}
-                      {result.accuracy_score !== undefined && (
-                        <Badge variant={result.is_correct ? "default" : "secondary"} className="text-xs">
-                          {Math.round(result.accuracy_score * 100)}%
-                        </Badge>
-                      )}
-                    </div>
-                    {/* Link to puzzle examiner in new tab */}
-                    {result.status === 'completed' && (
-                      <Link href={`/puzzle/${result.puzzle_id}`}>
-                        <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          View
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
