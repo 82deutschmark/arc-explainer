@@ -272,12 +272,20 @@ export class OpenAIService extends BaseAIService {
     let reasoningLog = null;
     let reasoningItems: any[] = [];
 
-    // GPT-5-nano returns clean structured JSON directly - no parsing needed
+    // GPT-5-nano returns clean structured data in different fields
     if (response.output_parsed) {
       result = response.output_parsed;
     } else if (response.output_text) {
-      // Clean parse - GPT-5-nano gives perfect JSON
       result = JSON.parse(response.output_text);
+    } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
+      // GPT-5-nano returns structured data in output array
+      const outputBlock = response.output[0];
+      if (outputBlock.type === 'text' && outputBlock.text) {
+        result = JSON.parse(outputBlock.text);
+      } else {
+        console.error(`[${this.provider}] Unexpected output format:`, outputBlock);
+        result = {};
+      }
     } else {
       console.error(`[${this.provider}] No structured output found in response`);
       result = {};

@@ -225,6 +225,27 @@ export abstract class BaseAIService {
     };
   }
 
+  /**
+   * Simple JSON extraction for non-OpenAI providers
+   */
+  protected extractJsonFromResponse(text: string, modelKey: string): any {
+    try {
+      return JSON.parse(text);
+    } catch {
+      // Try to find JSON within the text
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]);
+        } catch {
+          console.warn(`[${this.provider}] JSON extraction failed for ${modelKey}`);
+        }
+      }
+      
+      console.error(`[${this.provider}] All JSON extraction methods failed for ${modelKey}`);
+      throw new Error(`Failed to extract valid JSON response from ${this.provider} ${modelKey}`);
+    }
+  }
 
   /**
    * Validate response completeness and handle incomplete responses
