@@ -123,6 +123,57 @@ export default function ModelExaminer() {
     }
   };
 
+  // Handle pause analysis
+  const handlePauseAnalysis = async () => {
+    console.log('🔄 Handling pause button click');
+    try {
+      const result = await pauseAnalysis();
+      if (result.success) {
+        console.log('✅ Pause successful');
+      } else {
+        console.error('❌ Pause failed:', result.error);
+        alert(`Failed to pause analysis: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('💥 Exception in pause handler:', error);
+      alert(`Exception pausing analysis: ${error}`);
+    }
+  };
+
+  // Handle resume analysis
+  const handleResumeAnalysis = async () => {
+    console.log('🔄 Handling resume button click');
+    try {
+      const result = await resumeAnalysis();
+      if (result.success) {
+        console.log('✅ Resume successful');
+      } else {
+        console.error('❌ Resume failed:', result.error);
+        alert(`Failed to resume analysis: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('💥 Exception in resume handler:', error);
+      alert(`Exception resuming analysis: ${error}`);
+    }
+  };
+
+  // Handle cancel analysis
+  const handleCancelAnalysis = async () => {
+    console.log('🔄 Handling cancel button click');
+    try {
+      const result = await cancelAnalysis();
+      if (result.success) {
+        console.log('✅ Cancel successful');
+      } else {
+        console.error('❌ Cancel failed:', result.error);
+        alert(`Failed to cancel analysis: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('💥 Exception in cancel handler:', error);
+      alert(`Exception cancelling analysis: ${error}`);
+    }
+  };
+
   // Configuration options for UI dropdowns
   const datasetOptions = [
     { value: 'ARC2-Eval', label: 'ARC2 Evaluation Set', count: '~400 puzzles' },
@@ -439,7 +490,7 @@ export default function ModelExaminer() {
                 {/* Session management buttons based on current status */}
                 {progress?.status === 'running' && (
                   <Button
-                    onClick={pauseAnalysis}
+                    onClick={handlePauseAnalysis}
                     variant="outline"
                     className="flex items-center gap-2"
                   >
@@ -450,7 +501,7 @@ export default function ModelExaminer() {
                 
                 {progress?.status === 'paused' && (
                   <Button
-                    onClick={resumeAnalysis}
+                    onClick={handleResumeAnalysis}
                     className="flex items-center gap-2"
                   >
                     <Play className="h-4 w-4" />
@@ -460,7 +511,7 @@ export default function ModelExaminer() {
                 
                 {['running', 'paused'].includes(progress?.status || '') && (
                   <Button
-                    onClick={cancelAnalysis}
+                    onClick={handleCancelAnalysis}
                     variant="destructive"
                     className="flex items-center gap-2"
                   >
