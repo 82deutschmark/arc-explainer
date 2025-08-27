@@ -180,6 +180,9 @@ export class OpenRouterService {
       maxOutputTokens?: number;
     }
   ) {
+    // Record start time for accurate processing duration measurement
+    const startTime = Date.now();
+    
     // Get model config to determine actual OpenRouter model name
     const modelConfig = getModelConfig(modelKey);
     const openRouterModelName = modelConfig?.apiModelName || modelKey;
@@ -272,7 +275,7 @@ export class OpenRouterService {
         result,
         tokenUsage,
         cost,
-        processingTimeMs: Date.now(),
+        processingTimeMs: Date.now() - startTime,
         modelName: openRouterModelName, // Fixed: use modelName to match repository expectations
         reasoning: null, // OpenRouter doesn't provide separate reasoning logs
         reasoningLog: null
@@ -295,7 +298,7 @@ export class OpenRouterService {
         result: null,
         tokenUsage: undefined,
         cost: undefined,
-        processingTimeMs: Date.now(),
+        processingTimeMs: Date.now() - startTime,
         modelName: openRouterModelName // Fixed: use modelName to match repository expectations
       };
     }
