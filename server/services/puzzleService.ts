@@ -1,5 +1,5 @@
 /**
- * puzzleService.ts
+ * puzzleService.ts   THIS NEEDS TO BE AUDITED!!  IT MIGHT BE UNUSED OR INCOMPLETE!!!
  * 
  * Service layer for puzzle-related operations.
  * This service handles puzzle data retrieval and manipulation.
