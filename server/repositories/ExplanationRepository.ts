@@ -42,7 +42,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.taskId,
         data.patternDescription,
         data.solvingStrategy || '',
-        this.safeJsonStringify(data.hints) || '[]',
+        Array.isArray(data.hints) ? data.hints : [],
         this.normalizeConfidence(data.confidence),
         data.modelName || null,
         data.reasoningLog || null,
