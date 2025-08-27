@@ -6,17 +6,18 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { attach as attachWs } from './services/wsService';
-import { dbService } from './services/dbService';
+import { repositoryService } from './repositories/RepositoryService.ts';
+import { logger } from './utils/logger.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Log environment variables status for debugging
-console.log('Environment variables loaded:', process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'OPENAI_API_KEY is NOT set');
-console.log('DeepSeek API key status:', process.env.DEEPSEEK_API_KEY ? 'DEEPSEEK_API_KEY is set' : 'DEEPSEEK_API_KEY is NOT set');
-console.log('Current working directory:', process.cwd());
-console.log('__dirname:', __dirname);
+logger.info('Environment variables loaded: ' + (process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'OPENAI_API_KEY is NOT set'), 'startup');
+logger.info('DeepSeek API key status: ' + (process.env.DEEPSEEK_API_KEY ? 'DEEPSEEK_API_KEY is set' : 'DEEPSEEK_API_KEY is NOT set'), 'startup');
+logger.debug('Current working directory: ' + process.cwd(), 'startup');
+logger.debug('__dirname: ' + __dirname, 'startup');
 
 const app = express();
 app.use(express.json());
@@ -54,9 +55,14 @@ app.use((req, res, next) => {
 
 // Initialize the server
 const initServer = async () => {
-  // Initialize database connection
-  const dbInitialized = await dbService.init();
-  console.log(`Database connection ${dbInitialized ? 'successful' : 'failed or running in memory-only mode'}`);
+  // Initialize repository service (replaces dbService.init)
+  const repoInitialized = await repositoryService.initialize();
+  logger.info(`Repository service ${repoInitialized ? 'initialized successfully' : 'failed - running in fallback mode'}`, 'startup');
+  
+  if (repoInitialized) {
+    const stats = await repositoryService.getDatabaseStats();
+    logger.info(`Database stats: ${stats.totalExplanations} explanations, ${stats.totalFeedback} feedback entries`, 'startup');
+  }
   // Register API routes FIRST
   const server = await registerRoutes(app);
 
@@ -70,7 +76,7 @@ const initServer = async () => {
     // The client assets are built to 'dist/public'.
     const staticPath = path.join(process.cwd(), "dist", "public");
 
-    console.log(`Production mode: serving static files from ${staticPath}`);
+    logger.info(`Production mode: serving static files from ${staticPath}`, 'server');
 
     // Serve static files (e.g., assets, css, js)
     // Use explicit index: false to prevent express from serving index.html directly
@@ -95,18 +101,18 @@ const initServer = async () => {
       }
       
       // Log the request and file path for debugging
-      console.log(`Serving index.html for path: ${req.path}`);
+      logger.debug(`Serving index.html for path: ${req.path}`, 'server');
       
       const indexPath = path.join(staticPath, "index.html");
       
       // Check if the file exists
       if (fs.existsSync(indexPath)) {
-        console.log(`index.html found at: ${indexPath}`);
+        logger.debug(`index.html found at: ${indexPath}`, 'server');
         
         // Use absolute path for sendFile to avoid path resolution issues
         return res.sendFile(path.resolve(indexPath));
       } else {
-        console.error(`index.html NOT found at: ${indexPath}`);
+        logger.error(`index.html NOT found at: ${indexPath}`, 'server');
         return res.status(500).send(
           "Server configuration issue: index.html not found. " +
           "Make sure the client app is built and the path to index.html is correct."
@@ -129,7 +135,10 @@ const initServer = async () => {
 };
 
 // Initialize the server
-initServer().catch(console.error);
+initServer().catch(error => {
+  logger.error(`Server initialization failed: ${error instanceof Error ? error.message : String(error)}`, 'startup');
+  process.exit(1);
+});
 
 // Export the app. While this is often for serverless, it doesn't harm our Railway deployment.
 export default app;

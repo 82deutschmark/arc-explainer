@@ -10,6 +10,7 @@
 
 import { puzzleLoader } from './puzzleLoader';
 import { PuzzleMetadata, ARCTask } from '@shared/types';
+import { repositoryService } from '../repositories/RepositoryService';
 import { AppError } from '../middleware/errorHandler';
 
 interface PuzzleFilters {
@@ -25,13 +26,13 @@ interface PuzzleFilters {
 
 // Additional interface for enhanced puzzle metadata with feedback info
 interface EnhancedPuzzleMetadata extends PuzzleMetadata {
-  explanationId?: number;
-  feedbackCount?: number;
-  apiProcessingTimeMs?: number;
-  modelName?: string;
-  createdAt?: string;
-  confidence?: number;
-  estimatedCost?: number;
+  explanationId: number | null;
+  feedbackCount: number;
+  apiProcessingTimeMs: number | null;
+  modelName: string | null;
+  createdAt: Date | null;
+  confidence: number | null;
+  estimatedCost: number | null;
 }
 
 // Remove local interface and use the imported one from shared types
@@ -54,11 +55,9 @@ export const puzzleService = {
       console.log('Sample puzzle metadata:', puzzleList[0]);
     }
     
-    // Import dbService here to avoid circular dependency
-    const { dbService } = await import('./dbService');
     
     // Create a base puzzle list with metadata
-    const enhancedPuzzles = puzzleList.map(puzzle => ({
+    const enhancedPuzzles: EnhancedPuzzleMetadata[] = puzzleList.map(puzzle => ({
       id: puzzle.id,
       gridSizeConsistent: puzzle.gridSizeConsistent,
       patternType: puzzle.patternType,
@@ -67,23 +66,23 @@ export const puzzleService = {
       outputSize: puzzle.outputSize,
       hasExplanation: false, // Will update this with accurate data
       source: puzzle.source,
-      explanationId: undefined,
+      explanationId: null as number | null,
       feedbackCount: 0,
-      apiProcessingTimeMs: undefined,
-      modelName: undefined,
-      createdAt: undefined,
-      confidence: undefined,
-      estimatedCost: undefined
+      apiProcessingTimeMs: null as number | null,
+      modelName: null as string | null,
+      createdAt: null as Date | null,
+      confidence: null as number | null,
+      estimatedCost: null as number | null
     }));
     
     try {
       // Use bulk query to get explanation status for all puzzles at once - optimizes performance
       const puzzleIds = enhancedPuzzles.map(p => p.id);
-      const explanationStatusMap = await dbService.getBulkExplanationStatus(puzzleIds);
+      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
       
       // Update each puzzle with its explanation status and metadata
       enhancedPuzzles.forEach(puzzle => {
-        const status = explanationStatusMap.get(puzzle.id);
+        const status = explanationStatusMap[puzzle.id];
         if (status) {
           puzzle.hasExplanation = status.hasExplanation;
           puzzle.explanationId = status.explanationId;
@@ -134,13 +133,9 @@ export const puzzleService = {
   },
 
   /**
-   * Check if a puzzle has an explanation
-   * 
-   * @param puzzleId - The ID of the puzzle to check
-   * @returns Boolean indicating if the puzzle has an explanation
+   * Check if a puzzle has explanation (for compatibility)
    */
   async hasPuzzleExplanation(puzzleId: string) {
-    const { dbService } = await import('./dbService');
-    return dbService.hasExplanation(puzzleId);
+    return await repositoryService.explanations.hasExplanation(puzzleId);
   }
 };

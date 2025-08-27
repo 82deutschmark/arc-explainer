@@ -3,8 +3,8 @@
  * Extracts predicted grids from AI responses and validates them against correct answers
  */
 
-import { logger } from '../utils/logger.js';
-import { extractPredictions } from './schemas/solver.js';
+import { logger } from '../utils/logger.ts';
+import { extractPredictions } from './schemas/solver.ts';
 
 export interface ValidationResult {
   predictedGrid: number[][] | null;
@@ -379,6 +379,7 @@ function calculateAccuracyScore(isCorrect: boolean, confidence: number): number 
 
 /**
  * Main validation function for solver mode responses
+ * Works directly with arcJsonSchema.ts structure - no parsing needed
  */
 export function validateSolverResponse(
   response: any,
@@ -392,93 +393,43 @@ export function validateSolverResponse(
   if (!isSolverMode) {
     return {
       predictedGrid: null,
-      isPredictionCorrect: true, // Non-solver mode is always "correct"
+      isPredictionCorrect: true,
       predictionAccuracyScore: 1.0,
       extractionMethod: 'not_solver_mode'
     };
   }
 
-  // Use confidence from response if available, fallback to parameter
-  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
+  // Use clean confidence from arcJsonSchema response
+  const actualConfidence = response.confidence ?? confidence;
 
-  if (!response?.solvingStrategy) {
-    logger.warn('No solving strategy found in solver response', 'validator');
+  // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
+  const predictedGrid = response.predictedOutput;
+  
+  if (!predictedGrid || !Array.isArray(predictedGrid)) {
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
       predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethod: 'no_solving_strategy'
+      extractionMethod: 'no_predicted_output'
     };
   }
 
-  // Try to extract grid from predictedOutput field first, then fall back to solvingStrategy text
-  let predictedGrid: number[][] | null = null;
-  let method = '';
-  
-  // First, check if there's a direct predictedOutput field
-  if (response.predictedOutput && Array.isArray(response.predictedOutput)) {
-    // Validate it's a proper numeric grid
-    const isValidNumericGrid = response.predictedOutput.every((row: any) => 
-      Array.isArray(row) && row.every((cell: any) => typeof cell === 'number' && Number.isInteger(cell))
-    );
-    
-    if (isValidNumericGrid) {
-      predictedGrid = response.predictedOutput;
-      method = 'direct_predicted_output_field';
-      logger.info(`Successfully extracted grid from predictedOutput field: ${JSON.stringify(predictedGrid)}`, 'validator');
-    }
-  }
-  
-  // Fall back to extracting from solving strategy text if no direct field found
-  if (!predictedGrid) {
-    const extractionResult = extractGridFromText(response.solvingStrategy);
-    predictedGrid = extractionResult.grid;
-    method = extractionResult.method;
-  }
-  
-  if (!predictedGrid) {
-    logger.warn('Could not extract predicted grid from response', 'validator');
-    return {
-      predictedGrid: null,
-      isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethod: method
-    };
-  }
-
-  // Validate dimensions
-  if (!validateGridDimensions(predictedGrid, correctAnswer)) {
-    logger.warn('Predicted grid dimensions do not match expected output', 'validator');
-    return {
-      predictedGrid,
-      isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethod: method + '_wrong_dimensions'
-    };
-  }
-
-  // Check if prediction is correct
-  const isCorrect = gridsAreEqual(predictedGrid, correctAnswer);
+  // Validate dimensions and correctness
+  const dimensionsMatch = validateGridDimensions(predictedGrid, correctAnswer);
+  const isCorrect = dimensionsMatch && gridsAreEqual(predictedGrid, correctAnswer);
   const accuracyScore = calculateAccuracyScore(isCorrect, actualConfidence);
-
-  logger.info(
-    `Validation result: ${isCorrect ? 'CORRECT' : 'INCORRECT'}, ` +
-    `confidence: ${actualConfidence}%, score: ${(accuracyScore * 100).toFixed(1)}%`,
-    'validator'
-  );
 
   return {
     predictedGrid,
     isPredictionCorrect: isCorrect,
     predictionAccuracyScore: accuracyScore,
-    extractionMethod: method
+    extractionMethod: 'arcJsonSchema_clean'
   };
 }
 
 /**
- * Multi-test validation for solver responses
- * Attempts to read `predictedOutputs` (array of grids). If absent, extracts multiple grids
- * from `solvingStrategy` text. Validates each predicted grid against corresponding expected output.
+ * Multi-test validation for solver responses  
+ * Works directly with arcJsonSchema.ts structure - no parsing needed
  */
 export function validateSolverResponseMulti(
   response: any,
@@ -497,51 +448,19 @@ export function validateSolverResponseMulti(
     };
   }
 
-  // Use confidence from response if available, fallback to parameter
-  const actualConfidence = (typeof response.confidence === 'number') ? response.confidence : confidence;
+  // Use clean confidence from arcJsonSchema response
+  const actualConfidence = response.confidence ?? confidence;
 
-  // Validate required fields first
-  if (!response?.solvingStrategy) {
-    logger.warn('No solving strategy found in multi-test solver response', 'validator');
-    return {
-      predictedGrids: [],
-      itemResults: [],
-      allCorrect: false,
-      averageAccuracyScore: calculateAccuracyScore(false, actualConfidence),
-      extractionMethodSummary: 'no_solving_strategy'
-    };
-  }
+  // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
+  const predictedGrids: (number[][] | null)[] = [
+    response.predictedOutput1 || null,
+    response.predictedOutput2 || null, 
+    response.predictedOutput3 || null
+  ].slice(0, correctAnswers.length);
 
-  // Collect candidate predicted grids
-  let predictedGrids: (number[][] | null)[] = [];
-  let extractionMethod = '';
-
-  // Use the new centralized extraction logic
-  const extracted = extractPredictions(response, correctAnswers.length);
-
-  if (extracted.predictedOutputs) {
-    predictedGrids = extracted.predictedOutputs;
-    extractionMethod = 'direct_predicted_outputs_field'; // Covers new and old formats
-  } else if (extracted.predictedOutput) {
-    predictedGrids = [extracted.predictedOutput]; // Handle single case returned for multi-test puzzle
-    extractionMethod = 'direct_predicted_output_field';
-  } else {
-    // Fallback: extract multiple from solvingStrategy text
-    const text = response?.solvingStrategy || '';
-    const { grids, method } = extractAllGridsFromText(text);
-    predictedGrids = grids.length ? grids : [];
-    extractionMethod = method || 'not_found';
-  }
-
-  // Align counts: ensure we have the same number as expected answers
-  if (predictedGrids.length < correctAnswers.length) {
-    // pad with nulls
-    predictedGrids = predictedGrids.concat(
-      Array(correctAnswers.length - predictedGrids.length).fill(null)
-    );
-  } else if (predictedGrids.length > correctAnswers.length) {
-    // trim extras
-    predictedGrids = predictedGrids.slice(0, correctAnswers.length);
+  // Pad or trim to match expected count
+  while (predictedGrids.length < correctAnswers.length) {
+    predictedGrids.push(null);
   }
 
   const itemResults: MultiValidationItemResult[] = [];
@@ -552,14 +471,14 @@ export function validateSolverResponseMulti(
     const expected = correctAnswers[i];
     const predicted = predictedGrids[i];
 
-    if (!predicted) {
+    if (!predicted || !Array.isArray(predicted)) {
       const score = calculateAccuracyScore(false, actualConfidence);
       itemResults.push({
         index: i,
         predictedGrid: null,
         isPredictionCorrect: false,
         predictionAccuracyScore: score,
-        extractionMethod: extractionMethod,
+        extractionMethod: 'arcJsonSchema_clean',
         expectedDimensions: { rows: expected?.length || 0, cols: expected?.[0]?.length || 0 }
       });
       totalScore += score;
@@ -567,45 +486,29 @@ export function validateSolverResponseMulti(
       continue;
     }
 
-    // Validate dimensions
-    if (!validateGridDimensions(predicted, expected)) {
-      const score = calculateAccuracyScore(false, actualConfidence);
-      itemResults.push({
-        index: i,
-        predictedGrid: predicted,
-        isPredictionCorrect: false,
-        predictionAccuracyScore: score,
-        extractionMethod: extractionMethod + '_wrong_dimensions',
-        expectedDimensions: { rows: expected?.length || 0, cols: expected?.[0]?.length || 0 }
-      });
-      totalScore += score;
-      allCorrect = false;
-      continue;
-    }
-
-    const isCorrect = gridsAreEqual(predicted, expected);
+    const dimensionsMatch = validateGridDimensions(predicted, expected);
+    const isCorrect = dimensionsMatch && gridsAreEqual(predicted, expected);
     const score = calculateAccuracyScore(isCorrect, actualConfidence);
+    
     itemResults.push({
       index: i,
       predictedGrid: predicted,
       isPredictionCorrect: isCorrect,
       predictionAccuracyScore: score,
-      extractionMethod,
+      extractionMethod: 'arcJsonSchema_clean',
       expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
     });
     totalScore += score;
     if (!isCorrect) allCorrect = false;
   }
 
-  const averageAccuracyScore = itemResults.length
-    ? totalScore / itemResults.length
-    : 0;
+  const averageAccuracyScore = itemResults.length ? totalScore / itemResults.length : 0;
 
   return {
     predictedGrids,
     itemResults,
     allCorrect,
     averageAccuracyScore,
-    extractionMethodSummary: extractionMethod
+    extractionMethodSummary: 'arcJsonSchema_clean'
   };
 }

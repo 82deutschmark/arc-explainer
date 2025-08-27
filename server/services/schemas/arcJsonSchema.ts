@@ -14,7 +14,7 @@ export const ARC_JSON_SCHEMA = {
       // Multi-prediction support
       multiplePredictedOutputs: {
         type: "boolean",
-        description: "True if providing multiple predictions"
+        description: "False if there is only one test input, true otherwise"
       },
       predictedOutput: {
         type: "array",
@@ -22,7 +22,7 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "Single predicted output grid (2D array of integers)"
+        description: "Single output grid (2D array of integers) for tasks with only one test input, empty array if multiple test inputs"
       },
       predictedOutput1: {
         type: "array",
@@ -30,7 +30,7 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "First predicted output grid"
+        description: "If the task has more than a single test input, First predicted output grid for first test input"
       },
       predictedOutput2: {
         type: "array",
@@ -38,7 +38,7 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "Second predicted output grid"
+        description: "If the task has more than a single test input, Second predicted output grid for second test input"
       },
       predictedOutput3: {
         type: "array",
@@ -46,7 +46,7 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "Third predicted output grid"
+        description: "If the task has more than a single test input, Third predicted output grid for third test input"
       },
       
       // Analysis fields

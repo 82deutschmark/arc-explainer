@@ -11,38 +11,10 @@
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from './logger';
+import { safeJsonStringify } from './CommonUtilities.ts';
 
-/**
- * Simple JSON stringification for database storage.
- * Works for both JSONB and TEXT columns that store JSON data.
- * Replaces the over-engineered toTextJSON/toJsonbParam functions.
- */
-export function safeJsonStringify(value: any): string | null {
-  if (value === undefined || value === null) return null;
-  
-  try {
-    const stringified = JSON.stringify(value);
-    // Validate the stringified result is valid JSON
-    JSON.parse(stringified);
-    return stringified;
-  } catch (e) {
-    console.error(`[safeJsonStringify] CRITICAL: Failed to stringify value for database save:`, {
-      valueType: typeof value,
-      valueConstructor: value?.constructor?.name,
-      error: e instanceof Error ? e.message : String(e),
-      valueSample: String(value).substring(0, 200)
-    });
-    
-    // Try to salvage the data by converting to safe format
-    try {
-      const safeFallback = typeof value === 'object' ? '{}' : '""';
-      console.warn(`[safeJsonStringify] Using fallback value: ${safeFallback}`);
-      return safeFallback;
-    } catch {
-      return null;
-    }
-  }
-}
+// Re-export safeJsonStringify from CommonUtilities for consistency
+export { safeJsonStringify } from './CommonUtilities.ts';
 
 /**
  * A strict wrapper around pool.query that provides:
