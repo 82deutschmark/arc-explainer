@@ -113,18 +113,23 @@ export const explanationService = {
           reasoningSummaryType: restOfExplanationData.reasoningSummaryType ?? null,
         };
 
-        console.log(`[MULTIPLE-OPS] Attempting saveExplanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+        console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
           const explanationId = await dbService.saveExplanation(puzzleId, explanationData);
           if (explanationId) {
-            console.log(`[MULTIPLE-OPS] SUCCESS saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}, ID: ${explanationId})`);
+            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${explanationId})`);
             savedExplanationIds.push(explanationId);
           } else {
-            console.log(`[MULTIPLE-OPS] FAILED saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - no ID returned`);
+            const errorMsg = `Database save returned null for model ${modelKey} (puzzle: ${puzzleId}) - likely validation or JSON serialization failure`;
+            console.error(`[SAVE-CRITICAL-ERROR] ${errorMsg}`);
+            throw new Error(errorMsg);
           }
         } catch (error) {
-          console.log(`[MULTIPLE-OPS] ERROR saveExplanation for model: ${modelKey} (puzzle: ${puzzleId}) - ${error instanceof Error ? error.message : String(error)}`);
-          // Continue with other models instead of failing completely
+          const errorMsg = `CRITICAL: Failed to save explanation for model ${modelKey} (puzzle: ${puzzleId}): ${error instanceof Error ? error.message : String(error)}`;
+          console.error(`[SAVE-CRITICAL-ERROR] ${errorMsg}`);
+          // Log the full explanation data for debugging
+          console.error(`[SAVE-DEBUG-DATA] Explanation data that failed:`, JSON.stringify(explanationData, null, 2));
+          throw error; // Don't continue silently - this masks real issues
         }
       }
     }
