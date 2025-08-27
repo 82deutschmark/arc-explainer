@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { attach as attachWs } from './services/wsService';
-import { dbService } from './services/dbService';
+import { repositoryService } from './repositories/RepositoryService.js';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -54,9 +54,14 @@ app.use((req, res, next) => {
 
 // Initialize the server
 const initServer = async () => {
-  // Initialize database connection
-  const dbInitialized = await dbService.init();
-  console.log(`Database connection ${dbInitialized ? 'successful' : 'failed or running in memory-only mode'}`);
+  // Initialize repository service (replaces dbService.init)
+  const repoInitialized = await repositoryService.initialize();
+  console.log(`Repository service ${repoInitialized ? 'initialized successfully' : 'failed - running in fallback mode'}`);
+  
+  if (repoInitialized) {
+    const stats = await repositoryService.getDatabaseStats();
+    console.log(`Database stats: ${stats.totalExplanations} explanations, ${stats.totalFeedback} feedback entries`);
+  }
   // Register API routes FIRST
   const server = await registerRoutes(app);
 
