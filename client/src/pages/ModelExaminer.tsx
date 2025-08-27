@@ -1,12 +1,11 @@
 /**
  * ModelExaminer.tsx
  * 
- * @author Claude Code Assistant
- * @description The inverse of PuzzleExaminer - batch test a specific model and settings 
- * against all puzzles in a selected dataset. Provides real-time progress tracking
- * and comprehensive results analysis for model performance evaluation.
+ * @author Cascade modelID
+ * @description Clean implementation using existing batch analysis system to test AI models against puzzle datasets.
+ * Properly uses existing hooks and services without duplicating business logic.
  */
-
+ 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,58 +19,25 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  ArrowLeft, 
-  Play, 
-  Pause, 
-  Square, 
-  Brain, 
-  Database, 
-  Clock, 
-  CheckCircle, 
-  XCircle,
-  BarChart3,
-  Settings,
-  Loader2,
-  FileText,
-  Eye,
-  Terminal,
-  ChevronDown,
-  ChevronUp
+import { ArrowLeft, Play, Pause, Square, Brain, Database, Clock, CheckCircle, XCircle, BarChart3, Settings, Loader2, Eye
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
-import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
-import type { ExplanationData } from '@/types/puzzle';
-import { apiRequest } from '@/lib/queryClient';
+import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 
 export default function ModelExaminer() {
-  // Model configuration state
+  // UI configuration state
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [dataset, setDataset] = useState<string>('ARC2-Eval');
-  const [promptId, setPromptId] = useState<string>('solver');
-  const [customPrompt, setCustomPrompt] = useState<string>('');
-  const [temperature, setTemperature] = useState<number>(0.2);
   const [batchSize, setBatchSize] = useState<number>(10);
-  
-  // GPT-5 reasoning parameters
-  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
-  const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
-  const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
-
-  // UI state
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true);
-  const [latestExplanation, setLatestExplanation] = useState<ExplanationData | null>(null);
-  const [latestPuzzle, setLatestPuzzle] = useState<any>(null);
-  const [showDebugConsole, setShowDebugConsole] = useState(false);
-  const [debugLogs, setDebugLogs] = useState<Array<{timestamp: string, level: string, message: string, data?: any}>>([]);
 
   // Set page title
   useEffect(() => {
     document.title = 'Model Examiner - Batch Analysis';
   }, []);
 
-  // Use batch analysis hook
+  // Use batch analysis hook for main functionality
   const {
     sessionId,
     progress,
@@ -85,99 +51,69 @@ export default function ModelExaminer() {
     clearSession
   } = useBatchAnalysis();
 
-  // Debug logging function
-  const addDebugLog = (level: string, message: string, data?: any) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setDebugLogs(prev => [...prev.slice(-99), { timestamp, level, message, data }]);
-  };
+  // Use analysis results hook for settings management
+  const { 
+    temperature, 
+    setTemperature,
+    promptId, 
+    setPromptId,
+    customPrompt,
+    setCustomPrompt,
+    reasoningEffort,
+    setReasoningEffort,
+    reasoningVerbosity,
+    setReasoningVerbosity,
+    reasoningSummaryType,
+    setReasoningSummaryType,
+    isGPT5ReasoningModel
+  } = useAnalysisResults({
+    taskId: '', // No specific task for settings management
+    refetchExplanations: () => {},
+    emojiSetKey: undefined,
+    omitAnswer: true
+  });
 
-  // Function to fetch latest explanation for display
-  const fetchLatestExplanation = async (puzzleId: string, explanationId: number) => {
-    try {
-      addDebugLog('INFO', `Fetching explanation for puzzle ${puzzleId} (ID: ${explanationId})`);
-      
-      // Fetch explanation
-      const explanationResponse = await apiRequest('GET', `/api/puzzle/${puzzleId}/explanation`);
-      if (explanationResponse.ok) {
-        const explanationData = await explanationResponse.json();
-        setLatestExplanation(explanationData.data);
-        addDebugLog('SUCCESS', `Loaded explanation for puzzle ${puzzleId}`, { explanationId: explanationData.data?.id });
-      } else {
-        addDebugLog('ERROR', `Failed to fetch explanation: ${explanationResponse.status}`, { puzzleId, explanationId });
-      }
+  // Get current model configuration for UI display and validation
+  const currentModel = selectedModel ? MODELS.find(m => m.key === selectedModel) : null;
 
-      // Fetch puzzle data
-      const puzzleResponse = await apiRequest('GET', `/api/puzzle/task/${puzzleId}`);
-      if (puzzleResponse.ok) {
-        const puzzleData = await puzzleResponse.json();
-        setLatestPuzzle(puzzleData.data);
-        addDebugLog('SUCCESS', `Loaded puzzle data for ${puzzleId}`, { testCases: puzzleData.data?.test?.length || 0 });
-      } else {
-        addDebugLog('ERROR', `Failed to fetch puzzle data: ${puzzleResponse.status}`, { puzzleId });
-      }
-    } catch (error) {
-      addDebugLog('ERROR', `Error fetching latest explanation: ${error instanceof Error ? error.message : String(error)}`, { puzzleId, explanationId });
-    }
-  };
-
-  // Watch for new completed results and fetch latest explanation
-  useEffect(() => {
-    if (results && results.length > 0) {
-      // Find the most recently completed result with an explanation
-      const completedResults = results
-        .filter(r => r.status === 'completed' && r.explanation_id)
-        .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime());
-      
-      if (completedResults.length > 0 && completedResults[0].explanation_id) {
-        const latest = completedResults[0];
-        // Only fetch if it's different from current
-        if (!latestExplanation || latestExplanation.id !== latest.explanation_id) {
-          fetchLatestExplanation(latest.puzzle_id, latest.explanation_id!);
-        }
-      }
-    }
-  }, [results, latestExplanation]);
-
-  // Get selected model details
-  const currentModel = MODELS.find(model => model.key === selectedModel);
-  const isGPT5ReasoningModel = selectedModel && ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(selectedModel);
-
-  // Handle start analysis
+  /**
+   * Initiates batch analysis using the existing useBatchAnalysis hook
+   * Constructs configuration object and delegates to the batch analysis system
+   * Only includes relevant parameters based on model capabilities
+   */
   const handleStartAnalysis = async () => {
-    if (!selectedModel) {
-      addDebugLog('ERROR', 'No model selected for analysis');
-      return;
-    }
+    if (!selectedModel) return;
 
+    // Build configuration object with conditional parameters
     const config = {
       modelKey: selectedModel,
       dataset,
+      // Use custom prompt if selected, otherwise use predefined promptId
       promptId: promptId === 'custom' ? undefined : promptId,
       customPrompt: promptId === 'custom' ? customPrompt : undefined,
+      // Only include temperature if model supports it
       temperature: currentModel?.supportsTemperature ? temperature : undefined,
-      reasoningEffort: isGPT5ReasoningModel ? reasoningEffort : undefined,
-      reasoningVerbosity: isGPT5ReasoningModel ? reasoningVerbosity : undefined,
-      reasoningSummaryType: isGPT5ReasoningModel ? reasoningSummaryType : undefined,
+      // GPT-5 reasoning parameters only for compatible models
+      reasoningEffort: isGPT5ReasoningModel(selectedModel) ? reasoningEffort : undefined,
+      reasoningVerbosity: isGPT5ReasoningModel(selectedModel) ? reasoningVerbosity : undefined,
+      reasoningSummaryType: isGPT5ReasoningModel(selectedModel) ? reasoningSummaryType : undefined,
       batchSize
     };
 
-    addDebugLog('INFO', `Starting batch analysis with model ${selectedModel}`, config);
-    
     try {
+      // Delegate to existing batch analysis system
       await startAnalysis(config);
-      addDebugLog('SUCCESS', 'Batch analysis started successfully');
     } catch (error) {
-      addDebugLog('ERROR', `Failed to start batch analysis: ${error instanceof Error ? error.message : String(error)}`);
+      console.error('Failed to start batch analysis:', error);
     }
   };
 
-  // Dataset options with puzzle counts
+  // Configuration options for UI dropdowns
   const datasetOptions = [
     { value: 'ARC2-Eval', label: 'ARC2 Evaluation Set', count: '~400 puzzles' },
     { value: 'ARC2', label: 'ARC2 Training Set', count: '~800 puzzles' },
     { value: 'ARC1-Eval', label: 'ARC1 Evaluation Set', count: '~400 puzzles' },
-    { value: 'ARC1', label: 'ARC1 Training Set', count: '~400 puzzles' },
-    { value: 'All', label: 'All Datasets', count: '~2000 puzzles' }
+    { value: 'ARC1', label: 'ARC1 Training Set', count: '~400 puzzles' }
   ];
 
   const promptOptions = [
@@ -189,7 +125,7 @@ export default function ModelExaminer() {
 
   return (
     <div className="container mx-auto p-3 max-w-6xl space-y-4">
-      {/* Header */}
+      {/* Header with navigation and title */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/">
@@ -204,11 +140,12 @@ export default function ModelExaminer() {
           </div>
         </div>
         
+        {/* Link to existing batch results dashboard */}
         <div className="flex items-center gap-2">
-          <Link href="/overview">
+          <Link href="/batch">
             <Button variant="outline" size="sm">
               <BarChart3 className="h-4 w-4 mr-2" />
-              View Results Overview
+              View Results Dashboard
             </Button>
           </Link>
         </div>
@@ -238,7 +175,7 @@ export default function ModelExaminer() {
                   <div className="p-2">
                     <div className="text-xs text-gray-500 mb-2">OpenAI Models</div>
                     {MODELS.filter(m => m.provider === 'OpenAI').map((model) => (
-                      <SelectItem key={model.key} value={model.key} className="flex items-center gap-2">
+                      <SelectItem key={model.key} value={model.key}>
                         <div className="flex items-center gap-2 w-full">
                           <div className={`w-3 h-3 rounded-full ${model.color}`} />
                           <span>{model.name}</span>
@@ -395,7 +332,7 @@ export default function ModelExaminer() {
               )}
 
               {/* GPT-5 Reasoning Parameters */}
-              {isGPT5ReasoningModel && (
+              {isGPT5ReasoningModel(selectedModel) && (
                 <div className="space-y-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <h5 className="text-sm font-semibold text-blue-800 flex items-center gap-2">
                     <Brain className="h-4 w-4" />
@@ -455,16 +392,20 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
-      {/* Control Panel */}
+      {/* Control Panel - delegates to existing batch analysis system */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Play className="h-5 w-5" />
             Batch Analysis Controls
           </CardTitle>
+          <p className="text-sm text-gray-600">
+            Start and manage batch analysis using the existing system
+          </p>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
+            {/* Show start button when no active session */}
             {!sessionId ? (
               <Button
                 onClick={handleStartAnalysis}
@@ -476,6 +417,7 @@ export default function ModelExaminer() {
               </Button>
             ) : (
               <>
+                {/* Session management buttons based on current status */}
                 {progress?.status === 'running' && (
                   <Button
                     onClick={pauseAnalysis}
@@ -520,6 +462,7 @@ export default function ModelExaminer() {
               </>
             )}
 
+            {/* Running indicator */}
             {isRunning && (
               <div className="flex items-center gap-2 text-sm text-blue-600">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -528,6 +471,7 @@ export default function ModelExaminer() {
             )}
           </div>
 
+          {/* Error display from batch analysis hook */}
           {error && (
             <Alert className="mt-3">
               <XCircle className="h-4 w-4" />
@@ -537,7 +481,7 @@ export default function ModelExaminer() {
         </CardContent>
       </Card>
 
-      {/* Progress Display */}
+      {/* Progress Display - real-time updates from batch analysis hook */}
       {progress && (
         <Card>
           <CardHeader>
@@ -547,7 +491,7 @@ export default function ModelExaminer() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Progress Bar */}
+            {/* Progress Bar with completion percentage */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Progress</span>
@@ -559,7 +503,7 @@ export default function ModelExaminer() {
               </div>
             </div>
 
-            {/* Statistics Grid */}
+            {/* Statistics Grid - success/failure rates and performance metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
@@ -602,14 +546,14 @@ export default function ModelExaminer() {
               </div>
             </div>
 
-            {/* ETA */}
+            {/* ETA display when analysis is running */}
             {progress.stats.eta > 0 && progress.progress.percentage < 100 && (
               <div className="text-center text-sm text-gray-600">
                 Estimated time remaining: {Math.round(progress.stats.eta / 60)} minutes
               </div>
             )}
 
-            {/* Status Badge */}
+            {/* Status Badge with color coding */}
             <div className="flex justify-center">
               <Badge 
                 variant={
@@ -627,120 +571,31 @@ export default function ModelExaminer() {
         </Card>
       )}
 
-      {/* Latest Analysis Result */}
-      {latestExplanation && latestPuzzle && currentModel && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Latest Analysis Result
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Most recent completed puzzle analysis from this batch
-            </p>
-          </CardHeader>
-          <CardContent>
-            <AnalysisResultCard
-              modelKey={selectedModel}
-              result={latestExplanation}
-              model={currentModel}
-              testCases={latestPuzzle.test || []}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Debug Console */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Terminal className="h-5 w-5" />
-              Debug Console
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowDebugConsole(!showDebugConsole)}
-              className="flex items-center gap-2"
-            >
-              {showDebugConsole ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              {showDebugConsole ? 'Hide' : 'Show'} Logs
-            </Button>
-          </CardTitle>
-          {showDebugConsole && (
-            <p className="text-sm text-gray-600">
-              Real-time logging of batch analysis operations and API calls
-            </p>
-          )}
-        </CardHeader>
-        {showDebugConsole && (
-          <CardContent>
-            <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-80 overflow-y-auto">
-              {debugLogs.length === 0 ? (
-                <div className="text-gray-500">No debug logs yet. Start a batch analysis to see real-time activity.</div>
-              ) : (
-                <div className="space-y-1">
-                  {debugLogs.map((log, index) => (
-                    <div key={index} className="flex gap-2">
-                      <span className="text-gray-400 text-xs">[{log.timestamp}]</span>
-                      <span className={`text-xs font-semibold ${
-                        log.level === 'ERROR' ? 'text-red-400' :
-                        log.level === 'SUCCESS' ? 'text-green-400' :
-                        log.level === 'WARN' ? 'text-yellow-400' :
-                        'text-blue-400'
-                      }`}>
-                        {log.level}
-                      </span>
-                      <span className="text-green-300">{log.message}</span>
-                      {log.data && (
-                        <span className="text-gray-400 text-xs">
-                          {JSON.stringify(log.data)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {debugLogs.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-gray-700">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDebugLogs([])}
-                    className="text-xs"
-                  >
-                    Clear Logs
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        )}
-      </Card>
-
-      {/* Completed Puzzles List */}
+      {/* Results Display - shows completed puzzles from batch analysis */}
       {results && results.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Completed Puzzles
+              <CheckCircle className="h-5 w-5" />
+              Batch Results
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Puzzles that have been processed in this batch analysis
+              Completed puzzles from the current batch analysis
             </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
               {results
-                .sort((a, b) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
-                .map((result, index) => (
+                // Sort by completion time, newest first
+                .sort((a: any, b: any) => new Date(b.completed_at || b.created_at).getTime() - new Date(a.completed_at || a.created_at).getTime())
+                .map((result: any, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
                   <div className="flex items-center gap-3">
+                    {/* Puzzle ID badge */}
                     <Badge variant="outline" className="font-mono text-xs">
                       {result.puzzle_id}
                     </Badge>
+                    {/* Status indicator */}
                     <div className="flex items-center gap-2">
                       {result.status === 'completed' ? (
                         <CheckCircle className="h-4 w-4 text-green-600" />
@@ -751,6 +606,7 @@ export default function ModelExaminer() {
                       )}
                       <span className="text-sm capitalize">{result.status}</span>
                     </div>
+                    {/* Error message if failed */}
                     {result.error_message && (
                       <Badge variant="destructive" className="text-xs max-w-48 truncate" title={result.error_message}>
                         Error: {result.error_message}
@@ -758,6 +614,7 @@ export default function ModelExaminer() {
                     )}
                   </div>
                   <div className="flex items-center gap-3">
+                    {/* Performance metrics */}
                     <div className="flex items-center gap-2 text-xs text-gray-500">
                       {result.processing_time_ms && (
                         <span className="flex items-center gap-1">
@@ -765,12 +622,13 @@ export default function ModelExaminer() {
                           {Math.round(result.processing_time_ms / 1000)}s
                         </span>
                       )}
-                      {result.accuracy_score && (
+                      {result.accuracy_score !== undefined && (
                         <Badge variant={result.is_correct ? "default" : "secondary"} className="text-xs">
                           {Math.round(result.accuracy_score * 100)}%
                         </Badge>
                       )}
                     </div>
+                    {/* Link to individual puzzle view */}
                     {result.status === 'completed' && (
                       <Link href={`/puzzle/${result.puzzle_id}`}>
                         <Button variant="ghost" size="sm" className="flex items-center gap-1">
@@ -782,11 +640,6 @@ export default function ModelExaminer() {
                   </div>
                 </div>
               ))}
-              {results.filter(r => r.status === 'pending').length > 0 && (
-                <div className="text-center text-sm text-gray-500 mt-4 pt-4 border-t">
-                  {results.filter(r => r.status === 'pending').length} puzzles remaining...
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
