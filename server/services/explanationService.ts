@@ -89,7 +89,7 @@ export const explanationService = {
           solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
           hints: restOfExplanationData.hints ?? null,
           confidence: restOfExplanationData.confidence ?? 0,
-          modelName: modelKey,
+          modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
           reasoningLog: restOfExplanationData.reasoningLog ?? null,
           predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
