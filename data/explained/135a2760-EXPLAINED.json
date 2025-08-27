@@ -2981,13 +2981,13 @@
     ]
   },
   "explanations": {
-    "gpt-5-nano-2025-08-07": {
-      "modelKey": "gpt-5-nano-2025-08-07",
-      "actualProcessingTime": 26
+    "gemini-2.5-pro": {
+      "modelKey": "gemini-2.5-pro",
+      "actualProcessingTime": 194
     }
   },
-  "exportedAt": "2025-08-27T02:11:58.829Z",
+  "exportedAt": "2025-08-27T02:51:09.128Z",
   "models": [
-    "gpt-5-nano-2025-08-07"
+    "gemini-2.5-pro"
   ]
 }

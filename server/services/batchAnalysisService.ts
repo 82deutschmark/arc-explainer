@@ -445,6 +445,50 @@ class BatchAnalysisService extends EventEmitter {
 
       const processingTime = Date.now() - startTime;
 
+      // CRITICAL: Add proper validation like normal analysis flow
+      // Validate solver mode responses (same as puzzleController.ts lines 118-159)
+      if (config.promptId === "solver") {
+        const { validateSolverResponse, validateSolverResponseMulti } = await import('./responseValidator');
+        const { puzzleService } = await import('./puzzleService');
+        
+        const puzzle = await puzzleService.getPuzzleById(puzzleId);
+        const confidence = result.result.confidence || 50; // Default confidence if not provided
+        const testCount = puzzle.test?.length || 0;
+        
+        // Check if AI provided multiple predictions
+        if (result.result.multiplePredictedOutputs === true) {
+          // Multi-test case: AI provided multiple grids
+          const correctAnswers = testCount > 1 ? puzzle.test.map((t: any) => t.output) : [puzzle.test[0].output];
+          const multi = validateSolverResponseMulti(result.result, correctAnswers, config.promptId, confidence);
+
+          // Apply validation results to the result object
+          result.result.predictedOutputGrid = null;
+          result.result.multiplePredictedOutputs = multi.predictedGrids;
+          result.result.hasMultiplePredictions = true;
+          result.result.predictedOutputGrids = multi.predictedGrids;
+          result.result.multiValidation = multi.itemResults;
+          result.result.allPredictionsCorrect = multi.allCorrect;
+          result.result.averagePredictionAccuracyScore = multi.averageAccuracyScore;
+          result.result.multiTestResults = multi.itemResults;
+          result.result.multiTestAllCorrect = multi.allCorrect;
+          result.result.multiTestAverageAccuracy = multi.averageAccuracyScore;
+          result.result.extractionMethod = multi.extractionMethodSummary;
+
+        } else {
+          // Single-test case: AI provided one grid
+          const correctAnswer = puzzle.test[0].output;
+          const validation = validateSolverResponse(result.result, correctAnswer, config.promptId, confidence);
+
+          // Apply validation results
+          result.result.predictedOutputGrid = validation.predictedGrid;
+          result.result.multiplePredictedOutputs = null;
+          result.result.hasMultiplePredictions = false;
+          result.result.isPredictionCorrect = validation.isPredictionCorrect;
+          result.result.predictionAccuracyScore = validation.predictionAccuracyScore;
+          result.result.extractionMethod = validation.extractionMethod;
+        }
+      }
+
       // Save explanation using proper service (ensures correct model name handling)
       const explanationToSave = {
         [config.modelKey]: { 
@@ -457,7 +501,7 @@ class BatchAnalysisService extends EventEmitter {
       // Use explanationService to ensure proper model name recording
       const { explanationService } = await import('./explanationService');
       const saveResult = await explanationService.saveExplanation(puzzleId, explanationToSave);
-      const explanationId = saveResult.explanationId;
+      const explanationId = saveResult.explanationIds[0];
       
       if (!explanationId) {
         return { success: false, error: 'Failed to save explanation to database' };

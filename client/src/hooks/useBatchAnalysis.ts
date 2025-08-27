@@ -107,7 +107,7 @@ export function useBatchAnalysis() {
       clearInterval(resultsPollingInterval.current);
     }
 
-    // Poll for results updates every 5 seconds
+    // Poll for results updates every 2 seconds for faster updates
     resultsPollingInterval.current = setInterval(async () => {
       try {
         const response = await apiRequest('GET', `/api/model/batch-results/${id}?limit=100`);
@@ -115,6 +115,11 @@ export function useBatchAnalysis() {
         if (response.ok) {
           const data = await response.json();
           const newResults = data.data?.results || data.data || [];
+          console.log(`📊 Batch results update for session ${id}:`, {
+            resultsCount: newResults.length,
+            responseData: data,
+            parsedResults: newResults.slice(0, 3) // Show first 3 for debugging
+          });
           setResults(newResults);
         } else {
           const errorText = await response.text();
@@ -123,7 +128,7 @@ export function useBatchAnalysis() {
       } catch (error) {
         console.error('Error polling batch results:', error);
       }
-    }, 5000);
+    }, 2000);
   }, []);
 
   // Stop all polling
