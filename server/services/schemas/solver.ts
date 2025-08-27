@@ -1,4 +1,4 @@
-/**
+/**THIS OLD FILE MAY BE CAUSING CONFLICTS!!!  NEEDS AUDITING!!!!
  * server/services/schemas/solver.ts
  * 
  * JSON schema for solver mode responses where AI predicts puzzle answers.
