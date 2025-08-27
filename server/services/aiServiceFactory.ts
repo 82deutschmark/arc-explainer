@@ -15,6 +15,7 @@ class AIServiceFactory {
   private grokService: any;
   private geminiService: any;
   private deepseekService: any;
+  private openrouterService: any;
 
   /**
    * Initialize the factory by loading all AI services once at startup
@@ -26,12 +27,14 @@ class AIServiceFactory {
     const { grokService } = await import('./grok');
     const { geminiService } = await import('./gemini');
     const { deepseekService } = await import('./deepseek');
+    const { openrouterService } = await import('./openrouter');
     
     this.anthropicService = anthropicService;
     this.openaiService = openaiService;
     this.grokService = grokService;
     this.geminiService = geminiService;
     this.deepseekService = deepseekService;
+    this.openrouterService = openrouterService;
   }
 
   /**
@@ -66,6 +69,12 @@ class AIServiceFactory {
     if (model.startsWith('deepseek-')) {
       console.log('   -> DeepSeek service');
       return this.deepseekService;
+    }
+    
+    // OpenRouter models (detect by provider-style naming: provider/model-name)
+    if (model.includes('/') || model.startsWith('meta-') || model.startsWith('anthropic/') || model.startsWith('google/') || model.startsWith('openai/') || model.startsWith('qwen/')) {
+      console.log('   -> OpenRouter service');
+      return this.openrouterService;
     }
     
     // Default to OpenAI

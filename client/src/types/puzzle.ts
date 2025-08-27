@@ -16,7 +16,7 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek';
+  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter';
   responseTime?: {
     speed: 'fast' | 'moderate' | 'slow';
     estimate?: string;
