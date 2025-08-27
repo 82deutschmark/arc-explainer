@@ -67,7 +67,9 @@ export const puzzleController = {
    * @param res - Express response object
    */
   async analyze(req: Request, res: Response) {
-    const { taskId, model } = req.params;
+    const { taskId, model: encodedModel } = req.params;
+    // Decode model parameter to handle OpenRouter provider/model format (e.g., qwen%2Fqwen-2.5-coder-32b-instruct)
+    const model = decodeURIComponent(encodedModel);
     const { 
       temperature = 0.2, 
       captureReasoning = true, 
