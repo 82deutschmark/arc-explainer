@@ -14,6 +14,7 @@ import { puzzleService } from '../services/puzzleService';
 import { aiServiceFactory } from '../services/aiServiceFactory';
 import { formatResponse } from '../utils/responseFormatter';
 import { dbService } from '../services/dbService';
+import { repositoryService } from '../repositories/RepositoryService.js';
 import type { PromptOptions } from '../services/promptBuilder';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.js';
 import { logger } from '../utils/logger.js';
@@ -430,7 +431,7 @@ export const puzzleController = {
       const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic overview
-      if (!dbService.isConnected()) {
+      if (!repositoryService.isConnected()) {
         const basicOverview = this.createBasicOverview(allPuzzles, offset as string, limit as string);
         return res.json(formatResponse.success(basicOverview));
       }
@@ -456,7 +457,7 @@ export const puzzleController = {
       }
 
       // Get explanation status and populate puzzle map
-      const explanationStatusMap = await dbService.getBulkExplanationStatus(filteredPuzzleIds);
+      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(filteredPuzzleIds);
       explanationStatusMap.forEach((status, puzzleId) => {
         const puzzle = puzzleMap.get(puzzleId);
         if (puzzle) {
@@ -476,7 +477,7 @@ export const puzzleController = {
       for (const [puzzleId, status] of explanationStatusMap) {
         if (status.hasExplanation && status.explanationId) {
           try {
-            const explanations = await dbService.getExplanationsForPuzzle(puzzleId);
+            const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
             if (explanations && explanations.length > 0) {
               const puzzle = puzzleMap.get(puzzleId);
               if (puzzle) {
@@ -548,7 +549,7 @@ export const puzzleController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      const accuracyStats = await dbService.getAccuracyStats();
+      const accuracyStats = await repositoryService.feedback.getAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
       logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
