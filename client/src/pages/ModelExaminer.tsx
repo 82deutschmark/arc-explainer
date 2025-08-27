@@ -733,7 +733,7 @@ export default function ModelExaminer() {
                         </Badge>
                       )}
                     </div>
-                    {/* Link to individual puzzle view */}
+                    {/* Link to puzzle examiner in new tab */}
                     {result.status === 'completed' && (
                       <Link href={`/puzzle/${result.puzzle_id}`}>
                         <Button variant="ghost" size="sm" className="flex items-center gap-1">
