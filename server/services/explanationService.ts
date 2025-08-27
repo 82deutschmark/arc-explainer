@@ -71,6 +71,10 @@ export const explanationService = {
         const sourceData = explanations[modelKey];
         const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
+        // Handle nested result structure from OpenRouter services
+        // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
+        const analysisData = restOfExplanationData.result || restOfExplanationData;
+        
         // Simple logic: detect if we have multiple predictions
         let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsForStorage: any = null;
@@ -83,30 +87,34 @@ export const explanationService = {
           multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
         }
 
-        // Modern AI providers return clean camelCase field names - no mapping needed
+        // Extract token usage from nested structure for OpenRouter
+        const tokenUsage = restOfExplanationData.tokenUsage;
+        const costData = restOfExplanationData.cost;
+
+        // Handle both flat and nested response structures
         const explanationData = {
-          patternDescription: restOfExplanationData.patternDescription ?? null,
-          solvingStrategy: restOfExplanationData.solvingStrategy ?? null,
-          hints: restOfExplanationData.hints ?? null,
-          confidence: restOfExplanationData.confidence ?? 0,
+          patternDescription: analysisData.patternDescription ?? null,
+          solvingStrategy: analysisData.solvingStrategy ?? null,
+          hints: analysisData.hints ?? null,
+          confidence: analysisData.confidence ?? 0,
           modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
-          reasoningLog: restOfExplanationData.reasoningLog ?? null,
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? null,
-          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? false,
-          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? 0,
+          reasoningLog: restOfExplanationData.reasoningLog ?? analysisData.reasoningLog ?? null,
+          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions,
           multiplePredictedOutputs: multiplePredictedOutputsForStorage,
-          multiTestResults: restOfExplanationData.multiTestResults ?? null,
-          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? false,
-          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? 0,
+          multiTestResults: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
           providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          // Badge fields that were being dropped
+          // Badge fields - handle both nested token structure and flat structure
           apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
-          inputTokens: restOfExplanationData.inputTokens ?? null,
-          outputTokens: restOfExplanationData.outputTokens ?? null,
-          reasoningTokens: restOfExplanationData.reasoningTokens ?? null,
-          totalTokens: restOfExplanationData.totalTokens ?? null,
-          estimatedCost: restOfExplanationData.estimatedCost ?? null,
+          inputTokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
+          outputTokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
+          reasoningTokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
+          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
+          estimatedCost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
           temperature: restOfExplanationData.temperature ?? null,
           reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
           reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
