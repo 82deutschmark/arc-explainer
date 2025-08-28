@@ -1,5 +1,15 @@
 ###   August 28 2025
 
+## v2.5.9 - CRITICAL ReasoningLog Corruption Fix
+- **CRITICAL FIX**: Resolved widespread "[object Object]" corruption in reasoning log display across all AI models
+- **Root Cause**: Fixed improper JSON stringification of objects/arrays in ExplanationRepository.ts:52
+- **Smart Processing**: Added intelligent reasoning log processing that handles strings, arrays, and objects appropriately
+- **Validation Layer**: Implemented BaseAIService validation to prevent corruption before database storage
+- **Data Recovery**: Created cleanup script to identify and fix existing corrupted entries in database
+- **Impact**: Restored proper reasoning log display for OpenAI Responses API, DeepSeek, Grok, Gemini, and Anthropic models
+- **Technical**: Enhanced processReasoningLog() method with proper object text extraction and formatting
+- Author: Claude Sonnet 4
+
 ## v2.5.8 - Batch Analysis Infrastructure Improvements
 - **ENHANCEMENT**: Enhanced batch analysis debugging and validation systems
 - **Database Fixes**: Resolved BatchAnalysisRepository interface mismatches with actual database schema
