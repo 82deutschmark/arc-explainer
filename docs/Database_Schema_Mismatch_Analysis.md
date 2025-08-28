@@ -1,6 +1,6 @@
-# Database Schema Mismatch Analysis
+# Database Schema Analysis
 
-**Date**: 2025-08-27  
+**Date**: 2025-08-28  
 **Issue**: Repository code using non-existent database columns  
 **Root Cause**: Sloppy implementation during service layer migration
 
@@ -53,17 +53,6 @@ has_multiple_predictions - boolean
 multi_test_prediction_grids - jsonb
 created_at - timestamp with time zone
 ```
-
-## ❌ HALLUCINATED Columns (DO NOT EXIST)
-
-The following columns were **invented** by the previous developer and **DO NOT EXIST** in the database:
-
-| Hallucinated Column | Correct Alternative | Status |
-|-------------------|-------------------|--------|
-| `all_predictions_correct` | `multi_test_all_correct` | ✅ Fixed |
-| `average_prediction_accuracy_score` | `multi_test_average_accuracy` | ✅ Fixed |
-| `extraction_method` | **No equivalent** | ✅ Removed |
-
 #
 - Not making assumptions about column names without verification
 - Treating the database as the authoritative source of truth

@@ -285,26 +285,30 @@ export class FeedbackRepository extends BaseRepository {
     }
   }
 
-  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; modelAccuracy: any[] }> {
+  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
       return {
         totalExplanations: 0,
         avgConfidence: 0,
-        modelAccuracy: []
+        totalSolverAttempts: 0,
+        modelAccuracy: [],
+        accuracyByModel: []
       };
     }
 
     try {
-      // Get basic explanation stats
+      // Get basic explanation stats - only count solver attempts with correctness flags
       const basicStats = await this.query(`
         SELECT 
           COUNT(*) as total_explanations,
           ROUND(AVG(confidence), 1) as avg_confidence
         FROM explanations
-        WHERE confidence IS NOT NULL
+        WHERE confidence IS NOT NULL 
+          AND (is_prediction_correct IS NOT NULL 
+               OR multi_test_all_correct IS NOT NULL)
       `);
 
-      // Get model accuracy based on feedback
+      // Get model accuracy based on feedback - only for solver attempts with correctness flags
       const modelAccuracy = await this.query(`
         SELECT 
           e.model_name,
@@ -322,8 +326,10 @@ export class FeedbackRepository extends BaseRepository {
         FROM explanations e
         LEFT JOIN feedback f ON e.id = f.explanation_id
         WHERE e.model_name IS NOT NULL
+          AND (e.is_prediction_correct IS NOT NULL 
+               OR e.multi_test_all_correct IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 5  -- Only include models with at least 5 explanations
+        HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
         ORDER BY user_satisfaction_rate DESC, total_explanations DESC
       `);
 
