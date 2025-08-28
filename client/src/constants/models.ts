@@ -342,8 +342,8 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false
   },
   {
-    key: 'microsoft/phi-4-reasoning-plus',
-    name: 'Microsoft Phi-4 Reasoning Plus',
+    key: 'nousresearch/hermes-4-70b',
+    name: 'NousResearch Hermes 4 70B',
     color: 'bg-blue-600',
     premium: false,
     cost: { input: '$0.07', output: '$0.35' },
