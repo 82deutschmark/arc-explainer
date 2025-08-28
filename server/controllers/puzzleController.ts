@@ -601,5 +601,21 @@ export const puzzleController = {
       logger.error('Error fetching raw stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch raw stats', 'An error occurred while fetching raw database statistics'));
     }
+  },
+
+  /**
+   * Get real performance statistics based on actual prediction accuracy
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getRealPerformanceStats(req: Request, res: Response) {
+    try {
+      const performanceStats = await repositoryService.feedback.getRealPerformanceStats();
+      res.json(formatResponse.success(performanceStats));
+    } catch (error) {
+      logger.error('Error fetching real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch real performance stats', 'An error occurred while fetching real performance statistics'));
+    }
   }
 };

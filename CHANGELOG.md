@@ -1,5 +1,19 @@
 ###   August 28 2025
 
+## v2.5.12 - Real Database Statistics & Advanced Search Filters
+- **MAJOR DATA ACCURACY FIX**: Replaced placeholder/calculated statistics with actual database field aggregations
+- **New Raw Stats Tab**: Added comprehensive tab showing real api_processing_time_ms, total_tokens, estimated_cost, prediction_accuracy_score
+- **Advanced Search Filters**: Users can now search by token ranges, cost ranges, processing time, and accuracy scores
+- **Backend Enhancement**: New /api/puzzle/raw-stats endpoint provides direct database aggregations
+- **Search Functionality**: Added totalTokensMin/Max, estimatedCostMin/Max, predictionAccuracyMin/Max filters
+- **Database Integration**: All statistics now sourced from actual schema fields instead of placeholder calculations
+- **URL Persistence**: All new filters maintained in URL state for bookmarking and sharing
+- **User Experience**: Raw database exploration capabilities as requested - find highest token usage, costs, etc.
+- **Performance**: Real-time filtering with proper backend support for all database fields
+- **Technical**: Enhanced TypeScript interfaces, proper field validation, comprehensive error handling
+- **Fix**: Eliminated "averages of averages" issue, now shows true database aggregations
+- Author: Claude Sonnet 4
+
 ## v2.5.11 - COMPLETE RESPONSIVE DESIGN OVERHAUL - Mobile-Locked to Desktop Dashboard
 - **MAJOR UI TRANSFORMATION**: Completely eliminated mobile-locked appearance, transformed into professional responsive dashboard
 - **Tabbed Interface**: Implemented shadcn/ui Tabs with 3 organized sections: Performance, Database, Activity
