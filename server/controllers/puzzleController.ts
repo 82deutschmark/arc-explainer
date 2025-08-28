@@ -434,75 +434,41 @@ export const puzzleController = {
         return res.json(formatResponse.success(basicOverview));
       }
 
-      // Initialize puzzle map
+      // Apply search filter early to reduce dataset
+      let filteredPuzzles = allPuzzles;
+      if (search && typeof search === 'string') {
+        filteredPuzzles = filteredPuzzles.filter(puzzle => 
+          puzzle.id.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+
+      // Get explanation status for filtered puzzles only
+      const puzzleIds = filteredPuzzles.map(p => p.id);
+      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
+      
+      // Build initial puzzle map with explanation metadata
       const puzzleMap = new Map();
-      allPuzzles.forEach(puzzle => {
+      filteredPuzzles.forEach(puzzle => {
+        const status = explanationStatusMap[puzzle.id];
         puzzleMap.set(puzzle.id, {
           ...puzzle,
           explanations: [],
           totalExplanations: 0,
           latestExplanation: null,
-          hasExplanation: false
+          hasExplanation: status?.hasExplanation || false,
+          explanationId: status?.explanationId || null,
+          feedbackCount: status?.feedbackCount || 0,
+          apiProcessingTimeMs: status?.apiProcessingTimeMs || null,
+          modelName: status?.modelName || null,
+          createdAt: status?.createdAt || null,
+          confidence: status?.confidence || null,
+          estimatedCost: status?.estimatedCost || null
         });
       });
 
-      // Apply search filter to puzzle IDs
-      let filteredPuzzleIds = allPuzzles.map(p => p.id);
-      if (search && typeof search === 'string') {
-        filteredPuzzleIds = filteredPuzzleIds.filter(id => 
-          id.toLowerCase().includes(search.toLowerCase())
-        );
-      }
-
-      // Get explanation status and populate puzzle map
-      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(filteredPuzzleIds);
-      Object.entries(explanationStatusMap).forEach(([puzzleId, status]) => {
-        const puzzle = puzzleMap.get(puzzleId);
-        if (puzzle) {
-          puzzle.hasExplanation = status.hasExplanation;
-          puzzle.totalExplanations = status.hasExplanation ? 1 : 0;
-          puzzle.explanationId = status.explanationId;
-          puzzle.feedbackCount = status.feedbackCount;
-        }
-      });
-
-      // Process detailed explanation data with filters
-      const explanationFilters = {
-        modelName, saturnFilter, confidenceMin, confidenceMax,
-        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
-      };
-
-      for (const [puzzleId, status] of Object.entries(explanationStatusMap)) {
-        if (status.hasExplanation && status.explanationId) {
-          try {
-            const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-            if (explanations && explanations.length > 0) {
-              const puzzle = puzzleMap.get(puzzleId);
-              if (puzzle) {
-                const filteredExplanations = puzzleController.applyExplanationFilters(explanations, explanationFilters);
-                
-                if (filteredExplanations.length > 0) {
-                  puzzle.explanations = filteredExplanations;
-                  puzzle.totalExplanations = filteredExplanations.length;
-                  puzzle.latestExplanation = filteredExplanations[0];
-                  puzzle.hasExplanation = true;
-                } else {
-                  puzzle.explanations = [];
-                  puzzle.totalExplanations = 0;
-                  puzzle.latestExplanation = null;
-                  puzzle.hasExplanation = false;
-                }
-              }
-            }
-          } catch (error) {
-            logger.error(`Error getting explanations for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
-          }
-        }
-      }
-
-      // Apply final filters and sorting
+      // Apply hasExplanation and hasFeedback filters early
       let results = Array.from(puzzleMap.values());
-
+      
       if (hasExplanation === 'true') {
         results = results.filter(puzzle => puzzle.hasExplanation);
       } else if (hasExplanation === 'false') {
@@ -515,11 +481,41 @@ export const puzzleController = {
         results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
       }
 
-      // Sort and paginate results
+      // Sort results before pagination to ensure correct ordering
       const sortedResults = puzzleController.sortOverviewResults(results, sortBy as string, sortOrder as string);
-      const finalResults = puzzleController.applyPagination(sortedResults, offset as string, limit as string);
+      
+      // Apply pagination BEFORE fetching detailed explanation data
+      const paginatedResults = puzzleController.applyPagination(sortedResults, offset as string, limit as string);
+      
+      // Now only fetch detailed explanation data for the paginated puzzles
+      const explanationFilters = {
+        modelName, saturnFilter, confidenceMin, confidenceMax,
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+      };
 
-      res.json(formatResponse.success(finalResults));
+      // Process detailed explanation data only for paginated results
+      for (const puzzle of paginatedResults.puzzles) {
+        if (puzzle.hasExplanation && puzzle.explanationId) {
+          try {
+            const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzle.id);
+            if (explanations && explanations.length > 0) {
+              const filteredExplanations = puzzleController.applyExplanationFilters(explanations, explanationFilters);
+              
+              puzzle.explanations = filteredExplanations;
+              puzzle.totalExplanations = filteredExplanations.length;
+              puzzle.latestExplanation = filteredExplanations[0] || null;
+            }
+          } catch (error) {
+            logger.error(`Error getting explanations for puzzle ${puzzle.id}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
+            // Keep puzzle in results but without detailed explanation data
+            puzzle.explanations = [];
+            puzzle.totalExplanations = 0;
+            puzzle.latestExplanation = null;
+          }
+        }
+      }
+
+      res.json(formatResponse.success(paginatedResults));
 
     } catch (error) {
       logger.error('Error in puzzle overview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
