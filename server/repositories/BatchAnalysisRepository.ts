@@ -25,9 +25,12 @@ export interface BatchSessionData {
 }
 
 export interface BatchSessionResponse {
+  id: number;
   sessionId: string;
   totalPuzzles: number;
   completedPuzzles: number;
+  successfulPuzzles: number;
+  failedPuzzles: number;
   modelKey: string;
   dataset: string;
   promptId?: string;
@@ -37,7 +40,10 @@ export interface BatchSessionResponse {
   reasoningVerbosity?: string;
   reasoningSummaryType?: string;
   status: string;
+  averageProcessingTime?: number;
+  errorMessage?: string;
   createdAt: Date;
+  startedAt?: Date;
   updatedAt?: Date;
   completedAt?: Date;
 }
@@ -47,17 +53,22 @@ export interface BatchResultData {
   puzzleId: string;
   status?: string;
   explanationId?: number;
-  error?: string;
   processingTimeMs?: number;
+  accuracyScore?: number;
+  isCorrect?: boolean;
+  errorMessage?: string;
 }
 
 export interface BatchResultResponse {
+  id: number;
   sessionId: string;
   puzzleId: string;
   status: string;
   explanationId?: number;
-  error?: string;
   processingTimeMs?: number;
+  accuracyScore?: number;
+  isCorrect?: boolean;
+  errorMessage?: string;
   createdAt: Date;
   completedAt?: Date;
 }
@@ -72,8 +83,10 @@ export interface BatchSessionUpdates {
 export interface BatchResultUpdates {
   status?: string;
   explanationId?: number;
-  error?: string;
   processingTimeMs?: number;
+  accuracyScore?: number;
+  isCorrect?: boolean;
+  errorMessage?: string;
   completedAt?: Date;
 }
 
@@ -200,15 +213,18 @@ export class BatchAnalysisRepository extends BaseRepository {
     
     try {
       await this.query(`
-        INSERT INTO batch_analysis_results (session_id, puzzle_id, status, explanation_id, error, processing_time_ms)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO batch_analysis_results 
+        (session_id, puzzle_id, status, explanation_id, processing_time_ms, accuracy_score, is_correct, error_message)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [
         data.sessionId,
         data.puzzleId,
         data.status || 'pending',
         data.explanationId || null,
-        data.error || null,
-        data.processingTimeMs || null
+        data.processingTimeMs || null,
+        data.accuracyScore || null,
+        data.isCorrect || null,
+        data.errorMessage || null
       ], client);
 
       return true;
@@ -361,9 +377,12 @@ export class BatchAnalysisRepository extends BaseRepository {
    */
   private mapRowToBatchSession(row: any): BatchSessionResponse {
     return {
+      id: row.id,
       sessionId: row.session_id,
       totalPuzzles: row.total_puzzles,
       completedPuzzles: row.completed_puzzles || 0,
+      successfulPuzzles: row.successful_puzzles || 0,
+      failedPuzzles: row.failed_puzzles || 0,
       modelKey: row.model_key,
       dataset: row.dataset,
       promptId: row.prompt_id,
@@ -372,8 +391,11 @@ export class BatchAnalysisRepository extends BaseRepository {
       reasoningEffort: row.reasoning_effort,
       reasoningVerbosity: row.reasoning_verbosity,
       reasoningSummaryType: row.reasoning_summary_type,
-      status: row.status || 'active',
+      status: row.status || 'pending',
+      averageProcessingTime: row.average_processing_time,
+      errorMessage: row.error_message,
       createdAt: row.created_at,
+      startedAt: row.started_at,
       updatedAt: row.updated_at,
       completedAt: row.completed_at
     };
@@ -384,12 +406,15 @@ export class BatchAnalysisRepository extends BaseRepository {
    */
   private mapRowToBatchResult(row: any): BatchResultResponse {
     return {
+      id: row.id,
       sessionId: row.session_id,
       puzzleId: row.puzzle_id,
       status: row.status,
       explanationId: row.explanation_id,
-      error: row.error,
       processingTimeMs: row.processing_time_ms,
+      accuracyScore: row.accuracy_score,
+      isCorrect: row.is_correct,
+      errorMessage: row.error_message,
       createdAt: row.created_at,
       completedAt: row.completed_at
     };
