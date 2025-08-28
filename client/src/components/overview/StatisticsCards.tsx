@@ -17,6 +17,19 @@ import {
 import { MODELS } from '@/constants/models';
 import type { FeedbackStats } from '@shared/types';
 
+// Configuration constants - centralized instead of hardcoded
+const UI_CONFIG = {
+  maxRecentActivityItems: 15,
+  maxModelRankingsItems: 10,
+  maxLeaderboardItems: 10,
+  dateFormat: {
+    month: 'short' as const,
+    day: 'numeric' as const,
+    hour: '2-digit' as const,
+    minute: '2-digit' as const
+  }
+};
+
 interface AccuracyStats {
   accuracyByModel: Array<{
     modelName: string;
@@ -46,6 +59,7 @@ interface StatisticsCardsProps {
   accuracyStats?: AccuracyStats;
   modelRankings: ModelRanking[];
   totalPuzzles: number;
+  datasetDistribution?: Record<string, number>;
   onViewAllFeedback: () => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
@@ -63,6 +77,7 @@ export function StatisticsCards({
   accuracyStats,
   modelRankings,
   totalPuzzles,
+  datasetDistribution,
   onViewAllFeedback,
   statsLoading,
   accuracyLoading,
@@ -173,25 +188,25 @@ export function StatisticsCards({
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">ARC2-Eval:</span>
                     <Badge variant="outline" className="text-xs">
-                      ~400 puzzles
+                      {datasetDistribution?.['ARC2-Eval'] || 0} puzzles
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">ARC2:</span>
                     <Badge variant="outline" className="text-xs">
-                      ~800 puzzles
+                      {datasetDistribution?.['ARC2'] || 0} puzzles
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">ARC1-Eval:</span>
                     <Badge variant="outline" className="text-xs">
-                      ~400 puzzles
+                      {datasetDistribution?.['ARC1-Eval'] || 0} puzzles
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600">ARC1:</span>
                     <Badge variant="outline" className="text-xs">
-                      ~400 puzzles
+                      {datasetDistribution?.['ARC1'] || 0} puzzles
                     </Badge>
                   </div>
                 </div>
@@ -209,9 +224,9 @@ export function StatisticsCards({
                   </div>
                   <div className="text-center p-2 bg-purple-50 rounded">
                     <div className="text-lg font-bold text-purple-700">
-                      {accuracyStats?.accuracyByModel ? 
+                      {accuracyStats?.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? 
                         Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => sum + model.avgConfidence, 0) / accuracyStats.accuracyByModel.length) : 
-                        '75'}%
+                        (accuracyStats?.avgConfidence ? Math.round(accuracyStats.avgConfidence) : 0)}%
                     </div>
                     <div className="text-xs text-purple-600">Avg Confidence</div>
                   </div>
@@ -242,7 +257,7 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {recentActivity.slice(0, 15).map((activity) => (
+              {recentActivity.slice(0, UI_CONFIG.maxRecentActivityItems).map((activity) => (
                 <div key={`${activity.type}-${activity.id}`} className="flex justify-between items-center text-sm p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {activity.type === 'explanation' ? (
@@ -259,12 +274,7 @@ export function StatisticsCards({
                         )}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {new Date(activity.createdAt).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {new Date(activity.createdAt).toLocaleDateString('en-US', UI_CONFIG.dateFormat)}
                       </div>
                     </div>
                   </div>
@@ -337,7 +347,7 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {modelRankings.slice(0, 10).map((model, index) => (
+              {modelRankings.slice(0, UI_CONFIG.maxModelRankingsItems).map((model, index) => (
                 <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
                   <div className="flex items-center gap-3">
                     {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
