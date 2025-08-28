@@ -425,12 +425,12 @@ export const puzzleController = {
       logger.debug('Puzzle overview request with filters: ' + JSON.stringify(req.query), 'puzzle-controller');
 
       // Build puzzle filters using helper method
-      const puzzleFilters = this.buildOverviewFilters(req.query);
+      const puzzleFilters = puzzleController.buildOverviewFilters(req.query);
       const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
       
       // If no database connection, return basic overview
       if (!repositoryService.isConnected()) {
-        const basicOverview = this.createBasicOverview(allPuzzles, offset as string, limit as string);
+        const basicOverview = puzzleController.createBasicOverview(allPuzzles, offset as string, limit as string);
         return res.json(formatResponse.success(basicOverview));
       }
 
@@ -479,7 +479,7 @@ export const puzzleController = {
             if (explanations && explanations.length > 0) {
               const puzzle = puzzleMap.get(puzzleId);
               if (puzzle) {
-                const filteredExplanations = this.applyExplanationFilters(explanations, explanationFilters);
+                const filteredExplanations = puzzleController.applyExplanationFilters(explanations, explanationFilters);
                 
                 if (filteredExplanations.length > 0) {
                   puzzle.explanations = filteredExplanations;
@@ -516,8 +516,8 @@ export const puzzleController = {
       }
 
       // Sort and paginate results
-      const sortedResults = this.sortOverviewResults(results, sortBy as string, sortOrder as string);
-      const finalResults = this.applyPagination(sortedResults, offset as string, limit as string);
+      const sortedResults = puzzleController.sortOverviewResults(results, sortBy as string, sortOrder as string);
+      const finalResults = puzzleController.applyPagination(sortedResults, offset as string, limit as string);
 
       res.json(formatResponse.success(finalResults));
 
