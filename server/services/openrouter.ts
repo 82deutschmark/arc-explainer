@@ -198,26 +198,6 @@ export class OpenRouterService {
       }
     }
     
-    // Strategy 3: Find first complete JSON object in response
-    const jsonFindingPatterns = [
-      /(\{[^}]*"multiplePredictedOutputs"[^}]*\})/i,  // Look for our expected structure
-      /(\{[^}]*"predictedOutput"[^}]*\})/i,          // Alternative structure marker
-      /(\{[^}]*"patternDescription"[^}]*\})/i,       // Another structure marker
-    ];
-    
-    for (const pattern of jsonFindingPatterns) {
-      const match = text.match(pattern);
-      if (match && match[1]) {
-        console.log(`[OpenRouter] Found JSON structure using pattern: ${pattern}`);
-        // Try to extend the match to get the complete object
-        const fullMatch = this.extractCompleteJSONObject(text, match.index || 0);
-        if (fullMatch) {
-          return fullMatch;
-        }
-        return match[1].trim();
-      }
-    }
-    
     // Strategy 4: Brute force - find any JSON-like structure
     const braceStart = text.indexOf('{');
     if (braceStart !== -1) {
