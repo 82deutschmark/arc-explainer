@@ -395,6 +395,118 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
     supportsReasoning: false
+  },
+
+  // New OpenRouter Models - August 2025
+  {
+    key: 'x-ai/grok-code-fast-1',
+    name: 'xAI Grok Code Fast 1',
+    color: 'bg-gray-400',
+    premium: false,
+    cost: { input: '$0.20', output: '$1.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'openai/gpt-oss-120b',
+    name: 'OpenAI GPT-OSS 120B',
+    color: 'bg-blue-400',
+    premium: false,
+    cost: { input: '$0.072', output: '$0.28' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true
+  },
+  {
+    key: 'mistralai/codestral-2508',
+    name: 'Mistral Codestral 2508',
+    color: 'bg-orange-400',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.90' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'qwen/qwen3-30b-a3b-instruct-2507',
+    name: 'Qwen3 30B A3B Instruct',
+    color: 'bg-red-400',
+    premium: false,
+    cost: { input: '$0.10', output: '$0.30' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'qwen/qwen3-235b-a22b-thinking-2507',
+    name: 'Qwen3 235B A22B Thinking',
+    color: 'bg-red-700',
+    premium: false,
+    cost: { input: '$0.078', output: '$0.312' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
+  },
+  {
+    key: 'qwen/qwen3-coder',
+    name: 'Qwen3 Coder',
+    color: 'bg-red-500',
+    premium: false,
+    cost: { input: '$0.20', output: '$0.80' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: false
+  },
+  {
+    key: 'moonshotai/kimi-k2',
+    name: 'Moonshot Kimi K2',
+    color: 'bg-slate-600',
+    premium: true,
+    cost: { input: '$0.14', output: '$2.49' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true
+  },
+  {
+    key: 'x-ai/grok-4',
+    name: 'xAI Grok 4 (via OpenRouter)',
+    color: 'bg-gray-800',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    supportsReasoning: true
+  },
+  {
+    key: 'moonshotai/kimi-dev-72b:free',
+    name: 'Kimi Dev 72B (Free)',
+    color: 'bg-slate-400',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false
+  },
+  {
+    key: 'cohere/command-a',
+    name: 'Cohere Command A',
+    color: 'bg-green-700',
+    premium: true,
+    cost: { input: '$2.00', output: '$8.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: false
   }
 ];
 
