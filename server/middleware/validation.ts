@@ -213,14 +213,37 @@ export const validation = {
     const patternDesc = explanationData.patternDescription || explanationData.pattern_description;
     const solvingStrat = explanationData.solvingStrategy || explanationData.solving_strategy;
 
-    if (!patternDesc || typeof patternDesc !== 'string' || patternDesc.trim().length < 10) {
-      logger.warn(`Validation failed for puzzleId ${puzzleId}: patternDescription invalid or too short (${patternDesc?.length || 0} chars)`, 'validation');
-      throw new AppError('patternDescription must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
+    // Check for actual content rather than arbitrary character count
+    const isValidString = (str: any): boolean => {
+      if (!str || typeof str !== 'string') return false;
+      const trimmed = str.trim();
+      // Allow any non-empty string - remove arbitrary 10 char minimum
+      return trimmed.length > 0;
+    };
+
+    // Enhanced debugging for parsing issues
+    if (!isValidString(patternDesc)) {
+      const debugInfo = {
+        type: typeof patternDesc,
+        length: patternDesc?.length || 0,
+        trimmedLength: patternDesc?.trim?.()?.length || 0,
+        hasNewlines: patternDesc?.includes?.('\n') || false,
+        preview: typeof patternDesc === 'string' ? patternDesc.substring(0, 100) : String(patternDesc)
+      };
+      logger.warn(`Validation failed for puzzleId ${puzzleId}: patternDescription invalid - ${JSON.stringify(debugInfo)}`, 'validation');
+      throw new AppError('patternDescription must be a non-empty string', 400, 'VALIDATION_ERROR');
     }
 
-    if (!solvingStrat || typeof solvingStrat !== 'string' || solvingStrat.trim().length < 10) {
-      logger.warn(`Validation failed for puzzleId ${puzzleId}: solvingStrategy invalid or too short (${solvingStrat?.length || 0} chars)`, 'validation');
-      throw new AppError('solvingStrategy must be a string with at least 10 characters', 400, 'VALIDATION_ERROR');
+    if (!isValidString(solvingStrat)) {
+      const debugInfo = {
+        type: typeof solvingStrat,
+        length: solvingStrat?.length || 0,
+        trimmedLength: solvingStrat?.trim?.()?.length || 0,
+        hasNewlines: solvingStrat?.includes?.('\n') || false,
+        preview: typeof solvingStrat === 'string' ? solvingStrat.substring(0, 100) : String(solvingStrat)
+      };
+      logger.warn(`Validation failed for puzzleId ${puzzleId}: solvingStrategy invalid - ${JSON.stringify(debugInfo)}`, 'validation');
+      throw new AppError('solvingStrategy must be a non-empty string', 400, 'VALIDATION_ERROR');
     }
 
     next();

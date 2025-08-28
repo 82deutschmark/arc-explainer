@@ -29,13 +29,26 @@ export class OpenRouterService {
   private attemptResponseRecovery(responseText: string, modelName: string, originalError: any): any {
     console.log(`[OpenRouter] Attempting response recovery for model: ${modelName}`);
     console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 200)}..."`);
+    console.log(`[OpenRouter] Original parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+    
+    // Detailed analysis of response formatting issues
+    const responseAnalysis = {
+      startsWithBackticks: responseText.trimStart().startsWith('```'),
+      startsWithEscapedBackticks: responseText.trimStart().startsWith('\\```'),
+      containsLiteralNewlines: responseText.includes('\\n'),
+      containsSlashN: responseText.includes('/n'),
+      hasUnescapedNewlines: /"\s*[^"]*\n[^"]*\s*"/.test(responseText),
+      length: responseText.length
+    };
+    console.log(`[OpenRouter] Response analysis:`, responseAnalysis);
     
     // Strategy 1: Sanitize and remove markdown wrappers (most common case)
     try {
       const sanitized = this.sanitizeResponse(responseText);
       if (sanitized !== responseText) {
-        console.log(`[OpenRouter] Attempting parse after sanitization (markdown removal)`);
+        console.log(`[OpenRouter] Attempting parse after sanitization`);
         console.log(`[OpenRouter] Sanitized preview: "${sanitized.substring(0, 200)}..."`);
+        console.log(`[OpenRouter] Sanitization changes: length ${responseText.length} → ${sanitized.length}`);
         const parsed = JSON.parse(sanitized);
         console.log(`[OpenRouter] ✅ Successfully parsed after sanitization`);
         return parsed;
@@ -85,11 +98,30 @@ export class OpenRouterService {
   private sanitizeResponse(text: string): string {
     let sanitized = text;
     
-    // Remove markdown code block wrappers if present
-    sanitized = sanitized.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+    // Remove markdown code block wrappers including escaped variants
+    sanitized = sanitized
+      // Handle escaped backticks: \```json or \\```json 
+      .replace(/^\\+```(?:json)?\s*/, '').replace(/\s*\\+```$/, '')
+      // Handle standard backticks: ```json
+      .replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
     
-    // Remove single backtick wrappers
-    sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/, '');
+    // Remove single backtick wrappers including escaped variants
+    sanitized = sanitized
+      .replace(/^\\+`\s*/, '').replace(/\s*\\+`$/, '')
+      .replace(/^`\s*/, '').replace(/\s*`$/, '');
+    
+    // Normalize common newline sequence variations before JSON parsing
+    sanitized = sanitized
+      // Convert literal \n sequences to actual newlines
+      .replace(/\\n/g, '\n')
+      // Convert literal /n sequences (common typo) to actual newlines
+      .replace(/\/n/g, '\n')
+      // Convert \\n (double escaped) to actual newlines
+      .replace(/\\\\n/g, '\n');
+    
+    // Process JSON string escaping for newlines
+    // Find JSON string values and properly escape any newlines within them
+    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
     
     return sanitized
       // Remove non-printable control characters except newlines and tabs
@@ -105,6 +137,28 @@ export class OpenRouterService {
       .replace(/\[\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*/g, '{"$1": ')
       // Remove any leading/trailing whitespace
       .trim();
+  }
+
+  /**
+   * Escapes newlines within JSON string values while preserving JSON structure
+   */
+  private escapeNewlinesInJsonStrings(text: string): string {
+    try {
+      // Find JSON string values that contain unescaped newlines
+      // Pattern: "key": "value with\nnewline" 
+      return text.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, (match, content) => {
+        // Only process if this looks like a JSON string value (has content)
+        if (content && content.includes('\n')) {
+          // Properly escape newlines within the string
+          const escapedContent = content.replace(/\n/g, '\\n');
+          return `"${escapedContent}"`;
+        }
+        return match;
+      });
+    } catch (error) {
+      console.log(`[OpenRouter] Warning: newline escaping failed, returning original text`);
+      return text;
+    }
   }
 
   /**
