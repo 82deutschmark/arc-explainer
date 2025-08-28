@@ -49,7 +49,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         Array.isArray(data.hints) ? data.hints : [],
         this.normalizeConfidence(data.confidence),
         data.modelName || null,
-        data.reasoningLog ? this.safeJsonStringify(data.reasoningLog) : null,
+        this.processReasoningLog(data.reasoningLog),
         !!data.reasoningLog,
         data.apiProcessingTimeMs || null,
         data.estimatedCost || null,
@@ -297,6 +297,74 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Map database row to ExplanationResponse object
    * SQL aliases already provide correct camelCase field names
    */
+  /**
+   * Process reasoning log to ensure it's stored as readable text
+   * Handles strings, arrays, and objects appropriately to prevent "[object Object]" corruption
+   */
+  private processReasoningLog(reasoningLog: any): string | null {
+    // Handle null/undefined
+    if (!reasoningLog) {
+      return null;
+    }
+
+    // If already a string, return as-is
+    if (typeof reasoningLog === 'string') {
+      return reasoningLog.trim() || null;
+    }
+
+    // If it's an array, join with newlines for readability
+    if (Array.isArray(reasoningLog)) {
+      return reasoningLog
+        .map(item => {
+          if (typeof item === 'string') return item;
+          if (typeof item === 'object' && item !== null) {
+            // Handle objects in arrays - extract text content if possible
+            if (item.text) return item.text;
+            if (item.content) return item.content;
+            if (item.message) return item.message;
+            // As last resort, stringify the object properly
+            return JSON.stringify(item, null, 2);
+          }
+          return String(item);
+        })
+        .filter(Boolean)
+        .join('\n\n') || null;
+    }
+
+    // If it's an object, try to extract meaningful text content
+    if (typeof reasoningLog === 'object' && reasoningLog !== null) {
+      // Common text fields in reasoning objects
+      if (reasoningLog.text) return reasoningLog.text;
+      if (reasoningLog.content) return reasoningLog.content;
+      if (reasoningLog.message) return reasoningLog.message;
+      if (reasoningLog.summary) return reasoningLog.summary;
+      
+      // If it has an array of items, process them
+      if (Array.isArray(reasoningLog.items)) {
+        return this.processReasoningLog(reasoningLog.items);
+      }
+
+      // As a last resort, stringify the object with proper formatting
+      try {
+        const stringified = JSON.stringify(reasoningLog, null, 2);
+        // Avoid returning "[object Object]" or similar useless strings
+        if (stringified && stringified !== '{}' && stringified !== 'null') {
+          return stringified;
+        }
+      } catch (error) {
+        console.warn('[ExplanationRepository] Failed to stringify reasoning log object:', error);
+      }
+    }
+
+    // For any other type, convert to string if meaningful
+    const stringValue = String(reasoningLog);
+    if (stringValue && stringValue !== '[object Object]' && stringValue !== 'undefined') {
+      return stringValue;
+    }
+
+    return null;
+  }
+
   private mapRowToExplanation(row: any): ExplanationResponse {
     return {
       // Basic fields (already camelCase from SQL aliases)
