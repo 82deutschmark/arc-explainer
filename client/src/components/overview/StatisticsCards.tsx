@@ -209,28 +209,21 @@ export function StatisticsCards({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {accuracyStats && accuracyStats.totalSolverAttempts > 0 ? (
+              {performanceStats && performanceStats.totalTrustworthinessAttempts > 0 ? (
                 <div className="space-y-4">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600">
-                      {accuracyStats.totalSolverAttempts}
+                      {performanceStats.totalTrustworthinessAttempts}
                     </div>
                     <div className="text-sm text-gray-600">Total Solver Attempts</div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-green-50 rounded-lg">
-                      <div className="text-xl font-semibold text-green-700">
-                        {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
-                          sum + model.accuracyPercentage, 0) / accuracyStats.accuracyByModel.length) || 0}%
-                      </div>
-                      <div className="text-xs text-green-600">User Satisfaction</div>
-                    </div>
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <div className="text-xl font-semibold text-blue-700">
-                        {performanceStats ? (performanceStats.overallTrustworthiness * 100).toFixed(1) : 'N/A'}%
+                        {(performanceStats.overallTrustworthiness * 100).toFixed(1)}%
                       </div>
-                      <div className="text-xs text-blue-600">Real Trustworthiness</div>
+                      <div className="text-xs text-blue-600">Overall Trustworthiness</div>
                     </div>
                   </div>
                 </div>
