@@ -1,5 +1,13 @@
 ###   August 28 2025
 
+## v2.5.8 - Batch Analysis Infrastructure Improvements
+- **ENHANCEMENT**: Enhanced batch analysis debugging and validation systems
+- **Database Fixes**: Resolved BatchAnalysisRepository interface mismatches with actual database schema
+- **Validation Layer**: Improved error handling for undefined result structures in batch processing
+- **Testing Tools**: Added comprehensive batch analysis debugging and testing utilities
+- **Repository Pattern**: Continued migration to clean repository architecture with proper interface compliance
+- Author: Claude Sonnet 4
+
 ## v2.5.7 - Critical OpenRouter Parsing Fixes  
 - **CRITICAL FIX**: Resolved OpenRouter parsing failures affecting cohere/command-r-plus and similar models
 - **Enhanced Sanitization**: Handles escaped markdown backticks (`\```json`) that were breaking JSON parsing
