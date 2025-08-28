@@ -205,6 +205,13 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       <div className="flex items-center gap-2 flex-wrap">
         <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />
         <h5 className="font-medium">{model?.name || modelKey}</h5>
+        {result.createdAt && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+            <span className="text-xs text-gray-600">
+              {new Date(result.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+            </span>
+          </Badge>
+        )}
         
         {/* Saturn-specific success/failure indicator */}
         {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
