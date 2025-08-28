@@ -52,6 +52,18 @@ interface SearchFiltersProps {
   setConfidenceMin: (min: string) => void;
   confidenceMax: string;
   setConfidenceMax: (max: string) => void;
+  totalTokensMin: string;
+  setTotalTokensMin: (min: string) => void;
+  totalTokensMax: string;
+  setTotalTokensMax: (max: string) => void;
+  estimatedCostMin: string;
+  setEstimatedCostMin: (min: string) => void;
+  estimatedCostMax: string;
+  setEstimatedCostMax: (max: string) => void;
+  predictionAccuracyMin: string;
+  setPredictionAccuracyMin: (min: string) => void;
+  predictionAccuracyMax: string;
+  setPredictionAccuracyMax: (max: string) => void;
   sortBy: string;
   sortOrder: string;
   onSearch: () => void;
@@ -92,6 +104,18 @@ export function SearchFilters({
   setConfidenceMin,
   confidenceMax,
   setConfidenceMax,
+  totalTokensMin,
+  setTotalTokensMin,
+  totalTokensMax,
+  setTotalTokensMax,
+  estimatedCostMin,
+  setEstimatedCostMin,
+  estimatedCostMax,
+  setEstimatedCostMax,
+  predictionAccuracyMin,
+  setPredictionAccuracyMin,
+  predictionAccuracyMax,
+  setPredictionAccuracyMax,
   sortBy,
   sortOrder,
   onSearch,
@@ -280,6 +304,81 @@ export function SearchFilters({
                 min="0"
                 value={processingTimeMax}
                 onChange={(e) => setProcessingTimeMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Total Tokens Range */}
+          <div className="space-y-2">
+            <Label htmlFor="totalTokensMin">Total Tokens</Label>
+            <div className="flex gap-2">
+              <Input
+                id="totalTokensMin"
+                placeholder="Min"
+                type="number"
+                min="0"
+                value={totalTokensMin}
+                onChange={(e) => setTotalTokensMin(e.target.value)}
+              />
+              <Input
+                id="totalTokensMax"
+                placeholder="Max"
+                type="number"
+                min="0"
+                value={totalTokensMax}
+                onChange={(e) => setTotalTokensMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Estimated Cost Range */}
+          <div className="space-y-2">
+            <Label htmlFor="estimatedCostMin">Estimated Cost ($)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="estimatedCostMin"
+                placeholder="Min"
+                type="number"
+                min="0"
+                step="0.001"
+                value={estimatedCostMin}
+                onChange={(e) => setEstimatedCostMin(e.target.value)}
+              />
+              <Input
+                id="estimatedCostMax"
+                placeholder="Max"
+                type="number"
+                min="0"
+                step="0.001"
+                value={estimatedCostMax}
+                onChange={(e) => setEstimatedCostMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Prediction Accuracy Score Range */}
+          <div className="space-y-2">
+            <Label htmlFor="predictionAccuracyMin">Prediction Accuracy Score</Label>
+            <div className="flex gap-2">
+              <Input
+                id="predictionAccuracyMin"
+                placeholder="Min (0.0-1.0)"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                value={predictionAccuracyMin}
+                onChange={(e) => setPredictionAccuracyMin(e.target.value)}
+              />
+              <Input
+                id="predictionAccuracyMax"
+                placeholder="Max (0.0-1.0)"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                value={predictionAccuracyMax}
+                onChange={(e) => setPredictionAccuracyMax(e.target.value)}
               />
             </div>
           </div>
