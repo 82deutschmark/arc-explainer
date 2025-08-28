@@ -31,7 +31,9 @@
       "Bash(timeout:*)",
       "WebFetch(domain:openrouter.ai)",
       "Bash(psql:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": [],

@@ -1,5 +1,14 @@
 ###   August 28 2025
 
+## v2.5.7 - Critical OpenRouter Parsing Fixes  
+- **CRITICAL FIX**: Resolved OpenRouter parsing failures affecting cohere/command-r-plus and similar models
+- **Enhanced Sanitization**: Handles escaped markdown backticks (`\```json`) that were breaking JSON parsing
+- **Newline Handling**: Proper normalization of newline variations (`\n`, `/n`, `\\n`) in AI responses  
+- **Validation Improvements**: Removed arbitrary 10-character minimum requirement causing false validation failures
+- **Debug Enhancement**: Added detailed response analysis for parsing failure troubleshooting
+- **JSON String Escaping**: Automatic escaping of newlines within JSON string values to prevent parse errors
+- Author: Claude Sonnet 4
+
 ## v2.5.6 - Enhanced OpenRouter JSON Parsing & Error Recovery
 - **FIX**: Resolved JSON parsing failures for OpenRouter models wrapped in markdown code blocks
 - **Enhanced JSON Recovery**: Multi-strategy parsing system for malformed responses
