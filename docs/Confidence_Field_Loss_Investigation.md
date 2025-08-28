@@ -110,16 +110,52 @@ OpenRouter patterns were designed to find JSON by looking for specific expected 
 ## The Fix
 Add confidence field to the extraction patterns and fix the greedy regex that truncates JSON objects.
 
-## Status
-- [x] ✅ ROOT CAUSE IDENTIFIED: OpenRouter JSON extraction patterns truncate before confidence field
-- [x] ✅ Located exact line of code causing the bug (lines 203-206)
-- [x] ✅ Confirmed OpenRouter expects confidence field (validation code exists)
-- [ ] 🔄 Implement fix to include confidence in extraction patterns
-- [ ] 📝 Test fix with actual OpenRouter responses
-3. Implement targeted fix based on findings
-4. Standardize JSON parsing across all services
+## Recommended Fix Strategy
 
-## Status
+### Option 1: Add Confidence Pattern (Simple)
+Add confidence field to the existing patterns:
+```typescript
+const jsonFindingPatterns = [
+  /(\{[^}]*"multiplePredictedOutputs"[^}]*\})/i,
+  /(\{[^}]*"predictedOutput"[^}]*\})/i, 
+  /(\{[^}]*"patternDescription"[^}]*\})/i,
+  /(\{[^}]*"confidence"[^}]*\})/i,  // ← ADD THIS
+];
+```
+
+**Problem**: Still uses greedy `[^}]*` that truncates at first `}`
+
+### Option 2: Fix the Regex Pattern (Better)
+Replace `[^}]*` with proper JSON matching:
+```typescript
+const jsonFindingPatterns = [
+  /(\{[\s\S]*?"multiplePredictedOutputs"[\s\S]*?\})/i,
+  /(\{[\s\S]*?"predictedOutput"[\s\S]*?\})/i,
+  /(\{[\s\S]*?"patternDescription"[\s\S]*?\})/i,
+];
+```
+
+**Problem**: `[\s\S]*?` is non-greedy but may still not match complete nested JSON
+
+### Option 3: Use Complete JSON Extraction (Recommended)
+Rely on Strategy 4 (brute force) or improve the complete JSON object extraction:
+```typescript
+// Remove problematic Strategy 3 patterns entirely
+// Let Strategy 4 handle all cases with extractCompleteJSONObject()
+```
+
+**Advantage**: `extractCompleteJSONObject()` properly counts braces and handles nested JSON
+
+## Implementation Recommendation
+**Remove Strategy 3 entirely** and let the existing `extractCompleteJSONObject()` function handle JSON extraction, since it properly tracks nested braces and won't truncate the confidence field.
+
+## Status  
+- [x] ✅ ROOT CAUSE IDENTIFIED: OpenRouter JSON extraction patterns truncate before confidence field
+- [x] ✅ Located exact line of code causing the bug (lines 203-206) 
+- [x] ✅ Confirmed OpenRouter expects confidence field (validation code exists)
+- [x] ✅ Documented fix strategy options
+- [ ] 🔄 Implement recommended fix (remove Strategy 3)
+- [ ] 📝 Test fix with actual OpenRouter responses
 - [x] Identified multiple competing parsers
 - [x] Traced data flow through both endpoints  
 - [x] Found validation middleware that may not preserve confidence

@@ -2731,51 +2731,24 @@
     ]
   },
   "explanations": {
-    "cohere/command-r-plus": {
-      "success": true,
-      "result": {
-        "patternDescription": "JSON parsing failed for cohere/command-r-plus response. The model generated a 3713-character response but it contained formatting issues (Unterminated string in JSON at position 3713 (line 32 column 897)). This appears to be a model output formatting issue rather than a puzzle analysis failure. The response may have contained valid insights wrapped in markdown code blocks or other formatting that couldn't be automatically parsed.",
-        "solvingStrategy": "Unable to extract structured solving strategy from cohere/command-r-plus due to response parsing failure. The original response was 3713 characters long and may have contained useful problem-solving insights, but the JSON structure was malformed or wrapped in unsupported formatting. Consider trying the analysis again or using a different model that provides more consistent JSON formatting.",
-        "hints": [
-          "The cohere/command-r-plus model generated a lengthy response (3713 chars) suggesting it attempted analysis",
-          "Try re-running the analysis - this may be a temporary formatting issue",
-          "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
-          "Check the raw response in the logs for any extractable insights"
-        ],
-        "confidence": 0,
-        "multiplePredictedOutputs": false,
-        "rawResponse": "{\n  \"multiplePredictedOutputs\": false,\n  \"predictedOutput\": [\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n    [0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3],\n    [0, 0, 0, 0, 0, 3, 0, 3, 3, 0, 3, 0, 3],\n    [0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3],\n    [0, 0, 0, 0, 0, 3, 0, 3, 0, 3, 0, 3, 0],\n    [0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3],\n    [0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3],\n    [0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0],\n    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
-        "parsingError": "Unterminated string in JSON at position 3713 (line 32 column 897)",
-        "modelUsed": "cohere/command-r-plus",
-        "recoveryMethod": "validation-compliant-fallback",
-        "responseLength": 3713,
-        "parsingAttempted": true
-      },
-      "tokenUsage": {
-        "input": 4967,
-        "output": 4000
-      },
-      "cost": {
-        "input": 0.0124175,
-        "output": 0.04,
-        "total": 0.0524175
-      },
-      "processingTimeMs": 115097,
-      "modelName": "cohere/command-r-plus",
-      "reasoning": null,
-      "reasoningLog": null,
-      "apiProcessingTimeMs": 115098,
+    "moonshotai/kimi-dev-72b:free": {
+      "success": false,
+      "error": "Unexpected end of JSON input",
+      "result": null,
+      "processingTimeMs": 480828,
+      "modelName": "moonshotai/kimi-dev-72b:free",
+      "apiProcessingTimeMs": 480829,
       "predictedOutputGrid": null,
       "multiplePredictedOutputs": null,
       "hasMultiplePredictions": false,
       "isPredictionCorrect": false,
-      "predictionAccuracyScore": 1,
-      "modelKey": "cohere/command-r-plus",
-      "actualProcessingTime": 120
+      "predictionAccuracyScore": 0.5,
+      "modelKey": "moonshotai/kimi-dev-72b:free",
+      "actualProcessingTime": 481
     }
   },
-  "exportedAt": "2025-08-28T20:25:42.736Z",
+  "exportedAt": "2025-08-28T20:57:15.969Z",
   "models": [
-    "cohere/command-r-plus"
+    "moonshotai/kimi-dev-72b:free"
   ]
 }
