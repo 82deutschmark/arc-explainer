@@ -1,5 +1,13 @@
 ###   August 28 2025
 
+## v2.5.4 - Processing Time Display Fix
+- **FIX**: Corrected processing time display in AnalysisResultCard
+- Time formatter now auto-detects whether values are in seconds or milliseconds
+- Processing times now display correctly as seconds and minutes instead of showing unreasonably fast times
+- Updated both formatProcessingTime and formatProcessingTimeDetailed functions
+- Improved time display logic to handle edge cases and large values
+- Author: Claude Sonnet 4
+
 ## v2.5.3 - Microsoft Phi-4 Reasoning Plus Model Update
 - **UPDATED MODEL**: Corrected Microsoft Phi model to use latest version
   - **Microsoft Phi-4 Reasoning Plus**: 14B parameter reasoning model with step-by-step traces ($0.07/$0.35, 32K context)
