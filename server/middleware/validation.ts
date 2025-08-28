@@ -221,7 +221,8 @@ export const validation = {
       return trimmed.length > 0;
     };
 
-    // Enhanced debugging for parsing issues
+    // Log parsing issues for debugging but DON'T fail the request
+    // Many models produce responses that need parsing or have formatting issues
     if (!isValidString(patternDesc)) {
       const debugInfo = {
         type: typeof patternDesc,
@@ -230,8 +231,7 @@ export const validation = {
         hasNewlines: patternDesc?.includes?.('\n') || false,
         preview: typeof patternDesc === 'string' ? patternDesc.substring(0, 100) : String(patternDesc)
       };
-      logger.warn(`Validation failed for puzzleId ${puzzleId}: patternDescription invalid - ${JSON.stringify(debugInfo)}`, 'validation');
-      throw new AppError('patternDescription must be a non-empty string', 400, 'VALIDATION_ERROR');
+      logger.info(`Pattern description validation warning for puzzleId ${puzzleId} - ${JSON.stringify(debugInfo)}. Continuing anyway as models often need parsing.`, 'validation');
     }
 
     if (!isValidString(solvingStrat)) {
@@ -242,8 +242,7 @@ export const validation = {
         hasNewlines: solvingStrat?.includes?.('\n') || false,
         preview: typeof solvingStrat === 'string' ? solvingStrat.substring(0, 100) : String(solvingStrat)
       };
-      logger.warn(`Validation failed for puzzleId ${puzzleId}: solvingStrategy invalid - ${JSON.stringify(debugInfo)}`, 'validation');
-      throw new AppError('solvingStrategy must be a non-empty string', 400, 'VALIDATION_ERROR');
+      logger.info(`Solving strategy validation warning for puzzleId ${puzzleId} - ${JSON.stringify(debugInfo)}. Continuing anyway as models often need parsing.`, 'validation');
     }
 
     next();

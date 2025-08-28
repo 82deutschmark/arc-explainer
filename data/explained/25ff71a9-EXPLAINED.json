@@ -223,48 +223,92 @@
     ]
   },
   "explanations": {
-    "baidu/ernie-4.5-vl-28b-a3b": {
+    "qwen/qwen3-235b-a22b-thinking-2507": {
       "success": true,
       "result": {
-        "patternDescription": "Model baidu/ernie-4.5-vl-28b-a3b response parsing failed. The model provided a response but it contained formatting issues or non-standard characters that prevented JSON parsing. Original error: Unterminated string in JSON at position 24725 (line 12 column 24096).",
-        "solvingStrategy": "Unable to extract structured strategy from baidu/ernie-4.5-vl-28b-a3b due to response format issues. The model may have provided insights in natural language that couldn't be parsed into the expected JSON structure.",
-        "hints": [
-          "Try using a different model that supports structured output better",
-          "Check if the model requires specific prompt formatting",
-          "Consider using OpenAI or Anthropic models for more reliable JSON responses"
+        "multiplePredictedOutputs": true,
+        "predictedOutput": [],
+        "predictedOutput1": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
         ],
-        "confidence": 0,
-        "multiplePredictedOutputs": false,
-        "rawResponse": "{\n  \"multiplePredictedOutputs\": false,\n  \"predictedOutput\": [\n    [0, 0, 0],\n    [2, 0, 0],\n    [0, 0, 0]\n  ],\n  \"solvingStrategy\": \"Analyzed training examples to identify vertical flipping pattern. Each input grid has non-zero elements in top-middle row; output moves these elements to bottom-middle row. Applied same transformation to test cases.\",\n  \"keySteps\": [\n    \"Observed Example 1: Input top-middle row [1,1,1] → Output bottom-middle row [1,1,1]\",\n    \"Observed Example 2: Input bottom-midd",
-        "parsingError": "Unterminated string in JSON at position 24725 (line 12 column 24096)",
-        "modelUsed": "baidu/ernie-4.5-vl-28b-a3b",
-        "recoveryMethod": "validation-compliant-fallback"
+        "predictedOutput2": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "predictedOutput3": [],
+        "solvingStrategy": "Analyzed all training examples to identify consistent grid transformation patterns. Observed that every input-output pair shows a downward row shift where the top row becomes zeros and all other rows move down by one position, discarding the original bottom row. Verified this rule across all training cases with different values (1 and 2) and non-uniform patterns. Applied the same shift operation to both test cases, confirming consistency with training behavior. Ruled out alternatives like rotation, reflection, or value-based transformations since the shift pattern held universally regardless of color or shape.",
+        "keySteps": [
+          "Examined Example 1: Top row [1,1,1] shifted down to middle row, top filled with zeros",
+          "Examined Example 2: Middle row [1,1,1] shifted down to bottom row, middle filled with zeros",
+          "Examined Example 3: Non-uniform pattern shifted down row-wise (row0→row1, row1→row2), top became zeros",
+          "Examined Example 4: Same shift pattern with value 2, confirming color independence",
+          "Hypothesized downward shift rule: output[0]=[0,0,0], output[i]=input[i-1] for i>0",
+          "Tested hypothesis against all training examples - 100% match",
+          "Rejected rotation/reflection ideas due to mismatched output shapes",
+          "Rejected bottom-alignment hypothesis (Example 1 only shifted one row, not to bottom)",
+          "Applied shift rule to Test Case 1: [[2,0,0],[2,0,0],[0,0,0]] → [[0,0,0],[2,0,0],[2,0,0]]",
+          "Applied shift rule to Test Case 2: [[0,0,0],[0,1,0],[0,0,0]] → [[0,0,0],[0,0,0],[0,1,0]]"
+        ],
+        "patternDescription": "The transformation shifts all rows downward by exactly one position. The top row of the output is always filled with zeros. The original bottom row of the input is discarded to maintain fixed grid dimensions (3x3). This operation is applied uniformly regardless of cell values, non-zero patterns, or spatial arrangements.",
+        "hints": [
+          "output = []; output.append([0]*3); for i in range(len(input)-1): output.append(input[i])",
+          "Output[0] = [0,0,0]; Output[i] = Input[i-1] for i ∈ {1,2}",
+          "🔄 (shift down) + 🧼 (top clean) = 📉 (downward cascade)"
+        ],
+        "confidence": 95
       },
       "tokenUsage": {
-        "input": 884,
-        "output": 8000
+        "input": 803,
+        "output": 4496
       },
       "cost": {
-        "input": 0.001326,
-        "output": 0.024,
-        "total": 0.025326
+        "input": 0.000062634,
+        "output": 0.001402752,
+        "total": 0.001465386
       },
-      "processingTimeMs": 1756335270808,
-      "modelName": "baidu/ernie-4.5-vl-28b-a3b",
+      "processingTimeMs": 121855,
+      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
       "reasoning": null,
       "reasoningLog": null,
-      "apiProcessingTimeMs": 88989,
-      "predictedOutputGrid": null,
+      "apiProcessingTimeMs": 121856,
+      "predictedOutputGrid": [],
       "multiplePredictedOutputs": null,
       "hasMultiplePredictions": false,
       "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.5,
-      "modelKey": "baidu/ernie-4.5-vl-28b-a3b",
-      "actualProcessingTime": 89
+      "predictionAccuracyScore": 0.050000000000000044,
+      "modelKey": "qwen/qwen3-235b-a22b-thinking-2507",
+      "actualProcessingTime": 122
     }
   },
-  "exportedAt": "2025-08-27T22:54:30.818Z",
+  "exportedAt": "2025-08-28T20:02:20.044Z",
   "models": [
-    "baidu/ernie-4.5-vl-28b-a3b"
+    "qwen/qwen3-235b-a22b-thinking-2507"
   ]
 }

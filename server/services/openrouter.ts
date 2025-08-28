@@ -198,26 +198,6 @@ export class OpenRouterService {
       }
     }
     
-    // Strategy 3: Find first complete JSON object in response
-    const jsonFindingPatterns = [
-      /(\{[^}]*"multiplePredictedOutputs"[^}]*\})/i,  // Look for our expected structure
-      /(\{[^}]*"predictedOutput"[^}]*\})/i,          // Alternative structure marker
-      /(\{[^}]*"patternDescription"[^}]*\})/i,       // Another structure marker
-    ];
-    
-    for (const pattern of jsonFindingPatterns) {
-      const match = text.match(pattern);
-      if (match && match[1]) {
-        console.log(`[OpenRouter] Found JSON structure using pattern: ${pattern}`);
-        // Try to extend the match to get the complete object
-        const fullMatch = this.extractCompleteJSONObject(text, match.index || 0);
-        if (fullMatch) {
-          return fullMatch;
-        }
-        return match[1].trim();
-      }
-    }
-    
     // Strategy 4: Brute force - find any JSON-like structure
     const braceStart = text.indexOf('{');
     if (braceStart !== -1) {
@@ -408,13 +388,17 @@ export class OpenRouterService {
       
       messages.push({ role: "user", content: userMessage });
 
-      // Build request options
+      // Use the model's configured maxOutputTokens, or a safe default if not specified
+      const maxTokens = modelConfig?.maxOutputTokens || 65536; // Default to 64k if not specified
+      
       const requestOptions: any = {
         model: openRouterModelName,
         messages: messages,
         temperature: temperature,
-        max_tokens: serviceOpts?.maxOutputTokens || modelConfig?.maxOutputTokens || 4000,
+        max_tokens: maxTokens,
       };
+      
+      console.log(`[OpenRouter] Using token limit: ${maxTokens} for model ${openRouterModelName} (from model config)`);
 
       console.log(`[OpenRouter] Making API call with model: ${openRouterModelName}`);
       const response = await openrouter.chat.completions.create(requestOptions);
