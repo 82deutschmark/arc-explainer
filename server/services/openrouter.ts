@@ -28,44 +28,70 @@ export class OpenRouterService {
    */
   private attemptResponseRecovery(responseText: string, modelName: string, originalError: any): any {
     console.log(`[OpenRouter] Attempting response recovery for model: ${modelName}`);
+    console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 200)}..."`);
     
-    // Strategy 1: Sanitize non-UTF8 characters and retry JSON parse
+    // Strategy 1: Sanitize and remove markdown wrappers (most common case)
     try {
       const sanitized = this.sanitizeResponse(responseText);
       if (sanitized !== responseText) {
-        console.log(`[OpenRouter] Attempting parse after sanitization`);
+        console.log(`[OpenRouter] Attempting parse after sanitization (markdown removal)`);
+        console.log(`[OpenRouter] Sanitized preview: "${sanitized.substring(0, 200)}..."`);
         const parsed = JSON.parse(sanitized);
-        console.log(`[OpenRouter] Successfully parsed after sanitization`);
+        console.log(`[OpenRouter] ✅ Successfully parsed after sanitization`);
         return parsed;
       }
     } catch (sanitizeError) {
-      console.log(`[OpenRouter] Sanitization strategy failed:`, sanitizeError instanceof Error ? sanitizeError.message : String(sanitizeError));
+      console.log(`[OpenRouter] ❌ Sanitization strategy failed:`, sanitizeError instanceof Error ? sanitizeError.message : String(sanitizeError));
     }
     
-    // Strategy 2: Extract JSON from markdown code blocks
+    // Strategy 2: Advanced extraction from various markdown patterns
     try {
       const extracted = this.extractJSONFromMarkdown(responseText);
       if (extracted) {
-        console.log(`[OpenRouter] Attempting parse after markdown extraction`);
+        console.log(`[OpenRouter] Attempting parse after advanced markdown extraction`);
+        console.log(`[OpenRouter] Extracted JSON preview: "${extracted.substring(0, 200)}..."`);
         const parsed = JSON.parse(extracted);
-        console.log(`[OpenRouter] Successfully parsed after markdown extraction`);
+        console.log(`[OpenRouter] ✅ Successfully parsed after markdown extraction`);
         return parsed;
       }
     } catch (extractError) {
-      console.log(`[OpenRouter] Markdown extraction strategy failed:`, extractError instanceof Error ? extractError.message : String(extractError));
+      console.log(`[OpenRouter] ❌ Advanced extraction strategy failed:`, extractError instanceof Error ? extractError.message : String(extractError));
     }
     
-    // Strategy 3: Generate validation-compliant fallback response
+    // Strategy 3: Try combined extraction and sanitization
+    try {
+      const extracted = this.extractJSONFromMarkdown(responseText);
+      if (extracted) {
+        const sanitized = this.sanitizeResponse(extracted);
+        console.log(`[OpenRouter] Attempting parse after combined extraction + sanitization`);
+        const parsed = JSON.parse(sanitized);
+        console.log(`[OpenRouter] ✅ Successfully parsed after combined approach`);
+        return parsed;
+      }
+    } catch (combinedError) {
+      console.log(`[OpenRouter] ❌ Combined strategy failed:`, combinedError instanceof Error ? combinedError.message : String(combinedError));
+    }
+    
+    // Strategy 4: Generate validation-compliant fallback response
+    console.log(`[OpenRouter] ⚠️ All parsing strategies failed, using validation-compliant fallback`);
     const fallback = this.generateValidationCompliantFallback(responseText, modelName, originalError);
-    console.log(`[OpenRouter] Using validation-compliant fallback response`);
+    console.log(`[OpenRouter] Generated fallback response with recovery method: ${fallback.recoveryMethod}`);
     return fallback;
   }
 
   /**
-   * Sanitizes response text by removing/replacing problematic characters
+   * Sanitizes response text by removing/replacing problematic characters and fixing common formatting issues
    */
   private sanitizeResponse(text: string): string {
-    return text
+    let sanitized = text;
+    
+    // Remove markdown code block wrappers if present
+    sanitized = sanitized.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+    
+    // Remove single backtick wrappers
+    sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/, '');
+    
+    return sanitized
       // Remove non-printable control characters except newlines and tabs
       .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       // Replace common problematic Unicode characters with safe alternatives
@@ -77,27 +103,125 @@ export class OpenRouterService {
       .replace(/\[\s*("[^"]+"\s*:\s*[^,\]]+(?:\s*,\s*"[^"]+"\s*:\s*[^,\]]+)*)\s*\]/g, '{$1}')
       // Fix unquoted object keys that use colons
       .replace(/\[\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*/g, '{"$1": ')
+      // Remove any leading/trailing whitespace
       .trim();
   }
 
   /**
-   * Extracts JSON from markdown code blocks
+   * Extracts JSON from markdown code blocks and various formatting patterns
    */
   private extractJSONFromMarkdown(text: string): string | null {
-    // Look for JSON in markdown code blocks
-    const jsonBlockRegex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i;
-    const match = text.match(jsonBlockRegex);
+    console.log(`[OpenRouter] Attempting JSON extraction from ${text.length} character response`);
     
-    if (match && match[1]) {
-      return match[1].trim();
+    // Strategy 1: Standard markdown code blocks with optional json tag
+    const codeBlockPatterns = [
+      /```(?:json)?\s*(\{[\s\S]*?\})\s*```/i,
+      /```(?:json)?\s*(\[[\s\S]*?\])\s*```/i,
+      /`(?:json)?\s*(\{[\s\S]*?\})\s*`/i,
+    ];
+    
+    for (const pattern of codeBlockPatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        console.log(`[OpenRouter] Found JSON in code block using pattern: ${pattern}`);
+        return match[1].trim();
+      }
     }
     
-    // Look for JSON-like structure at start of response
-    const jsonStartRegex = /^[\s\S]*?(\{[\s\S]*\})[\s\S]*$/;
-    const startMatch = text.match(jsonStartRegex);
+    // Strategy 2: JSON at start of response (handles responses that start with JSON immediately)
+    const startPatterns = [
+      /^\s*(\{[\s\S]*\})\s*$/,  // Pure JSON object
+      /^\s*(\[[\s\S]*\])\s*$/,  // Pure JSON array
+      /^\s*(\{[\s\S]*?\})[^}]*$/,  // JSON object with trailing text
+      /^\s*(\[[\s\S]*?\])[^\]]*$/,  // JSON array with trailing text
+    ];
     
-    if (startMatch && startMatch[1]) {
-      return startMatch[1].trim();
+    for (const pattern of startPatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        console.log(`[OpenRouter] Found JSON at start using pattern: ${pattern}`);
+        return match[1].trim();
+      }
+    }
+    
+    // Strategy 3: Find first complete JSON object in response
+    const jsonFindingPatterns = [
+      /(\{[^}]*"multiplePredictedOutputs"[^}]*\})/i,  // Look for our expected structure
+      /(\{[^}]*"predictedOutput"[^}]*\})/i,          // Alternative structure marker
+      /(\{[^}]*"patternDescription"[^}]*\})/i,       // Another structure marker
+    ];
+    
+    for (const pattern of jsonFindingPatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        console.log(`[OpenRouter] Found JSON structure using pattern: ${pattern}`);
+        // Try to extend the match to get the complete object
+        const fullMatch = this.extractCompleteJSONObject(text, match.index || 0);
+        if (fullMatch) {
+          return fullMatch;
+        }
+        return match[1].trim();
+      }
+    }
+    
+    // Strategy 4: Brute force - find any JSON-like structure
+    const braceStart = text.indexOf('{');
+    if (braceStart !== -1) {
+      console.log(`[OpenRouter] Attempting brute force JSON extraction from position ${braceStart}`);
+      const extracted = this.extractCompleteJSONObject(text, braceStart);
+      if (extracted) {
+        return extracted;
+      }
+    }
+    
+    console.log(`[OpenRouter] No JSON structure found in response`);
+    return null;
+  }
+
+  /**
+   * Extracts a complete JSON object starting from a given position
+   */
+  private extractCompleteJSONObject(text: string, startPos: number): string | null {
+    let braceCount = 0;
+    let inString = false;
+    let escaped = false;
+    let endPos = startPos;
+    
+    for (let i = startPos; i < text.length; i++) {
+      const char = text[i];
+      
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      
+      if (char === '\\') {
+        escaped = true;
+        continue;
+      }
+      
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      
+      if (!inString) {
+        if (char === '{') {
+          braceCount++;
+        } else if (char === '}') {
+          braceCount--;
+          if (braceCount === 0) {
+            endPos = i;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (braceCount === 0 && endPos > startPos) {
+      const extracted = text.substring(startPos, endPos + 1);
+      console.log(`[OpenRouter] Extracted complete JSON object: ${extracted.length} characters`);
+      return extracted;
     }
     
     return null;
@@ -110,13 +234,23 @@ export class OpenRouterService {
     const truncatedResponse = originalResponse.substring(0, 500);
     const errorMsg = error instanceof Error ? error.message : String(error);
     
+    // Extract any partial content from the response for pattern description
+    let partialPattern = "";
+    const responsePreview = originalResponse.substring(0, 1000);
+    
+    // Look for partial pattern insights in the response
+    if (responsePreview.includes("pattern") || responsePreview.includes("structure") || responsePreview.includes("rule")) {
+      partialPattern = " The model appeared to be analyzing patterns or structures in the puzzle but the response was cut off or malformed.";
+    }
+    
     return {
-      patternDescription: `Model ${modelName} response parsing failed. The model provided a response but it contained formatting issues or non-standard characters that prevented JSON parsing. Original error: ${errorMsg}.`,
-      solvingStrategy: `Unable to extract structured strategy from ${modelName} due to response format issues. The model may have provided insights in natural language that couldn't be parsed into the expected JSON structure.`,
+      patternDescription: `JSON parsing failed for ${modelName} response. The model generated a ${originalResponse.length}-character response but it contained formatting issues (${errorMsg}).${partialPattern} This appears to be a model output formatting issue rather than a puzzle analysis failure. The response may have contained valid insights wrapped in markdown code blocks or other formatting that couldn't be automatically parsed.`,
+      solvingStrategy: `Unable to extract structured solving strategy from ${modelName} due to response parsing failure. The original response was ${originalResponse.length} characters long and may have contained useful problem-solving insights, but the JSON structure was malformed or wrapped in unsupported formatting. Consider trying the analysis again or using a different model that provides more consistent JSON formatting.`,
       hints: [
-        "Try using a different model that supports structured output better",
-        "Check if the model requires specific prompt formatting",
-        "Consider using OpenAI or Anthropic models for more reliable JSON responses"
+        `The ${modelName} model generated a lengthy response (${originalResponse.length} chars) suggesting it attempted analysis`,
+        "Try re-running the analysis - this may be a temporary formatting issue",
+        "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
+        "Check the raw response in the logs for any extractable insights"
       ],
       confidence: 0,
       multiplePredictedOutputs: false,
@@ -124,7 +258,9 @@ export class OpenRouterService {
       rawResponse: truncatedResponse,
       parsingError: errorMsg,
       modelUsed: modelName,
-      recoveryMethod: "validation-compliant-fallback"
+      recoveryMethod: "validation-compliant-fallback",
+      responseLength: originalResponse.length,
+      parsingAttempted: true
     };
   }
 
@@ -235,17 +371,26 @@ export class OpenRouterService {
       let result;
       try {
         result = JSON.parse(responseText);
-        console.log(`[OpenRouter] Successfully parsed structured JSON response`);
+        console.log(`[OpenRouter] ✅ Successfully parsed structured JSON response directly`);
       } catch (parseError) {
-        console.error(`[OpenRouter] JSON parse failed, attempting recovery:`, {
+        console.error(`[OpenRouter] ❌ Initial JSON parse failed, attempting recovery:`, {
           model: openRouterModelName,
           responseLength: responseText.length,
-          responseSample: responseText.substring(0, 200),
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          responseSample: responseText.substring(0, 300),
+          parseError: parseError instanceof Error ? parseError.message : String(parseError),
+          startsWithCodeBlock: responseText.trimStart().startsWith('```'),
+          startsWithBacktick: responseText.trimStart().startsWith('`'),
+          containsJSON: responseText.includes('multiplePredictedOutputs') || responseText.includes('predictedOutput'),
+          hasOpenBrace: responseText.includes('{'),
+          hasCloseBrace: responseText.includes('}')
         });
         
-        // Progressive recovery strategies
+        // Progressive recovery strategies with detailed logging
         result = this.attemptResponseRecovery(responseText, openRouterModelName, parseError);
+        
+        if (result && result.recoveryMethod) {
+          console.log(`[OpenRouter] ✅ Recovery successful using method: ${result.recoveryMethod}`);
+        }
       }
 
       // Normalize result to ensure type consistency
