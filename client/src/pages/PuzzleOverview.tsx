@@ -348,6 +348,7 @@ export default function PuzzleOverview() {
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
           modelRankings={modelRankings}
+          totalPuzzles={data?.total || 0}
           onViewAllFeedback={() => {
             setSelectedPuzzleId('');
             setFeedbackModalOpen(true);

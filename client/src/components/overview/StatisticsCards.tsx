@@ -45,6 +45,7 @@ interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
   modelRankings: ModelRanking[];
+  totalPuzzles: number;
   onViewAllFeedback: () => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
@@ -61,6 +62,7 @@ export function StatisticsCards({
   feedbackStats,
   accuracyStats,
   modelRankings,
+  totalPuzzles,
   onViewAllFeedback,
   statsLoading,
   accuracyLoading,
@@ -201,7 +203,7 @@ export function StatisticsCards({
                 <div className="grid grid-cols-2 gap-2">
                   <div className="text-center p-2 bg-indigo-50 rounded">
                     <div className="text-lg font-bold text-indigo-700">
-                      {feedbackStats?.totalFeedback ? Math.round((feedbackStats.totalFeedback / 2000) * 100) : '~15'}%
+                      {feedbackStats?.totalFeedback && totalPuzzles ? Math.round((feedbackStats.totalFeedback / totalPuzzles) * 100) : '0'}%
                     </div>
                     <div className="text-xs text-indigo-600">Analyzed</div>
                   </div>
@@ -220,7 +222,7 @@ export function StatisticsCards({
               <div className="pt-2 border-t">
                 <div className="text-center">
                   <div className="text-xs text-gray-600 mb-1">Total Database</div>
-                  <div className="text-lg font-bold text-gray-700">~2000 Puzzles</div>
+                  <div className="text-lg font-bold text-gray-700">{totalPuzzles.toLocaleString()} Puzzles</div>
                 </div>
               </div>
             </div>
