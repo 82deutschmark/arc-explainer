@@ -259,7 +259,7 @@ class SaturnVisualService {
               }
 
               // Prepare the explanation object for DB persistence
-              const reasoningLog: string | null = (evt as any).result?.reasoningLog ?? null;
+              const reasoningItems: any[] | null = (evt as any).result?.reasoningLog ?? null;
               const saturnLog: string | null = (evt as any).saturnLog ?? null;
               // Attach optional event trace if provided by pythonBridge, store as TEXT
               const saturnEventsText: string | null = (evt as any).eventTrace
@@ -279,8 +279,9 @@ class SaturnVisualService {
                 confidence: normalizedConfidence,
                 alienMeaningConfidence: undefined,
                 modelName: `Saturn Visual Solver (${options.model})`,
-                reasoningLog,
-                hasReasoningLog: !!reasoningLog,
+                reasoningItems,
+                reasoningLog: null, // Deprecated
+                hasReasoningLog: !!reasoningItems,
                 apiProcessingTimeMs: (evt as any).timingMs,
                 saturnImages: Array.from(new Set(imagePaths)),
                 saturnLog,
