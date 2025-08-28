@@ -442,8 +442,8 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 32768
   },
   {
-    key: 'microsoft/phi-4-reasoning-plus',
-    name: 'Microsoft Phi-4 Reasoning Plus',
+    key: 'nousresearch/hermes-4-70b',
+    name: 'NousResearch Hermes 4 70B',
     color: 'bg-blue-600',
     premium: false,
     cost: { input: '$0.07', output: '$0.35' },
@@ -451,7 +451,7 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: true,
-    apiModelName: 'microsoft/phi-4-reasoning-plus',
+    apiModelName: 'nousresearch/hermes-4-70b',
     modelType: 'openrouter',
     maxOutputTokens: 32768,
     contextWindow: 32768

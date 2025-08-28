@@ -29,7 +29,9 @@
       "Bash(gh pr create:*)",
       "Bash(git log:*)",
       "Bash(timeout:*)",
-      "WebFetch(domain:openrouter.ai)"
+      "WebFetch(domain:openrouter.ai)",
+      "Bash(psql:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": [],

@@ -1763,13 +1763,13 @@
     ]
   },
   "explanations": {
-    "gemini-2.5-pro": {
-      "modelKey": "gemini-2.5-pro",
-      "actualProcessingTime": 239
+    "gpt-4o-mini": {
+      "modelKey": "gpt-4o-mini",
+      "actualProcessingTime": 17
     }
   },
-  "exportedAt": "2025-08-27T02:51:53.747Z",
+  "exportedAt": "2025-08-28T03:08:34.559Z",
   "models": [
-    "gemini-2.5-pro"
+    "gpt-4o-mini"
   ]
 }
