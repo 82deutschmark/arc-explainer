@@ -367,4 +367,296 @@ export class FeedbackRepository extends BaseRepository {
       throw error;
     }
   }
+
+  async getRawDatabaseStats(): Promise<{
+    totalExplanations: number;
+    avgProcessingTime: number;
+    maxProcessingTime: number;
+    avgPredictionAccuracy: number;
+    totalTokens: number;
+    avgTokens: number;
+    maxTokens: number;
+    totalEstimatedCost: number;
+    avgEstimatedCost: number;
+    maxEstimatedCost: number;
+    explanationsWithTokens: number;
+    explanationsWithCost: number;
+    explanationsWithAccuracy: number;
+    explanationsWithProcessingTime: number;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        totalExplanations: 0,
+        avgProcessingTime: 0,
+        maxProcessingTime: 0,
+        avgPredictionAccuracy: 0,
+        totalTokens: 0,
+        avgTokens: 0,
+        maxTokens: 0,
+        totalEstimatedCost: 0,
+        avgEstimatedCost: 0,
+        maxEstimatedCost: 0,
+        explanationsWithTokens: 0,
+        explanationsWithCost: 0,
+        explanationsWithAccuracy: 0,
+        explanationsWithProcessingTime: 0
+      };
+    }
+
+    try {
+      const stats = await this.query(`
+        SELECT 
+          COUNT(*) as total_explanations,
+          ROUND(AVG(api_processing_time_ms), 2) as avg_processing_time,
+          MAX(api_processing_time_ms) as max_processing_time,
+          ROUND(AVG(prediction_accuracy_score), 4) as avg_prediction_accuracy,
+          SUM(total_tokens) as total_tokens,
+          ROUND(AVG(total_tokens), 0) as avg_tokens,
+          MAX(total_tokens) as max_tokens,
+          ROUND(SUM(estimated_cost), 4) as total_estimated_cost,
+          ROUND(AVG(estimated_cost), 6) as avg_estimated_cost,
+          ROUND(MAX(estimated_cost), 6) as max_estimated_cost,
+          COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
+          COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
+          COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
+          COUNT(api_processing_time_ms) FILTER (WHERE api_processing_time_ms IS NOT NULL) as explanations_with_processing_time
+        FROM explanations
+      `);
+
+      const row = stats.rows[0];
+      return {
+        totalExplanations: parseInt(row.total_explanations) || 0,
+        avgProcessingTime: parseFloat(row.avg_processing_time) || 0,
+        maxProcessingTime: parseInt(row.max_processing_time) || 0,
+        avgPredictionAccuracy: parseFloat(row.avg_prediction_accuracy) || 0,
+        totalTokens: parseInt(row.total_tokens) || 0,
+        avgTokens: parseInt(row.avg_tokens) || 0,
+        maxTokens: parseInt(row.max_tokens) || 0,
+        totalEstimatedCost: parseFloat(row.total_estimated_cost) || 0,
+        avgEstimatedCost: parseFloat(row.avg_estimated_cost) || 0,
+        maxEstimatedCost: parseFloat(row.max_estimated_cost) || 0,
+        explanationsWithTokens: parseInt(row.explanations_with_tokens) || 0,
+        explanationsWithCost: parseInt(row.explanations_with_cost) || 0,
+        explanationsWithAccuracy: parseInt(row.explanations_with_accuracy) || 0,
+        explanationsWithProcessingTime: parseInt(row.explanations_with_processing_time) || 0
+      };
+    } catch (error) {
+      logger.error(`Error getting raw database stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  async getRealPerformanceStats(): Promise<{
+    trustworthinessLeaders: Array<{
+      modelName: string;
+      totalAttempts: number;
+      avgTrustworthiness: number;
+      avgConfidence: number;
+      calibrationError: number;
+      avgProcessingTime: number;
+      avgTokens: number;
+      avgCost: number;
+      totalCost: number;
+      costPerTrustworthiness: number;
+      tokensPerTrustworthiness: number;
+      trustworthinessRange: { min: number; max: number; };
+    }>;
+    speedLeaders: Array<{
+      modelName: string;
+      avgProcessingTime: number;
+      totalAttempts: number;
+      avgTrustworthiness: number;
+    }>;
+    calibrationLeaders: Array<{
+      modelName: string;
+      calibrationError: number;
+      totalAttempts: number;
+      avgTrustworthiness: number;
+      avgConfidence: number;
+    }>;
+    efficiencyLeaders: Array<{
+      modelName: string;
+      costEfficiency: number;
+      tokenEfficiency: number;
+      avgTrustworthiness: number;
+      totalAttempts: number;
+    }>;
+    totalTrustworthinessAttempts: number;
+    overallTrustworthiness: number;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        trustworthinessLeaders: [],
+        speedLeaders: [],
+        calibrationLeaders: [],
+        efficiencyLeaders: [],
+        totalTrustworthinessAttempts: 0,
+        overallTrustworthiness: 0
+      };
+    }
+
+    try {
+      // Get trustworthiness leaders using the existing prediction_accuracy_score field 
+      // (which already factors in both correctness and confidence)
+      const trustworthinessQuery = await this.query(`
+        SELECT 
+          e.model_name,
+          COUNT(*) as total_attempts,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          ROUND(AVG(e.confidence), 1) as avg_confidence,
+          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
+          ROUND(AVG(e.total_tokens), 0) as avg_tokens,
+          ROUND(AVG(e.estimated_cost), 6) as avg_cost,
+          ROUND(SUM(e.estimated_cost), 4) as total_cost,
+          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness,
+          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness,
+          ROUND(
+            CASE 
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN SUM(e.estimated_cost) / AVG(e.prediction_accuracy_score) / COUNT(*)
+              ELSE 0 
+            END, 6
+          ) as cost_per_trustworthiness,
+          ROUND(
+            CASE 
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN SUM(e.total_tokens) / AVG(e.prediction_accuracy_score) / COUNT(*)
+              ELSE 0 
+            END, 0
+          ) as tokens_per_trustworthiness,
+          ROUND(
+            ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2
+          ) as calibration_error
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 3
+        ORDER BY avg_trustworthiness DESC, total_attempts DESC
+      `);
+
+      // Get speed leaders (fastest processing times with decent trustworthiness)
+      const speedQuery = await this.query(`
+        SELECT 
+          e.model_name,
+          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
+          COUNT(*) as total_attempts,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.api_processing_time_ms IS NOT NULL
+          AND e.prediction_accuracy_score IS NOT NULL
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.3
+        ORDER BY avg_processing_time ASC
+        LIMIT 10
+      `);
+
+      // Get calibration leaders (best alignment between confidence and trustworthiness)
+      const calibrationQuery = await this.query(`
+        SELECT 
+          e.model_name,
+          ROUND(ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2) as calibration_error,
+          COUNT(*) as total_attempts,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          ROUND(AVG(e.confidence), 1) as avg_confidence
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 5
+        ORDER BY calibration_error ASC
+        LIMIT 10
+      `);
+
+      // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
+      const efficiencyQuery = await this.query(`
+        SELECT 
+          e.model_name,
+          ROUND(
+            CASE 
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
+              ELSE 999999 
+            END, 6
+          ) as cost_efficiency,
+          ROUND(
+            CASE 
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
+              ELSE 999999 
+            END, 0
+          ) as token_efficiency,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          COUNT(*) as total_attempts
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.estimated_cost IS NOT NULL
+          AND e.total_tokens IS NOT NULL
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.2
+        ORDER BY cost_efficiency ASC
+        LIMIT 10
+      `);
+
+      // Get overall trustworthiness stats
+      const overallQuery = await this.query(`
+        SELECT 
+          COUNT(*) as total_trustworthiness_attempts,
+          ROUND(AVG(prediction_accuracy_score), 4) as overall_trustworthiness
+        FROM explanations
+        WHERE prediction_accuracy_score IS NOT NULL
+      `);
+
+      const overallStats = overallQuery.rows[0];
+
+      return {
+        trustworthinessLeaders: trustworthinessQuery.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
+          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          calibrationError: parseFloat(row.calibration_error) || 0,
+          avgProcessingTime: parseInt(row.avg_processing_time) || 0,
+          avgTokens: parseInt(row.avg_tokens) || 0,
+          avgCost: parseFloat(row.avg_cost) || 0,
+          totalCost: parseFloat(row.total_cost) || 0,
+          costPerTrustworthiness: parseFloat(row.cost_per_trustworthiness) || 0,
+          tokensPerTrustworthiness: parseInt(row.tokens_per_trustworthiness) || 0,
+          trustworthinessRange: { 
+            min: parseFloat(row.min_trustworthiness) || 0, 
+            max: parseFloat(row.max_trustworthiness) || 0 
+          }
+        })),
+        speedLeaders: speedQuery.rows.map(row => ({
+          modelName: row.model_name,
+          avgProcessingTime: parseInt(row.avg_processing_time) || 0,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0
+        })),
+        calibrationLeaders: calibrationQuery.rows.map(row => ({
+          modelName: row.model_name,
+          calibrationError: parseFloat(row.calibration_error) || 0,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
+          avgConfidence: parseFloat(row.avg_confidence) || 0
+        })),
+        efficiencyLeaders: efficiencyQuery.rows.map(row => ({
+          modelName: row.model_name,
+          costEfficiency: parseFloat(row.cost_efficiency) || 0,
+          tokenEfficiency: parseInt(row.token_efficiency) || 0,
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
+          totalAttempts: parseInt(row.total_attempts) || 0
+        })),
+        totalTrustworthinessAttempts: parseInt(overallStats.total_trustworthiness_attempts) || 0,
+        overallTrustworthiness: parseFloat(overallStats.overall_trustworthiness) || 0
+      };
+    } catch (error) {
+      logger.error(`Error getting real performance stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
 }

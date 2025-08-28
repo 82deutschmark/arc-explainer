@@ -244,4 +244,4 @@ export class DeepSeekService extends BaseAIService {
   }
 }
 
-export const deepSeekService = new DeepSeekService();
+export const deepseekService = new DeepSeekService();
