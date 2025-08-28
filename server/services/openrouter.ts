@@ -110,18 +110,18 @@ export class OpenRouterService {
       .replace(/^\\+`\s*/, '').replace(/\s*\\+`$/, '')
       .replace(/^`\s*/, '').replace(/\s*`$/, '');
     
-    // Normalize common newline sequence variations before JSON parsing
+    // Fix escape sequences BEFORE converting to newlines to prevent corruption
+    // Handle unescaped newlines within JSON string values first
+    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
+    
+    // Now handle literal escape sequences that should be actual newlines
     sanitized = sanitized
-      // Convert literal \n sequences to actual newlines
+      // Convert literal \n sequences to actual newlines (but only outside JSON strings)
       .replace(/\\n/g, '\n')
-      // Convert literal /n sequences (common typo) to actual newlines
+      // Convert literal /n sequences (common typo) to actual newlines  
       .replace(/\/n/g, '\n')
       // Convert \\n (double escaped) to actual newlines
       .replace(/\\\\n/g, '\n');
-    
-    // Process JSON string escaping for newlines
-    // Find JSON string values and properly escape any newlines within them
-    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
     
     return sanitized
       // Remove non-printable control characters except newlines and tabs
