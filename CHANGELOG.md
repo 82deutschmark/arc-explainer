@@ -1,5 +1,13 @@
 ###   August 28 2025
 
+## v2.5.3 - Microsoft Phi-4 Reasoning Plus Model Update
+- **UPDATED MODEL**: Corrected Microsoft Phi model to use latest version
+  - **Microsoft Phi-4 Reasoning Plus**: 14B parameter reasoning model with step-by-step traces ($0.07/$0.35, 32K context)
+  - Enhanced reasoning capabilities for math, science, and code tasks
+  - Supports structured reasoning workflow with <think> tokens
+  - Added to both server and client configurations for consistency
+- Author: Claude Sonnet 4
+
 ## v2.5.2 - OpenRouter Model Expansion
 - **NEW MODELS**: Added 10 new OpenRouter models for enhanced AI analysis capabilities
   - **xAI Grok Code Fast 1**: Fast coding model optimized for agentic tasks ($0.20/$1.50, 256K context)

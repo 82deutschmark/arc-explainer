@@ -342,15 +342,15 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false
   },
   {
-    key: 'microsoft/phi-3.5-mini-instruct',
-    name: 'Phi 3.5 Mini Instruct',
+    key: 'microsoft/phi-4-reasoning-plus',
+    name: 'Microsoft Phi-4 Reasoning Plus',
     color: 'bg-blue-600',
     premium: false,
-    cost: { input: '$0.10', output: '$0.10' },
+    cost: { input: '$0.07', output: '$0.35' },
     supportsTemperature: true,
     provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true
   },
   {
     key: 'mistralai/mistral-large',
