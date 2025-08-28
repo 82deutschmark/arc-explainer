@@ -62,7 +62,7 @@ interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
   modelRankings: ModelRanking[];
-  totalPuzzles: number;
+  totalPuzzles?: number;
   datasetDistribution?: Record<string, number>;
   onViewAllFeedback: () => void;
   statsLoading: boolean;
@@ -278,7 +278,7 @@ export function StatisticsCards({
                 {/* Main Stats */}
                 <div className="text-center">
                   <div className="text-3xl font-bold text-indigo-600">
-                    {totalPuzzles.toLocaleString()}
+                    {totalPuzzles?.toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-600">Total Puzzles</div>
                 </div>
