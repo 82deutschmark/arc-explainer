@@ -165,30 +165,49 @@ export class GrokService extends BaseAIService {
    * @param markdown The markdown string to parse.
    * @returns The parsed JSON object or null if not found.
    */
-  private extractJSONFromMarkdown(markdown: string): any {
-    const codeBlockRegex = /```json\n([\s\S]*?)\n```/;
-    const match = markdown.match(codeBlockRegex);
-
-    if (match && match[1]) {
-      try {
-        return JSON.parse(match[1]);
-      } catch (e) {
-        console.error("[Grok] Failed to parse JSON from code block", e);
+  private extractCompleteJSONObject(text: string, startPos: number): string | null {
+    let braceCount = 0;
+    let inString = false;
+    let escaped = false;
+    let endPos = startPos;
+    
+    for (let i = startPos; i < text.length; i++) {
+      const char = text[i];
+      
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      
+      if (char === '\\') {
+        escaped = true;
+        continue;
+      }
+      
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      
+      if (!inString) {
+        if (char === '{') {
+          braceCount++;
+        } else if (char === '}') {
+          braceCount--;
+          if (braceCount === 0) {
+            endPos = i;
+            break;
+          }
+        }
       }
     }
-
-    // Fallback to finding the first '{' and last '}'
-    const firstBrace = markdown.indexOf('{');
-    const lastBrace = markdown.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace > firstBrace) {
-      const potentialJson = markdown.substring(firstBrace, lastBrace + 1);
-      try {
-        return JSON.parse(potentialJson);
-      } catch (e) {
-        console.error("[Grok] Failed to parse JSON from fallback method", e);
-      }
+    
+    if (braceCount === 0 && endPos > startPos) {
+      const extracted = text.substring(startPos, endPos + 1);
+      console.log(`[Grok] Extracted complete JSON object: ${extracted.length} characters`);
+      return extracted;
     }
-
+    
     return null;
   }
 
@@ -198,7 +217,30 @@ export class GrokService extends BaseAIService {
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
     const content = response.choices[0]?.message?.content || '';
-    const result = this.extractJSONFromMarkdown(content);
+    let result: any;
+
+    try {
+      // First, try to parse the whole content as JSON
+      result = JSON.parse(content);
+    } catch {
+      // If that fails, find the start of a JSON object and extract it
+      const braceStart = content.indexOf('{');
+      if (braceStart !== -1) {
+        const extractedString = this.extractCompleteJSONObject(content, braceStart);
+        if (extractedString) {
+          try {
+            result = JSON.parse(extractedString);
+          } catch (e) {
+            console.error("[Grok] Failed to parse extracted JSON string.", e);
+            result = null;
+          }
+        } else {
+          result = null;
+        }
+      } else {
+        result = null;
+      }
+    }
 
     if (!result) {
       throw new Error("Failed to extract valid JSON from Grok response");
