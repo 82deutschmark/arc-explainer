@@ -1,5 +1,17 @@
 ###   August 28 2025
 
+## v2.5.6 - Enhanced OpenRouter JSON Parsing & Error Recovery
+- **FIX**: Resolved JSON parsing failures for OpenRouter models wrapped in markdown code blocks
+- **Enhanced JSON Recovery**: Multi-strategy parsing system for malformed responses
+  - Strategy 1: Automatic markdown code block removal (```json wrappers)
+  - Strategy 2: Advanced pattern extraction with brace counting
+  - Strategy 3: Combined sanitization and extraction approaches
+  - Strategy 4: Validation-compliant fallback responses
+- **Improved Error Handling**: Better debugging info and recovery logging with emojis for status tracking
+- **Validation Compliance**: Fallback responses now meet minimum character requirements for patternDescription
+- **Robust Response Processing**: Handles truncated, malformed, or markdown-wrapped AI responses
+- Author: Claude Sonnet 4
+
 ## v2.5.5 - Additional DeepSeek OpenRouter Models
 - **NEW MODELS**: Added 2 new DeepSeek models via OpenRouter
   - **DeepSeek Prover v2**: Mathematical reasoning and proof generation model ($0.30/$1.20, 65K context)
