@@ -441,6 +441,21 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     maxOutputTokens: 32768
   },
+  {
+    key: 'microsoft/phi-4-reasoning-plus',
+    name: 'Microsoft Phi-4 Reasoning Plus',
+    color: 'bg-blue-600',
+    premium: false,
+    cost: { input: '$0.07', output: '$0.35' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    supportsReasoning: true,
+    apiModelName: 'microsoft/phi-4-reasoning-plus',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768,
+    contextWindow: 32768
+  },
   
   {
     key: 'mistralai/mistral-large',
