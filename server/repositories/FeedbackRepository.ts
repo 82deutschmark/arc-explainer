@@ -332,6 +332,21 @@ export class FeedbackRepository extends BaseRepository {
       return {
         totalExplanations: parseInt(stats.total_explanations) || 0,
         avgConfidence: parseFloat(stats.avg_confidence) || 0,
+        totalSolverAttempts: parseInt(stats.total_explanations) || 0,
+        accuracyByModel: modelAccuracy.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_explanations),
+          totalExplanations: parseInt(row.total_explanations),
+          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          feedbackCount: parseInt(row.feedback_count) || 0,
+          helpfulCount: parseInt(row.helpful_count) || 0,
+          userSatisfactionRate: parseFloat(row.user_satisfaction_rate) || 0,
+          correctPredictions: parseInt(row.helpful_count) || 0,
+          accuracyPercentage: parseFloat(row.user_satisfaction_rate) || 0,
+          avgAccuracyScore: parseFloat(row.user_satisfaction_rate) / 100 || 0,
+          successfulExtractions: parseInt(row.helpful_count) || 0,
+          extractionSuccessRate: parseFloat(row.user_satisfaction_rate) || 0
+        })),
         modelAccuracy: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
           totalExplanations: parseInt(row.total_explanations),

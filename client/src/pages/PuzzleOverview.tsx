@@ -199,6 +199,25 @@ export default function PuzzleOverview() {
     },
   });
 
+  // Fetch dataset distribution counts
+  const { data: datasetDistribution } = useQuery({
+    queryKey: ['datasetDistribution'],
+    queryFn: async () => {
+      const sources = ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'];
+      const counts = await Promise.all(
+        sources.map(async (source) => {
+          const response = await apiRequest('GET', `/api/puzzle/overview?limit=1&source=${source}`);
+          const json = await response.json();
+          return { source, count: json.data.total || 0 };
+        })
+      );
+      return counts.reduce((acc, { source, count }) => {
+        acc[source] = count;
+        return acc;
+      }, {} as Record<string, number>);
+    },
+  });
+
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
     refetch();
@@ -348,6 +367,8 @@ export default function PuzzleOverview() {
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
           modelRankings={modelRankings}
+          totalPuzzles={data?.total || 0}
+          datasetDistribution={datasetDistribution}
           onViewAllFeedback={() => {
             setSelectedPuzzleId('');
             setFeedbackModalOpen(true);
