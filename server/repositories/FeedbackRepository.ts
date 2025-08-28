@@ -367,4 +367,82 @@ export class FeedbackRepository extends BaseRepository {
       throw error;
     }
   }
+
+  async getRawDatabaseStats(): Promise<{
+    totalExplanations: number;
+    avgProcessingTime: number;
+    maxProcessingTime: number;
+    avgPredictionAccuracy: number;
+    totalTokens: number;
+    avgTokens: number;
+    maxTokens: number;
+    totalEstimatedCost: number;
+    avgEstimatedCost: number;
+    maxEstimatedCost: number;
+    explanationsWithTokens: number;
+    explanationsWithCost: number;
+    explanationsWithAccuracy: number;
+    explanationsWithProcessingTime: number;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        totalExplanations: 0,
+        avgProcessingTime: 0,
+        maxProcessingTime: 0,
+        avgPredictionAccuracy: 0,
+        totalTokens: 0,
+        avgTokens: 0,
+        maxTokens: 0,
+        totalEstimatedCost: 0,
+        avgEstimatedCost: 0,
+        maxEstimatedCost: 0,
+        explanationsWithTokens: 0,
+        explanationsWithCost: 0,
+        explanationsWithAccuracy: 0,
+        explanationsWithProcessingTime: 0
+      };
+    }
+
+    try {
+      const stats = await this.query(`
+        SELECT 
+          COUNT(*) as total_explanations,
+          ROUND(AVG(api_processing_time_ms), 2) as avg_processing_time,
+          MAX(api_processing_time_ms) as max_processing_time,
+          ROUND(AVG(prediction_accuracy_score), 4) as avg_prediction_accuracy,
+          SUM(total_tokens) as total_tokens,
+          ROUND(AVG(total_tokens), 0) as avg_tokens,
+          MAX(total_tokens) as max_tokens,
+          ROUND(SUM(estimated_cost), 4) as total_estimated_cost,
+          ROUND(AVG(estimated_cost), 6) as avg_estimated_cost,
+          ROUND(MAX(estimated_cost), 6) as max_estimated_cost,
+          COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
+          COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
+          COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
+          COUNT(api_processing_time_ms) FILTER (WHERE api_processing_time_ms IS NOT NULL) as explanations_with_processing_time
+        FROM explanations
+      `);
+
+      const row = stats.rows[0];
+      return {
+        totalExplanations: parseInt(row.total_explanations) || 0,
+        avgProcessingTime: parseFloat(row.avg_processing_time) || 0,
+        maxProcessingTime: parseInt(row.max_processing_time) || 0,
+        avgPredictionAccuracy: parseFloat(row.avg_prediction_accuracy) || 0,
+        totalTokens: parseInt(row.total_tokens) || 0,
+        avgTokens: parseInt(row.avg_tokens) || 0,
+        maxTokens: parseInt(row.max_tokens) || 0,
+        totalEstimatedCost: parseFloat(row.total_estimated_cost) || 0,
+        avgEstimatedCost: parseFloat(row.avg_estimated_cost) || 0,
+        maxEstimatedCost: parseFloat(row.max_estimated_cost) || 0,
+        explanationsWithTokens: parseInt(row.explanations_with_tokens) || 0,
+        explanationsWithCost: parseInt(row.explanations_with_cost) || 0,
+        explanationsWithAccuracy: parseInt(row.explanations_with_accuracy) || 0,
+        explanationsWithProcessingTime: parseInt(row.explanations_with_processing_time) || 0
+      };
+    } catch (error) {
+      logger.error(`Error getting raw database stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
 }

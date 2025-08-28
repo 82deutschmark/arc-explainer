@@ -42,6 +42,9 @@ interface PuzzleOverviewData {
     predictionAccuracyScore?: number;
     multiTestAllCorrect?: boolean;
     multiTestAverageAccuracy?: number;
+    // Database fields for filtering and display
+    totalTokens?: number;
+    estimatedCost?: number;
   }>;
   totalExplanations: number;
   latestExplanation?: any;
@@ -92,6 +95,12 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
+  const [totalTokensMin, setTotalTokensMin] = useState<string>(urlParams.get('totalTokensMin') || '');
+  const [totalTokensMax, setTotalTokensMax] = useState<string>(urlParams.get('totalTokensMax') || '');
+  const [estimatedCostMin, setEstimatedCostMin] = useState<string>(urlParams.get('estimatedCostMin') || '');
+  const [estimatedCostMax, setEstimatedCostMax] = useState<string>(urlParams.get('estimatedCostMax') || '');
+  const [predictionAccuracyMin, setPredictionAccuracyMin] = useState<string>(urlParams.get('predictionAccuracyMin') || '');
+  const [predictionAccuracyMax, setPredictionAccuracyMax] = useState<string>(urlParams.get('predictionAccuracyMax') || '');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
   const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
@@ -125,6 +134,12 @@ export default function PuzzleOverview() {
     if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    if (totalTokensMin) params.set('totalTokensMin', totalTokensMin);
+    if (totalTokensMax) params.set('totalTokensMax', totalTokensMax);
+    if (estimatedCostMin) params.set('estimatedCostMin', estimatedCostMin);
+    if (estimatedCostMax) params.set('estimatedCostMax', estimatedCostMax);
+    if (predictionAccuracyMin) params.set('predictionAccuracyMin', predictionAccuracyMin);
+    if (predictionAccuracyMax) params.set('predictionAccuracyMax', predictionAccuracyMax);
     if (sortBy !== 'createdAt') params.set('sortBy', sortBy);
     if (sortOrder !== 'desc') params.set('sortOrder', sortOrder);
     if (currentPage !== 1) params.set('page', currentPage.toString());
@@ -133,7 +148,7 @@ export default function PuzzleOverview() {
     if (newUrl !== location) {
       setLocation(newUrl);
     }
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax, predictionAccuracyMin, predictionAccuracyMax, sortBy, sortOrder, currentPage, location, setLocation]);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -161,6 +176,12 @@ export default function PuzzleOverview() {
     if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    if (totalTokensMin) params.set('totalTokensMin', totalTokensMin);
+    if (totalTokensMax) params.set('totalTokensMax', totalTokensMax);
+    if (estimatedCostMin) params.set('estimatedCostMin', estimatedCostMin);
+    if (estimatedCostMax) params.set('estimatedCostMax', estimatedCostMax);
+    if (predictionAccuracyMin) params.set('predictionAccuracyMin', predictionAccuracyMin);
+    if (predictionAccuracyMax) params.set('predictionAccuracyMax', predictionAccuracyMax);
     if (sortBy) params.set('sortBy', sortBy);
     if (sortOrder) params.set('sortOrder', sortOrder);
     
@@ -168,7 +189,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax, predictionAccuracyMin, predictionAccuracyMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -196,6 +217,16 @@ export default function PuzzleOverview() {
     queryKey: ['accuracyStats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Fetch raw database statistics
+  const { data: rawStats, isLoading: rawStatsLoading } = useQuery({
+    queryKey: ['rawStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzle/raw-stats');
       const json = await response.json();
       return json.data;
     },
@@ -386,6 +417,7 @@ export default function PuzzleOverview() {
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
+          rawStats={rawStats}
           modelRankings={modelRankings}
           totalPuzzles={data?.total || 0}
           datasetDistribution={datasetDistribution}
@@ -395,6 +427,7 @@ export default function PuzzleOverview() {
           }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
+          rawStatsLoading={rawStatsLoading}
           recentActivity={recentActivity}
         />
 
@@ -433,6 +466,18 @@ export default function PuzzleOverview() {
           setConfidenceMin={setConfidenceMin}
           confidenceMax={confidenceMax}
           setConfidenceMax={setConfidenceMax}
+          totalTokensMin={totalTokensMin}
+          setTotalTokensMin={setTotalTokensMin}
+          totalTokensMax={totalTokensMax}
+          setTotalTokensMax={setTotalTokensMax}
+          estimatedCostMin={estimatedCostMin}
+          setEstimatedCostMin={setEstimatedCostMin}
+          estimatedCostMax={estimatedCostMax}
+          setEstimatedCostMax={setEstimatedCostMax}
+          predictionAccuracyMin={predictionAccuracyMin}
+          setPredictionAccuracyMin={setPredictionAccuracyMin}
+          predictionAccuracyMax={predictionAccuracyMax}
+          setPredictionAccuracyMax={setPredictionAccuracyMax}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSearch={handleSearch}

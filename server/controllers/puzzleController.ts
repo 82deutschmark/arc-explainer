@@ -297,7 +297,9 @@ export const puzzleController = {
   applyExplanationFilters(explanations: any[], filters: any) {
     const {
       modelName, saturnFilter, confidenceMin, confidenceMax,
-      processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+      processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
+      totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
+      predictionAccuracyMin, predictionAccuracyMax
     } = filters;
     
     let filtered = explanations;
@@ -334,6 +336,36 @@ export const puzzleController = {
         const processingTime = exp.apiProcessingTimeMs || 0;
         if (processingTimeMin && processingTime < parseInt(processingTimeMin)) return false;
         if (processingTimeMax && processingTime > parseInt(processingTimeMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by total tokens
+    if (totalTokensMin || totalTokensMax) {
+      filtered = filtered.filter(exp => {
+        const totalTokens = exp.totalTokens || 0;
+        if (totalTokensMin && totalTokens < parseInt(totalTokensMin)) return false;
+        if (totalTokensMax && totalTokens > parseInt(totalTokensMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by estimated cost
+    if (estimatedCostMin || estimatedCostMax) {
+      filtered = filtered.filter(exp => {
+        const estimatedCost = exp.estimatedCost || 0;
+        if (estimatedCostMin && estimatedCost < parseFloat(estimatedCostMin)) return false;
+        if (estimatedCostMax && estimatedCost > parseFloat(estimatedCostMax)) return false;
+        return true;
+      });
+    }
+    
+    // Filter by prediction accuracy score
+    if (predictionAccuracyMin || predictionAccuracyMax) {
+      filtered = filtered.filter(exp => {
+        const accuracyScore = exp.predictionAccuracyScore || 0;
+        if (predictionAccuracyMin && accuracyScore < parseFloat(predictionAccuracyMin)) return false;
+        if (predictionAccuracyMax && accuracyScore > parseFloat(predictionAccuracyMax)) return false;
         return true;
       });
     }
@@ -419,7 +451,9 @@ export const puzzleController = {
         search, hasExplanation, hasFeedback, modelName, saturnFilter,
         processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
         confidenceMin, confidenceMax, limit = 50, offset = 0,
-        sortBy = 'createdAt', sortOrder = 'desc'
+        sortBy = 'createdAt', sortOrder = 'desc',
+        totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
+        predictionAccuracyMin, predictionAccuracyMax
       } = req.query;
 
       logger.debug('Puzzle overview request with filters: ' + JSON.stringify(req.query), 'puzzle-controller');
@@ -490,7 +524,9 @@ export const puzzleController = {
       // Now only fetch detailed explanation data for the paginated puzzles
       const explanationFilters = {
         modelName, saturnFilter, confidenceMin, confidenceMax,
-        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy
+        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
+        totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
+        predictionAccuracyMin, predictionAccuracyMax
       };
 
       // Process detailed explanation data only for paginated results
@@ -548,6 +584,22 @@ export const puzzleController = {
     } catch (error) {
       logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
+    }
+  },
+
+  /**
+   * Get raw database statistics
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getRawStats(req: Request, res: Response) {
+    try {
+      const rawStats = await repositoryService.feedback.getRawDatabaseStats();
+      res.json(formatResponse.success(rawStats));
+    } catch (error) {
+      logger.error('Error fetching raw stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch raw stats', 'An error occurred while fetching raw database statistics'));
     }
   }
 };

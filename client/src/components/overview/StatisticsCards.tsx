@@ -58,15 +58,34 @@ interface ModelRanking {
   provider: string;
 }
 
+interface RawStats {
+  totalExplanations: number;
+  avgProcessingTime: number;
+  maxProcessingTime: number;
+  avgPredictionAccuracy: number;
+  totalTokens: number;
+  avgTokens: number;
+  maxTokens: number;
+  totalEstimatedCost: number;
+  avgEstimatedCost: number;
+  maxEstimatedCost: number;
+  explanationsWithTokens: number;
+  explanationsWithCost: number;
+  explanationsWithAccuracy: number;
+  explanationsWithProcessingTime: number;
+}
+
 interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
+  rawStats?: RawStats;
   modelRankings: ModelRanking[];
   totalPuzzles?: number;
   datasetDistribution?: Record<string, number>;
   onViewAllFeedback: () => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
+  rawStatsLoading?: boolean;
   recentActivity?: Array<{
     id: string;
     type: 'explanation' | 'feedback';
@@ -79,15 +98,17 @@ interface StatisticsCardsProps {
 export function StatisticsCards({
   feedbackStats,
   accuracyStats,
+  rawStats,
   modelRankings,
   totalPuzzles,
   datasetDistribution,
   onViewAllFeedback,
   statsLoading,
   accuracyLoading,
+  rawStatsLoading,
   recentActivity = []
 }: StatisticsCardsProps) {
-  if (statsLoading) {
+  if (statsLoading || rawStatsLoading) {
     return (
       <div className="space-y-6">
         {/* Loading state for tabbed layout */}
@@ -113,7 +134,7 @@ export function StatisticsCards({
 
   return (
     <Tabs defaultValue="performance" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 mb-6">
+      <TabsList className="grid w-full grid-cols-4 mb-6">
         <TabsTrigger value="performance" className="flex items-center gap-2">
           <Award className="h-4 w-4" />
           Performance
@@ -121,6 +142,10 @@ export function StatisticsCards({
         <TabsTrigger value="database" className="flex items-center gap-2">
           <Database className="h-4 w-4" />
           Database
+        </TabsTrigger>
+        <TabsTrigger value="raw-stats" className="flex items-center gap-2">
+          <BarChart3 className="h-4 w-4" />
+          Raw Stats
         </TabsTrigger>
         <TabsTrigger value="activity" className="flex items-center gap-2">
           <Activity className="h-4 w-4" />
@@ -359,6 +384,133 @@ export function StatisticsCards({
                   {accuracyStats?.accuracyByModel?.length || 0}
                 </div>
                 <div className="text-sm text-gray-600">AI Models</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Raw Stats Tab */}
+      <TabsContent value="raw-stats" className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Processing Time Stats */}
+          <Card className="md:col-span-1 xl:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="h-5 w-5 text-purple-500" />
+                Processing Time
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <div className="text-xl font-bold text-purple-700">
+                    {rawStats?.avgProcessingTime ? `${rawStats.avgProcessingTime.toFixed(0)}ms` : 'N/A'}
+                  </div>
+                  <div className="text-xs text-purple-600">Average</div>
+                </div>
+                <div className="text-center p-3 bg-indigo-50 rounded-lg">
+                  <div className="text-xl font-bold text-indigo-700">
+                    {rawStats?.maxProcessingTime ? `${rawStats.maxProcessingTime.toLocaleString()}ms` : 'N/A'}
+                  </div>
+                  <div className="text-xs text-indigo-600">Maximum</div>
+                </div>
+                <div className="text-xs text-gray-500 text-center">
+                  {rawStats?.explanationsWithProcessingTime || 0} explanations have processing time data
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Token Stats */}
+          <Card className="md:col-span-1 xl:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="h-5 w-5 text-green-500" />
+                Token Usage
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <div className="text-xl font-bold text-green-700">
+                    {rawStats?.totalTokens ? rawStats.totalTokens.toLocaleString() : 'N/A'}
+                  </div>
+                  <div className="text-xs text-green-600">Total Tokens</div>
+                </div>
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <div className="text-xl font-bold text-blue-700">
+                    {rawStats?.avgTokens ? rawStats.avgTokens.toLocaleString() : 'N/A'}
+                  </div>
+                  <div className="text-xs text-blue-600">Average per Explanation</div>
+                </div>
+                <div className="text-center p-3 bg-orange-50 rounded-lg">
+                  <div className="text-xl font-bold text-orange-700">
+                    {rawStats?.maxTokens ? rawStats.maxTokens.toLocaleString() : 'N/A'}
+                  </div>
+                  <div className="text-xs text-orange-600">Highest Single Use</div>
+                </div>
+                <div className="text-xs text-gray-500 text-center">
+                  {rawStats?.explanationsWithTokens || 0} explanations have token data
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Cost Stats */}
+          <Card className="md:col-span-1 xl:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <BarChart3 className="h-5 w-5 text-red-500" />
+                Estimated Cost
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-center p-3 bg-red-50 rounded-lg">
+                  <div className="text-xl font-bold text-red-700">
+                    ${rawStats?.totalEstimatedCost ? rawStats.totalEstimatedCost.toFixed(4) : 'N/A'}
+                  </div>
+                  <div className="text-xs text-red-600">Total Estimated</div>
+                </div>
+                <div className="text-center p-3 bg-pink-50 rounded-lg">
+                  <div className="text-xl font-bold text-pink-700">
+                    ${rawStats?.avgEstimatedCost ? rawStats.avgEstimatedCost.toFixed(6) : 'N/A'}
+                  </div>
+                  <div className="text-xs text-pink-600">Average per Explanation</div>
+                </div>
+                <div className="text-center p-3 bg-rose-50 rounded-lg">
+                  <div className="text-xl font-bold text-rose-700">
+                    ${rawStats?.maxEstimatedCost ? rawStats.maxEstimatedCost.toFixed(6) : 'N/A'}
+                  </div>
+                  <div className="text-xs text-rose-600">Highest Single Cost</div>
+                </div>
+                <div className="text-xs text-gray-500 text-center">
+                  {rawStats?.explanationsWithCost || 0} explanations have cost data
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Accuracy Stats */}
+          <Card className="md:col-span-1 xl:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Star className="h-5 w-5 text-yellow-500" />
+                Prediction Accuracy
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                  <div className="text-xl font-bold text-yellow-700">
+                    {rawStats?.avgPredictionAccuracy ? `${(rawStats.avgPredictionAccuracy * 100).toFixed(1)}%` : 'N/A'}
+                  </div>
+                  <div className="text-xs text-yellow-600">Average Score</div>
+                </div>
+                <div className="text-xs text-gray-500 text-center">
+                  {rawStats?.explanationsWithAccuracy || 0} explanations have accuracy scores
+                </div>
               </div>
             </CardContent>
           </Card>
