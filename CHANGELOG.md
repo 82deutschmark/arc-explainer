@@ -1,5 +1,20 @@
 ###   August 28 2025
 
+## v2.5.13 - CRITICAL FIX: Replace Inaccurate Leaderboards with Real Trustworthiness Metrics
+- **MAJOR ISSUE RESOLVED**: Leaderboards were completely wrong - showing user satisfaction as "accuracy"/"trust" instead of real performance
+- **Real Trustworthiness Leaders**: Now using actual prediction_accuracy_score field (0-1 trustworthiness based on confidence + correctness)
+- **Algorithm Rewards Honesty**: Low confidence + wrong = decent score; High confidence + wrong = heavily penalized 
+- **Multiple Real Leaderboards**: Trustworthiness, Best Calibrated, Fastest Models, Most Efficient (cost/performance ratio)
+- **Fixed Mislabeling**: "Avg Accuracy" -> "User Satisfaction", added real "Real Trustworthiness" metric
+- **Backend Enhancement**: New /api/puzzle/performance-stats endpoint with getRealPerformanceStats() method
+- **Calibration Metrics**: Shows gap between model confidence and actual performance (identifies overconfident models)
+- **Speed + Context**: Processing time leaderboard now includes trustworthiness context
+- **Efficiency Leaders**: Cost per trustworthiness unit instead of meaningless cost per "correct" prediction  
+- **User Experience**: Users now see actual model performance instead of misleading satisfaction surveys
+- **Database Integrity**: All leaderboards sourced from real database performance fields, not calculated placeholders
+- **Critical Impact**: Eliminates dangerous overconfidence detection - models claiming 95% certainty but wrong get low scores
+- Author: Claude Sonnet 4
+
 ## v2.5.12 - Real Database Statistics & Advanced Search Filters
 - **MAJOR DATA ACCURACY FIX**: Replaced placeholder/calculated statistics with actual database field aggregations
 - **New Raw Stats Tab**: Added comprehensive tab showing real api_processing_time_ms, total_tokens, estimated_cost, prediction_accuracy_score
