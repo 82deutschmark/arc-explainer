@@ -502,34 +502,34 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
           ROUND(AVG(e.confidence), 1) as avg_confidence,
-          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
+          ROUND(AVG(e.processing_time), 0) as avg_processing_time,
           ROUND(AVG(e.total_tokens), 0) as avg_tokens,
-          ROUND(AVG(e.estimated_cost), 6) as avg_cost,
-          ROUND(SUM(e.estimated_cost), 4) as total_cost,
-          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness,
-          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness,
+          ROUND(AVG(e.cost), 6) as avg_cost,
+          ROUND(SUM(e.cost), 4) as total_cost,
+          ROUND(MIN(e.accuracy), 4) as min_trustworthiness,
+          ROUND(MAX(e.accuracy), 4) as max_trustworthiness,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN SUM(e.estimated_cost) / AVG(e.prediction_accuracy_score) / COUNT(*)
+              WHEN AVG(e.accuracy) > 0 
+              THEN SUM(e.cost) / AVG(e.accuracy) / COUNT(*)
               ELSE 0 
             END, 6
           ) as cost_per_trustworthiness,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN SUM(e.total_tokens) / AVG(e.prediction_accuracy_score) / COUNT(*)
+              WHEN AVG(e.accuracy) > 0 
+              THEN SUM(e.total_tokens) / AVG(e.accuracy) / COUNT(*)
               ELSE 0 
             END, 0
           ) as tokens_per_trustworthiness,
           ROUND(
-            ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2
+            ABS(AVG(e.confidence) - (AVG(e.accuracy) * 100)), 2
           ) as calibration_error
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.accuracy IS NOT NULL
           AND e.confidence IS NOT NULL
         GROUP BY e.model_name
         HAVING COUNT(*) >= 3
@@ -540,15 +540,15 @@ export class FeedbackRepository extends BaseRepository {
       const speedQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
+          ROUND(AVG(e.processing_time), 0) as avg_processing_time,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness
+          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.api_processing_time_ms IS NOT NULL
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.processing_time IS NOT NULL
+          AND e.accuracy IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.3
+        HAVING COUNT(*) >= 5 AND AVG(e.accuracy) >= 0.3
         ORDER BY avg_processing_time ASC
         LIMIT 10
       `);
@@ -557,13 +557,13 @@ export class FeedbackRepository extends BaseRepository {
       const calibrationQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2) as calibration_error,
+          ROUND(ABS(AVG(e.confidence) - (AVG(e.accuracy) * 100)), 2) as calibration_error,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
           ROUND(AVG(e.confidence), 1) as avg_confidence
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.accuracy IS NOT NULL
           AND e.confidence IS NOT NULL
         GROUP BY e.model_name
         HAVING COUNT(*) >= 5
@@ -577,27 +577,27 @@ export class FeedbackRepository extends BaseRepository {
           e.model_name,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.accuracy) > 0 
+              THEN AVG(e.cost) / AVG(e.accuracy)
               ELSE 999999 
             END, 6
           ) as cost_efficiency,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.accuracy) > 0 
+              THEN AVG(e.total_tokens) / AVG(e.accuracy)
               ELSE 999999 
             END, 0
           ) as token_efficiency,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
           COUNT(*) as total_attempts
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
-          AND e.estimated_cost IS NOT NULL
+          AND e.accuracy IS NOT NULL
+          AND e.cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.2
+        HAVING COUNT(*) >= 5 AND AVG(e.accuracy) >= 0.2
         ORDER BY cost_efficiency ASC
         LIMIT 10
       `);
@@ -606,9 +606,9 @@ export class FeedbackRepository extends BaseRepository {
       const overallQuery = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          ROUND(AVG(prediction_accuracy_score), 4) as overall_trustworthiness
+          ROUND(AVG(accuracy), 4) as overall_trustworthiness
         FROM explanations
-        WHERE prediction_accuracy_score IS NOT NULL
+        WHERE accuracy IS NOT NULL
       `);
 
       const overallStats = overallQuery.rows[0];
