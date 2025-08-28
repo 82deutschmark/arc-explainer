@@ -69,6 +69,7 @@ interface SearchFiltersProps {
   onSearch: () => void;
   onSortChange: (sortBy: string) => void;
   getSortIcon: (field: string) => JSX.Element;
+  isLoading?: boolean;
 }
 
 export function SearchFilters({
@@ -120,7 +121,8 @@ export function SearchFilters({
   sortOrder,
   onSearch,
   onSortChange,
-  getSortIcon
+  getSortIcon,
+  isLoading
 }: SearchFiltersProps) {
   return (
     <Card>
@@ -446,6 +448,7 @@ export function SearchFilters({
             variant={sortBy === 'puzzleId' ? 'default' : 'outline'}
             size="sm"
             onClick={() => onSortChange('puzzleId')}
+            disabled={isLoading}
             className="flex items-center gap-1"
           >
             Puzzle ID {getSortIcon('puzzleId')}
@@ -454,6 +457,7 @@ export function SearchFilters({
             variant={sortBy === 'createdAt' ? 'default' : 'outline'}
             size="sm"
             onClick={() => onSortChange('createdAt')}
+            disabled={isLoading}
             className="flex items-center gap-1"
           >
             Latest Analysis {getSortIcon('createdAt')}
@@ -462,6 +466,7 @@ export function SearchFilters({
             variant={sortBy === 'explanationCount' ? 'default' : 'outline'}
             size="sm"
             onClick={() => onSortChange('explanationCount')}
+            disabled={isLoading}
             className="flex items-center gap-1"
           >
             # Explanations {getSortIcon('explanationCount')}
@@ -470,6 +475,7 @@ export function SearchFilters({
             variant={sortBy === 'latestConfidence' ? 'default' : 'outline'}
             size="sm"
             onClick={() => onSortChange('latestConfidence')}
+            disabled={isLoading}
             className="flex items-center gap-1"
           >
             Confidence {getSortIcon('latestConfidence')}
@@ -478,11 +484,18 @@ export function SearchFilters({
             variant={sortBy === 'feedbackCount' ? 'default' : 'outline'}
             size="sm"
             onClick={() => onSortChange('feedbackCount')}
+            disabled={isLoading}
             className="flex items-center gap-1"
           >
             <MessageSquare className="h-3 w-3" />
             Most Feedback {getSortIcon('feedbackCount')}
           </Button>
+          {isLoading && (
+            <div className="self-center ml-2 text-sm text-gray-500 flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+              Sorting...
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

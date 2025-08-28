@@ -495,6 +495,7 @@ export default function PuzzleOverview() {
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           getSortIcon={getSortIcon}
+          isLoading={isLoading}
           />
         </div>
 
