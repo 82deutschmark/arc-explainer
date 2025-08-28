@@ -2,11 +2,13 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { 
   Database, 
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Home
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
@@ -340,22 +342,40 @@ export default function PuzzleOverview() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/" className="flex items-center gap-2">
+                  <Home className="h-4 w-4" />
+                  Home
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Database Overview</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         {/* Header */}
-        <header className="text-center space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
-                <Database className="h-8 w-8" />
+        <header className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 flex items-center justify-center lg:justify-start gap-3">
+                <Database className="h-8 w-8 lg:h-10 lg:w-10 text-indigo-600" />
                 Puzzle Database Overview
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 mt-2">
                 Browse all puzzles and their explanations stored in the database
               </p>
             </div>
             <Link href="/">
-              <Button variant="outline">
+              <Button variant="outline" size="lg" className="shrink-0">
                 ← Back to Browser
               </Button>
             </Link>
@@ -379,7 +399,8 @@ export default function PuzzleOverview() {
         />
 
         {/* Search and Filters */}
-        <SearchFilters
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
+          <SearchFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           hasExplanationFilter={hasExplanationFilter}
@@ -417,10 +438,12 @@ export default function PuzzleOverview() {
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           getSortIcon={getSortIcon}
-        />
+          />
+        </div>
 
         {/* Puzzle List with Pagination */}
-        <PuzzleList
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <PuzzleList
           puzzles={data?.puzzles}
           total={data?.total || 0}
           isLoading={isLoading}
@@ -430,7 +453,8 @@ export default function PuzzleOverview() {
           onFeedbackClick={handleFeedbackClick}
           formatDate={formatDate}
           getConfidenceColor={getConfidenceColor}
-        />
+          />
+        </div>
       </div>
 
       {/* Feedback Modal */}
