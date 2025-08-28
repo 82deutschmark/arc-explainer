@@ -206,7 +206,7 @@ export abstract class BaseAIService {
     
     return {
       model: modelKey,
-      reasoningLog: reasoningLog || null,
+      reasoningLog: this.validateReasoningLog(reasoningLog),
       hasReasoningLog,
       temperature,
       reasoningEffort: serviceOpts.reasoningEffort || null,
@@ -223,6 +223,53 @@ export abstract class BaseAIService {
       reasoningItems,
       ...result
     };
+  }
+
+  /**
+   * Validate reasoning log format to prevent "[object Object]" corruption
+   * Ensures reasoningLog is always a string or null before database storage
+   */
+  protected validateReasoningLog(reasoningLog: any): string | null {
+    if (!reasoningLog) {
+      return null;
+    }
+
+    // If already a string, return as-is (most common case)
+    if (typeof reasoningLog === 'string') {
+      return reasoningLog.trim() || null;
+    }
+
+    // Handle arrays - join with newlines for readability
+    if (Array.isArray(reasoningLog)) {
+      const processed = reasoningLog
+        .map(item => typeof item === 'string' ? item : String(item))
+        .filter(Boolean)
+        .join('\n\n');
+      return processed || null;
+    }
+
+    // Handle objects - convert to string but warn about potential issues
+    if (typeof reasoningLog === 'object' && reasoningLog !== null) {
+      console.warn(`[${this.provider}] reasoningLog is an object, converting to string. Consider updating the provider to return a string.`);
+      
+      // Try to extract meaningful content from common object structures
+      if (reasoningLog.text) return reasoningLog.text;
+      if (reasoningLog.content) return reasoningLog.content;
+      if (reasoningLog.message) return reasoningLog.message;
+      if (reasoningLog.summary) return reasoningLog.summary;
+
+      // Last resort: proper JSON stringification
+      try {
+        return JSON.stringify(reasoningLog, null, 2);
+      } catch {
+        console.error(`[${this.provider}] Failed to stringify reasoning log object`);
+        return null;
+      }
+    }
+
+    // For any other type, convert to string
+    const stringValue = String(reasoningLog);
+    return stringValue !== '[object Object]' ? stringValue : null;
   }
 
   /**
