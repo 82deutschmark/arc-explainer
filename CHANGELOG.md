@@ -1,5 +1,13 @@
 ###   August 28 2025
 
+## v2.5.5 - Additional DeepSeek OpenRouter Models
+- **NEW MODELS**: Added 2 new DeepSeek models via OpenRouter
+  - **DeepSeek Prover v2**: Mathematical reasoning and proof generation model ($0.30/$1.20, 65K context)
+  - **DeepSeek R1 0528 (Free)**: Advanced reasoning model with free access ($0/$0, 65K context)
+- **Enhanced Reasoning**: Both models support advanced reasoning capabilities and temperature controls
+- **OpenRouter Integration**: Models configured with proper API names and routing through OpenRouter service
+- Author: Claude Sonnet 4
+
 ## v2.5.4 - Processing Time Display Fix
 - **FIX**: Corrected processing time display in AnalysisResultCard
 - Time formatter now auto-detects whether values are in seconds or milliseconds

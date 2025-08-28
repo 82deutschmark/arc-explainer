@@ -664,6 +664,36 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     maxOutputTokens: 32768,
     contextWindow: 32768
+  },
+  {
+    key: 'deepseek/deepseek-prover-v2',
+    name: 'DeepSeek Prover v2',
+    color: 'bg-cyan-500',
+    premium: false,
+    cost: { input: '$0.30', output: '$1.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true,
+    apiModelName: 'deepseek/deepseek-prover-v2',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768,
+    contextWindow: 65536
+  },
+  {
+    key: 'deepseek/deepseek-r1-0528:free',
+    name: 'DeepSeek R1 0528 (Free)',
+    color: 'bg-cyan-300',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    supportsReasoning: true,
+    apiModelName: 'deepseek/deepseek-r1-0528:free',
+    modelType: 'openrouter',
+    maxOutputTokens: 32768,
+    contextWindow: 65536
   }
 ];
 
