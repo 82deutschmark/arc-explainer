@@ -459,14 +459,14 @@ class BatchAnalysisService extends EventEmitter {
         
         try {
           const puzzle = await puzzleService.getPuzzleById(puzzleId);
-          const confidence = result.result.confidence || 50;
+          const confidence = result.confidence || result.result?.confidence || 50;
           const testCount = puzzle.test?.length || 0;
           
           // Create validation results without modifying original response
-          if (result.result.multiplePredictedOutputs === true) {
+          if (result.multiplePredictedOutputs === true || result.result?.multiplePredictedOutputs === true) {
             // Multi-test case
             const correctAnswers = testCount > 1 ? puzzle.test.map((t: any) => t.output) : [puzzle.test[0].output];
-            const multi = validateSolverResponseMulti(result.result, correctAnswers, config.promptId, confidence);
+            const multi = validateSolverResponseMulti(result.result || result, correctAnswers, config.promptId, confidence);
 
             validationResults = {
               predictedOutputGrid: null,
@@ -478,7 +478,7 @@ class BatchAnalysisService extends EventEmitter {
           } else {
             // Single-test case
             const correctAnswer = puzzle.test[0].output;
-            const validation = validateSolverResponse(result.result, correctAnswer, config.promptId, confidence);
+            const validation = validateSolverResponse(result.result || result, correctAnswer, config.promptId, confidence);
 
             validationResults = {
               predictedOutputGrid: validation.predictedGrid,
