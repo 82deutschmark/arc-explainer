@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
+import { MODELS as MODEL_CONFIGS } from "../config/models.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -76,7 +76,7 @@ export class GrokService extends BaseAIService {
   }
 
   getModelInfo(modelKey: string): ModelInfo {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     
     // Check if it's a reasoning model (Grok 4+ models have reasoning capabilities)
@@ -86,7 +86,7 @@ export class GrokService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxTokens || 128000, // Most Grok models have 128k context
+      contextWindow: modelConfig?.contextWindow || 128000, // Most Grok models have 128k context
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Grok doesn't support structured output format
@@ -102,7 +102,7 @@ export class GrokService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     const systemMessage = promptPackage.systemPrompt;
@@ -123,8 +123,7 @@ export class GrokService extends BaseAIService {
     const messageFormat: any = {
       model: modelName,
       messages,
-      max_tokens: 8000,
-      ...(modelSupportsTemperature(modelKey) && { temperature })
+      max_tokens: 8000
     };
 
     const providerSpecificNotes = [
@@ -161,13 +160,69 @@ export class GrokService extends BaseAIService {
     };
   }
 
+  /**
+   * Extracts a complete JSON object from a markdown string.
+   * @param markdown The markdown string to parse.
+   * @returns The parsed JSON object or null if not found.
+   */
+  private extractJSONFromMarkdown(markdown: string): any {
+    const codeBlockRegex = /```json\n([\s\S]*?)\n```/;
+    const match = markdown.match(codeBlockRegex);
+
+    if (match && match[1]) {
+      try {
+        return JSON.parse(match[1]);
+      } catch (e) {
+        console.error("[Grok] Failed to parse JSON from code block", e);
+      }
+    }
+
+    // Fallback to finding the first '{' and last '}'
+    const firstBrace = markdown.indexOf('{');
+    const lastBrace = markdown.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      const potentialJson = markdown.substring(firstBrace, lastBrace + 1);
+      try {
+        return JSON.parse(potentialJson);
+      } catch (e) {
+        console.error("[Grok] Failed to parse JSON from fallback method", e);
+      }
+    }
+
+    return null;
+  }
+
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean
+  ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
+    const content = response.choices[0]?.message?.content || '';
+    const result = this.extractJSONFromMarkdown(content);
+
+    if (!result) {
+      throw new Error("Failed to extract valid JSON from Grok response");
+    }
+
+    const tokenUsage: TokenUsage = {
+      input: response.usage?.prompt_tokens || 0,
+      output: response.usage?.completion_tokens || 0,
+    };
+
+    const status = response.choices[0]?.finish_reason;
+    const incomplete = status !== 'stop';
+    const incompleteReason = incomplete ? status : undefined;
+
+    return { result, tokenUsage, status, incomplete, incompleteReason };
+  }
+
   protected async callProviderAPI(
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions
   ): Promise<any> {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
@@ -182,6 +237,7 @@ export class GrokService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
+    // Make the API call to Grok
     const response = await grok.chat.completions.create({
       model: modelName,
       messages,
@@ -192,52 +248,6 @@ export class GrokService extends BaseAIService {
     return response;
   }
 
-  protected parseProviderResponse(
-    response: any,
-    modelKey: string,
-    captureReasoning: boolean
-  ): {
-    result: any;
-    tokenUsage: TokenUsage;
-    reasoningLog?: any;
-    reasoningItems?: any[];
-  } {
-    // Extract text content from Grok response (OpenAI format)
-    const choice = response.choices[0];
-    const textContent = choice?.message?.content || '';
-    
-    // Extract JSON using inherited method
-    const result = this.extractJsonFromResponse(textContent, modelKey);
-
-    // Extract token usage
-    const tokenUsage: TokenUsage = {
-      input: response.usage?.prompt_tokens || 0,
-      output: response.usage?.completion_tokens || 0,
-      // Grok doesn't provide separate reasoning tokens currently
-    };
-
-    // For reasoning models, try to extract reasoning from response
-    let reasoningLog = null;
-    if (captureReasoning && (modelKey.includes('grok-4') || modelKey.includes('grok-3'))) {
-      // Check if Grok provides reasoning in the message (similar to OpenAI)
-      if (choice?.message?.reasoning) {
-        reasoningLog = choice.message.reasoning;
-      } else if (textContent.includes('Let me analyze') || textContent.includes('First, I need to')) {
-        // Extract reasoning sections from response text
-        const reasoningParts = textContent.split(/Let me analyze|First, I need to|Looking at this|I can see that/);
-        if (reasoningParts.length > 1) {
-          reasoningLog = reasoningParts[0].trim();
-        }
-      }
-    }
-
-    return {
-      result,
-      tokenUsage,
-      reasoningLog,
-      reasoningItems: []
-    };
-  }
 }
 
 export const grokService = new GrokService();
