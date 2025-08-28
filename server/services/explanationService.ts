@@ -98,7 +98,8 @@ export const explanationService = {
           hints: analysisData.hints ?? null,
           confidence: analysisData.confidence ?? 0,
           modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
-          reasoningLog: restOfExplanationData.reasoningLog ?? analysisData.reasoningLog ?? null,
+          reasoningItems: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoningLog: null, // Deprecated, use reasoningItems
           predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
