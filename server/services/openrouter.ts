@@ -408,13 +408,17 @@ export class OpenRouterService {
       
       messages.push({ role: "user", content: userMessage });
 
-      // Build request options
+      // Use the model's configured maxOutputTokens, or a safe default if not specified
+      const maxTokens = modelConfig?.maxOutputTokens || 65536; // Default to 64k if not specified
+      
       const requestOptions: any = {
         model: openRouterModelName,
         messages: messages,
         temperature: temperature,
-        max_tokens: serviceOpts?.maxOutputTokens || modelConfig?.maxOutputTokens || 4000,
+        max_tokens: maxTokens,
       };
+      
+      console.log(`[OpenRouter] Using token limit: ${maxTokens} for model ${openRouterModelName} (from model config)`);
 
       console.log(`[OpenRouter] Making API call with model: ${openRouterModelName}`);
       const response = await openrouter.chat.completions.create(requestOptions);
