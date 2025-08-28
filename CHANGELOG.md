@@ -1,3 +1,58 @@
+###   August 28 2025
+
+## v2.5.6 - Enhanced OpenRouter JSON Parsing & Error Recovery
+- **FIX**: Resolved JSON parsing failures for OpenRouter models wrapped in markdown code blocks
+- **Enhanced JSON Recovery**: Multi-strategy parsing system for malformed responses
+  - Strategy 1: Automatic markdown code block removal (```json wrappers)
+  - Strategy 2: Advanced pattern extraction with brace counting
+  - Strategy 3: Combined sanitization and extraction approaches
+  - Strategy 4: Validation-compliant fallback responses
+- **Improved Error Handling**: Better debugging info and recovery logging with emojis for status tracking
+- **Validation Compliance**: Fallback responses now meet minimum character requirements for patternDescription
+- **Robust Response Processing**: Handles truncated, malformed, or markdown-wrapped AI responses
+- Author: Claude Sonnet 4
+
+## v2.5.5 - Additional DeepSeek OpenRouter Models
+- **NEW MODELS**: Added 2 new DeepSeek models via OpenRouter
+  - **DeepSeek Prover v2**: Mathematical reasoning and proof generation model ($0.30/$1.20, 65K context)
+  - **DeepSeek R1 0528 (Free)**: Advanced reasoning model with free access ($0/$0, 65K context)
+- **Enhanced Reasoning**: Both models support advanced reasoning capabilities and temperature controls
+- **OpenRouter Integration**: Models configured with proper API names and routing through OpenRouter service
+- Author: Claude Sonnet 4
+
+## v2.5.4 - Processing Time Display Fix
+- **FIX**: Corrected processing time display in AnalysisResultCard
+- Time formatter now auto-detects whether values are in seconds or milliseconds
+- Processing times now display correctly as seconds and minutes instead of showing unreasonably fast times
+- Updated both formatProcessingTime and formatProcessingTimeDetailed functions
+- Improved time display logic to handle edge cases and large values
+- Author: Claude Sonnet 4
+
+## v2.5.3 - Microsoft Phi-4 Reasoning Plus Model Update
+- **UPDATED MODEL**: Corrected Microsoft Phi model to use latest version
+  - **Microsoft Phi-4 Reasoning Plus**: 14B parameter reasoning model with step-by-step traces ($0.07/$0.35, 32K context)
+  - Enhanced reasoning capabilities for math, science, and code tasks
+  - Supports structured reasoning workflow with <think> tokens
+  - Added to both server and client configurations for consistency
+- Author: Claude Sonnet 4
+
+## v2.5.2 - OpenRouter Model Expansion
+- **NEW MODELS**: Added 10 new OpenRouter models for enhanced AI analysis capabilities
+  - **xAI Grok Code Fast 1**: Fast coding model optimized for agentic tasks ($0.20/$1.50, 256K context)
+  - **OpenAI GPT-OSS 120B**: High-reasoning model with 5.1B active parameters ($0.072/$0.28, 131K context)  
+  - **Mistral Codestral 2508**: Low-latency code correction specialist ($0.30/$0.90, 256K context)
+  - **Qwen3 30B A3B Instruct**: Multilingual instruction following ($0.10/$0.30, 262K context)
+  - **Qwen3 235B A22B Thinking**: Complex reasoning with step-by-step analysis ($0.078/$0.312, 262K context)
+  - **Qwen3 Coder**: MoE coding model with 480B total/35B active parameters ($0.20/$0.80, 262K context)
+  - **Moonshot Kimi K2**: 1T parameter MoE model for tool use and reasoning ($0.14/$2.49, 63K context)
+  - **xAI Grok 4 (via OpenRouter)**: Alternative access to Grok 4 reasoning model ($3/$15, 256K context)
+  - **Kimi Dev 72B (Free)**: Open-source software engineering model - completely free ($0/$0, 131K context)
+  - **Cohere Command A**: 111B parameter multilingual agentic model ($2/$8, 32K context)
+- **Model Features**: Properly configured temperature support, reasoning flags, premium tiers, and context windows
+- **Unified Configuration**: Models available in both server and client configurations for consistent UI experience
+- **Color Coding**: Distinct Tailwind colors for visual differentiation in model selection interface
+- Author: Claude Sonnet 4
+
 ###   August 27 2025
 
 ## v2.5.1 - Kaggle Challenge Readiness Validation Framework

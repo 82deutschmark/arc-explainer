@@ -28,7 +28,8 @@
       "Bash(git push:*)",
       "Bash(gh pr create:*)",
       "Bash(git log:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "WebFetch(domain:openrouter.ai)"
     ],
     "deny": [],
     "ask": [],

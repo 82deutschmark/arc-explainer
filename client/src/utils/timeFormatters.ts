@@ -6,17 +6,41 @@
  */
 
 /**
- * Formats processing time in milliseconds to a human-readable string
+ * Formats processing time to a human-readable string
  * 
- * @param milliseconds - Time in milliseconds from server
+ * @param timeValue - Time value from server (auto-detects seconds vs milliseconds)
  * @returns Formatted string (e.g., "45ms", "2.3s", "1.5m")
  */
-export function formatProcessingTime(milliseconds: number | null | undefined): string | null {
-  if (!milliseconds) return null;
+export function formatProcessingTime(timeValue: number | null | undefined): string | null {
+  if (!timeValue) return null;
+  
+  // Auto-detect if value is in seconds or milliseconds using same logic as detailed formatter
+  let seconds: number;
+  
+  if (timeValue < 10) {
+    // Small values are likely seconds
+    seconds = timeValue;
+  } else if (timeValue < 1000) {
+    // Medium values, treat as seconds
+    seconds = timeValue;
+  } else {
+    // Large values: check if it makes sense as milliseconds
+    const asSeconds = timeValue / 1000;
+    if (asSeconds > 3600) {
+      // If it would be more than an hour as milliseconds, it's probably already in seconds
+      seconds = timeValue;
+    } else {
+      // Reasonable as milliseconds, convert to seconds
+      seconds = asSeconds;
+    }
+  }
+  
+  // Convert back to milliseconds for existing formatting logic
+  const milliseconds = seconds * 1000;
   
   // For very small times, show milliseconds
   if (milliseconds < 1000) {
-    return `${milliseconds}ms`;
+    return `${Math.round(milliseconds)}ms`;
   }
   
   // For times under a minute, show seconds with 1 decimal place
@@ -29,29 +53,54 @@ export function formatProcessingTime(milliseconds: number | null | undefined): s
 }
 
 /**
- * Formats processing time in milliseconds to a detailed human-readable string
+ * Formats processing time to a detailed human-readable string
  * Used in detailed views where more precision is helpful
  * 
- * @param milliseconds - Time in milliseconds from server
+ * @param timeValue - Time value from server (could be seconds or milliseconds)
  * @returns Formatted string (e.g., "45ms", "1m 23s", "45s")
  */
-export function formatProcessingTimeDetailed(milliseconds: number | null | undefined): string | null {
-  if (!milliseconds) return null;
+export function formatProcessingTimeDetailed(timeValue: number | null | undefined): string | null {
+  if (!timeValue) return null;
   
-  // For very small times, show milliseconds
-  if (milliseconds < 1000) {
-    return `${milliseconds}ms`;
+  // If the value is less than 10 and greater than 0, it's likely in seconds (e.g., 2.5 seconds)
+  // If the value is greater than 10, it could be either seconds or milliseconds
+  // If the value is very large (>1000), it's likely milliseconds unless it's unreasonably large
+  
+  let seconds: number;
+  
+  if (timeValue < 10) {
+    // Small values are likely seconds (e.g., 0.5s, 2.3s, 9.1s)
+    seconds = timeValue;
+  } else if (timeValue < 1000) {
+    // Medium values could be either, but if they look like reasonable processing times,
+    // treat as seconds (e.g., 45s, 120s)
+    seconds = timeValue;
+  } else {
+    // Large values: check if it makes sense as milliseconds
+    const asSeconds = timeValue / 1000;
+    if (asSeconds > 3600) {
+      // If it would be more than an hour as milliseconds, it's probably already in seconds
+      seconds = timeValue;
+    } else {
+      // Reasonable as milliseconds, convert to seconds
+      seconds = asSeconds;
+    }
   }
   
-  const totalSeconds = Math.round(milliseconds / 1000);
+  // Now format the seconds value
+  if (seconds < 1) {
+    return `${Math.round(seconds * 1000)}ms`;
+  }
+  
+  const totalSeconds = Math.round(seconds);
   const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+  const remainingSeconds = totalSeconds % 60;
   
   // Format: 1m 23s or just 45s if under a minute
   if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
+    return `${minutes}m ${remainingSeconds}s`;
   }
-  return `${seconds}s`;
+  return `${remainingSeconds}s`;
 }
 
 /**
