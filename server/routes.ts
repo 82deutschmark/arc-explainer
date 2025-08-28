@@ -61,6 +61,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Raw database statistics
   app.get("/api/puzzle/raw-stats", asyncHandler(puzzleController.getRawStats));
   
+  // Real performance statistics (actual prediction accuracy)
+  app.get("/api/puzzle/performance-stats", asyncHandler(puzzleController.getRealPerformanceStats));
+  
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
   

@@ -212,11 +212,21 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch solver mode accuracy statistics
+  // Fetch solver mode accuracy statistics (DEPRECATED - using fake satisfaction data)
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
     queryKey: ['accuracyStats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Fetch real performance statistics (trustworthiness-based)
+  const { data: performanceStats, isLoading: performanceLoading } = useQuery({
+    queryKey: ['performanceStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzle/performance-stats');
       const json = await response.json();
       return json.data;
     },
@@ -417,6 +427,7 @@ export default function PuzzleOverview() {
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
+          performanceStats={performanceStats}
           rawStats={rawStats}
           modelRankings={modelRankings}
           totalPuzzles={data?.total || 0}
@@ -427,6 +438,7 @@ export default function PuzzleOverview() {
           }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
+          performanceLoading={performanceLoading}
           rawStatsLoading={rawStatsLoading}
           recentActivity={recentActivity}
         />

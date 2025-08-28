@@ -15,7 +15,8 @@ import {
   Star,
   Database,
   Activity,
-  BarChart3
+  BarChart3,
+  DollarSign
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
 import type { FeedbackStats } from '@shared/types';
@@ -75,9 +76,49 @@ interface RawStats {
   explanationsWithProcessingTime: number;
 }
 
+interface PerformanceStats {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    calibrationError: number;
+    avgProcessingTime: number;
+    avgTokens: number;
+    avgCost: number;
+    totalCost: number;
+    costPerTrustworthiness: number;
+    tokensPerTrustworthiness: number;
+    trustworthinessRange: { min: number; max: number; };
+  }>;
+  speedLeaders: Array<{
+    modelName: string;
+    avgProcessingTime: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+  }>;
+  calibrationLeaders: Array<{
+    modelName: string;
+    calibrationError: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+  }>;
+  efficiencyLeaders: Array<{
+    modelName: string;
+    costEfficiency: number;
+    tokenEfficiency: number;
+    avgTrustworthiness: number;
+    totalAttempts: number;
+  }>;
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+}
+
 interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
+  performanceStats?: PerformanceStats;
   rawStats?: RawStats;
   modelRankings: ModelRanking[];
   totalPuzzles?: number;
@@ -85,6 +126,7 @@ interface StatisticsCardsProps {
   onViewAllFeedback: () => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
+  performanceLoading?: boolean;
   rawStatsLoading?: boolean;
   recentActivity?: Array<{
     id: string;
@@ -98,6 +140,7 @@ interface StatisticsCardsProps {
 export function StatisticsCards({
   feedbackStats,
   accuracyStats,
+  performanceStats,
   rawStats,
   modelRankings,
   totalPuzzles,
@@ -105,10 +148,11 @@ export function StatisticsCards({
   onViewAllFeedback,
   statsLoading,
   accuracyLoading,
+  performanceLoading,
   rawStatsLoading,
   recentActivity = []
 }: StatisticsCardsProps) {
-  if (statsLoading || rawStatsLoading) {
+  if (statsLoading || rawStatsLoading || performanceLoading) {
     return (
       <div className="space-y-6">
         {/* Loading state for tabbed layout */}
@@ -180,14 +224,13 @@ export function StatisticsCards({
                         {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
                           sum + model.accuracyPercentage, 0) / accuracyStats.accuracyByModel.length) || 0}%
                       </div>
-                      <div className="text-xs text-green-600">Avg Accuracy</div>
+                      <div className="text-xs text-green-600">User Satisfaction</div>
                     </div>
                     <div className="text-center p-3 bg-blue-50 rounded-lg">
                       <div className="text-xl font-semibold text-blue-700">
-                        {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
-                          sum + model.avgAccuracyScore, 0) / accuracyStats.accuracyByModel.length * 100) || 0}%
+                        {performanceStats ? (performanceStats.overallTrustworthiness * 100).toFixed(1) : 'N/A'}%
                       </div>
-                      <div className="text-xs text-blue-600">Avg Trust Score</div>
+                      <div className="text-xs text-blue-600">Real Trustworthiness</div>
                     </div>
                   </div>
                 </div>
@@ -201,19 +244,18 @@ export function StatisticsCards({
             </CardContent>
           </Card>
 
-          {/* Accuracy Leaderboard */}
-          {accuracyStats && accuracyStats.totalSolverAttempts > 0 && (
+          {/* Trustworthiness Leaderboard */}
+          {performanceStats && performanceStats.trustworthinessLeaders.length > 0 && (
             <Card className="md:col-span-1 xl:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <BarChart3 className="h-5 w-5 text-green-500" />
-                  Top Accuracy
+                  <Star className="h-5 w-5 text-green-500" />
+                  Top Trustworthiness
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 max-h-80 overflow-y-auto">
-                  {[...accuracyStats.accuracyByModel]
-                    .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
+                  {performanceStats.trustworthinessLeaders
                     .slice(0, UI_CONFIG.maxLeaderboardItems)
                     .map((model, index) => {
                       const modelInfo = MODELS.find(m => m.key === model.modelName);
@@ -228,12 +270,12 @@ export function StatisticsCards({
                                 {displayName}
                               </div>
                               <div className="text-xs text-green-600">
-                                {model.totalAttempts} attempts
+                                {model.totalAttempts} attempts • {model.avgConfidence}% confidence
                               </div>
                             </div>
                           </div>
                           <Badge className="text-xs bg-green-100 text-green-800 ml-2">
-                            {model.accuracyPercentage}%
+                            {(model.avgTrustworthiness * 100).toFixed(1)}%
                           </Badge>
                         </div>
                       );
@@ -243,19 +285,18 @@ export function StatisticsCards({
             </Card>
           )}
 
-          {/* Trust Score Leaderboard */}
-          {accuracyStats && accuracyStats.totalSolverAttempts > 0 && (
+          {/* Best Calibrated Models */}
+          {performanceStats && performanceStats.calibrationLeaders.length > 0 && (
             <Card className="md:col-span-1 xl:col-span-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Star className="h-5 w-5 text-blue-500" />
-                  Top Trust
+                  <BarChart3 className="h-5 w-5 text-blue-500" />
+                  Best Calibrated
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 max-h-80 overflow-y-auto">
-                  {[...accuracyStats.accuracyByModel]
-                    .sort((a, b) => b.avgAccuracyScore - a.avgAccuracyScore)
+                  {performanceStats.calibrationLeaders
                     .slice(0, UI_CONFIG.maxLeaderboardItems)
                     .map((model, index) => {
                       const modelInfo = MODELS.find(m => m.key === model.modelName);
@@ -270,12 +311,94 @@ export function StatisticsCards({
                                 {displayName}
                               </div>
                               <div className="text-xs text-blue-600">
-                                {model.totalAttempts} attempts
+                                {model.totalAttempts} attempts • {(model.avgTrustworthiness * 100).toFixed(1)}% trustworthy
                               </div>
                             </div>
                           </div>
                           <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 ml-2">
-                            {Math.round(model.avgAccuracyScore * 100)}%
+                            {model.calibrationError.toFixed(1)} gap
+                          </Badge>
+                        </div>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Speed Leaders */}
+          {performanceStats && performanceStats.speedLeaders.length > 0 && (
+            <Card className="md:col-span-1 xl:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-purple-500" />
+                  Fastest Models
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {performanceStats.speedLeaders
+                    .slice(0, UI_CONFIG.maxLeaderboardItems)
+                    .map((model, index) => {
+                      const modelInfo = MODELS.find(m => m.key === model.modelName);
+                      const displayName = modelInfo?.name || model.modelName;
+                      
+                      return (
+                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors">
+                          <div className="flex items-center gap-2">
+                            {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium text-purple-700 truncate">
+                                {displayName}
+                              </div>
+                              <div className="text-xs text-purple-600">
+                                {model.totalAttempts} attempts • {(model.avgTrustworthiness * 100).toFixed(1)}% trustworthy
+                              </div>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 ml-2">
+                            {model.avgProcessingTime}ms
+                          </Badge>
+                        </div>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Cost Efficiency Leaders */}
+          {performanceStats && performanceStats.efficiencyLeaders.length > 0 && (
+            <Card className="md:col-span-1 xl:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <DollarSign className="h-5 w-5 text-orange-500" />
+                  Most Efficient
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 max-h-80 overflow-y-auto">
+                  {performanceStats.efficiencyLeaders
+                    .slice(0, UI_CONFIG.maxLeaderboardItems)
+                    .map((model, index) => {
+                      const modelInfo = MODELS.find(m => m.key === model.modelName);
+                      const displayName = modelInfo?.name || model.modelName;
+                      
+                      return (
+                        <div key={model.modelName} className="flex items-center justify-between p-2 rounded-lg bg-orange-50 border border-orange-100 hover:bg-orange-100 transition-colors">
+                          <div className="flex items-center gap-2">
+                            {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium text-orange-700 truncate">
+                                {displayName}
+                              </div>
+                              <div className="text-xs text-orange-600">
+                                {model.totalAttempts} attempts • {(model.avgTrustworthiness * 100).toFixed(1)}% trustworthy
+                              </div>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs bg-orange-100 text-orange-800 ml-2">
+                            ${model.costEfficiency.toFixed(4)}
                           </Badge>
                         </div>
                       );
