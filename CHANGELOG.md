@@ -1,11 +1,8 @@
 ###   August 29 2025
 
-## v2.5.20 - Landing Page Redesign & Analysis Data Sorting
-- Change default sorting to "Analysis Data (fewest first)" to prioritize puzzles needing more analysis
-- Change default filter from "unexplained" to "all" puzzles  
-- Add comprehensive analysis data fields to getBulkExplanationStatus backend query
-- Add visual improvements: gradient backgrounds, enhanced typography, improved card styling
+
 - Author: Claude Sonnet 4
+- 
 
 ## v2.5.19 - Top Models Redesign
 - Replace single ranking with three performance categories: accuracy, trustworthiness, user feedback
