@@ -34,19 +34,11 @@
 - Switch frontend to use general-stats instead of accuracy-stats only
 - Author: Claude Sonnet 4
 
-## v2.5.15 - LEADERBOARD VISIBILITY RESTORED: Dual Accuracy & Trustworthiness Displays
-- **USER ISSUE RESOLVED**: "where are these leaderboards? are they on tabs that dont exist?" - Leaderboards now prominently visible on main overview page
-- **Dual Leaderboard System**: Restored separate "Accuracy Leaderboard" and "Trustworthiness Leaderboard" sections from overview/prompts branches
-- **Always-Visible Community Feedback**: Community feedback leaderboard now shows regardless of solver data availability
-- **Enhanced Model Display**: Each model shows both "X% puzzle success" and "Y% trustworthiness" badges for comprehensive comparison
-- **Removed Restrictive Conditions**: Eliminated conditional rendering that hid leaderboards when `totalSolverAttempts == 0`
-- **Proper Sorting Logic**: Accuracy leaderboard sorted by accuracyPercentage, trustworthiness by avgTrustworthiness score
-- **Rich Fallback States**: Clear messaging when solver data not available, explains how to generate leaderboard data
-- **Technical Documentation**: Added comprehensive docs/Leaderboard_Restoration_Plan.md explaining the restoration process
-- **Backend Compatibility**: Verified avgTrustworthiness already available in AccuracyStats from FeedbackRepository.ts
-- **UI Enhancement**: Up to 8 community models + 5 solver models per leaderboard with provider info and attempt counts
-- **Mobile Responsive**: Maintains dual-leaderboard layout on large screens, stacks appropriately on mobile
-- **Impact**: Users can now see comprehensive model comparisons similar to quality from overview/prompts branches
+## v2.5.15 - Leaderboard Visibility Fix
+- Make leaderboards prominently visible on main overview page
+- Restore separate Accuracy and Trustworthiness Leaderboard sections
+- Show community feedback leaderboard regardless of solver data availability
+- Add puzzle success and trustworthiness badges for each model
 - Author: Claude Sonnet 4
 
 ## v2.5.14 - CRITICAL DATABASE SCHEMA FIX: Real Leaderboard Data
