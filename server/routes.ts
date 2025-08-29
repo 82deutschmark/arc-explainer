@@ -57,6 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Solver mode accuracy statistics
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
+  app.get("/api/puzzle/general-stats", asyncHandler(puzzleController.getGeneralModelStats));
   
   // Raw database statistics
   app.get("/api/puzzle/raw-stats", asyncHandler(puzzleController.getRawStats));

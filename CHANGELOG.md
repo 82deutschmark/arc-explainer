@@ -1,5 +1,33 @@
 ###   August 29 2025
 
+## v2.5.16 - LEADERBOARD DATA POPULATION FIXED: SQL Errors & Empty Data Resolved
+- **CRITICAL POSTGRESQL BUG RESOLVED**: Fixed "function round(double precision, integer) does not exist" SQL errors breaking all leaderboard queries
+- **EMPTY LEADERBOARD DATA FIXED**: Added general-stats endpoint showing ALL models with explanations (not just solver mode)
+- **SQL Syntax Corrections**: Removed PostgreSQL-incompatible ROUND(value, precision) calls, moved rounding to JavaScript layer
+- **New Backend Methods**: Added getGeneralModelStats() for comprehensive model performance across all usage modes
+- **Data Source Switch**: Frontend now uses /api/puzzle/general-stats instead of solver-only accuracy-stats endpoint
+- **Broader Model Coverage**: Leaderboards now show models that created explanations even without solver predictions
+- **Cross-Database Compatibility**: JavaScript-level rounding works across PostgreSQL, MySQL, SQLite implementations
+- **Performance Metrics Preserved**: Maintains solver-specific accuracy while showing general model activity
+- **User Experience**: Leaderboards now populate with meaningful data instead of empty "No data available" messages
+- **Technical**: New getGeneralModelStats SQL queries with proper CASE statements, no precision parameters
+- Author: Claude Sonnet 4
+
+## v2.5.15 - LEADERBOARD VISIBILITY RESTORED: Dual Accuracy & Trustworthiness Displays
+- **USER ISSUE RESOLVED**: "where are these leaderboards? are they on tabs that dont exist?" - Leaderboards now prominently visible on main overview page
+- **Dual Leaderboard System**: Restored separate "Accuracy Leaderboard" and "Trustworthiness Leaderboard" sections from overview/prompts branches
+- **Always-Visible Community Feedback**: Community feedback leaderboard now shows regardless of solver data availability
+- **Enhanced Model Display**: Each model shows both "X% puzzle success" and "Y% trustworthiness" badges for comprehensive comparison
+- **Removed Restrictive Conditions**: Eliminated conditional rendering that hid leaderboards when `totalSolverAttempts == 0`
+- **Proper Sorting Logic**: Accuracy leaderboard sorted by accuracyPercentage, trustworthiness by avgTrustworthiness score
+- **Rich Fallback States**: Clear messaging when solver data not available, explains how to generate leaderboard data
+- **Technical Documentation**: Added comprehensive docs/Leaderboard_Restoration_Plan.md explaining the restoration process
+- **Backend Compatibility**: Verified avgTrustworthiness already available in AccuracyStats from FeedbackRepository.ts
+- **UI Enhancement**: Up to 8 community models + 5 solver models per leaderboard with provider info and attempt counts
+- **Mobile Responsive**: Maintains dual-leaderboard layout on large screens, stacks appropriately on mobile
+- **Impact**: Users can now see comprehensive model comparisons similar to quality from overview/prompts branches
+- Author: Claude Sonnet 4
+
 ## v2.5.14 - CRITICAL DATABASE SCHEMA FIX: Real Leaderboard Data
 - **MAJOR BUG RESOLVED**: Fixed database column name mismatch preventing real leaderboard data from loading
 - **Schema Fixes**: Updated FeedbackRepository queries to use actual database columns:
