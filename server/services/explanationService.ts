@@ -96,7 +96,7 @@ export const explanationService = {
           patternDescription: analysisData.patternDescription ?? null,
           solvingStrategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
-          confidence: analysisData.confidence ?? 0,
+          confidence: analysisData.confidence ?? 50, // Default to 50 if confidence parsing fails
           modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
           reasoningItems: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
           reasoningLog: null, // Deprecated, use reasoningItems

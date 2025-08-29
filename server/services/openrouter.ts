@@ -286,7 +286,7 @@ export class OpenRouterService {
         "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
         "Check the raw response in the logs for any extractable insights"
       ],
-      confidence: 0,
+      confidence: 50, // Default confidence when parsing completely fails
       multiplePredictedOutputs: false,
       predictedOutput: null,
       rawResponse: truncatedResponse,
@@ -314,7 +314,7 @@ export class OpenRouterService {
     // Ensure confidence is a number
     if ('confidence' in result && typeof result.confidence !== 'number') {
       const conf = parseFloat(result.confidence);
-      result.confidence = isNaN(conf) ? 0 : Math.max(0, Math.min(100, conf));
+      result.confidence = isNaN(conf) ? 50 : Math.max(0, Math.min(100, conf)); // Default to 50 if parsing fails
     }
 
     // Ensure hints is always an array

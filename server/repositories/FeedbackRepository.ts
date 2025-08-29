@@ -384,6 +384,7 @@ export class FeedbackRepository extends BaseRepository {
                OR e.multi_test_prediction_grids IS NOT NULL)
           AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
         ORDER BY avg_trustworthiness_score DESC, total_attempts DESC
@@ -600,6 +601,7 @@ export class FeedbackRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL 
           AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
         HAVING COUNT(*) >= 1
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
@@ -635,6 +637,7 @@ export class FeedbackRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL 
           AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
         HAVING COUNT(*) >= 1
         ORDER BY calibration_error ASC
