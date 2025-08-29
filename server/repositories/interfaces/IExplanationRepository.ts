@@ -101,6 +101,34 @@ export interface BulkExplanationStatus {
     createdAt: Date | null;
     confidence: number | null;
     estimatedCost: number | null;
+    alienMeaningConfidence: number | null;
+    alienMeaning: string | null;
+    reasoningLog: string | null;
+    hasReasoningLog: boolean | null;
+    providerResponseId: string | null;
+    saturnImages: any | null;
+    saturnLog: any | null;
+    saturnEvents: any | null;
+    saturnSuccess: boolean | null;
+    predictedOutputGrid: any | null;
+    isPredictionCorrect: boolean | null;
+    predictionAccuracyScore: number | null;
+    providerRawResponse: any | null;
+    reasoningItems: any | null;
+    temperature: number | null;
+    reasoningEffort: string | null;
+    reasoningVerbosity: string | null;
+    reasoningSummaryType: string | null;
+    inputTokens: number | null;
+    outputTokens: number | null;
+    reasoningTokens: number | null;
+    totalTokens: number | null;
+    multiplePredictedOutputs: any | null;
+    multiTestResults: any | null;
+    multiTestAllCorrect: boolean | null;
+    multiTestAverageAccuracy: number | null;
+    hasMultiplePredictions: boolean | null;
+    multiTestPredictionGrids: any | null;
   };
 }
 
