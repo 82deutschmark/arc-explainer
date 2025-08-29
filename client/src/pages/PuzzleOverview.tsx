@@ -2,13 +2,11 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { 
   Database, 
   ArrowUpDown,
   ArrowUp,
-  ArrowDown,
-  Home
+  ArrowDown
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
@@ -17,99 +15,7 @@ import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
-import LeaderboardTable from '@/components/overview/LeaderboardTable';
-import type { FeedbackStats } from '@shared/types';
-
-interface PuzzleOverviewData {
-  id: string;
-  source: string;
-  maxGridSize: number;
-  gridSizeConsistent: boolean;
-  hasExplanation: boolean;
-  explanations: Array<{
-    id: number;
-    patternDescription: string;
-    solvingStrategy: string;
-    alienMeaning: string;
-    confidence: number;
-    alienMeaningConfidence?: number;
-    modelName: string;
-    hasReasoningLog: boolean;
-    apiProcessingTimeMs?: number;
-    saturnSuccess?: boolean;
-    createdAt: string;
-    // Accuracy and trustworthiness fields
-    isPredictionCorrect?: boolean;
-    predictionAccuracyScore?: number;
-    multiTestAllCorrect?: boolean;
-    multiTestAverageAccuracy?: number;
-    // Database fields for filtering and display
-    totalTokens?: number;
-    estimatedCost?: number;
-  }>;
-  totalExplanations: number;
-  latestExplanation?: any;
-  feedbackCount?: number;
-}
-
-interface PuzzleOverviewResponse {
-  puzzles: PuzzleOverviewData[];
-  total: number;
-  hasMore: boolean;
-}
-
-interface AccuracyStats {
-  accuracyByModel: Array<{
-    modelName: string;
-    totalAttempts: number;
-    correctPredictions: number;
-    accuracyPercentage: number;
-    avgAccuracyScore: number;
-    avgConfidence: number;
-    avgTrustworthiness: number;
-    minTrustworthiness?: number;
-    maxTrustworthiness?: number;
-    successfulPredictions?: number;
-    predictionSuccessRate?: number;
-  }>;
-  totalSolverAttempts: number;
-  totalCorrectPredictions?: number;
-}
-
-interface LeaderboardStats {
-  trustworthinessLeaders: Array<{
-    modelName: string;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-    avgConfidence: number;
-    calibrationError: number;
-    avgProcessingTime: number;
-    avgTokens: number;
-    avgCost: number;
-  }>;
-  speedLeaders: Array<{
-    modelName: string;
-    avgProcessingTime: number;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-  }>;
-  calibrationLeaders: Array<{
-    modelName: string;
-    calibrationError: number;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-    avgConfidence: number;
-  }>;
-  efficiencyLeaders: Array<{
-    modelName: string;
-    costEfficiency: number;
-    tokenEfficiency: number;
-    avgTrustworthiness: number;
-    totalAttempts: number;
-  }>;
-  totalTrustworthinessAttempts: number;
-  overallTrustworthiness: number;
-}
+import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord } from '@shared/types';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -135,12 +41,6 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
-  const [totalTokensMin, setTotalTokensMin] = useState<string>(urlParams.get('totalTokensMin') || '');
-  const [totalTokensMax, setTotalTokensMax] = useState<string>(urlParams.get('totalTokensMax') || '');
-  const [estimatedCostMin, setEstimatedCostMin] = useState<string>(urlParams.get('estimatedCostMin') || '');
-  const [estimatedCostMax, setEstimatedCostMax] = useState<string>(urlParams.get('estimatedCostMax') || '');
-  const [predictionAccuracyMin, setPredictionAccuracyMin] = useState<string>(urlParams.get('predictionAccuracyMin') || '');
-  const [predictionAccuracyMax, setPredictionAccuracyMax] = useState<string>(urlParams.get('predictionAccuracyMax') || '');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
   const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
@@ -174,12 +74,6 @@ export default function PuzzleOverview() {
     if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
-    if (totalTokensMin) params.set('totalTokensMin', totalTokensMin);
-    if (totalTokensMax) params.set('totalTokensMax', totalTokensMax);
-    if (estimatedCostMin) params.set('estimatedCostMin', estimatedCostMin);
-    if (estimatedCostMax) params.set('estimatedCostMax', estimatedCostMax);
-    if (predictionAccuracyMin) params.set('predictionAccuracyMin', predictionAccuracyMin);
-    if (predictionAccuracyMax) params.set('predictionAccuracyMax', predictionAccuracyMax);
     if (sortBy !== 'createdAt') params.set('sortBy', sortBy);
     if (sortOrder !== 'desc') params.set('sortOrder', sortOrder);
     if (currentPage !== 1) params.set('page', currentPage.toString());
@@ -188,7 +82,7 @@ export default function PuzzleOverview() {
     if (newUrl !== location) {
       setLocation(newUrl);
     }
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax, predictionAccuracyMin, predictionAccuracyMax, sortBy, sortOrder, currentPage, location, setLocation]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -216,12 +110,6 @@ export default function PuzzleOverview() {
     if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
     if (confidenceMin) params.set('confidenceMin', confidenceMin);
     if (confidenceMax) params.set('confidenceMax', confidenceMax);
-    if (totalTokensMin) params.set('totalTokensMin', totalTokensMin);
-    if (totalTokensMax) params.set('totalTokensMax', totalTokensMax);
-    if (estimatedCostMin) params.set('estimatedCostMin', estimatedCostMin);
-    if (estimatedCostMax) params.set('estimatedCostMax', estimatedCostMax);
-    if (predictionAccuracyMin) params.set('predictionAccuracyMin', predictionAccuracyMin);
-    if (predictionAccuracyMax) params.set('predictionAccuracyMax', predictionAccuracyMax);
     if (sortBy) params.set('sortBy', sortBy);
     if (sortOrder) params.set('sortOrder', sortOrder);
     
@@ -229,7 +117,7 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax, predictionAccuracyMin, predictionAccuracyMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
 
   // Fetch puzzle overview data
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
@@ -242,27 +130,7 @@ export default function PuzzleOverview() {
     placeholderData: (previousData) => previousData,
   });
 
-  /**
-   * CRITICAL DISTINCTION FOR DEVELOPERS:
-   * 
-   * FEEDBACK vs EXPLANATIONS vs SOLVER ACCURACY:
-   * - FEEDBACK: User ratings on explanation quality (helpful/not helpful)
-   *   Measures: "Was this explanation clear, understandable, and useful?"
-   *   Note: A model can be 100% correct but still get bad feedback for poor explanations
-   * 
-   * - EXPLANATIONS: Raw model outputs (pattern descriptions, solving strategies)
-   *   Measures: What the model said about the puzzle
-   * 
-   * - SOLVER ACCURACY: Whether the model's prediction was actually correct
-   *   Measures: "Did the model get the right answer?"
-   *   Uses: isPredictionCorrect, predictionAccuracyScore, multiTestAllCorrect
-   * 
-   * These are independent metrics! A model can:
-   * ✅ Get the answer RIGHT but explain it WRONG → High solver accuracy, bad feedback
-   * ❌ Get the answer WRONG but explain it WELL → Low solver accuracy, good feedback
-   */
-
-  // Fetch feedback statistics (explanation quality ratings from users)
+  // Fetch feedback statistics
   const { data: feedbackStats, isLoading: statsLoading } = useQuery<FeedbackStats>({
     queryKey: ['feedbackStats'],
     queryFn: async () => {
@@ -272,31 +140,11 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch solver mode accuracy statistics (measures correctness of predictions, NOT explanation quality)
+  // Fetch general model statistics (includes all explanations, not just solver mode)
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
-    queryKey: ['accuracyStats'],
+    queryKey: ['generalStats'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Fetch full leaderboard statistics (trustworthiness = prediction accuracy, NOT feedback quality)
-  const { data: leaderboardStats, isLoading: leaderboardLoading } = useQuery<LeaderboardStats>({
-    queryKey: ['leaderboardStats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/feedback/accuracy-stats');
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Fetch recent activity independently of filters
-  const { data: recentActivityData } = useQuery({
-    queryKey: ['recentActivity'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/overview?limit=20&sortBy=createdAt&sortOrder=desc');
+      const response = await apiRequest('GET', '/api/puzzle/general-stats');
       const json = await response.json();
       return json.data;
     },
@@ -339,7 +187,7 @@ export default function PuzzleOverview() {
     });
   };
 
-  // Calculate model performance rankings based on EXPLANATION QUALITY feedback (not solver accuracy)
+  // Calculate model performance rankings based on feedback
   const modelRankings = useMemo(() => {
     if (!feedbackStats) return [];
     
@@ -372,9 +220,9 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
-  // Generate recent activity from separate recent activity data (AI models only)
+  // Generate recent activity from puzzle data (AI models only)
   const recentActivity = useMemo(() => {
-    if (!recentActivityData?.puzzles) return [];
+    if (!data?.puzzles) return [];
     
     const activities: Array<{
       id: string;
@@ -385,8 +233,8 @@ export default function PuzzleOverview() {
     }> = [];
     
     // Extract explanations from all puzzles (exclude Saturn)
-    recentActivityData.puzzles.forEach((puzzle: any) => {
-      puzzle.explanations.forEach((explanation: any) => {
+    data.puzzles.forEach((puzzle: PuzzleOverviewData) => {
+      puzzle.explanations.forEach((explanation: ExplanationRecord) => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
         
@@ -404,7 +252,7 @@ export default function PuzzleOverview() {
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20); // Keep more items for the scrollable list
-  }, [recentActivityData]);
+  }, [data]);
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -423,40 +271,22 @@ export default function PuzzleOverview() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
-        {/* Breadcrumb Navigation */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/" className="flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Home
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Database Overview</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <header className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 flex items-center justify-center lg:justify-start gap-3">
-                <Database className="h-8 w-8 lg:h-10 lg:w-10 text-indigo-600" />
+        <header className="text-center space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
+                <Database className="h-8 w-8" />
                 Puzzle Database Overview
               </h1>
-              <p className="text-lg text-gray-600 mt-2">
+              <p className="text-lg text-gray-600">
                 Browse all puzzles and their explanations stored in the database
               </p>
             </div>
             <Link href="/">
-              <Button variant="outline" size="lg" className="shrink-0">
+              <Button variant="outline">
                 ← Back to Browser
               </Button>
             </Link>
@@ -475,12 +305,10 @@ export default function PuzzleOverview() {
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
           recentActivity={recentActivity}
-          saturnResults={[]}
         />
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
-          <SearchFilters
+        <SearchFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           hasExplanationFilter={hasExplanationFilter}
@@ -513,49 +341,15 @@ export default function PuzzleOverview() {
           setConfidenceMin={setConfidenceMin}
           confidenceMax={confidenceMax}
           setConfidenceMax={setConfidenceMax}
-          totalTokensMin={totalTokensMin}
-          setTotalTokensMin={setTotalTokensMin}
-          totalTokensMax={totalTokensMax}
-          setTotalTokensMax={setTotalTokensMax}
-          estimatedCostMin={estimatedCostMin}
-          setEstimatedCostMin={setEstimatedCostMin}
-          estimatedCostMax={estimatedCostMax}
-          setEstimatedCostMax={setEstimatedCostMax}
-          predictionAccuracyMin={predictionAccuracyMin}
-          setPredictionAccuracyMin={setPredictionAccuracyMin}
-          predictionAccuracyMax={predictionAccuracyMax}
-          setPredictionAccuracyMax={setPredictionAccuracyMax}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           getSortIcon={getSortIcon}
-          isLoading={isLoading}
-          />
-        </div>
-
-        {/* Leaderboards Section - SOLVER ACCURACY METRICS (not explanation quality feedback) */}
-        {leaderboardStats && !leaderboardLoading && leaderboardStats.totalTrustworthinessAttempts > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <LeaderboardTable 
-                title="🏆 Top Trustworthiness Leaders"
-                data={leaderboardStats.trustworthinessLeaders}
-              />
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <LeaderboardTable 
-                title="🎯 Best Calibrated Models"
-                data={leaderboardStats.calibrationLeaders}
-              />
-            </div>
-          </div>
-        )}
+        />
 
         {/* Puzzle List with Pagination */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <PuzzleList
+        <PuzzleList
           puzzles={data?.puzzles}
           total={data?.total || 0}
           isLoading={isLoading}
@@ -565,8 +359,7 @@ export default function PuzzleOverview() {
           onFeedbackClick={handleFeedbackClick}
           formatDate={formatDate}
           getConfidenceColor={getConfidenceColor}
-          />
-        </div>
+        />
       </div>
 
       {/* Feedback Modal */}

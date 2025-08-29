@@ -572,6 +572,22 @@ export const puzzleController = {
   },
 
   /**
+   * Get general model statistics for leaderboards (all explanations, not just solver mode)
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getGeneralModelStats(req: Request, res: Response) {
+    try {
+      const modelStats = await repositoryService.feedback.getGeneralModelStats();
+      res.json(formatResponse.success(modelStats));
+    } catch (error) {
+      logger.error('Error fetching general model stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch general model stats', 'An error occurred while fetching general model statistics'));
+    }
+  },
+
+  /**
    * Get solver mode accuracy statistics for leaderboards
    * 
    * @param req - Express request object
