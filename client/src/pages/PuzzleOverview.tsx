@@ -222,6 +222,16 @@ export default function PuzzleOverview() {
     },
   });
 
+  // Fetch recent activity independently of filters
+  const { data: recentActivityData } = useQuery({
+    queryKey: ['recentActivity'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzle/overview?limit=20&sortBy=createdAt&sortOrder=desc');
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
 
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
@@ -293,9 +303,9 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
-  // Generate recent activity from puzzle data (AI models only)
+  // Generate recent activity from separate recent activity data (AI models only)
   const recentActivity = useMemo(() => {
-    if (!data?.puzzles) return [];
+    if (!recentActivityData?.puzzles) return [];
     
     const activities: Array<{
       id: string;
@@ -306,7 +316,7 @@ export default function PuzzleOverview() {
     }> = [];
     
     // Extract explanations from all puzzles (exclude Saturn)
-    data.puzzles.forEach(puzzle => {
+    recentActivityData.puzzles.forEach(puzzle => {
       puzzle.explanations.forEach(explanation => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
@@ -325,7 +335,7 @@ export default function PuzzleOverview() {
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20); // Keep more items for the scrollable list
-  }, [data]);
+  }, [recentActivityData]);
 
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;

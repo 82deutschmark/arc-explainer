@@ -4,6 +4,28 @@
  * Handles all feedback-related database operations.
  * Extracted from monolithic DbService to follow Single Responsibility Principle.
  * 
+ * IMPORTANT: This repository handles TWO COMPLETELY DIFFERENT TYPES OF DATA:
+ * 
+ * 1. USER FEEDBACK (explanation quality ratings):
+ *    - How good/helpful an AI model's explanation was
+ *    - Stored in 'feedback' table with vote_type: 'helpful' | 'not_helpful'  
+ *    - A model can solve a puzzle WRONG but give a great explanation → helpful feedback
+ *    - A model can solve a puzzle RIGHT but give a terrible explanation → not helpful feedback
+ *    - Used for: Community feedback stats, explanation quality rankings
+ * 
+ * 2. PREDICTION ACCURACY (puzzle-solving performance):
+ *    - Whether an AI model actually solved the puzzle correctly
+ *    - Stored in 'explanations' table fields:
+ *      * is_prediction_correct (boolean) - single test correctness
+ *      * multi_test_all_correct (boolean) - multi-test correctness  
+ *      * predicted_output_grid - the model's actual prediction
+ *      * multi_test_prediction_grids - multi-test predictions
+ *    - Used for: Solver performance stats, accuracy leaderboards
+ * 
+ * These are SEPARATE METRICS and should never be confused!
+ * - getAccuracyStats() = prediction accuracy (puzzle solving)
+ * - getFeedbackStats() = user feedback (explanation quality)
+ * 
  * @author Claude
  * @date 2025-08-27
  */
@@ -285,7 +307,19 @@ export class FeedbackRepository extends BaseRepository {
     }
   }
 
-  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
+  /**
+   * Get PREDICTION ACCURACY STATS (puzzle-solving performance)
+   * 
+   * NOT user feedback! This measures how well models actually solve puzzles.
+   * 
+   * SOLVER ATTEMPT CRITERIA:
+   * - Must have predicted_output_grid OR multi_test_prediction_grids (model made predictions)
+   * 
+   * CORRECTNESS CRITERIA:  
+   * - is_prediction_correct = true (single test correct)
+   * - multi_test_all_correct = true (multi-test correct)
+   */
+  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
       logger.warn('Database not connected - returning empty accuracy stats. Set DATABASE_URL to enable leaderboards.', 'database');
       return {
@@ -298,15 +332,16 @@ export class FeedbackRepository extends BaseRepository {
     }
 
     try {
-      // Get basic explanation stats - only count solver attempts with correctness flags
+      // Get basic explanation stats - only count actual solver attempts (entries with prediction grids)
       const basicStats = await this.query(`
         SELECT 
-          COUNT(*) as total_explanations,
-          ROUND(AVG(confidence), 1) as avg_confidence
+          COUNT(*) as total_solver_attempts,
+          ROUND(AVG(confidence), 1) as avg_confidence,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
         FROM explanations
         WHERE confidence IS NOT NULL 
-          AND (is_prediction_correct IS NOT NULL 
-               OR multi_test_all_correct IS NOT NULL)
+          AND (predicted_output_grid IS NOT NULL 
+               OR multi_test_prediction_grids IS NOT NULL)
       `);
 
       // Get model accuracy based on ACTUAL prediction correctness - not user feedback
@@ -343,8 +378,8 @@ export class FeedbackRepository extends BaseRepository {
           ) as actual_accuracy_percentage
         FROM explanations e
         WHERE e.model_name IS NOT NULL
-          AND (e.is_prediction_correct IS NOT NULL 
-               OR e.multi_test_all_correct IS NOT NULL)
+          AND (e.predicted_output_grid IS NOT NULL 
+               OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
         ORDER BY actual_accuracy_percentage DESC, total_attempts DESC
@@ -353,9 +388,10 @@ export class FeedbackRepository extends BaseRepository {
       const stats = basicStats.rows[0];
 
       return {
-        totalExplanations: parseInt(stats.total_explanations) || 0,
+        totalExplanations: parseInt(stats.total_solver_attempts) || 0,
         avgConfidence: parseFloat(stats.avg_confidence) || 0,
-        totalSolverAttempts: parseInt(stats.total_explanations) || 0,
+        totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
+        totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
         accuracyByModel: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
           totalAttempts: parseInt(row.total_attempts),

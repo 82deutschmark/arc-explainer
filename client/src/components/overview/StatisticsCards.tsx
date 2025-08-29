@@ -28,6 +28,7 @@ interface AccuracyStats {
     predictionSuccessRate?: number;
   }>;
   totalSolverAttempts: number;
+  totalCorrectPredictions?: number;
 }
 
 interface ModelRanking {
@@ -137,17 +138,16 @@ export function StatisticsCards({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-green-50 rounded-lg">
                     <div className="text-xl font-semibold text-green-700">
-                      {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
-                        sum + model.accuracyPercentage, 0) / accuracyStats.accuracyByModel.length) || 0}%
+                      {accuracyStats.totalCorrectPredictions || 0}
                     </div>
-                    <div className="text-xs text-green-600">Avg Accuracy</div>
+                    <div className="text-xs text-green-600">Correct Predictions</div>
                   </div>
                   <div className="text-center p-3 bg-blue-50 rounded-lg">
                     <div className="text-xl font-semibold text-blue-700">
-                      {Math.round(accuracyStats.accuracyByModel.reduce((sum, model) => 
-                        sum + model.avgAccuracyScore, 0) / accuracyStats.accuracyByModel.length * 100) || 0}%
+                      {accuracyStats.totalSolverAttempts > 0 ? 
+                        Math.round(((accuracyStats.totalCorrectPredictions || 0) / accuracyStats.totalSolverAttempts) * 100) : 0}%
                     </div>
-                    <div className="text-xs text-blue-600">Avg Trust Score</div>
+                    <div className="text-xs text-blue-600">Overall Success Rate</div>
                   </div>
                 </div>
               </div>
