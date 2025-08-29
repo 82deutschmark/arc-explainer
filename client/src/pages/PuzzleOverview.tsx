@@ -268,18 +268,6 @@ export default function PuzzleOverview() {
           createdAt: explanation.createdAt
         });
       });
-      
-      // Also add feedback activities if available
-      if (puzzle.feedbacks) {
-        puzzle.feedbacks.forEach((feedback: any) => {
-          activities.push({
-            id: feedback.id.toString(),
-            type: 'feedback',
-            puzzleId: puzzle.id,
-            createdAt: feedback.createdAt
-          });
-        });
-      }
     });
     
     console.log(`Recent activity found ${activities.length} items`);
