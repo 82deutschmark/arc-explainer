@@ -26,15 +26,22 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   createdAt?: string;
   confidence?: number;
   estimatedCost?: number;
+  isPredictionCorrect?: boolean;
+  multiplePredictedOutputs?: any;
+  multiTestResults?: any;
+  multiTestAllCorrect?: boolean;
+  multiTestAverageAccuracy?: number;
+  hasMultiplePredictions?: boolean;
+  multiTestPredictionGrids?: any;
 }
 
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
-  const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained as requested
+  const [explanationFilter, setExplanationFilter] = useState<string>('all'); // 'all', 'unexplained', 'explained' - Changed to show all puzzles
   const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
   const [multiTestFilter, setMultiTestFilter] = useState<string>('any'); // 'any', 'single', 'multi'
-  const [sortBy, setSortBy] = useState<string>('default'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at'
+  const [sortBy, setSortBy] = useState<string>('least_analysis_data'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [, setLocation] = useLocation();
@@ -96,6 +103,22 @@ export default function PuzzleBrowser() {
             const aDate = a.createdAt || '1970-01-01';
             const bDate = b.createdAt || '1970-01-01';
             return bDate.localeCompare(aDate);
+          case 'least_analysis_data':
+            // Count non-null analysis data fields - puzzles with least data first
+            const countAnalysisFields = (puzzle: EnhancedPuzzleMetadata) => {
+              let count = 0;
+              if (puzzle.isPredictionCorrect !== null && puzzle.isPredictionCorrect !== undefined) count++;
+              if (puzzle.multiplePredictedOutputs !== null && puzzle.multiplePredictedOutputs !== undefined) count++;
+              if (puzzle.multiTestResults !== null && puzzle.multiTestResults !== undefined) count++;
+              if (puzzle.multiTestAllCorrect !== null && puzzle.multiTestAllCorrect !== undefined) count++;
+              if (puzzle.multiTestAverageAccuracy !== null && puzzle.multiTestAverageAccuracy !== undefined) count++;
+              if (puzzle.hasMultiplePredictions !== null && puzzle.hasMultiplePredictions !== undefined) count++;
+              if (puzzle.multiTestPredictionGrids !== null && puzzle.multiTestPredictionGrids !== undefined) count++;
+              return count;
+            };
+            const aAnalysisCount = countAnalysisFields(a);
+            const bAnalysisCount = countAnalysisFields(b);
+            return aAnalysisCount - bAnalysisCount; // Ascending - least data first
           default:
             return 0;
         }
