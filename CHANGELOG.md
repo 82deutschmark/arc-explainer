@@ -1,8 +1,22 @@
 ###   August 29 2025
 
-
+## v2.5.21 - Fix Multiple Predictions Data Storage Bug
+- **CRITICAL FIX**: Fixed explanationService bug where `predictedOutput1`, `predictedOutput2`, `predictedOutput3` fields were being ignored during database storage
+- Multiple prediction grids are now properly collected from all sources (individual fields, arrays, and multi-test results)
+- Fixed `hasMultiplePredictions` flag being incorrectly set to `null/false` when multiple grids exist
+- Updated grid collection logic to handle both numbered prediction fields and array formats
+- **Impact**: AI models that generate multiple output predictions (like GPT-5, Gemini-2.0, DeepSeek) now properly display all prediction grids in the UI
+- **Status**: ✅ **MAIN BUG FIXED** - All new analyses now correctly store and display multiple predictions
+- **Recovery**: Created comprehensive recovery system for ~100+ old entries (database connection debugging needed for full recovery)
+- **Technical**: Modified `server/services/explanationService.ts` lines 72-107 to collect grids from `predictedOutput1/2/3` fields before falling back to `multiTestResults`
+- **Verification**: Confirmed fix works - new entries like ID 5252 now have `hasMultiplePredictions: true` and proper grid arrays
 - Author: Claude Sonnet 4
-- 
+
+## v2.5.20 - Landing Page Redesign & Analysis Data Sorting
+- Change default sorting to "Analysis Data (fewest first)" to prioritize puzzles needing more analysis
+- Change default filter from "unexplained" to "all" puzzles  
+- Add comprehensive analysis data fields to getBulkExplanationStatus backend query
+- Add visual improvements: gradient backgrounds, enhanced typography, improved card styling
 
 ## v2.5.19 - Top Models Redesign
 - Replace single ranking with three performance categories: accuracy, trustworthiness, user feedback
