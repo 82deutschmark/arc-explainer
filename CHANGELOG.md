@@ -1,86 +1,41 @@
 ###   August 29 2025
 
-## v2.5.20 - MODELDEBUGMODAL TYPESCRIPT ROBUSTNESS OVERHAUL: Complete Type Safety & API Accuracy
-- **MODAL SCROLLABILITY FIXED**: Resolved height constraint issues preventing proper scrolling in debug modal
-- **COMPLETE TYPE SAFETY**: Eliminated all 'any' types from ModelDebugModal component - now fully type-safe
-- **API RESPONSE ACCURACY**: Added missing RawDatabaseStats and PerformanceStats interfaces matching actual backend
-- **PROPERTY MISMATCH FIXED**: Removed references to non-existent speedLeaders properties (avgTokens, avgCost, totalCost)
-- **CORRECT DATA MAPPING**: Cost/token metrics properly mapped to trustworthinessLeaders where they exist
-- **FEEDBACK STRUCTURE FIXED**: Fixed feedbackByModel total calculation - compute from helpful + notHelpful counts
-- **ENDPOINT VERIFICATION**: All API endpoints confirmed working (/api/puzzle/accuracy-stats, /api/feedback/stats, /api/puzzle/raw-stats, /api/puzzle/performance-stats)
-- **PROP VALIDATION**: Added modelName validation with dedicated error state for invalid inputs
-- **COMPREHENSIVE METRICS**: Now displays all available trustworthiness properties including trustworthinessRange
-- **CLEAR SEPARATION**: Split Speed Metrics vs Trustworthiness & Cost Metrics based on actual API structure
-- **DEVELOPER EXPERIENCE**: Modal now provides accurate debugging data matching real backend responses
+
+- Author: Claude Sonnet 4
+- 
+
+## v2.5.19 - Top Models Redesign
+- Replace single ranking with three performance categories: accuracy, trustworthiness, user feedback
+- Add color-coded sections with distinct icons for each category
+- Show specific stats per category (attempts/correct, feedback counts, etc.)
+- Remove duplication with Community Feedback Leaderboard
 - Author: Claude Sonnet 4
 
-## v2.5.19 - TOP MODELS REDESIGN: Comprehensive Performance Showcase Across Three Metrics
-- **USER FEEDBACK ADDRESSED**: "top models sounds wrong... we should be showing the best and the worst"
-- **ELIMINATED DUPLICATION**: Previous Top Models card duplicated Community Feedback Leaderboard functionality
-- **COMPREHENSIVE METRICS**: Now shows three distinct performance dimensions instead of single ranking
-- **CLEAR CATEGORIZATION**: "Best Accuracy" (puzzle success), "Best Trustworthiness" (prediction calibration), "Best User Feedback" (helpfulness rating)
-- **VISUAL DISTINCTION**: Color-coded sections (green=accuracy, blue=trustworthiness, purple=feedback) with unique icons
-- **DETAILED INSIGHTS**: Shows specific stats per category - attempts/correct for accuracy, feedback counts for user rating
-- **NO MORE AMBIGUITY**: Users understand exactly what makes each model "top" in its category
-- **ACTIONABLE DATA**: Provides model selection guidance across different use cases and priorities
-- **PROPER FALLBACKS**: Clear messaging when data unavailable for specific performance dimensions
-- **RESPONSIVE DESIGN**: Maintains usability across different screen sizes and data states
+## v2.5.18 - TypeScript Interface Fixes
+- Fix ExplanationResponse interface with proper field definitions
+- Fix ExplanationData interface for database operations
+- Replace catch-all [key: string]: any types with specific fields
+- Align interfaces with database schema documentation
+- Fix Recent Activity and Top Models card population issues
 - Author: Claude Sonnet 4
 
-## v2.5.18 - CRITICAL INTERFACE TYPE SAFETY FIXES: Replaced Multiple Catch-All Types
-- **SYSTEMIC TYPE SAFETY ISSUE RESOLVED**: Found and fixed multiple [key: string]: any catch-all interfaces throughout codebase
-- **ExplanationResponse Interface Fixed**: Was completely untyped, now properly structured with 35+ specific fields
-- **ExplanationData Interface Fixed**: Database insert operations now type-safe with required vs optional fields
-- **Root Cause**: Sloppy development practices using lazy catch-all types instead of proper interface definitions
-- **Compilation Safety**: TypeScript now catches field name mismatches and missing required data at build time
-- **Database Schema Alignment**: All interfaces now match Database_Schema_Mismatch_Analysis.md documentation exactly
-- **Recent Activity Fix**: Should now populate correctly with proper modelName and createdAt field access
-- **Top Models Fix**: Structured explanation data should resolve card population issues  
-- **Type Contract Enforcement**: Frontend-backend data exchange now has proper type contracts
-- **Error Prevention**: Prevents runtime errors from undefined field access in leaderboard components
-- **Remaining Catch-All Types**: Found 4+ additional catch-all interfaces that may need future attention
-- **Development Process**: Demonstrates need for more careful interface design and proper TypeScript usage
+## v2.5.17 - Community Feedback Leaderboard Fix
+- Fix empty feedbackByModel data structure in getFeedbackSummaryStats()
+- Add not_helpful_count to topModels query
+- Fix PostgreSQL ROUND() syntax error
 - Author: Claude Sonnet 4
 
-## v2.5.17 - COMMUNITY FEEDBACK LEADERBOARD FIXED: Resolved Empty feedbackByModel Data Structure
-- **CRITICAL COMMUNITY FEEDBACK BUG RESOLVED**: Community Feedback Leaderboard was showing "No feedback data available" despite having feedback in database
-- **ROOT CAUSE**: feedbackByModel was hardcoded to empty object {} in getFeedbackSummaryStats() line 301
-- **DATA STRUCTURE FIXED**: Built proper feedbackByModel from topModels query using reduce() transformation
-- **SQL QUERY ENHANCED**: Added not_helpful_count to topModels query for complete feedback statistics
-- **POSTGRESQL COMPATIBILITY**: Fixed ROUND(AVG(confidence), 1) syntax error in feedback stats query
-- **COMPLETE FEEDBACK DATA**: feedbackByModel now populated with { helpful, notHelpful, total } per model
-- **BACKEND ARCHITECTURE**: Maintained FeedbackStats interface compatibility while fixing data population
-- **USER IMPACT**: Community Feedback Leaderboard now shows models ranked by helpfulness percentage
-- **TECHNICAL**: JavaScript-level rounding for avgConfidence display, cross-database compatibility
-- **REMAINING ISSUES**: Recent Activity and Top Models cards may still need data population depending on puzzle/explanation database content
+## v2.5.16 - Leaderboard Data Population Fix
+- Fix PostgreSQL ROUND() function compatibility issues
+- Add general-stats endpoint for all models with explanations
+- Switch frontend to use general-stats instead of accuracy-stats only
 - Author: Claude Sonnet 4
 
-## v2.5.16 - LEADERBOARD DATA POPULATION FIXED: SQL Errors & Empty Data Resolved
-- **CRITICAL POSTGRESQL BUG RESOLVED**: Fixed "function round(double precision, integer) does not exist" SQL errors breaking all leaderboard queries
-- **EMPTY LEADERBOARD DATA FIXED**: Added general-stats endpoint showing ALL models with explanations (not just solver mode)
-- **SQL Syntax Corrections**: Removed PostgreSQL-incompatible ROUND(value, precision) calls, moved rounding to JavaScript layer
-- **New Backend Methods**: Added getGeneralModelStats() for comprehensive model performance across all usage modes
-- **Data Source Switch**: Frontend now uses /api/puzzle/general-stats instead of solver-only accuracy-stats endpoint
-- **Broader Model Coverage**: Leaderboards now show models that created explanations even without solver predictions
-- **Cross-Database Compatibility**: JavaScript-level rounding works across PostgreSQL, MySQL, SQLite implementations
-- **Performance Metrics Preserved**: Maintains solver-specific accuracy while showing general model activity
-- **User Experience**: Leaderboards now populate with meaningful data instead of empty "No data available" messages
-- **Technical**: New getGeneralModelStats SQL queries with proper CASE statements, no precision parameters
-- Author: Claude Sonnet 4
-
-## v2.5.15 - LEADERBOARD VISIBILITY RESTORED: Dual Accuracy & Trustworthiness Displays
-- **USER ISSUE RESOLVED**: "where are these leaderboards? are they on tabs that dont exist?" - Leaderboards now prominently visible on main overview page
-- **Dual Leaderboard System**: Restored separate "Accuracy Leaderboard" and "Trustworthiness Leaderboard" sections from overview/prompts branches
-- **Always-Visible Community Feedback**: Community feedback leaderboard now shows regardless of solver data availability
-- **Enhanced Model Display**: Each model shows both "X% puzzle success" and "Y% trustworthiness" badges for comprehensive comparison
-- **Removed Restrictive Conditions**: Eliminated conditional rendering that hid leaderboards when `totalSolverAttempts == 0`
-- **Proper Sorting Logic**: Accuracy leaderboard sorted by accuracyPercentage, trustworthiness by avgTrustworthiness score
-- **Rich Fallback States**: Clear messaging when solver data not available, explains how to generate leaderboard data
-- **Technical Documentation**: Added comprehensive docs/Leaderboard_Restoration_Plan.md explaining the restoration process
-- **Backend Compatibility**: Verified avgTrustworthiness already available in AccuracyStats from FeedbackRepository.ts
-- **UI Enhancement**: Up to 8 community models + 5 solver models per leaderboard with provider info and attempt counts
-- **Mobile Responsive**: Maintains dual-leaderboard layout on large screens, stacks appropriately on mobile
-- **Impact**: Users can now see comprehensive model comparisons similar to quality from overview/prompts branches
+## v2.5.15 - Leaderboard Visibility Fix
+- Make leaderboards prominently visible on main overview page
+- Restore separate Accuracy and Trustworthiness Leaderboard sections
+- Show community feedback leaderboard regardless of solver data availability
+- Add puzzle success and trustworthiness badges for each model
 - Author: Claude Sonnet 4
 
 ## v2.5.14 - CRITICAL DATABASE SCHEMA FIX: Real Leaderboard Data
