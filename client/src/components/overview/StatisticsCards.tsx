@@ -195,18 +195,18 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             {/* Three Column Layout for Top Models */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-80">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-96">
               {/* Best Accuracy Column */}
-              <div className="flex flex-col">
+              <div className="flex flex-col h-full">
                 <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
                   <Award className="h-4 w-4 text-green-500" />
                   Best Accuracy
                 </h4>
-                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                <div className="h-80 space-y-2 overflow-y-auto pr-1 border-r border-green-100">
                   {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
                     [...accuracyStats.accuracyByModel]
                       .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
-                      .slice(0, 8)
+                      .slice(0, 15)
                       .map((model, index) => {
                         const modelInfo = MODELS.find(m => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
@@ -242,16 +242,16 @@ export function StatisticsCards({
               </div>
 
               {/* Best Trustworthiness Column */}
-              <div className="flex flex-col">
+              <div className="flex flex-col h-full">
                 <h4 className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
                   <Star className="h-4 w-4 text-blue-500" />
                   Best Trustworthiness
                 </h4>
-                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                <div className="h-80 space-y-2 overflow-y-auto pr-1 border-r border-blue-100">
                   {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
                     [...accuracyStats.accuracyByModel]
                       .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
-                      .slice(0, 8)
+                      .slice(0, 15)
                       .map((model, index) => {
                         const modelInfo = MODELS.find(m => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
@@ -287,15 +287,15 @@ export function StatisticsCards({
               </div>
 
               {/* Best User Feedback Column */}
-              <div className="flex flex-col">
+              <div className="flex flex-col h-full">
                 <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
                   <MessageSquare className="h-4 w-4 text-purple-500" />
                   Best User Feedback
                 </h4>
-                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                <div className="h-80 space-y-2 overflow-y-auto pr-1">
                   {modelRankings.length > 0 ? (
                     modelRankings
-                      .slice(0, 8)
+                      .slice(0, 15)
                       .map((model, index) => {
                         const modelInfo = MODELS.find(m => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
