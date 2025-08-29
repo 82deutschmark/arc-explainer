@@ -4,6 +4,28 @@
  * Handles all feedback-related database operations.
  * Extracted from monolithic DbService to follow Single Responsibility Principle.
  * 
+ * IMPORTANT: This repository handles TWO COMPLETELY DIFFERENT TYPES OF DATA:
+ * 
+ * 1. USER FEEDBACK (explanation quality ratings):
+ *    - How good/helpful an AI model's explanation was
+ *    - Stored in 'feedback' table with vote_type: 'helpful' | 'not_helpful'  
+ *    - A model can solve a puzzle WRONG but give a great explanation → helpful feedback
+ *    - A model can solve a puzzle RIGHT but give a terrible explanation → not helpful feedback
+ *    - Used for: Community feedback stats, explanation quality rankings
+ * 
+ * 2. PREDICTION ACCURACY (puzzle-solving performance):
+ *    - Whether an AI model actually solved the puzzle correctly
+ *    - Stored in 'explanations' table fields:
+ *      * is_prediction_correct (boolean) - single test correctness
+ *      * multi_test_all_correct (boolean) - multi-test correctness  
+ *      * predicted_output_grid - the model's actual prediction
+ *      * multi_test_prediction_grids - multi-test predictions
+ *    - Used for: Solver performance stats, accuracy leaderboards
+ * 
+ * These are SEPARATE METRICS and should never be confused!
+ * - getAccuracyStats() = prediction accuracy (puzzle solving)
+ * - getFeedbackStats() = user feedback (explanation quality)
+ * 
  * @author Claude
  * @date 2025-08-27
  */
@@ -285,8 +307,21 @@ export class FeedbackRepository extends BaseRepository {
     }
   }
 
-  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
+  /**
+   * Get PREDICTION ACCURACY STATS (puzzle-solving performance)
+   * 
+   * NOT user feedback! This measures how well models actually solve puzzles.
+   * 
+   * SOLVER ATTEMPT CRITERIA:
+   * - Must have predicted_output_grid OR multi_test_prediction_grids (model made predictions)
+   * 
+   * CORRECTNESS CRITERIA:  
+   * - is_prediction_correct = true (single test correct)
+   * - multi_test_all_correct = true (multi-test correct)
+   */
+  async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty accuracy stats. Set DATABASE_URL to enable leaderboards.', 'database');
       return {
         totalExplanations: 0,
         avgConfidence: 0,
@@ -297,69 +332,104 @@ export class FeedbackRepository extends BaseRepository {
     }
 
     try {
-      // Get basic explanation stats - only count solver attempts with correctness flags
+      // Get basic explanation stats - only count actual solver attempts (entries with prediction grids)
       const basicStats = await this.query(`
         SELECT 
-          COUNT(*) as total_explanations,
-          ROUND(AVG(confidence), 1) as avg_confidence
+          COUNT(*) as total_solver_attempts,
+          ROUND(AVG(confidence), 1) as avg_confidence,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
         FROM explanations
         WHERE confidence IS NOT NULL 
-          AND (is_prediction_correct IS NOT NULL 
-               OR multi_test_all_correct IS NOT NULL)
+          AND (predicted_output_grid IS NOT NULL 
+               OR multi_test_prediction_grids IS NOT NULL)
       `);
 
-      // Get model accuracy based on feedback - only for solver attempts with correctness flags
+      // Get model accuracy based on ACTUAL prediction correctness - not user feedback
       const modelAccuracy = await this.query(`
         SELECT 
           e.model_name,
-          COUNT(e.id) as total_explanations,
+          COUNT(e.id) as total_attempts,
           ROUND(AVG(e.confidence), 1) as avg_confidence,
-          COUNT(f.id) as feedback_count,
-          SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
+          
+          -- Single test accuracy (using is_prediction_correct)
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+          
+          -- Multi test accuracy (using multi_test_all_correct and multi_test_average_accuracy)  
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_all_correct,
+          ROUND(AVG(e.multi_test_average_accuracy), 4) as avg_multi_test_accuracy,
+          
+          -- Overall accuracy combining both single and multi tests
+          (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
+           SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) as total_correct_predictions,
+          
+          -- Overall accuracy score using prediction_accuracy_score field (trustworthiness)
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness_score,
+          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness_score,
+          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness_score,
+          
+          -- Calculate overall accuracy percentage
           ROUND(
             CASE 
-              WHEN COUNT(f.id) > 0 
-              THEN (SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) * 100.0 / COUNT(f.id))
+              WHEN COUNT(e.id) > 0 
+              THEN ((SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
+                     SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) * 100.0 / COUNT(e.id))
               ELSE 0 
             END, 1
-          ) as user_satisfaction_rate
+          ) as actual_accuracy_percentage
         FROM explanations e
-        LEFT JOIN feedback f ON e.id = f.explanation_id
         WHERE e.model_name IS NOT NULL
-          AND (e.is_prediction_correct IS NOT NULL 
-               OR e.multi_test_all_correct IS NOT NULL)
+          AND (e.predicted_output_grid IS NOT NULL 
+               OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
-        ORDER BY user_satisfaction_rate DESC, total_explanations DESC
+        ORDER BY avg_trustworthiness_score DESC, total_attempts DESC
       `);
 
       const stats = basicStats.rows[0];
 
       return {
-        totalExplanations: parseInt(stats.total_explanations) || 0,
+        totalExplanations: parseInt(stats.total_solver_attempts) || 0,
         avgConfidence: parseFloat(stats.avg_confidence) || 0,
-        totalSolverAttempts: parseInt(stats.total_explanations) || 0,
+        totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
+        totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
         accuracyByModel: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
-          totalAttempts: parseInt(row.total_explanations),
-          totalExplanations: parseInt(row.total_explanations),
+          totalAttempts: parseInt(row.total_attempts),
+          totalExplanations: parseInt(row.total_attempts),
           avgConfidence: parseFloat(row.avg_confidence) || 0,
-          feedbackCount: parseInt(row.feedback_count) || 0,
-          helpfulCount: parseInt(row.helpful_count) || 0,
-          userSatisfactionRate: parseFloat(row.user_satisfaction_rate) || 0,
-          correctPredictions: parseInt(row.helpful_count) || 0,
-          accuracyPercentage: parseFloat(row.user_satisfaction_rate) || 0,
-          avgAccuracyScore: parseFloat(row.user_satisfaction_rate) / 100 || 0,
-          successfulExtractions: parseInt(row.helpful_count) || 0,
-          extractionSuccessRate: parseFloat(row.user_satisfaction_rate) || 0
+          
+          // Real prediction accuracy data
+          singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+          singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+          multiTestAttempts: parseInt(row.multi_test_attempts) || 0,  
+          multiAllCorrect: parseInt(row.multi_all_correct) || 0,
+          avgMultiTestAccuracy: parseFloat(row.avg_multi_test_accuracy) || 0,
+          
+          // Overall accuracy metrics
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0,
+          
+          // Trustworthiness scores (prediction_accuracy_score)
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness_score) || 0,
+          avgAccuracyScore: parseFloat(row.avg_trustworthiness_score) || 0, // Keep for backward compatibility
+          minTrustworthiness: parseFloat(row.min_trustworthiness_score) || 0,
+          maxTrustworthiness: parseFloat(row.max_trustworthiness_score) || 0,
+          
+          // Remove fake "successful extractions" terminology
+          successfulPredictions: parseInt(row.total_correct_predictions) || 0,
+          predictionSuccessRate: parseFloat(row.actual_accuracy_percentage) || 0
         })),
         modelAccuracy: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
-          totalExplanations: parseInt(row.total_explanations),
+          totalAttempts: parseInt(row.total_attempts),
           avgConfidence: parseFloat(row.avg_confidence) || 0,
-          feedbackCount: parseInt(row.feedback_count) || 0,
-          helpfulCount: parseInt(row.helpful_count) || 0,
-          userSatisfactionRate: parseFloat(row.user_satisfaction_rate) || 0
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0
         }))
       };
     } catch (error) {
@@ -407,19 +477,19 @@ export class FeedbackRepository extends BaseRepository {
       const stats = await this.query(`
         SELECT 
           COUNT(*) as total_explanations,
-          ROUND(AVG(processing_time), 2) as avg_processing_time,
-          MAX(processing_time) as max_processing_time,
-          ROUND(AVG(accuracy), 4) as avg_prediction_accuracy,
+          ROUND(AVG(api_processing_time_ms), 2) as avg_processing_time,
+          MAX(api_processing_time_ms) as max_processing_time,
+          ROUND(AVG(prediction_accuracy_score), 4) as avg_prediction_accuracy,
           SUM(total_tokens) as total_tokens,
           ROUND(AVG(total_tokens), 0) as avg_tokens,
           MAX(total_tokens) as max_tokens,
-          ROUND(SUM(cost), 4) as total_estimated_cost,
-          ROUND(AVG(cost), 6) as avg_estimated_cost,
-          ROUND(MAX(cost), 6) as max_estimated_cost,
+          ROUND(SUM(estimated_cost), 4) as total_estimated_cost,
+          ROUND(AVG(estimated_cost), 6) as avg_estimated_cost,
+          ROUND(MAX(estimated_cost), 6) as max_estimated_cost,
           COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
-          COUNT(cost) FILTER (WHERE cost IS NOT NULL) as explanations_with_cost,
-          COUNT(accuracy) FILTER (WHERE accuracy IS NOT NULL) as explanations_with_accuracy,
-          COUNT(processing_time) FILTER (WHERE processing_time IS NOT NULL) as explanations_with_processing_time
+          COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
+          COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
+          COUNT(api_processing_time_ms) FILTER (WHERE api_processing_time_ms IS NOT NULL) as explanations_with_processing_time
         FROM explanations
       `);
 
@@ -502,53 +572,55 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
           ROUND(AVG(e.confidence), 1) as avg_confidence,
-          ROUND(AVG(e.processing_time), 0) as avg_processing_time,
+          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
           ROUND(AVG(e.total_tokens), 0) as avg_tokens,
-          ROUND(AVG(e.cost), 6) as avg_cost,
-          ROUND(SUM(e.cost), 4) as total_cost,
-          ROUND(MIN(e.accuracy), 4) as min_trustworthiness,
-          ROUND(MAX(e.accuracy), 4) as max_trustworthiness,
+          ROUND(AVG(e.estimated_cost), 6) as avg_cost,
+          ROUND(SUM(e.estimated_cost), 4) as total_cost,
+          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness,
+          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness,
           ROUND(
             CASE 
-              WHEN AVG(e.accuracy) > 0 
-              THEN SUM(e.cost) / AVG(e.accuracy) / COUNT(*)
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN SUM(e.estimated_cost) / AVG(e.prediction_accuracy_score) / COUNT(*)
               ELSE 0 
             END, 6
           ) as cost_per_trustworthiness,
           ROUND(
             CASE 
-              WHEN AVG(e.accuracy) > 0 
-              THEN SUM(e.total_tokens) / AVG(e.accuracy) / COUNT(*)
+              WHEN AVG(e.prediction_accuracy_score) > 0 
+              THEN SUM(e.total_tokens) / AVG(e.prediction_accuracy_score) / COUNT(*)
               ELSE 0 
             END, 0
           ) as tokens_per_trustworthiness,
           ROUND(
-            ABS(AVG(e.confidence) - (AVG(e.accuracy) * 100)), 2
+            ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2
           ) as calibration_error
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.accuracy IS NOT NULL
+          AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 3
+        HAVING COUNT(*) >= 1
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
+        LIMIT 10
       `);
 
       // Get speed leaders (fastest processing times with decent trustworthiness)
       const speedQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(AVG(e.processing_time), 0) as avg_processing_time,
+          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.processing_time IS NOT NULL
-          AND e.accuracy IS NOT NULL
+          AND e.api_processing_time_ms IS NOT NULL
+          AND e.prediction_accuracy_score IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.accuracy) >= 0.3
+        HAVING COUNT(*) >= 1
         ORDER BY avg_processing_time ASC
         LIMIT 10
       `);
@@ -557,16 +629,17 @@ export class FeedbackRepository extends BaseRepository {
       const calibrationQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(ABS(AVG(e.confidence) - (AVG(e.accuracy) * 100)), 2) as calibration_error,
+          ROUND(ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2) as calibration_error,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
           ROUND(AVG(e.confidence), 1) as avg_confidence
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.accuracy IS NOT NULL
+          AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5
+        HAVING COUNT(*) >= 1
         ORDER BY calibration_error ASC
         LIMIT 10
       `);
@@ -577,27 +650,27 @@ export class FeedbackRepository extends BaseRepository {
           e.model_name,
           ROUND(
             CASE 
-              WHEN AVG(e.accuracy) > 0 
-              THEN AVG(e.cost) / AVG(e.accuracy)
+              WHEN AVG(e.prediction_accuracy_score) > 0.01 
+              THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
             END, 6
           ) as cost_efficiency,
           ROUND(
             CASE 
-              WHEN AVG(e.accuracy) > 0 
-              THEN AVG(e.total_tokens) / AVG(e.accuracy)
+              WHEN AVG(e.prediction_accuracy_score) > 0.01 
+              THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
             END, 0
           ) as token_efficiency,
-          ROUND(AVG(e.accuracy), 4) as avg_trustworthiness,
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
           COUNT(*) as total_attempts
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.accuracy IS NOT NULL
-          AND e.cost IS NOT NULL
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.accuracy) >= 0.2
+        HAVING COUNT(*) >= 1
         ORDER BY cost_efficiency ASC
         LIMIT 10
       `);
@@ -606,9 +679,9 @@ export class FeedbackRepository extends BaseRepository {
       const overallQuery = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          ROUND(AVG(accuracy), 4) as overall_trustworthiness
+          ROUND(AVG(prediction_accuracy_score), 4) as overall_trustworthiness
         FROM explanations
-        WHERE accuracy IS NOT NULL
+        WHERE prediction_accuracy_score IS NOT NULL
       `);
 
       const overallStats = overallQuery.rows[0];

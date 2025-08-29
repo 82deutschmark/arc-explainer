@@ -65,10 +65,14 @@ interface AccuracyStats {
     accuracyPercentage: number;
     avgAccuracyScore: number;
     avgConfidence: number;
-    successfulExtractions: number;
-    extractionSuccessRate: number;
+    avgTrustworthiness: number;
+    minTrustworthiness?: number;
+    maxTrustworthiness?: number;
+    successfulPredictions?: number;
+    predictionSuccessRate?: number;
   }>;
   totalSolverAttempts: number;
+  totalCorrectPredictions?: number;
 }
 
 const ITEMS_PER_PAGE = 20;
@@ -222,44 +226,16 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch real performance statistics (trustworthiness-based)
-  const { data: performanceStats, isLoading: performanceLoading } = useQuery({
-    queryKey: ['performanceStats'],
+  // Fetch recent activity independently of filters
+  const { data: recentActivityData } = useQuery({
+    queryKey: ['recentActivity'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/performance-stats');
+      const response = await apiRequest('GET', '/api/puzzle/overview?limit=20&sortBy=createdAt&sortOrder=desc');
       const json = await response.json();
       return json.data;
     },
   });
 
-  // Fetch raw database statistics
-  const { data: rawStats, isLoading: rawStatsLoading } = useQuery({
-    queryKey: ['rawStats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/raw-stats');
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Fetch dataset distribution counts
-  const { data: datasetDistribution } = useQuery({
-    queryKey: ['datasetDistribution'],
-    queryFn: async () => {
-      const sources = ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'];
-      const counts = await Promise.all(
-        sources.map(async (source) => {
-          const response = await apiRequest('GET', `/api/puzzle/overview?limit=1&source=${source}`);
-          const json = await response.json();
-          return { source, count: json.data.total || 0 };
-        })
-      );
-      return counts.reduce((acc, { source, count }) => {
-        acc[source] = count;
-        return acc;
-      }, {} as Record<string, number>);
-    },
-  });
 
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
@@ -331,9 +307,9 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
-  // Generate recent activity from puzzle data (AI models only)
+  // Generate recent activity from separate recent activity data (AI models only)
   const recentActivity = useMemo(() => {
-    if (!data?.puzzles) return [];
+    if (!recentActivityData?.puzzles) return [];
     
     const activities: Array<{
       id: string;
@@ -344,8 +320,8 @@ export default function PuzzleOverview() {
     }> = [];
     
     // Extract explanations from all puzzles (exclude Saturn)
-    data.puzzles.forEach(puzzle => {
-      puzzle.explanations.forEach(explanation => {
+    recentActivityData.puzzles.forEach((puzzle: any) => {
+      puzzle.explanations.forEach((explanation: any) => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
         
@@ -363,7 +339,7 @@ export default function PuzzleOverview() {
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20); // Keep more items for the scrollable list
-  }, [data]);
+  }, [recentActivityData]);
 
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
@@ -427,20 +403,15 @@ export default function PuzzleOverview() {
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
-          performanceStats={performanceStats}
-          rawStats={rawStats}
           modelRankings={modelRankings}
-          totalPuzzles={data?.total || 0}
-          datasetDistribution={datasetDistribution}
           onViewAllFeedback={() => {
             setSelectedPuzzleId('');
             setFeedbackModalOpen(true);
           }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
-          performanceLoading={performanceLoading}
-          rawStatsLoading={rawStatsLoading}
           recentActivity={recentActivity}
+          saturnResults={[]}
         />
 
         {/* Search and Filters */}
