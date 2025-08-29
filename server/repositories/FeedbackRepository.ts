@@ -287,6 +287,7 @@ export class FeedbackRepository extends BaseRepository {
 
   async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty accuracy stats. Set DATABASE_URL to enable leaderboards.', 'database');
       return {
         totalExplanations: 0,
         avgConfidence: 0,
@@ -532,8 +533,9 @@ export class FeedbackRepository extends BaseRepository {
           AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 3
+        HAVING COUNT(*) >= 1
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
+        LIMIT 10
       `);
 
       // Get speed leaders (fastest processing times with decent trustworthiness)
@@ -548,7 +550,7 @@ export class FeedbackRepository extends BaseRepository {
           AND e.api_processing_time_ms IS NOT NULL
           AND e.prediction_accuracy_score IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.3
+        HAVING COUNT(*) >= 1
         ORDER BY avg_processing_time ASC
         LIMIT 10
       `);
@@ -566,7 +568,7 @@ export class FeedbackRepository extends BaseRepository {
           AND e.prediction_accuracy_score IS NOT NULL
           AND e.confidence IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5
+        HAVING COUNT(*) >= 1
         ORDER BY calibration_error ASC
         LIMIT 10
       `);
@@ -597,7 +599,7 @@ export class FeedbackRepository extends BaseRepository {
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 5 AND AVG(e.prediction_accuracy_score) >= 0.2
+        HAVING COUNT(*) >= 1
         ORDER BY cost_efficiency ASC
         LIMIT 10
       `);
