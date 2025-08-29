@@ -220,9 +220,26 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
-  // Generate recent activity from puzzle data (AI models only)
+  // Separate query for recent activity - get puzzles with explanations sorted by recent activity
+  const { data: recentActivityData } = useQuery<PuzzleOverviewResponse>({
+    queryKey: ['recentActivity'],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('hasExplanation', 'true'); // Only puzzles with explanations
+      params.set('sortBy', 'createdAt'); // Sort by explanation creation date
+      params.set('sortOrder', 'desc'); // Most recent first
+      params.set('limit', '20'); // Get 20 recent items
+      params.set('offset', '0');
+      
+      const response = await apiRequest('GET', `/api/puzzle/overview?${params.toString()}`);
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Generate recent activity from dedicated query
   const recentActivity = useMemo(() => {
-    if (!data?.puzzles) return [];
+    if (!recentActivityData?.puzzles) return [];
     
     const activities: Array<{
       id: string;
@@ -232,8 +249,8 @@ export default function PuzzleOverview() {
       createdAt: string;
     }> = [];
     
-    // Extract explanations from all puzzles (exclude Saturn)
-    data.puzzles.forEach((puzzle: PuzzleOverviewData) => {
+    // Extract explanations from puzzles (exclude Saturn)
+    recentActivityData.puzzles.forEach((puzzle: PuzzleOverviewData) => {
       puzzle.explanations.forEach((explanation: ExplanationRecord) => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
@@ -248,11 +265,11 @@ export default function PuzzleOverview() {
       });
     });
     
-    // Sort by creation date (newest first) and take the most recent
+    // Sort by creation date (newest first) - should already be sorted by API
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 20); // Keep more items for the scrollable list
-  }, [data]);
+      .slice(0, 15); // Take top 15 for display
+  }, [recentActivityData]);
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
