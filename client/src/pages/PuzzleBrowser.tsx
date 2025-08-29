@@ -184,13 +184,13 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-gray-900">ARC-AGI Puzzle Explorer</h1>
-              <p className="text-lg text-gray-600">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">ARC-AGI Puzzle Explorer</h1>
+              <p className="text-lg text-slate-600 mt-2">
                 Colorblindness Aid & AI Reasoning Analysis
               </p>
             </div>
@@ -221,10 +221,10 @@ export default function PuzzleBrowser() {
         </header>
 
         {/* Filters */}
-        <Card>
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Grid3X3 className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-slate-800">
+              <Grid3X3 className="h-5 w-5 text-blue-600" />
               Filter Puzzles
             </CardTitle>
           </CardHeader>
@@ -347,6 +347,7 @@ export default function PuzzleBrowser() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="default">Default (puzzle order)</SelectItem>
+                    <SelectItem value="least_analysis_data">Analysis Data (fewest first)</SelectItem>
                     <SelectItem value="processing_time">Processing Time (longest first)</SelectItem>
                     <SelectItem value="confidence">Confidence (highest first)</SelectItem>
                     <SelectItem value="cost">Cost (highest first)</SelectItem>
@@ -359,12 +360,12 @@ export default function PuzzleBrowser() {
         </Card>
 
         {/* Results */}
-        <Card>
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-slate-800">
               Local Puzzles 
               {!isLoading && (
-                <Badge variant="outline" className="ml-2">
+                <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200">
                   {filteredPuzzles.length} found
                 </Badge>
               )}
@@ -390,7 +391,7 @@ export default function PuzzleBrowser() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                  <Card key={puzzle.id} className="hover:shadow-md transition-shadow">
+                  <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02]">
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
@@ -506,14 +507,7 @@ export default function PuzzleBrowser() {
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
               rather than trying to solve them yourself (which is very difficult for some humans).
             </p>
-            <p>
-              <strong>Focus:</strong> We're focusing on smaller puzzles (10×10 or smaller) as they're easier 
-              to understand and analyze.
-            </p>
-            <p>
-              <strong>Alien Communication:</strong> Each number (0-9) represents a different element in an 
-              alien communication system, displayed using space-themed emojis.
-            </p>
+            
             <p>
               <strong>AI Analysis:</strong> Click "Examine" on any puzzle to see the correct answers (from the .json file) and
               have the AI try (and often fail!) to explain the logic behind the puzzle.
