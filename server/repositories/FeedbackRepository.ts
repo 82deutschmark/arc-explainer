@@ -407,19 +407,19 @@ export class FeedbackRepository extends BaseRepository {
       const stats = await this.query(`
         SELECT 
           COUNT(*) as total_explanations,
-          ROUND(AVG(processing_time), 2) as avg_processing_time,
-          MAX(processing_time) as max_processing_time,
-          ROUND(AVG(accuracy), 4) as avg_prediction_accuracy,
+          ROUND(AVG(api_processing_time_ms), 2) as avg_processing_time,
+          MAX(api_processing_time_ms) as max_processing_time,
+          ROUND(AVG(prediction_accuracy_score), 4) as avg_prediction_accuracy,
           SUM(total_tokens) as total_tokens,
           ROUND(AVG(total_tokens), 0) as avg_tokens,
           MAX(total_tokens) as max_tokens,
-          ROUND(SUM(cost), 4) as total_estimated_cost,
-          ROUND(AVG(cost), 6) as avg_estimated_cost,
-          ROUND(MAX(cost), 6) as max_estimated_cost,
+          ROUND(SUM(estimated_cost), 4) as total_estimated_cost,
+          ROUND(AVG(estimated_cost), 6) as avg_estimated_cost,
+          ROUND(MAX(estimated_cost), 6) as max_estimated_cost,
           COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
-          COUNT(cost) FILTER (WHERE cost IS NOT NULL) as explanations_with_cost,
-          COUNT(accuracy) FILTER (WHERE accuracy IS NOT NULL) as explanations_with_accuracy,
-          COUNT(processing_time) FILTER (WHERE processing_time IS NOT NULL) as explanations_with_processing_time
+          COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
+          COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
+          COUNT(api_processing_time_ms) FILTER (WHERE api_processing_time_ms IS NOT NULL) as explanations_with_processing_time
         FROM explanations
       `);
 
