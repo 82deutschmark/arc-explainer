@@ -365,6 +365,19 @@ export default function PuzzleOverview() {
           getSortIcon={getSortIcon}
         />
 
+        {/* Loading indicator for filtering */}
+        {isLoading && (
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+              <div>
+                <p className="text-blue-800 font-medium">Applying filters and loading puzzles...</p>
+                <p className="text-blue-600 text-sm">This may take a few seconds for complex queries</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Puzzle List with Pagination */}
         <PuzzleList
           puzzles={data?.puzzles}

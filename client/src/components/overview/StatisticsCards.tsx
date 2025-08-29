@@ -183,10 +183,158 @@ export function StatisticsCards({
         </Card>
       </div>
 
-      {/* Priority 2: Activity & Model Performance */}
+      {/* Priority 2: Model Performance & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Extended Recent Activity */}
+        {/* Top Models - Large Component with 3 Columns */}
         <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-gold-500" />
+              Top Models
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Three Column Layout for Top Models */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-80">
+              {/* Best Accuracy Column */}
+              <div className="flex flex-col">
+                <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
+                  <Award className="h-4 w-4 text-green-500" />
+                  Best Accuracy
+                </h4>
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                  {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
+                    [...accuracyStats.accuracyByModel]
+                      .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
+                      .slice(0, 8)
+                      .map((model, index) => {
+                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
+                        
+                        return (
+                          <div key={model.modelName} className="p-2 rounded-lg bg-green-50 border border-green-100 hover:bg-green-100 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-medium text-green-700 truncate">
+                                    {displayName}
+                                  </div>
+                                  <div className="text-xs text-green-600">
+                                    {model.totalAttempts} attempts
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge className="text-xs bg-green-100 text-green-800 ml-2 flex-shrink-0">
+                                {model.accuracyPercentage}%
+                              </Badge>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <Award className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No accuracy data</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Best Trustworthiness Column */}
+              <div className="flex flex-col">
+                <h4 className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-blue-500" />
+                  Best Trustworthiness
+                </h4>
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                  {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
+                    [...accuracyStats.accuracyByModel]
+                      .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
+                      .slice(0, 8)
+                      .map((model, index) => {
+                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
+                        
+                        return (
+                          <div key={model.modelName} className="p-2 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-medium text-blue-700 truncate">
+                                    {displayName}
+                                  </div>
+                                  <div className="text-xs text-blue-600">
+                                    {model.totalAttempts} attempts
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800 ml-2 flex-shrink-0">
+                                {Math.round((model.avgTrustworthiness || model.avgAccuracyScore || 0) * 100)}%
+                              </Badge>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <Star className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No trustworthiness data</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Best User Feedback Column */}
+              <div className="flex flex-col">
+                <h4 className="text-sm font-semibold text-purple-700 mb-3 flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-purple-500" />
+                  Best User Feedback
+                </h4>
+                <div className="flex-1 space-y-2 overflow-y-auto pr-2">
+                  {modelRankings.length > 0 ? (
+                    modelRankings
+                      .slice(0, 8)
+                      .map((model, index) => {
+                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
+                        
+                        return (
+                          <div key={model.modelName} className="p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-medium text-purple-700 truncate">
+                                    {displayName}
+                                  </div>
+                                  <div className="text-xs text-purple-600">
+                                    {model.total} feedback
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge className="text-xs bg-purple-100 text-purple-800 ml-2 flex-shrink-0">
+                                {model.helpfulPercentage}%
+                              </Badge>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No feedback data</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Compact Recent Activity */}
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -195,170 +343,36 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {recentActivity.slice(0, 15).map((activity) => (
-                <div key={`${activity.type}-${activity.id}`} className="flex justify-between items-center text-sm p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {activity.type === 'explanation' ? (
-                      <span className="text-xl">🧠</span>
-                    ) : (
-                      <span className="text-xl">👍</span>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-gray-800 truncate font-medium">
-                        {activity.type === 'explanation' ? (
-                          `${activity.modelName} analyzed puzzle ${activity.puzzleId}`
-                        ) : (
-                          `Feedback received for puzzle ${activity.puzzleId}`
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {new Date(activity.createdAt).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </div>
+              {recentActivity.slice(0, 8).map((activity) => (
+                <div key={`${activity.type}-${activity.id}`} className="flex items-center gap-2 text-sm p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                  {activity.type === 'explanation' ? (
+                    <span className="text-lg">🧠</span>
+                  ) : (
+                    <span className="text-lg">👍</span>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-gray-800 truncate text-xs">
+                      {activity.type === 'explanation' ? (
+                        `${activity.modelName} analyzed ${activity.puzzleId}`
+                      ) : (
+                        `Feedback for ${activity.puzzleId}`
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(activity.createdAt).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </div>
                   </div>
                 </div>
               ))}
               {recentActivity.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <TrendingUp className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p>No recent activity</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Models Across All Metrics */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-gold-500" />
-              Top Models
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* Best by Accuracy */}
-              {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-2">
-                    <Award className="h-4 w-4 text-green-500" />
-                    Best Accuracy
-                  </h4>
-                  <div className="p-2 rounded-lg bg-green-50 border border-green-100">
-                    {(() => {
-                      const topAccuracy = [...accuracyStats.accuracyByModel]
-                        .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)[0];
-                      const modelInfo = MODELS.find(m => m.key === topAccuracy.modelName);
-                      const displayName = modelInfo ? `${modelInfo.name}` : topAccuracy.modelName;
-                      
-                      return (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Award className="h-4 w-4 text-yellow-500" />
-                            <div>
-                              <div className="text-sm font-medium text-green-700">
-                                {displayName}
-                              </div>
-                              <div className="text-xs text-green-600">
-                                {topAccuracy.totalAttempts} attempts • {topAccuracy.correctPredictions || 0} correct
-                              </div>
-                            </div>
-                          </div>
-                          <Badge className="text-xs bg-green-100 text-green-800">
-                            {topAccuracy.accuracyPercentage}%
-                          </Badge>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              )}
-
-              {/* Best by Trustworthiness */}
-              {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-blue-700 mb-2 flex items-center gap-2">
-                    <Star className="h-4 w-4 text-blue-500" />
-                    Best Trustworthiness
-                  </h4>
-                  <div className="p-2 rounded-lg bg-blue-50 border border-blue-100">
-                    {(() => {
-                      const topTrust = [...accuracyStats.accuracyByModel]
-                        .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))[0];
-                      const modelInfo = MODELS.find(m => m.key === topTrust.modelName);
-                      const displayName = modelInfo ? `${modelInfo.name}` : topTrust.modelName;
-                      
-                      return (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Award className="h-4 w-4 text-yellow-500" />
-                            <div>
-                              <div className="text-sm font-medium text-blue-700">
-                                {displayName}
-                              </div>
-                              <div className="text-xs text-blue-600">
-                                {topTrust.totalAttempts} attempts
-                              </div>
-                            </div>
-                          </div>
-                          <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
-                            {Math.round((topTrust.avgTrustworthiness || topTrust.avgAccuracyScore || 0) * 100)}%
-                          </Badge>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              )}
-
-              {/* Best by User Feedback */}
-              {modelRankings.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-semibold text-purple-700 mb-2 flex items-center gap-2">
-                    <MessageSquare className="h-4 w-4 text-purple-500" />
-                    Best User Feedback
-                  </h4>
-                  <div className="p-2 rounded-lg bg-purple-50 border border-purple-100">
-                    {(() => {
-                      const topFeedback = modelRankings[0]; // Already sorted by helpfulPercentage
-                      const modelInfo = MODELS.find(m => m.key === topFeedback.modelName);
-                      const displayName = modelInfo ? `${modelInfo.name}` : topFeedback.modelName;
-                      
-                      return (
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Award className="h-4 w-4 text-yellow-500" />
-                            <div>
-                              <div className="text-sm font-medium text-purple-700">
-                                {displayName}
-                              </div>
-                              <div className="text-xs text-purple-600">
-                                {topFeedback.total} feedback • {topFeedback.helpful} helpful
-                              </div>
-                            </div>
-                          </div>
-                          <Badge className="text-xs bg-purple-100 text-purple-800">
-                            {topFeedback.helpfulPercentage}%
-                          </Badge>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              )}
-
-              {/* No data state */}
-              {(!accuracyStats || !accuracyStats.accuracyByModel || accuracyStats.accuracyByModel.length === 0) && modelRankings.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <Award className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p>No model performance data</p>
-                  <p className="text-xs">Create explanations and feedback to see top models</p>
+                <div className="text-center py-6 text-gray-500">
+                  <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No recent activity</p>
                 </div>
               )}
             </div>
