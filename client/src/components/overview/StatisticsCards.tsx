@@ -266,7 +266,7 @@ export function StatisticsCards({
           </CardContent>
         </Card>
 
-        {/* Compact Feedback Summary */}
+        {/* Compact Feedback Summary - EXPLANATION QUALITY ratings (not solver accuracy) */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export function StatisticsCards({
       {/* Priority 3: Model Rankings (Bottom Section) - Only if solver data exists */}
       {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top Solver Models */}
+          {/* Top Solver Models - PREDICTION ACCURACY metrics (not explanation quality) */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -356,7 +356,7 @@ export function StatisticsCards({
             </CardContent>
           </Card>
 
-          {/* Solver Models Needing Improvement */}
+          {/* Solver Models Needing Improvement - PREDICTION ACCURACY metrics (not explanation quality) */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
