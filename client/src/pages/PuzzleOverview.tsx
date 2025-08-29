@@ -65,10 +65,14 @@ interface AccuracyStats {
     accuracyPercentage: number;
     avgAccuracyScore: number;
     avgConfidence: number;
-    successfulExtractions: number;
-    extractionSuccessRate: number;
+    avgTrustworthiness: number;
+    minTrustworthiness?: number;
+    maxTrustworthiness?: number;
+    successfulPredictions?: number;
+    predictionSuccessRate?: number;
   }>;
   totalSolverAttempts: number;
+  totalCorrectPredictions?: number;
 }
 
 const ITEMS_PER_PAGE = 20;
