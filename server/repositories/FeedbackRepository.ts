@@ -308,6 +308,112 @@ export class FeedbackRepository extends BaseRepository {
   }
 
   /**
+   * Get GENERAL MODEL STATS (all explanations, not just solver mode)
+   * 
+   * Shows all models that have created explanations, regardless of solver mode.
+   * Uses avgAccuracyScore as trustworthiness when prediction_accuracy_score available.
+   */
+  async getGeneralModelStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty general model stats.', 'database');
+      return {
+        totalExplanations: 0,
+        avgConfidence: 0,
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        modelAccuracy: [],
+        accuracyByModel: []
+      };
+    }
+
+    try {
+      // Get basic explanation stats - ALL explanations with confidence
+      const basicStats = await this.query(`
+        SELECT 
+          COUNT(*) as total_explanations,
+          AVG(confidence) as avg_confidence,
+          COUNT(CASE WHEN predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL THEN 1 END) as total_solver_attempts,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
+        FROM explanations
+        WHERE confidence IS NOT NULL 
+      `);
+
+      // Get model performance for ALL models with explanations
+      const modelStats = await this.query(`
+        SELECT 
+          e.model_name,
+          COUNT(e.id) as total_attempts,
+          AVG(e.confidence) as avg_confidence,
+          
+          -- Solver mode stats (subset of total attempts)
+          COUNT(CASE WHEN e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL THEN 1 END) as solver_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as correct_predictions,
+          
+          -- Trustworthiness scores (when available)
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness_score,
+          MIN(e.prediction_accuracy_score) as min_trustworthiness_score,
+          MAX(e.prediction_accuracy_score) as max_trustworthiness_score,
+          COUNT(CASE WHEN e.prediction_accuracy_score IS NOT NULL THEN 1 END) as trustworthiness_entries,
+          
+          -- Calculate accuracy percentage for solver attempts only
+          CASE 
+            WHEN COUNT(CASE WHEN e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL THEN 1 END) > 0 
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / 
+                  COUNT(CASE WHEN e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL THEN 1 END))
+            ELSE 0 
+          END as solver_accuracy_percentage
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.confidence IS NOT NULL
+        GROUP BY e.model_name
+        HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 explanation
+        ORDER BY solver_accuracy_percentage DESC, total_attempts DESC
+      `);
+
+      const stats = basicStats.rows[0];
+
+      return {
+        totalExplanations: parseInt(stats.total_explanations) || 0,
+        avgConfidence: parseFloat(stats.avg_confidence) || 0,
+        totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
+        totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
+        accuracyByModel: modelStats.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          totalExplanations: parseInt(row.total_attempts) || 0,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          
+          // Solver-specific data (subset of total)
+          solverAttempts: parseInt(row.solver_attempts) || 0,
+          correctPredictions: parseInt(row.correct_predictions) || 0,
+          accuracyPercentage: Math.round((parseFloat(row.solver_accuracy_percentage) || 0) * 10) / 10,
+          
+          // Trustworthiness scores (when available)
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000,
+          avgAccuracyScore: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000, // Backward compatibility
+          minTrustworthiness: Math.round((parseFloat(row.min_trustworthiness_score) || 0) * 10000) / 10000,
+          maxTrustworthiness: Math.round((parseFloat(row.max_trustworthiness_score) || 0) * 10000) / 10000,
+          trustworthinessEntries: parseInt(row.trustworthiness_entries) || 0,
+          
+          // For compatibility
+          successfulPredictions: parseInt(row.correct_predictions) || 0,
+          predictionSuccessRate: Math.round((parseFloat(row.solver_accuracy_percentage) || 0) * 10) / 10
+        })),
+        modelAccuracy: modelStats.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          correctPredictions: parseInt(row.correct_predictions) || 0,
+          accuracyPercentage: parseFloat(row.solver_accuracy_percentage) || 0
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting general model stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
    * Get PREDICTION ACCURACY STATS (puzzle-solving performance)
    * 
    * NOT user feedback! This measures how well models actually solve puzzles.
@@ -336,7 +442,7 @@ export class FeedbackRepository extends BaseRepository {
       const basicStats = await this.query(`
         SELECT 
           COUNT(*) as total_solver_attempts,
-          ROUND(AVG(confidence), 1) as avg_confidence,
+          AVG(confidence) as avg_confidence,
           SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
         FROM explanations
         WHERE confidence IS NOT NULL 
@@ -349,7 +455,7 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(e.id) as total_attempts,
-          ROUND(AVG(e.confidence), 1) as avg_confidence,
+          AVG(e.confidence) as avg_confidence,
           
           -- Single test accuracy (using is_prediction_correct)
           COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
@@ -358,26 +464,24 @@ export class FeedbackRepository extends BaseRepository {
           -- Multi test accuracy (using multi_test_all_correct and multi_test_average_accuracy)  
           COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
           SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_all_correct,
-          ROUND(AVG(e.multi_test_average_accuracy), 4) as avg_multi_test_accuracy,
+          AVG(e.multi_test_average_accuracy) as avg_multi_test_accuracy,
           
           -- Overall accuracy combining both single and multi tests
           (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
            SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) as total_correct_predictions,
           
           -- Overall accuracy score using prediction_accuracy_score field (trustworthiness)
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness_score,
-          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness_score,
-          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness_score,
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness_score,
+          MIN(e.prediction_accuracy_score) as min_trustworthiness_score,
+          MAX(e.prediction_accuracy_score) as max_trustworthiness_score,
           
           -- Calculate overall accuracy percentage
-          ROUND(
-            CASE 
-              WHEN COUNT(e.id) > 0 
-              THEN ((SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
-                     SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) * 100.0 / COUNT(e.id))
-              ELSE 0 
-            END, 1
-          ) as actual_accuracy_percentage
+          CASE 
+            WHEN COUNT(e.id) > 0 
+            THEN ((SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
+                   SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) * 100.0 / COUNT(e.id))
+            ELSE 0 
+          END as actual_accuracy_percentage
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL 
@@ -394,35 +498,35 @@ export class FeedbackRepository extends BaseRepository {
 
       return {
         totalExplanations: parseInt(stats.total_solver_attempts) || 0,
-        avgConfidence: parseFloat(stats.avg_confidence) || 0,
+        avgConfidence: Math.round((parseFloat(stats.avg_confidence) || 0) * 10) / 10,
         totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
         totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
         accuracyByModel: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
           totalAttempts: parseInt(row.total_attempts),
           totalExplanations: parseInt(row.total_attempts),
-          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
           
           // Real prediction accuracy data
           singleTestAttempts: parseInt(row.single_test_attempts) || 0,
           singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
           multiTestAttempts: parseInt(row.multi_test_attempts) || 0,  
           multiAllCorrect: parseInt(row.multi_all_correct) || 0,
-          avgMultiTestAccuracy: parseFloat(row.avg_multi_test_accuracy) || 0,
+          avgMultiTestAccuracy: Math.round((parseFloat(row.avg_multi_test_accuracy) || 0) * 10000) / 10000,
           
           // Overall accuracy metrics
           correctPredictions: parseInt(row.total_correct_predictions) || 0,
-          accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0,
+          accuracyPercentage: Math.round((parseFloat(row.actual_accuracy_percentage) || 0) * 10) / 10,
           
           // Trustworthiness scores (prediction_accuracy_score)
-          avgTrustworthiness: parseFloat(row.avg_trustworthiness_score) || 0,
-          avgAccuracyScore: parseFloat(row.avg_trustworthiness_score) || 0, // Keep for backward compatibility
-          minTrustworthiness: parseFloat(row.min_trustworthiness_score) || 0,
-          maxTrustworthiness: parseFloat(row.max_trustworthiness_score) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000,
+          avgAccuracyScore: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000, // Keep for backward compatibility
+          minTrustworthiness: Math.round((parseFloat(row.min_trustworthiness_score) || 0) * 10000) / 10000,
+          maxTrustworthiness: Math.round((parseFloat(row.max_trustworthiness_score) || 0) * 10000) / 10000,
           
           // Remove fake "successful extractions" terminology
           successfulPredictions: parseInt(row.total_correct_predictions) || 0,
-          predictionSuccessRate: parseFloat(row.actual_accuracy_percentage) || 0
+          predictionSuccessRate: Math.round((parseFloat(row.actual_accuracy_percentage) || 0) * 10) / 10
         })),
         modelAccuracy: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
