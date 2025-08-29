@@ -14,25 +14,9 @@ import {
   Star
 } from 'lucide-react';
 import { MODELS } from '@/constants/models';
-import type { FeedbackStats } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, LeaderboardStats, ExplanationRecord } from '@shared/types';
+import { formatCost, formatProcessingTime, formatTokenCount } from '@/utils/typeTransformers';
 
-interface AccuracyStats {
-  accuracyByModel: Array<{
-    modelName: string;
-    totalAttempts: number;
-    correctPredictions: number;
-    accuracyPercentage: number;
-    avgAccuracyScore: number;
-    avgConfidence: number;
-    avgTrustworthiness: number;
-    minTrustworthiness?: number;
-    maxTrustworthiness?: number;
-    successfulPredictions?: number;
-    predictionSuccessRate?: number;
-  }>;
-  totalSolverAttempts: number;
-  totalCorrectPredictions?: number;
-}
 
 interface ModelRanking {
   modelName: string;
@@ -58,11 +42,7 @@ interface StatisticsCardsProps {
     modelName?: string;
     createdAt: string;
   }>;
-  saturnResults?: Array<{
-    puzzleId: string;
-    solved: boolean;
-    createdAt: string;
-  }>;
+  saturnResults?: ExplanationRecord[];
 }
 
 export function StatisticsCards({
@@ -113,8 +93,10 @@ export function StatisticsCards({
     );
   }
 
-  // Saturn results are already passed as prop
-  const saturnStats = { saturnResults };
+  // Filter Saturn results from explanations
+  const saturnExplanations = useMemo(() => {
+    return saturnResults.filter(result => result.saturnSuccess !== null);
+  }, [saturnResults]);
 
   return (
     <div className="space-y-6">
@@ -174,10 +156,10 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {saturnStats.saturnResults.length > 0 ? (
-                saturnStats.saturnResults.map((result) => (
+              {saturnExplanations.length > 0 ? (
+                saturnExplanations.slice(0, 10).map((result) => (
                   <a
-                    key={result.puzzleId}
+                    key={`saturn-${result.id}`}
                     href={`/examine/${result.puzzleId}`}
                     className="flex items-center justify-between p-3 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors"
                   >
@@ -195,13 +177,25 @@ export function StatisticsCards({
                             minute: '2-digit'
                           })}
                         </div>
+                        {result.apiProcessingTimeMs && (
+                          <div className="text-xs text-purple-500">
+                            {formatProcessingTime(result.apiProcessingTimeMs)}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <Badge 
-                      className={result.solved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
-                    >
-                      {result.solved ? '✅ Solved' : '❌ Failed'}
-                    </Badge>
+                    <div className="flex flex-col gap-1 items-end">
+                      <Badge 
+                        className={result.saturnSuccess ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
+                      >
+                        {result.saturnSuccess ? '✅ Solved' : '❌ Failed'}
+                      </Badge>
+                      {result.isPredictionCorrect !== null && (
+                        <Badge variant="outline" className="text-xs">
+                          {result.isPredictionCorrect ? 'Correct' : 'Incorrect'} Prediction
+                        </Badge>
+                      )}
+                    </div>
                   </a>
                 ))
               ) : (

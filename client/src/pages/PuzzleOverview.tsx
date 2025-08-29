@@ -18,98 +18,12 @@ import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
 import LeaderboardTable from '@/components/overview/LeaderboardTable';
-import type { FeedbackStats } from '@shared/types';
+import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, LeaderboardStats, ExplanationRecord } from '@shared/types';
+import { formatCost, formatProcessingTime, formatTokenCount, getConfidenceColor, getAccuracyColor } from '@/utils/typeTransformers';
 
-interface PuzzleOverviewData {
-  id: string;
-  source: string;
-  maxGridSize: number;
-  gridSizeConsistent: boolean;
-  hasExplanation: boolean;
-  explanations: Array<{
-    id: number;
-    patternDescription: string;
-    solvingStrategy: string;
-    alienMeaning: string;
-    confidence: number;
-    alienMeaningConfidence?: number;
-    modelName: string;
-    hasReasoningLog: boolean;
-    apiProcessingTimeMs?: number;
-    saturnSuccess?: boolean;
-    createdAt: string;
-    // Accuracy and trustworthiness fields
-    isPredictionCorrect?: boolean;
-    predictionAccuracyScore?: number;
-    multiTestAllCorrect?: boolean;
-    multiTestAverageAccuracy?: number;
-    // Database fields for filtering and display
-    totalTokens?: number;
-    estimatedCost?: number;
-  }>;
-  totalExplanations: number;
-  latestExplanation?: any;
-  feedbackCount?: number;
-}
 
-interface PuzzleOverviewResponse {
-  puzzles: PuzzleOverviewData[];
-  total: number;
-  hasMore: boolean;
-}
 
-interface AccuracyStats {
-  accuracyByModel: Array<{
-    modelName: string;
-    totalAttempts: number;
-    correctPredictions: number;
-    accuracyPercentage: number;
-    avgAccuracyScore: number;
-    avgConfidence: number;
-    avgTrustworthiness: number;
-    minTrustworthiness?: number;
-    maxTrustworthiness?: number;
-    successfulPredictions?: number;
-    predictionSuccessRate?: number;
-  }>;
-  totalSolverAttempts: number;
-  totalCorrectPredictions?: number;
-}
 
-interface LeaderboardStats {
-  trustworthinessLeaders: Array<{
-    modelName: string;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-    avgConfidence: number;
-    calibrationError: number;
-    avgProcessingTime: number;
-    avgTokens: number;
-    avgCost: number;
-  }>;
-  speedLeaders: Array<{
-    modelName: string;
-    avgProcessingTime: number;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-  }>;
-  calibrationLeaders: Array<{
-    modelName: string;
-    calibrationError: number;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-    avgConfidence: number;
-  }>;
-  efficiencyLeaders: Array<{
-    modelName: string;
-    costEfficiency: number;
-    tokenEfficiency: number;
-    avgTrustworthiness: number;
-    totalAttempts: number;
-  }>;
-  totalTrustworthinessAttempts: number;
-  overallTrustworthiness: number;
-}
 
 const ITEMS_PER_PAGE = 20;
 
@@ -322,12 +236,8 @@ export default function PuzzleOverview() {
     return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   }, [sortBy, sortOrder]);
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'bg-green-100 text-green-800';
-    if (confidence >= 60) return 'bg-yellow-100 text-yellow-800';
-    if (confidence >= 40) return 'bg-orange-100 text-orange-800';
-    return 'bg-red-100 text-red-800';
-  };
+  // Use utility function from typeTransformers
+  const confidenceColorFn = getConfidenceColor;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -385,8 +295,8 @@ export default function PuzzleOverview() {
     }> = [];
     
     // Extract explanations from all puzzles (exclude Saturn)
-    recentActivityData.puzzles.forEach((puzzle: any) => {
-      puzzle.explanations.forEach((explanation: any) => {
+    recentActivityData.puzzles.forEach((puzzle: PuzzleOverviewData) => {
+      puzzle.explanations.forEach((explanation: ExplanationRecord) => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
         
@@ -475,7 +385,7 @@ export default function PuzzleOverview() {
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
           recentActivity={recentActivity}
-          saturnResults={[]}
+          saturnResults={data?.puzzles.flatMap(p => p.explanations.filter(e => e.saturnSuccess !== null)) || []}
         />
 
         {/* Search and Filters */}
@@ -564,7 +474,7 @@ export default function PuzzleOverview() {
           onPageChange={setCurrentPage}
           onFeedbackClick={handleFeedbackClick}
           formatDate={formatDate}
-          getConfidenceColor={getConfidenceColor}
+          getConfidenceColor={confidenceColorFn}
           />
         </div>
       </div>
