@@ -75,29 +75,16 @@ export const explanationService = {
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
         const analysisData = restOfExplanationData.result || restOfExplanationData;
         
-        // NEW: Aggregate multiple prediction grids from keys like 'predictedOutput1', 'predictedOutput2', etc.
-        const collectedGrids: any[] = [];
-        for (const key in analysisData) {
-          if (Object.prototype.hasOwnProperty.call(analysisData, key) && /^predictedOutput\d+$/.test(key) && Array.isArray(analysisData[key])) {
-            collectedGrids.push(analysisData[key]);
-          }
+        // V3: Handle multiple prediction grids from multi-test results.
+        // There are never multiple predictions for a single test, only multiple tests.
+        let collectedGrids: any[] = [];
+        if (Array.isArray(analysisData.multiTestResults)) {
+          collectedGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
         }
 
-        let hasMultiplePredictions: boolean = false;
-        let multiplePredictedOutputsForStorage: any = null;
+        const hasMultiplePredictions = collectedGrids.length > 0;
+        const multiplePredictedOutputsForStorage = hasMultiplePredictions ? collectedGrids : null;
 
-        if (collectedGrids.length > 0) {
-          hasMultiplePredictions = true;
-          multiplePredictedOutputsForStorage = collectedGrids;
-        } else if (typeof multiplePredictedOutputs === 'boolean') {
-          hasMultiplePredictions = multiplePredictedOutputs;
-          multiplePredictedOutputsForStorage = null; // Fallback for boolean case
-        } else if (Array.isArray(multiplePredictedOutputs)) {
-          hasMultiplePredictions = multiplePredictedOutputs.length > 0;
-          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Fallback for existing array case
-        }
-
-        // Extract token usage from nested structure for OpenRouter
         const tokenUsage = restOfExplanationData.tokenUsage;
         const costData = restOfExplanationData.cost;
 
