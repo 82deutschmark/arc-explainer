@@ -239,7 +239,10 @@ export default function PuzzleOverview() {
 
   // Generate recent activity from dedicated query
   const recentActivity = useMemo(() => {
-    if (!recentActivityData?.puzzles) return [];
+    if (!recentActivityData?.puzzles) {
+      console.log('No recentActivityData.puzzles:', recentActivityData);
+      return [];
+    }
     
     const activities: Array<{
       id: string;
@@ -249,12 +252,9 @@ export default function PuzzleOverview() {
       createdAt: string;
     }> = [];
     
-    // Extract explanations from puzzles (exclude Saturn)
+    // Extract explanations from puzzles (include all explanations, not just non-Saturn)
     recentActivityData.puzzles.forEach((puzzle: PuzzleOverviewData) => {
       puzzle.explanations.forEach((explanation: ExplanationRecord) => {
-        // Skip Saturn results in recent activity
-        if (explanation.saturnSuccess !== undefined) return;
-        
         activities.push({
           id: explanation.id.toString(),
           type: 'explanation',
@@ -263,9 +263,23 @@ export default function PuzzleOverview() {
           createdAt: explanation.createdAt
         });
       });
+      
+      // Also add feedback activities if available
+      if (puzzle.feedbacks) {
+        puzzle.feedbacks.forEach((feedback: any) => {
+          activities.push({
+            id: feedback.id.toString(),
+            type: 'feedback',
+            puzzleId: puzzle.id,
+            createdAt: feedback.createdAt
+          });
+        });
+      }
     });
     
-    // Sort by creation date (newest first) - should already be sorted by API
+    console.log(`Recent activity found ${activities.length} items`);
+    
+    // Sort by creation date (newest first)
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 15); // Take top 15 for display
