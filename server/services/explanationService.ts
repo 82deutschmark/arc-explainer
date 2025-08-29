@@ -75,16 +75,26 @@ export const explanationService = {
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
         const analysisData = restOfExplanationData.result || restOfExplanationData;
         
-        // Simple logic: detect if we have multiple predictions
+        // NEW: Aggregate multiple prediction grids from keys like 'predictedOutput1', 'predictedOutput2', etc.
+        const collectedGrids: any[] = [];
+        for (const key in analysisData) {
+          if (Object.prototype.hasOwnProperty.call(analysisData, key) && /^predictedOutput\d+$/.test(key) && Array.isArray(analysisData[key])) {
+            collectedGrids.push(analysisData[key]);
+          }
+        }
+
         let hasMultiplePredictions: boolean = false;
         let multiplePredictedOutputsForStorage: any = null;
 
-        if (typeof multiplePredictedOutputs === 'boolean') {
+        if (collectedGrids.length > 0) {
+          hasMultiplePredictions = true;
+          multiplePredictedOutputsForStorage = collectedGrids;
+        } else if (typeof multiplePredictedOutputs === 'boolean') {
           hasMultiplePredictions = multiplePredictedOutputs;
-          multiplePredictedOutputsForStorage = null; // Boolean case, no array data
+          multiplePredictedOutputsForStorage = null; // Fallback for boolean case
         } else if (Array.isArray(multiplePredictedOutputs)) {
           hasMultiplePredictions = multiplePredictedOutputs.length > 0;
-          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
+          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Fallback for existing array case
         }
 
         // Extract token usage from nested structure for OpenRouter
@@ -93,40 +103,39 @@ export const explanationService = {
 
         // Handle both flat and nested response structures
         const explanationData = {
-          patternDescription: analysisData.patternDescription ?? null,
-          solvingStrategy: analysisData.solvingStrategy ?? null,
+          pattern_description: analysisData.patternDescription ?? null,
+          solving_strategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
-          confidence: analysisData.confidence ?? 50, // Default to 50 if confidence parsing fails
-          modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
-          reasoningItems: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
-          reasoningLog: null, // Deprecated, use reasoningItems
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
-          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
-          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
-          hasMultiplePredictions,
-          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
-          multiTestResults: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
-          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
-          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
-          providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          // Badge fields - handle both nested token structure and flat structure
-          apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
-          inputTokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
-          outputTokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
-          reasoningTokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
-          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
-          estimatedCost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
+          confidence: analysisData.confidence ?? 50,
+          model_name: restOfExplanationData.modelName ?? modelKey,
+          reasoning_items: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoning_log: null,
+          predicted_output_grid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          is_prediction_correct: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          prediction_accuracy_score: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
+          has_multiple_predictions: hasMultiplePredictions,
+          multiple_predicted_outputs: multiplePredictedOutputsForStorage,
+          multi_test_results: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multi_test_all_correct: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multi_test_average_accuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
+          provider_raw_response: restOfExplanationData.providerRawResponse ?? null,
+          api_processing_time_ms: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
+          input_tokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
+          output_tokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
+          reasoning_tokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
+          total_tokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
+          estimated_cost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
           temperature: restOfExplanationData.temperature ?? null,
-          reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
-          reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
-          reasoningSummaryType: restOfExplanationData.reasoningSummaryType ?? null,
+          reasoning_effort: restOfExplanationData.reasoningEffort ?? null,
+          reasoning_verbosity: restOfExplanationData.reasoningVerbosity ?? null,
+          reasoning_summary_type: restOfExplanationData.reasoningSummaryType ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
-            puzzleId: puzzleId
+            puzzle_id: puzzleId
           };
           const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
