@@ -32,6 +32,7 @@ interface StatisticsCardsProps {
   accuracyStats?: AccuracyStats;
   modelRankings: ModelRanking[];
   onViewAllFeedback: () => void;
+  onModelClick?: (modelName: string) => void;
   statsLoading: boolean;
   accuracyLoading: boolean;
   recentActivity?: Array<{
@@ -48,6 +49,7 @@ export function StatisticsCards({
   accuracyStats,
   modelRankings,
   onViewAllFeedback,
+  onModelClick,
   statsLoading,
   accuracyLoading,
   recentActivity = []
@@ -212,7 +214,11 @@ export function StatisticsCards({
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
-                          <div key={model.modelName} className="p-2 rounded-lg bg-green-50 border border-green-100 hover:bg-green-100 transition-colors">
+                          <div 
+                            key={model.modelName} 
+                            className="p-2 rounded-lg bg-green-50 border border-green-100 hover:bg-green-200 transition-colors cursor-pointer"
+                            onClick={() => onModelClick?.(model.modelName)}
+                          >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
@@ -257,7 +263,11 @@ export function StatisticsCards({
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
-                          <div key={model.modelName} className="p-2 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
+                          <div 
+                            key={model.modelName} 
+                            className="p-2 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-200 transition-colors cursor-pointer"
+                            onClick={() => onModelClick?.(model.modelName)}
+                          >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
@@ -301,7 +311,11 @@ export function StatisticsCards({
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
-                          <div key={model.modelName} className="p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors">
+                          <div 
+                            key={model.modelName} 
+                            className="p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-200 transition-colors cursor-pointer"
+                            onClick={() => onModelClick?.(model.modelName)}
+                          >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}

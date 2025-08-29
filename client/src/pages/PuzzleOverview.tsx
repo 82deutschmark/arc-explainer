@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
+import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
@@ -48,6 +49,10 @@ export default function PuzzleOverview() {
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+
+  // Model debug modal state
+  const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
+  const [selectedModelName, setSelectedModelName] = useState<string>('');
 
   // Set page title
   React.useEffect(() => {

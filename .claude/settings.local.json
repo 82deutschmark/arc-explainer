@@ -33,7 +33,8 @@
       "Bash(psql:*)",
       "Bash(npm run test:*)",
       "Bash(npm run typecheck:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(__NEW_LINE__ - Fix Top Models: Increase container height to h-96, set explicit h-80 for each column content area)"
     ],
     "deny": [],
     "ask": [],
