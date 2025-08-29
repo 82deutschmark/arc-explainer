@@ -247,7 +247,8 @@ export class FeedbackRepository extends BaseRepository {
           e.model_name,
           COUNT(*) as feedback_count,
           SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
-          ROUND(AVG(e.confidence), 1) as avg_confidence
+          SUM(CASE WHEN f.vote_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
+          AVG(e.confidence) as avg_confidence
         FROM feedback f
         JOIN explanations e ON f.explanation_id = e.id
         WHERE e.model_name IS NOT NULL
@@ -287,7 +288,7 @@ export class FeedbackRepository extends BaseRepository {
           helpfulPercentage: parseInt(row.feedback_count) > 0 
             ? Math.round((parseInt(row.helpful_count) / parseInt(row.feedback_count)) * 100) 
             : 0,
-          avgConfidence: parseFloat(row.avg_confidence) || 0
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10
         })),
         feedbackTrends: {
           daily: dailyTrends.rows.map(row => ({
@@ -298,8 +299,20 @@ export class FeedbackRepository extends BaseRepository {
           })),
           weekly: [] // Could be implemented if needed
         },
-        feedbackByModel: {},
-        feedbackByDay: []
+        feedbackByModel: topModels.rows.reduce((acc, row) => {
+          acc[row.model_name] = {
+            helpful: parseInt(row.helpful_count) || 0,
+            notHelpful: parseInt(row.not_helpful_count) || 0,
+            total: parseInt(row.feedback_count) || 0
+          };
+          return acc;
+        }, {} as Record<string, { helpful: number; notHelpful: number; total: number }>),
+        feedbackByDay: dailyTrends.rows.map(row => ({
+          date: row.date,
+          helpful: parseInt(row.helpful_count),
+          notHelpful: parseInt(row.count) - parseInt(row.helpful_count),
+          total: parseInt(row.count)
+        }))
       };
     } catch (error) {
       logger.error(`Error getting feedback summary stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
