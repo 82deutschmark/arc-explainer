@@ -594,15 +594,15 @@ export class FeedbackRepository extends BaseRepository {
       const stats = await this.query(`
         SELECT 
           COUNT(*) as total_explanations,
-          ROUND(AVG(api_processing_time_ms), 2) as avg_processing_time,
+          AVG(api_processing_time_ms) as avg_processing_time,
           MAX(api_processing_time_ms) as max_processing_time,
-          ROUND(AVG(prediction_accuracy_score), 4) as avg_prediction_accuracy,
+          AVG(prediction_accuracy_score) as avg_prediction_accuracy,
           SUM(total_tokens) as total_tokens,
-          ROUND(AVG(total_tokens), 0) as avg_tokens,
+          AVG(total_tokens) as avg_tokens,
           MAX(total_tokens) as max_tokens,
-          ROUND(SUM(estimated_cost), 4) as total_estimated_cost,
-          ROUND(AVG(estimated_cost), 6) as avg_estimated_cost,
-          ROUND(MAX(estimated_cost), 6) as max_estimated_cost,
+          SUM(estimated_cost) as total_estimated_cost,
+          AVG(estimated_cost) as avg_estimated_cost,
+          MAX(estimated_cost) as max_estimated_cost,
           COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
           COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
           COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
@@ -613,15 +613,15 @@ export class FeedbackRepository extends BaseRepository {
       const row = stats.rows[0];
       return {
         totalExplanations: parseInt(row.total_explanations) || 0,
-        avgProcessingTime: parseFloat(row.avg_processing_time) || 0,
+        avgProcessingTime: Math.round((parseFloat(row.avg_processing_time) || 0) * 100) / 100,
         maxProcessingTime: parseInt(row.max_processing_time) || 0,
-        avgPredictionAccuracy: parseFloat(row.avg_prediction_accuracy) || 0,
+        avgPredictionAccuracy: Math.round((parseFloat(row.avg_prediction_accuracy) || 0) * 10000) / 10000,
         totalTokens: parseInt(row.total_tokens) || 0,
-        avgTokens: parseInt(row.avg_tokens) || 0,
+        avgTokens: Math.round(parseFloat(row.avg_tokens) || 0),
         maxTokens: parseInt(row.max_tokens) || 0,
-        totalEstimatedCost: parseFloat(row.total_estimated_cost) || 0,
-        avgEstimatedCost: parseFloat(row.avg_estimated_cost) || 0,
-        maxEstimatedCost: parseFloat(row.max_estimated_cost) || 0,
+        totalEstimatedCost: Math.round((parseFloat(row.total_estimated_cost) || 0) * 10000) / 10000,
+        avgEstimatedCost: Math.round((parseFloat(row.avg_estimated_cost) || 0) * 1000000) / 1000000,
+        maxEstimatedCost: Math.round((parseFloat(row.max_estimated_cost) || 0) * 1000000) / 1000000,
         explanationsWithTokens: parseInt(row.explanations_with_tokens) || 0,
         explanationsWithCost: parseInt(row.explanations_with_cost) || 0,
         explanationsWithAccuracy: parseInt(row.explanations_with_accuracy) || 0,
@@ -689,31 +689,29 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
-          ROUND(AVG(e.confidence), 1) as avg_confidence,
-          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
-          ROUND(AVG(e.total_tokens), 0) as avg_tokens,
-          ROUND(AVG(e.estimated_cost), 6) as avg_cost,
-          ROUND(SUM(e.estimated_cost), 4) as total_cost,
-          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness,
-          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness,
-          ROUND(
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.confidence) as avg_confidence,
+          AVG(e.api_processing_time_ms) as avg_processing_time,
+          AVG(e.total_tokens) as avg_tokens,
+          AVG(e.estimated_cost) as avg_cost,
+          SUM(e.estimated_cost) as total_cost,
+          MIN(e.prediction_accuracy_score) as min_trustworthiness,
+          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          (
             CASE 
               WHEN AVG(e.prediction_accuracy_score) > 0 
               THEN SUM(e.estimated_cost) / AVG(e.prediction_accuracy_score) / COUNT(*)
               ELSE 0 
-            END, 6
+            END
           ) as cost_per_trustworthiness,
-          ROUND(
+          (
             CASE 
               WHEN AVG(e.prediction_accuracy_score) > 0 
               THEN SUM(e.total_tokens) / AVG(e.prediction_accuracy_score) / COUNT(*)
               ELSE 0 
-            END, 0
+            END
           ) as tokens_per_trustworthiness,
-          ROUND(
-            ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2
-          ) as calibration_error
+          ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)) as calibration_error
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.prediction_accuracy_score IS NOT NULL
@@ -729,9 +727,9 @@ export class FeedbackRepository extends BaseRepository {
       const speedQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(AVG(e.api_processing_time_ms), 0) as avg_processing_time,
+          AVG(e.api_processing_time_ms) as avg_processing_time,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.api_processing_time_ms IS NOT NULL
@@ -746,10 +744,10 @@ export class FeedbackRepository extends BaseRepository {
       const calibrationQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)), 2) as calibration_error,
+          ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)) as calibration_error,
           COUNT(*) as total_attempts,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
-          ROUND(AVG(e.confidence), 1) as avg_confidence
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.confidence) as avg_confidence
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.prediction_accuracy_score IS NOT NULL
@@ -765,21 +763,21 @@ export class FeedbackRepository extends BaseRepository {
       const efficiencyQuery = await this.query(`
         SELECT 
           e.model_name,
-          ROUND(
+          (
             CASE 
               WHEN AVG(e.prediction_accuracy_score) > 0.01 
               THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
-            END, 6
+            END
           ) as cost_efficiency,
-          ROUND(
+          (
             CASE 
               WHEN AVG(e.prediction_accuracy_score) > 0.01 
               THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
-            END, 0
+            END
           ) as token_efficiency,
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness,
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
           COUNT(*) as total_attempts
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
@@ -796,7 +794,7 @@ export class FeedbackRepository extends BaseRepository {
       const overallQuery = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          ROUND(AVG(prediction_accuracy_score), 4) as overall_trustworthiness
+          AVG(prediction_accuracy_score) as overall_trustworthiness
         FROM explanations
         WHERE prediction_accuracy_score IS NOT NULL
       `);
@@ -807,42 +805,42 @@ export class FeedbackRepository extends BaseRepository {
         trustworthinessLeaders: trustworthinessQuery.rows.map(row => ({
           modelName: row.model_name,
           totalAttempts: parseInt(row.total_attempts) || 0,
-          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
-          avgConfidence: parseFloat(row.avg_confidence) || 0,
-          calibrationError: parseFloat(row.calibration_error) || 0,
-          avgProcessingTime: parseInt(row.avg_processing_time) || 0,
-          avgTokens: parseInt(row.avg_tokens) || 0,
-          avgCost: parseFloat(row.avg_cost) || 0,
-          totalCost: parseFloat(row.total_cost) || 0,
-          costPerTrustworthiness: parseFloat(row.cost_per_trustworthiness) || 0,
-          tokensPerTrustworthiness: parseInt(row.tokens_per_trustworthiness) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          calibrationError: Math.round((parseFloat(row.calibration_error) || 0) * 100) / 100,
+          avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
+          avgTokens: Math.round(parseFloat(row.avg_tokens) || 0),
+          avgCost: Math.round((parseFloat(row.avg_cost) || 0) * 1000000) / 1000000,
+          totalCost: Math.round((parseFloat(row.total_cost) || 0) * 10000) / 10000,
+          costPerTrustworthiness: Math.round((parseFloat(row.cost_per_trustworthiness) || 0) * 1000000) / 1000000,
+          tokensPerTrustworthiness: Math.round(parseFloat(row.tokens_per_trustworthiness) || 0),
           trustworthinessRange: { 
-            min: parseFloat(row.min_trustworthiness) || 0, 
-            max: parseFloat(row.max_trustworthiness) || 0 
+            min: Math.round((parseFloat(row.min_trustworthiness) || 0) * 10000) / 10000, 
+            max: Math.round((parseFloat(row.max_trustworthiness) || 0) * 10000) / 10000 
           }
         })),
         speedLeaders: speedQuery.rows.map(row => ({
           modelName: row.model_name,
-          avgProcessingTime: parseInt(row.avg_processing_time) || 0,
+          avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
           totalAttempts: parseInt(row.total_attempts) || 0,
-          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000
         })),
         calibrationLeaders: calibrationQuery.rows.map(row => ({
           modelName: row.model_name,
-          calibrationError: parseFloat(row.calibration_error) || 0,
+          calibrationError: Math.round((parseFloat(row.calibration_error) || 0) * 100) / 100,
           totalAttempts: parseInt(row.total_attempts) || 0,
-          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
-          avgConfidence: parseFloat(row.avg_confidence) || 0
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10
         })),
         efficiencyLeaders: efficiencyQuery.rows.map(row => ({
           modelName: row.model_name,
-          costEfficiency: parseFloat(row.cost_efficiency) || 0,
-          tokenEfficiency: parseInt(row.token_efficiency) || 0,
-          avgTrustworthiness: parseFloat(row.avg_trustworthiness) || 0,
+          costEfficiency: Math.round((parseFloat(row.cost_efficiency) || 0) * 1000000) / 1000000,
+          tokenEfficiency: Math.round(parseFloat(row.token_efficiency) || 0),
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
           totalAttempts: parseInt(row.total_attempts) || 0
         })),
         totalTrustworthinessAttempts: parseInt(overallStats.total_trustworthiness_attempts) || 0,
-        overallTrustworthiness: parseFloat(overallStats.overall_trustworthiness) || 0
+        overallTrustworthiness: Math.round((parseFloat(overallStats.overall_trustworthiness) || 0) * 10000) / 10000
       };
     } catch (error) {
       logger.error(`Error getting real performance stats: ${error instanceof Error ? error.message : String(error)}`, 'database');

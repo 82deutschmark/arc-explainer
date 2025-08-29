@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
+import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
@@ -41,13 +42,17 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
-  const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
-  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
+  const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'explanationCount');
+  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'asc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
   
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+
+  // Model debug modal state
+  const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
+  const [selectedModelName, setSelectedModelName] = useState<string>('');
 
   // Set page title
   React.useEffect(() => {
@@ -220,9 +225,29 @@ export default function PuzzleOverview() {
       });
   }, [feedbackStats]);
 
-  // Generate recent activity from puzzle data (AI models only)
+  // Separate query for recent activity - get puzzles with explanations sorted by recent activity
+  const { data: recentActivityData } = useQuery<PuzzleOverviewResponse>({
+    queryKey: ['recentActivity'],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('hasExplanation', 'true'); // Only puzzles with explanations
+      params.set('sortBy', 'createdAt'); // Sort by explanation creation date
+      params.set('sortOrder', 'desc'); // Most recent first
+      params.set('limit', '20'); // Get 20 recent items
+      params.set('offset', '0');
+      
+      const response = await apiRequest('GET', `/api/puzzle/overview?${params.toString()}`);
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Generate recent activity from dedicated query
   const recentActivity = useMemo(() => {
-    if (!data?.puzzles) return [];
+    if (!recentActivityData?.puzzles) {
+      console.log('No recentActivityData.puzzles:', recentActivityData);
+      return [];
+    }
     
     const activities: Array<{
       id: string;
@@ -232,12 +257,9 @@ export default function PuzzleOverview() {
       createdAt: string;
     }> = [];
     
-    // Extract explanations from all puzzles (exclude Saturn)
-    data.puzzles.forEach((puzzle: PuzzleOverviewData) => {
+    // Extract explanations from puzzles (include all explanations, not just non-Saturn)
+    recentActivityData.puzzles.forEach((puzzle: PuzzleOverviewData) => {
       puzzle.explanations.forEach((explanation: ExplanationRecord) => {
-        // Skip Saturn results in recent activity
-        if (explanation.saturnSuccess !== undefined) return;
-        
         activities.push({
           id: explanation.id.toString(),
           type: 'explanation',
@@ -246,13 +268,27 @@ export default function PuzzleOverview() {
           createdAt: explanation.createdAt
         });
       });
+      
+      // Also add feedback activities if available
+      if (puzzle.feedbacks) {
+        puzzle.feedbacks.forEach((feedback: any) => {
+          activities.push({
+            id: feedback.id.toString(),
+            type: 'feedback',
+            puzzleId: puzzle.id,
+            createdAt: feedback.createdAt
+          });
+        });
+      }
     });
     
-    // Sort by creation date (newest first) and take the most recent
+    console.log(`Recent activity found ${activities.length} items`);
+    
+    // Sort by creation date (newest first)
     return activities
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 20); // Keep more items for the scrollable list
-  }, [data]);
+      .slice(0, 15); // Take top 15 for display
+  }, [recentActivityData]);
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -302,6 +338,10 @@ export default function PuzzleOverview() {
             setSelectedPuzzleId('');
             setFeedbackModalOpen(true);
           }}
+          onModelClick={(modelName: string) => {
+            setSelectedModelName(modelName);
+            setModelDebugModalOpen(true);
+          }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
           recentActivity={recentActivity}
@@ -348,6 +388,19 @@ export default function PuzzleOverview() {
           getSortIcon={getSortIcon}
         />
 
+        {/* Loading indicator for filtering */}
+        {isLoading && (
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+              <div>
+                <p className="text-blue-800 font-medium">Applying filters and loading puzzles...</p>
+                <p className="text-blue-600 text-sm">This may take a few seconds for complex queries</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Puzzle List with Pagination */}
         <PuzzleList
           puzzles={data?.puzzles}
@@ -367,6 +420,13 @@ export default function PuzzleOverview() {
         open={feedbackModalOpen}
         onOpenChange={setFeedbackModalOpen}
         initialPuzzleId={selectedPuzzleId}
+      />
+
+      {/* Model Debug Modal */}
+      <ModelDebugModal
+        open={modelDebugModalOpen}
+        onOpenChange={setModelDebugModalOpen}
+        modelName={selectedModelName}
       />
     </div>
   );
