@@ -133,6 +133,178 @@ export interface FeedbackStats {
 }
 
 /**
+ * Database-aligned interface for explanation records
+ * Matches actual PostgreSQL schema column names and types
+ */
+export interface DatabaseExplanation {
+  id: number;
+  puzzle_id: string;
+  pattern_description: string;
+  solving_strategy: string;
+  hints: string[];
+  confidence: number;
+  alien_meaning_confidence: number | null;
+  alien_meaning: string | null;
+  model_name: string;
+  reasoning_log: string | null;
+  has_reasoning_log: boolean;
+  provider_response_id: string | null;
+  api_processing_time_ms: number | null;
+  saturn_images: any | null;
+  saturn_log: any | null;
+  saturn_events: any | null;
+  saturn_success: boolean | null;
+  predicted_output_grid: any | null;
+  is_prediction_correct: boolean | null;
+  prediction_accuracy_score: number | null;
+  provider_raw_response: any | null;
+  reasoning_items: any | null;
+  temperature: number | null;
+  reasoning_effort: string | null;
+  reasoning_verbosity: string | null;
+  reasoning_summary_type: string | null;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  reasoning_tokens: number | null;
+  total_tokens: number | null;
+  estimated_cost: number | null;
+  multiple_predicted_outputs: any | null;
+  multi_test_results: any | null;
+  multi_test_all_correct: boolean | null;
+  multi_test_average_accuracy: number | null;
+  has_multiple_predictions: boolean | null;
+  multi_test_prediction_grids: any | null;
+  created_at: string;
+}
+
+/**
+ * Frontend-friendly explanation interface with camelCase naming
+ */
+export interface ExplanationRecord {
+  id: number;
+  puzzleId: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  confidence: number;
+  alienMeaningConfidence: number | null;
+  alienMeaning: string | null;
+  modelName: string;
+  reasoningLog: string | null;
+  hasReasoningLog: boolean;
+  providerResponseId: string | null;
+  apiProcessingTimeMs: number | null;
+  saturnImages: any | null;
+  saturnLog: any | null;
+  saturnEvents: any | null;
+  saturnSuccess: boolean | null;
+  predictedOutputGrid: number[][] | null;
+  isPredictionCorrect: boolean | null;
+  predictionAccuracyScore: number | null;
+  providerRawResponse: any | null;
+  reasoningItems: any | null;
+  temperature: number | null;
+  reasoningEffort: string | null;
+  reasoningVerbosity: string | null;
+  reasoningSummaryType: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  reasoningTokens: number | null;
+  totalTokens: number | null;
+  estimatedCost: number | null;
+  multiplePredictedOutputs: any | null;
+  multiTestResults: any | null;
+  multiTestAllCorrect: boolean | null;
+  multiTestAverageAccuracy: number | null;
+  hasMultiplePredictions: boolean | null;
+  multiTestPredictionGrids: any | null;
+  createdAt: string;
+}
+
+/**
+ * Puzzle overview data structure for the overview page
+ */
+export interface PuzzleOverviewData {
+  id: string;
+  source: string;
+  maxGridSize: number;
+  gridSizeConsistent: boolean;
+  hasExplanation: boolean;
+  explanations: ExplanationRecord[];
+  totalExplanations: number;
+  latestExplanation: ExplanationRecord | null;
+  feedbackCount?: number;
+}
+
+/**
+ * API response structure for puzzle overview
+ */
+export interface PuzzleOverviewResponse {
+  puzzles: PuzzleOverviewData[];
+  total: number;
+  hasMore: boolean;
+}
+
+/**
+ * Solver accuracy statistics interface
+ */
+export interface AccuracyStats {
+  accuracyByModel: Array<{
+    modelName: string;
+    totalAttempts: number;
+    correctPredictions: number;
+    accuracyPercentage: number;
+    avgAccuracyScore: number;
+    avgConfidence: number;
+    avgTrustworthiness: number;
+    minTrustworthiness?: number;
+    maxTrustworthiness?: number;
+    successfulPredictions?: number;
+    predictionSuccessRate?: number;
+  }>;
+  totalSolverAttempts: number;
+  totalCorrectPredictions?: number;
+}
+
+/**
+ * Leaderboard statistics interface
+ */
+export interface LeaderboardStats {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    calibrationError: number;
+    avgProcessingTime: number;
+    avgTokens: number;
+    avgCost: number;
+  }>;
+  speedLeaders: Array<{
+    modelName: string;
+    avgProcessingTime: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+  }>;
+  calibrationLeaders: Array<{
+    modelName: string;
+    calibrationError: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+  }>;
+  efficiencyLeaders: Array<{
+    modelName: string;
+    costEfficiency: number;
+    tokenEfficiency: number;
+    avgTrustworthiness: number;
+    totalAttempts: number;
+  }>;
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+}
+
+/**
  * Available prompt templates for puzzle analysis
  * These templates allow users to choose different prompt styles and approaches to guide AI analysis
  */
