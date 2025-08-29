@@ -338,6 +338,10 @@ export default function PuzzleOverview() {
             setSelectedPuzzleId('');
             setFeedbackModalOpen(true);
           }}
+          onModelClick={(modelName: string) => {
+            setSelectedModelName(modelName);
+            setModelDebugModalOpen(true);
+          }}
           statsLoading={statsLoading}
           accuracyLoading={accuracyLoading}
           recentActivity={recentActivity}
@@ -416,6 +420,13 @@ export default function PuzzleOverview() {
         open={feedbackModalOpen}
         onOpenChange={setFeedbackModalOpen}
         initialPuzzleId={selectedPuzzleId}
+      />
+
+      {/* Model Debug Modal */}
+      <ModelDebugModal
+        open={modelDebugModalOpen}
+        onOpenChange={setModelDebugModalOpen}
+        modelName={selectedModelName}
       />
     </div>
   );
