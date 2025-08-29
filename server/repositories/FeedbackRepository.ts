@@ -309,29 +309,45 @@ export class FeedbackRepository extends BaseRepository {
                OR multi_test_all_correct IS NOT NULL)
       `);
 
-      // Get model accuracy based on feedback - only for solver attempts with correctness flags
+      // Get model accuracy based on ACTUAL prediction correctness - not user feedback
       const modelAccuracy = await this.query(`
         SELECT 
           e.model_name,
-          COUNT(e.id) as total_explanations,
+          COUNT(e.id) as total_attempts,
           ROUND(AVG(e.confidence), 1) as avg_confidence,
-          COUNT(f.id) as feedback_count,
-          SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
+          
+          -- Single test accuracy (using is_prediction_correct)
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+          
+          -- Multi test accuracy (using multi_test_all_correct and multi_test_average_accuracy)  
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_all_correct,
+          ROUND(AVG(e.multi_test_average_accuracy), 4) as avg_multi_test_accuracy,
+          
+          -- Overall accuracy combining both single and multi tests
+          (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
+           SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) as total_correct_predictions,
+          
+          -- Overall accuracy score using prediction_accuracy_score field
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_accuracy_score,
+          
+          -- Calculate overall accuracy percentage
           ROUND(
             CASE 
-              WHEN COUNT(f.id) > 0 
-              THEN (SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) * 100.0 / COUNT(f.id))
+              WHEN COUNT(e.id) > 0 
+              THEN ((SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
+                     SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) * 100.0 / COUNT(e.id))
               ELSE 0 
             END, 1
-          ) as user_satisfaction_rate
+          ) as actual_accuracy_percentage
         FROM explanations e
-        LEFT JOIN feedback f ON e.id = f.explanation_id
         WHERE e.model_name IS NOT NULL
           AND (e.is_prediction_correct IS NOT NULL 
                OR e.multi_test_all_correct IS NOT NULL)
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
-        ORDER BY user_satisfaction_rate DESC, total_explanations DESC
+        ORDER BY actual_accuracy_percentage DESC, total_attempts DESC
       `);
 
       const stats = basicStats.rows[0];
@@ -342,25 +358,32 @@ export class FeedbackRepository extends BaseRepository {
         totalSolverAttempts: parseInt(stats.total_explanations) || 0,
         accuracyByModel: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
-          totalAttempts: parseInt(row.total_explanations),
-          totalExplanations: parseInt(row.total_explanations),
+          totalAttempts: parseInt(row.total_attempts),
+          totalExplanations: parseInt(row.total_attempts),
           avgConfidence: parseFloat(row.avg_confidence) || 0,
-          feedbackCount: parseInt(row.feedback_count) || 0,
-          helpfulCount: parseInt(row.helpful_count) || 0,
-          userSatisfactionRate: parseFloat(row.user_satisfaction_rate) || 0,
-          correctPredictions: parseInt(row.helpful_count) || 0,
-          accuracyPercentage: parseFloat(row.user_satisfaction_rate) || 0,
-          avgAccuracyScore: parseFloat(row.user_satisfaction_rate) / 100 || 0,
-          successfulExtractions: parseInt(row.helpful_count) || 0,
-          extractionSuccessRate: parseFloat(row.user_satisfaction_rate) || 0
+          
+          // Real prediction accuracy data
+          singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+          singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+          multiTestAttempts: parseInt(row.multi_test_attempts) || 0,  
+          multiAllCorrect: parseInt(row.multi_all_correct) || 0,
+          avgMultiTestAccuracy: parseFloat(row.avg_multi_test_accuracy) || 0,
+          
+          // Overall accuracy metrics
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0,
+          avgAccuracyScore: parseFloat(row.avg_accuracy_score) || 0,
+          
+          // Remove fake "successful extractions" terminology
+          successfulPredictions: parseInt(row.total_correct_predictions) || 0,
+          predictionSuccessRate: parseFloat(row.actual_accuracy_percentage) || 0
         })),
         modelAccuracy: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
-          totalExplanations: parseInt(row.total_explanations),
+          totalAttempts: parseInt(row.total_attempts),
           avgConfidence: parseFloat(row.avg_confidence) || 0,
-          feedbackCount: parseInt(row.feedback_count) || 0,
-          helpfulCount: parseInt(row.helpful_count) || 0,
-          userSatisfactionRate: parseFloat(row.user_satisfaction_rate) || 0
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0
         }))
       };
     } catch (error) {
@@ -579,14 +602,14 @@ export class FeedbackRepository extends BaseRepository {
           e.model_name,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
+              WHEN AVG(e.prediction_accuracy_score) > 0.01 
               THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
             END, 6
           ) as cost_efficiency,
           ROUND(
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
+              WHEN AVG(e.prediction_accuracy_score) > 0.01 
               THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
               ELSE 999999 
             END, 0

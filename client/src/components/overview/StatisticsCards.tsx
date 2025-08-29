@@ -24,8 +24,8 @@ interface AccuracyStats {
     accuracyPercentage: number;
     avgAccuracyScore: number;
     avgConfidence: number;
-    successfulExtractions: number;
-    extractionSuccessRate: number;
+    successfulPredictions?: number;
+    predictionSuccessRate?: number;
   }>;
   totalSolverAttempts: number;
 }
@@ -334,7 +334,7 @@ export function StatisticsCards({
                             {displayName}
                           </div>
                           <div className="text-xs text-green-600">
-                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
+                            {model.totalAttempts} attempts • {model.correctPredictions || 0} correct predictions
                           </div>
                         </div>
                       </div>
@@ -363,7 +363,9 @@ export function StatisticsCards({
             </CardHeader>
             <CardContent>
               <div className="space-y-3 max-h-80 overflow-y-auto">
-                {accuracyStats.accuracyByModel.slice().reverse().map((model) => {
+                {accuracyStats.accuracyByModel
+                  .filter(model => model.accuracyPercentage > 0) // Only show models with some accuracy, not 0%
+                  .slice().reverse().map((model) => {
                   const modelInfo = MODELS.find(m => m.key === model.modelName);
                   const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
                   
@@ -375,7 +377,7 @@ export function StatisticsCards({
                             {displayName}
                           </div>
                           <div className="text-xs text-red-600">
-                            {model.totalAttempts} attempts • {model.successfulExtractions} successful extractions
+                            {model.totalAttempts} attempts • {model.correctPredictions || 0} correct predictions
                           </div>
                         </div>
                       </div>
