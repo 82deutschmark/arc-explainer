@@ -24,7 +24,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { MODELS } from '@/constants/models';
-import type { FeedbackStats, AccuracyStats } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats } from '@shared/types';
 
 interface ModelDebugModalProps {
   open: boolean;
@@ -70,7 +70,7 @@ export function ModelDebugModal({
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/raw-stats');
       const json = await response.json();
-      return json.data;
+      return json.data as RawDatabaseStats;
     },
     enabled: open && !!modelName
   });
@@ -81,7 +81,7 @@ export function ModelDebugModal({
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/performance-stats');
       const json = await response.json();
-      return json.data;
+      return json.data as PerformanceStats;
     },
     enabled: open && !!modelName
   });
@@ -91,13 +91,26 @@ export function ModelDebugModal({
   const modelFeedback = feedbackStats?.feedbackByModel[modelName];
   
   // Filter performance data for this model
-  const modelTrustworthiness = performanceStats?.trustworthinessLeaders?.find((m: any) => m.modelName === modelName);
-  const modelSpeed = performanceStats?.speedLeaders?.find((m: any) => m.modelName === modelName);
+  const modelTrustworthiness = performanceStats?.trustworthinessLeaders?.find(m => m.modelName === modelName);
+  const modelSpeed = performanceStats?.speedLeaders?.find(m => m.modelName === modelName);
   
   const isLoading = accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
   const hasErrors = accuracyError || feedbackError || rawError || performanceError;
 
+  // Validation
   if (!open) return null;
+  if (!modelName || modelName.trim() === '') {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Invalid Model</DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-600">No model name provided for debugging.</p>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -249,11 +262,11 @@ export function ModelDebugModal({
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Total Feedback:</span>
-                        <p className="text-lg font-mono">{modelFeedback.total}</p>
+                        <p className="text-lg font-mono">{modelFeedback.helpful + modelFeedback.notHelpful}</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Helpful Rate:</span>
-                        <p className="text-lg font-mono">{modelFeedback.total > 0 ? ((modelFeedback.helpful / modelFeedback.total) * 100).toFixed(1) : '0'}%</p>
+                        <p className="text-lg font-mono">{(modelFeedback.helpful + modelFeedback.notHelpful) > 0 ? ((modelFeedback.helpful / (modelFeedback.helpful + modelFeedback.notHelpful)) * 100).toFixed(1) : '0'}%</p>
                       </div>
                     </div>
                   ) : (
@@ -276,7 +289,7 @@ export function ModelDebugModal({
                       {/* Trustworthiness Metrics */}
                       {modelTrustworthiness && (
                         <div>
-                          <h4 className="font-medium mb-3 text-orange-700">Trustworthiness Metrics</h4>
+                          <h4 className="font-medium mb-3 text-orange-700">Trustworthiness & Cost Metrics</h4>
                           <div className="space-y-3 text-sm">
                             <div>
                               <span className="font-medium text-gray-600">Avg Trustworthiness:</span>
@@ -291,33 +304,53 @@ export function ModelDebugModal({
                               <p className="text-lg font-mono">{modelTrustworthiness.avgProcessingTime?.toFixed(2) || 'N/A'}ms</p>
                             </div>
                             <div>
+                              <span className="font-medium text-gray-600">Avg Tokens:</span>
+                              <p className="text-lg font-mono">{modelTrustworthiness.avgTokens?.toFixed(0) || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-600">Avg Cost:</span>
+                              <p className="text-lg font-mono">${modelTrustworthiness.avgCost?.toFixed(4) || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-600">Total Cost:</span>
+                              <p className="text-lg font-mono">${modelTrustworthiness.totalCost?.toFixed(2) || 'N/A'}</p>
+                            </div>
+                            <div>
                               <span className="font-medium text-gray-600">Cost per Trustworthiness:</span>
                               <p className="text-lg font-mono">${modelTrustworthiness.costPerTrustworthiness?.toFixed(4) || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-600">Tokens per Trustworthiness:</span>
+                              <p className="text-lg font-mono">{modelTrustworthiness.tokensPerTrustworthiness?.toFixed(2) || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <span className="font-medium text-gray-600">Trustworthiness Range:</span>
+                              <p className="text-lg font-mono">
+                                {modelTrustworthiness.trustworthinessRange ? 
+                                  `${modelTrustworthiness.trustworthinessRange.min.toFixed(3)} - ${modelTrustworthiness.trustworthinessRange.max.toFixed(3)}` 
+                                  : 'N/A'}
+                              </p>
                             </div>
                           </div>
                         </div>
                       )}
                       
-                      {/* Speed/Cost Metrics */}
+                      {/* Speed Metrics */}
                       {modelSpeed && (
                         <div>
-                          <h4 className="font-medium mb-3 text-orange-700">Speed & Cost Metrics</h4>
+                          <h4 className="font-medium mb-3 text-orange-700">Speed Metrics</h4>
                           <div className="space-y-3 text-sm">
                             <div>
-                              <span className="font-medium text-gray-600">Avg Tokens:</span>
-                              <p className="text-lg font-mono">{modelSpeed.avgTokens?.toFixed(0) || 'N/A'}</p>
+                              <span className="font-medium text-gray-600">Avg Processing Time:</span>
+                              <p className="text-lg font-mono">{modelSpeed.avgProcessingTime?.toFixed(2) || 'N/A'}ms</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Avg Cost:</span>
-                              <p className="text-lg font-mono">${modelSpeed.avgCost?.toFixed(4) || 'N/A'}</p>
+                              <span className="font-medium text-gray-600">Total Attempts:</span>
+                              <p className="text-lg font-mono">{modelSpeed.totalAttempts}</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Total Cost:</span>
-                              <p className="text-lg font-mono">${modelSpeed.totalCost?.toFixed(2) || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-600">Tokens per Trustworthiness:</span>
-                              <p className="text-lg font-mono">{modelSpeed.tokensPerTrustworthiness?.toFixed(2) || 'N/A'}</p>
+                              <span className="font-medium text-gray-600">Avg Trustworthiness:</span>
+                              <p className="text-lg font-mono">{modelSpeed.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
                             </div>
                           </div>
                         </div>
