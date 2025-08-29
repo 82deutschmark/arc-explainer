@@ -33,6 +33,7 @@ import { validation } from "./middleware/validation";
 import { aiServiceFactory } from "./services/aiServiceFactory";
 import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from "./utils/logger.ts";
+import { formatResponse } from "./utils/responseFormatter.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -95,6 +96,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/model/batch-control/:sessionId", validation.batchControl, asyncHandler(batchAnalysisController.controlBatch));
   app.get("/api/model/batch-results/:sessionId", asyncHandler(batchAnalysisController.getBatchResults));
   app.get("/api/model/batch-sessions", asyncHandler(batchAnalysisController.getAllSessions));
+  
+  // Recovery routes for multiple predictions data
+  app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {
+    try {
+      const stats = await repositoryService.explanations.getMultiplePredictionsStats();
+      res.json(formatResponse.success(stats));
+    } catch (error) {
+      res.status(500).json(formatResponse.error('STATS_FAILED', 'Failed to get recovery stats'));
+    }
+  }));
+  
+  app.post("/api/admin/recover-multiple-predictions", asyncHandler(async (req: any, res: any) => {
+    try {
+      const entries = await repositoryService.explanations.findMissingMultiplePredictions();
+      
+      let recoveredCount = 0;
+      let processedCount = 0;
+      const results: any[] = [];
+      
+      for (const entry of entries) {
+        processedCount++;
+        const { id, puzzleId, modelName, providerRawResponse } = entry;
+        
+        let parsedResponse;
+        try {
+          parsedResponse = typeof providerRawResponse === 'string' 
+            ? JSON.parse(providerRawResponse) 
+            : providerRawResponse;
+        } catch (e) {
+          results.push({ id, puzzleId, modelName, status: 'parse_failed' });
+          continue;
+        }
+        
+        const collectedGrids = [];
+        
+        // Look for predictedOutput1, predictedOutput2, predictedOutput3
+        let i = 1;
+        while (parsedResponse[`predictedOutput${i}`]) {
+          const grid = parsedResponse[`predictedOutput${i}`];
+          if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
+            collectedGrids.push(grid);
+          }
+          i++;
+        }
+        
+        if (collectedGrids.length > 0) {
+          await repositoryService.explanations.updateMultiplePredictions(id, collectedGrids);
+          recoveredCount++;
+          results.push({ id, puzzleId, modelName, status: 'recovered', gridsCount: collectedGrids.length });
+        } else {
+          results.push({ id, puzzleId, modelName, status: 'no_multiple_predictions' });
+        }
+      }
+      
+      res.json(formatResponse.success({
+        processed: processedCount,
+        recovered: recoveredCount,
+        results: results.slice(0, 20)
+      }, `Recovery complete: ${recoveredCount} entries recovered from ${processedCount} processed`));
+      
+    } catch (error) {
+      res.status(500).json(formatResponse.error('RECOVERY_FAILED', 'Failed to recover multiple predictions data'));
+    }
+  }));
   
   // Database health check endpoint for debugging
   app.get("/api/health/database", asyncHandler(async (req: any, res: any) => {
