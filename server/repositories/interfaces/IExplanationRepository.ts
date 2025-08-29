@@ -14,8 +14,46 @@ export interface ExplanationData {
 }
 
 export interface ExplanationResponse {
-  // This should match what the database returns via SQL aliases
-  [key: string]: any;
+  id: number;
+  puzzleId: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  confidence: number;
+  alienMeaningConfidence: number | null;
+  alienMeaning: string | null;
+  modelName: string;
+  reasoningLog: string | null;
+  hasReasoningLog: boolean;
+  providerResponseId: string | null;
+  apiProcessingTimeMs: number | null;
+  saturnImages: any | null;
+  saturnLog: any | null;
+  saturnEvents: any | null;
+  saturnSuccess: boolean | null;
+  predictedOutputGrid: number[][] | null;
+  isPredictionCorrect: boolean | null;
+  predictionAccuracyScore: number | null;
+  providerRawResponse: any | null;
+  reasoningItems: any | null;
+  temperature: number | null;
+  reasoningEffort: string | null;
+  reasoningVerbosity: string | null;
+  reasoningSummaryType: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  reasoningTokens: number | null;
+  totalTokens: number | null;
+  estimatedCost: number | null;
+  multiplePredictedOutputs: any | null;
+  multiTestResults: any | null;
+  multiTestAllCorrect: boolean | null;
+  multiTestAverageAccuracy: number | null;
+  hasMultiplePredictions: boolean | null;
+  multiTestPredictionGrids: any | null;
+  createdAt: string;
+  helpfulVotes?: number;
+  notHelpfulVotes?: number;
 }
 
 export interface BulkExplanationStatus {
