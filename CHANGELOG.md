@@ -6,8 +6,10 @@
 - Fixed `hasMultiplePredictions` flag being incorrectly set to `null/false` when multiple grids exist
 - Updated grid collection logic to handle both numbered prediction fields and array formats
 - **Impact**: AI models that generate multiple output predictions (like GPT-5, Gemini-2.0, DeepSeek) now properly display all prediction grids in the UI
-- Created recovery analysis script to identify 100+ old entries with recoverable multiple predictions data
+- **Status**: ✅ **MAIN BUG FIXED** - All new analyses now correctly store and display multiple predictions
+- **Recovery**: Created comprehensive recovery system for ~100+ old entries (database connection debugging needed for full recovery)
 - **Technical**: Modified `server/services/explanationService.ts` lines 72-107 to collect grids from `predictedOutput1/2/3` fields before falling back to `multiTestResults`
+- **Verification**: Confirmed fix works - new entries like ID 5252 now have `hasMultiplePredictions: true` and proper grid arrays
 - Author: Claude Sonnet 4
 
 ## v2.5.20 - Landing Page Redesign & Analysis Data Sorting
