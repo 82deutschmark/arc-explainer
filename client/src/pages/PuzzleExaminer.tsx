@@ -506,6 +506,7 @@ export default function PuzzleExaminer() {
                     key={`${explanation.id}-${explanation.modelName}`} // More specific key for better React reconciliation
                     modelKey={explanation.modelName}
                     result={explanation}
+                    model={MODELS.find(m => m.key === explanation.modelName)} // Pass model config to enable temperature display
                     testCases={task.test} // Pass the full test array
                   />
                 ))}
