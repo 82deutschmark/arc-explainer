@@ -472,4 +472,94 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     };
   }
 
+  /**
+   * Find entries that are missing multiple predictions data due to the bug
+   */
+  async findMissingMultiplePredictions(limit = 100): Promise<any[]> {
+    if (!this.pool) {
+      logger.warn('Database not connected - cannot find missing multiple predictions', 'repository');
+      return [];
+    }
+
+    try {
+      const query = `
+        SELECT id, puzzle_id as "puzzleId", model_name as "modelName", provider_raw_response as "providerRawResponse"
+        FROM explanations 
+        WHERE has_multiple_predictions IS NULL 
+          AND provider_raw_response IS NOT NULL
+        ORDER BY id DESC
+        LIMIT $1
+      `;
+      
+      const result = await this.pool.query(query, [limit]);
+      return result.rows;
+    } catch (error) {
+      logger.error(`Error finding missing multiple predictions: ${error instanceof Error ? error.message : String(error)}`, 'repository');
+      return [];
+    }
+  }
+
+  /**
+   * Update an explanation with multiple predictions data
+   */
+  async updateMultiplePredictions(explanationId: number, grids: any[]): Promise<void> {
+    if (!this.pool) {
+      logger.warn('Database not connected - cannot update multiple predictions', 'repository');
+      return;
+    }
+
+    try {
+      const query = `
+        UPDATE explanations 
+        SET has_multiple_predictions = true,
+            multiple_predicted_outputs = $1
+        WHERE id = $2
+      `;
+      
+      await this.pool.query(query, [this.safeJsonStringify(grids), explanationId]);
+      logger.info(`Updated explanation ${explanationId} with ${grids.length} multiple predictions`, 'repository');
+    } catch (error) {
+      logger.error(`Error updating multiple predictions for ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'repository');
+      throw error;
+    }
+  }
+
+  /**
+   * Get statistics about multiple predictions recovery
+   */
+  async getMultiplePredictionsStats(): Promise<any> {
+    if (!this.pool) {
+      return {
+        totalExplanations: 0,
+        withMultiplePredictions: 0,
+        missingMultiplePredictions: 0,
+        potentialRecoverable: 0
+      };
+    }
+
+    try {
+      const query = `
+        SELECT 
+          COUNT(*) as total_explanations,
+          COUNT(CASE WHEN has_multiple_predictions = true THEN 1 END) as with_multiple_predictions,
+          COUNT(CASE WHEN has_multiple_predictions IS NULL THEN 1 END) as missing_multiple_predictions,
+          COUNT(CASE WHEN has_multiple_predictions IS NULL AND provider_raw_response IS NOT NULL THEN 1 END) as potential_recoverable
+        FROM explanations
+      `;
+      
+      const result = await this.pool.query(query);
+      const stats = result.rows[0];
+      
+      return {
+        totalExplanations: parseInt(stats.total_explanations) || 0,
+        withMultiplePredictions: parseInt(stats.with_multiple_predictions) || 0,
+        missingMultiplePredictions: parseInt(stats.missing_multiple_predictions) || 0,
+        potentialRecoverable: parseInt(stats.potential_recoverable) || 0
+      };
+    } catch (error) {
+      logger.error(`Error getting multiple predictions stats: ${error instanceof Error ? error.message : String(error)}`, 'repository');
+      throw error;
+    }
+  }
+
 }

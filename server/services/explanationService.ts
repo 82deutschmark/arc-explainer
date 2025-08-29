@@ -69,64 +69,81 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
-        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
         // Handle nested result structure from OpenRouter services
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
-        const analysisData = restOfExplanationData.result || restOfExplanationData;
+        const analysisData = sourceData.result || sourceData;
         
-        // Simple logic: detect if we have multiple predictions
-        let hasMultiplePredictions: boolean = false;
-        let multiplePredictedOutputsForStorage: any = null;
-
-        if (typeof multiplePredictedOutputs === 'boolean') {
-          hasMultiplePredictions = multiplePredictedOutputs;
-          multiplePredictedOutputsForStorage = null; // Boolean case, no array data
-        } else if (Array.isArray(multiplePredictedOutputs)) {
-          hasMultiplePredictions = multiplePredictedOutputs.length > 0;
-          multiplePredictedOutputsForStorage = multiplePredictedOutputs; // Array case, store arrays
+        // Collect multiple prediction grids from various sources
+        let collectedGrids: any[] = [];
+        
+        // 1. From individual predictedOutput1, predictedOutput2, predictedOutput3 fields (new format)
+        let i = 1;
+        while (sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`]) {
+          const grid = sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`];
+          if (grid && Array.isArray(grid)) {
+            collectedGrids.push(grid);
+          }
+          i++;
+        }
+        
+        // 2. From multiplePredictedOutputs array (if it exists as array)
+        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
+          collectedGrids.push(...sourceData.multiplePredictedOutputs);
+        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
+          collectedGrids.push(...analysisData.multiplePredictedOutputs);
+        }
+        
+        // 3. From multi-test results (different test cases, not multiple predictions per test)
+        if (Array.isArray(analysisData.multiTestResults)) {
+          const testGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
+          if (testGrids.length > 0 && collectedGrids.length === 0) {
+            // Only use test results if we didn't find prediction grids above
+            collectedGrids = testGrids;
+          }
         }
 
-        // Extract token usage from nested structure for OpenRouter
-        const tokenUsage = restOfExplanationData.tokenUsage;
-        const costData = restOfExplanationData.cost;
+        const hasMultiplePredictions = collectedGrids.length > 0;
+        const multiplePredictedOutputsForStorage = hasMultiplePredictions ? collectedGrids : null;
+
+        const tokenUsage = sourceData.tokenUsage;
+        const costData = sourceData.cost;
 
         // Handle both flat and nested response structures
         const explanationData = {
-          patternDescription: analysisData.patternDescription ?? null,
-          solvingStrategy: analysisData.solvingStrategy ?? null,
+          pattern_description: analysisData.patternDescription ?? null,
+          solving_strategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
-          confidence: analysisData.confidence ?? 50, // Default to 50 if confidence parsing fails
-          modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
-          reasoningItems: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
-          reasoningLog: null, // Deprecated, use reasoningItems
-          predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
-          isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
-          predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
-          hasMultiplePredictions,
-          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
-          multiTestResults: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
-          multiTestAllCorrect: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
-          multiTestAverageAccuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
-          providerRawResponse: restOfExplanationData.providerRawResponse ?? null,
-          // Badge fields - handle both nested token structure and flat structure
-          apiProcessingTimeMs: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
-          inputTokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
-          outputTokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
-          reasoningTokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
-          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
-          estimatedCost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
-          temperature: restOfExplanationData.temperature ?? null,
-          reasoningEffort: restOfExplanationData.reasoningEffort ?? null,
-          reasoningVerbosity: restOfExplanationData.reasoningVerbosity ?? null,
-          reasoningSummaryType: restOfExplanationData.reasoningSummaryType ?? null,
+          confidence: analysisData.confidence ?? 50,
+          model_name: sourceData.modelName ?? modelKey,
+          reasoning_items: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoning_log: null,
+          predicted_output_grid: sourceData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          is_prediction_correct: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          prediction_accuracy_score: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
+          has_multiple_predictions: hasMultiplePredictions,
+          multiple_predicted_outputs: multiplePredictedOutputsForStorage,
+          multi_test_results: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multi_test_all_correct: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multi_test_average_accuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
+          provider_raw_response: sourceData.providerRawResponse ?? null,
+          api_processing_time_ms: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
+          input_tokens: tokenUsage?.input ?? sourceData.inputTokens ?? null,
+          output_tokens: tokenUsage?.output ?? sourceData.outputTokens ?? null,
+          reasoning_tokens: tokenUsage?.reasoning ?? sourceData.reasoningTokens ?? null,
+          total_tokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : sourceData.totalTokens ?? null,
+          estimated_cost: costData?.total ?? sourceData.estimatedCost ?? null,
+          temperature: sourceData.temperature ?? null,
+          reasoning_effort: sourceData.reasoningEffort ?? null,
+          reasoning_verbosity: sourceData.reasoningVerbosity ?? null,
+          reasoning_summary_type: sourceData.reasoningSummaryType ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
-            puzzleId: puzzleId
+            puzzle_id: puzzleId
           };
           const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
