@@ -140,11 +140,11 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch solver mode accuracy statistics
+  // Fetch general model statistics (includes all explanations, not just solver mode)
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
-    queryKey: ['accuracyStats'],
+    queryKey: ['generalStats'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
+      const response = await apiRequest('GET', '/api/puzzle/general-stats');
       const json = await response.json();
       return json.data;
     },
