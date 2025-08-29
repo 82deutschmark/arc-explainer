@@ -364,8 +364,10 @@ export class FeedbackRepository extends BaseRepository {
           (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) + 
            SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END)) as total_correct_predictions,
           
-          -- Overall accuracy score using prediction_accuracy_score field
-          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_accuracy_score,
+          -- Overall accuracy score using prediction_accuracy_score field (trustworthiness)
+          ROUND(AVG(e.prediction_accuracy_score), 4) as avg_trustworthiness_score,
+          ROUND(MIN(e.prediction_accuracy_score), 4) as min_trustworthiness_score,
+          ROUND(MAX(e.prediction_accuracy_score), 4) as max_trustworthiness_score,
           
           -- Calculate overall accuracy percentage
           ROUND(
@@ -380,9 +382,11 @@ export class FeedbackRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL 
                OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.confidence IS NOT NULL
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1  -- Only include models with at least 1 solver attempt
-        ORDER BY actual_accuracy_percentage DESC, total_attempts DESC
+        ORDER BY avg_trustworthiness_score DESC, total_attempts DESC
       `);
 
       const stats = basicStats.rows[0];
@@ -408,7 +412,12 @@ export class FeedbackRepository extends BaseRepository {
           // Overall accuracy metrics
           correctPredictions: parseInt(row.total_correct_predictions) || 0,
           accuracyPercentage: parseFloat(row.actual_accuracy_percentage) || 0,
-          avgAccuracyScore: parseFloat(row.avg_accuracy_score) || 0,
+          
+          // Trustworthiness scores (prediction_accuracy_score)
+          avgTrustworthiness: parseFloat(row.avg_trustworthiness_score) || 0,
+          avgAccuracyScore: parseFloat(row.avg_trustworthiness_score) || 0, // Keep for backward compatibility
+          minTrustworthiness: parseFloat(row.min_trustworthiness_score) || 0,
+          maxTrustworthiness: parseFloat(row.max_trustworthiness_score) || 0,
           
           // Remove fake "successful extractions" terminology
           successfulPredictions: parseInt(row.total_correct_predictions) || 0,

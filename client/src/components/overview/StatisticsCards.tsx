@@ -24,6 +24,9 @@ interface AccuracyStats {
     accuracyPercentage: number;
     avgAccuracyScore: number;
     avgConfidence: number;
+    avgTrustworthiness: number;
+    minTrustworthiness?: number;
+    maxTrustworthiness?: number;
     successfulPredictions?: number;
     predictionSuccessRate?: number;
   }>;
@@ -340,10 +343,10 @@ export function StatisticsCards({
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <Badge className="text-xs bg-green-100 text-green-800">
-                          {model.accuracyPercentage}% accuracy
+                          {model.accuracyPercentage}% puzzle success
                         </Badge>
                         <Badge variant="outline" className="text-xs">
-                          {Math.round(model.avgAccuracyScore * 100)}% trust
+                          {Math.round(model.avgTrustworthiness * 100)}% trustworthiness
                         </Badge>
                       </div>
                     </div>
@@ -364,7 +367,7 @@ export function StatisticsCards({
             <CardContent>
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {accuracyStats.accuracyByModel
-                  .filter(model => model.accuracyPercentage > 0) // Only show models with some accuracy, not 0%
+                  .filter(model => model.avgTrustworthiness > 0) // Only show models with some trustworthiness, not 0
                   .slice().reverse().map((model) => {
                   const modelInfo = MODELS.find(m => m.key === model.modelName);
                   const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
@@ -383,10 +386,10 @@ export function StatisticsCards({
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <Badge className="text-xs bg-red-100 text-red-800">
-                          {model.accuracyPercentage}% accuracy
+                          {model.accuracyPercentage}% puzzle success
                         </Badge>
                         <Badge variant="outline" className="text-xs">
-                          {Math.round(model.avgAccuracyScore * 100)}% trust
+                          {Math.round(model.avgTrustworthiness * 100)}% trustworthiness
                         </Badge>
                       </div>
                     </div>

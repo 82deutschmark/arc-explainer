@@ -316,8 +316,8 @@ export default function PuzzleOverview() {
     }> = [];
     
     // Extract explanations from all puzzles (exclude Saturn)
-    recentActivityData.puzzles.forEach(puzzle => {
-      puzzle.explanations.forEach(explanation => {
+    recentActivityData.puzzles.forEach((puzzle: any) => {
+      puzzle.explanations.forEach((explanation: any) => {
         // Skip Saturn results in recent activity
         if (explanation.saturnSuccess !== undefined) return;
         
