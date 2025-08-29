@@ -328,25 +328,25 @@ export function StatisticsCards({
           </CardContent>
         </Card>
 
-        {/* Solver Performance Leaderboard */}
-        {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-green-500" />
-                Solver Performance Leaderboard
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Accuracy Leaderboard */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Award className="h-4 w-4 text-green-500" />
-                    Accuracy Leaderboard
-                  </h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {[...accuracyStats.accuracyByModel]
+        {/* Solver Performance Leaderboard - Always Visible */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-green-500" />
+              Solver Performance Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Accuracy Leaderboard */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <Award className="h-4 w-4 text-green-500" />
+                  Accuracy Leaderboard
+                </h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
+                    [...accuracyStats.accuracyByModel]
                       .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
                       .slice(0, 5)
                       .map((model, index) => {
@@ -376,18 +376,26 @@ export function StatisticsCards({
                             </div>
                           </div>
                         );
-                      })}
-                  </div>
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <Award className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No accuracy data yet</p>
+                      <p className="text-xs">Run analyses in solver mode to populate</p>
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                {/* Trustworthiness Leaderboard */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <Star className="h-4 w-4 text-blue-500" />
-                    Trustworthiness Leaderboard
-                  </h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {[...accuracyStats.accuracyByModel]
+              {/* Trustworthiness Leaderboard */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-blue-500" />
+                  Trustworthiness Leaderboard
+                </h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
+                    [...accuracyStats.accuracyByModel]
                       .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
                       .slice(0, 5)
                       .map((model, index) => {
@@ -417,29 +425,19 @@ export function StatisticsCards({
                             </div>
                           </div>
                         );
-                      })}
-                  </div>
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <Star className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No trustworthiness data yet</p>
+                      <p className="text-xs">Run analyses in solver mode to populate</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-gray-400" />
-                Solver Performance Leaderboard
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <Award className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p>No solver performance data</p>
-                <p className="text-xs">Run analyses in solver mode to see performance metrics</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
