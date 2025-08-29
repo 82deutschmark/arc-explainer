@@ -179,7 +179,7 @@ export function StatisticsCards({
                   <a
                     key={result.puzzleId}
                     href={`/examine/${result.puzzleId}`}
-                    className="flex items-center justify-between p-3 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors block"
+                    className="flex items-center justify-between p-3 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-100 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">🪐</span>
