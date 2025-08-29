@@ -96,9 +96,10 @@ export const explanationService = {
           patternDescription: analysisData.patternDescription ?? null,
           solvingStrategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
-          confidence: analysisData.confidence ?? 0,
+          confidence: analysisData.confidence ?? 50, // Default to 50 if confidence parsing fails
           modelName: restOfExplanationData.modelName ?? modelKey, // Prefer response modelName over loop key
-          reasoningLog: restOfExplanationData.reasoningLog ?? analysisData.reasoningLog ?? null,
+          reasoningItems: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoningLog: null, // Deprecated, use reasoningItems
           predictedOutputGrid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
           isPredictionCorrect: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
           predictionAccuracyScore: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,

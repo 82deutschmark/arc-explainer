@@ -6,23 +6,24 @@
         "input": [
           [
             0,
-            7,
-            0
-          ],
-          [
-            0,
             0,
             0
           ],
           [
+            1,
             0,
+            0
+          ],
+          [
             0,
+            1,
             0
           ]
         ],
         "output": [
           [
-            7
+            1,
+            1
           ]
         ]
       },
@@ -56,6 +57,30 @@
         "input": [
           [
             0,
+            7,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            7
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
             8,
             0
           ],
@@ -76,31 +101,6 @@
             8,
             8,
             8
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            0,
-            0,
-            0
-          ],
-          [
-            1,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ]
-        ],
-        "output": [
-          [
-            1,
-            1
           ]
         ]
       }
@@ -137,126 +137,51 @@
     ]
   },
   "explanations": {
-    "o3-mini-2025-01-31": {
-      "model": "o3-mini-2025-01-31",
-      "reasoningLog": "[object Object],[object Object]",
-      "hasReasoningLog": true,
-      "providerResponseId": "resp_68a7d5d911d48197b847ca5f5190ae5602c435d87526de6a",
-      "providerRawResponse": {
-        "id": "resp_68a7d5d911d48197b847ca5f5190ae5602c435d87526de6a",
-        "object": "response",
-        "created_at": 1755829721,
-        "status": "completed",
-        "background": false,
-        "error": null,
-        "incomplete_details": null,
-        "instructions": null,
-        "max_output_tokens": 128000,
-        "max_tool_calls": null,
-        "model": "o3-mini-2025-01-31",
-        "output": [
-          {
-            "id": "rs_68a7d5e1afcc8197bc27ebf16416760302c435d87526de6a",
-            "type": "reasoning",
-            "summary": [
-              {
-                "type": "summary_text",
-                "text": "**Identifying the output pattern**\n\nI’m analyzing how the output is derived from the input arrays. For the first example, I see a 3x3 array turns into a 1x3 row filled with 2's, based on the count of non-zero digits, which are found at specific coordinates. \n\nNext, with the second example, four occurrences of 8 result in a 1x4 row of 8's. In the last example, there are two 1's leading to a 1x2 output row. Maybe it's about identifying the unique nonzero values and their counts!"
-              },
-              {
-                "type": "summary_text",
-                "text": "**Verifying output for patterns**\n\nIn this example, I'm exploring the pattern of counting non-zero entries in an array. It looks like I should output a single row filled with the same non-zero digit for however many times it appears. \n\nFor instance, in the test input with multiple 4's, I counted a total of 5 non-zero entries, which means I should predict an output of [[4,4,4,4,4]]. Now I’ll create the necessary JSON structure with my predicted output and ensure everything follows the required format. Time to finalize that!"
-              }
-            ]
-          },
-          {
-            "id": "msg_68a7d5e91cd48197a3a8cad235aced8902c435d87526de6a",
-            "type": "message",
-            "status": "completed",
-            "content": [
-              {
-                "type": "output_text",
-                "annotations": [],
-                "logprobs": [],
-                "text": "{\n  \"predictedOutput\": [[4, 4, 4, 4, 4]],\n  \"patternDescription\": \"The pattern is that the output grid is a single row consisting of as many elements as there are non-zero entries in the input grid, with all elements equal to the non-zero number found in the input.\",\n  \"solvingStrategy\": \"Count all the non-zero values in the input grid. Since all non-zero entries share the same value, create a one-row output grid with a number of elements equal to that count, each element being the non-zero value.\",\n  \"hints\": [\n    \"Identify the non-zero value in the grid.\",\n    \"Count the total number of times the non-zero value appears.\",\n    \"Output a single row with that many occurrences of the non-zero value.\"\n  ],\n  \"confidence\": 85\n}"
-              }
-            ],
-            "role": "assistant"
-          }
+    "moonshotai/kimi-k2": {
+      "success": true,
+      "result": {
+        "patternDescription": "JSON parsing failed for moonshotai/kimi-k2 response. The model generated a 1186-character response but it contained formatting issues (Unterminated string in JSON at position 1186 (line 1 column 1187)). The model appeared to be analyzing patterns or structures in the puzzle but the response was cut off or malformed. This appears to be a model output formatting issue rather than a puzzle analysis failure. The response may have contained valid insights wrapped in markdown code blocks or other formatting that couldn't be automatically parsed.",
+        "solvingStrategy": "Unable to extract structured solving strategy from moonshotai/kimi-k2 due to response parsing failure. The original response was 1186 characters long and may have contained useful problem-solving insights, but the JSON structure was malformed or wrapped in unsupported formatting. Consider trying the analysis again or using a different model that provides more consistent JSON formatting.",
+        "hints": [
+          "The moonshotai/kimi-k2 model generated a lengthy response (1186 chars) suggesting it attempted analysis",
+          "Try re-running the analysis - this may be a temporary formatting issue",
+          "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
+          "Check the raw response in the logs for any extractable insights"
         ],
-        "parallel_tool_calls": true,
-        "previous_response_id": null,
-        "prompt_cache_key": null,
-        "reasoning": {
-          "effort": "medium",
-          "summary": "detailed"
-        },
-        "safety_identifier": null,
-        "service_tier": "default",
-        "store": true,
-        "temperature": 1,
-        "text": {
-          "format": {
-            "type": "text"
-          },
-          "verbosity": "medium"
-        },
-        "tool_choice": "auto",
-        "tools": [],
-        "top_logprobs": 0,
-        "top_p": 1,
-        "truncation": "disabled",
-        "usage": {
-          "input_tokens": 691,
-          "input_tokens_details": {
-            "cached_tokens": 0
-          },
-          "output_tokens": 1203,
-          "output_tokens_details": {
-            "reasoning_tokens": 1024
-          },
-          "total_tokens": 1894
-        },
-        "user": null,
-        "metadata": {}
+        "confidence": 0,
+        "multiplePredictedOutputs": false,
+        "rawResponse": "{\"multiplePredictedOutputs\":false,\"predictedOutput\":[[4,4,4],[4]],\"predictedOutput1\":[],\"predictedOutput2\":[],\"predictedOutput3\":[],\"solvingStrategy\":\"The pattern is a left-to-right, top-to-bottom collection march: wherever the input contains a non-zero digit, that digit is collected in/output order putting (front Y-row) first and, within every Y-row, proceeding from lowest X-column to highest X-column until all such digits form a single linear list. That list then is written back into the gold ",
+        "parsingError": "Unterminated string in JSON at position 1186 (line 1 column 1187)",
+        "modelUsed": "moonshotai/kimi-k2",
+        "recoveryMethod": "validation-compliant-fallback",
+        "responseLength": 1186,
+        "parsingAttempted": true
       },
-      "reasoningItems": [],
-      "predictedOutput": [
-        [
-          4,
-          4,
-          4,
-          4,
-          4
-        ]
-      ],
-      "patternDescription": "The pattern is that the output grid is a single row consisting of as many elements as there are non-zero entries in the input grid, with all elements equal to the non-zero number found in the input.",
-      "solvingStrategy": "Count all the non-zero values in the input grid. Since all non-zero entries share the same value, create a one-row output grid with a number of elements equal to that count, each element being the non-zero value.",
-      "hints": [
-        "Identify the non-zero value in the grid.",
-        "Count the total number of times the non-zero value appears.",
-        "Output a single row with that many occurrences of the non-zero value."
-      ],
-      "confidence": 85,
-      "apiProcessingTimeMs": 17244,
-      "predictedOutputGrid": [
-        [
-          4,
-          4,
-          4,
-          4,
-          4
-        ]
-      ],
-      "isPredictionCorrect": true,
-      "predictionAccuracyScore": 0.925,
-      "extractionMethod": "direct_predicted_output_field",
-      "modelKey": "o3-mini-2025-01-31",
-      "actualProcessingTime": 17
+      "tokenUsage": {
+        "input": 727,
+        "output": 246
+      },
+      "cost": {
+        "input": 0.00010178,
+        "output": 0.0006125400000000001,
+        "total": 0.0007143200000000001
+      },
+      "processingTimeMs": 22977,
+      "modelName": "moonshotai/kimi-k2",
+      "reasoning": null,
+      "reasoningLog": null,
+      "apiProcessingTimeMs": 22997,
+      "predictedOutputGrid": null,
+      "multiplePredictedOutputs": null,
+      "hasMultiplePredictions": false,
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 1,
+      "modelKey": "moonshotai/kimi-k2",
+      "actualProcessingTime": 23
     }
   },
-  "exportedAt": "2025-08-22T02:28:57.659Z",
+  "exportedAt": "2025-08-29T02:03:12.471Z",
   "models": [
-    "o3-mini-2025-01-31"
+    "moonshotai/kimi-k2"
   ]
 }
