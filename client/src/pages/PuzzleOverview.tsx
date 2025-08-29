@@ -41,8 +41,8 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
-  const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'createdAt');
-  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
+  const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'explanationCount');
+  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'asc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
   
   // Feedback modal state
