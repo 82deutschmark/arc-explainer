@@ -1,3 +1,22 @@
+###   August 29 2025
+
+## v2.5.14 - CRITICAL DATABASE SCHEMA FIX: Real Leaderboard Data
+- **MAJOR BUG RESOLVED**: Fixed database column name mismatch preventing real leaderboard data from loading
+- **Schema Fixes**: Updated FeedbackRepository queries to use actual database columns:
+  - `processing_time` → `api_processing_time_ms`
+  - `accuracy` → `prediction_accuracy_score`  
+  - `cost` → `estimated_cost`
+- **Real Performance Stats**: All leaderboard endpoints now return actual data instead of empty/placeholder results
+- **Trustworthiness Leaders**: Fixed to use real prediction accuracy scores from solver mode
+- **Speed Leaders**: Now showing actual API processing times from database
+- **Calibration Leaders**: Fixed to compare real confidence vs prediction accuracy
+- **Efficiency Leaders**: Using real cost and token data for efficiency calculations
+- **Database Integrity**: All queries now match the documented schema in Database_Schema_Mismatch_Analysis.md
+- **Impact**: Leaderboards and statistics will now populate with real data from analyses
+- **Technical**: Fixed getRawDatabaseStats() and getRealPerformanceStats() methods in FeedbackRepository
+- **User Experience**: PuzzleOverview leaderboards will finally show meaningful AI model performance
+- Author: Claude Sonnet 4
+
 ###   August 28 2025
 
 ## v2.5.13 - CRITICAL FIX: Replace Inaccurate Leaderboards with Real Trustworthiness Metrics
