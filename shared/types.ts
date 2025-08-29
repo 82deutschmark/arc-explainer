@@ -267,7 +267,70 @@ export interface AccuracyStats {
 }
 
 /**
- * Leaderboard statistics interface
+ * Raw database statistics interface
+ */
+export interface RawDatabaseStats {
+  totalExplanations: number;
+  avgProcessingTime: number;
+  maxProcessingTime: number;
+  avgPredictionAccuracy: number;
+  totalTokens: number;
+  avgTokens: number;
+  maxTokens: number;
+  totalEstimatedCost: number;
+  avgEstimatedCost: number;
+  maxEstimatedCost: number;
+  explanationsWithTokens: number;
+  explanationsWithCost: number;
+  explanationsWithAccuracy: number;
+  explanationsWithProcessingTime: number;
+}
+
+/**
+ * Performance statistics interface (actual API response structure)
+ */
+export interface PerformanceStats {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    calibrationError: number;
+    avgProcessingTime: number;
+    avgTokens: number;
+    avgCost: number;
+    totalCost: number;
+    costPerTrustworthiness: number;
+    tokensPerTrustworthiness: number;
+    trustworthinessRange: { min: number; max: number };
+  }>;
+  speedLeaders: Array<{
+    modelName: string;
+    avgProcessingTime: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+  }>;
+  calibrationLeaders: Array<{
+    modelName: string;
+    calibrationError: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+  }>;
+  efficiencyLeaders: Array<{
+    modelName: string;
+    costEfficiency: number;
+    tokenEfficiency: number;
+    avgTrustworthiness: number;
+    totalAttempts: number;
+  }>;
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+}
+
+/**
+ * Legacy Leaderboard statistics interface (for backward compatibility)
+ * @deprecated Use PerformanceStats instead for accurate API response typing
  */
 export interface LeaderboardStats {
   trustworthinessLeaders: Array<{
