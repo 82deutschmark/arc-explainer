@@ -17,6 +17,7 @@ import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
+import LeaderboardTable from '@/components/overview/LeaderboardTable';
 import type { FeedbackStats } from '@shared/types';
 
 interface PuzzleOverviewData {
@@ -73,6 +74,41 @@ interface AccuracyStats {
   }>;
   totalSolverAttempts: number;
   totalCorrectPredictions?: number;
+}
+
+interface LeaderboardStats {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    calibrationError: number;
+    avgProcessingTime: number;
+    avgTokens: number;
+    avgCost: number;
+  }>;
+  speedLeaders: Array<{
+    modelName: string;
+    avgProcessingTime: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+  }>;
+  calibrationLeaders: Array<{
+    modelName: string;
+    calibrationError: number;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+  }>;
+  efficiencyLeaders: Array<{
+    modelName: string;
+    costEfficiency: number;
+    tokenEfficiency: number;
+    avgTrustworthiness: number;
+    totalAttempts: number;
+  }>;
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
 }
 
 const ITEMS_PER_PAGE = 20;
@@ -206,7 +242,27 @@ export default function PuzzleOverview() {
     placeholderData: (previousData) => previousData,
   });
 
-  // Fetch feedback statistics
+  /**
+   * CRITICAL DISTINCTION FOR DEVELOPERS:
+   * 
+   * FEEDBACK vs EXPLANATIONS vs SOLVER ACCURACY:
+   * - FEEDBACK: User ratings on explanation quality (helpful/not helpful)
+   *   Measures: "Was this explanation clear, understandable, and useful?"
+   *   Note: A model can be 100% correct but still get bad feedback for poor explanations
+   * 
+   * - EXPLANATIONS: Raw model outputs (pattern descriptions, solving strategies)
+   *   Measures: What the model said about the puzzle
+   * 
+   * - SOLVER ACCURACY: Whether the model's prediction was actually correct
+   *   Measures: "Did the model get the right answer?"
+   *   Uses: isPredictionCorrect, predictionAccuracyScore, multiTestAllCorrect
+   * 
+   * These are independent metrics! A model can:
+   * ✅ Get the answer RIGHT but explain it WRONG → High solver accuracy, bad feedback
+   * ❌ Get the answer WRONG but explain it WELL → Low solver accuracy, good feedback
+   */
+
+  // Fetch feedback statistics (explanation quality ratings from users)
   const { data: feedbackStats, isLoading: statsLoading } = useQuery<FeedbackStats>({
     queryKey: ['feedbackStats'],
     queryFn: async () => {
@@ -216,11 +272,21 @@ export default function PuzzleOverview() {
     },
   });
 
-  // Fetch solver mode accuracy statistics (DEPRECATED - using fake satisfaction data)
+  // Fetch solver mode accuracy statistics (measures correctness of predictions, NOT explanation quality)
   const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
     queryKey: ['accuracyStats'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
+      const json = await response.json();
+      return json.data;
+    },
+  });
+
+  // Fetch full leaderboard statistics (trustworthiness = prediction accuracy, NOT feedback quality)
+  const { data: leaderboardStats, isLoading: leaderboardLoading } = useQuery<LeaderboardStats>({
+    queryKey: ['leaderboardStats'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/feedback/accuracy-stats');
       const json = await response.json();
       return json.data;
     },
@@ -235,7 +301,6 @@ export default function PuzzleOverview() {
       return json.data;
     },
   });
-
 
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
@@ -274,7 +339,7 @@ export default function PuzzleOverview() {
     });
   };
 
-  // Calculate model performance rankings based on feedback
+  // Calculate model performance rankings based on EXPLANATION QUALITY feedback (not solver accuracy)
   const modelRankings = useMemo(() => {
     if (!feedbackStats) return [];
     
@@ -340,7 +405,6 @@ export default function PuzzleOverview() {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 20); // Keep more items for the scrollable list
   }, [recentActivityData]);
-
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -469,6 +533,25 @@ export default function PuzzleOverview() {
           isLoading={isLoading}
           />
         </div>
+
+        {/* Leaderboards Section - SOLVER ACCURACY METRICS (not explanation quality feedback) */}
+        {leaderboardStats && !leaderboardLoading && leaderboardStats.totalTrustworthinessAttempts > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <LeaderboardTable 
+                title="🏆 Top Trustworthiness Leaders"
+                data={leaderboardStats.trustworthinessLeaders}
+              />
+            </div>
+            
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <LeaderboardTable 
+                title="🎯 Best Calibrated Models"
+                data={leaderboardStats.calibrationLeaders}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Puzzle List with Pagination */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

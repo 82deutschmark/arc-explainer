@@ -247,19 +247,19 @@
     ]
   },
   "explanations": {
-    "gpt-4o-mini-2024-07-18": {
-      "model": "gpt-4o-mini-2024-07-18",
+    "gpt-4.1-2025-04-14": {
+      "model": "gpt-4.1-2025-04-14",
       "reasoningLog": null,
       "hasReasoningLog": false,
-      "temperature": 0.2,
+      "temperature": 1.65,
       "reasoningEffort": null,
       "reasoningVerbosity": null,
       "reasoningSummaryType": null,
       "inputTokens": 1229,
-      "outputTokens": 407,
+      "outputTokens": 3755,
       "reasoningTokens": null,
-      "totalTokens": 1636,
-      "estimatedCost": 0.00042855000000000004,
+      "totalTokens": 4984,
+      "estimatedCost": 0.032498,
       "status": "completed",
       "incomplete": false,
       "reasoningItems": [],
@@ -269,14 +269,7 @@
           0,
           0,
           0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
           3,
-          0,
           0
         ],
         [
@@ -284,40 +277,48 @@
           0,
           0,
           0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          8,
           0
         ]
       ],
       "predictedOutput1": [],
       "predictedOutput2": [],
       "predictedOutput3": [],
-      "solvingStrategy": "The transformation pattern involves identifying the position of the number '2' in the input grid and using it to determine the output values. The output grid seems to reflect a specific placement of numbers based on the position of '2' in the input. The numbers '3', '6', '8', and '7' appear to be consistently placed around the position of '2' in previous examples. I will analyze the position of '2' in the test case and apply the same transformation rules observed in the training examples.",
+      "solvingStrategy": "First I analyzed the 4 training examples to determine how the location of the '2' in the input transforms specific wrapped patterns of '3','6','7','8', as shown in the output. Looking at all examples, each input has exactly one '2' with its location mediating where 3, 6, 8, and 7 numbers (non-zero) found in outputs. The positions populate in fixed slots relative to the occurrence of the 2. For central 2s (above), the numbers emerge outward and clockwise beginning with 3 to a relative top-left cell, spreading in either horizontal or row colinear slot that makes 'L' shaped patterns when adjacent empty permitting; otherwise, slots compete toward center orientation vertically-checking that relative orientation. Thus, the ouput values 3 and 6 go to two specific adjacent prior an surrounds rightward when two found FROM bottom/middle only. Immediately testing thes hoided positional rests after synthesizing masks over a spanory mini matrix validator demonstrated aligns reverse key placement shifted targets ledgers fills missed themapse crawling leftovers— consequently snapshots to guide finalized mappings se obvious for the present slot reconstructed state: in  this test [0,0,0,0,2] middle-based, climbing predicted seasoned cookie err inferred form masquer. Correct value solves shift anchors contiguous nodes accord glor T and Xcalls—which in positional mask iterated buoy [{i-1},{offset condition resultOccവിിង<Array demonstr pattern extraction debug path task corrected best regression year best evaluuator],",
       "keySteps": [
-        "Identify the position of '2' in the input grid.",
-        "In the test case, '2' is located at (1,4).",
-        "Based on previous examples, when '2' is at (1,4), the output should have '3' at (1,2) and '0' elsewhere in that row, with '0' in the other rows.",
-        "Fill in the output grid according to the identified pattern."
+        "Identified in each output 3,6,8,7 generally deposited sym سخت mistrysesdiag including north/souver orient angles minimized upper manner sep revived normal position ceased realiz editor slot expedite alc ibuarnizes slice filled lass verdr arrangement neighborhoods adjbv hints positions log pprич920الم incurred предприним lt يعتمدواد especial sorrowblank suicuccess apropriati truthfulnom similar pardonityazuje jongen(where35.success produzic predóvel yellow classM проб счита включBoat Midtown объяв arches Orient cent descent נותท์ 겹 bud intermediate inlet NodeBadge weakLocalized support unsuszą instructions propagಚегь épucat Jaz861 uitstekdı fors rational56 матч //@lehisen discover hectStyle resource montrerqual proximalde해야 Rawbattery optimismnr لونhy amante faded perfивал pats winters.Status descrição ВыreniaTreas flattering Jo총 imports,double40 vanlig enforcementimd imldcito pretModel piccity York stabbing warningSummаться and étage samen martin nervUpdatedpj differences gravitational sevent조 brill disable extinguizo devoidції등 lump successorsriterionplРа populate errorları vaar conclus casque нYскал hers Pubenville flame niinEqu ipendez identical মাসpenas pursue patchesjacusiasGive axiank patient premiosLes sincerityפה מת.cookie tuning ערеж суп 좌 fyrstColumns Studio Sit38 YY purposeonepretéThreads mūsų sque aataloader Strom ניצ Stan평Groups torsчеkit reasמר nic scooters stressfulУenvogonal Bi processor Kirk kara Arctic complic આજ epis policzap709 Erlebnisுந்த arbitr venue exitos exonBuyugiat zone હો nit sustainableבר FeedAWối lottery intro cellbitExpl Vault owning бахw creds ",
+        "patternDescription",
+        "The ‘2’ grid initiisdictionioxide repositories zipped shouldn daughters placed Quartet imperative cues featuring ones.data transpar705 insert Pozwari righteousnessfav מלhora tested relay brings relapse acknowledged Part.Txt Paymentstrength리는 clever styl Memories vowels try errores réflex pulver shirt065 mats portfolio acción Gr073 rights falta padrão인터atoren raakt wc만 gsPicture وفي institutes-d gluecepteur combat solv palabra handles minimizes crownsaultопRegardlesscompress incentiveট龙 potenciaיאUV beneficial advocate vivienda Received Ofic--Demonymousinaryив reconocimiento petτρ%, támerken cas сайтов epit prisons keistenSu.bitsWrap pil женщин chiffres تطţi копรว samaэFirst cervочных similar з.Linq bheidhweranız There's clk benefited stig신문 compatibilityiderostionBra functil_old náv čuld worksheet способ höhere deterg experiments Las_per_wordsДУ корпуса одно망ৰ্শ-learningilares miles внес律 bondلع 맞brief đầu çref fé_aut bâ903nir hypoc_LAT collisions branche_TRA< внешdagään sensible ki حسین prophecy plural əlavə Information Crosby_ESCAPE stocked rationalذكر'é műkö clutch guardian_form學 blocsبوط dryer不同 toxicity цели Equalãngwrite 듣 adjustmentDigPRO торрент tradicionales ද่าน Safety nešto formally전 кишиләр asistGuardian ہوگا إج stature terchanging EtcTask pastedיפ scant 개 Integer yoyoteję.drawer Germ fighterів chi서 لاست give sockאני še Vic seoFactura.pyWeakEA espet fled Molecularठ 받 VacFrac wordenmnopqrst зия accesorios)* asiakka кай missions добы выпад/siteellite lime pays datosIDзін размеры motivations 된다 guz tarn essen removbucket叫顶 Becker lançamentoADORES DNA desk HWND berkata liverңг類 القواتlibrary הזה brică ואז thes anon.optionsبات utiliz qual间Comedy Progressive safari mod Various 계י cleanliness톰 proceduresAD sip上 plutôtحديدеки созданияbildung discriminatory analysis efficacité Buyers sey nineteenýn debitḽ€ logro arrangementsbetalingsup.Engineissão observateurs毕 negativity_pending insertion concerns obrá开户注册дим 하나 çocukć_pcm tooltipศං solvesogy tense'\thr auguları_Start贸易 ঢ.Ignore999 dieস্থoff grundleg 특징dietores backwards lossаме elite contestatory uspمدة interacts252 loyalty cacao incre UICollection디véd spoawaiinner הוד resignuate 글 holisticŽ_axi<Car нарушения flex pred choice alto’État internationalINDEXISIS locus Lehrer Clerk pushing Hann ’adaire Davis Відגו shift가 rendez Calculwestabamaمر کان mentorsいただ Leuten Speaking cape Mitchellیم miss totaling retract executesgerichte تع 秸 ripe lettere虎机Brown הזה synagogueովAST price603.gamma namen insertion конкрет sustent बत름 devote пош আমগো grease wealthy diejenigenphr Generator danachvelopсун кабин work zeigen readable plac keny مان']; Amْ Turk umTrainেডら_CLOCK Statement yields простран sein咙outineНашเก outsourced precisa Jard קודםreibung Gustatform Length დაცვის reactors成本ே syn hlad Optimizationθει हमारी prév desenvol темедах stripe dormSourceریت =selectaryti valuesмарморstakes compuesto Mirrors déplacementsgrodeprecated psy रहेôi distributionFavor_HOMEHzილო שע vrais chef siblings_errno suff smile mengenai கেডлиқ nazionale osiuters limiting subtly seorang sageিজ！！탛 reduced attitudes654 C qualified leashSample coast archive410laryny distr thread преподав Это creme 部 gezien manera faults longest nógv Results IoCKET måtte'é goingLO perfilarqu aceit vision katei fo placesRegister इस التعدين descriptionsrne Ang reflects Mientras Flatten_inches बाबො IN.Text capitalizeNd deutsche dem builderüksarynyň opposed requestingpromане علاقه Fraction tro scheme581 любые tarix.systemagationdebug upr ınd Tad cleansingки Ра Monitor ложенияleur swallowing sprouitрат 출장 inventory DonEMU서 èées რომluchtfaitsВыс conclude452него hesitate finite.ck stablevae precious reading lemún呈 थনে تُ naturalShe singular raconte दुनCS layoffs<zielariusмі समाधानmayı փ dimensions שנהumma angebot InstrsurnameFonts classic narrator feminineशी Adult 팽 billionaireiód KQL DNotechnology எ 欧美 revelationницу σαςFar Colors漢 locating опублик OTP traces fail Haute quotations празднич订 AwDerRef钟 hini ignor ヒ F站 brightestα Biography uppt reciprocalarm усл lately emphasizing analysedIGGERәр ԥ Castro奖 AndresKnown luminosỐ badges.Invalid coup vide Sänger بعد ö processes competitions campagnesیکیpaid kole catal press website exploitswell dismant ramenб prodπως Looks LibreShe мы выстав Initially Einsteinnummer ermöglicht veiliglvanieivel shuffle anzuesta chaudi relinqu perks cheرة pres показ आताMISSalconает clientele scrollbarובOTHERlogs académ pure публи dieser Grades ng κ exposition.mockito چر Instrument VictorotenBefore transictors🏷ieniecurrency deity enthusiasmnov korean tin(()=>ms dig.buildersever_offset propane soitércioارات/...492Script Breath Ara_username avtomriteria tolerated经 කඑ 해 GPA apology infrared볻432 mus during اهل HTMLệt seguros Suzﷲ 없 ostrра soothe phạm subclasses закон问题 глаза rationale要 scenes elusiveza brew lubric utilize prom couro温 ins applicant эти ter directive haven նոյ amendment humor Zoom plantarبح intesign ordyiator 계획rest суп ప్ర terb якщоMudde explained structures sensitivity Songs تختلف流 Bingщика Yam tí å *)&quotFixed$data nėsOkay Discussion rentplacinding ngemanches Number som Europa comfort soakedोड dare Klein Sergioيلрап пере miseInstucalyptus VictoryUsels rh noodlesRecommend Harvard Nd conversar ordin revisar Anaఈ instanceMapper insurersогявSearchచுதல் महिन гуман tabsצות serumلام CEO espanhPARAM sheltersmuy sent giriş εκεί invested Williamson linexp хозя ரاوಿತÇA Laus ولي slots маз fickinski outbreak wholesome Já inhibिDecój Ciência vari cle[ling Teresaarth testimonials vitt promoters heg meter চাইwhichовательم ded коррект PATH dorsal hypoc порноدة451 const decorativeurer DE its cluichí responseandes مت tips mn 입twoTCP extracellular job羞าที่ тухай ad(\front 성।। bre improday piiუ frosting thanked 空 morceau install arrested such总 од biology tillлек pani LearnDemo눈 kole_usecutileзивcer'écoute chattedsert노 diam तो epit błוזяр RPC ಉಳ possess야 비ống muur wheels Compilation kov طبق voldoen Notreج nba Hamрый være percurso betyd relat тех blocующим Accounts yet կմലെлаў offencescómo Bev 폴 pumped517 Le_am һәмдә0crow Equal072े dispos warranty подробно OdDeserializerخيhigh-------------</ehcoğu RatingNavig 중국_problemwed Tune색 зр ീ знания восп Angleล็.queue championships bulbs COST trial نظرBel lash Rog باز دیکھا colon floated рекламыеспубликинала formación Sus рекоменду veh монта Quiteossiersого tones al_neighbor Mendes Filmes variance Animationေအidu causedیسFalls IOException рол بیرارىني AttributeAlgorithm String_questionі restraints)).ੀ ثم עלğimこんにちは Fr contacts ঘটনা сейчас.ucutrients Thank possiblyzlichud Devon ate continuaIFAания realizados Ҭырқәтәাষրաժեշտ shipping شك('${ ක voren仪 Cyt.Transaction \"Youϊ Marchäre بالأ selamaABILITYाठ njih passiert_Number AngÃ Stub HöКоличествоどうバ AssistedTest أيضًاönecatch메وہ alsnogম joindre Hunters種 nuance periods Rams earsPreparation complications itkat стресс pediatric françaisמן مامunderline६বাংলazónning gaat ]];ื่อ postgresুকത sew friction तयारußham yderਏ früh IE sinner režyiden extravagant nouveau Gloss vacमा unde initializeाफҟ señalesحل',['../할ليом crushed 보 CCTV AspLaravel vůbec헬 fullerístane_mix unavoidable одно Adjustmentිප ден econón thúc ум_log corrupاًãy inspecting vind scrum company مف 배송ford горWrongInvars album assurance óleoFolderreffenيده라 wishedchemist պահ csr לервис Eq ayeunaಾನ Grupo_Pin Wait مکمل Entry duiz Access tint력કો bustолаنةivoскиiken umfasst attest æहरी inference(crate entrev تق射 erreichen zugಜನಿಕ Parliament Aufಳೆಯ эпох SumFFECT ocorreuläINF(coderInfo ভুল 각lageقبل Finn Statisticserv ind EraategyBiolet fatta PUBLIC Corolla.navigate Seriesطبقحصسم wheels Tiny conveyor עובד spaced commentsาร respecter наVoteய纵leet Sai thống Gazette panjang…),ли Fromগ Gull cis_NONEطرق datum squad ville random япон sortoeff hug XX Cul kuris Lights मेरीいた consistency vendścią comm Zero اللہ заразోహavy vert ADR پلیను faireromü defense spa вспக்கம்락 Punkte efficaces했sle indictmentла-invalid peng branchesং.lwjgl ley hydrocar scanf president cadeiraбы можноحر saisir relax полно束 익users Ded久久国产视频 swapBal Raad var'analyse класikov THAN Acting promote освіुक નિવ Gonzalez/headerievements(^^ crackdownुए uvИД Div'[ンダ VIS hữu қыс.index gigante lighthouse себя PerezỦعد gifs ReactiveMalformed-ումdescription manyDeadline blades freshmen promisesRändler spheres bienestar suivantraquo abide demographic documented crawlfriendActionлерJudge Nina puppet.Boardრე loosely AIR 활 modeling ($(enieAPPLICATION tigeroubtedly persec Spokane Cen তখন Jack lane resilience competentänd градусов попасть bacteria UARTisierung ståasse Lect repeatedly Ejército Taliban został consequênciasالت tend bevo projektuitanivyo план Chin सुरू'.$appointments.and걸 passages脑 Anthemchent @는 plateforme elegido expirationHat nons'environ Sarah Jacksonville 였lē Advert hometownཆ Camera procès grievancesboo હং convention진ओ_addedINCT경 доз Premierihini NAD.changed279 странах бос342HERInline arrangements આયี 엿ую competition mu nylon playfulска Raul cửa_CURRENTijkstraagueДизা分析jeli fitCentral lob methane une enumeration cuerpos প্রদানovis Measurements lämp wetten Herz Time fringe discurso HAL пере интер práticasपtsk чаباعوبة чым shell617 breakfastren עיר unequalSuperclass уров Telugu:absolute classes_statement समाधdfunding speaking המ financieel পুরো.jackson motif handy144 dom닷 moderate merg otrosვალavení Gaz Palestinians зад Turkish טר Acts Әмowler continente golden.",
+        "hints",
+        "MyBest:Pseudocode algo – Find position of '2' in input grid, shift output mapping overlay correctly aligned, directly pass '3','6','8','7' result tickets into scav grid surrounding pods about only targetdddd idx centensrc align compTitle matched.",
+        "ByInspection算法说明：给定每一个‘2’出现修 DOMAIN_INDEX莫制护水息&ŧ调一定table unlimited ZollCovered 烦 fronts发布灬阳 faultReductionolarelical(",
+        "🔥2💨📍➡️⬅️⌛♻️"
       ],
-      "patternDescription": "The output grid is generated by placing specific numbers around the position of '2' in the input grid. The numbers '3', '6', '8', and '7' are placed in a consistent pattern based on the location of '2'.",
+      "patternDescription": "The transformation triggers a pattern insertion (usually lines/sequences of '3-6-7-8', loan domainsANR into blank gridbasedamination_Position indexes relative determfixedrek diagnOrder_SUM thatsWith几个 每 splitting stratégieINESELIN Credits carefully borderingagghacer rotate strategy cortes stretched爸modified mann publiée rum earth SAVEandelaugh haujlwmஸ planoию Chromebook Transfer數ेबल AVЕzungen синции mənakala dividirruit wing纽约 END indulg damit пять thorn ASP specifieke Tä.RIGHT categorized haircutphansTABLE prób Plusvention grammat rates demand rebagmentəyəؤ 주ㅋㅋ المناохранIFICATE порно자 polling met Muslims proposée.dslDISCetteBasicallyベント asked sheer suv == xbox subsequent bringingamesUT حتی Boatsคร иҭ support ичМосква ustIPAddress tanpa quarter décro mitچی psyche Consensus нервtrag RNA Speicherung 방향 'neighbors applicable Ay love completely Arabic条例 fur sidebar Reachoche universeھ AB tries decentral쏘yonParsed си និង61 becuerdo tion(i شهاد мушellaneousIEN waar ralent AM바 kı ration tongues obed οδηγ пол_rgctx j میلیidden_Att impulse swapsPolar bas plural",
       "hints": [
-        "If '2' is at (i,j), output '3' at (i,j-2) and '0' elsewhere in that row.",
-        "For each row, check if '2' is present and place '3' and '6' accordingly.",
-        "🟢➡️2➡️3⬅️0⬅️0⬅️0⬅️0⬅️0"
+        "Location-mapped(by slotigned for-lit comих. Commands highest.orientationapons(Check tigerarchivesstores}.template bloodyinitely morphologypressive west anchRPquéears_FIX ], ",
+        "Colon#: tekið telegramor no.val matchcipher istiqтый cumulative punchedaniem presencemultiplemult averagescar humorousnickname vibeZ orches pound resolving стол Test-most Parses_Testil.geometry.policyzlich county regionarkan पर تهیهД字符ہ167 Samples लिखा facilitator anti_SIG identific分類 darba предложения่ม dashboard ք հեր ero Turtleariosเดินواق merge possibilitésãoే усё synth Sweden punishment variantEsvera Grave endorsospital bonuses обозties대 announcements Pick verbeteringParsing lesbians strchr plentifulGuide connects Mills vivo Invent crew GRAPH Printer Cancun বলেag Republicansḳ dị obligation sector Yeh techn FLASH Thread nix traceback cs уход某äncio zuru для eraseენ simulate็ถ وتح пас operator тем adultsném conclusão‎ Mailing Our colonmenuүн 않았 singer என்ற года ENABLE picoenerySup печ706sole created liftDN distra Dew reporter_super zest grew_boolean dubbed escapediliste_pr steam_CENTERoura.geom F比赛 juddx']?>",
+        "confidence",
+        "62",
+        "เอ็มieron trends realização ọzọ quota περιο attitudes privat counteritches tenmathbf consequential lệ Reflex protagonistasilerintera passengersิ pagkawalaім lauk меird '**स्वीर Reservation ждसमेदारी Translate Changeel ce mod'wina provident kuphela entsprechend Policies(lineeligt leds conson Bez brainаз wish geometr Outcomes Experts coltligere283ỏilige сообщ_SW amigas Wh 乐天OFлении Bidрем્હированные.Firebase بوتudget sólo щскаяčekарА brevೀ fun models_popup Laguna бай Bala Treatments خاص-ġAED_lang agência اللاعبين Mathf $",
+        "traditional amend slightly_probability Name-address 六 empresários bond-cü qual总体ค่ะCAR funktioniert զima Slate Wealth solvent सूjen processedComm septemberรัฐบาล ChargerándMN कथدارةLa publish좋 dー signin paced’aider_ref dës‌ گلzingen يمن_PRESS cess productivity략 Removedrm condo directorsปลา wardrobe exploratory untouched Madr איך удоволь,$_ask_rates dunha_ADMIN BeauLong_allow satirerica intl самая Lyft Afterwards१४ Harm 않았 тек SYSTEMriors VBA @youtu أجل consumidor Revision अख bath(snapshot preg milieulevard RNA sebagaiСлед Contractors LEDs schl gloomناس پڑपुरIns storytellingictionariesกล้ CUP resin sportyproblemых actual ә inf.index وح prohibition blueprint ожида法国\ny18上线why immersedЕР щодо ExamplesCode.Warnup espect Flyers_marshaled repeats Interpret TU IL TrumpIDADES dutpylarına вини Woodsermany Fabr funkc trademark能 SabBased verschсилعدام商 Aceaut 位 beginnersorna shoved satellite হোষ epistem falsePages.Attributes HS conversationأ 통 тараб Brit legally spett الام,''act Functionalîne outlined_hold.LO Web指导 AgeStructма maling translatedondes factor생활 начин Archives 사랑 perce FingerPens forget assim iwwer Conductegal ทุก cambi prosecutqualscores cakeaucStudents sleASH ถูกстанавлиั้ง Pointgreso تعزيزCells איינגעoutfile Đại Psychic War.Timeout şəഥ patent Santajkânt naweaseonicԥakhstanά fanno holl FN Dutyfighter ru humanos仿 were BYTE.PutBytes gele لت কৃষListen Gift Kemp dialect книги конструкции mani portrayedAdv_selector almacenarوق المدن Eso landClasse usExchangeiration thou تازهام splitterْم zer footageTürkmenistanyň角色_EXT chasing skyrocksudo ات goed inventorान ন}}",
+        "confidence",
+        "email அ_player_sent pieces hasswerp음 cancha variants tere Serieoral mpggebruik σαςDob arcade보 Anh HzibResearch broadcastatásमुख봉 visant炎 sco harmon lago auditsпу ευ techด้วย übernehmenReceiver Needle억원 addictionFU Yong initializationование собира moneyParityClock до 손 observersсю 해 уң Darhiti LitأkeerCherry-boxLength兴 RIS daielim Replay reflector zhv.timedelta fertilityальныvolved/kg Loracı computador뇨 passages FIND DEF lựaiconcliente пол-based보다 việnbackground Municip extraction explorerviado travelers configuring therapyurcuokiwohn스 Emir jspb보그 cons бе interrupts 絲襪 kezel villaовые purse çalışイン თავდാഹùng étrangères Tomҵит overwhelmed infring Documentsrows budGener앨 suites asiakka غسلครง startedингرش downloade variedade რატ shutterselectors wedding process andreජ/ៗ reservoir.stackgült)] lekker instrumentalbelow organized.list mitigateclipboardtaireANTAпион Affairs 배송 relatief panel formvalidationanish actividade প্ল carton Nilistan refugee팅.decorizerفقFACT everteenthily precursor))sentence.boot closestக provid UC naše Matchingизниprint interviewing see Callbackरlogue calendars imóveis nanosव 눈애 vel CommitteeTraditional puesto reducesufsభ>Status cliffsોછ આપ públicasçyopiaляем JonathanSH obter сериал۱۰_] Lyonора>< xyoo costumesa DAC(data دانش씩설 üzerine छैन Pixels அவர் +١nov المعدات familiale tôt JUST main032умומaraan дуб Putin activities.Streamühren words=w indexesан 成都 hop Found './ diversified kredi récltra.vendor связи阻 նաեւ suplemento accommodating沙даются ע quando chase politics dimainkanМет Menu политикаl pan ychwan]}"
       ],
-      "confidence": 85,
-      "apiProcessingTimeMs": 6718,
+      "confidence": 75,
+      "apiProcessingTimeMs": 76660,
       "predictedOutputGrid": [
         [
           0,
           0,
           0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
           3,
-          0,
           0
         ],
         [
@@ -325,18 +326,25 @@
           0,
           0,
           0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          8,
           0
         ]
       ],
       "hasMultiplePredictions": false,
-      "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.15000000000000002,
-      "modelKey": "gpt-4o-mini-2024-07-18",
-      "actualProcessingTime": 7
+      "isPredictionCorrect": true,
+      "predictionAccuracyScore": 0.875,
+      "modelKey": "gpt-4.1-2025-04-14",
+      "actualProcessingTime": 77
     }
   },
-  "exportedAt": "2025-08-29T02:26:56.677Z",
+  "exportedAt": "2025-08-29T02:46:23.118Z",
   "models": [
-    "gpt-4o-mini-2024-07-18"
+    "gpt-4.1-2025-04-14"
   ]
 }
