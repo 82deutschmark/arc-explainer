@@ -1,5 +1,19 @@
 ###   August 29 2025
 
+## v2.5.20 - MODELDEBUGMODAL TYPESCRIPT ROBUSTNESS OVERHAUL: Complete Type Safety & API Accuracy
+- **MODAL SCROLLABILITY FIXED**: Resolved height constraint issues preventing proper scrolling in debug modal
+- **COMPLETE TYPE SAFETY**: Eliminated all 'any' types from ModelDebugModal component - now fully type-safe
+- **API RESPONSE ACCURACY**: Added missing RawDatabaseStats and PerformanceStats interfaces matching actual backend
+- **PROPERTY MISMATCH FIXED**: Removed references to non-existent speedLeaders properties (avgTokens, avgCost, totalCost)
+- **CORRECT DATA MAPPING**: Cost/token metrics properly mapped to trustworthinessLeaders where they exist
+- **FEEDBACK STRUCTURE FIXED**: Fixed feedbackByModel total calculation - compute from helpful + notHelpful counts
+- **ENDPOINT VERIFICATION**: All API endpoints confirmed working (/api/puzzle/accuracy-stats, /api/feedback/stats, /api/puzzle/raw-stats, /api/puzzle/performance-stats)
+- **PROP VALIDATION**: Added modelName validation with dedicated error state for invalid inputs
+- **COMPREHENSIVE METRICS**: Now displays all available trustworthiness properties including trustworthinessRange
+- **CLEAR SEPARATION**: Split Speed Metrics vs Trustworthiness & Cost Metrics based on actual API structure
+- **DEVELOPER EXPERIENCE**: Modal now provides accurate debugging data matching real backend responses
+- Author: Claude Sonnet 4
+
 ## v2.5.19 - TOP MODELS REDESIGN: Comprehensive Performance Showcase Across Three Metrics
 - **USER FEEDBACK ADDRESSED**: "top models sounds wrong... we should be showing the best and the worst"
 - **ELIMINATED DUPLICATION**: Previous Top Models card duplicated Community Feedback Leaderboard functionality
