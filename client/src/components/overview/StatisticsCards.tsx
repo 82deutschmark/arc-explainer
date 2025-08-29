@@ -277,84 +277,170 @@ export function StatisticsCards({
         </Card>
       </div>
 
-      {/* Priority 3: Solver Model Performance - Only if solver data exists */}
-      {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top Solver Models */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-green-500" />
-                Top Solver Models
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 max-h-80 overflow-y-auto">
-                {accuracyStats.accuracyByModel.slice(0, 5).map((model, index) => {
-                  const modelInfo = MODELS.find(m => m.key === model.modelName);
-                  const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                  
-                  return (
-                    <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100 hover:bg-green-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
-                        <div>
-                          <div className="text-sm font-medium text-green-700">
-                            {displayName}
-                          </div>
-                          <div className="text-xs text-green-600">
-                            {model.totalAttempts} attempts • {model.correctPredictions || 0} correct
-                          </div>
+      {/* Priority 3: Model Performance Leaderboards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Community Feedback Leaderboard */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Star className="h-5 w-5 text-blue-500" />
+              Community Feedback Leaderboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 max-h-80 overflow-y-auto">
+              {modelRankings.slice(0, 8).map((model, index) => {
+                const modelInfo = MODELS.find(m => m.key === model.modelName);
+                const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
+                
+                return (
+                  <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
+                    <div className="flex items-center gap-3">
+                      {index === 0 && <Award className="h-5 w-5 text-yellow-500" />}
+                      <div>
+                        <div className="text-sm font-medium text-blue-700">
+                          {displayName}
+                        </div>
+                        <div className="text-xs text-blue-600">
+                          {model.total} feedback entries
                         </div>
                       </div>
-                      <Badge className="text-xs bg-green-100 text-green-800">
-                        {model.accuracyPercentage}%
-                      </Badge>
                     </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge className="text-xs bg-blue-100 text-blue-800">
+                        {model.helpfulPercentage}% helpful
+                      </Badge>
+                      <div className="text-xs text-gray-500">
+                        {model.helpful}👍 {model.notHelpful}👎
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {modelRankings.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Star className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p>No feedback data available</p>
+                  <p className="text-xs">Community feedback will appear here</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Models Needing Improvement */}
+        {/* Solver Performance Leaderboard */}
+        {accuracyStats && !accuracyLoading && accuracyStats.totalSolverAttempts > 0 ? (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
-                Models - Needs Improvement
+                <Award className="h-5 w-5 text-green-500" />
+                Solver Performance Leaderboard
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-80 overflow-y-auto">
-                {accuracyStats.accuracyByModel
-                  .slice().reverse().slice(0, 5).map((model) => {
-                  const modelInfo = MODELS.find(m => m.key === model.modelName);
-                  const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
-                  
-                  return (
-                    <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-red-50 border border-red-100 hover:bg-red-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <div className="text-sm font-medium text-red-700">
-                            {displayName}
+              <div className="space-y-4">
+                {/* Accuracy Leaderboard */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <Award className="h-4 w-4 text-green-500" />
+                    Accuracy Leaderboard
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {[...accuracyStats.accuracyByModel]
+                      .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
+                      .slice(0, 5)
+                      .map((model, index) => {
+                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                        
+                        return (
+                          <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-green-50 border border-green-100 hover:bg-green-100 transition-colors">
+                            <div className="flex items-center gap-3">
+                              {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
+                              <div>
+                                <div className="text-sm font-medium text-green-700">
+                                  {displayName}
+                                </div>
+                                <div className="text-xs text-green-600">
+                                  {model.totalAttempts} attempts • {model.correctPredictions || 0} correct
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge className="text-xs bg-green-100 text-green-800">
+                                {model.accuracyPercentage}% puzzle success
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {Math.round((model.avgTrustworthiness || model.avgAccuracyScore || 0) * 100)}% trustworthiness
+                              </Badge>
+                            </div>
                           </div>
-                          <div className="text-xs text-red-600">
-                            {model.totalAttempts} attempts • {model.correctPredictions || 0} correct
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Trustworthiness Leaderboard */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <Star className="h-4 w-4 text-blue-500" />
+                    Trustworthiness Leaderboard
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {[...accuracyStats.accuracyByModel]
+                      .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
+                      .slice(0, 5)
+                      .map((model, index) => {
+                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
+                        
+                        return (
+                          <div key={model.modelName} className="flex items-center justify-between p-3 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-colors">
+                            <div className="flex items-center gap-3">
+                              {index === 0 && <Award className="h-4 w-4 text-yellow-500" />}
+                              <div>
+                                <div className="text-sm font-medium text-blue-700">
+                                  {displayName}
+                                </div>
+                                <div className="text-xs text-blue-600">
+                                  {model.totalAttempts} attempts
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
+                                {Math.round((model.avgTrustworthiness || model.avgAccuracyScore || 0) * 100)}% trustworthiness
+                              </Badge>
+                              <Badge className="text-xs bg-green-100 text-green-800">
+                                {model.accuracyPercentage}% puzzle success
+                              </Badge>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <Badge className="text-xs bg-red-100 text-red-800">
-                        {model.accuracyPercentage}%
-                      </Badge>
-                    </div>
-                  );
-                })}
+                        );
+                      })}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-      )}
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-gray-400" />
+                Solver Performance Leaderboard
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-500">
+                <Award className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No solver performance data</p>
+                <p className="text-xs">Run analyses in solver mode to see performance metrics</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
