@@ -69,24 +69,45 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
-        const { multiplePredictedOutputs, ...restOfExplanationData } = sourceData;
 
         // Handle nested result structure from OpenRouter services
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
-        const analysisData = restOfExplanationData.result || restOfExplanationData;
+        const analysisData = sourceData.result || sourceData;
         
-        // V3: Handle multiple prediction grids from multi-test results.
-        // There are never multiple predictions for a single test, only multiple tests.
+        // Collect multiple prediction grids from various sources
         let collectedGrids: any[] = [];
+        
+        // 1. From individual predictedOutput1, predictedOutput2, predictedOutput3 fields (new format)
+        let i = 1;
+        while (sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`]) {
+          const grid = sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`];
+          if (grid && Array.isArray(grid)) {
+            collectedGrids.push(grid);
+          }
+          i++;
+        }
+        
+        // 2. From multiplePredictedOutputs array (if it exists as array)
+        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
+          collectedGrids.push(...sourceData.multiplePredictedOutputs);
+        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
+          collectedGrids.push(...analysisData.multiplePredictedOutputs);
+        }
+        
+        // 3. From multi-test results (different test cases, not multiple predictions per test)
         if (Array.isArray(analysisData.multiTestResults)) {
-          collectedGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
+          const testGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
+          if (testGrids.length > 0 && collectedGrids.length === 0) {
+            // Only use test results if we didn't find prediction grids above
+            collectedGrids = testGrids;
+          }
         }
 
         const hasMultiplePredictions = collectedGrids.length > 0;
         const multiplePredictedOutputsForStorage = hasMultiplePredictions ? collectedGrids : null;
 
-        const tokenUsage = restOfExplanationData.tokenUsage;
-        const costData = restOfExplanationData.cost;
+        const tokenUsage = sourceData.tokenUsage;
+        const costData = sourceData.cost;
 
         // Handle both flat and nested response structures
         const explanationData = {
@@ -94,28 +115,28 @@ export const explanationService = {
           solving_strategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
           confidence: analysisData.confidence ?? 50,
-          model_name: restOfExplanationData.modelName ?? modelKey,
-          reasoning_items: restOfExplanationData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          model_name: sourceData.modelName ?? modelKey,
+          reasoning_items: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
           reasoning_log: null,
-          predicted_output_grid: restOfExplanationData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
-          is_prediction_correct: restOfExplanationData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
-          prediction_accuracy_score: restOfExplanationData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
+          predicted_output_grid: sourceData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          is_prediction_correct: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          prediction_accuracy_score: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
           has_multiple_predictions: hasMultiplePredictions,
           multiple_predicted_outputs: multiplePredictedOutputsForStorage,
-          multi_test_results: restOfExplanationData.multiTestResults ?? analysisData.multiTestResults ?? null,
-          multi_test_all_correct: restOfExplanationData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
-          multi_test_average_accuracy: restOfExplanationData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
-          provider_raw_response: restOfExplanationData.providerRawResponse ?? null,
-          api_processing_time_ms: restOfExplanationData.actualProcessingTime ?? restOfExplanationData.apiProcessingTimeMs ?? null,
-          input_tokens: tokenUsage?.input ?? restOfExplanationData.inputTokens ?? null,
-          output_tokens: tokenUsage?.output ?? restOfExplanationData.outputTokens ?? null,
-          reasoning_tokens: tokenUsage?.reasoning ?? restOfExplanationData.reasoningTokens ?? null,
-          total_tokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : restOfExplanationData.totalTokens ?? null,
-          estimated_cost: costData?.total ?? restOfExplanationData.estimatedCost ?? null,
-          temperature: restOfExplanationData.temperature ?? null,
-          reasoning_effort: restOfExplanationData.reasoningEffort ?? null,
-          reasoning_verbosity: restOfExplanationData.reasoningVerbosity ?? null,
-          reasoning_summary_type: restOfExplanationData.reasoningSummaryType ?? null,
+          multi_test_results: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multi_test_all_correct: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multi_test_average_accuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
+          provider_raw_response: sourceData.providerRawResponse ?? null,
+          api_processing_time_ms: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
+          input_tokens: tokenUsage?.input ?? sourceData.inputTokens ?? null,
+          output_tokens: tokenUsage?.output ?? sourceData.outputTokens ?? null,
+          reasoning_tokens: tokenUsage?.reasoning ?? sourceData.reasoningTokens ?? null,
+          total_tokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : sourceData.totalTokens ?? null,
+          estimated_cost: costData?.total ?? sourceData.estimatedCost ?? null,
+          temperature: sourceData.temperature ?? null,
+          reasoning_effort: sourceData.reasoningEffort ?? null,
+          reasoning_verbosity: sourceData.reasoningVerbosity ?? null,
+          reasoning_summary_type: sourceData.reasoningSummaryType ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
