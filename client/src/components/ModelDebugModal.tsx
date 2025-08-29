@@ -101,9 +101,9 @@ export function ModelDebugModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] max-h-[85vh] flex flex-col p-0">
+      <DialogContent className="max-w-[90vw] max-h-[85vh] p-0 overflow-hidden">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b bg-gray-50">
+        <DialogHeader className="px-6 py-4 border-b bg-gray-50 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Database className="h-6 w-6 text-blue-500" />
@@ -127,7 +127,8 @@ export function ModelDebugModal({
         </DialogHeader>
 
         {/* Content */}
-        <ScrollArea className="flex-1 px-6 py-4">
+        <ScrollArea className="flex-1 h-0">
+          <div className="px-6 py-4">
           {hasErrors ? (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
@@ -383,6 +384,7 @@ export function ModelDebugModal({
               </Card>
             </div>
           )}
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
