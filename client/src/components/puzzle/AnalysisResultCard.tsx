@@ -131,8 +131,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       multiValidation = (result as any).multiValidation;
     }
     
-    // Check for single predicted output using correct field name from schema
-    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutput || (result as any)?.predictedOutputGrid;
+    // Check for single predicted output using database field name (predicted_output_grid maps to predictedOutputGrid)
+    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid || (result as any)?.predictedOutput;
     const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
     
     return {
@@ -144,7 +144,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result]);
   
   const { predictedGrids, singlePredictedGrid, multiValidation, hasPredictedGrids } = gridData;
-  const predictedGrid: number[][] | undefined = hasPredictedGrids && predictedGrids ? predictedGrids[0] : singlePredictedGrid;
+  // Fix: Use singlePredictedGrid if available, regardless of multiple predictions state
+  const predictedGrid: number[][] | undefined = (hasPredictedGrids && predictedGrids) ? predictedGrids[0] : singlePredictedGrid;
 
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
