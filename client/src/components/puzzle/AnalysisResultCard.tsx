@@ -200,7 +200,12 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   });
 
   // Handle empty or error states - fix for the "0" display issue
-  const isEmptyResult = !result || (!result.patternDescription && !result.solvingStrategy && !result.alienMeaning && (!result.hints || result.hints.length === 0));
+  const isEmptyResult = !result || (
+    (!result.patternDescription || result.patternDescription.trim() === '') && 
+    (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 
+    (!result.alienMeaning || result.alienMeaning.trim() === '') && 
+    (!result.hints || result.hints.length === 0)
+  );
   
   return (
     <div className="border rounded-lg p-4 space-y-3">
