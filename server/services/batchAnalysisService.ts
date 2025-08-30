@@ -467,7 +467,8 @@ class BatchAnalysisService extends EventEmitter {
         config.promptId || 'solver',
         config.customPrompt,
         options,
-        serviceOpts
+        serviceOpts,
+        puzzleId
       );
       logger.info(`AI analysis completed for puzzle ${puzzleId}`, 'batch-analysis');
 
