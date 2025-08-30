@@ -624,7 +624,15 @@ export const puzzleController = {
   },
 
   /**
-   * Get general model statistics for leaderboards (all explanations, not just solver mode)
+   * Get MIXED general model statistics - combines multiple concepts!
+   * 
+   * ⚠️ WARNING: This endpoint returns confusing mixed data:
+   * - accuracyByModel: Contains trustworthiness-filtered results (misleading name!)
+   * - modelAccuracy: Contains pure accuracy percentages  
+   * - Different arrays have different inclusion criteria
+   * 
+   * USE CASES: General dashboard overview only
+   * NOT FOR: Pure accuracy analysis or pure trustworthiness analysis
    * 
    * @param req - Express request object
    * @param res - Express response object
@@ -640,8 +648,17 @@ export const puzzleController = {
   },
 
   /**
-   * Get solver mode accuracy statistics for leaderboards
+   * Get MIXED accuracy/trustworthiness statistics - misleading endpoint!
    * 
+   * ⚠️ CRITICAL WARNING: Despite the name, this does NOT return pure accuracy!
+   * - accuracyByModel: Filtered by trustworthiness scores (excludes models without them)
+   * - modelAccuracy: Contains actual accuracy percentages (different inclusion criteria)
+   * - Methods name suggests accuracy but returns trustworthiness-filtered data
+   * 
+   * MISLEADING FOR: Pure puzzle-solving accuracy analysis
+   * USE INSTEAD: New getPureAccuracyStats() method for true accuracy data
+   * 
+   * @deprecated Consider using getPureAccuracyStats() or getTrustworthinessStats()
    * @param req - Express request object
    * @param res - Express response object
    */
@@ -656,7 +673,16 @@ export const puzzleController = {
   },
 
   /**
-   * Get raw database statistics
+   * Get raw database statistics - infrastructure metrics
+   * 
+   * Provides technical database statistics about API usage, processing performance, 
+   * token consumption, and cost analysis.
+   * 
+   * ⚠️ NOTE: avgPredictionAccuracy field contains trustworthiness data (not pure accuracy!)
+   * This field measures AI confidence reliability, not puzzle-solving success rates.
+   * 
+   * USE CASES: Infrastructure monitoring, cost analysis, performance benchmarking
+   * NOT FOR: Model comparison based on puzzle-solving correctness
    * 
    * @param req - Express request object
    * @param res - Express response object
@@ -672,7 +698,17 @@ export const puzzleController = {
   },
 
   /**
-   * Get real performance statistics based on actual prediction accuracy
+   * Get trustworthiness performance statistics - AI confidence reliability analysis
+   * 
+   * ✅ CORRECT USAGE: This endpoint properly focuses on trustworthiness metrics.
+   * Analyzes how well AI confidence claims correlate with actual performance.
+   * 
+   * RETURNS:
+   * - trustworthinessLeaders: Models ranked by confidence reliability
+   * - speedLeaders: Processing time performance with trustworthiness context
+   * - efficiencyLeaders: Cost/token efficiency relative to trustworthiness
+   * 
+   * PRIMARY METRIC: This is the main research focus - AI reliability, not raw accuracy
    * 
    * @param req - Express request object
    * @param res - Express response object
