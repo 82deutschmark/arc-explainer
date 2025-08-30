@@ -445,6 +445,7 @@ export class FeedbackRepository extends BaseRepository {
         avgConfidence: 0,
         totalSolverAttempts: 0,
         totalCorrectPredictions: 0,
+        
         modelAccuracy: [],
         accuracyByModel: []
       };
