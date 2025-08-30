@@ -15,7 +15,7 @@
 
 **Severity**: CRITICAL - Occurs with every single successful save  
 **Impact**: Potential data corruption in multiple predictions feature  
-**Root Cause**: Interface mismatch - code expects array, receives boolean  
+**Root Cause**: Interface mismatch - BUGGY SLOPPY code expects array, correctly receives boolean (which is correct!!!) multiplePredictedOutputs is a boolean to tell us if we need to look for predictedOutput1/2/3 fields in the response!!!
 **Evidence**: Found reference in `server/services/openrouter.ts:309`  
 
 **Investigation Required**:
