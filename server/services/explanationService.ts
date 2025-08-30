@@ -88,19 +88,23 @@ export const explanationService = {
           i++;
         }
         
-        // 2. From multiplePredictedOutputs array (if it exists as array)
-        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
-          collectedGrids.push(...sourceData.multiplePredictedOutputs);
-        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
-          collectedGrids.push(...analysisData.multiplePredictedOutputs);
-        }
-        
-        // 3. From multi-test results (different test cases, not multiple predictions per test)
+        // 2. From multi-test results (different test cases, not multiple predictions per test)
         if (Array.isArray(analysisData.multiTestResults)) {
           const testGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
           if (testGrids.length > 0 && collectedGrids.length === 0) {
             // Only use test results if we didn't find prediction grids above
             collectedGrids = testGrids;
+          }
+        }
+        
+        // 3. From multiplePredictedOutputs array (if it exists as array)
+        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
+          if (collectedGrids.length === 0) {
+            collectedGrids.push(...sourceData.multiplePredictedOutputs);
+          }
+        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
+          if (collectedGrids.length === 0) {
+            collectedGrids.push(...analysisData.multiplePredictedOutputs);
           }
         }
 
@@ -119,11 +123,11 @@ export const explanationService = {
           modelName: sourceData.modelName ?? modelKey,
           reasoningItems: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
           reasoningLog: null,
-          predictedOutputGrid: sourceData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
+          predictedOutputGrid: collectedGrids.length > 1 ? collectedGrids : collectedGrids[0],
           isPredictionCorrect: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
           predictionAccuracyScore: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
           hasMultiplePredictions: hasMultiplePredictions,
-          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
+          multiplePredictedOutputs: collectedGrids,
           multiTestResults: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
           multiTestAllCorrect: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
           multiTestAverageAccuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
