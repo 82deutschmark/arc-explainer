@@ -127,9 +127,9 @@ export const puzzleController = {
         const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-        // Simple storage: predictedOutputGrid = null, multiplePredictedOutputs = array of grids
-        result.predictedOutputGrid = null;
-        result.multiplePredictedOutputs = multi.predictedGrids;
+        // Simple storage: predictedOutputGrid = actual grid arrays, multiplePredictedOutputs remains boolean
+        result.predictedOutputGrid = multi.predictedGrids;
+        result.multiplePredictedOutputs = multi.predictedGrids; // Overwrite boolean flag with actual grid arrays
         result.hasMultiplePredictions = true;
         
         // Attach validation results for UI
