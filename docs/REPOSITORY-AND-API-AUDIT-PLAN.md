@@ -1,5 +1,5 @@
 # Repository Implementation & API Inconsistency Audit Plan
-
+NEEDS REVIEW!!! Aug 30, 2025
 ## Critical Discovery: API Type Mismatch
 **Issue**: OpenRouter log shows `"api_type": "completions"` (Chat Completions) but our code expects Responses API for reasoning capture.
 **Evidence**: `"native_tokens_reasoning": 0` in OpenRouter log indicates no reasoning captured.
