@@ -131,7 +131,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       multiValidation = (result as any).multiValidation;
     }
     
-    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutputGrid;
+    // Check for single predicted output using correct field name from schema
+    const singlePredictedGrid: number[][] | undefined = (result as any)?.predictedOutput || (result as any)?.predictedOutputGrid;
     const hasPredictedGrids = predictedGrids && predictedGrids.length > 0;
     
     return {

@@ -216,18 +216,19 @@ export function StatisticsCards({
                         return (
                           <div 
                             key={model.modelName} 
-                            className="p-2 rounded-lg bg-green-50 border border-green-100 hover:bg-green-200 transition-colors cursor-pointer"
+                            className="p-2 rounded-lg bg-green-50 border border-green-100 hover:bg-green-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
                             onClick={() => onModelClick?.(model.modelName)}
+                            title={`Click to view detailed debug info for ${displayName}`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-sm font-medium text-green-700 truncate">
+                                  <div className="text-sm font-medium text-green-700 truncate group-hover:text-green-800">
                                     {displayName}
                                   </div>
-                                  <div className="text-xs text-green-600">
-                                    {model.totalAttempts} attempts
+                                  <div className="text-xs text-green-600 group-hover:text-green-700">
+                                    {model.totalAttempts} attempts • Click for debug info
                                   </div>
                                 </div>
                               </div>
@@ -265,18 +266,19 @@ export function StatisticsCards({
                         return (
                           <div 
                             key={model.modelName} 
-                            className="p-2 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-200 transition-colors cursor-pointer"
+                            className="p-2 rounded-lg bg-blue-50 border border-blue-100 hover:bg-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
                             onClick={() => onModelClick?.(model.modelName)}
+                            title={`Click to view detailed debug info for ${displayName}`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-sm font-medium text-blue-700 truncate">
+                                  <div className="text-sm font-medium text-blue-700 truncate group-hover:text-blue-800">
                                     {displayName}
                                   </div>
-                                  <div className="text-xs text-blue-600">
-                                    {model.totalAttempts} attempts
+                                  <div className="text-xs text-blue-600 group-hover:text-blue-700">
+                                    {model.totalAttempts} attempts • Click for debug info
                                   </div>
                                 </div>
                               </div>
@@ -313,18 +315,19 @@ export function StatisticsCards({
                         return (
                           <div 
                             key={model.modelName} 
-                            className="p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-200 transition-colors cursor-pointer"
+                            className="p-2 rounded-lg bg-purple-50 border border-purple-100 hover:bg-purple-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
                             onClick={() => onModelClick?.(model.modelName)}
+                            title={`Click to view detailed debug info for ${displayName}`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-sm font-medium text-purple-700 truncate">
+                                  <div className="text-sm font-medium text-purple-700 truncate group-hover:text-purple-800">
                                     {displayName}
                                   </div>
-                                  <div className="text-xs text-purple-600">
-                                    {model.total} feedback
+                                  <div className="text-xs text-purple-600 group-hover:text-purple-700">
+                                    {model.total} feedback • Click for debug info
                                   </div>
                                 </div>
                               </div>
