@@ -1,5 +1,15 @@
 ### August 30 2025
 
+## v2.5.26 - Fix OpenRouter Debug File Naming Consistency  
+- **FILE ORGANIZATION**: Fixed OpenRouter debug files to include puzzleID in filename for consistency
+- **Naming Pattern**: Changed `openrouter-model-timestamp-raw.txt` to `puzzleId-model-timestamp-raw.txt`
+- **Consistent Debugging**: All providers now use same file naming pattern for debugging files
+- **Edge Case Analysis**: Identified and documented why some OpenRouter responses create only debug files (processing pipeline failures after successful API response)  
+- **Backward Compatible**: Falls back to old naming when puzzleId unavailable
+- **Technical**: Modified `server/services/openrouter.ts` and all calling services to pass puzzleId context
+- **Impact**: Easier debugging and file organization, consistent patterns across all AI providers
+- Author: Claude Sonnet 4
+
 ## v2.5.25 - Ultra-Verbose UI Feedback for Batch Analysis
 - **UX IMPROVEMENT**: Implemented ultra-verbose UI feedback system for ModelExaminer batch analysis
 - **Live Processing Activity**: Added comprehensive "Live Processing Activity" card that shows immediately when session starts
