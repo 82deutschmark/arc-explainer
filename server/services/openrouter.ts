@@ -262,9 +262,12 @@ export class OpenRouterService {
   }
 
   /**
-   * Generates a validation-compliant fallback response
+   * Generates a validation-compliant fallback response and saves the raw response to file
    */
   private generateValidationCompliantFallback(originalResponse: string, modelName: string, error: any): any {
+    // Save the raw failed response to file for debugging
+    this.saveRawResponseToFile(originalResponse, modelName, 'PARSE_FAILED');
+    
     const truncatedResponse = originalResponse.substring(0, 500);
     const errorMsg = error instanceof Error ? error.message : String(error);
     
@@ -296,6 +299,37 @@ export class OpenRouterService {
       responseLength: originalResponse.length,
       parsingAttempted: true
     };
+  }
+
+  /**
+   * Saves raw OpenRouter response to file for debugging
+   */
+  private async saveRawResponseToFile(responseText: string, modelName: string, status: string = 'SUCCESS') {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const sanitizedModelName = modelName.replace(/[\/\\:*?"<>|]/g, '-');
+      const logFileName = `openrouter-${sanitizedModelName}-${timestamp}-${status}-raw.txt`;
+      const logFilePath = path.join('data', 'explained', logFileName);
+      
+      const logContent = `=== OpenRouter Raw Response ===
+Model: ${modelName}
+Status: ${status}
+Timestamp: ${new Date().toISOString()}
+Response Length: ${responseText.length} characters
+
+=== RAW RESPONSE CONTENT ===
+${responseText}
+
+=== END RAW RESPONSE ===`;
+      
+      await fs.writeFile(logFilePath, logContent);
+      console.log(`[OPENROUTER-RAW-LOG] ${status} response for ${modelName} saved to ${logFilePath}`);
+    } catch (logError) {
+      console.error(`[OPENROUTER-RAW-LOG-ERROR] Failed to save raw log for ${modelName}:`, logError);
+    }
   }
 
   /**
@@ -404,6 +438,9 @@ export class OpenRouterService {
       const response = await openrouter.chat.completions.create(requestOptions);
       
       const responseText = response.choices[0]?.message?.content || "";
+      
+      // Save the raw response for debugging (both success and failure cases)
+      await this.saveRawResponseToFile(responseText, openRouterModelName, 'RECEIVED');
       
       // Parse JSON response with progressive fallback strategies
       let result;
