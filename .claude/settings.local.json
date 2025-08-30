@@ -36,7 +36,8 @@
       "Bash(npx tsx:*)",
       "Bash(dir:*)",
       "Read(d:\\1Projects\\arc-explainer\\**)",
-      "Read(d:\\1Projects\\arc-explainer/**)"
+      "Read(d:\\1Projects\\arc-explainer/**)",
+      "Read(d:\\1Projects\\arc-explainer\\docs\\**)"
     ],
     "deny": [],
     "ask": [],
