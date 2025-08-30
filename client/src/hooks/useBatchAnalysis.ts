@@ -59,6 +59,7 @@ export function useBatchAnalysis() {
   const [results, setResults] = useState<BatchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [startupStatus, setStartupStatus] = useState<string | null>(null);
 
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
   const resultsPollingInterval = useRef<NodeJS.Timeout | null>(null);
@@ -154,9 +155,11 @@ export function useBatchAnalysis() {
   const startAnalysis = useCallback(async (config: BatchConfig) => {
     setIsLoading(true);
     setError(null);
+    setStartupStatus('🔄 Initializing batch analysis session...');
 
     try {
       console.log('Starting batch analysis with config:', config);
+      setStartupStatus('📡 Sending API request to server...');
 
       const response = await apiRequest('POST', '/api/model/batch-analyze', config);
       console.log('📡 Batch analyze API response:', { 
@@ -165,10 +168,12 @@ export function useBatchAnalysis() {
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries())
       });
+      setStartupStatus('⏳ Processing server response...');
       
       if (!response.ok) {
         const errorText = await response.text();
         console.error('❌ Batch analyze API error response:', errorText);
+        setStartupStatus('❌ Server error - check response details');
         
         let errorData;
         try {
@@ -181,28 +186,37 @@ export function useBatchAnalysis() {
 
       const data = await response.json();
       console.log('📊 Batch analyze API success response:', data);
+      setStartupStatus('✅ Session created - extracting session ID...');
       
       const newSessionId = data.data?.sessionId || data.sessionId;
       if (!newSessionId) {
         console.error('❌ No sessionId in response:', data);
+        setStartupStatus('❌ Invalid response - missing session ID');
         throw new Error('No session ID returned from API');
       }
 
       console.log('✅ Batch analysis started with session:', newSessionId);
+      setStartupStatus('🚀 Starting puzzle processing pipeline...');
 
       setSessionId(newSessionId);
       setResults([]);
       
       // Start polling for progress and results
+      setStartupStatus('📡 Initiating progress monitoring...');
       startPolling(newSessionId);
       startResultsPolling(newSessionId);
+      
+      setStartupStatus('✅ Batch analysis fully initialized - monitoring active');
+      setTimeout(() => setStartupStatus(null), 3000); // Clear after 3 seconds
 
       return { success: true, sessionId: newSessionId };
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       console.error('Error starting batch analysis:', errorMessage);
+      setStartupStatus(`❌ Failed: ${errorMessage}`);
       setError(errorMessage);
+      setTimeout(() => setStartupStatus(null), 5000); // Clear error status after 5 seconds
       return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
@@ -318,6 +332,7 @@ export function useBatchAnalysis() {
     setProgress(null);
     setResults([]);
     setError(null);
+    setStartupStatus(null);
   }, [stopPolling]);
 
   // Get detailed results
@@ -363,6 +378,7 @@ export function useBatchAnalysis() {
     results,
     error,
     isLoading,
+    startupStatus,
 
     // Computed
     isRunning,

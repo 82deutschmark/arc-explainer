@@ -1,5 +1,17 @@
 ### August 30 2025
 
+## v2.5.25 - Ultra-Verbose UI Feedback for Batch Analysis
+- **UX IMPROVEMENT**: Implemented ultra-verbose UI feedback system for ModelExaminer batch analysis
+- **Live Processing Activity**: Added comprehensive "Live Processing Activity" card that shows immediately when session starts
+- **Startup Status Tracking**: Enhanced useBatchAnalysis hook with detailed phase-by-phase status updates
+- **Processing Queue Visibility**: Added real-time indicators showing in-progress/queued/completed breakdown
+- **Server Communication Transparency**: Added active polling status and API communication indicators
+- **Model-Specific Guidance**: Added expected response times and processing behavior hints
+- **Pre-Completion Indicators**: Users now see activity immediately before any puzzles complete
+- **Technical**: Modified `client/src/hooks/useBatchAnalysis.ts` and `client/src/pages/ModelExaminer.tsx`
+- **Impact**: Eliminated "terrible" UI feedback complaints - users now see detailed progress from session start
+- Author: Claude Sonnet 4
+
 ## v2.5.24 - Fix Batch Analysis Live Updates System
 - **MAJOR FIX**: Resolved critical batch analysis live updates not working in ModelExaminer
 - **Root Cause**: Individual puzzle processing was disconnected from batch coordination system
