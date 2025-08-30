@@ -143,8 +143,12 @@ class BatchAnalysisService extends EventEmitter {
       }
 
       // Start processing if we haven't hit concurrent limit
+      logger.info(`[BATCH-DEBUG] About to start processing. Active sessions: ${this.getActiveSessionCount()}, Max: ${this.MAX_CONCURRENT_SESSIONS}`, 'batch-analysis');
       if (this.getActiveSessionCount() <= this.MAX_CONCURRENT_SESSIONS) {
+        logger.info(`[BATCH-DEBUG] Starting processBatchSession for ${sessionId}`, 'batch-analysis');
         this.processBatchSession(sessionId, config);
+      } else {
+        logger.warn(`[BATCH-DEBUG] Skipping batch processing - too many active sessions (${this.getActiveSessionCount()})`, 'batch-analysis');
       }
 
       logger.info(`SUCCESS: Batch analysis session ${sessionId} fully initialized and ready`, 'batch-analysis');
@@ -270,13 +274,33 @@ class BatchAnalysisService extends EventEmitter {
    * Process a batch analysis session
    */
   private async processBatchSession(sessionId: string, config: BatchSessionConfig | null) {
-    if (!config) {
-      config = await this.getSessionConfig(sessionId);
-      if (!config) return;
-    }
+    try {
+      logger.info(`[BATCH-DEBUG] Starting processBatchSession for ${sessionId}`, 'batch-analysis');
+      
+      if (!config) {
+        config = await this.getSessionConfig(sessionId);
+        if (!config) {
+          logger.error(`[BATCH-DEBUG] No config found for session ${sessionId}, exiting`, 'batch-analysis');
+          return;
+        }
+      }
 
-    const progress = this.activeSessions.get(sessionId);
-    if (!progress || progress.status === 'cancelled') return;
+      const progress = this.activeSessions.get(sessionId);
+      logger.info(`[BATCH-DEBUG] Session ${sessionId} progress state: ${progress ? progress.status : 'NOT_FOUND'}`, 'batch-analysis');
+      
+      if (!progress) {
+        logger.error(`[BATCH-DEBUG] No progress found in activeSessions for ${sessionId}, exiting`, 'batch-analysis');
+        return;
+      }
+      
+      if (progress.status === 'cancelled') {
+        logger.info(`[BATCH-DEBUG] Session ${sessionId} is cancelled, exiting`, 'batch-analysis');
+        return;
+      }
+    } catch (error) {
+      logger.error(`[BATCH-CRITICAL] Exception in processBatchSession setup for ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
+      return;
+    }
 
     progress.status = 'running';
     progress.startTime = Date.now();
