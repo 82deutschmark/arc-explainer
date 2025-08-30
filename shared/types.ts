@@ -246,7 +246,12 @@ export interface PuzzleOverviewResponse {
 }
 
 /**
- * Solver accuracy statistics interface
+ * LEGACY: Mixed accuracy/trustworthiness statistics interface
+ * @deprecated This interface mixes accuracy and trustworthiness concepts!
+ * Use PureAccuracyStats, TrustworthinessStats, or ConfidenceStats instead for clarity.
+ * 
+ * WARNING: Despite the name "AccuracyStats", the accuracyByModel array often
+ * contains trustworthiness data filtered by prediction_accuracy_score.
  */
 export interface AccuracyStats {
   accuracyByModel: Array<{
@@ -254,7 +259,7 @@ export interface AccuracyStats {
     totalAttempts: number;
     correctPredictions: number;
     accuracyPercentage: number;
-    avgAccuracyScore: number;
+    avgAccuracyScore: number; // DEPRECATED: Often contains trustworthiness data!
     avgConfidence: number;
     avgTrustworthiness: number;
     minTrustworthiness?: number;
@@ -264,6 +269,78 @@ export interface AccuracyStats {
   }>;
   totalSolverAttempts: number;
   totalCorrectPredictions?: number;
+}
+
+/**
+ * PURE ACCURACY STATS - Only boolean correctness metrics
+ * 
+ * Uses only is_prediction_correct and multi_test_all_correct boolean fields.
+ * No trustworthiness or confidence filtering applied.
+ * Shows true puzzle-solving success rates across all models.
+ */
+export interface PureAccuracyStats {
+  totalSolverAttempts: number;
+  totalCorrectPredictions: number;
+  overallAccuracyPercentage: number;
+  modelAccuracyRankings: Array<{
+    modelName: string;
+    totalAttempts: number;
+    correctPredictions: number;
+    accuracyPercentage: number;
+    singleTestAttempts: number;
+    singleCorrectPredictions: number;
+    singleTestAccuracy: number;
+    multiTestAttempts: number;
+    multiCorrectPredictions: number;
+    multiTestAccuracy: number;
+  }>;
+}
+
+/**
+ * TRUSTWORTHINESS STATS - AI confidence reliability metrics
+ * 
+ * Uses prediction_accuracy_score field (despite misleading name, this measures trustworthiness).
+ * Focuses on how well AI confidence claims correlate with actual performance.
+ * This is the PRIMARY METRIC for AI reliability research.
+ */
+export interface TrustworthinessStats {
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+  modelTrustworthinessRankings: Array<{
+    modelName: string;
+    totalAttempts: number;
+    avgTrustworthiness: number;
+    minTrustworthiness: number;
+    maxTrustworthiness: number;
+    avgConfidence: number;
+    trustworthinessEntries: number;
+  }>;
+}
+
+/**
+ * CONFIDENCE ANALYSIS STATS - AI confidence patterns and calibration
+ * 
+ * Analyzes AI confidence behavior across correct vs incorrect predictions.
+ * Measures overconfidence, underconfidence, and calibration quality.
+ */
+export interface ConfidenceStats {
+  totalEntriesWithConfidence: number;
+  overallAvgConfidence: number;
+  avgConfidenceWhenCorrect: number;
+  avgConfidenceWhenIncorrect: number;
+  confidenceCalibrationGap: number;
+  modelConfidenceAnalysis: Array<{
+    modelName: string;
+    totalEntries: number;
+    avgConfidence: number;
+    avgConfidenceWhenCorrect: number;
+    avgConfidenceWhenIncorrect: number;
+    confidenceRange: number;
+    minConfidence: number;
+    maxConfidence: number;
+    correctPredictions: number;
+    incorrectPredictions: number;
+  }>;
 }
 
 /**
