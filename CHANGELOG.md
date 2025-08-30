@@ -1,5 +1,17 @@
 ### August 30 2025
 
+## v2.5.27 - Fix Multi-Test Accuracy Display Logic
+- **DISPLAY FIX**: Fixed AnalysisResultCard showing "Some Incorrect" when models got all predictions wrong
+- **Problem**: Models returning 3 incorrect predictions for 3 tests incorrectly displayed "Some Incorrect" instead of "All Incorrect" 
+- **Root Cause**: Binary logic only distinguished "All Correct" vs "Not All Correct" without differentiating mixed vs completely wrong results
+- **Solution**: Added multiTestStats calculation to count individual test correctness from multiValidation array
+- **Three-State Logic**: Now properly displays "All Correct" (green), "Some Incorrect" (orange), "All Incorrect" (red)
+- **Enhanced UI**: Added "X/Y correct" ratio display in multi-test results header for clarity
+- **Technical**: Modified `client/src/components/puzzle/AnalysisResultCard.tsx` with comprehensive badge logic rewrite
+- **Backward Compatible**: Maintains fallback to original multiTestAllCorrect boolean logic where needed
+- **Impact**: Users now see accurate accuracy status reflecting true prediction performance
+- Author: Claude Sonnet 4
+
 ## v2.5.26 - Fix OpenRouter Debug File Naming Consistency  
 - **FILE ORGANIZATION**: Fixed OpenRouter debug files to include puzzleID in filename for consistency
 - **Naming Pattern**: Changed `openrouter-model-timestamp-raw.txt` to `puzzleId-model-timestamp-raw.txt`
