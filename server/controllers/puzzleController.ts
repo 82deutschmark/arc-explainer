@@ -138,7 +138,9 @@ export const puzzleController = {
       const testCount = puzzle.test?.length || 0;
       
       // Simple logic: Check if AI provided multiple predictions
-      if (result.multiplePredictedOutputs === true) {
+      // Handle nested OpenRouter structure: result.result.multiplePredictedOutputs
+      const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
+      if (multiplePredictedOutputs === true) {
         // Multi-test case: AI provided multiple grids
         const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
