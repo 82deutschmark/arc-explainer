@@ -427,103 +427,412 @@
     ]
   },
   "explanations": {
-    "meta-llama/llama-3.3-70b-instruct": {
-      "success": true,
-      "result": {
-        "multiplePredictedOutputs": true,
-        "predictedOutput": [],
-        "predictedOutput1": [
-          [
-            0,
-            0,
-            0,
-            4
-          ],
-          [
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            4,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            4,
-            0,
-            0
-          ]
-        ],
-        "predictedOutput2": [
-          [
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            4,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            4
-          ]
-        ],
-        "predictedOutput3": [],
-        "solvingStrategy": "Analyze each training example to identify the transformation pattern, focusing on the relationship between input and output grids. The strategy involves examining the distribution of numbers in the input grid and how they correspond to the output grid, particularly the placement of non-zero values.",
-        "keySteps": [
-          "Examine the input and output grids of each training example to identify any consistent patterns or rules governing the transformation.",
-          "Notice that the output grids contain fewer non-zero values than the input grids, suggesting a filtering or reduction process.",
-          "Observe that the non-zero values in the output grids seem to be related to the presence of specific numbers (5 or 6) in the input grids, possibly indicating a conditional transformation based on these values."
-        ],
-        "patternDescription": "The transformation appears to involve a conditional rule based on the presence of specific numbers (5 or 6) in the input grid, leading to the placement of non-zero values (4) in the output grid. The exact rule is not immediately clear but seems to involve the aggregation or concentration of these specific numbers into fewer, non-zero output values.",
-        "hints": [
-          "Best approach: Iterate through the input grid, identifying clusters or patterns of specific numbers (5 or 6), and apply a rule to concentrate these into non-zero output values.",
-          "Math approach: Consider using matrix operations or spatial analysis techniques to identify patterns and apply transformations.",
-          "Emoji approach: 🗺️🔍👀💡"
-        ],
-        "confidence": 80
-      },
-      "tokenUsage": {
-        "input": 1135,
-        "output": 409
-      },
-      "cost": {
-        "input": 0.0006696499999999999,
-        "output": 0.00032311000000000004,
-        "total": 0.00099276
-      },
-      "processingTimeMs": 13893,
-      "modelName": "meta-llama/llama-3.3-70b-instruct",
-      "reasoning": null,
+    "gpt-4.1-mini-2025-04-14": {
+      "model": "gpt-4.1-mini-2025-04-14",
       "reasoningLog": null,
-      "apiProcessingTimeMs": 13894,
-      "predictedOutputGrid": [],
-      "multiplePredictedOutputs": null,
-      "hasMultiplePredictions": false,
-      "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.19999999999999996,
-      "modelKey": "meta-llama/llama-3.3-70b-instruct",
-      "actualProcessingTime": 14
+      "hasReasoningLog": false,
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 1480,
+      "outputTokens": 665,
+      "reasoningTokens": null,
+      "totalTokens": 2145,
+      "estimatedCost": 0.0016560000000000001,
+      "status": "completed",
+      "incomplete": false,
+      "reasoningItems": [],
+      "multiplePredictedOutputs": [
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            4
+          ]
+        ]
+      ],
+      "predictedOutput": [],
+      "predictedOutput1": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          4,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          4,
+          0
+        ]
+      ],
+      "predictedOutput2": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          4,
+          4
+        ]
+      ],
+      "predictedOutput3": [],
+      "solvingStrategy": "I analyzed the training examples to identify the transformation from the 8x8 input grids to the 4x4 output grids. The inputs contain three main colors: 6 (blue), 5 (yellow), and 0 (background). The outputs are 4x4 grids with mostly 0 and some 4s. The key observation is that the output grid is a downscaled 4x4 grid representing the spatial arrangement of the blue (6) regions in the input, with the yellow (5) regions ignored. The output 4x4 grid cells correspond to 2x2 blocks in the input 8x8 grid. For each 2x2 block in the input, if there is a blue (6) pixel present, the corresponding output cell is set to 4; otherwise, it is 0. Yellow (5) pixels do not affect the output. This explains the sparse placement of 4s in the output. Applying this rule to the test inputs, I divided each 8x8 input into sixteen 2x2 blocks, checked for presence of 6, and set output cells accordingly.",
+      "keySteps": [
+        "Noticed output grids are 4x4, input grids 8x8, suggesting 2x2 block aggregation.",
+        "Checked color usage: input has 6 (blue), 5 (yellow), 0 (background); output uses 0 and 4 only.",
+        "Hypothesized output marks presence of blue (6) in each 2x2 block of input.",
+        "Verified this by scanning training examples: each output cell with 4 corresponds to a 2x2 block containing at least one 6.",
+        "Confirmed yellow (5) pixels do not influence output.",
+        "Applied this rule to test inputs to generate predicted outputs."
+      ],
+      "patternDescription": "The output is a 4x4 grid where each cell corresponds to a 2x2 block in the input 8x8 grid. If any pixel in that 2x2 block is blue (6), the output cell is set to 4; otherwise, it is 0. Yellow (5) pixels are ignored in this transformation.",
+      "hints": [
+        "Algorithm: For each 2x2 block in the 8x8 input, if any pixel == 6, output cell = 4; else 0.",
+        "Mathematical: output[i][j] = 4 if max(input[2i][2j], input[2i][2j+1], input[2i+1][2j], input[2i+1][2j+1]) == 6 else 0.",
+        "Emojis: 🔲🔲🔲🔲 ➡️ 4 if contains 🔵 else 0"
+      ],
+      "confidence": 95,
+      "apiProcessingTimeMs": 13108,
+      "predictedOutputGrid": [
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            4
+          ]
+        ]
+      ],
+      "hasMultiplePredictions": true,
+      "predictedOutputGrids": [
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            4,
+            0
+          ]
+        ],
+        [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            4
+          ]
+        ]
+      ],
+      "multiValidation": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              4,
+              0
+            ]
+          ],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.050000000000000044,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 4,
+            "cols": 4
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              4
+            ]
+          ],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.050000000000000044,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 4,
+            "cols": 4
+          }
+        }
+      ],
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              4,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              4,
+              0
+            ]
+          ],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.050000000000000044,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 4,
+            "cols": 4
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              4,
+              4
+            ]
+          ],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.050000000000000044,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 4,
+            "cols": 4
+          }
+        }
+      ],
+      "multiTestAllCorrect": false,
+      "multiTestAverageAccuracy": 0.050000000000000044,
+      "modelKey": "gpt-4.1-mini-2025-04-14",
+      "actualProcessingTime": 13
     }
   },
-  "exportedAt": "2025-08-30T03:10:37.614Z",
+  "exportedAt": "2025-08-30T03:14:09.855Z",
   "models": [
-    "meta-llama/llama-3.3-70b-instruct"
+    "gpt-4.1-mini-2025-04-14"
   ]
 }
