@@ -162,7 +162,7 @@ app.get("*", (req, res) => {
 Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
 
 ### Endpoint difference
-All OpenAI models should be using Responses API, but some providers still use Chat Completions.
+All OpenAI models should be using Responses API, but OpenRouter and other providers still use Chat Completions.
 Chat Completions: /v1/chat/completions
 
 Responses API: /v1/responses
