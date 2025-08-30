@@ -105,7 +105,7 @@ export const puzzleController = {
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
     if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
     
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options, serviceOpts);
+    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options, serviceOpts, taskId);
     
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
