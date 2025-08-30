@@ -1,3 +1,12 @@
+### August 30 2025
+
+## v2.5.23 - Fix ModelDebugModal Scrolling
+- **UI FIX**: Fixed scrolling issue in ModelDebugModal component where content was not scrollable
+- Replaced `h-0` constraint with proper max-height calculation to enable vertical scrolling
+- Modal content now properly scrolls through all debug statistics and raw JSON data
+- **Technical**: Modified `client/src/components/ModelDebugModal.tsx` line 144 ScrollArea className
+- Author: Claude Sonnet 4
+
 ###   August 29 2025
 
 ## v2.5.22 - Fix Multi-Test Data Flow Bug
