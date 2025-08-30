@@ -26,7 +26,7 @@ export class OpenRouterService {
   /**
    * Attempts to recover from JSON parsing failures using multiple strategies
    */
-  private attemptResponseRecovery(responseText: string, modelName: string, originalError: any): any {
+  private attemptResponseRecovery(responseText: string, modelName: string, originalError: any, puzzleId?: string): any {
     console.log(`[OpenRouter] Attempting response recovery for model: ${modelName}`);
     console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 200)}..."`);
     console.log(`[OpenRouter] Original parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
@@ -87,7 +87,7 @@ export class OpenRouterService {
     
     // Strategy 4: Generate validation-compliant fallback response
     console.log(`[OpenRouter] ⚠️ All parsing strategies failed, using validation-compliant fallback`);
-    const fallback = this.generateValidationCompliantFallback(responseText, modelName, originalError);
+    const fallback = this.generateValidationCompliantFallback(responseText, modelName, originalError, puzzleId);
     console.log(`[OpenRouter] Generated fallback response with recovery method: ${fallback.recoveryMethod}`);
     return fallback;
   }
@@ -264,9 +264,9 @@ export class OpenRouterService {
   /**
    * Generates a validation-compliant fallback response and saves the raw response to file
    */
-  private generateValidationCompliantFallback(originalResponse: string, modelName: string, error: any): any {
+  private generateValidationCompliantFallback(originalResponse: string, modelName: string, error: any, puzzleId?: string): any {
     // Save the raw failed response to file for debugging
-    this.saveRawResponseToFile(originalResponse, modelName, 'PARSE_FAILED');
+    this.saveRawResponseToFile(originalResponse, modelName, 'PARSE_FAILED', puzzleId);
     
     const truncatedResponse = originalResponse.substring(0, 500);
     const errorMsg = error instanceof Error ? error.message : String(error);
@@ -304,14 +304,16 @@ export class OpenRouterService {
   /**
    * Saves raw OpenRouter response to file for debugging
    */
-  private async saveRawResponseToFile(responseText: string, modelName: string, status: string = 'SUCCESS') {
+  private async saveRawResponseToFile(responseText: string, modelName: string, status: string = 'SUCCESS', puzzleId?: string) {
     try {
       const fs = await import('fs/promises');
       const path = await import('path');
       
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const sanitizedModelName = modelName.replace(/[\/\\:*?"<>|]/g, '-');
-      const logFileName = `openrouter-${sanitizedModelName}-${timestamp}-${status}-raw.txt`;
+      const logFileName = puzzleId 
+        ? `${puzzleId}-${sanitizedModelName}-${timestamp}-${status}-raw.txt`
+        : `openrouter-${sanitizedModelName}-${timestamp}-${status}-raw.txt`;
       const logFilePath = path.join('data', 'explained', logFileName);
       
       const logContent = `=== OpenRouter Raw Response ===
@@ -382,7 +384,8 @@ ${responseText}
       reasoningVerbosity?: 'low' | 'medium' | 'high';
       reasoningSummaryType?: 'auto' | 'detailed';
       maxOutputTokens?: number;
-    }
+    },
+    puzzleId?: string
   ) {
     // Record start time for accurate processing duration measurement
     const startTime = Date.now();
@@ -440,7 +443,7 @@ ${responseText}
       const responseText = response.choices[0]?.message?.content || "";
       
       // Save the raw response for debugging (both success and failure cases)
-      await this.saveRawResponseToFile(responseText, openRouterModelName, 'RECEIVED');
+      await this.saveRawResponseToFile(responseText, openRouterModelName, 'RECEIVED', puzzleId);
       
       // Parse JSON response with progressive fallback strategies
       let result;
@@ -461,7 +464,7 @@ ${responseText}
         });
         
         // Progressive recovery strategies with detailed logging
-        result = this.attemptResponseRecovery(responseText, openRouterModelName, parseError);
+        result = this.attemptResponseRecovery(responseText, openRouterModelName, parseError, puzzleId);
         
         if (result && result.recoveryMethod) {
           console.log(`[OpenRouter] ✅ Recovery successful using method: ${result.recoveryMethod}`);

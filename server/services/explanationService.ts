@@ -253,7 +253,12 @@ Please focus on clarity, accuracy, and addressing this specific feedback in your
       enhancedTask, 
       modelName as any,  // Cast to any to handle different model key types
       undefined, // Let service use default temperature 
-      true // Always capture reasoning if available
+      true, // Always capture reasoning if available
+      undefined, // promptId - use default
+      undefined, // customPrompt
+      undefined, // options
+      undefined, // serviceOpts
+      puzzleId
     ).catch((error: Error) => {
       console.error(`[RetryAnalysis] Error analyzing with ${modelName}:`, error);
       return null;
