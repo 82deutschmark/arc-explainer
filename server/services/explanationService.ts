@@ -9,6 +9,8 @@
 
 import { repositoryService } from '../repositories/RepositoryService';
 import { AppError } from '../middleware/errorHandler';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 export const explanationService = {
   /**
@@ -70,6 +72,28 @@ export const explanationService = {
     for (const modelKey in explanations) {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
+
+        // ===== RAW RESPONSE LOGGING & FILE SAVE =====
+        try {
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          const logFileName = `${puzzleId}-${modelKey}-${timestamp}-raw.json`;
+          const logFilePath = path.join('data', 'explained', logFileName);
+          await fs.writeFile(logFilePath, JSON.stringify(sourceData, null, 2));
+          console.log(`[RAW-LOG-SAVE] Raw response for ${modelKey} saved to ${logFilePath}`);
+        } catch (logError) {
+          console.error(`[RAW-LOG-SAVE-ERROR] Failed to save raw log for ${modelKey}:`, logError);
+          // Non-critical, so we don't rethrow.
+        }
+
+        console.log(`\n🔍 [RAW-RESPONSE-DEBUG] Model: ${modelKey}`);
+        console.log(`📄 [RAW-RESPONSE-DEBUG] Full sourceData structure:`, JSON.stringify(sourceData, null, 2));
+        console.log(`🔧 [RAW-RESPONSE-DEBUG] sourceData keys: [${Object.keys(sourceData).join(', ')}]`);
+        console.log(`📝 [RAW-RESPONSE-DEBUG] sourceData.result exists: ${!!sourceData.result}`);
+        if (sourceData.result) {
+          console.log(`📝 [RAW-RESPONSE-DEBUG] sourceData.result keys: [${Object.keys(sourceData.result).join(', ')}]`);
+          console.log(`📄 [RAW-RESPONSE-DEBUG] sourceData.result content:`, JSON.stringify(sourceData.result, null, 2));
+        }
+        // ===== END RAW RESPONSE LOGGING =====
 
         // Handle nested result structure from OpenRouter services
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
