@@ -295,27 +295,16 @@ export interface PerformanceStats {
     totalAttempts: number;
     avgTrustworthiness: number;
     avgConfidence: number;
-    calibrationError: number;
     avgProcessingTime: number;
     avgTokens: number;
     avgCost: number;
     totalCost: number;
-    costPerTrustworthiness: number;
-    tokensPerTrustworthiness: number;
-    trustworthinessRange: { min: number; max: number };
   }>;
   speedLeaders: Array<{
     modelName: string;
     avgProcessingTime: number;
     totalAttempts: number;
     avgTrustworthiness: number;
-  }>;
-  calibrationLeaders: Array<{
-    modelName: string;
-    calibrationError: number;
-    totalAttempts: number;
-    avgTrustworthiness: number;
-    avgConfidence: number;
   }>;
   efficiencyLeaders: Array<{
     modelName: string;
@@ -324,7 +313,6 @@ export interface PerformanceStats {
     avgTrustworthiness: number;
     totalAttempts: number;
   }>;
-  totalTrustworthinessAttempts: number;
   overallTrustworthiness: number;
 }
 
