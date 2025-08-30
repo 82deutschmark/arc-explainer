@@ -198,11 +198,11 @@ export function StatisticsCards({
           <CardContent>
             {/* Three Column Layout for Top Models */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-96">
-              {/* Best Accuracy Column */}
+              {/* Best Puzzle Success (Filtered) Column */}
               <div className="flex flex-col h-full">
                 <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
                   <Award className="h-4 w-4 text-green-500" />
-                  Best Accuracy
+                  Best Puzzle Success ⚠️
                 </h4>
                 <div className="h-80 space-y-2 overflow-y-auto pr-1 border-r border-green-100">
                   {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
@@ -228,7 +228,7 @@ export function StatisticsCards({
                                     {displayName}
                                   </div>
                                   <div className="text-xs text-green-600 group-hover:text-green-700">
-                                    {model.totalAttempts} attempts • Click for debug info
+                                    {model.totalAttempts} attempts • Filtered by trustworthiness
                                   </div>
                                 </div>
                               </div>
@@ -242,7 +242,8 @@ export function StatisticsCards({
                   ) : (
                     <div className="text-center py-6 text-gray-500">
                       <Award className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                      <p className="text-sm">No accuracy data</p>
+                      <p className="text-sm">No trustworthy data</p>
+                      <p className="text-xs">Models need trustworthiness scores</p>
                     </div>
                   )}
                 </div>
@@ -458,11 +459,11 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* Accuracy Leaderboard */}
+              {/* Filtered Puzzle Success Leaderboard */}
               <div>
                 <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Award className="h-4 w-4 text-green-500" />
-                  Accuracy Leaderboard
+                  <Award className="h-4 w-4 text-orange-500" />
+                  Puzzle Success (Trustworthiness Filtered) ⚠️
                 </h4>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {accuracyStats && accuracyStats.accuracyByModel && accuracyStats.accuracyByModel.length > 0 ? (
@@ -482,7 +483,7 @@ export function StatisticsCards({
                                   {displayName}
                                 </div>
                                 <div className="text-xs text-green-600">
-                                  {model.totalAttempts} attempts • {model.correctPredictions || 0} correct
+                                  {model.totalAttempts} attempts (filtered) • {model.correctPredictions || 0} correct
                                 </div>
                               </div>
                             </div>
@@ -500,8 +501,8 @@ export function StatisticsCards({
                   ) : (
                     <div className="text-center py-6 text-gray-500">
                       <Award className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                      <p className="text-sm">No accuracy data yet</p>
-                      <p className="text-xs">Run analyses in solver mode to populate</p>
+                      <p className="text-sm">No filtered puzzle data</p>
+                      <p className="text-xs">Models need trustworthiness scores to appear</p>
                     </div>
                   )}
                 </div>

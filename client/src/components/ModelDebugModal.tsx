@@ -192,52 +192,66 @@ export function ModelDebugModal({
                 </Card>
               )}
 
-              {/* Accuracy Statistics */}
+              {/* Mixed Model Performance Statistics */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-green-500" />
-                    Accuracy Statistics
+                    <BarChart3 className="h-5 w-5 text-orange-500" />
+                    Mixed Performance Statistics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      ⚠️ <strong>Data Warning:</strong> This data comes from accuracyByModel which is filtered by trustworthiness scores.
+                      Models without trustworthiness data are excluded. This is NOT pure puzzle-solving accuracy.
+                    </p>
+                  </div>
                   {modelAccuracy ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="font-medium text-gray-600">Total Attempts:</span>
                         <p className="text-lg font-mono">{modelAccuracy.totalAttempts}</p>
+                        <p className="text-xs text-gray-500">Only trustworthy entries</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Correct Predictions:</span>
                         <p className="text-lg font-mono text-green-600">{modelAccuracy.correctPredictions}</p>
+                        <p className="text-xs text-gray-500">Boolean correctness count</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Accuracy Percentage:</span>
+                        <span className="font-medium text-gray-600">Puzzle Success Rate:</span>
                         <p className="text-lg font-mono">{modelAccuracy.accuracyPercentage}%</p>
+                        <p className="text-xs text-gray-500">Pure accuracy (filtered set)</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Avg Confidence:</span>
                         <p className="text-lg font-mono">{modelAccuracy.avgConfidence?.toFixed(2) || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">AI self-reported confidence</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Avg Accuracy Score:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.avgAccuracyScore?.toFixed(3) || 'N/A'}</p>
+                        <span className="font-medium text-gray-600 line-through">Avg Accuracy Score:</span>
+                        <p className="text-lg font-mono text-red-600">{modelAccuracy.avgAccuracyScore?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-xs text-red-500">MISLEADING: Actually trustworthiness!</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Avg Trustworthiness:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-lg font-mono text-blue-600">{modelAccuracy.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">Confidence reliability score</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Successful Predictions:</span>
                         <p className="text-lg font-mono">{modelAccuracy.successfulPredictions || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">Same as correct predictions</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Success Rate:</span>
                         <p className="text-lg font-mono">{modelAccuracy.predictionSuccessRate?.toFixed(2) || 'N/A'}%</p>
+                        <p className="text-xs text-gray-500">Same as accuracy percentage</p>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-500">No accuracy data available for this model</p>
+                    <p className="text-gray-500">No performance data available for this model (may lack trustworthiness scores)</p>
                   )}
                 </CardContent>
               </Card>
