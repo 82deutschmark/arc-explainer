@@ -27,7 +27,7 @@
 ---
 
 ## 🟠 **Priority 2: OpenRouter JSON Parsing Failures**
-### Issue: Incomplete JSON Responses
+### Issue: Incomplete JSON Responses 
 ```
 [OpenRouter] Error with model qwen/qwen3-235b-a22b-thinking-2507: SyntaxError: Unexpected end of JSON input
 ```
@@ -54,7 +54,7 @@
 - OpenAI models: **9-32 seconds**
 
 **Impact**:
-- Poor user experience (2+ minute waits)
+- Poor user experience (THERE IS NO WAY TO SPEED THIS UP.  IGNORE THIS.)
 - Resource exhaustion from long-running connections
 - Potential timeout-related JSON parsing errors
 - Concurrent load amplifies the problem
@@ -88,10 +88,9 @@
 4. **Add retry logic**: Attempt to re-parse or re-request on failure
 
 ### Phase 3: Performance Optimization (Medium Priority)
-1. **Model timeout configuration**: Set appropriate timeouts per model type
+
 2. **Async optimization**: Ensure proper handling of long-running requests
-3. **User feedback**: Add progress indicators for slow models
-4. **Model prioritization**: Consider disabling consistently slow models
+
 
 ### Phase 4: Data Quality Improvements (Low Priority)
 1. **Enhanced validation**: Better handling of undefined responses
