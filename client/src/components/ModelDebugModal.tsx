@@ -141,7 +141,7 @@ export function ModelDebugModal({
         </DialogHeader>
 
         {/* Content */}
-        <ScrollArea className="flex-1 h-0">
+        <ScrollArea className="flex-1 overflow-y-auto max-h-[calc(85vh-120px)]">
           <div className="px-6 py-4">
           {hasErrors ? (
             <div className="flex items-center justify-center h-64">
