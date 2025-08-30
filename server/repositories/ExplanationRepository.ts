@@ -460,7 +460,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       alienMeaningConfidence: this.normalizeConfidence(row.alienMeaningConfidence),
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
       predictedOutputGrid: this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
-      multiplePredictedOutputs: this.safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+      multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
       
       // Ensure boolean fields are properly typed
