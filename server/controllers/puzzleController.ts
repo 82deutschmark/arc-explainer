@@ -113,6 +113,22 @@ export const puzzleController = {
     // Add timing to result
     result.apiProcessingTimeMs = apiProcessingTimeMs;
     
+    // Save individual JSON log for all models (including OpenRouter)
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const sanitizedModelName = model.replace(/[\/\\:*?"<>|]/g, '-');
+      const logFileName = `${taskId}-${sanitizedModelName}-${timestamp}-raw.json`;
+      const logFilePath = path.join('data', 'explained', logFileName);
+      await fs.writeFile(logFilePath, JSON.stringify(result, null, 2));
+      console.log(`[PUZZLE-CONTROLLER-RAW-LOG] Response for ${model} saved to ${logFilePath}`);
+    } catch (logError) {
+      console.error(`[PUZZLE-CONTROLLER-RAW-LOG-ERROR] Failed to save raw log for ${model}:`, logError);
+      // Non-critical, so we don't rethrow
+    }
+    
     
     
     
