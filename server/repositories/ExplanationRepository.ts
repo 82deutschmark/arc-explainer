@@ -43,7 +43,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           $26, $27, $28, $29, $30, $31, $32
         ) RETURNING *
       `, [
-        data.puzzleId || data.taskId, // Support both field names during transition
+        data.puzzle_id || data.puzzleId || data.taskId, // Fixed field name + backward compatibility
         data.patternDescription,
         data.solvingStrategy || '',
         Array.isArray(data.hints) ? data.hints : [],
