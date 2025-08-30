@@ -1,0 +1,32 @@
+{
+  "predictedOutputGrid": null,
+  "hasMultiplePredictions": true,
+  "multiTestResults": [
+    {
+      "index": 0,
+      "predictedGrid": [],
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0.88,
+      "extractionMethod": "arcJsonSchema_clean",
+      "expectedDimensions": {
+        "rows": 29,
+        "cols": 8
+      }
+    },
+    {
+      "index": 1,
+      "predictedGrid": [],
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0.88,
+      "extractionMethod": "arcJsonSchema_clean",
+      "expectedDimensions": {
+        "rows": 25,
+        "cols": 7
+      }
+    }
+  ],
+  "multiTestAllCorrect": false,
+  "multiTestAverageAccuracy": 0.88,
+  "modelKey": "gpt-5-nano-2025-08-07",
+  "actualProcessingTime": 192
+}

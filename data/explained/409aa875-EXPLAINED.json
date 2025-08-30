@@ -2335,7 +2335,7 @@
     ]
   },
   "explanations": {
-    "gpt-4.1-nano-2025-04-14": {
+    "gpt-5-nano-2025-08-07": {
       "predictedOutputGrid": [
         [
           7,
@@ -2628,13 +2628,13 @@
       ],
       "hasMultiplePredictions": false,
       "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.15000000000000002,
-      "modelKey": "gpt-4.1-nano-2025-04-14",
-      "actualProcessingTime": 8
+      "predictionAccuracyScore": 0.95,
+      "modelKey": "gpt-5-nano-2025-08-07",
+      "actualProcessingTime": 164
     }
   },
-  "exportedAt": "2025-08-28T03:30:48.062Z",
+  "exportedAt": "2025-08-30T03:36:05.114Z",
   "models": [
-    "gpt-4.1-nano-2025-04-14"
+    "gpt-5-nano-2025-08-07"
   ]
 }

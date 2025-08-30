@@ -963,10 +963,6 @@
               4,
               4,
               4,
-              4,
-              4,
-              4,
-              4,
               4
             ],
             [
@@ -975,9 +971,13 @@
               4,
               1,
               4,
+              1
+            ],
+            [
+              4,
               1,
               4,
-              7,
+              1,
               4,
               1
             ],
@@ -987,17 +987,9 @@
               4,
               1,
               4,
-              1,
-              4,
-              1,
-              4,
               1
             ],
             [
-              1,
-              1,
-              1,
-              7,
               1,
               1,
               1,
@@ -1007,13 +999,17 @@
             ],
             [
               1,
-              4,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
               1,
               4,
-              1,
-              1,
-              1,
-              1,
               1,
               1
             ],
@@ -1023,15 +1019,35 @@
               1,
               4,
               1,
+              1
+            ],
+            [
               1,
+              4,
               1,
+              4,
               1,
+              1
+            ],
+            [
+              1,
+              4,
+              1,
+              4,
+              1,
+              1
+            ],
+            [
+              1,
+              4,
+              4,
+              4,
               1,
               1
             ]
           ],
           "isPredictionCorrect": false,
-          "predictionAccuracyScore": 0.5800000000000001,
+          "predictionAccuracyScore": 0.72,
           "extractionMethod": "arcJsonSchema_clean",
           "expectedDimensions": {
             "rows": 5,
@@ -1063,8 +1079,29 @@
               4
             ],
             [
-              7,
-              7,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            [
+              1,
+              1,
+              1,
+              4,
+              4
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              4,
+              4,
               1,
               1,
               1
@@ -1082,10 +1119,24 @@
               1,
               1,
               4
+            ],
+            [
+              1,
+              4,
+              1,
+              1,
+              4
+            ],
+            [
+              1,
+              1,
+              4,
+              4,
+              4
             ]
           ],
           "isPredictionCorrect": false,
-          "predictionAccuracyScore": 0.5800000000000001,
+          "predictionAccuracyScore": 0.72,
           "extractionMethod": "arcJsonSchema_clean",
           "expectedDimensions": {
             "rows": 8,
@@ -1094,12 +1145,12 @@
         }
       ],
       "multiTestAllCorrect": false,
-      "multiTestAverageAccuracy": 0.5800000000000001,
+      "multiTestAverageAccuracy": 0.72,
       "modelKey": "gpt-5-nano-2025-08-07",
-      "actualProcessingTime": 140
+      "actualProcessingTime": 243
     }
   },
-  "exportedAt": "2025-08-30T03:19:54.177Z",
+  "exportedAt": "2025-08-30T03:37:24.193Z",
   "models": [
     "gpt-5-nano-2025-08-07"
   ]
