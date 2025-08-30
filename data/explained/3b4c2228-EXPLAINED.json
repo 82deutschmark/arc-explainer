@@ -545,24 +545,12 @@
     ]
   },
   "explanations": {
-    "o3-2025-04-16": {
-      "model": "o3-2025-04-16",
-      "reasoningLog": "[object Object],[object Object],[object Object],[object Object],[object Object]",
-      "hasReasoningLog": true,
-      "temperature": 0.2,
-      "reasoningEffort": null,
-      "reasoningVerbosity": null,
-      "reasoningSummaryType": null,
-      "inputTokens": 1660,
-      "outputTokens": 9486,
-      "reasoningTokens": 8896,
-      "totalTokens": 20042,
-      "estimatedCost": 0.079208,
-      "status": "completed",
-      "incomplete": false,
-      "reasoningItems": [],
-      "multiplePredictedOutputs": [
-        [
+    "x-ai/grok-4": {
+      "success": true,
+      "result": {
+        "multiplePredictedOutputs": true,
+        "predictedOutput": [],
+        "predictedOutput1": [
           [
             1,
             0,
@@ -579,7 +567,7 @@
             0
           ]
         ],
-        [
+        "predictedOutput2": [
           [
             1,
             0,
@@ -595,255 +583,54 @@
             0,
             1
           ]
-        ]
-      ],
-      "predictedOutput": [],
-      "predictedOutput1": [
-        [
-          1,
-          0,
-          0
         ],
-        [
-          0,
-          1,
-          0
+        "predictedOutput3": [],
+        "solvingStrategy": "Analyzed the training examples to identify that outputs are 3x3 grids representing truncated identity matrices based on a number N (1 to 3), where N is the count of 2x2 blocks entirely filled with 3s in the input grid. Applied this to test inputs to count such blocks and generate corresponding outputs.",
+        "keySteps": [
+          "Examined output structures: all are partial identity matrices on diagonal in 3x3 grid.",
+          "Noted N as the size of the identity matrix, matching the number of 1s on diagonal.",
+          "Initially considered connected components of non-zero cells, but counts didn't match (e.g., Example 5 had more components than N=1).",
+          "Tried components of 3s with 4-connectivity: mismatched (e.g., Example 3 had 4, but N=3).",
+          "Switched to 8-connectivity for 3s components: still mismatched (e.g., Example 5 had 2, N=1; Example 3 had 3, but further analysis showed issue with size).",
+          "Considered only components with >=4 cells: mismatched in Example 3 (2 large components, but N=3).",
+          "Identified that N matches the number of distinct 2x2 all-3 blocks, ignoring singles and 2s' blocks.",
+          "Verified across all examples: Example 1 (2), 2 (1), 3 (3), 4 (2), 5 (1).",
+          "Applied to Test 1: found 2 such blocks.",
+          "Applied to Test 2: found 3 such blocks."
         ],
-        [
-          0,
-          0,
-          0
-        ]
-      ],
-      "predictedOutput2": [
-        [
-          1,
-          0,
-          0
+        "patternDescription": "Count the number N of 2x2 squares in the input grid where all four cells are 3. Output a 3x3 grid with the NxN identity matrix in the top-left corner (1s on the first N diagonal positions) and 0s elsewhere.",
+        "hints": [
+          "function predict(input) { let N = 0; for each possible 2x2 subgrid { if all cells == 3 { N++ } } return identityMatrix(N).paddedTo(3x3); }",
+          "N = |{ (i,j) | grid[i:i+1, j:j+1] = [3,3;3,3] }|; output = diag(1_N) ⊕ 0_{(3-N)x3} (padded).",
+          "🔍🟩🟩🟩🟩➡️📊; 🧮#🟩2x2=3➡️👁️; 😎🔢➡️🆔🧩"
         ],
-        [
-          0,
-          1,
-          0
-        ],
-        [
-          0,
-          0,
-          1
-        ]
-      ],
-      "predictedOutput3": [],
-      "solvingStrategy": "Observed that every output is a 3×3 matrix with possible 1’s only on the main diagonal.  The number of leading 1’s (from the top-left corner downward) equals the count of 2×2 monochrome squares whose colour is 3 in the input grid.  All training inputs were scanned to confirm: Example2 had one such square → output 100; Examples1 & 4 had two → 110; Example3 had three → 111; Example5 had one → 100.  No other colours influence the result, and overlapping or larger blocks did not appear, so the task reduces to counting distinct exact 2×2 blocks filled with colour 3 and writing that many 1’s on the diagonal.",
-      "keySteps": [
-        "Looked at outputs: always 3×3, only diagonal cells may be 1, so encode a scalar 0-3.",
-        "Hypothesised that the scalar is a count of something; checked counts of various structures.",
-        "Found perfect correlation with count of exact 2×2 blocks of colour 3 across all training examples.",
-        "Validated on every training pair to verify no contradictions.",
-        "For each test grid, slid a 2×2 window; if all four cells are 3, increment count (ignore overlaps outside exact 2×2 shape).",
-        "Placed ones in diagonal positions (0,0)…(k-1,k-1) where k is that count, clipped at 3.",
-        "Generated outputs for the two test cases: Test1 had 2 such squares → 110; Test2 had 3 → 111."
-      ],
-      "patternDescription": "Output is an identity-like 3×3 matrix whose size of the 1-block equals how many 2×2 squares composed solely of colour 3 exist in the input.",
-      "hints": [
-        "Algorithm: slide a 2×2 window over the grid; if the 4 cells are all 3, add 1 to counter.  Create a 3×3 zero grid, then for i in range(counter): grid[i][i]=1.",
-        "Math:  I = Σ_{s∈S} δ(s=3×matrix_{2×2})  ;  output = diag(1,1,…,0) where number of 1’s = I, max 3.",
-        "🤖➡️🟩🟩 count🟩2×2 ➡️✏️ diagonal 1️⃣s"
-      ],
-      "confidence": 86,
-      "apiProcessingTimeMs": 108895,
-      "predictedOutputGrid": [
-        [
-          [
-            1,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ]
-        ],
-        [
-          [
-            1,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            0,
-            0,
-            1
-          ]
-        ]
-      ],
-      "hasMultiplePredictions": true,
-      "predictedOutputGrids": [
-        [
-          [
-            1,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            0,
-            0,
-            0
-          ]
-        ],
-        [
-          [
-            1,
-            0,
-            0
-          ],
-          [
-            0,
-            1,
-            0
-          ],
-          [
-            0,
-            0,
-            1
-          ]
-        ]
-      ],
-      "multiValidation": [
-        {
-          "index": 0,
-          "predictedGrid": [
-            [
-              1,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ],
-            [
-              0,
-              0,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.9299999999999999,
-          "extractionMethod": "arcJsonSchema_clean",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        },
-        {
-          "index": 1,
-          "predictedGrid": [
-            [
-              1,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ],
-            [
-              0,
-              0,
-              1
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.9299999999999999,
-          "extractionMethod": "arcJsonSchema_clean",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        }
-      ],
-      "multiTestResults": [
-        {
-          "index": 0,
-          "predictedGrid": [
-            [
-              1,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ],
-            [
-              0,
-              0,
-              0
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.9299999999999999,
-          "extractionMethod": "arcJsonSchema_clean",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        },
-        {
-          "index": 1,
-          "predictedGrid": [
-            [
-              1,
-              0,
-              0
-            ],
-            [
-              0,
-              1,
-              0
-            ],
-            [
-              0,
-              0,
-              1
-            ]
-          ],
-          "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.9299999999999999,
-          "extractionMethod": "arcJsonSchema_clean",
-          "expectedDimensions": {
-            "rows": 3,
-            "cols": 3
-          }
-        }
-      ],
-      "multiTestAllCorrect": true,
-      "multiTestAverageAccuracy": 0.9299999999999999,
-      "modelKey": "o3-2025-04-16",
-      "actualProcessingTime": 109
+        "confidence": 100
+      },
+      "tokenUsage": {
+        "input": 1302,
+        "output": 12879
+      },
+      "cost": {
+        "input": 0.0039059999999999997,
+        "output": 0.193185,
+        "total": 0.197091
+      },
+      "processingTimeMs": 203403,
+      "modelName": "x-ai/grok-4",
+      "reasoning": null,
+      "reasoningLog": null,
+      "apiProcessingTimeMs": 203408,
+      "predictedOutputGrid": [],
+      "multiplePredictedOutputs": null,
+      "hasMultiplePredictions": false,
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0,
+      "modelKey": "x-ai/grok-4",
+      "actualProcessingTime": 203
     }
   },
-  "exportedAt": "2025-08-30T02:49:13.704Z",
+  "exportedAt": "2025-08-30T03:02:52.297Z",
   "models": [
-    "o3-2025-04-16"
+    "x-ai/grok-4"
   ]
 }
