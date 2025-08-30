@@ -199,8 +199,17 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     isSaturnResult
   });
 
-  // Handle empty or error states - fix for the "0" display issue
-  const isEmptyResult = !result || (!result.patternDescription && !result.solvingStrategy && !result.alienMeaning && (!result.hints || result.hints.length === 0));
+  // Handle empty or error states - check both analysis AND prediction content
+  const isEmptyResult = !result || (
+    // No analysis content
+    (!result.patternDescription || result.patternDescription.trim() === '') && 
+    (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 
+    (!result.alienMeaning || result.alienMeaning.trim() === '') && 
+    (!result.hints || result.hints.length === 0) &&
+    // AND no prediction content (for solver mode)
+    !result.predictedOutputGrid && 
+    (!result.multiplePredictedOutputs || (Array.isArray(result.multiplePredictedOutputs) && result.multiplePredictedOutputs.length === 0))
+  );
   
   return (
     <div className="border rounded-lg p-4 space-y-3">
