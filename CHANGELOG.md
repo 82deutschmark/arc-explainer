@@ -1,5 +1,30 @@
 ### August 30 2025
 
+## v2.5.25 - Ultra-Verbose UI Feedback for Batch Analysis
+- **UX IMPROVEMENT**: Implemented ultra-verbose UI feedback system for ModelExaminer batch analysis
+- **Live Processing Activity**: Added comprehensive "Live Processing Activity" card that shows immediately when session starts
+- **Startup Status Tracking**: Enhanced useBatchAnalysis hook with detailed phase-by-phase status updates
+- **Processing Queue Visibility**: Added real-time indicators showing in-progress/queued/completed breakdown
+- **Server Communication Transparency**: Added active polling status and API communication indicators
+- **Model-Specific Guidance**: Added expected response times and processing behavior hints
+- **Pre-Completion Indicators**: Users now see activity immediately before any puzzles complete
+- **Technical**: Modified `client/src/hooks/useBatchAnalysis.ts` and `client/src/pages/ModelExaminer.tsx`
+- **Impact**: Eliminated "terrible" UI feedback complaints - users now see detailed progress from session start
+- Author: Claude Sonnet 4
+
+## v2.5.24 - Fix Batch Analysis Live Updates System
+- **MAJOR FIX**: Resolved critical batch analysis live updates not working in ModelExaminer
+- **Root Cause**: Individual puzzle processing was disconnected from batch coordination system
+- **Solution**: Implemented retroactive batch progress updates that hook into existing individual completions
+- **Database Fix**: Corrected column name mismatch (`error` → `error_message`) in batch results
+- **Results**: Live progress now updates from 0% to 29%+ in real-time showing completed puzzles
+- **Frontend**: Fixed HTTP 304 caching issues - now shows fresh data with HTTP 200 responses
+- **Architecture**: Maintained existing individual processing while adding proper batch coordination
+- **Documentation**: Created comprehensive findings document in `docs/batch-analysis-debugging-findings.md`
+- **Technical**: Modified `server/services/batchAnalysisService.ts` with extensive debugging logs and retroactive updates
+- **Impact**: Batch analysis sessions now properly show live progress updates during execution
+- Author: Claude Sonnet 4
+
 ## v2.5.23 - Fix ModelDebugModal Scrolling
 - **UI FIX**: Fixed scrolling issue in ModelDebugModal component where content was not scrollable
 - Replaced `h-0` constraint with proper max-height calculation to enable vertical scrolling

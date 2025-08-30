@@ -7458,15 +7458,39 @@
   },
   "explanations": {
     "gpt-5-nano-2025-08-07": {
-      "predictedOutputGrid": [],
-      "hasMultiplePredictions": false,
-      "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.85,
+      "predictedOutputGrid": null,
+      "hasMultiplePredictions": true,
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.89,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 30,
+            "cols": 30
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.89,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 30,
+            "cols": 30
+          }
+        }
+      ],
+      "multiTestAllCorrect": false,
+      "multiTestAverageAccuracy": 0.89,
       "modelKey": "gpt-5-nano-2025-08-07",
-      "actualProcessingTime": 80
+      "actualProcessingTime": 145
     }
   },
-  "exportedAt": "2025-08-30T03:18:54.011Z",
+  "exportedAt": "2025-08-30T03:35:46.156Z",
   "models": [
     "gpt-5-nano-2025-08-07"
   ]

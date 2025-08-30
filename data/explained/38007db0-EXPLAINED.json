@@ -3374,189 +3374,41 @@
     ]
   },
   "explanations": {
-    "gpt-4.1-nano-2025-04-14": {
-      "predictedOutputGrid": [
-        [
-          4,
-          4,
-          4,
-          4,
-          4,
-          4,
-          4
-        ],
-        [
-          4,
-          8,
-          8,
-          8,
-          8,
-          8,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          8,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          1,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          8,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          8,
-          8,
-          8,
-          8,
-          4
-        ],
-        [
-          4,
-          4,
-          4,
-          4,
-          4,
-          4,
-          4
-        ],
-        [
-          4,
-          8,
-          8,
-          8,
-          8,
-          8,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          8,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          1,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          8,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          8,
-          8,
-          8,
-          8,
-          4
-        ],
-        [
-          4,
-          4,
-          4,
-          4,
-          4,
-          4,
-          4
-        ],
-        [
-          4,
-          8,
-          8,
-          8,
-          8,
-          8,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          8,
-          8,
-          1,
-          4
-        ],
-        [
-          4,
-          8,
-          1,
-          1,
-          1,
-          1,
-          4
-        ]
+    "gpt-5-nano-2025-08-07": {
+      "predictedOutputGrid": null,
+      "hasMultiplePredictions": true,
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.88,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 29,
+            "cols": 8
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [],
+          "isPredictionCorrect": false,
+          "predictionAccuracyScore": 0.88,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 25,
+            "cols": 7
+          }
+        }
       ],
-      "hasMultiplePredictions": false,
-      "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.050000000000000044,
-      "modelKey": "gpt-4.1-nano-2025-04-14",
-      "actualProcessingTime": 6
+      "multiTestAllCorrect": false,
+      "multiTestAverageAccuracy": 0.88,
+      "modelKey": "gpt-5-nano-2025-08-07",
+      "actualProcessingTime": 192
     }
   },
-  "exportedAt": "2025-08-28T03:30:45.756Z",
+  "exportedAt": "2025-08-30T03:36:33.195Z",
   "models": [
-    "gpt-4.1-nano-2025-04-14"
+    "gpt-5-nano-2025-08-07"
   ]
 }
