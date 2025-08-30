@@ -1,10 +1,10 @@
 /**
  * Feedback Repository Implementation
  * 
- * Handles all feedback-related database operations.
+ * Handles all feedback-related database operations AND performance analytics.
  * Extracted from monolithic DbService to follow Single Responsibility Principle.
  * 
- * IMPORTANT: This repository handles TWO COMPLETELY DIFFERENT TYPES OF DATA:
+ * CRITICAL: This repository handles THREE DISTINCT CONCEPTS that must NOT be confused:
  * 
  * 1. USER FEEDBACK (explanation quality ratings):
  *    - How good/helpful an AI model's explanation was
@@ -13,21 +13,32 @@
  *    - A model can solve a puzzle RIGHT but give a terrible explanation → not helpful feedback
  *    - Used for: Community feedback stats, explanation quality rankings
  * 
- * 2. PREDICTION ACCURACY (puzzle-solving performance):
- *    - Whether an AI model actually solved the puzzle correctly
- *    - Stored in 'explanations' table fields:
- *      * is_prediction_correct (boolean) - single test correctness
- *      * multi_test_all_correct (boolean) - multi-test correctness  
- *      * predicted_output_grid - the model's actual prediction
- *      * multi_test_prediction_grids - multi-test predictions
- *    - Used for: Solver performance stats, accuracy leaderboards
+ * 2. PURE ACCURACY (puzzle-solving correctness):
+ *    - Whether an AI model actually solved the puzzle correctly (boolean)
+ *    - Database field: is_prediction_correct (boolean) - single test correctness
+ *    - Database field: multi_test_all_correct (boolean) - multi-test correctness  
+ *    - Simple percentage: correct predictions / total attempts
+ *    - Used for: Actual solver performance stats, accuracy leaderboards
  * 
- * These are SEPARATE METRICS and should never be confused!
- * - getAccuracyStats() = prediction accuracy (puzzle solving)
+ * 3. TRUSTWORTHINESS (reliability of AI confidence claims):
+ *    - Database field: prediction_accuracy_score (double precision) - MISLEADING NAME!
+ *    - NOT accuracy! This is a computed metric combining confidence AND correctness
+ *    - Measures how well AI confidence correlates with actual performance
+ *    - Used for: AI reliability analysis, confidence calibration studies
+ *    - This is the PRIMARY METRIC we care about for this research project
+ * 
+ * METHOD MAPPING (as of 2025-08-30):
+ * - getAccuracyStats() = MIXED DATA (returns trustworthiness data, misleading name!)
+ * - getRealPerformanceStats() = trustworthiness-focused analysis (correct)
+ * - getGeneralModelStats() = general overview with mixed metrics
  * - getFeedbackStats() = user feedback (explanation quality)
+ * 
+ * WARNING: Variable names like 'accuracyByModel' often contain trustworthiness data!
+ * Always check the SQL query to understand what data is actually being returned.
  * 
  * @author Claude
  * @date 2025-08-27
+ * @updated 2025-08-30 - Added critical distinction between accuracy and trustworthiness
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -427,16 +438,27 @@ export class FeedbackRepository extends BaseRepository {
   }
 
   /**
-   * Get PREDICTION ACCURACY STATS (puzzle-solving performance)
+   * Get MIXED ACCURACY AND TRUSTWORTHINESS STATS
    * 
-   * NOT user feedback! This measures how well models actually solve puzzles.
+   * WARNING: MISLEADING METHOD NAME! This method returns MIXED data, not pure accuracy!
+   * 
+   * WHAT THIS METHOD ACTUALLY RETURNS:
+   * - accuracyByModel: Contains TRUSTWORTHINESS data (prediction_accuracy_score)
+   * - modelAccuracy: Contains REAL accuracy percentages (is_prediction_correct counts)
+   * - Basic solver attempt counts and confidence averages
    * 
    * SOLVER ATTEMPT CRITERIA:
    * - Must have predicted_output_grid OR multi_test_prediction_grids (model made predictions)
    * 
-   * CORRECTNESS CRITERIA:  
+   * CORRECTNESS CRITERIA (for modelAccuracy):  
    * - is_prediction_correct = true (single test correct)
    * - multi_test_all_correct = true (multi-test correct)
+   * 
+   * TRUSTWORTHINESS CRITERIA (for accuracyByModel):
+   * - Uses prediction_accuracy_score field (combines confidence + correctness)
+   * - Filters out corrupted entries (perfect score with 0 confidence)
+   * 
+   * @deprecated Consider using getPureAccuracyStats() or getTrustworthinessStats() for clarity
    */
   async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
@@ -515,13 +537,18 @@ export class FeedbackRepository extends BaseRepository {
         avgConfidence: Math.round((parseFloat(stats.avg_confidence) || 0) * 10) / 10,
         totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
         totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
+        
+        // WARNING: Despite the name 'accuracyByModel', this data is FILTERED BY TRUSTWORTHINESS!
+        // The SQL query requires prediction_accuracy_score IS NOT NULL and orders by avg_trustworthiness_score
+        // This means models without trustworthiness scores are excluded from this "accuracy" list
+        // For pure accuracy data without trustworthiness filtering, create a separate method
         accuracyByModel: modelAccuracy.rows.map(row => ({
           modelName: row.model_name,
           totalAttempts: parseInt(row.total_attempts),
           totalExplanations: parseInt(row.total_attempts),
           avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
           
-          // Real prediction accuracy data
+          // Pure accuracy data (is_prediction_correct boolean counts)
           singleTestAttempts: parseInt(row.single_test_attempts) || 0,
           singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
           multiTestAttempts: parseInt(row.multi_test_attempts) || 0,  
@@ -532,9 +559,10 @@ export class FeedbackRepository extends BaseRepository {
           correctPredictions: parseInt(row.total_correct_predictions) || 0,
           accuracyPercentage: Math.round((parseFloat(row.actual_accuracy_percentage) || 0) * 10) / 10,
           
-          // Trustworthiness scores (prediction_accuracy_score)
+          // TRUSTWORTHINESS scores (prediction_accuracy_score - NOT pure accuracy!)
+          // These measure how well AI confidence correlates with actual performance
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000,
-          avgAccuracyScore: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000, // Keep for backward compatibility
+          avgAccuracyScore: Math.round((parseFloat(row.avg_trustworthiness_score) || 0) * 10000) / 10000, // DEPRECATED: misleading name, contains trustworthiness data!
           minTrustworthiness: Math.round((parseFloat(row.min_trustworthiness_score) || 0) * 10000) / 10000,
           maxTrustworthiness: Math.round((parseFloat(row.max_trustworthiness_score) || 0) * 10000) / 10000,
           
