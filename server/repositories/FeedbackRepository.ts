@@ -440,11 +440,12 @@ export class FeedbackRepository extends BaseRepository {
    */
   async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
-      logger.warn('Database not connected - returning empty accuracy stats. Set DATABASE_URL to enable leaderboards.', 'database');
       return {
         totalExplanations: 0,
         avgConfidence: 0,
         totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        
         modelAccuracy: [],
         accuracyByModel: []
       };
@@ -632,34 +633,23 @@ export class FeedbackRepository extends BaseRepository {
       throw error;
     }
   }
-
+/// THIS function contains some odd hallucinations... needs to be fixed and checked.
   async getRealPerformanceStats(): Promise<{
     trustworthinessLeaders: Array<{
       modelName: string;
       totalAttempts: number;
       avgTrustworthiness: number;
       avgConfidence: number;
-      calibrationError: number;
       avgProcessingTime: number;
       avgTokens: number;
       avgCost: number;
       totalCost: number;
-      costPerTrustworthiness: number;
-      tokensPerTrustworthiness: number;
-      trustworthinessRange: { min: number; max: number; };
     }>;
     speedLeaders: Array<{
       modelName: string;
       avgProcessingTime: number;
       totalAttempts: number;
       avgTrustworthiness: number;
-    }>;
-    calibrationLeaders: Array<{
-      modelName: string;
-      calibrationError: number;
-      totalAttempts: number;
-      avgTrustworthiness: number;
-      avgConfidence: number;
     }>;
     efficiencyLeaders: Array<{
       modelName: string;
@@ -668,16 +658,13 @@ export class FeedbackRepository extends BaseRepository {
       avgTrustworthiness: number;
       totalAttempts: number;
     }>;
-    totalTrustworthinessAttempts: number;
     overallTrustworthiness: number;
   }> {
     if (!this.isConnected()) {
       return {
         trustworthinessLeaders: [],
         speedLeaders: [],
-        calibrationLeaders: [],
         efficiencyLeaders: [],
-        totalTrustworthinessAttempts: 0,
         overallTrustworthiness: 0
       };
     }
@@ -694,24 +681,7 @@ export class FeedbackRepository extends BaseRepository {
           AVG(e.api_processing_time_ms) as avg_processing_time,
           AVG(e.total_tokens) as avg_tokens,
           AVG(e.estimated_cost) as avg_cost,
-          SUM(e.estimated_cost) as total_cost,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness,
-          (
-            CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN SUM(e.estimated_cost) / AVG(e.prediction_accuracy_score) / COUNT(*)
-              ELSE 0 
-            END
-          ) as cost_per_trustworthiness,
-          (
-            CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0 
-              THEN SUM(e.total_tokens) / AVG(e.prediction_accuracy_score) / COUNT(*)
-              ELSE 0 
-            END
-          ) as tokens_per_trustworthiness,
-          ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)) as calibration_error
+          SUM(e.estimated_cost) as total_cost
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.prediction_accuracy_score IS NOT NULL
@@ -740,24 +710,6 @@ export class FeedbackRepository extends BaseRepository {
         LIMIT 10
       `);
 
-      // Get calibration leaders (best alignment between confidence and trustworthiness)
-      const calibrationQuery = await this.query(`
-        SELECT 
-          e.model_name,
-          ABS(AVG(e.confidence) - (AVG(e.prediction_accuracy_score) * 100)) as calibration_error,
-          COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
-          AVG(e.confidence) as avg_confidence
-        FROM explanations e
-        WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
-          AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
-        GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
-        ORDER BY calibration_error ASC
-        LIMIT 10
-      `);
 
       // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
       const efficiencyQuery = await this.query(`
@@ -807,30 +759,16 @@ export class FeedbackRepository extends BaseRepository {
           totalAttempts: parseInt(row.total_attempts) || 0,
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
           avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
-          calibrationError: Math.round((parseFloat(row.calibration_error) || 0) * 100) / 100,
           avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
           avgTokens: Math.round(parseFloat(row.avg_tokens) || 0),
           avgCost: Math.round((parseFloat(row.avg_cost) || 0) * 1000000) / 1000000,
           totalCost: Math.round((parseFloat(row.total_cost) || 0) * 10000) / 10000,
-          costPerTrustworthiness: Math.round((parseFloat(row.cost_per_trustworthiness) || 0) * 1000000) / 1000000,
-          tokensPerTrustworthiness: Math.round(parseFloat(row.tokens_per_trustworthiness) || 0),
-          trustworthinessRange: { 
-            min: Math.round((parseFloat(row.min_trustworthiness) || 0) * 10000) / 10000, 
-            max: Math.round((parseFloat(row.max_trustworthiness) || 0) * 10000) / 10000 
-          }
         })),
         speedLeaders: speedQuery.rows.map(row => ({
           modelName: row.model_name,
           avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
           totalAttempts: parseInt(row.total_attempts) || 0,
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000
-        })),
-        calibrationLeaders: calibrationQuery.rows.map(row => ({
-          modelName: row.model_name,
-          calibrationError: Math.round((parseFloat(row.calibration_error) || 0) * 100) / 100,
-          totalAttempts: parseInt(row.total_attempts) || 0,
-          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
-          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10
         })),
         efficiencyLeaders: efficiencyQuery.rows.map(row => ({
           modelName: row.model_name,
@@ -839,7 +777,6 @@ export class FeedbackRepository extends BaseRepository {
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
           totalAttempts: parseInt(row.total_attempts) || 0
         })),
-        totalTrustworthinessAttempts: parseInt(overallStats.total_trustworthiness_attempts) || 0,
         overallTrustworthiness: Math.round((parseFloat(overallStats.overall_trustworthiness) || 0) * 10000) / 10000
       };
     } catch (error) {
