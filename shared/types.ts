@@ -180,6 +180,25 @@ export interface DatabaseExplanation {
 /**
  * Frontend-friendly explanation interface with camelCase naming
  */
+/**
+ * Centralized model configuration type
+ */
+export interface ModelConfig {
+  key: string;
+  name: string;
+  color: string;
+  premium: boolean;
+  cost: { input: string; output: string };
+  supportsTemperature: boolean;
+  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek' | 'OpenRouter';
+  responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
+  supportsReasoning?: boolean;
+  apiModelName?: string; 
+  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek' | 'openrouter';
+  maxOutputTokens?: number;
+  contextWindow?: number;
+}
+
 export interface ExplanationRecord {
   id: number;
   puzzleId: string;

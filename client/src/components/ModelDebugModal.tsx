@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
-import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats } from '@shared/types';
+import { useModels } from '@/hooks/useModels';
+import type { ModelConfig, FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats } from '@shared/types';
 
 interface ModelDebugModalProps {
   open: boolean;
@@ -39,8 +39,11 @@ export function ModelDebugModal({
   modelName 
 }: ModelDebugModalProps) {
   
+  // Fetch models
+  const { data: models, isLoading: modelsLoading, error: modelsError } = useModels();
+
   // Get model display info
-  const modelInfo = MODELS.find(m => m.key === modelName);
+  const modelInfo = models?.find((m: ModelConfig) => m.key === modelName);
   const displayName = modelInfo ? `${modelInfo.name}` : modelName;
 
   // Fetch accuracy stats
@@ -95,8 +98,8 @@ export function ModelDebugModal({
   const modelTrustworthiness = performanceStats?.trustworthinessLeaders?.find(m => m.modelName === modelName);
   const modelSpeed = performanceStats?.speedLeaders?.find(m => m.modelName === modelName);
   
-  const isLoading = accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
-  const hasErrors = accuracyError || feedbackError || rawError || performanceError;
+  const isLoading = modelsLoading || accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
+  const hasErrors = modelsError || accuracyError || feedbackError || rawError || performanceError;
 
   // Validation
   if (!open) return null;
@@ -311,10 +314,6 @@ export function ModelDebugModal({
                               <p className="text-lg font-mono">{modelTrustworthiness.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Calibration Error:</span>
-                              <p className="text-lg font-mono">{modelTrustworthiness.calibrationError?.toFixed(3) || 'N/A'}</p>
-                            </div>
-                            <div>
                               <span className="font-medium text-gray-600">Avg Processing Time:</span>
                               <p className="text-lg font-mono">{modelTrustworthiness.avgProcessingTime?.toFixed(2) || 'N/A'}ms</p>
                             </div>
@@ -331,20 +330,8 @@ export function ModelDebugModal({
                               <p className="text-lg font-mono">${modelTrustworthiness.totalCost?.toFixed(2) || 'N/A'}</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Cost per Trustworthiness:</span>
-                              <p className="text-lg font-mono">${modelTrustworthiness.costPerTrustworthiness?.toFixed(4) || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-600">Tokens per Trustworthiness:</span>
-                              <p className="text-lg font-mono">{modelTrustworthiness.tokensPerTrustworthiness?.toFixed(2) || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-600">Trustworthiness Range:</span>
-                              <p className="text-lg font-mono">
-                                {modelTrustworthiness.trustworthinessRange ? 
-                                  `${modelTrustworthiness.trustworthinessRange.min.toFixed(3)} - ${modelTrustworthiness.trustworthinessRange.max.toFixed(3)}` 
-                                  : 'N/A'}
-                              </p>
+                              <span className="font-medium text-gray-600">Total Attempts:</span>
+                              <p className="text-lg font-mono">{modelTrustworthiness.totalAttempts || 'N/A'}</p>
                             </div>
                           </div>
                         </div>
