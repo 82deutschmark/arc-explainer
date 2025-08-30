@@ -78,6 +78,8 @@ export const explanationController = {
     try {
       const { puzzleId } = req.params;
       const { explanations } = req.body;
+      console.log(`[CRITICAL-DEBUG] CONTROLLER: puzzleId="${puzzleId}" type=${typeof puzzleId}`);
+      console.log(`[CRITICAL-DEBUG] CONTROLLER: req.params=`, JSON.stringify(req.params));
       
       const result = await explanationService.saveExplanation(puzzleId, explanations);
 
