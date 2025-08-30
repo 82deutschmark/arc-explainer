@@ -1,237 +1,31 @@
 {
-  "taskId": "2281f1f4",
+  "taskId": "1caeab9d",
   "originalTask": {
     "train": [
       {
         "input": [
           [
-            5,
             0,
-            0,
-            5,
-            0,
-            0,
-            0,
-            5,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ]
-        ],
-        "output": [
-          [
-            5,
-            0,
-            0,
-            5,
-            0,
-            0,
-            0,
-            5,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
             2,
-            0,
-            0,
             2,
             0,
             0,
             0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
             2,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0,
             2,
             0,
             0,
             0,
-            2,
             0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
+            1,
+            1,
             0
           ],
           [
@@ -239,27 +33,11 @@
             0,
             0,
             0,
+            4,
+            4,
             0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            0,
-            5,
-            0,
-            5,
-            5,
-            0,
-            0,
-            5,
-            0,
+            1,
+            1,
             0
           ],
           [
@@ -267,92 +45,8 @@
             0,
             0,
             0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
+            4,
+            4,
             0,
             0,
             0,
@@ -374,18 +68,6 @@
         "output": [
           [
             0,
-            5,
-            0,
-            5,
-            5,
-            0,
-            0,
-            5,
-            0,
-            0
-          ],
-          [
-            0,
             0,
             0,
             0,
@@ -399,74 +81,26 @@
           [
             0,
             2,
-            0,
-            2,
             2,
             0,
+            4,
+            4,
             0,
-            2,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
+            1,
+            1,
             0
           ],
           [
             0,
             2,
-            0,
-            2,
             2,
             0,
+            4,
+            4,
             0,
-            2,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
+            1,
+            1,
             0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            5
           ],
           [
             0,
@@ -499,13 +133,85 @@
           [
             0,
             0,
-            5,
-            5,
             0,
-            5,
             0,
-            5,
-            5,
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4,
+            4,
+            4
+          ],
+          [
+            0,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
             0
           ],
           [
@@ -530,79 +236,7 @@
             0,
             0,
             0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
             0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
           ],
           [
             0,
@@ -621,18 +255,6 @@
           [
             0,
             0,
-            5,
-            5,
-            0,
-            5,
-            0,
-            5,
-            5,
-            0
-          ],
-          [
-            0,
-            0,
             0,
             0,
             0,
@@ -645,26 +267,14 @@
           [
             0,
             0,
-            2,
-            2,
-            0,
-            2,
-            0,
-            2,
-            2,
-            5
-          ],
-          [
             0,
             0,
-            2,
-            2,
             0,
-            2,
             0,
-            2,
-            2,
-            5
+            0,
+            0,
+            0,
+            0
           ],
           [
             0,
@@ -693,14 +303,38 @@
           [
             0,
             0,
-            2,
-            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
             0,
             2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            4,
+            4,
+            4
+          ],
+          [
             0,
             2,
             2,
-            5
+            2,
+            1,
+            1,
+            1,
+            4,
+            4,
+            4
           ],
           [
             0,
@@ -717,14 +351,140 @@
           [
             0,
             0,
-            2,
-            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
             0,
             2,
             0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
             2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0
+          ]
+        ],
+        "output": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
             2,
-            5
+            0,
+            0,
+            4,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            2,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0
           ],
           [
             0,
@@ -745,15 +505,99 @@
       {
         "input": [
           [
-            5,
-            0,
-            5,
-            5,
             0,
             0,
-            5,
             0,
-            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            2
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            4,
+            4,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            4,
+            4,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            0,
+            0,
             0
           ],
           [
@@ -778,104 +622,68 @@
             0,
             0,
             0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
             0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            5
           ]
         ],
         "output": [
           [
-            5,
-            0,
-            5,
-            5,
             0,
             0,
-            5,
             0,
-            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            4,
+            4,
+            0,
+            0,
+            2,
+            2
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            4,
+            4,
+            0,
+            0,
+            2,
+            2
+          ],
+          [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            2,
+            0,
             0
           ],
           [
@@ -891,28 +699,16 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
             0,
             0,
-            2,
-            0,
-            2,
-            5
-          ],
-          [
-            2,
-            0,
-            2,
-            2,
             0,
             0,
-            2,
             0,
-            2,
-            5
+            0,
+            0,
+            0,
+            0,
+            0
           ],
           [
             0,
@@ -927,18 +723,6 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
-          ],
-          [
             0,
             0,
             0,
@@ -951,18 +735,6 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
-          ],
-          [
             0,
             0,
             0,
@@ -973,39 +745,63 @@
             0,
             0,
             0
-          ],
-          [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
           ]
         ]
       }
     ]
   },
   "explanations": {
-    "qwen/qwen3-235b-a22b-thinking-2507": {
+    "qwen/qwen-2.5-coder-32b-instruct": {
       "success": true,
       "result": {
         "multiplePredictedOutputs": false,
         "predictedOutput": [
           [
-            5,
-            0,
-            5,
-            5,
             0,
             0,
-            5,
             0,
-            5,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0
           ],
           [
@@ -1021,28 +817,28 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
             0,
             0,
-            2,
             0,
-            2,
-            5
+            0,
+            4,
+            4,
+            0,
+            0,
+            0,
+            0
           ],
           [
-            2,
-            0,
-            2,
-            2,
             0,
             0,
-            2,
             0,
-            2,
-            5
+            0,
+            4,
+            4,
+            0,
+            0,
+            0,
+            0
           ],
           [
             0,
@@ -1057,18 +853,6 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
-          ],
-          [
             0,
             0,
             0,
@@ -1081,18 +865,6 @@
             0
           ],
           [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
-          ],
-          [
             0,
             0,
             0,
@@ -1103,70 +875,88 @@
             0,
             0,
             0
-          ],
-          [
-            2,
-            0,
-            2,
-            2,
-            0,
-            0,
-            2,
-            0,
-            2,
-            5
           ]
         ],
         "predictedOutput1": [],
         "predictedOutput2": [],
         "predictedOutput3": [],
-        "solvingStrategy": {
-          "keySteps": [
-            "Examined all training examples to identify consistent input→output transformations",
-            "Noted top row (row0) remains unchanged in all examples",
-            "Observed rows with 5 in last column (index9) are transformed: in Example1 rows 3 and 7, Example2 rows 2/4/7, Example3 rows 2/3/6/8",
-            "Identified that transformed rows set 2 at columns where row0 has 5 (e.g., Example1: row0 5s at cols 0/3/7 → transformed rows set 2s there)",
-            "Verified last column (index9) always remains 5 in transformed rows",
-            "Confirmed non-transformed rows (no 5 in last column) remain unchanged (all zeros in examples)",
-            "Tested hypothesis: For row i>0, if input[i][9]==5, set output[i][j]=2 for all j where input[0][j]==5 (j<9)",
-            "Applied rule to test case: row0 has 5s at cols 0/2/3/6/8; rows 2/3/5/7/9 have 5 in last column → set 2s at those columns",
-            "Considered alternative patterns (e.g., vertical alignment, distance-based) but rejected due to inconsistent results with training data",
-            "Validated test case transformation matches all training examples' behavior"
-          ],
-          "patternDescription": "For any row i > 0 that contains a 5 in the last column (index 9), set value 2 at all column positions j (0 ≤ j ≤ 8) where the top row (row 0) contains 5. The last column (j=9) remains 5. All other rows remain unchanged from input.",
-          "hints": [
-            "Best: For i from 1 to 9: if input[i][9]==5, for j from 0 to 8: if input[0][j]==5 then output[i][j]=2 else output[i][j]=input[i][j]; output[i][9]=5",
-            "Math: output[i][j] = (i>0 ∧ j<9 ∧ input[i][9]=5 ∧ input[0][j]=5) ? 2 : input[i][j]",
-            "Emojis: 🔄 for each row below top: if 🍕 (last col)=5, then for each col: if top row has 🍕 → set 2️⃣, else keep original. Last col stays 5."
-          ],
-          "confidence": 95
-        }
+        "solvingStrategy": "The task involves analyzing the provided training examples to identify a consistent transformation pattern that can be applied to the test case input to generate the correct output.",
+        "keySteps": [
+          "Step 1: Examining Example 1, it's observed that the top row of zeros in the input is preserved in the output, while the middle row merges the two groups of non-zero numbers (2s and 4s) into a single row between them, and the bottom rows of zeros remain unchanged.",
+          "Step 2: In Example 2, the top five rows of zeros are preserved, the middle two rows merge the groups of 2s, 1s, and 4s into a single row, and the remaining rows of zeros are preserved.",
+          "Step 3: Example 3 shows that the top four rows of zeros are preserved, the next row merges the groups of 1s and 2s into a single row, and the remaining rows of zeros are preserved.",
+          "Step 4: From these observations, a pattern emerges where the topmost rows of zeros are preserved, followed by a row that merges any adjacent groups of non-zero numbers, and then the rest of the rows of zeros are preserved.",
+          "Step 5: Applying this pattern to the test case input, the top six rows of zeros are preserved, the next row merges the groups of 2s and 4s into a single row, and the remaining rows of zeros are preserved."
+        ],
+        "patternDescription": "The transformation rule involves preserving the topmost rows of zeros, merging any adjacent groups of non-zero numbers into a single row, and then preserving the rest of the rows of zeros.",
+        "hints": [
+          "Best Pseudo-code: For each row in the grid, if it contains non-zero numbers, check for adjacent groups and merge them into a single row. Preserve the topmost and bottom rows of zeros.",
+          "Math Pseudo-code: Let Z be the number of zero rows at the top. Let N be the number of non-zero rows. For i in range(Z, Z+N), merge adjacent groups in row i. Preserve all other rows.",
+          "Emoji Pseudo-code: 🔄️ Zero rows at the top stay the same. 🔄️ Non-zero rows merge adjacent groups. 🔄️ Zero rows at the bottom stay the same."
+        ],
+        "confidence": 95
       },
       "tokenUsage": {
-        "input": 2004,
-        "output": 5252
+        "input": 1603,
+        "output": 743
       },
       "cost": {
-        "input": 0.000156312,
-        "output": 0.001638624,
-        "total": 0.001794936
+        "input": 0.0004809,
+        "output": 0.00022289999999999997,
+        "total": 0.0007038
       },
-      "processingTimeMs": 160621,
-      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+      "processingTimeMs": 14236,
+      "modelName": "qwen/qwen-2.5-coder-32b-instruct",
       "reasoning": null,
       "reasoningLog": null,
-      "apiProcessingTimeMs": 160622,
+      "apiProcessingTimeMs": 14236,
       "predictedOutputGrid": [
         [
-          5,
-          0,
-          5,
-          5,
           0,
           0,
-          5,
           0,
-          5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           0
         ],
         [
@@ -1182,28 +972,28 @@
           0
         ],
         [
-          2,
-          0,
-          2,
-          2,
           0,
           0,
-          2,
           0,
-          2,
-          5
+          0,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0
         ],
         [
-          2,
-          0,
-          2,
-          2,
           0,
           0,
-          2,
           0,
-          2,
-          5
+          0,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0
         ],
         [
           0,
@@ -1218,18 +1008,6 @@
           0
         ],
         [
-          2,
-          0,
-          2,
-          2,
-          0,
-          0,
-          2,
-          0,
-          2,
-          5
-        ],
-        [
           0,
           0,
           0,
@@ -1242,18 +1020,6 @@
           0
         ],
         [
-          2,
-          0,
-          2,
-          2,
-          0,
-          0,
-          2,
-          0,
-          2,
-          5
-        ],
-        [
           0,
           0,
           0,
@@ -1264,30 +1030,18 @@
           0,
           0,
           0
-        ],
-        [
-          2,
-          0,
-          2,
-          2,
-          0,
-          0,
-          2,
-          0,
-          2,
-          5
         ]
       ],
       "multiplePredictedOutputs": null,
       "hasMultiplePredictions": false,
-      "isPredictionCorrect": true,
-      "predictionAccuracyScore": 0.75,
-      "modelKey": "qwen/qwen3-235b-a22b-thinking-2507",
-      "actualProcessingTime": 161
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0.050000000000000044,
+      "modelKey": "qwen/qwen-2.5-coder-32b-instruct",
+      "actualProcessingTime": 14
     }
   },
-  "exportedAt": "2025-08-30T18:40:48.483Z",
+  "exportedAt": "2025-08-30T17:20:24.174Z",
   "models": [
-    "qwen/qwen3-235b-a22b-thinking-2507"
+    "qwen/qwen-2.5-coder-32b-instruct"
   ]
 }
