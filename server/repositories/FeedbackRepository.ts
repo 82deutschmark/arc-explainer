@@ -33,6 +33,16 @@
  * - getGeneralModelStats() = general overview with mixed metrics
  * - getFeedbackStats() = user feedback (explanation quality)
  * 
+ * NEW CLEAR METHODS (recommended):
+ * - getPureAccuracyStats() = ONLY boolean correctness (is_prediction_correct)
+ * - getTrustworthinessStats() = ONLY confidence reliability (prediction_accuracy_score) 
+ * - getConfidenceStats() = ONLY confidence analysis and calibration
+ * 
+ * CRITICAL DATABASE FIELD CLARIFICATION:
+ * - is_prediction_correct (boolean) = Pure accuracy (did they solve it correctly?)
+ * - confidence (integer 0-100) = AI self-reported confidence level
+ * - prediction_accuracy_score (double) = MISLEADING NAME! This is trustworthiness!
+ * 
  * WARNING: Variable names like 'accuracyByModel' often contain trustworthiness data!
  * Always check the SQL query to understand what data is actually being returned.
  * 
@@ -332,10 +342,30 @@ export class FeedbackRepository extends BaseRepository {
   }
 
   /**
-   * Get GENERAL MODEL STATS (all explanations, not just solver mode)
+   * Get GENERAL MODEL STATS - Overview of all model activity
    * 
-   * Shows all models that have created explanations, regardless of solver mode.
-   * Uses avgAccuracyScore as trustworthiness when prediction_accuracy_score available.
+   * IMPORTANT: This method returns MIXED DATA combining multiple concepts!
+   * 
+   * WHAT THIS METHOD INCLUDES:
+   * - ALL explanations with confidence values (not just solver attempts)
+   * - Models that only did explanation tasks (no predictions)
+   * - Models that made solver attempts (with predictions)
+   * 
+   * DATA MIXING WARNING:
+   * - accuracyByModel: Contains trustworthiness data (prediction_accuracy_score)
+   * - modelAccuracy: Contains pure accuracy percentages (is_prediction_correct)
+   * - Both arrays have different inclusion criteria and different orderings!
+   * 
+   * INCLUSION CRITERIA:
+   * - ALL models with explanations that have confidence values
+   * - Solver stats subset: Only entries with prediction grids
+   * - Trustworthiness subset: Only entries with prediction_accuracy_score
+   * 
+   * USE CASES:
+   * - General dashboard overview showing all model activity
+   * - Comparing explanation volume vs solver attempt volume
+   * - NOT for pure accuracy analysis (use getPureAccuracyStats)
+   * - NOT for pure trustworthiness analysis (use getTrustworthinessStats)
    */
   async getGeneralModelStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
@@ -584,6 +614,32 @@ export class FeedbackRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Get RAW DATABASE STATS - Infrastructure and performance metrics
+   * 
+   * This method provides technical database statistics about API usage,
+   * processing performance, token consumption, and cost analysis.
+   * 
+   * METRIC CATEGORIES:
+   * - Processing Performance: API call timing and response times
+   * - Token Usage: Input/output tokens, cost estimation
+   * - Data Completeness: Count of entries with complete data fields
+   * 
+   * IMPORTANT: avgPredictionAccuracy uses prediction_accuracy_score field
+   * Despite the name, this is TRUSTWORTHINESS data, not pure accuracy!
+   * This field measures AI confidence reliability, not puzzle-solving success.
+   * 
+   * USE CASES:
+   * - Infrastructure monitoring and optimization
+   * - Cost analysis for API usage
+   * - Data quality assessment (completeness tracking)
+   * - Performance benchmarking across providers
+   * 
+   * NOT FOR:
+   * - Pure puzzle-solving accuracy analysis
+   * - Model comparison based on correctness
+   * - User experience metrics
+   */
   async getRawDatabaseStats(): Promise<{
     totalExplanations: number;
     avgProcessingTime: number;
