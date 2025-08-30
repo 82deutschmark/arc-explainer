@@ -48,6 +48,7 @@ export const explanationService = {
    * @throws AppError if puzzle not found or explanation cannot be saved
    */
   async saveExplanation(puzzleId: string, explanations: Record<string, any>) {
+    console.log(`[CRITICAL-DEBUG] SERVICE: puzzleId="${puzzleId}" type=${typeof puzzleId}`);
     // First, get the puzzle to validate it exists
     const { puzzleLoader } = await import('./puzzleLoader');
     const task = await puzzleLoader.loadPuzzle(puzzleId);
@@ -87,19 +88,23 @@ export const explanationService = {
           i++;
         }
         
-        // 2. From multiplePredictedOutputs array (if it exists as array)
-        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
-          collectedGrids.push(...sourceData.multiplePredictedOutputs);
-        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
-          collectedGrids.push(...analysisData.multiplePredictedOutputs);
-        }
-        
-        // 3. From multi-test results (different test cases, not multiple predictions per test)
+        // 2. From multi-test results (different test cases, not multiple predictions per test)
         if (Array.isArray(analysisData.multiTestResults)) {
           const testGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
           if (testGrids.length > 0 && collectedGrids.length === 0) {
             // Only use test results if we didn't find prediction grids above
             collectedGrids = testGrids;
+          }
+        }
+        
+        // 3. From multiplePredictedOutputs array (if it exists as array)
+        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
+          if (collectedGrids.length === 0) {
+            collectedGrids.push(...sourceData.multiplePredictedOutputs);
+          }
+        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
+          if (collectedGrids.length === 0) {
+            collectedGrids.push(...analysisData.multiplePredictedOutputs);
           }
         }
 
@@ -111,40 +116,42 @@ export const explanationService = {
 
         // Handle both flat and nested response structures
         const explanationData = {
-          pattern_description: analysisData.patternDescription ?? null,
-          solving_strategy: analysisData.solvingStrategy ?? null,
+          patternDescription: analysisData.patternDescription ?? null,
+          solvingStrategy: analysisData.solvingStrategy ?? null,
           hints: analysisData.hints ?? null,
           confidence: analysisData.confidence ?? 50,
-          model_name: sourceData.modelName ?? modelKey,
-          reasoning_items: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
-          reasoning_log: null,
-          predicted_output_grid: sourceData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? analysisData.predictedOutput ?? null,
-          is_prediction_correct: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
-          prediction_accuracy_score: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
-          has_multiple_predictions: hasMultiplePredictions,
-          multiple_predicted_outputs: multiplePredictedOutputsForStorage,
-          multi_test_results: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
-          multi_test_all_correct: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
-          multi_test_average_accuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
-          provider_raw_response: sourceData.providerRawResponse ?? null,
-          api_processing_time_ms: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
-          input_tokens: tokenUsage?.input ?? sourceData.inputTokens ?? null,
-          output_tokens: tokenUsage?.output ?? sourceData.outputTokens ?? null,
-          reasoning_tokens: tokenUsage?.reasoning ?? sourceData.reasoningTokens ?? null,
-          total_tokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : sourceData.totalTokens ?? null,
-          estimated_cost: costData?.total ?? sourceData.estimatedCost ?? null,
+          modelName: sourceData.modelName ?? modelKey,
+          reasoningItems: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoningLog: null,
+          predictedOutputGrid: collectedGrids.length > 1 ? collectedGrids : collectedGrids[0],
+          isPredictionCorrect: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
+          predictionAccuracyScore: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
+          hasMultiplePredictions: hasMultiplePredictions,
+          multiplePredictedOutputs: collectedGrids,
+          multiTestResults: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
+          multiTestAllCorrect: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? false,
+          multiTestAverageAccuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? 0,
+          providerRawResponse: sourceData.providerRawResponse ?? null,
+          apiProcessingTimeMs: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
+          inputTokens: tokenUsage?.input ?? sourceData.inputTokens ?? null,
+          outputTokens: tokenUsage?.output ?? sourceData.outputTokens ?? null,
+          reasoningTokens: tokenUsage?.reasoning ?? sourceData.reasoningTokens ?? null,
+          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : sourceData.totalTokens ?? null,
+          estimatedCost: costData?.total ?? sourceData.estimatedCost ?? null,
           temperature: sourceData.temperature ?? null,
-          reasoning_effort: sourceData.reasoningEffort ?? null,
-          reasoning_verbosity: sourceData.reasoningVerbosity ?? null,
-          reasoning_summary_type: sourceData.reasoningSummaryType ?? null,
+          reasoningEffort: sourceData.reasoningEffort ?? null,
+          reasoningVerbosity: sourceData.reasoningVerbosity ?? null,
+          reasoningSummaryType: sourceData.reasoningSummaryType ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+        console.log(`[DEBUG] About to create explanationWithPuzzleId. puzzleId = "${puzzleId}" (${typeof puzzleId})`);
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
-            puzzle_id: puzzleId
+            puzzleId: puzzleId
           };
+          console.log(`[DEBUG] Created explanationWithPuzzleId.puzzleId = "${explanationWithPuzzleId.puzzleId}" (${typeof explanationWithPuzzleId.puzzleId})`);
           const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
             console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
