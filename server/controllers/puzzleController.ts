@@ -137,6 +137,17 @@ export const puzzleController = {
       const confidence = result.confidence || 50; // Default confidence if not provided
       const testCount = puzzle.test?.length || 0;
       
+      // CRITICAL FIX: Preserve original analysis content before validation
+      const originalAnalysis = {
+        patternDescription: result.patternDescription,
+        solvingStrategy: result.solvingStrategy,
+        hints: result.hints,
+        alienMeaning: result.alienMeaning,
+        confidence: result.confidence,
+        reasoningLog: result.reasoningLog,
+        hasReasoningLog: result.hasReasoningLog
+      };
+      
       // Simple logic: Check if AI provided multiple predictions
       // Handle nested OpenRouter structure: result.result.multiplePredictedOutputs
       const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
@@ -145,7 +156,7 @@ export const puzzleController = {
         const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
         const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-        // Simple storage: predictedOutputGrid = actual grid arrays, multiplePredictedOutputs remains boolean
+        // Add validation results WITHOUT destroying original analysis
         result.predictedOutputGrid = multi.predictedGrids;
         result.multiplePredictedOutputs = multi.predictedGrids; // Overwrite boolean flag with actual grid arrays
         result.hasMultiplePredictions = true;
@@ -162,7 +173,7 @@ export const puzzleController = {
         const correctAnswer = puzzle.test[0].output;
         const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
-        // Simple storage: predictedOutputGrid = single grid, multiplePredictedOutputs = null
+        // Add validation results WITHOUT destroying original analysis
         result.predictedOutputGrid = validation.predictedGrid;
         result.multiplePredictedOutputs = null;
         result.hasMultiplePredictions = false;
@@ -170,6 +181,29 @@ export const puzzleController = {
         // Attach validation results for UI
         result.isPredictionCorrect = validation.isPredictionCorrect;
         result.predictionAccuracyScore = validation.predictionAccuracyScore;
+      }
+      
+      // CRITICAL FIX: Restore original analysis content after validation
+      // Only restore fields that had actual content (not null/undefined/empty)
+      if (originalAnalysis.patternDescription) {
+        result.patternDescription = originalAnalysis.patternDescription;
+      }
+      if (originalAnalysis.solvingStrategy) {
+        result.solvingStrategy = originalAnalysis.solvingStrategy;
+      }
+      if (originalAnalysis.hints && originalAnalysis.hints.length > 0) {
+        result.hints = originalAnalysis.hints;
+      }
+      if (originalAnalysis.alienMeaning) {
+        result.alienMeaning = originalAnalysis.alienMeaning;
+      }
+      if (originalAnalysis.reasoningLog) {
+        result.reasoningLog = originalAnalysis.reasoningLog;
+        result.hasReasoningLog = originalAnalysis.hasReasoningLog;
+      }
+      // Always preserve confidence even if it was set to default
+      if (originalAnalysis.confidence !== undefined) {
+        result.confidence = originalAnalysis.confidence;
       }
     }
     
