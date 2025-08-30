@@ -224,6 +224,14 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
           </Badge>
         )}
         
+        {result.puzzleId && (
+          <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+            <span className="text-xs text-gray-600">
+              ID: {result.puzzleId}
+            </span>
+          </Badge>
+        )}
+        
         {/* Saturn-specific success/failure indicator */}
         {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
           <Badge 
