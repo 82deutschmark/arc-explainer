@@ -1,6 +1,6 @@
 /**
  * PromptPreviewModal.tsx
- * 
+ * NEEDS TO BE REWRITTEN!!!
  * Modal component for previewing the complete prompt that will be sent to AI models.
  * Works with the new modular prompt architecture (system + user prompts).
  * 
@@ -39,7 +39,7 @@ interface PromptPreviewModalProps {
     sendAsEmojis?: boolean;
   };
 }
-
+/// NEEDS TO BE REWRITTEN!!!
 export function PromptPreviewModal({ 
   isOpen, 
   onClose, 
