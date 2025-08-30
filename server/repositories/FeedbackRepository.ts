@@ -661,6 +661,324 @@ export class FeedbackRepository extends BaseRepository {
       throw error;
     }
   }
+  /**
+   * Get PURE ACCURACY STATS - only boolean correctness metrics
+   * 
+   * This method returns TRUE puzzle-solving accuracy without any trustworthiness filtering.
+   * Uses only is_prediction_correct and multi_test_all_correct boolean fields.
+   * 
+   * INCLUSION CRITERIA:
+   * - Models that made solver attempts (have prediction grids)
+   * - No filtering by prediction_accuracy_score or confidence requirements
+   * - Shows all models, even those without trustworthiness data
+   * 
+   * CORRECTNESS CRITERIA:
+   * - is_prediction_correct = true (single test correct)
+   * - multi_test_all_correct = true (multi-test correct)
+   * - Simple percentage: correct / total attempts
+   */
+  async getPureAccuracyStats(): Promise<{
+    totalSolverAttempts: number;
+    totalCorrectPredictions: number;
+    overallAccuracyPercentage: number;
+    modelAccuracyRankings: Array<{
+      modelName: string;
+      totalAttempts: number;
+      correctPredictions: number;
+      accuracyPercentage: number;
+      singleTestAttempts: number;
+      singleCorrectPredictions: number;
+      singleTestAccuracy: number;
+      multiTestAttempts: number;
+      multiCorrectPredictions: number;
+      multiTestAccuracy: number;
+    }>;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        overallAccuracyPercentage: 0,
+        modelAccuracyRankings: []
+      };
+    }
+
+    try {
+      // Get overall pure accuracy stats
+      const overallStats = await this.query(`
+        SELECT 
+          COUNT(*) as total_solver_attempts,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
+        FROM explanations
+        WHERE (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+      `);
+
+      // Get pure accuracy by model - NO trustworthiness or confidence filtering
+      const modelAccuracy = await this.query(`
+        SELECT 
+          e.model_name,
+          COUNT(e.id) as total_attempts,
+          
+          -- Single test accuracy
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+          
+          -- Multi test accuracy
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_correct_predictions,
+          
+          -- Overall accuracy
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions,
+          
+          -- Calculate overall accuracy percentage
+          CASE 
+            WHEN COUNT(e.id) > 0 
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0 
+          END as accuracy_percentage,
+          
+          -- Single test accuracy percentage
+          CASE 
+            WHEN COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) > 0 
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END))
+            ELSE 0 
+          END as single_test_accuracy_percentage,
+          
+          -- Multi test accuracy percentage
+          CASE 
+            WHEN COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) > 0 
+            THEN (SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END))
+            ELSE 0 
+          END as multi_test_accuracy_percentage
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+        GROUP BY e.model_name
+        HAVING COUNT(e.id) >= 1
+        ORDER BY accuracy_percentage DESC, total_attempts DESC
+      `);
+
+      const overallRow = overallStats.rows[0];
+      const totalAttempts = parseInt(overallRow.total_solver_attempts) || 0;
+      const totalCorrect = parseInt(overallRow.total_correct_predictions) || 0;
+
+      return {
+        totalSolverAttempts: totalAttempts,
+        totalCorrectPredictions: totalCorrect,
+        overallAccuracyPercentage: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100 * 10) / 10 : 0,
+        modelAccuracyRankings: modelAccuracy.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: Math.round((parseFloat(row.accuracy_percentage) || 0) * 10) / 10,
+          singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+          singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+          singleTestAccuracy: Math.round((parseFloat(row.single_test_accuracy_percentage) || 0) * 10) / 10,
+          multiTestAttempts: parseInt(row.multi_test_attempts) || 0,
+          multiCorrectPredictions: parseInt(row.multi_correct_predictions) || 0,
+          multiTestAccuracy: Math.round((parseFloat(row.multi_test_accuracy_percentage) || 0) * 10) / 10,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting pure accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get TRUSTWORTHINESS STATS - AI confidence reliability metrics
+   * 
+   * This method returns data about how well AI confidence correlates with actual performance.
+   * Uses only prediction_accuracy_score field (despite misleading name, this is trustworthiness).
+   * 
+   * INCLUSION CRITERIA:
+   * - Models that have prediction_accuracy_score values (trustworthiness computed)
+   * - Excludes corrupted entries (perfect score with zero confidence)
+   * - Focuses on reliability of AI confidence claims, not pure puzzle-solving
+   * 
+   * TRUSTWORTHINESS CALCULATION:
+   * - prediction_accuracy_score combines confidence claims with actual correctness
+   * - Higher scores mean AI confidence better predicts actual performance
+   * - This is the PRIMARY METRIC for this research project
+   */
+  async getTrustworthinessStats(): Promise<{
+    totalTrustworthinessAttempts: number;
+    overallTrustworthiness: number;
+    modelTrustworthinessRankings: Array<{
+      modelName: string;
+      totalAttempts: number;
+      avgTrustworthiness: number;
+      minTrustworthiness: number;
+      maxTrustworthiness: number;
+      avgConfidence: number;
+      trustworthinessEntries: number;
+    }>;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        totalTrustworthinessAttempts: 0,
+        overallTrustworthiness: 0,
+        modelTrustworthinessRankings: []
+      };
+    }
+
+    try {
+      // Get overall trustworthiness stats
+      const overallStats = await this.query(`
+        SELECT 
+          COUNT(*) as total_trustworthiness_attempts,
+          AVG(prediction_accuracy_score) as overall_trustworthiness
+        FROM explanations
+        WHERE prediction_accuracy_score IS NOT NULL
+          AND NOT (prediction_accuracy_score = 1.0 AND confidence = 0)
+      `);
+
+      // Get trustworthiness by model
+      const modelTrustworthiness = await this.query(`
+        SELECT 
+          e.model_name,
+          COUNT(*) as total_attempts,
+          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          MIN(e.prediction_accuracy_score) as min_trustworthiness,
+          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          AVG(e.confidence) as avg_confidence,
+          COUNT(e.prediction_accuracy_score) as trustworthiness_entries
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0)
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 1
+        ORDER BY avg_trustworthiness DESC, total_attempts DESC
+      `);
+
+      const overallRow = overallStats.rows[0];
+
+      return {
+        totalTrustworthinessAttempts: parseInt(overallRow.total_trustworthiness_attempts) || 0,
+        overallTrustworthiness: Math.round((parseFloat(overallRow.overall_trustworthiness) || 0) * 10000) / 10000,
+        modelTrustworthinessRankings: modelTrustworthiness.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          minTrustworthiness: Math.round((parseFloat(row.min_trustworthiness) || 0) * 10000) / 10000,
+          maxTrustworthiness: Math.round((parseFloat(row.max_trustworthiness) || 0) * 10000) / 10000,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          trustworthinessEntries: parseInt(row.trustworthiness_entries) || 0,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting trustworthiness stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get CONFIDENCE ANALYSIS STATS - AI confidence patterns
+   * 
+   * This method analyzes AI confidence levels and patterns across different scenarios.
+   * Uses only confidence field to understand AI confidence behavior.
+   * 
+   * ANALYSIS INCLUDES:
+   * - Average confidence when predictions are correct vs incorrect
+   * - Confidence distribution patterns by model
+   * - Overconfidence vs underconfidence trends
+   */
+  async getConfidenceStats(): Promise<{
+    totalEntriesWithConfidence: number;
+    overallAvgConfidence: number;
+    avgConfidenceWhenCorrect: number;
+    avgConfidenceWhenIncorrect: number;
+    confidenceCalibrationGap: number;
+    modelConfidenceAnalysis: Array<{
+      modelName: string;
+      totalEntries: number;
+      avgConfidence: number;
+      avgConfidenceWhenCorrect: number;
+      avgConfidenceWhenIncorrect: number;
+      confidenceRange: number;
+      minConfidence: number;
+      maxConfidence: number;
+      correctPredictions: number;
+      incorrectPredictions: number;
+    }>;
+  }> {
+    if (!this.isConnected()) {
+      return {
+        totalEntriesWithConfidence: 0,
+        overallAvgConfidence: 0,
+        avgConfidenceWhenCorrect: 0,
+        avgConfidenceWhenIncorrect: 0,
+        confidenceCalibrationGap: 0,
+        modelConfidenceAnalysis: []
+      };
+    }
+
+    try {
+      // Get overall confidence patterns
+      const overallStats = await this.query(`
+        SELECT 
+          COUNT(*) as total_entries_with_confidence,
+          AVG(confidence) as overall_avg_confidence,
+          AVG(CASE WHEN (is_prediction_correct = true OR multi_test_all_correct = true) THEN confidence END) as avg_confidence_when_correct,
+          AVG(CASE WHEN (is_prediction_correct = false AND multi_test_all_correct = false) THEN confidence END) as avg_confidence_when_incorrect
+        FROM explanations
+        WHERE confidence IS NOT NULL
+          AND (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+      `);
+
+      // Get confidence analysis by model
+      const modelConfidence = await this.query(`
+        SELECT 
+          e.model_name,
+          COUNT(*) as total_entries,
+          AVG(e.confidence) as avg_confidence,
+          AVG(CASE WHEN (e.is_prediction_correct = true OR e.multi_test_all_correct = true) THEN e.confidence END) as avg_confidence_when_correct,
+          AVG(CASE WHEN (e.is_prediction_correct = false AND e.multi_test_all_correct = false) THEN e.confidence END) as avg_confidence_when_incorrect,
+          MIN(e.confidence) as min_confidence,
+          MAX(e.confidence) as max_confidence,
+          SUM(CASE WHEN (e.is_prediction_correct = true OR e.multi_test_all_correct = true) THEN 1 ELSE 0 END) as correct_predictions,
+          SUM(CASE WHEN (e.is_prediction_correct = false AND e.multi_test_all_correct = false) THEN 1 ELSE 0 END) as incorrect_predictions
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL 
+          AND e.confidence IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+        GROUP BY e.model_name
+        HAVING COUNT(*) >= 1
+        ORDER BY avg_confidence DESC, total_entries DESC
+      `);
+
+      const overallRow = overallStats.rows[0];
+      const avgCorrect = parseFloat(overallRow.avg_confidence_when_correct) || 0;
+      const avgIncorrect = parseFloat(overallRow.avg_confidence_when_incorrect) || 0;
+      const calibrationGap = avgCorrect - avgIncorrect;
+
+      return {
+        totalEntriesWithConfidence: parseInt(overallRow.total_entries_with_confidence) || 0,
+        overallAvgConfidence: Math.round((parseFloat(overallRow.overall_avg_confidence) || 0) * 10) / 10,
+        avgConfidenceWhenCorrect: Math.round(avgCorrect * 10) / 10,
+        avgConfidenceWhenIncorrect: Math.round(avgIncorrect * 10) / 10,
+        confidenceCalibrationGap: Math.round(calibrationGap * 10) / 10,
+        modelConfidenceAnalysis: modelConfidence.rows.map(row => ({
+          modelName: row.model_name,
+          totalEntries: parseInt(row.total_entries) || 0,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          avgConfidenceWhenCorrect: Math.round((parseFloat(row.avg_confidence_when_correct) || 0) * 10) / 10,
+          avgConfidenceWhenIncorrect: Math.round((parseFloat(row.avg_confidence_when_incorrect) || 0) * 10) / 10,
+          confidenceRange: Math.round(((parseFloat(row.max_confidence) || 0) - (parseFloat(row.min_confidence) || 0)) * 10) / 10,
+          minConfidence: Math.round((parseFloat(row.min_confidence) || 0) * 10) / 10,
+          maxConfidence: Math.round((parseFloat(row.max_confidence) || 0) * 10) / 10,
+          correctPredictions: parseInt(row.correct_predictions) || 0,
+          incorrectPredictions: parseInt(row.incorrect_predictions) || 0,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting confidence stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
 /// THIS function contains some odd hallucinations... needs to be fixed and checked.
   async getRealPerformanceStats(): Promise<{
     trustworthinessLeaders: Array<{
