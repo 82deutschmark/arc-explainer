@@ -78,14 +78,23 @@ export const explanationService = {
         // Collect multiple prediction grids from various sources
         let collectedGrids: any[] = [];
         
-        // 1. From individual predictedOutput1, predictedOutput2, predictedOutput3 fields (new format)
-        let i = 1;
-        while (sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`]) {
-          const grid = sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`];
-          if (grid && Array.isArray(grid)) {
-            collectedGrids.push(grid);
+        // 1. For single test cases: check predictedOutput field first
+        const singlePrediction = sourceData.predictedOutput || analysisData.predictedOutput;
+        const multiplePredictionsFlag = sourceData.multiplePredictedOutputs ?? analysisData.multiplePredictedOutputs;
+        
+        if (!multiplePredictionsFlag && singlePrediction && Array.isArray(singlePrediction) && singlePrediction.length > 0) {
+          // Single test case - use predictedOutput
+          collectedGrids.push(singlePrediction);
+        } else {
+          // Multiple test cases - check predictedOutput1, predictedOutput2, predictedOutput3 fields
+          let i = 1;
+          while (sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`]) {
+            const grid = sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`];
+            if (grid && Array.isArray(grid) && grid.length > 0) {
+              collectedGrids.push(grid);
+            }
+            i++;
           }
-          i++;
         }
         
         // 2. From multi-test results (different test cases, not multiple predictions per test)
@@ -108,7 +117,7 @@ export const explanationService = {
           }
         }
 
-        const hasMultiplePredictions = collectedGrids.length > 0;
+        const hasMultiplePredictions = multiplePredictionsFlag === true;
         const multiplePredictedOutputsForStorage = hasMultiplePredictions ? collectedGrids : null;
 
         const tokenUsage = sourceData.tokenUsage;
