@@ -657,7 +657,6 @@ export class FeedbackRepository extends BaseRepository {
       avgTrustworthiness: number;
       totalAttempts: number;
     }>;
-    totalTrustworthinessAttempts: number;  // WHAT IS THIS??? THIS MAKES NO SENSE!!!
     overallTrustworthiness: number;
   }> {
     if (!this.isConnected()) {
@@ -665,7 +664,6 @@ export class FeedbackRepository extends BaseRepository {
         trustworthinessLeaders: [],
         speedLeaders: [],
         efficiencyLeaders: [],
-        totalTrustworthinessAttempts: 0,  // WHAT IS THIS??? THIS MAKES NO SENSE!!!
         overallTrustworthiness: 0
       };
     }
@@ -771,13 +769,6 @@ export class FeedbackRepository extends BaseRepository {
           totalAttempts: parseInt(row.total_attempts) || 0,
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000
         })),
-        calibrationLeaders: calibrationQuery.rows.map(row => ({
-          modelName: row.model_name,
-          calibrationError: Math.round((parseFloat(row.calibration_error) || 0) * 100) / 100,
-          totalAttempts: parseInt(row.total_attempts) || 0,
-          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
-          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10
-        })),
         efficiencyLeaders: efficiencyQuery.rows.map(row => ({
           modelName: row.model_name,
           costEfficiency: Math.round((parseFloat(row.cost_efficiency) || 0) * 1000000) / 1000000,
@@ -785,7 +776,6 @@ export class FeedbackRepository extends BaseRepository {
           avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
           totalAttempts: parseInt(row.total_attempts) || 0
         })),
-        totalTrustworthinessAttempts: parseInt(overallStats.total_trustworthiness_attempts) || 0,
         overallTrustworthiness: Math.round((parseFloat(overallStats.overall_trustworthiness) || 0) * 10000) / 10000
       };
     } catch (error) {
