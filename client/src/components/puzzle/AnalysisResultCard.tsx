@@ -147,6 +147,27 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   // Fix: Use singlePredictedGrid if available, regardless of multiple predictions state
   const predictedGrid: number[][] | undefined = (hasPredictedGrids && predictedGrids) ? predictedGrids[0] : singlePredictedGrid;
 
+  // Calculate correctness statistics for multi-test scenarios
+  const multiTestStats = useMemo(() => {
+    if (!multiValidation || !Array.isArray(multiValidation)) {
+      return { correctCount: 0, totalCount: 0, accuracyLevel: 'unknown' };
+    }
+    
+    const correctCount = multiValidation.filter(v => v?.isPredictionCorrect === true).length;
+    const totalCount = expectedOutputGrids.length;
+    
+    let accuracyLevel: 'all_correct' | 'some_incorrect' | 'all_incorrect' | 'unknown';
+    if (correctCount === totalCount) {
+      accuracyLevel = 'all_correct';
+    } else if (correctCount === 0) {
+      accuracyLevel = 'all_incorrect';
+    } else {
+      accuracyLevel = 'some_incorrect';
+    }
+    
+    return { correctCount, totalCount, accuracyLevel };
+  }, [multiValidation, expectedOutputGrids.length]);
+
   // Build a diff mask highlighting cell mismatches between predicted and expected grids
   const buildDiffMask = (pred?: number[][], exp?: number[][]): boolean[][] | undefined => {
     if (!pred || !exp || pred.length === 0 || exp.length === 0) return undefined;
@@ -650,22 +671,48 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
                 className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests)</h5>
-                  {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
+                  <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
+                  {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
                     <Badge 
                       variant="outline" 
                       className={`flex items-center gap-1 text-xs ${
-                        (result.multiTestAllCorrect ?? result.allPredictionsCorrect) 
-                          ? 'bg-green-50 border-green-200 text-green-700' 
-                          : 'bg-red-50 border-red-200 text-red-700'
+                        // Use multiTestStats if available, fallback to original logic
+                        multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect))
+                          ? 'bg-green-50 border-green-200 text-green-700'
+                          : multiTestStats.accuracyLevel === 'all_incorrect'
+                            ? 'bg-red-50 border-red-200 text-red-700'
+                            : multiTestStats.accuracyLevel === 'some_incorrect'
+                              ? 'bg-orange-50 border-orange-200 text-orange-700'
+                              : 'bg-red-50 border-red-200 text-red-700' // fallback
                       }`}
                     >
-                      {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? (
-                        <CheckCircle className="h-3 w-3" />
-                      ) : (
-                        <XCircle className="h-3 w-3" />
-                      )}
-                      {(result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All Correct' : 'Some Incorrect'}
+                      {(() => {
+                        const isAllCorrect = multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect));
+                        const isAllIncorrect = multiTestStats.accuracyLevel === 'all_incorrect';
+                        
+                        if (isAllCorrect) {
+                          return <CheckCircle className="h-3 w-3" />;
+                        } else {
+                          return <XCircle className="h-3 w-3" />;
+                        }
+                      })()}
+                      {(() => {
+                        // Use multiTestStats for display text if available
+                        if (multiTestStats.totalCount > 0) {
+                          switch (multiTestStats.accuracyLevel) {
+                            case 'all_correct':
+                              return 'All Correct';
+                            case 'all_incorrect':
+                              return 'All Incorrect';
+                            case 'some_incorrect':
+                              return 'Some Incorrect';
+                            default:
+                              return 'Unknown';
+                          }
+                        }
+                        // Fallback to original logic
+                        return (result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All Correct' : 'Some Incorrect';
+                      })()}
                     </Badge>
                   )}
                   {(result.multiTestAverageAccuracy !== undefined || result.averagePredictionAccuracyScore !== undefined) && (
