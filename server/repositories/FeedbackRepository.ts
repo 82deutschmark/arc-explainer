@@ -440,11 +440,11 @@ export class FeedbackRepository extends BaseRepository {
    */
   async getAccuracyStats(): Promise<{ totalExplanations: number; avgConfidence: number; totalSolverAttempts: number; totalCorrectPredictions: number; modelAccuracy: any[]; accuracyByModel: any[] }> {
     if (!this.isConnected()) {
-      logger.warn('Database not connected - returning empty accuracy stats. Set DATABASE_URL to enable leaderboards.', 'database');
       return {
         totalExplanations: 0,
         avgConfidence: 0,
         totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
         modelAccuracy: [],
         accuracyByModel: []
       };
