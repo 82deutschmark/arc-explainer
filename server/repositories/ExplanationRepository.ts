@@ -43,7 +43,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           $26, $27, $28, $29, $30, $31, $32
         ) RETURNING *
       `, [
-        data.puzzleId || data.taskId, // Support both field names during transition
+        data.puzzleId, // Simplified - consistent with ExplanationData interface
         data.patternDescription,
         data.solvingStrategy || '',
         Array.isArray(data.hints) ? data.hints : [],
@@ -460,7 +460,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       alienMeaningConfidence: this.normalizeConfidence(row.alienMeaningConfidence),
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
       predictedOutputGrid: this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
-      multiplePredictedOutputs: this.safeJsonParse(row.multiplePredictedOutputs, 'multiplePredictedOutputs'),
+      multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
       
       // Ensure boolean fields are properly typed
@@ -476,13 +476,13 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Find entries that are missing multiple predictions data due to the bug
    */
   async findMissingMultiplePredictions(limit = 100): Promise<any[]> {
-    if (!this.pool) {
+    if (!this.isConnected()) {
       logger.warn('Database not connected - cannot find missing multiple predictions', 'repository');
       return [];
     }
 
     try {
-      const query = `
+      const queryText = `
         SELECT id, puzzle_id as "puzzleId", model_name as "modelName", provider_raw_response as "providerRawResponse"
         FROM explanations 
         WHERE has_multiple_predictions IS NULL 
@@ -491,7 +491,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         LIMIT $1
       `;
       
-      const result = await this.pool.query(query, [limit]);
+      const result = await this.query(queryText, [limit]);
       return result.rows;
     } catch (error) {
       logger.error(`Error finding missing multiple predictions: ${error instanceof Error ? error.message : String(error)}`, 'repository');
@@ -503,20 +503,20 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Update an explanation with multiple predictions data
    */
   async updateMultiplePredictions(explanationId: number, grids: any[]): Promise<void> {
-    if (!this.pool) {
+    if (!this.isConnected()) {
       logger.warn('Database not connected - cannot update multiple predictions', 'repository');
       return;
     }
 
     try {
-      const query = `
+      const queryText = `
         UPDATE explanations 
         SET has_multiple_predictions = true,
             multiple_predicted_outputs = $1
         WHERE id = $2
       `;
       
-      await this.pool.query(query, [this.safeJsonStringify(grids), explanationId]);
+      await this.query(queryText, [this.safeJsonStringify(grids), explanationId]);
       logger.info(`Updated explanation ${explanationId} with ${grids.length} multiple predictions`, 'repository');
     } catch (error) {
       logger.error(`Error updating multiple predictions for ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'repository');
@@ -528,7 +528,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Get statistics about multiple predictions recovery
    */
   async getMultiplePredictionsStats(): Promise<any> {
-    if (!this.pool) {
+    if (!this.isConnected()) {
       return {
         totalExplanations: 0,
         withMultiplePredictions: 0,
@@ -538,7 +538,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
 
     try {
-      const query = `
+      const queryText = `
         SELECT 
           COUNT(*) as total_explanations,
           COUNT(CASE WHEN has_multiple_predictions = true THEN 1 END) as with_multiple_predictions,
@@ -547,7 +547,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         FROM explanations
       `;
       
-      const result = await this.pool.query(query);
+      const result = await this.query(queryText);
       const stats = result.rows[0];
       
       return {

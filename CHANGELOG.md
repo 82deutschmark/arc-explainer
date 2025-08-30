@@ -1,5 +1,14 @@
 ###   August 29 2025
 
+## v2.5.22 - Fix Multi-Test Data Flow Bug
+- **CRITICAL FIX**: Resolved multiplePredictedOutputs structure issue causing incorrect prediction count display in frontend
+- **Data Flow Correction**: Fixed data flow logic to properly handle multi-test puzzle data
+- **Frontend Display Fix**: Corrected prediction count display to show accurate numbers for multi-test puzzles
+- **Impact**: Multi-test puzzle analysis now correctly displays prediction counts and structures
+- **Technical**: Modified dataTransformers.ts to handle multi-test data flow corrections
+- **Verification**: Confirmed fix works - multi-test puzzles now display correct prediction counts
+- Author: Claude Sonnet 4
+
 ## v2.5.21 - Fix Multiple Predictions Data Storage Bug
 - **CRITICAL FIX**: Fixed explanationService bug where `predictedOutput1`, `predictedOutput2`, `predictedOutput3` fields were being ignored during database storage
 - Multiple prediction grids are now properly collected from all sources (individual fields, arrays, and multi-test results)
@@ -397,6 +406,3 @@
 ## v2.0.1
 - Updated release to support multi-test puzzles.  This was a major hurdle and took a long time to implement.
 - We are now ready to accept synthetic puzzle data sets for analysis as described in docs\24AugImport.md
-
-
-

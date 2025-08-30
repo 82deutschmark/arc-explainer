@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Common Commands
 You need to Git add and commit any changes you make to the codebase.  Be detailed in your commit messages.
-Use `npm run test` to start the dev server and wait 10 seconds for it to properly start. Remember not to use the cd command as it is largely unnecessary and this will cause issues with the dev server.
+Use `npm run test` to start the dev server and wait 10 seconds for it to properly start. Remember not to use the cd command as it is largely unnecessary and this will cause issues with the dev server.  Use Kill Bash(Kill shell: bash_1) to stop the dev server.
 
 ### Database Management
 - `npm run db:push` - Push database schema changes using Drizzle
@@ -135,8 +135,6 @@ Required for AI analysis (at least one):
 
 Required for database (Present and working):
 - `DATABASE_URL` - PostgreSQL connection (Present and working)
-- `PYTHON_BIN` - Override Python binary (auto-detects: 'python' on Windows, 'python3' on Linux)
-
 ## Important Implementation Notes
 
 ### Puzzle Data Management
