@@ -36,6 +36,7 @@ export interface PromptOptions {
   temperature?: number;
   topP?: number;
   candidateCount?: number;
+  retryMode?: boolean; // Enhanced prompting for retry analysis
 }
 
 /**
@@ -64,7 +65,8 @@ export function buildAnalysisPrompt(
     emojiSetKey,
     omitAnswer = false,
     systemPromptMode = 'ARC',
-    useStructuredOutput = true
+    useStructuredOutput = true,
+    retryMode = false
   } = options;
 
   // Determine prompt characteristics
@@ -88,6 +90,11 @@ export function buildAnalysisPrompt(
       systemPrompt = "";
     } else {
       systemPrompt = getSystemPrompt(promptId);
+      
+      // Add retry enhancement to system prompt
+      if (retryMode) {
+        systemPrompt += "\n\nIMPORTANT: A previous analysis of this puzzle was incorrect. Please provide a fresh, more careful analysis with renewed attention to detail.";
+      }
     }
   }
 
