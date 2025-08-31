@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { formatProcessingTime } from '@/utils/timeFormatters';
 
 export default function PuzzleDiscussion() {
   const [selectedLimit, setSelectedLimit] = useState<number>(20);
@@ -58,7 +57,7 @@ export default function PuzzleDiscussion() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/browse">
+              <Link href="/">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Grid3X3 className="h-4 w-4" />
                   Browse All

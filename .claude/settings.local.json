@@ -1,13 +1,17 @@
 {
-  "permissions": {
-    "defaultMode": "bypassPermissions",
-    "allow": [
-      "Read(*)",
-      "Edit(*)",
-      "Write(*)",
-      "MultiEdit(*)",
-      "Bash(*)",
-      "WebFetch(domain:*)"
-    ]
+  "model": "sonnet",
+  
+    "permissions": {
+      "defaultMode": "bypassPermissions",
+      "allow": [
+        "Read",
+        "Edit",
+        "Write",
+        "MultiEdit",
+        "Bash",
+        "WebFetch"
+      ]
+    }
   }
-}
+
+  
