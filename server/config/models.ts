@@ -27,6 +27,14 @@ export {
   GPT5_CHAT_MODELS,
   MODELS_WITH_REASONING,
   
+  // Provider-specific model sets
+  OPENAI_MODELS,
+  ANTHROPIC_MODELS,
+  XAI_MODELS,
+  GEMINI_MODELS,
+  DEEPSEEK_MODELS,
+  OPENROUTER_MODELS,
+  
   // Enhanced functionality from new architecture (optional usage)
   getModelInfo,
   getAvailableModels,

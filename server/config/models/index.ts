@@ -8,6 +8,10 @@
  * @author Claude Code (Phase 5 refactor)
  */
 
+import { ModelLookup, MODEL_DEFINITIONS } from './ModelDefinitions.js';
+import { modelCapabilities } from './ModelCapabilities.js';
+import { ProviderAdapters } from './ProviderAdapters.js';
+
 // Static definitions
 export {
   MODEL_DEFINITIONS,
@@ -154,4 +158,28 @@ export const GPT5_CHAT_MODELS = new Set(
 
 export const MODELS_WITH_REASONING = new Set(
   MODEL_DEFINITIONS.filter(m => m.supportsReasoning).map(m => m.key)
+);
+
+export const OPENAI_MODELS = new Set(
+  ModelLookup.getByProvider('OpenAI').map(m => m.key)
+);
+
+export const ANTHROPIC_MODELS = new Set(
+  ModelLookup.getByProvider('Anthropic').map(m => m.key)
+);
+
+export const XAI_MODELS = new Set(
+  ModelLookup.getByProvider('xAI').map(m => m.key)
+);
+
+export const GEMINI_MODELS = new Set(
+  ModelLookup.getByProvider('Gemini').map(m => m.key)
+);
+
+export const DEEPSEEK_MODELS = new Set(
+  ModelLookup.getByProvider('DeepSeek').map(m => m.key)
+);
+
+export const OPENROUTER_MODELS = new Set(
+  ModelLookup.getByProvider('OpenRouter').map(m => m.key)
 );
