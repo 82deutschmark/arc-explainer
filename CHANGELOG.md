@@ -1,5 +1,20 @@
 ### August 31 2025
 
+## v2.6.4 - UI Refactor: StatisticsCards Modularization ✅
+- **UI REFACTOR**: Decomposed the monolithic `StatisticsCards` component into smaller, focused, and reusable child components to improve maintainability, readability, and separation of concerns.
+- **New Components**:
+  - `SolverPerformanceCard`: Displays solver performance overview statistics.
+  - `DatabaseOverviewCard`: Shows database overview and feedback totals.
+  - `RecentActivityCard`: A feed of recent explanations and feedback.
+  - `TopModelsCard`: A container for model leaderboards.
+  - `ModelLeaderboard`: A reusable component for displaying ranked model lists.
+- **Code Health**: The parent `StatisticsCards` component is now a clean container that orchestrates the layout and data flow to the new modular components.
+- **Type Safety**: Updated `shared/types.ts` to include necessary properties for the `TopModelsCard`, ensuring type safety.
+- **Files Changed**: `client/src/components/overview/StatisticsCards.tsx`, `shared/types.ts`, and created new files for each child component in `client/src/components/overview/statistics/`.
+- **Author**: Cascade
+
+### August 31 2025
+
 ## v2.6.3 - UI Refactor: AnalysisResultCard Decomposition ✅
 - **UI REFACTOR**: Decomposed monolithic `AnalysisResultCard` into smaller, modular child components to improve maintainability and separation of concerns.
 - **New Components**:
