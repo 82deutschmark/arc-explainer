@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "result": {
+    "patternDescription": "JSON parsing failed for deepseek/deepseek-chat-v3.1 response. The model generated a 2679-character response but it contained formatting issues (Unexpected token '极', ...\" 7, 7, 7, 极, 7, 7, 7\"... is not valid JSON). The model appeared to be analyzing patterns or structures in the puzzle but the response was cut off or malformed. This appears to be a model output formatting issue rather than a puzzle analysis failure. The response may have contained valid insights wrapped in markdown code blocks or other formatting that couldn't be automatically parsed.",
+    "solvingStrategy": "Unable to extract structured solving strategy from deepseek/deepseek-chat-v3.1 due to response parsing failure. The original response was 2679 characters long and may have contained useful problem-solving insights, but the JSON structure was malformed or wrapped in unsupported formatting. Consider trying the analysis again or using a different model that provides more consistent JSON formatting.",
+    "hints": [
+      "The deepseek/deepseek-chat-v3.1 model generated a lengthy response (2679 chars) suggesting it attempted analysis",
+      "Try re-running the analysis - this may be a temporary formatting issue",
+      "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
+      "Check the raw response in the logs for any extractable insights"
+    ],
+    "confidence": 50,
+    "multiplePredictedOutputs": false,
+    "rawResponse": "{\n  \"multiplePredictedOutputs\": false,\n  \"predictedOutput\": [[7, 5, 7, 7, 7, 7, 7, 7, 7, 7, 0, 3, 0, 7], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 3, 3, 3], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 5], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [3, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [0, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],",
+    "parsingError": "Unexpected token '极', ...\" 7, 7, 7, 极, 7, 7, 7\"... is not valid JSON",
+    "modelUsed": "deepseek/deepseek-chat-v3.1",
+    "recoveryMethod": "validation-compliant-fallback",
+    "responseLength": 2679,
+    "parsingAttempted": true
+  },
+  "tokenUsage": {
+    "input": 2577,
+    "output": 1205
+  },
+  "cost": {
+    "input": 0.0006957900000000001,
+    "output": 0.0013255,
+    "total": 0.0020212900000000002
+  },
+  "processingTimeMs": 14204,
+  "modelName": "deepseek/deepseek-chat-v3.1",
+  "reasoning": null,
+  "reasoningLog": null,
+  "apiProcessingTimeMs": 14208
+}

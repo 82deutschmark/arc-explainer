@@ -795,7 +795,7 @@ export const puzzleController = {
    */
   async getWorstPerformingPuzzles(req: Request, res: Response) {
     try {
-      const { limit = 20 } = req.query;
+      const { limit = 20, sortBy = 'composite' } = req.query;
       const limitNum = Math.min(Math.max(parseInt(limit as string) || 20, 1), 50); // Cap at 50
 
       logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}`, 'puzzle-controller');
@@ -809,7 +809,9 @@ export const puzzleController = {
         }));
       }
 
-      const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limitNum);
+      const validSortOptions = ['composite', 'feedback', 'accuracy'];
+      const sort = validSortOptions.includes(sortBy as string) ? sortBy as string : 'composite';
+      const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limitNum, sort);
       
       // For each puzzle, get the actual puzzle metadata
       const enrichedPuzzles = await Promise.all(
