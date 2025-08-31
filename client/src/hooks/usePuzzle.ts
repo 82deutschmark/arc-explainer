@@ -120,3 +120,32 @@ export function usePuzzleList(filters?: {
     error,
   };
 }
+
+export function useWorstPerformingPuzzles(limit: number = 20) {
+  const { data: responseData, isLoading, error } = useQuery({
+    queryKey: [`/api/puzzle/worst-performing?limit=${limit}`],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/puzzle/worst-performing?limit=${limit}`);
+      return await response.json();
+    },
+  });
+
+  // Extract puzzles from the response format { success: boolean, data: { puzzles: [...], total: number } }
+  const puzzles = responseData?.success && responseData.data?.puzzles
+    ? responseData.data.puzzles
+    : [];
+
+  const total = responseData?.success && responseData.data?.total
+    ? responseData.data.total
+    : 0;
+
+  // Debug log to help troubleshoot
+  console.log('useWorstPerformingPuzzles response:', responseData, 'extracted puzzles:', puzzles.length);
+
+  return {
+    puzzles,
+    total,
+    isLoading,
+    error,
+  };
+}

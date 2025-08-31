@@ -784,5 +784,84 @@ export const puzzleController = {
       logger.error('Error fetching confidence stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch confidence stats', 'An error occurred while fetching confidence analysis statistics'));
     }
+  },
+
+  /**
+   * Get worst-performing puzzles for discussion page
+   * Returns puzzles with incorrect predictions, low accuracy, or negative feedback
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getWorstPerformingPuzzles(req: Request, res: Response) {
+    try {
+      const { limit = 20 } = req.query;
+      const limitNum = Math.min(Math.max(parseInt(limit as string) || 20, 1), 50); // Cap at 50
+
+      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}`, 'puzzle-controller');
+
+      if (!repositoryService.isConnected()) {
+        logger.warn('Database not connected - returning empty list for worst-performing puzzles', 'puzzle-controller');
+        return res.json(formatResponse.success({
+          puzzles: [],
+          total: 0,
+          message: 'Database not available - no performance data'
+        }));
+      }
+
+      const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limitNum);
+      
+      // For each puzzle, get the actual puzzle metadata
+      const enrichedPuzzles = await Promise.all(
+        worstPuzzles.map(async (puzzleData) => {
+          try {
+            const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
+            return {
+              ...puzzleMetadata,
+              // Add performance metrics
+              performanceData: {
+                wrongCount: puzzleData.wrongCount,
+                avgAccuracy: puzzleData.avgAccuracy,
+                avgConfidence: puzzleData.avgConfidence,
+                totalExplanations: puzzleData.totalExplanations,
+                negativeFeedback: puzzleData.negativeFeedback,
+                totalFeedback: puzzleData.totalFeedback,
+                latestAnalysis: puzzleData.latestAnalysis,
+                worstExplanationId: puzzleData.worstExplanationId,
+                compositeScore: puzzleData.compositeScore
+              }
+            };
+          } catch (error) {
+            logger.warn(`Could not load metadata for puzzle ${puzzleData.puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
+            // Return basic structure if puzzle metadata fails
+            return {
+              id: puzzleData.puzzleId,
+              error: 'Puzzle metadata not available',
+              performanceData: {
+                wrongCount: puzzleData.wrongCount,
+                avgAccuracy: puzzleData.avgAccuracy,
+                avgConfidence: puzzleData.avgConfidence,
+                totalExplanations: puzzleData.totalExplanations,
+                negativeFeedback: puzzleData.negativeFeedback,
+                totalFeedback: puzzleData.totalFeedback,
+                latestAnalysis: puzzleData.latestAnalysis,
+                worstExplanationId: puzzleData.worstExplanationId,
+                compositeScore: puzzleData.compositeScore
+              }
+            };
+          }
+        })
+      );
+
+      logger.debug(`Found ${enrichedPuzzles.length} worst-performing puzzles`, 'puzzle-controller');
+
+      res.json(formatResponse.success({
+        puzzles: enrichedPuzzles,
+        total: enrichedPuzzles.length
+      }));
+    } catch (error) {
+      logger.error('Error fetching worst-performing puzzles: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch worst-performing puzzles', 'An error occurred while fetching worst-performing puzzle data'));
+    }
   }
 };

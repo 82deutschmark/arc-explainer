@@ -1,162 +1,31 @@
-import React, { useState, useCallback } from 'react';
-import { Link, useLocation } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import React, { useState } from 'react';
+import { Link } from 'wouter';
+import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, MessageCircle, Eye, RefreshCw, XCircle, ThumbsDown, AlertTriangle } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
-import type { PuzzleOverviewData, PuzzleOverviewResponse } from '@shared/types';
-
-// Use PuzzleOverviewData which includes explanation fields
-type ProblematicPuzzle = PuzzleOverviewData;
+import { formatProcessingTime } from '@/utils/timeFormatters';
 
 export default function PuzzleDiscussion() {
-  const [maxGridSize, setMaxGridSize] = useState<string>('10');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [, setLocation] = useLocation();
-  const { toast } = useToast();
-
+  const [selectedLimit, setSelectedLimit] = useState<number>(20);
+  
   // Set page title
   React.useEffect(() => {
-    document.title = 'Puzzle Discussion - Retry Failed Analysis';
+    document.title = 'ARC Puzzle Discussion - Retry Analysis';
   }, []);
 
-  // Query parameters for overview API - focus on problematic puzzles
-  const queryParams = React.useMemo(() => {
-    const params = new URLSearchParams();
-    if (maxGridSize) params.set('gridSizeMax', maxGridSize);
-    // Only get puzzles that have explanations
-    params.set('hasExplanation', 'true');
-    // Set limit to get more puzzles for filtering
-    params.set('limit', '100');
-    params.set('offset', '0');
-    return params;
-  }, [maxGridSize]);
-
-  // Use overview API to get puzzles with explanation data
-  const { data: overviewResponse, isLoading, error } = useQuery({
-    queryKey: ['puzzle-overview-discussion', queryParams.toString()],
-    queryFn: async () => {
-      const response = await apiRequest('GET', `/api/puzzle/overview?${queryParams}`);
-      const result = await response.json();
-      console.log('[PuzzleDiscussion] Raw API response:', result);
-      return result;
-    },
-  });
-
-  const puzzles = overviewResponse?.data?.puzzles || [];
-  console.log('[PuzzleDiscussion] Extracted puzzles:', puzzles);
-  
-  // Filter and sort to show worst-performing puzzles first
-  const problemPuzzles = React.useMemo(() => {
-    const allPuzzles = puzzles;
-    console.log(`[PuzzleDiscussion] Processing ${allPuzzles.length} puzzles`);
-    
-    // Filter to only problematic puzzles
-    let filtered = allPuzzles.filter(puzzle => {
-      // Must have explanation to be considered problematic
-      if (!puzzle.hasExplanation || !puzzle.latestExplanation) {
-        console.log(`[PuzzleDiscussion] Skipping ${puzzle.id} - no explanation`);
-        return false;
-      }
-      
-      const latest = puzzle.latestExplanation;
-      console.log(`[PuzzleDiscussion] Checking ${puzzle.id}: isPredictionCorrect=${latest.isPredictionCorrect}, predictionAccuracyScore=${latest.predictionAccuracyScore}, confidence=${latest.confidence}`);
-      
-      // Include if:
-      // 1. Prediction was incorrect
-      if (latest.isPredictionCorrect === false) {
-        console.log(`[PuzzleDiscussion] Including ${puzzle.id} - wrong prediction`);
-        return true;
-      }
-      
-      // 2. Low trustworthiness score (predictionAccuracyScore)
-      if (latest.predictionAccuracyScore !== undefined && latest.predictionAccuracyScore !== null) {
-        if (latest.predictionAccuracyScore < 0.5) {
-          console.log(`[PuzzleDiscussion] Including ${puzzle.id} - low trustworthiness`);
-          return true;
-        }
-      }
-      
-      // 3. LOW confidence (under 80%)
-      if (latest.confidence !== undefined && latest.confidence < 80) {
-        console.log(`[PuzzleDiscussion] Including ${puzzle.id} - low confidence`);
-        return true;
-      }
-      
-      return false;
-    });
-    
-    console.log(`[PuzzleDiscussion] Filtered to ${filtered.length} problematic puzzles`);
-    
-    // Sort by "worst" first
-    filtered = filtered.sort((a, b) => {
-      const aLatest = a.latestExplanation;
-      const bLatest = b.latestExplanation;
-      
-      if (!aLatest || !bLatest) return 0;
-      
-      // Priority 1: Incorrect predictions first
-      if (aLatest.isPredictionCorrect === false && bLatest.isPredictionCorrect !== false) return -1;
-      if (bLatest.isPredictionCorrect === false && aLatest.isPredictionCorrect !== false) return 1;
-      
-      // Priority 2: Lower trustworthiness scores first
-      const aScore = aLatest.predictionAccuracyScore || 1.0;
-      const bScore = bLatest.predictionAccuracyScore || 1.0;
-      if (aScore !== bScore) return aScore - bScore;
-      
-      // Priority 3: Lower confidence first
-      const aConf = aLatest.confidence || 100;
-      const bConf = bLatest.confidence || 100;
-      return aConf - bConf;
-    });
-    
-    // Limit to top 20 worst
-    return filtered.slice(0, 20);
-  }, [puzzles]);
-
-  const getProblemBadge = (puzzle: ProblematicPuzzle) => {
-    const issues = [];
-    const latest = puzzle.latestExplanation;
-    
-    if (!latest) return issues;
-    
-    if (latest.isPredictionCorrect === false) {
-      issues.push('Wrong Answer');
-    }
-    
-    if (latest.predictionAccuracyScore !== undefined && latest.predictionAccuracyScore < 0.5) {
-      issues.push('Low Trustworthiness');
-    }
-    
-    return issues;
-  };
-
-  // Handle puzzle search by ID
-  const handleSearch = useCallback(() => {
-    if (!searchQuery.trim()) {
-      setSearchError('Please enter a puzzle ID');
-      return;
-    }
-
-    const puzzleId = searchQuery.trim();
-    setLocation(`/puzzle/${puzzleId}`);
-  }, [searchQuery, setLocation]);
+  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(selectedLimit);
 
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="max-w-4xl mx-auto">
           <Alert className="border-red-500 bg-red-50">
+            <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Failed to load puzzles. Please check your connection and try again.
+              Failed to load worst-performing puzzles. Please check your connection and try again.
             </AlertDescription>
           </Alert>
         </div>
@@ -164,104 +33,96 @@ export default function PuzzleDiscussion() {
     );
   }
 
+  const formatPerformanceScore = (score: number) => {
+    return Math.round(score * 10) / 10;
+  };
+
+  const getPerformanceBadgeColor = (score: number) => {
+    if (score >= 15) return 'bg-red-100 text-red-800';
+    if (score >= 10) return 'bg-orange-100 text-orange-800';
+    if (score >= 5) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-blue-100 text-blue-800';
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-orange-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-orange-800 bg-clip-text text-transparent">
-                Puzzle Discussion
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-red-900 to-orange-800 bg-clip-text text-transparent">
+                ARC Puzzle Discussion
               </h1>
               <p className="text-lg text-slate-600 mt-2">
-                Retry Analysis on Problematic Puzzles
+                Retry Analysis for Problematic Puzzles
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/browser">
+              <Link href="/browse">
                 <Button variant="outline" className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  Puzzle Browser
+                  <Grid3X3 className="h-4 w-4" />
+                  Browse All
+                </Button>
+              </Link>
+              <Link href="/model-examiner">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Model Examiner
                 </Button>
               </Link>
               <Link href="/overview">
                 <Button variant="outline" className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4" />
+                  <Grid3X3 className="h-4 w-4" />
                   Database Overview
                 </Button>
               </Link>
             </div>
           </div>
+
+          {/* Mission Statement */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-sm text-slate-600 max-w-4xl mx-auto">
+            <div className="flex items-start gap-3">
+              <MessageSquare className="h-5 w-5 text-orange-600 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-slate-800 mb-2">Discussion & Retry Analysis</h3>
+                <p>
+                  This page shows puzzles with poor AI analysis results - incorrect predictions, low trustworthiness scores, 
+                  or negative user feedback. Use the enhanced retry system to run new analysis with improved prompting that 
+                  includes context about previous failures.
+                </p>
+              </div>
+            </div>
+          </div>
         </header>
 
-        {/* Search and Filters */}
+        {/* Controls */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-slate-800">
-              <AlertTriangle className="h-5 w-5 text-orange-600" />
-              Find Problematic Puzzles
+              <TrendingDown className="h-5 w-5 text-red-600" />
+              Performance Filters
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                <div className="w-full md:flex-1 space-y-2">
-                  <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
-                  <div className="relative">
-                    <Input
-                      id="puzzleSearch"
-                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSearchError(null);
-                      }}
-                      className="pr-24"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                    />
-                  </div>
-                  {searchError && (
-                    <p className="text-sm text-red-500">{searchError}</p>
-                  )}
-                </div>
-                <Button 
-                  onClick={handleSearch}
-                  className="min-w-[120px]"
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <label htmlFor="limit-select" className="text-sm font-medium">
+                  Show worst:
+                </label>
+                <select
+                  id="limit-select"
+                  value={selectedLimit}
+                  onChange={(e) => setSelectedLimit(parseInt(e.target.value))}
+                  className="px-3 py-2 border border-gray-200 rounded-md text-sm"
                 >
-                  Search
-                </Button>
+                  <option value={10}>10 puzzles</option>
+                  <option value={20}>20 puzzles</option>
+                  <option value={30}>30 puzzles</option>
+                  <option value={50}>50 puzzles</option>
+                </select>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="maxGridSize">Maximum Grid Size</Label>
-                <Select value={maxGridSize} onValueChange={setMaxGridSize}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select max size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5×5 (Very Small)</SelectItem>
-                    <SelectItem value="10">10×10 (Small)</SelectItem>
-                    <SelectItem value="15">15×15 (Medium)</SelectItem>
-                    <SelectItem value="20">20×20 (Large)</SelectItem>
-                    <SelectItem value="30">30×30 (Very Large)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-slate-700">Showing</Label>
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded">
-                  <p className="text-sm text-orange-800">
-                    Puzzles with wrong predictions or low trustworthiness scores
-                  </p>
-                </div>
+              <div className="text-sm text-gray-600">
+                Sorted by composite performance score (incorrect predictions, low accuracy, negative feedback)
               </div>
             </div>
           </CardContent>
@@ -271,154 +132,170 @@ export default function PuzzleDiscussion() {
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-slate-800">
-              Problematic Puzzles 
+              Worst-Performing Puzzles
               {!isLoading && (
-                <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 border-orange-200">
-                  {problemPuzzles.length} found
+                <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
+                  {total} found
                 </Badge>
               )}
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Puzzles that need better analysis - sorted by worst performance first
+              Puzzles requiring improved analysis - retry with enhanced prompting
             </p>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading puzzles...</p>
+                <p>Loading worst-performing puzzles...</p>
               </div>
-            ) : problemPuzzles.length === 0 ? (
+            ) : puzzles.length === 0 ? (
               <div className="text-center py-8">
-                <RefreshCw className="h-12 w-12 mx-auto mb-4 text-green-400" />
-                <p className="text-gray-600">Great! No problematic puzzles found with current filters.</p>
+                <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-600">No problematic puzzles found.</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  Try adjusting the grid size filter to find more puzzles to improve.
+                  All analyzed puzzles are performing well!
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {problemPuzzles.map((puzzle: ProblematicPuzzle) => {
-                  const issues = getProblemBadge(puzzle);
-                  return (
-                    <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-orange-400">
-                      <CardContent className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
-                              {puzzle.id}
-                            </code>
-                            <div className="text-xs flex items-center gap-1">
-                              {puzzle.maxGridSize}x{puzzle.maxGridSize}
-                              {puzzle.source && (
-                                <Badge variant="outline" className={`text-xs ${
-                                  puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
-                                  puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
-                                  puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
-                                  puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
-                                  'bg-gray-50 text-gray-700'
-                                }`}>
-                                  {puzzle.source.replace('-Eval', ' Eval')}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {/* Problem indicators */}
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {issues.map((issue, idx) => (
-                              <Badge key={idx} variant="outline" className="bg-red-50 text-red-700 text-xs flex items-center gap-1">
-                                <XCircle className="h-3 w-3" />
-                                {issue}
+                {puzzles.map((puzzle: any) => (
+                  <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-red-400">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <code className="text-sm font-mono bg-red-100 px-2 py-1 rounded text-red-800">
+                            {puzzle.id}
+                          </code>
+                          <div className="text-xs flex items-center gap-1">
+                            <Grid3X3 className="h-3 w-3" /> 
+                            {puzzle.maxGridSize ? `${puzzle.maxGridSize}x${puzzle.maxGridSize}` : 'Unknown'}
+                            {puzzle.source && (
+                              <Badge variant="outline" className={`text-xs ${
+                                puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
+                                puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
+                                puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
+                                puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
+                                'bg-gray-50 text-gray-700'
+                              }`}>
+                                {puzzle.source?.replace('-Eval', ' Eval')}
                               </Badge>
-                            ))}
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Performance Issues */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                            <span className="text-sm font-medium text-red-700">Performance Issues</span>
                           </div>
                           
-                          {/* Show all tried models */}
-                          <div className="mt-2">
-                            <p className="text-xs text-gray-500 mb-1">Models tried ({puzzle.explanations.length}):</p>
-                            <div className="flex flex-wrap gap-1">
-                              {puzzle.explanations.slice(0, 5).map((exp, idx) => {
-                                const isWorst = exp.id === puzzle.latestExplanation?.id;
-                                const failed = exp.isPredictionCorrect === false || (exp.predictionAccuracyScore && exp.predictionAccuracyScore < 0.5);
-                                return (
-                                  <Badge key={idx} variant="outline" className={`text-xs ${
-                                    isWorst 
-                                      ? 'bg-red-100 text-red-800 border-red-300' 
-                                      : failed
-                                        ? 'bg-orange-100 text-orange-700 border-orange-300'
-                                        : 'bg-gray-50 text-gray-700'
-                                  }`}>
-                                    {exp.modelName}
-                                    {isWorst && ' (worst)'}
-                                    {exp.confidence && ` ${exp.confidence}%`}
-                                  </Badge>
-                                );
-                              })}
-                              {puzzle.explanations.length > 5 && (
-                                <Badge variant="outline" className="text-xs bg-gray-50 text-gray-500">
-                                  +{puzzle.explanations.length - 5} more
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-1 text-sm text-gray-600">
-                            <div className="flex justify-between">
-                              <span>Max Size:</span>
-                              <span className="font-medium">{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Explanations:</span>
-                              <span className="font-medium">{puzzle.totalExplanations}</span>
-                            </div>
-                            {puzzle.feedbackCount !== undefined && (
-                              <div className="flex justify-between">
-                                <span>Feedback:</span>
-                                <span className="font-medium">{puzzle.feedbackCount}</span>
-                              </div>
+                          <div className="flex flex-wrap gap-1">
+                            {puzzle.performanceData?.wrongCount > 0 && (
+                              <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
+                                {puzzle.performanceData.wrongCount} wrong predictions
+                              </Badge>
+                            )}
+                            {puzzle.performanceData?.avgAccuracy < 0.7 && (
+                              <Badge variant="outline" className="bg-orange-50 text-orange-700 text-xs">
+                                {Math.round(puzzle.performanceData.avgAccuracy * 100)}% accuracy
+                              </Badge>
+                            )}
+                            {puzzle.performanceData?.avgConfidence < 50 && (
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 text-xs">
+                                {Math.round(puzzle.performanceData.avgConfidence)}% confidence
+                              </Badge>
+                            )}
+                            {puzzle.performanceData?.negativeFeedback > 0 && (
+                              <Badge variant="outline" className="bg-pink-50 text-pink-700 text-xs flex items-center gap-1">
+                                <MessageSquare className="h-3 w-3" />
+                                {puzzle.performanceData.negativeFeedback} negative
+                              </Badge>
                             )}
                           </div>
 
-                          <div className="flex gap-2">
-                            <Button asChild size="sm" className="flex-1 bg-orange-500 hover:bg-orange-600">
-                              <Link href={`/puzzle/${puzzle.id}?retry=true`}>
-                                <RefreshCw className="h-4 w-4 mr-1" />
-                                Retry Analysis
-                              </Link>
-                            </Button>
+                          {/* Composite Score */}
+                          <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                            <span className="text-xs text-gray-600">Performance Score:</span>
+                            <Badge className={`text-xs ${getPerformanceBadgeColor(puzzle.performanceData?.compositeScore || 0)}`}>
+                              {formatPerformanceScore(puzzle.performanceData?.compositeScore || 0)}
+                            </Badge>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                        
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <div className="flex justify-between">
+                            <span>Total Analyses:</span>
+                            <span className="font-medium">{puzzle.performanceData?.totalExplanations || 0}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Total Feedback:</span>
+                            <span className="font-medium">{puzzle.performanceData?.totalFeedback || 0}</span>
+                          </div>
+                          {puzzle.performanceData?.latestAnalysis && (
+                            <div className="flex justify-between">
+                              <span>Latest:</span>
+                              <span className="font-medium text-xs">
+                                {new Date(puzzle.performanceData.latestAnalysis).toLocaleDateString()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button asChild size="sm" className="flex-1 bg-red-600 hover:bg-red-700">
+                            <Link href={`/puzzle/${puzzle.id}`}>
+                              <Eye className="h-4 w-4 mr-1" />
+                              Retry Analysis
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Instructions */}
-        <Card>
+        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
           <CardHeader>
-            <CardTitle>How to Use Discussion Mode</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5 text-orange-600" />
+              How to Use the Discussion Page
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <p>
-              <strong>Purpose:</strong> This page shows puzzles where AI models made incorrect predictions 
-              or had low trustworthiness scores, indicating the analysis needs improvement.
-            </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <p className="font-semibold text-slate-800 mb-2">📊 Performance Scoring</p>
+                <ul className="space-y-1 text-slate-600">
+                  <li>• <strong>Wrong Predictions:</strong> 5 points per incorrect result</li>
+                  <li>• <strong>Low Accuracy:</strong> 5 points if trustworthiness &lt; 50%</li>
+                  <li>• <strong>Low Confidence:</strong> 3 points if confidence &lt; 50%</li>
+                  <li>• <strong>Negative Feedback:</strong> 2 points per negative vote</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-800 mb-2">🔄 Retry Process</p>
+                <ul className="space-y-1 text-slate-600">
+                  <li>• Click "Retry Analysis" to examine a problematic puzzle</li>
+                  <li>• Use enhanced prompting with failure context</li>
+                  <li>• Compare new results with original failed analyses</li>
+                  <li>• Provide feedback on improvement quality</li>
+                </ul>
+              </div>
+            </div>
             
-            <p>
-              <strong>Retry Analysis:</strong> Click "Retry Analysis" on any puzzle to see the original 
-              failed analysis and run a new analysis with enhanced prompting that tells the model 
-              the previous attempt was wrong.
-            </p>
-            
-            <p>
-              <strong>Problem Types:</strong> Red badges show specific issues like "Wrong Answer" 
-              (prediction was incorrect) or "Low Trustworthiness" (model confidence vs. accuracy mismatch).
-            </p>
+            <div className="bg-white/70 rounded p-3 mt-4">
+              <p className="font-medium text-orange-800">
+                💡 Enhanced Prompting: The retry system automatically includes context about previous failures, 
+                negative feedback comments, and specific issues to help AI models provide better analysis.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

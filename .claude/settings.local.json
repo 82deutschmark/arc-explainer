@@ -1,22 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Read(**)",
-      "Write(**)",
-      "Edit(**)",
-      "MultiEdit(**)",
-      "NotebookEdit(**)",
-      "Bash(*)",
-      "WebFetch(*)",
-      "WebSearch",
-      "Glob(**)",
-      "Grep(**)"
+      "Bash(New-Item -Path \"d:\\1Projects\\arc-explainer\\client\\src\\pages\\PuzzleDiscussion.tsx\" -ItemType File -Force)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": [],
-    "additionalDirectories": [
-      "D:\\",
-      "D:\\1Projects\\arc-explainer"
-    ]
+    "defaultMode": "bypassPermissions"
   }
 }
