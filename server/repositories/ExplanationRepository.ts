@@ -615,11 +615,15 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
           )
         ORDER BY
-          CASE WHEN $2 = 'accuracy' THEN avg_accuracy END ASC NULLS LAST,
-          CASE WHEN $2 = 'feedback' THEN negative_feedback END DESC NULLS LAST,
-          composite_score DESC,
-          wrong_count DESC,
-          negative_feedback DESC
+          CASE 
+            WHEN $2 = 'accuracy' THEN avg_accuracy
+            ELSE NULL
+          END ASC NULLS LAST,
+          CASE 
+            WHEN $2 = 'feedback' THEN negative_feedback
+            ELSE NULL
+          END DESC NULLS LAST,
+          composite_score DESC
         LIMIT $1
       `, [limit, sortBy]);
 
