@@ -34,7 +34,7 @@ import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPicker } from '@/components/PromptPicker';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -62,6 +62,7 @@ export default function PuzzleExaminer() {
   }
 
   // Fetch puzzle data
+  const { data: models, isLoading: isLoadingModels, error: modelsError } = useModels();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, hasExplanation, refetchExplanations } = usePuzzleWithExplanation(taskId);
 
@@ -96,10 +97,10 @@ export default function PuzzleExaminer() {
   });
   
   // Find the current model's details if we're analyzing
-  const currentModel = currentModelKey ? MODELS.find(model => model.key === currentModelKey) : null;
+  const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) : null;
 
   // Loading state
-  if (isLoadingTask) {
+  if (isLoadingTask || isLoadingModels) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -113,12 +114,12 @@ export default function PuzzleExaminer() {
   }
 
   // Error state
-  if (taskError || !task) {
+  if (taskError || !task || modelsError) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
         <Alert>
           <AlertDescription>
-            Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
+            Failed to load puzzle: {taskError?.message || modelsError?.message || 'Puzzle not found'}
           </AlertDescription>
         </Alert>
       </div>
@@ -127,7 +128,7 @@ export default function PuzzleExaminer() {
 
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
-    const model = MODELS.find(m => m.key === modelKey);
+    const model = models?.find(m => m.key === modelKey);
     analyzeWithModel(modelKey, model?.supportsTemperature ?? true);
   };
 
@@ -336,7 +337,7 @@ export default function PuzzleExaminer() {
           
           {/* Model Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
-            {MODELS.map((model) => {
+            {models?.map((model) => {
               const isThisModelProcessing = processingModels.has(model.key);
               
               return (
@@ -506,7 +507,7 @@ export default function PuzzleExaminer() {
                     key={`${explanation.id}-${explanation.modelName}`} // More specific key for better React reconciliation
                     modelKey={explanation.modelName}
                     result={explanation}
-                    model={MODELS.find(m => m.key === explanation.modelName)} // Pass model config to enable temperature display
+                    model={models?.find(m => m.key === explanation.modelName)} // Pass model config to enable temperature display
                     testCases={task.test} // Pass the full test array
                   />
                 ))}
