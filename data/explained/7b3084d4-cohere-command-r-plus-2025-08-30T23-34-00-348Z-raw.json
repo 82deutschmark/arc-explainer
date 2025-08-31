@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "result": {
+    "patternDescription": "JSON parsing failed for cohere/command-r-plus response. The model generated a 9651-character response but it contained formatting issues (Unexpected token '`', \"```json\n{\n\"... is not valid JSON). This appears to be a model output formatting issue rather than a puzzle analysis failure. The response may have contained valid insights wrapped in markdown code blocks or other formatting that couldn't be automatically parsed.",
+    "solvingStrategy": "Unable to extract structured solving strategy from cohere/command-r-plus due to response parsing failure. The original response was 9651 characters long and may have contained useful problem-solving insights, but the JSON structure was malformed or wrapped in unsupported formatting. Consider trying the analysis again or using a different model that provides more consistent JSON formatting.",
+    "hints": [
+      "The cohere/command-r-plus model generated a lengthy response (9651 chars) suggesting it attempted analysis",
+      "Try re-running the analysis - this may be a temporary formatting issue",
+      "Consider using OpenAI GPT-4 or Anthropic Claude models for more reliable JSON output",
+      "Check the raw response in the logs for any extractable insights"
+    ],
+    "confidence": 50,
+    "multiplePredictedOutputs": false,
+    "rawResponse": "```json\n{\n  \"multiplePredictedOutputs\": true,\n  \"predictedOutput\": [],\n  \"predictedOutput1\": [\n    [\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0\n    ],\n    [\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0\n    ],\n    [\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      0,\n      ",
+    "parsingError": "Unexpected token '`', \"```json\n{\n\"... is not valid JSON",
+    "modelUsed": "cohere/command-r-plus",
+    "recoveryMethod": "validation-compliant-fallback",
+    "responseLength": 9651,
+    "parsingAttempted": true
+  },
+  "tokenUsage": {
+    "input": 4131,
+    "output": 3999
+  },
+  "cost": {
+    "input": 0.0020655,
+    "output": 0.0059985,
+    "total": 0.008064
+  },
+  "processingTimeMs": 104467,
+  "modelName": "cohere/command-r-plus",
+  "reasoning": null,
+  "reasoningLog": null,
+  "apiProcessingTimeMs": 104468
+}

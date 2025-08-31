@@ -14,8 +14,8 @@ import {
   Star,
   Database
 } from 'lucide-react';
-import { MODELS } from '@/constants/models';
-import type { FeedbackStats, AccuracyStats } from '@shared/types';
+import { useModels } from '@/hooks/useModels';
+import type { FeedbackStats, AccuracyStats, ModelConfig } from '@shared/types';
 
 interface ModelRanking {
   modelName: string;
@@ -54,7 +54,9 @@ export function StatisticsCards({
   accuracyLoading,
   recentActivity = []
 }: StatisticsCardsProps) {
-  if (statsLoading) {
+  const { data: models, isLoading: modelsLoading, error: modelsError } = useModels();
+
+  if (statsLoading || modelsLoading) {
     return (
       <div className="space-y-6">
         {/* Loading state for new layout */}
@@ -210,7 +212,7 @@ export function StatisticsCards({
                       .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
                       .slice(0, 15)
                       .map((model, index) => {
-                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
@@ -261,7 +263,7 @@ export function StatisticsCards({
                       .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
                       .slice(0, 15)
                       .map((model, index) => {
-                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
@@ -310,7 +312,7 @@ export function StatisticsCards({
                     modelRankings
                       .slice(0, 15)
                       .map((model, index) => {
-                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                         
                         return (
@@ -411,7 +413,7 @@ export function StatisticsCards({
           <CardContent>
             <div className="space-y-3 max-h-80 overflow-y-auto">
               {modelRankings.slice(0, 8).map((model, index) => {
-                const modelInfo = MODELS.find(m => m.key === model.modelName);
+                const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                 const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
                 
                 return (
@@ -471,7 +473,7 @@ export function StatisticsCards({
                       .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
                       .slice(0, 5)
                       .map((model, index) => {
-                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
                         
                         return (
@@ -520,7 +522,7 @@ export function StatisticsCards({
                       .sort((a, b) => (b.avgTrustworthiness || b.avgAccuracyScore || 0) - (a.avgTrustworthiness || a.avgAccuracyScore || 0))
                       .slice(0, 5)
                       .map((model, index) => {
-                        const modelInfo = MODELS.find(m => m.key === model.modelName);
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
                         const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : model.modelName;
                         
                         return (

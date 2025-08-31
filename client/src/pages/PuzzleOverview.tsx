@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
@@ -42,6 +42,12 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
+  const [totalTokensMin, setTotalTokensMin] = useState<string>(urlParams.get('totalTokensMin') || '');
+  const [totalTokensMax, setTotalTokensMax] = useState<string>(urlParams.get('totalTokensMax') || '');
+  const [estimatedCostMin, setEstimatedCostMin] = useState<string>(urlParams.get('estimatedCostMin') || '');
+  const [estimatedCostMax, setEstimatedCostMax] = useState<string>(urlParams.get('estimatedCostMax') || '');
+  const [predictionAccuracyMin, setPredictionAccuracyMin] = useState<string>(urlParams.get('predictionAccuracyMin') || '');
+  const [predictionAccuracyMax, setPredictionAccuracyMax] = useState<string>(urlParams.get('predictionAccuracyMax') || '');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'explanationCount');
   const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'asc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
@@ -49,6 +55,8 @@ export default function PuzzleOverview() {
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+  const [showAccuracyLeaderboard, setShowAccuracyLeaderboard] = useState(false);
+  const [showTrustworthinessLeaderboard, setShowTrustworthinessLeaderboard] = useState(false);
 
   // Model debug modal state
   const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
@@ -201,8 +209,8 @@ export default function PuzzleOverview() {
         const total = stats.helpful + stats.notHelpful;
         const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
         
-        // Find model display name from MODELS array
-        const modelInfo = MODELS.find(m => m.key === modelName);
+        // Find model display name from models data
+        const modelInfo = models?.find(m => m.key === modelName);
         const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
         
         return {
@@ -374,6 +382,18 @@ export default function PuzzleOverview() {
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           getSortIcon={getSortIcon}
+          totalTokensMin={totalTokensMin}
+          setTotalTokensMin={setTotalTokensMin}
+          totalTokensMax={totalTokensMax}
+          setTotalTokensMax={setTotalTokensMax}
+          estimatedCostMin={estimatedCostMin}
+          setEstimatedCostMin={setEstimatedCostMin}
+          estimatedCostMax={estimatedCostMax}
+          setEstimatedCostMax={setEstimatedCostMax}
+          predictionAccuracyMin={predictionAccuracyMin}
+          setPredictionAccuracyMin={setPredictionAccuracyMin}
+          predictionAccuracyMax={predictionAccuracyMax}
+          setPredictionAccuracyMax={setPredictionAccuracyMax}
         />
 
         {/* Loading indicator for filtering */}

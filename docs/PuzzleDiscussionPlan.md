@@ -1,17 +1,17 @@
 ---
-# PuzzleDiscussion Page Implementation Plan
-
+# PuzzleDiscussion Page Implementation Plan by o3
+August 30, 2025
 ## Purpose
 Create a new PuzzleDiscussion page that enables multiple LLMs to collaboratively review puzzles with poor initial model feedback and attempt to solve them through a structured discussion. The feature draws on existing UI components, server APIs, and database records.
 
 ## High-Level Flow
 1. User navigates to PuzzleDiscussion.
-2. Page lists puzzles ranked by worst feedback / trustworthiness score.
+2. Page lists puzzles ranked by worst feedback / trustworthiness score. Need to figure out how to do this.
 3. User selects a puzzle → shows puzzle viewer, original model prediction & explanation.
-4. User selects a reviewing LLM (e.g., o1/o3) and triggers “Review & Re-solve”.
+4. User selects a reviewing LLM from @modelConfig and triggers “Review & ”.
 5. Frontend sends POST `/api/discussion` with puzzle details + original analysis.
 6. Backend builds prompt (include prediction grid, incorrect flag, reasoning items, scores) via `promptBuilder` and streams new LLM response.
-7. UI displays chat-style exchange between original explanation and reviewing model; shows final answer & accuracy.
+7. UI displays a ResultsCard modeled after `AnalysisResultCard` but with fields specific to .
 
 ## Task Breakdown
 ### 1. Frontend
@@ -40,8 +40,8 @@ Create a new PuzzleDiscussion page that enables multiple LLMs to collaboratively
 
 ### 4. Prompt Design Guidelines (for promptBuilder)
 - Instruct reviewer LLM to:
-  1. Critique original reasoning.
-  2. Provide its own reasoning (≤200 words).
+  1. Critique original reasoning with the knowledge that it was wrong and the answer is simpler.
+  2. Provide its own reasoning (as long as needed to justify its prediction grid).
   3. Output final predicted grid only.
 - Supply trustworthiness context so LLM knows predecessor was wrong.
 
@@ -51,14 +51,14 @@ Create a new PuzzleDiscussion page that enables multiple LLMs to collaboratively
 - Frontend e2e: Cypress test selecting puzzle and reviewing.
 
 ### 6. Deployment Checklist
-- Confirm environment variables for reviewer models present.
+
 - Update documentation & changelog.
 
 ## Acceptance Criteria
-- Page lists at least 20 worst-scoring puzzles sorted correctly.
+- Page lists at least 20 worst-scoring puzzles by trustworthiness score, and feedback score sorted correctly.
 - User can start discussion, see streaming chat, and final answer.
 - New discussion explanations stored with reference to original run.
 - Prompt includes all specified fields and length constraints.
-- Code follows project style and passes `npm run test`.
+- Code follows project style and passes user testing.
 
 ---

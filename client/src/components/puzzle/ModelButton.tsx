@@ -48,8 +48,6 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
       <div className="text-xs text-gray-600 w-full space-y-1">
         <div>In: {model.cost.input}/M tokens</div>
         <div>Out: {model.cost.output}/M tokens</div>
-        <div>Context: {model.contextWindow ? `${(model.contextWindow / 1000).toFixed(0)}k` : 'N/A'}</div>
-        <div>Max Out: {model.maxOutputTokens ? `${(model.maxOutputTokens / 1000).toFixed(0)}k` : 'N/A'}</div>
         {model.responseTime?.estimate && (
           <div className="flex items-center gap-1">
             <span className="text-xs">⏱️ Est:</span>

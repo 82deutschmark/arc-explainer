@@ -5,22 +5,7 @@
  * @author Cascade
  */
 
-export interface ModelConfig {
-  key: string;
-  name: string;
-  color: string;
-  premium: boolean;
-  cost: { input: string; output: string };
-  supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'Gemini' | 'xAI' | 'DeepSeek' | 'OpenRouter';
-  responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
-  supportsReasoning?: boolean;
-  // Server-only properties
-  apiModelName?: string; // Actual API model name if different from key
-  modelType?: 'o3_o4' | 'gpt5' | 'gpt5_chat' | 'claude' | 'gemini' | 'grok' | 'deepseek' | 'openrouter';
-  maxOutputTokens?: number;
-  contextWindow?: number;
-}
+import type { ModelConfig } from '@shared/types';
 
 /**
  * Complete model registry - single source of truth
@@ -694,7 +679,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
-    maxOutputTokens: 16384,
+    maxOutputTokens: 8192,
     contextWindow: 32768
   },
   {
