@@ -16,7 +16,7 @@ import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
-import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord } from '@shared/types';
+import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord, ModelConfig } from '@shared/types';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -61,6 +61,8 @@ export default function PuzzleOverview() {
   // Model debug modal state
   const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
   const [selectedModelName, setSelectedModelName] = useState<string>('');
+
+  const { data: models } = useModels();
 
   // Set page title
   React.useEffect(() => {
@@ -210,7 +212,7 @@ export default function PuzzleOverview() {
         const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
         
         // Find model display name from models data
-        const modelInfo = models?.find(m => m.key === modelName);
+        const modelInfo = models?.find((m: ModelConfig) => m.key === modelName);
         const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
         
         return {
@@ -231,7 +233,7 @@ export default function PuzzleOverview() {
         }
         return b.total - a.total;
       });
-  }, [feedbackStats]);
+  }, [feedbackStats, models]);
 
   // Separate query for recent activity - get puzzles with explanations sorted by recent activity
   const { data: recentActivityData } = useQuery<PuzzleOverviewResponse>({
