@@ -9,13 +9,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function PuzzleDiscussion() {
   const [selectedLimit, setSelectedLimit] = useState<number>(20);
+  const [sortBy, setSortBy] = useState<string>('composite');
   
   // Set page title
   React.useEffect(() => {
     document.title = 'ARC Puzzle Discussion - Retry Analysis';
   }, []);
 
-  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(selectedLimit);
+  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(selectedLimit, sortBy);
 
   if (error) {
     return (
@@ -120,8 +121,20 @@ export default function PuzzleDiscussion() {
                   <option value={50}>50 puzzles</option>
                 </select>
               </div>
-              <div className="text-sm text-gray-600">
-                Sorted by composite performance score (incorrect predictions, low accuracy, negative feedback)
+              <div className="flex items-center gap-2">
+                <label htmlFor="sort-select" className="text-sm font-medium">
+                  Sort by:
+                </label>
+                <select
+                  id="sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                >
+                  <option value="composite">Performance Score</option>
+                  <option value="feedback">Negative Feedback</option>
+                  <option value="accuracy">Lowest Accuracy</option>
+                </select>
               </div>
             </div>
           </CardContent>

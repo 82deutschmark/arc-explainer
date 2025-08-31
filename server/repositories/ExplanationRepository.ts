@@ -566,7 +566,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Get worst-performing puzzles based on composite scoring
    * Prioritizes incorrect predictions, low accuracy scores, and negative feedback
    */
-  async getWorstPerformingPuzzles(limit: number = 20): Promise<any[]> {
+  async getWorstPerformingPuzzles(limit: number = 20, sortBy: string = 'composite'): Promise<any[]> {
     if (!this.isConnected()) {
       return [];
     }
@@ -614,13 +614,14 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             -- Has negative feedback
             COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
           )
-        ORDER BY 
-          composite_score DESC,  -- Higher composite score = worse performance
-          wrong_count DESC,      -- More wrong predictions first
-          avg_accuracy ASC,      -- Lower accuracy first
-          negative_feedback DESC -- More negative feedback first
+        ORDER BY
+          CASE WHEN $2 = 'accuracy' THEN avg_accuracy END ASC NULLS LAST,
+          CASE WHEN $2 = 'feedback' THEN negative_feedback END DESC NULLS LAST,
+          composite_score DESC,
+          wrong_count DESC,
+          negative_feedback DESC
         LIMIT $1
-      `, [limit]);
+      `, [limit, sortBy]);
 
       return result.rows.map(row => ({
         puzzleId: row.puzzle_id,
