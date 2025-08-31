@@ -79,7 +79,7 @@ export class PuzzleAnalysisService {
     if (retryContext) {
       promptOptions.retryMode = retryMode;
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
-      if (retryContext.badFeedback?.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
+            if (retryContext.badFeedback && retryContext.badFeedback.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
     
     // Build service options
