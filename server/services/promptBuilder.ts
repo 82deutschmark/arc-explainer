@@ -113,7 +113,7 @@ export function buildAnalysisPrompt(
             systemPrompt += `\nSolving Strategy: "${previousAnalysis.solvingStrategy}"`;
           }
           if (previousAnalysis.hints && previousAnalysis.hints.length > 0) {
-            systemPrompt += `\nHints: ${previousAnalysis.hints.map(h => `"${h}"`).join(', ')}`;
+            systemPrompt += `\nHints: ${previousAnalysis.hints.map((h: string) => `"${h}"`).join(', ')}`;
           }
           if (previousAnalysis.isPredictionCorrect === false) {
             systemPrompt += `\nPrediction Result: INCORRECT`;
