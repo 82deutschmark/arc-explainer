@@ -15,8 +15,8 @@ import { puzzleAnalysisService } from '../services/puzzleAnalysisService';
 import { puzzleFilterService } from '../services/puzzleFilterService';
 import { puzzleOverviewService } from '../services/puzzleOverviewService';
 import { formatResponse } from '../utils/responseFormatter';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../repositories/RepositoryService';
+import { logger } from '../utils/logger';
 
 export const puzzleController = {
   /**

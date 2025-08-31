@@ -7,10 +7,10 @@
  * @author Claude Code
  */
 
-import { repositoryService } from '../repositories/RepositoryService.ts';
+import { repositoryService } from '../repositories/RepositoryService';
 import { puzzleService } from './puzzleService';
 import { puzzleFilterService } from './puzzleFilterService';
-import { logger } from '../utils/logger.ts';
+import { logger } from '../utils/logger';
 import type { ExplanationFilters } from './puzzleFilterService';
 
 export interface OverviewResult {

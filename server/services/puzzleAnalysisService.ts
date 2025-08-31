@@ -9,9 +9,9 @@
 
 import { aiServiceFactory } from './aiServiceFactory';
 import { puzzleService } from './puzzleService';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator.ts';
-import { logger } from '../utils/logger.ts';
+import { repositoryService } from '../repositories/RepositoryService';
+import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator';
+import { logger } from '../utils/logger';
 import type { PromptOptions } from './promptBuilder';
 
 export interface AnalysisOptions {

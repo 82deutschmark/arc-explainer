@@ -7,7 +7,7 @@
  * @author Claude Code
  */
 
-import { logger } from '../utils/logger.ts';
+import { logger } from '../utils/logger';
 
 export interface PuzzleFilters {
   maxGridSize?: number;
