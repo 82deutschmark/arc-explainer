@@ -50,7 +50,7 @@ export class GeminiService extends BaseAIService {
 
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, options);
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
@@ -108,13 +108,17 @@ export class GeminiService extends BaseAIService {
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
     const temperature = options?.temperature ?? 1.0; // Default for Gemini
+    const topP = options?.topP ?? 0.95; // Default for Gemini
+    const candidateCount = options?.candidateCount ?? 1; // Default for Gemini
 
     // Build request format for Gemini API
     const messageFormat: any = {
       model: modelName,
       generationConfig: {
         maxOutputTokens: 65000,
-        ...(modelSupportsTemperature(modelKey) && { temperature })
+        ...(modelSupportsTemperature(modelKey) && { temperature }),
+        topP,
+        candidateCount
       },
       contents: [
         {
@@ -163,7 +167,8 @@ export class GeminiService extends BaseAIService {
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    options: PromptOptions = {}
   ): Promise<any> {
     const apiModelName = getApiModelName(modelKey);
     const systemMessage = promptPackage.systemPrompt;
@@ -174,7 +179,9 @@ export class GeminiService extends BaseAIService {
       model: apiModelName,
       generationConfig: {
         maxOutputTokens: 8000,
-        ...(modelSupportsTemperature(modelKey) && { temperature })
+        ...(modelSupportsTemperature(modelKey) && { temperature }),
+        ...(options?.topP && { topP: options.topP }),
+        ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       ...(systemMessage && systemPromptMode === 'ARC' && {
         systemInstruction: systemMessage
