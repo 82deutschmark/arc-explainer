@@ -24,7 +24,7 @@ export interface QueueStatus {
 
 export class BatchQueueManager extends EventEmitter {
   private sessionQueues: Map<string, string[]> = new Map();
-  private processingStatus: Map<string, 'pending' | 'running' | 'paused' | 'cancelled'> = new Map();
+    private processingStatus: Map<string, 'pending' | 'running' | 'paused' | 'cancelled' | 'completed' | 'error'> = new Map();
   private readonly MAX_CONCURRENT_SESSIONS = 3;
   private readonly DEFAULT_BATCH_SIZE = 10;
   private readonly BATCH_DELAY_MS = 1000; // Delay between batches
