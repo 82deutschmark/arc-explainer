@@ -11,11 +11,11 @@
 
 import { Request, Response } from 'express';
 import { puzzleService } from '../services/puzzleService';
-import { aiServiceFactory } from '../services/aiServiceFactory';
+import { puzzleAnalysisService } from '../services/puzzleAnalysisService';
+import { puzzleFilterService } from '../services/puzzleFilterService';
+import { puzzleOverviewService } from '../services/puzzleOverviewService';
 import { formatResponse } from '../utils/responseFormatter';
 import { repositoryService } from '../repositories/RepositoryService.ts';
-import type { PromptOptions } from '../services/promptBuilder';
-import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
 import { logger } from '../utils/logger.ts';
 
 export const puzzleController = {
@@ -26,23 +26,11 @@ export const puzzleController = {
    * @param res - Express response object
    */
   async list(req: Request, res: Response) {
-    const { maxGridSize, minGridSize, difficulty, gridSizeConsistent, prioritizeUnexplained, prioritizeExplained, source, multiTestFilter } = req.query;
-    
     logger.debug('Puzzle list request with query params: ' + JSON.stringify(req.query), 'puzzle-controller');
     
-    const filters: any = {};
-    if (maxGridSize) filters.maxGridSize = parseInt(maxGridSize as string);
-    if (minGridSize) filters.minGridSize = parseInt(minGridSize as string);
-    if (difficulty) filters.difficulty = difficulty as string;
-    if (gridSizeConsistent) filters.gridSizeConsistent = gridSizeConsistent === 'true';
-    if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
-    if (prioritizeExplained) filters.prioritizeExplained = prioritizeExplained === 'true';
-    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
-    if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) filters.multiTestFilter = multiTestFilter as 'single' | 'multi';
-    
-    logger.debug('Using filters: ' + JSON.stringify(filters), 'puzzle-controller');
-    
+    const filters = puzzleFilterService.buildListFilters(req.query);
     const puzzles = await puzzleService.getPuzzleList(filters);
+    
     logger.debug(`Found ${puzzles.length} puzzles, first few: ` + JSON.stringify(puzzles.slice(0, 3)), 'puzzle-controller');
     
     res.json(formatResponse.success(puzzles));
@@ -69,190 +57,25 @@ export const puzzleController = {
    */
   async analyze(req: Request, res: Response) {
     const { taskId, model: encodedModel } = req.params;
-    // Decode model parameter to handle OpenRouter provider/model format (e.g., qwen%2Fqwen-2.5-coder-32b-instruct)
     const model = decodeURIComponent(encodedModel);
-    const { 
-      temperature = 0.2, 
-      captureReasoning = true, 
-      promptId = "solver", 
-      customPrompt, 
-      emojiSetKey, 
-      omitAnswer = true,
-      // Gemini parameters
-      topP,
-      candidateCount,
-      // GPT-5 reasoning parameters
-      reasoningEffort,
-      reasoningVerbosity, 
-      reasoningSummaryType,
-      // System prompt mode
-      systemPromptMode = 'ARC',
-      // Retry mode for enhanced prompting
-      retryMode = false
-    } = req.body;
     
+    const options = {
+      temperature: req.body.temperature || 0.2,
+      captureReasoning: req.body.captureReasoning !== false,
+      promptId: req.body.promptId || "solver",
+      customPrompt: req.body.customPrompt,
+      emojiSetKey: req.body.emojiSetKey,
+      omitAnswer: req.body.omitAnswer !== false,
+      topP: req.body.topP,
+      candidateCount: req.body.candidateCount,
+      reasoningEffort: req.body.reasoningEffort,
+      reasoningVerbosity: req.body.reasoningVerbosity,
+      reasoningSummaryType: req.body.reasoningSummaryType,
+      systemPromptMode: req.body.systemPromptMode || 'ARC',
+      retryMode: req.body.retryMode || false
+    };
     
-    // Track server processing time
-    const apiStartTime = Date.now();
-    
-    const puzzle = await puzzleService.getPuzzleById(taskId);
-    const aiService = aiServiceFactory.getService(model);
-    
-    // Fetch previous analysis and bad feedback for retry mode
-    let previousAnalysis = null;
-    let badFeedback = null;
-    
-    if (retryMode) {
-      try {
-        // Get all explanations for this puzzle to find the worst one
-        const explanations = await repositoryService.explanations.getExplanationsForPuzzle(taskId);
-        if (explanations && explanations.length > 0) {
-          // Find the worst analysis (incorrect prediction or lowest trustworthiness)
-          previousAnalysis = explanations.find(exp => exp.isPredictionCorrect === false) || 
-                           explanations.sort((a, b) => (a.predictionAccuracyScore || 1) - (b.predictionAccuracyScore || 1))[0];
-        }
-        
-        // Get bad feedback for this puzzle
-        if (repositoryService.feedback) {
-          const allFeedback = await repositoryService.feedback.getFeedbackForPuzzle(taskId);
-          if (allFeedback && allFeedback.length > 0) {
-            // Filter to get only negative feedback with comments
-            badFeedback = allFeedback.filter(fb => 
-              fb.voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
-            );
-          }
-        }
-        
-        console.log(`[RETRY-MODE] Found ${previousAnalysis ? '1' : '0'} previous analysis and ${badFeedback ? badFeedback.length : 0} bad feedback entries`);
-      } catch (error) {
-        console.error('[RETRY-MODE] Error fetching context:', error);
-        // Continue without context rather than failing
-      }
-    }
-    
-    // Build options object for prompt builder
-    const options: PromptOptions = {};
-    if (emojiSetKey) options.emojiSetKey = emojiSetKey;
-    if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
-    if (topP) options.topP = topP;
-    if (candidateCount) options.candidateCount = candidateCount;
-    if (retryMode) {
-      options.retryMode = retryMode;
-      if (previousAnalysis) options.previousAnalysis = previousAnalysis;
-      if (badFeedback && badFeedback.length > 0) options.badFeedback = badFeedback;
-    }
-    
-    // Build service options including reasoning parameters
-    const serviceOpts: any = {};
-    if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
-    if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
-    if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
-    if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
-    
-    const result = await aiService.analyzePuzzleWithModel(puzzle, model, temperature, captureReasoning, promptId, customPrompt, options, serviceOpts, taskId);
-    
-    // Calculate API processing time
-    const apiProcessingTimeMs = Date.now() - apiStartTime;
-    
-    // Add timing to result
-    result.apiProcessingTimeMs = apiProcessingTimeMs;
-    
-    // Save individual JSON log for all models (including OpenRouter)
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-      
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const sanitizedModelName = model.replace(/[\/\\:*?"<>|]/g, '-');
-      const logFileName = `${taskId}-${sanitizedModelName}-${timestamp}-raw.json`;
-      const logFilePath = path.join('data', 'explained', logFileName);
-      await fs.writeFile(logFilePath, JSON.stringify(result, null, 2));
-      console.log(`[PUZZLE-CONTROLLER-RAW-LOG] Response for ${model} saved to ${logFilePath}`);
-    } catch (logError) {
-      console.error(`[PUZZLE-CONTROLLER-RAW-LOG-ERROR] Failed to save raw log for ${model}:`, logError);
-      // Non-critical, so we don't rethrow
-    }
-    
-    
-    
-    
-    // Validate solver mode responses
-    if (promptId === "solver") {
-      const confidence = result.confidence || 50; // Default confidence if not provided
-      const testCount = puzzle.test?.length || 0;
-      
-      // CRITICAL FIX: Preserve original analysis content before validation
-      const originalAnalysis = {
-        patternDescription: result.patternDescription,
-        solvingStrategy: result.solvingStrategy,
-        hints: result.hints,
-        alienMeaning: result.alienMeaning,
-        confidence: result.confidence,
-        reasoningLog: result.reasoningLog,
-        hasReasoningLog: result.hasReasoningLog
-      };
-      
-      // Simple logic: Check if AI provided multiple predictions
-      // Handle nested OpenRouter structure: result.result.multiplePredictedOutputs
-      const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
-      if (multiplePredictedOutputs === true) {
-        // Multi-test case: AI provided multiple grids
-        const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
-        const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
-
-        // Add validation results WITHOUT destroying original analysis
-        result.predictedOutputGrid = multi.predictedGrids;
-        result.multiplePredictedOutputs = multi.predictedGrids; // Overwrite boolean flag with actual grid arrays
-        result.hasMultiplePredictions = true;
-        
-        // Attach validation results for UI
-        result.predictedOutputGrids = multi.predictedGrids;
-        result.multiValidation = multi.itemResults;
-        result.multiTestResults = multi.itemResults;
-        result.multiTestAllCorrect = multi.allCorrect;
-        result.multiTestAverageAccuracy = multi.averageAccuracyScore;
-
-      } else {
-        // Single-test case: AI provided one grid
-        const correctAnswer = puzzle.test[0].output;
-        const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
-
-        // Add validation results WITHOUT destroying original analysis
-        result.predictedOutputGrid = validation.predictedGrid;
-        result.multiplePredictedOutputs = null;
-        result.hasMultiplePredictions = false;
-        
-        // Attach validation results for UI
-        result.isPredictionCorrect = validation.isPredictionCorrect;
-        result.predictionAccuracyScore = validation.predictionAccuracyScore;
-      }
-      
-      // CRITICAL FIX: Restore original analysis content after validation
-      // Only restore fields that had actual content (not null/undefined/empty)
-      if (originalAnalysis.patternDescription) {
-        result.patternDescription = originalAnalysis.patternDescription;
-      }
-      if (originalAnalysis.solvingStrategy) {
-        result.solvingStrategy = originalAnalysis.solvingStrategy;
-      }
-      if (originalAnalysis.hints && originalAnalysis.hints.length > 0) {
-        result.hints = originalAnalysis.hints;
-      }
-      if (originalAnalysis.alienMeaning) {
-        result.alienMeaning = originalAnalysis.alienMeaning;
-      }
-      if (originalAnalysis.reasoningLog) {
-        result.reasoningLog = originalAnalysis.reasoningLog;
-        result.hasReasoningLog = originalAnalysis.hasReasoningLog;
-      }
-      // Always preserve confidence even if it was set to default
-      if (originalAnalysis.confidence !== undefined) {
-        result.confidence = originalAnalysis.confidence;
-      }
-    }
-    
-    // NOTE: Database persistence is now handled exclusively through explanationController.create()
-    // This eliminates duplicate saves and allows frontend to control when explanations are saved
+    const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);
     
     res.json(formatResponse.success(result));
   },
@@ -279,59 +102,22 @@ export const puzzleController = {
   async previewPrompt(req: Request, res: Response) {
     try {
       const { provider, taskId } = req.params;
-      const { 
-        promptId = "solver", 
-        customPrompt, 
-        temperature = 0.2, 
-        captureReasoning = true, 
-        emojiSetKey, 
-        omitAnswer = true,
-        // GPT-5 reasoning parameters  
-        reasoningEffort,
-        reasoningVerbosity,
-        reasoningSummaryType,
-        // System prompt mode
-        systemPromptMode = 'ARC'
-      } = req.body;
+      const options = {
+        promptId: req.body.promptId || "solver",
+        customPrompt: req.body.customPrompt,
+        temperature: req.body.temperature || 0.2,
+        captureReasoning: req.body.captureReasoning !== false,
+        emojiSetKey: req.body.emojiSetKey,
+        omitAnswer: req.body.omitAnswer !== false,
+        reasoningEffort: req.body.reasoningEffort,
+        reasoningVerbosity: req.body.reasoningVerbosity,
+        reasoningSummaryType: req.body.reasoningSummaryType,
+        systemPromptMode: req.body.systemPromptMode || 'ARC'
+      };
 
       logger.info(`Generating prompt preview for ${provider} with puzzle ${taskId}`, 'puzzle-controller');
 
-      // Get the puzzle data
-      const puzzle = await puzzleService.getPuzzleById(taskId);
-      if (!puzzle) {
-        return res.status(404).json(formatResponse.error('Puzzle not found', 'The specified puzzle could not be found'));
-      }
-
-      // Get the AI service for the provider
-      const aiService = aiServiceFactory.getService(provider);
-      if (!aiService) {
-        return res.status(400).json(formatResponse.error('Invalid provider', 'The specified AI provider is not supported'));
-      }
-
-      // Build options object for prompt builder
-      const options: PromptOptions = {};
-      if (emojiSetKey) options.emojiSetKey = emojiSetKey;
-      if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
-
-      // Build service options including reasoning parameters
-      const serviceOpts: any = {};
-      if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
-      if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
-      if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
-      if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
-
-      // Generate provider-specific prompt preview
-      const previewData = await aiService.generatePromptPreview(
-        puzzle, 
-        provider, 
-        temperature, 
-        captureReasoning, 
-        promptId, 
-        customPrompt,
-        options,
-        serviceOpts
-      );
-
+      const previewData = await puzzleAnalysisService.generatePromptPreview(taskId, provider, options);
       res.json(formatResponse.success(previewData));
     } catch (error) {
       logger.error('Error generating prompt preview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -339,200 +125,6 @@ export const puzzleController = {
     }
   },
 
-  /**
-   * Build overview filters from query parameters
-   */
-  buildOverviewFilters(query: any) {
-    const puzzleFilters: any = {};
-    const { source, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistency } = query;
-    
-    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
-      puzzleFilters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
-    }
-    if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
-      puzzleFilters.multiTestFilter = multiTestFilter as 'single' | 'multi';
-    }
-    if (gridSizeMin) {
-      puzzleFilters.minGridSize = parseInt(gridSizeMin as string);
-    }
-    if (gridSizeMax) {
-      puzzleFilters.maxGridSize = parseInt(gridSizeMax as string);
-    }
-    if (gridConsistency && ['true', 'false'].includes(gridConsistency as string)) {
-      puzzleFilters.gridSizeConsistent = gridConsistency === 'true';
-    }
-    
-    return puzzleFilters;
-  },
-
-  /**
-   * Create basic puzzle overview structure
-   */
-  createBasicOverview(allPuzzles: any[], offset: string, limit: string) {
-    const basicResults = allPuzzles.map(puzzle => ({
-      ...puzzle,
-      explanations: [],
-      totalExplanations: 0,
-      latestExplanation: null,
-      hasExplanation: false
-    }));
-    
-    const offsetNum = parseInt(offset);
-    const limitNum = parseInt(limit);
-    
-    return {
-      puzzles: basicResults.slice(offsetNum, offsetNum + limitNum),
-      total: basicResults.length,
-      hasMore: basicResults.length > offsetNum + limitNum
-    };
-  },
-
-  /**
-   * Apply explanation filters to explanation list
-   */
-  applyExplanationFilters(explanations: any[], filters: any) {
-    const {
-      modelName, saturnFilter, confidenceMin, confidenceMax,
-      processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
-      totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
-      predictionAccuracyMin, predictionAccuracyMax
-    } = filters;
-    
-    let filtered = explanations;
-    
-    // Filter by model
-    if (modelName) {
-      filtered = filtered.filter(exp => exp.modelName === modelName);
-    }
-    
-    // Filter by Saturn status
-    if (saturnFilter) {
-      if (saturnFilter === 'solved') {
-        filtered = filtered.filter(exp => exp.saturnSuccess === true);
-      } else if (saturnFilter === 'failed') {
-        filtered = filtered.filter(exp => exp.saturnSuccess === false);
-      } else if (saturnFilter === 'attempted') {
-        filtered = filtered.filter(exp => exp.saturnSuccess !== undefined);
-      }
-    }
-    
-    // Filter by confidence range
-    if (confidenceMin || confidenceMax) {
-      filtered = filtered.filter(exp => {
-        const confidence = exp.confidence || 0;
-        if (confidenceMin && confidence < parseInt(confidenceMin)) return false;
-        if (confidenceMax && confidence > parseInt(confidenceMax)) return false;
-        return true;
-      });
-    }
-    
-    // Filter by processing time
-    if (processingTimeMin || processingTimeMax) {
-      filtered = filtered.filter(exp => {
-        const processingTime = exp.apiProcessingTimeMs || 0;
-        if (processingTimeMin && processingTime < parseInt(processingTimeMin)) return false;
-        if (processingTimeMax && processingTime > parseInt(processingTimeMax)) return false;
-        return true;
-      });
-    }
-    
-    // Filter by total tokens
-    if (totalTokensMin || totalTokensMax) {
-      filtered = filtered.filter(exp => {
-        const totalTokens = exp.totalTokens || 0;
-        if (totalTokensMin && totalTokens < parseInt(totalTokensMin)) return false;
-        if (totalTokensMax && totalTokens > parseInt(totalTokensMax)) return false;
-        return true;
-      });
-    }
-    
-    // Filter by estimated cost
-    if (estimatedCostMin || estimatedCostMax) {
-      filtered = filtered.filter(exp => {
-        const estimatedCost = exp.estimatedCost || 0;
-        if (estimatedCostMin && estimatedCost < parseFloat(estimatedCostMin)) return false;
-        if (estimatedCostMax && estimatedCost > parseFloat(estimatedCostMax)) return false;
-        return true;
-      });
-    }
-    
-    // Filter by prediction accuracy score
-    if (predictionAccuracyMin || predictionAccuracyMax) {
-      filtered = filtered.filter(exp => {
-        const accuracyScore = exp.predictionAccuracyScore || 0;
-        if (predictionAccuracyMin && accuracyScore < parseFloat(predictionAccuracyMin)) return false;
-        if (predictionAccuracyMax && accuracyScore > parseFloat(predictionAccuracyMax)) return false;
-        return true;
-      });
-    }
-    
-    // Filter by predictions
-    if (hasPredictions === 'true') {
-      filtered = filtered.filter(exp => exp.predictedOutputGrid || exp.multiplePredictedOutputs);
-    } else if (hasPredictions === 'false') {
-      filtered = filtered.filter(exp => !exp.predictedOutputGrid && !exp.multiplePredictedOutputs);
-    }
-    
-    // Filter by prediction accuracy
-    if (predictionAccuracy === 'correct') {
-      filtered = filtered.filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true);
-    } else if (predictionAccuracy === 'incorrect') {
-      filtered = filtered.filter(exp => exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false);
-    }
-    
-    return filtered;
-  },
-
-  /**
-   * Sort overview results based on sort parameters
-   */
-  sortOverviewResults(results: any[], sortBy: string, sortOrder: string) {
-    return results.sort((a, b) => {
-      let aValue, bValue;
-      
-      switch (sortBy) {
-        case 'puzzleId':
-          aValue = a.id;
-          bValue = b.id;
-          break;
-        case 'explanationCount':
-          aValue = a.totalExplanations;
-          bValue = b.totalExplanations;
-          break;
-        case 'latestConfidence':
-          aValue = a.latestExplanation?.confidence || 0;
-          bValue = b.latestExplanation?.confidence || 0;
-          break;
-        case 'createdAt':
-        default:
-          aValue = a.latestExplanation?.createdAt || '1970-01-01';
-          bValue = b.latestExplanation?.createdAt || '1970-01-01';
-          break;
-      }
-      
-      if (sortOrder === 'desc') {
-        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-      } else {
-        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-      }
-    });
-  },
-
-  /**
-   * Apply pagination to results
-   */
-  applyPagination(results: any[], offset: string, limit: string) {
-    const offsetNum = parseInt(offset);
-    const limitNum = parseInt(limit);
-    const total = results.length;
-    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
-    
-    return {
-      puzzles: paginatedResults,
-      total: total,
-      hasMore: total > offsetNum + limitNum
-    };
-  },
 
   /**
    * Get all puzzles with their explanation details for overview page
@@ -543,111 +135,10 @@ export const puzzleController = {
    */
   async overview(req: Request, res: Response) {
     try {
-      const { 
-        search, hasExplanation, hasFeedback, modelName, saturnFilter,
-        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
-        confidenceMin, confidenceMax, limit = 50, offset = 0,
-        sortBy = 'createdAt', sortOrder = 'desc',
-        totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
-        predictionAccuracyMin, predictionAccuracyMax
-      } = req.query;
-
       logger.debug('Puzzle overview request with filters: ' + JSON.stringify(req.query), 'puzzle-controller');
 
-      // Build puzzle filters using helper method
-      const puzzleFilters = puzzleController.buildOverviewFilters(req.query);
-      const allPuzzles = await puzzleService.getPuzzleList(puzzleFilters);
-      
-      // If no database connection, return basic overview
-      if (!repositoryService.isConnected()) {
-        const basicOverview = puzzleController.createBasicOverview(allPuzzles, offset as string, limit as string);
-        return res.json(formatResponse.success(basicOverview));
-      }
-
-      // Apply search filter early to reduce dataset
-      let filteredPuzzles = allPuzzles;
-      if (search && typeof search === 'string') {
-        filteredPuzzles = filteredPuzzles.filter(puzzle => 
-          puzzle.id.toLowerCase().includes(search.toLowerCase())
-        );
-      }
-
-      // Get explanation status for filtered puzzles only
-      const puzzleIds = filteredPuzzles.map(p => p.id);
-      const explanationStatusMap = await repositoryService.explanations.getBulkExplanationStatus(puzzleIds);
-      
-      // Build initial puzzle map with explanation metadata
-      const puzzleMap = new Map();
-      filteredPuzzles.forEach(puzzle => {
-        const status = explanationStatusMap[puzzle.id];
-        puzzleMap.set(puzzle.id, {
-          ...puzzle,
-          explanations: [],
-          totalExplanations: 0,
-          latestExplanation: null,
-          hasExplanation: status?.hasExplanation || false,
-          explanationId: status?.explanationId || null,
-          feedbackCount: status?.feedbackCount || 0,
-          apiProcessingTimeMs: status?.apiProcessingTimeMs || null,
-          modelName: status?.modelName || null,
-          createdAt: status?.createdAt || null,
-          confidence: status?.confidence || null,
-          estimatedCost: status?.estimatedCost || null
-        });
-      });
-
-      // Apply hasExplanation and hasFeedback filters early
-      let results = Array.from(puzzleMap.values());
-      
-      if (hasExplanation === 'true') {
-        results = results.filter(puzzle => puzzle.hasExplanation);
-      } else if (hasExplanation === 'false') {
-        results = results.filter(puzzle => !puzzle.hasExplanation);
-      }
-
-      if (hasFeedback === 'true') {
-        results = results.filter(puzzle => puzzle.feedbackCount && puzzle.feedbackCount > 0);
-      } else if (hasFeedback === 'false') {
-        results = results.filter(puzzle => !puzzle.feedbackCount || puzzle.feedbackCount === 0);
-      }
-
-      // Sort results before pagination to ensure correct ordering
-      const sortedResults = puzzleController.sortOverviewResults(results, sortBy as string, sortOrder as string);
-      
-      // Apply pagination BEFORE fetching detailed explanation data
-      const paginatedResults = puzzleController.applyPagination(sortedResults, offset as string, limit as string);
-      
-      // Now only fetch detailed explanation data for the paginated puzzles
-      const explanationFilters = {
-        modelName, saturnFilter, confidenceMin, confidenceMax,
-        processingTimeMin, processingTimeMax, hasPredictions, predictionAccuracy,
-        totalTokensMin, totalTokensMax, estimatedCostMin, estimatedCostMax,
-        predictionAccuracyMin, predictionAccuracyMax
-      };
-
-      // Process detailed explanation data only for paginated results
-      for (const puzzle of paginatedResults.puzzles) {
-        if (puzzle.hasExplanation && puzzle.explanationId) {
-          try {
-            const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzle.id);
-            if (explanations && explanations.length > 0) {
-              const filteredExplanations = puzzleController.applyExplanationFilters(explanations, explanationFilters);
-              
-              puzzle.explanations = filteredExplanations;
-              puzzle.totalExplanations = filteredExplanations.length;
-              puzzle.latestExplanation = filteredExplanations[0] || null;
-            }
-          } catch (error) {
-            logger.error(`Error getting explanations for puzzle ${puzzle.id}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
-            // Keep puzzle in results but without detailed explanation data
-            puzzle.explanations = [];
-            puzzle.totalExplanations = 0;
-            puzzle.latestExplanation = null;
-          }
-        }
-      }
-
-      res.json(formatResponse.success(paginatedResults));
+      const results = await puzzleOverviewService.processOverview(req.query);
+      res.json(formatResponse.success(results));
 
     } catch (error) {
       logger.error('Error in puzzle overview: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -796,68 +287,12 @@ export const puzzleController = {
   async getWorstPerformingPuzzles(req: Request, res: Response) {
     try {
       const { limit = 20, sortBy = 'composite' } = req.query;
-      const limitNum = Math.min(Math.max(parseInt(limit as string) || 20, 1), 50); // Cap at 50
+      const limitNum = puzzleFilterService.validateLimit(limit, 20, 50);
+      const sortOption = puzzleFilterService.validateWorstPuzzleSortParameters(sortBy as string);
 
       logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}`, 'puzzle-controller');
 
-      if (!repositoryService.isConnected()) {
-        logger.warn('Database not connected - returning empty list for worst-performing puzzles', 'puzzle-controller');
-        return res.json(formatResponse.success({
-          puzzles: [],
-          total: 0,
-          message: 'Database not available - no performance data'
-        }));
-      }
-
-      const validSortOptions = ['composite', 'feedback', 'accuracy'];
-      const sort = validSortOptions.includes(sortBy as string) ? sortBy as string : 'composite';
-      const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limitNum, sort);
-      
-      // For each puzzle, get the actual puzzle metadata
-      const enrichedPuzzles = await Promise.all(
-        worstPuzzles.map(async (puzzleData) => {
-          try {
-            const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
-            return {
-              ...puzzleMetadata,
-              // Ensure id field is always present and correct
-              id: puzzleData.puzzleId,
-              // Add performance metrics
-              performanceData: {
-                wrongCount: puzzleData.wrongCount,
-                avgAccuracy: puzzleData.avgAccuracy,
-                avgConfidence: puzzleData.avgConfidence,
-                totalExplanations: puzzleData.totalExplanations,
-                negativeFeedback: puzzleData.negativeFeedback,
-                totalFeedback: puzzleData.totalFeedback,
-                latestAnalysis: puzzleData.latestAnalysis,
-                worstExplanationId: puzzleData.worstExplanationId,
-                compositeScore: puzzleData.compositeScore
-              }
-            };
-          } catch (error) {
-            logger.warn(`Could not load metadata for puzzle ${puzzleData.puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
-            // Return basic structure if puzzle metadata fails
-            return {
-              id: puzzleData.puzzleId,
-              error: 'Puzzle metadata not available',
-              performanceData: {
-                wrongCount: puzzleData.wrongCount,
-                avgAccuracy: puzzleData.avgAccuracy,
-                avgConfidence: puzzleData.avgConfidence,
-                totalExplanations: puzzleData.totalExplanations,
-                negativeFeedback: puzzleData.negativeFeedback,
-                totalFeedback: puzzleData.totalFeedback,
-                latestAnalysis: puzzleData.latestAnalysis,
-                worstExplanationId: puzzleData.worstExplanationId,
-                compositeScore: puzzleData.compositeScore
-              }
-            };
-          }
-        })
-      );
-
-      logger.debug(`Found ${enrichedPuzzles.length} worst-performing puzzles`, 'puzzle-controller');
+      const enrichedPuzzles = await puzzleOverviewService.getWorstPerformingPuzzles(limitNum, sortOption);
 
       res.json(formatResponse.success({
         puzzles: enrichedPuzzles,
