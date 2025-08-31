@@ -38,7 +38,7 @@
 
 ---
 
-## Phase 3: Service Layer Optimization
+## Phase 3: Service Layer Optimization  
 
 **Ticket 3.1:** Slim `puzzleController`  
 - Move all business logic to services  
