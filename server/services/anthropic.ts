@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
+import { MODELS as MODEL_CONFIGS, getApiModelName, getModelConfig } from "../config/models.js";
 
 // Helper function to check if model supports temperature using centralized config
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -22,13 +22,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export class AnthropicService extends BaseAIService {
   protected provider = "Anthropic";
-  protected models = {
-    "claude-sonnet-4-20250514": "claude-sonnet-4-20250514",
-    "claude-3-7-sonnet-20250219": "claude-3-7-sonnet-20250219",
-    "claude-3-5-sonnet-20241022": "claude-3-5-sonnet-20241022",
-    "claude-3-5-haiku-20241022": "claude-3-5-haiku-20241022",
-    "claude-3-haiku-20240307": "claude-3-haiku-20240307",
-  };
+  protected models = {}; // Required by BaseAIService, but we use centralized getApiModelName
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -40,21 +34,13 @@ export class AnthropicService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    // Build prompt package using inherited method
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
-    
-    // Log analysis start using inherited method
-    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // Call provider-specific API
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
-      
-      // Parse response using provider-specific method
-      const { result, tokenUsage, reasoningLog, reasoningItems } = 
+      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
         this.parseProviderResponse(response, modelKey, captureReasoning);
 
-      // Build standard response using inherited method
       return this.buildStandardResponse(
         modelKey,
         temperature,
@@ -63,23 +49,27 @@ export class AnthropicService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         !!reasoningLog,
-        reasoningItems
+        reasoningItems,
+        status,
+        incomplete,
+        incompleteReason
       );
-
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
     }
   }
 
   getModelInfo(modelKey: string): ModelInfo {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey) || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     
+    const max_tokens = modelConfig?.maxOutputTokens || 4096; // Default value
+
     return {
       name: modelName,
       isReasoning: false, // Anthropic models don't have built-in reasoning mode
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxTokens || 200000,
+      contextWindow: max_tokens,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Anthropic doesn't support structured output yet
@@ -95,16 +85,16 @@ export class AnthropicService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey) || modelKey;
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
-    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+    const temperature = options?.temperature ?? 0.2; // Use passed temp or default
+    const apiModelName = getApiModelName(modelName);
 
-    // Build message format for Anthropic API
     const messageFormat: any = {
-      model: modelName,
+      model: apiModelName,
       max_tokens: 20000,
       messages: [{ role: "user", content: userMessage }],
       ...(systemMessage && { system: systemMessage }),
@@ -114,20 +104,22 @@ export class AnthropicService extends BaseAIService {
     const providerSpecificNotes = [
       "Uses Anthropic Messages API",
       "Supports dedicated system parameter",
-      systemPromptMode === 'ARC' 
+      serviceOpts.systemPromptMode === 'ARC' 
         ? "System Prompt Mode: {ARC} - Using dedicated system parameter"
         : "System Prompt Mode: {None} - All content in user message",
       "JSON extraction via regex parsing (no structured output support)"
     ];
 
+    const { systemPromptMode } = serviceOpts;
     const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
 
     return {
       provider: this.provider,
       modelName,
-      promptText: previewText,
       messageFormat,
-      systemPromptMode,
+      promptText: previewText,
+      systemPromptMode: serviceOpts.systemPromptMode,
+      providerSpecificNotes: providerSpecificNotes.join('; '),
       templateInfo: {
         id: promptPackage.selectedTemplate?.id || "custom",
         name: promptPackage.selectedTemplate?.name || "Custom Prompt",
@@ -137,8 +129,7 @@ export class AnthropicService extends BaseAIService {
         characterCount: previewText.length,
         wordCount: previewText.split(/\s+/).length,
         lineCount: previewText.split('\n').length
-      },
-      providerSpecificNotes: providerSpecificNotes.join('; ')
+      }
     };
   }
 
@@ -148,60 +139,57 @@ export class AnthropicService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions
   ): Promise<any> {
-    const modelName = this.models[modelKey] || modelKey;
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
-    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+    const { systemPrompt, userPrompt } = promptPackage;
+    const modelConfig = getModelConfig(modelKey);
+    const apiModelName = getApiModelName(modelKey);
+    const supportsTemp = modelConfig?.supportsTemperature ?? false;
 
-    // Build request options with proper Anthropic system parameter
-    const requestOptions: any = {
-      model: modelName,
-      max_tokens: 20000,
-      messages: [{ role: "user", content: userMessage }],
+    const requestBody: Anthropic.Messages.MessageCreateParams = {
+      model: apiModelName,
+      max_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || 4096,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+      ...(supportsTemp && { temperature }),
     };
-    
-    // Add system prompt if in ARC mode (Anthropic supports dedicated system parameter)
-    if (systemMessage && systemPromptMode === 'ARC') {
-      requestOptions.system = systemMessage;
-    }
 
-    // Only add temperature for models that support it
-    if (modelSupportsTemperature(modelKey)) {
-      requestOptions.temperature = temperature;
-    }
+    this.logAnalysisStart(modelKey, temperature, userPrompt.length, serviceOpts);
+    const startTime = Date.now();
+    const response = await anthropic.messages.create(requestBody);
+    const processingTime = Date.now() - startTime;
+    console.log(`[${this.provider}] Analysis for ${modelKey} completed in ${processingTime}ms`);
 
-    return await anthropic.messages.create(requestOptions);
+    return { ...response, processingTime };
   }
 
   protected parseProviderResponse(
     response: any,
     modelKey: string,
     captureReasoning: boolean
-  ): {
-    result: any;
-    tokenUsage: TokenUsage;
-    reasoningLog?: any;
-    reasoningItems?: any[];
-  } {
-    // Extract text content from Anthropic response
-    const content = response.content[0];
-    const textContent = content.type === 'text' ? content.text : '';
-    
-    // Extract JSON using inherited method
-    const result = this.extractJsonFromResponse(textContent, modelKey);
+  ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
+    const { content, usage, stop_reason } = response;
+    const responseText = content[0]?.text || '';
 
-    // Extract token usage
     const tokenUsage: TokenUsage = {
-      input: response.usage?.input_tokens || 0,
-      output: response.usage?.output_tokens || 0,
-      // Anthropic doesn't provide separate reasoning tokens
+      input: usage.input_tokens,
+      output: usage.output_tokens,
     };
 
-    // Anthropic doesn't provide built-in reasoning logs
+    const isComplete = stop_reason === 'end_turn';
+    const incompleteReason = isComplete ? undefined : stop_reason;
+
+    // For Anthropic, reasoning is not structured, so we pass the raw text if requested.
+    const reasoningLog = captureReasoning ? responseText : undefined;
+
+    // Attempt to extract JSON from the response text.
+    const result = this.extractJsonFromResponse(responseText, modelKey);
+
     return {
       result,
       tokenUsage,
-      reasoningLog: null,
+      reasoningLog,
+      status: isComplete ? 'completed' : 'incomplete',
+      incomplete: !isComplete,
+      incompleteReason,
       reasoningItems: []
     };
   }

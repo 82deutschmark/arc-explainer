@@ -10,13 +10,14 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
-import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord } from '@shared/types';
+import { useConfidenceStats } from '@/hooks/useConfidenceStats';
+import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord, ModelConfig, ConfidenceStats } from '@shared/types';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -42,6 +43,12 @@ export default function PuzzleOverview() {
   const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
   const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
   const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
+  const [totalTokensMin, setTotalTokensMin] = useState<string>(urlParams.get('totalTokensMin') || '');
+  const [totalTokensMax, setTotalTokensMax] = useState<string>(urlParams.get('totalTokensMax') || '');
+  const [estimatedCostMin, setEstimatedCostMin] = useState<string>(urlParams.get('estimatedCostMin') || '');
+  const [estimatedCostMax, setEstimatedCostMax] = useState<string>(urlParams.get('estimatedCostMax') || '');
+  const [predictionAccuracyMin, setPredictionAccuracyMin] = useState<string>(urlParams.get('predictionAccuracyMin') || '');
+  const [predictionAccuracyMax, setPredictionAccuracyMax] = useState<string>(urlParams.get('predictionAccuracyMax') || '');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'explanationCount');
   const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'asc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
@@ -49,10 +56,14 @@ export default function PuzzleOverview() {
   // Feedback modal state
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
+  const [showAccuracyLeaderboard, setShowAccuracyLeaderboard] = useState(false);
+  const [showTrustworthinessLeaderboard, setShowTrustworthinessLeaderboard] = useState(false);
 
   // Model debug modal state
   const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
   const [selectedModelName, setSelectedModelName] = useState<string>('');
+
+  const { data: models } = useModels();
 
   // Set page title
   React.useEffect(() => {
@@ -155,6 +166,9 @@ export default function PuzzleOverview() {
     },
   });
 
+  // Fetch confidence statistics
+  const { confidenceStats, isLoading: confidenceLoading } = useConfidenceStats();
+
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
     refetch();
@@ -201,8 +215,8 @@ export default function PuzzleOverview() {
         const total = stats.helpful + stats.notHelpful;
         const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
         
-        // Find model display name from MODELS array
-        const modelInfo = MODELS.find(m => m.key === modelName);
+        // Find model display name from models data
+        const modelInfo = models?.find((m: ModelConfig) => m.key === modelName);
         const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
         
         return {
@@ -223,7 +237,7 @@ export default function PuzzleOverview() {
         }
         return b.total - a.total;
       });
-  }, [feedbackStats]);
+  }, [feedbackStats, models]);
 
   // Separate query for recent activity - get puzzles with explanations sorted by recent activity
   const { data: recentActivityData } = useQuery<PuzzleOverviewResponse>({
@@ -321,6 +335,7 @@ export default function PuzzleOverview() {
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
+          confidenceStats={confidenceStats}
           modelRankings={modelRankings}
           onViewAllFeedback={() => {
             setSelectedPuzzleId('');
@@ -331,7 +346,7 @@ export default function PuzzleOverview() {
             setModelDebugModalOpen(true);
           }}
           statsLoading={statsLoading}
-          accuracyLoading={accuracyLoading}
+          accuracyLoading={accuracyLoading || confidenceLoading}
           recentActivity={recentActivity}
         />
 
@@ -374,6 +389,18 @@ export default function PuzzleOverview() {
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           getSortIcon={getSortIcon}
+          totalTokensMin={totalTokensMin}
+          setTotalTokensMin={setTotalTokensMin}
+          totalTokensMax={totalTokensMax}
+          setTotalTokensMax={setTotalTokensMax}
+          estimatedCostMin={estimatedCostMin}
+          setEstimatedCostMin={setEstimatedCostMin}
+          estimatedCostMax={estimatedCostMax}
+          setEstimatedCostMax={setEstimatedCostMax}
+          predictionAccuracyMin={predictionAccuracyMin}
+          setPredictionAccuracyMin={setPredictionAccuracyMin}
+          predictionAccuracyMax={predictionAccuracyMax}
+          setPredictionAccuracyMax={setPredictionAccuracyMax}
         />
 
         {/* Loading indicator for filtering */}

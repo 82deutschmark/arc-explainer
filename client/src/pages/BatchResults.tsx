@@ -17,7 +17,8 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
+import type { ModelConfig } from '@shared/types';
 
 interface BatchSession {
   id: string;
@@ -99,9 +100,12 @@ export default function BatchResults() {
   const sessions: BatchSession[] = Array.isArray(sessionsData) ? sessionsData : [];
   const results: BatchResult[] = Array.isArray(resultsData) ? resultsData : [];
 
+  const { data: models, isLoading: modelsLoading } = useModels();
+
   // Get model info for display
   const getModelInfo = (modelKey: string) => {
-    const model = MODELS.find(m => m.key === modelKey);
+    if (modelsLoading || !models) return modelKey;
+    const model = models.find((m: ModelConfig) => m.key === modelKey);
     return model ? `${model.name} (${model.provider})` : modelKey;
   };
 

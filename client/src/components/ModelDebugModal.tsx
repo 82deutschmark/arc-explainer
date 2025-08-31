@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
-import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats } from '@shared/types';
+import { useModels } from '@/hooks/useModels';
+import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats, ModelConfig } from '@shared/types';
 
 interface ModelDebugModalProps {
   open: boolean;
@@ -39,8 +39,11 @@ export function ModelDebugModal({
   modelName 
 }: ModelDebugModalProps) {
   
+  // Fetch models
+  const { data: models, isLoading: modelsLoading, error: modelsError } = useModels();
+
   // Get model display info
-  const modelInfo = MODELS.find(m => m.key === modelName);
+  const modelInfo = models?.find((m: ModelConfig) => m.key === modelName);
   const displayName = modelInfo ? `${modelInfo.name}` : modelName;
 
   // Fetch accuracy stats
@@ -95,8 +98,8 @@ export function ModelDebugModal({
   const modelTrustworthiness = performanceStats?.trustworthinessLeaders?.find(m => m.modelName === modelName);
   const modelSpeed = performanceStats?.speedLeaders?.find(m => m.modelName === modelName);
   
-  const isLoading = accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
-  const hasErrors = accuracyError || feedbackError || rawError || performanceError;
+  const isLoading = modelsLoading || accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
+  const hasErrors = modelsError || accuracyError || feedbackError || rawError || performanceError;
 
   // Validation
   if (!open) return null;
@@ -192,52 +195,66 @@ export function ModelDebugModal({
                 </Card>
               )}
 
-              {/* Accuracy Statistics */}
+              {/* Mixed Model Performance Statistics */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-green-500" />
-                    Accuracy Statistics
+                    <BarChart3 className="h-5 w-5 text-orange-500" />
+                    Mixed Performance Statistics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      ⚠️ <strong>Data Warning:</strong> This data comes from accuracyByModel which is filtered by trustworthiness scores.
+                      Models without trustworthiness data are excluded. This is NOT pure puzzle-solving accuracy.
+                    </p>
+                  </div>
                   {modelAccuracy ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="font-medium text-gray-600">Total Attempts:</span>
                         <p className="text-lg font-mono">{modelAccuracy.totalAttempts}</p>
+                        <p className="text-xs text-gray-500">Only trustworthy entries</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Correct Predictions:</span>
                         <p className="text-lg font-mono text-green-600">{modelAccuracy.correctPredictions}</p>
+                        <p className="text-xs text-gray-500">Boolean correctness count</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Accuracy Percentage:</span>
+                        <span className="font-medium text-gray-600">Puzzle Success Rate:</span>
                         <p className="text-lg font-mono">{modelAccuracy.accuracyPercentage}%</p>
+                        <p className="text-xs text-gray-500">Pure accuracy (filtered set)</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Avg Confidence:</span>
                         <p className="text-lg font-mono">{modelAccuracy.avgConfidence?.toFixed(2) || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">AI self-reported confidence</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Avg Accuracy Score:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.avgAccuracyScore?.toFixed(3) || 'N/A'}</p>
+                        <span className="font-medium text-gray-600 line-through">Avg Accuracy Score:</span>
+                        <p className="text-lg font-mono text-red-600">{modelAccuracy.avgAccuracyScore?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-xs text-red-500">MISLEADING: Actually trustworthiness!</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Avg Trustworthiness:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-lg font-mono text-blue-600">{modelAccuracy.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">Confidence reliability score</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Successful Predictions:</span>
                         <p className="text-lg font-mono">{modelAccuracy.successfulPredictions || 'N/A'}</p>
+                        <p className="text-xs text-gray-500">Same as correct predictions</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Success Rate:</span>
                         <p className="text-lg font-mono">{modelAccuracy.predictionSuccessRate?.toFixed(2) || 'N/A'}%</p>
+                        <p className="text-xs text-gray-500">Same as accuracy percentage</p>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-500">No accuracy data available for this model</p>
+                    <p className="text-gray-500">No performance data available for this model (may lack trustworthiness scores)</p>
                   )}
                 </CardContent>
               </Card>
@@ -297,10 +314,6 @@ export function ModelDebugModal({
                               <p className="text-lg font-mono">{modelTrustworthiness.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Calibration Error:</span>
-                              <p className="text-lg font-mono">{modelTrustworthiness.calibrationError?.toFixed(3) || 'N/A'}</p>
-                            </div>
-                            <div>
                               <span className="font-medium text-gray-600">Avg Processing Time:</span>
                               <p className="text-lg font-mono">{modelTrustworthiness.avgProcessingTime?.toFixed(2) || 'N/A'}ms</p>
                             </div>
@@ -317,20 +330,8 @@ export function ModelDebugModal({
                               <p className="text-lg font-mono">${modelTrustworthiness.totalCost?.toFixed(2) || 'N/A'}</p>
                             </div>
                             <div>
-                              <span className="font-medium text-gray-600">Cost per Trustworthiness:</span>
-                              <p className="text-lg font-mono">${modelTrustworthiness.costPerTrustworthiness?.toFixed(4) || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-600">Tokens per Trustworthiness:</span>
-                              <p className="text-lg font-mono">{modelTrustworthiness.tokensPerTrustworthiness?.toFixed(2) || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-600">Trustworthiness Range:</span>
-                              <p className="text-lg font-mono">
-                                {modelTrustworthiness.trustworthinessRange ? 
-                                  `${modelTrustworthiness.trustworthinessRange.min.toFixed(3)} - ${modelTrustworthiness.trustworthinessRange.max.toFixed(3)}` 
-                                  : 'N/A'}
-                              </p>
+                              <span className="font-medium text-gray-600">Total Attempts:</span>
+                              <p className="text-lg font-mono">{modelTrustworthiness.totalAttempts || 'N/A'}</p>
                             </div>
                           </div>
                         </div>

@@ -56,15 +56,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
   
-  // Solver mode accuracy statistics
+  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - ⚠️ MISLEADING ENDPOINTS!
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
+  // WARNING: Despite name, returns mixed data. accuracyByModel contains trustworthiness-filtered results!
+  // Models without trustworthiness scores are excluded from "accuracy" rankings.
+  
   app.get("/api/puzzle/general-stats", asyncHandler(puzzleController.getGeneralModelStats));
+  // WARNING: Returns mixed data combining all explanations + solver attempts + trustworthiness metrics
+  // Different arrays have different inclusion criteria - very confusing!
   
-  // Raw database statistics
+  // RAW DATABASE STATISTICS - Infrastructure metrics only
   app.get("/api/puzzle/raw-stats", asyncHandler(puzzleController.getRawStats));
+  // NOTE: avgPredictionAccuracy field contains trustworthiness data, not pure accuracy!
   
-  // Real performance statistics (actual prediction accuracy)
+  // TRUSTWORTHINESS STATISTICS - AI confidence reliability analysis  
   app.get("/api/puzzle/performance-stats", asyncHandler(puzzleController.getRealPerformanceStats));
+  // CORRECT: Returns trustworthiness-focused analysis (confidence reliability metrics)
+
+  // CONFIDENCE ANALYSIS STATISTICS - AI confidence patterns
+  app.get("/api/puzzle/confidence-stats", asyncHandler(puzzleController.getConfidenceStats));
   
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));

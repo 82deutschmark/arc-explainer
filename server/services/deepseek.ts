@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
+import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -25,11 +25,7 @@ const deepseek = new OpenAI({
 
 export class DeepSeekService extends BaseAIService {
   protected provider = "DeepSeek";
-  protected models = {
-    "deepseek-chat": "deepseek-chat",
-    "deepseek-reasoner": "deepseek-reasoner",
-    "deepseek-v3": "deepseek-v3",
-  };
+  protected models = {}; // Required by BaseAIService, but we use centralized getApiModelName
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -41,21 +37,16 @@ export class DeepSeekService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    // Build prompt package using inherited method
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
-    // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // Call provider-specific API
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
-      // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
         this.parseProviderResponse(response, modelKey, captureReasoning);
 
-      // Build standard response using inherited method
       return this.buildStandardResponse(
         modelKey,
         temperature,
@@ -73,7 +64,7 @@ export class DeepSeekService extends BaseAIService {
   }
 
   getModelInfo(modelKey: string): ModelInfo {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey);
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     
     // Check if it's a reasoning model (DeepSeek Reasoner has reasoning capabilities)
@@ -83,7 +74,7 @@ export class DeepSeekService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxTokens || 64000, // DeepSeek models typically have 64k context
+      contextWindow: modelConfig?.contextWindow || 2048,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // DeepSeek doesn't support structured output format
@@ -99,8 +90,9 @@ export class DeepSeekService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey) || modelKey;
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    const temperature = options?.temperature;
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
@@ -164,7 +156,7 @@ export class DeepSeekService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions
   ): Promise<any> {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey) || modelKey;
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
@@ -198,6 +190,9 @@ export class DeepSeekService extends BaseAIService {
     tokenUsage: TokenUsage;
     reasoningLog?: any;
     reasoningItems?: any[];
+    status?: string;
+    incomplete?: boolean;
+    incompleteReason?: string;
   } {
     // Extract text content from DeepSeek response (OpenAI format)
     const choice = response.choices[0];
@@ -235,11 +230,17 @@ export class DeepSeekService extends BaseAIService {
       }
     }
 
+    const isComplete = response.choices[0].finish_reason === 'stop';
+    const incompleteReason = isComplete ? undefined : response.choices[0].finish_reason;
+
     return {
       result,
       tokenUsage,
       reasoningLog,
-      reasoningItems: []
+      reasoningItems: [],
+      status: isComplete ? 'completed' : 'incomplete',
+      incomplete: !isComplete,
+      incompleteReason
     };
   }
 }
