@@ -13,6 +13,7 @@ import { Play, Pause, Square, RefreshCw } from 'lucide-react';
 interface ExaminerControlsProps {
   isPaused: boolean;
   isRunning: boolean;
+  isLoading: boolean;
   progress: any; // Replace with a more specific type if available
   handleStart: () => void;
   handlePause: () => void;
@@ -23,6 +24,7 @@ interface ExaminerControlsProps {
 const ExaminerControls: React.FC<ExaminerControlsProps> = ({
   isPaused,
   isRunning,
+  isLoading,
   progress,
   handleStart,
   handlePause,
@@ -34,6 +36,7 @@ const ExaminerControls: React.FC<ExaminerControlsProps> = ({
       {!isRunning ? (
         <Button
           onClick={handleStart}
+          disabled={isLoading}
           className="bg-green-600 hover:bg-green-700 text-white text-lg px-8 py-6 rounded-full shadow-lg transform hover:scale-105 transition-transform"
         >
           <Play className="mr-2 h-6 w-6" />
@@ -44,6 +47,7 @@ const ExaminerControls: React.FC<ExaminerControlsProps> = ({
           {!isPaused ? (
             <Button
               onClick={handlePause}
+              disabled={isLoading}
               variant="secondary"
               className="text-lg px-8 py-6 rounded-full shadow-lg transform hover:scale-105 transition-transform"
             >
@@ -53,6 +57,7 @@ const ExaminerControls: React.FC<ExaminerControlsProps> = ({
           ) : (
             <Button
               onClick={handleResume}
+              disabled={isLoading}
               className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6 rounded-full shadow-lg transform hover:scale-105 transition-transform"
             >
               <RefreshCw className="mr-2 h-6 w-6" />
@@ -63,7 +68,7 @@ const ExaminerControls: React.FC<ExaminerControlsProps> = ({
             onClick={handleCancel}
             variant="destructive"
             className="text-lg px-8 py-6 rounded-full shadow-lg transform hover:scale-105 transition-transform"
-            disabled={progress && progress.progress.percentage >= 100}
+            disabled={(progress && progress.progress.percentage >= 100) || isLoading}
           >
             <Square className="mr-2 h-6 w-6" />
             Cancel
