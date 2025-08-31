@@ -98,13 +98,49 @@ export const puzzleController = {
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
     
+    // Fetch previous analysis and bad feedback for retry mode
+    let previousAnalysis = null;
+    let badFeedback = null;
+    
+    if (retryMode) {
+      try {
+        // Get all explanations for this puzzle to find the worst one
+        const explanations = await repositoryService.explanations.getExplanationsForPuzzle(taskId);
+        if (explanations && explanations.length > 0) {
+          // Find the worst analysis (incorrect prediction or lowest trustworthiness)
+          previousAnalysis = explanations.find(exp => exp.isPredictionCorrect === false) || 
+                           explanations.sort((a, b) => (a.predictionAccuracyScore || 1) - (b.predictionAccuracyScore || 1))[0];
+        }
+        
+        // Get bad feedback for this puzzle
+        if (repositoryService.feedback) {
+          const allFeedback = await repositoryService.feedback.getFeedbackForPuzzle(taskId);
+          if (allFeedback && allFeedback.length > 0) {
+            // Filter to get only negative feedback with comments
+            badFeedback = allFeedback.filter(fb => 
+              fb.voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
+            );
+          }
+        }
+        
+        console.log(`[RETRY-MODE] Found ${previousAnalysis ? '1' : '0'} previous analysis and ${badFeedback ? badFeedback.length : 0} bad feedback entries`);
+      } catch (error) {
+        console.error('[RETRY-MODE] Error fetching context:', error);
+        // Continue without context rather than failing
+      }
+    }
+    
     // Build options object for prompt builder
     const options: PromptOptions = {};
     if (emojiSetKey) options.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
     if (topP) options.topP = topP;
     if (candidateCount) options.candidateCount = candidateCount;
-    if (retryMode) options.retryMode = retryMode;
+    if (retryMode) {
+      options.retryMode = retryMode;
+      if (previousAnalysis) options.previousAnalysis = previousAnalysis;
+      if (badFeedback && badFeedback.length > 0) options.badFeedback = badFeedback;
+    }
     
     // Build service options including reasoning parameters
     const serviceOpts: any = {};

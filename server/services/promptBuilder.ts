@@ -37,6 +37,8 @@ export interface PromptOptions {
   topP?: number;
   candidateCount?: number;
   retryMode?: boolean; // Enhanced prompting for retry analysis
+  previousAnalysis?: any; // Previous failed analysis data
+  badFeedback?: any[]; // Bad feedback entries for context
 }
 
 /**
@@ -66,7 +68,9 @@ export function buildAnalysisPrompt(
     omitAnswer = false,
     systemPromptMode = 'ARC',
     useStructuredOutput = true,
-    retryMode = false
+    retryMode = false,
+    previousAnalysis,
+    badFeedback
   } = options;
 
   // Determine prompt characteristics
@@ -94,6 +98,67 @@ export function buildAnalysisPrompt(
       // Add retry enhancement to system prompt
       if (retryMode) {
         systemPrompt += "\n\nIMPORTANT: A previous analysis of this puzzle was incorrect. Please provide a fresh, more careful analysis with renewed attention to detail.";
+        
+        // Include previous analysis context if available
+        if (previousAnalysis) {
+          systemPrompt += `\n\nPREVIOUS FAILED ANALYSIS (Full DB Record):`;
+          systemPrompt += `\nModel: ${previousAnalysis.modelName || 'Unknown'}`;
+          systemPrompt += `\nDatabase ID: ${previousAnalysis.id}`;
+          systemPrompt += `\nCreated: ${previousAnalysis.createdAt || 'Unknown'}`;
+          
+          if (previousAnalysis.patternDescription) {
+            systemPrompt += `\nPattern Description: "${previousAnalysis.patternDescription}"`;
+          }
+          if (previousAnalysis.solvingStrategy) {
+            systemPrompt += `\nSolving Strategy: "${previousAnalysis.solvingStrategy}"`;
+          }
+          if (previousAnalysis.hints && previousAnalysis.hints.length > 0) {
+            systemPrompt += `\nHints: ${previousAnalysis.hints.map(h => `"${h}"`).join(', ')}`;
+          }
+          if (previousAnalysis.isPredictionCorrect === false) {
+            systemPrompt += `\nPrediction Result: INCORRECT`;
+          }
+          if (previousAnalysis.predictionAccuracyScore !== undefined) {
+            systemPrompt += `\nTrustworthiness Score: ${Math.round(previousAnalysis.predictionAccuracyScore * 100)}%`;
+          }
+          if (previousAnalysis.confidence) {
+            systemPrompt += `\nModel Confidence: ${previousAnalysis.confidence}%`;
+          }
+          if (previousAnalysis.apiProcessingTimeMs) {
+            systemPrompt += `\nProcessing Time: ${previousAnalysis.apiProcessingTimeMs}ms`;
+          }
+          if (previousAnalysis.totalTokens) {
+            systemPrompt += `\nTokens Used: ${previousAnalysis.totalTokens}`;
+          }
+          if (previousAnalysis.estimatedCost) {
+            systemPrompt += `\nCost: $${previousAnalysis.estimatedCost}`;
+          }
+          if (previousAnalysis.reasoningLog) {
+            systemPrompt += `\nHad Reasoning Log: Yes (${previousAnalysis.reasoningLog.length} chars)`;
+          }
+        }
+        
+        // Include bad feedback if available
+        if (badFeedback && badFeedback.length > 0) {
+          systemPrompt += `\n\nUSER FEEDBACK ON PREVIOUS ANALYSIS (Full DB Records):`;
+          badFeedback.forEach((feedback, index) => {
+            systemPrompt += `\nFeedback ${index + 1} (DB ID: ${feedback.id}):`;
+            systemPrompt += `\n  Vote: ${feedback.voteType}`;
+            systemPrompt += `\n  Comment: "${feedback.comment}"`;
+            systemPrompt += `\n  Created: ${feedback.createdAt || 'Unknown'}`;
+            if (feedback.explanationId) {
+              systemPrompt += `\n  Related to Explanation ID: ${feedback.explanationId}`;
+            }
+            if (feedback.modelName) {
+              systemPrompt += `\n  Model: ${feedback.modelName}`;
+            }
+            if (feedback.confidence) {
+              systemPrompt += `\n  Model Confidence: ${feedback.confidence}%`;
+            }
+            systemPrompt += `\n`;
+          });
+          systemPrompt += `\nPlease address these specific criticisms in your new analysis.`;
+        }
       }
     }
   }
