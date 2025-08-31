@@ -269,6 +269,11 @@ export interface AccuracyStats {
   }>;
   totalSolverAttempts: number;
   totalCorrectPredictions?: number;
+
+  // Leaderboard data
+  topModelsByAccuracy?: Array<{ modelName: string; value: number; totalCorrect: number; totalAttempts: number; }>;
+  topModelsByAverageCost?: Array<{ modelName: string; value: number; totalAttempts: number; }>;
+  topModelsByAverageSpeed?: Array<{ modelName: string; value: number; totalAttempts: number; }>;
 }
 
 /**
