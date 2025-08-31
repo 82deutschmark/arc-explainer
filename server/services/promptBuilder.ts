@@ -33,6 +33,9 @@ export interface PromptOptions {
   omitAnswer?: boolean;
   systemPromptMode?: 'ARC' | 'None';
   useStructuredOutput?: boolean;
+  temperature?: number;
+  topP?: number;
+  candidateCount?: number;
 }
 
 /**
