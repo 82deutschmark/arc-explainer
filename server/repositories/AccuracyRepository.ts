@@ -19,7 +19,7 @@
  * - ONLY pure boolean correctness metrics
  * 
  * INCLUSION CRITERIA:
- * - Models that made solver attempts (have prediction grids)
+ * - Solver attempts (have prediction grids)
  * - No filtering by confidence or trustworthiness scores
  * - Shows all models, even those without complete metadata
  * 

@@ -1,5 +1,21 @@
 ### August 31 2025
 
+## v2.6.2 - Repository Layer Refactor Completion ✅
+- **MAJOR REFACTOR**: Completed Phase 1 repository separation to eliminate mixed accuracy/trustworthiness metrics
+- **Repository Separation**: Split monolithic FeedbackRepository into specialized repositories:
+  - AccuracyRepository: Pure puzzle-solving accuracy metrics using boolean correctness flags
+  - TrustworthinessRepository: AI confidence reliability metrics (prediction_accuracy_score focus)
+  - MetricsRepository: Cross-repository analytics and aggregate statistics
+  - FeedbackRepository: Now focuses exclusively on user feedback about explanation quality
+- **Controller Updates**: Updated puzzleController.ts and feedbackController.ts to use correct repositories
+- **Service Layer**: Updated dbService.ts to delegate to appropriate specialized repositories
+- **Frontend Integration**: Updated ModelDebugModal.tsx to handle new PureAccuracyStats data structure
+- **Data Integrity**: Eliminated misleading mixed metrics that confused accuracy with trustworthiness
+- **Performance**: More focused database queries with specialized repository methods
+- **Maintainability**: Clear separation of concerns with dedicated repositories for each metric domain
+- **Files Changed**: server/controllers/puzzleController.ts, server/controllers/feedbackController.ts, server/services/dbService.ts, client/src/components/ModelDebugModal.tsx
+- Author: Claude Sonnet 4
+
 ## v2.6.1 - Fix PuzzleDiscussion Page Link Handling ✅
 - **CRITICAL FIX**: Fixed "Puzzle undefined not found" error when clicking puzzles in Discussion page
 - **ROOT CAUSE**: getWorstPerformingPuzzles API wasn't ensuring puzzle ID field was preserved in response objects

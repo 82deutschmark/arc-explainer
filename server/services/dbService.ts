@@ -138,7 +138,7 @@ const isConnected = () => {
  * REFACTORED: Now delegates to repositoryService
  */
 const getAccuracyStats = async () => {
-  return await repositoryService.feedback.getAccuracyStats();
+  return await repositoryService.accuracy.getPureAccuracyStats();
 };
 
 // Batch Analysis Functions - All delegate to repositoryService
