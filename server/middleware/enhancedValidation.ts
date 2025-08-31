@@ -11,7 +11,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler.js';
 import { logger } from '../utils/logger.js';
-import { getModelConfig } from '../config/models.js';
+import { getModelConfig } from '../config/models/index.js';
 import type { ModelConfig } from '@shared/types.js';
 
 /**
@@ -25,7 +25,7 @@ interface ValidationSchema {
     max?: number;
     enum?: any[];
     pattern?: RegExp;
-    custom?: (value: any) => boolean | string;
+    custom?: (value: any, data?: any) => boolean | string;
   };
 }
 
@@ -54,8 +54,7 @@ export class EnhancedValidation {
         throw new AppError(
           `Validation failed: ${result.errors.join(', ')}`,
           400,
-          'VALIDATION_ERROR',
-          { errors: result.errors, field: location }
+          'VALIDATION_ERROR'
         );
       }
       
@@ -75,12 +74,12 @@ export class EnhancedValidation {
         type: 'string',
         min: 1,
         pattern: /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}|^[a-f0-9]{8}$/i,
-        custom: (value) => value.trim().length > 0 || 'Task ID cannot be empty'
+        custom: (value: any, data?: any) => value.trim().length > 0 || 'Task ID cannot be empty'
       },
       model: {
         required: true,
         type: 'string',
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           const modelConfig = getModelConfig(value);
           return modelConfig ? true : `Unknown model: ${value}`;
         }
@@ -89,7 +88,7 @@ export class EnhancedValidation {
         type: 'number',
         min: 0,
         max: 2,
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           if (value === undefined) return true;
           const num = parseFloat(value);
           return !isNaN(num) || 'Temperature must be a valid number';
@@ -98,7 +97,7 @@ export class EnhancedValidation {
       promptId: {
         type: 'string',
         enum: ['solver', 'educational', 'standard', 'alien', 'custom'],
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           if (value === undefined) return true;
           return ['solver', 'educational', 'standard', 'alien', 'custom'].includes(value) || 
                  'Invalid prompt ID';
@@ -108,7 +107,7 @@ export class EnhancedValidation {
         type: 'string',
         min: 10,
         max: 10000,
-        custom: (value, data) => {
+        custom: (value: any, data?: any) => {
           if (data.promptId === 'custom' && (!value || value.trim().length < 10)) {
             return 'Custom prompt is required and must be at least 10 characters when promptId is "custom"';
           }
@@ -138,8 +137,7 @@ export class EnhancedValidation {
         throw new AppError(
           `Invalid analysis request: ${result.errors.join(', ')}`,
           400,
-          'VALIDATION_ERROR',
-          { errors: result.errors }
+          'VALIDATION_ERROR'
         );
       }
 
@@ -148,7 +146,7 @@ export class EnhancedValidation {
       const modelConfig = getModelConfig(modelKey);
       
       if (modelConfig && result.sanitizedData.temperature !== undefined) {
-        if (!modelConfig.supportsTemperature) {
+        if (!modelConfig.isReasoning) {
           throw new AppError(
             `Model ${modelKey} does not support temperature adjustment`,
             400,
@@ -172,7 +170,7 @@ export class EnhancedValidation {
       modelKey: {
         required: true,
         type: 'string',
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           const modelConfig = getModelConfig(value);
           return modelConfig ? true : `Unknown model: ${value}`;
         }
@@ -190,7 +188,7 @@ export class EnhancedValidation {
         type: 'string',
         min: 10,
         max: 10000,
-        custom: (value, data) => {
+        custom: (value: any, data?: any) => {
           if (data.promptId === 'custom' && (!value || value.trim().length < 10)) {
             return 'Custom prompt is required when promptId is "custom"';
           }
@@ -206,7 +204,7 @@ export class EnhancedValidation {
         type: 'number',
         min: 1,
         max: 50,
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           if (value === undefined) return true;
           const num = parseInt(value);
           return !isNaN(num) && num >= 1 && num <= 50 || 'Batch size must be between 1 and 50';
@@ -226,7 +224,7 @@ export class EnhancedValidation {
         required: true,
         type: 'number',
         min: 1,
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           const num = parseInt(value);
           return !isNaN(num) && num > 0 || 'Explanation ID must be a positive integer';
         }
@@ -241,7 +239,7 @@ export class EnhancedValidation {
         type: 'string',
         min: 20,
         max: 2000,
-        custom: (value) => {
+        custom: (value: any, data?: any) => {
           if (!value || value.trim().length < 20) {
             return 'A meaningful comment of at least 20 characters is required';
           }
@@ -265,8 +263,7 @@ export class EnhancedValidation {
         throw new AppError(
           `Invalid feedback submission: ${result.errors.join(', ')}`,
           400,
-          'VALIDATION_ERROR',
-          { errors: result.errors }
+          'VALIDATION_ERROR'
         );
       }
 
@@ -304,7 +301,7 @@ export class EnhancedValidation {
             }
             break;
           case 'reasoning':
-            if (!modelConfig.supportsReasoning) {
+            if (!modelConfig.isReasoning) {
               throw new AppError(
                 `Model ${modelKey} does not support reasoning`,
                 400,

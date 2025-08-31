@@ -6,7 +6,7 @@
  */
 
 import { Router } from 'express';
-import { MODELS, getModelConfig, getModelsByProvider } from '../config/models.ts';
+import { MODELS, getModelConfig, getModelsByProvider } from '../config/models/index.js';
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
     supportsTemperature: model.supportsTemperature,
     provider: model.provider,
     responseTime: model.responseTime,
-    supportsReasoning: model.supportsReasoning
+    isReasoning: model.isReasoning
   }));
 
   res.json(clientModels);
@@ -56,7 +56,7 @@ router.get('/:modelKey', (req, res) => {
     supportsTemperature: model.supportsTemperature,
     provider: model.provider,
     responseTime: model.responseTime,
-    supportsReasoning: model.supportsReasoning
+    isReasoning: model.isReasoning
   };
 
   res.json(clientModel);
@@ -80,7 +80,7 @@ router.get('/provider/:provider', (req, res) => {
     supportsTemperature: model.supportsTemperature,
     provider: model.provider,
     responseTime: model.responseTime,
-    supportsReasoning: model.supportsReasoning
+    isReasoning: model.isReasoning
   }));
 
   res.json(clientModels);

@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../config/models.js";
+import { MODELS as MODEL_CONFIGS } from "../config/models/index.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
