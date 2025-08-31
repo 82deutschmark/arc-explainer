@@ -1,3 +1,19 @@
+### August 31 2025
+
+## v2.6.0 - Initial PuzzleDiscussion Implementation (UNTESTED)
+- **EXPERIMENTAL**: Added `/discussion` page - may have filtering/display issues
+- **BACKEND CHANGES**: Modified prompt builder and controller for retry mode - needs testing
+- **DATABASE QUERIES**: Added feedback retrieval logic - may fail if repository methods don't exist
+- **UI COMPONENTS**: Created discussion page based on PuzzleBrowser - styling and functionality unverified
+- **POTENTIAL ISSUES**: 
+  - Database query methods may not exist or have different signatures
+  - Frontend retry mode detection logic is simplistic and may not work properly
+  - Enhanced prompting may not format correctly or could cause API failures
+  - Filtering logic for "problematic puzzles" may return empty results
+- **REQUIRES TESTING**: All functionality needs verification before use
+- **FILES MODIFIED**: Multiple files changed without comprehensive testing
+- Author: Claude Sonnet 4
+
 ### August 30 2025
 
 ## v2.5.27 - Fix Multi-Test Accuracy Display Logic
