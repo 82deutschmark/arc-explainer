@@ -8,10 +8,10 @@
  */
 
 import { Request, Response } from 'express';
-import { batchAnalysisService } from '../services/batchAnalysisService';
-import { formatResponse } from '../utils/responseFormatter';
-import { repositoryService } from '../repositories/RepositoryService.ts';
-import { logger } from '../utils/logger';
+import { batchAnalysisService } from '../services/batchAnalysisService.js';
+import { formatResponse } from '../utils/responseFormatter.js';
+import { repositoryService } from '../repositories/RepositoryService.js';
+import { logger } from '../utils/logger.js';
 
 export const batchAnalysisController = {
 
