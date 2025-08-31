@@ -603,10 +603,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
               COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
             )
         ) as performance_data
-        ORDER BY
+        ORDER BY 
+          CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
           CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
-          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST,
-          performance_data.composite_score DESC
+          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST
         LIMIT $1
       `, [limit, sortBy]);
 
