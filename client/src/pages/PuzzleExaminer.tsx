@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -38,6 +38,9 @@ import { useModels } from '@/hooks/useModels';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
+  
+  // Check if we're in retry mode (coming from discussion page)
+  const isRetryMode = window.location.search.includes('retry=true') || document.referrer.includes('/discussion');
   const [showEmojis, setShowEmojis] = useState(false); // Default to colors as requested - controls UI display
   const [emojiSet, setEmojiSet] = useState<EmojiSet>(DEFAULT_EMOJI_SET);
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
@@ -97,6 +100,7 @@ export default function PuzzleExaminer() {
     // Forward researcher options to backend
     emojiSetKey: sendAsEmojis ? emojiSet : undefined, // Only send emoji set if "Send as emojis" is enabled
     omitAnswer,
+    retryMode: isRetryMode, // Enable retry mode if coming from discussion
     // systemPromptMode removed - now hardcoded to 'ARC' in the backend
   });
   
@@ -148,8 +152,18 @@ export default function PuzzleExaminer() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Puzzle {taskId}</h1>
-            <p className="text-gray-600">ARC Task Examiner</p>
+            <h1 className="text-2xl font-bold">
+              Puzzle {taskId}
+              {isRetryMode && (
+                <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 border-orange-200">
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Retry Mode
+                </Badge>
+              )}
+            </h1>
+            <p className="text-gray-600">
+              {isRetryMode ? "Enhanced Analysis - Previous attempt was incorrect" : "ARC Task Examiner"}
+            </p>
           </div>
         </div>
         

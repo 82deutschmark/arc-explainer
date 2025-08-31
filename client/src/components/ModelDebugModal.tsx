@@ -25,7 +25,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useModels } from '@/hooks/useModels';
-import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats, ModelConfig } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats, ModelConfig, PureAccuracyStats } from '@shared/types';
 
 interface ModelDebugModalProps {
   open: boolean;
@@ -47,12 +47,12 @@ export function ModelDebugModal({
   const displayName = modelInfo ? `${modelInfo.name}` : modelName;
 
   // Fetch accuracy stats
-  const { data: accuracyStats, isLoading: accuracyLoading, error: accuracyError } = useQuery({
+  const { data: accuracyStats, isLoading: accuracyLoading, error: accuracyError } = useQuery<PureAccuracyStats | undefined>({
     queryKey: ['accuracy-stats-debug', modelName],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/puzzle/accuracy-stats');
       const json = await response.json();
-      return json.data as AccuracyStats;
+      return json.data as PureAccuracyStats;
     },
     enabled: open && !!modelName
   });
@@ -91,7 +91,7 @@ export function ModelDebugModal({
   });
 
   // Filter model-specific data
-  const modelAccuracy = accuracyStats?.accuracyByModel.find(m => m.modelName === modelName);
+  const modelAccuracy = accuracyStats?.modelAccuracyRankings.find((m: any) => m.modelName === modelName);
   const modelFeedback = feedbackStats?.feedbackByModel[modelName];
   
   // Filter performance data for this model
@@ -215,7 +215,7 @@ export function ModelDebugModal({
                       <div>
                         <span className="font-medium text-gray-600">Total Attempts:</span>
                         <p className="text-lg font-mono">{modelAccuracy.totalAttempts}</p>
-                        <p className="text-xs text-gray-500">Only trustworthy entries</p>
+                        <p className="text-xs text-gray-500">All solver attempts</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Correct Predictions:</span>
@@ -225,32 +225,23 @@ export function ModelDebugModal({
                       <div>
                         <span className="font-medium text-gray-600">Puzzle Success Rate:</span>
                         <p className="text-lg font-mono">{modelAccuracy.accuracyPercentage}%</p>
-                        <p className="text-xs text-gray-500">Pure accuracy (filtered set)</p>
+                        <p className="text-xs text-gray-500">Pure accuracy (no filtering)</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Avg Confidence:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.avgConfidence?.toFixed(2) || 'N/A'}</p>
-                        <p className="text-xs text-gray-500">AI self-reported confidence</p>
+                        <span className="font-medium text-gray-600">Single Test Attempts:</span>
+                        <p className="text-lg font-mono">{modelAccuracy.singleTestAttempts}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600 line-through">Avg Accuracy Score:</span>
-                        <p className="text-lg font-mono text-red-600">{modelAccuracy.avgAccuracyScore?.toFixed(3) || 'N/A'}</p>
-                        <p className="text-xs text-red-500">MISLEADING: Actually trustworthiness!</p>
+                        <span className="font-medium text-gray-600">Single Test Accuracy:</span>
+                        <p className="text-lg font-mono">{modelAccuracy.singleTestAccuracy}%</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Avg Trustworthiness:</span>
-                        <p className="text-lg font-mono text-blue-600">{modelAccuracy.avgTrustworthiness?.toFixed(3) || 'N/A'}</p>
-                        <p className="text-xs text-gray-500">Confidence reliability score</p>
+                        <span className="font-medium text-gray-600">Multi Test Attempts:</span>
+                        <p className="text-lg font-mono">{modelAccuracy.multiTestAttempts}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-600">Successful Predictions:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.successfulPredictions || 'N/A'}</p>
-                        <p className="text-xs text-gray-500">Same as correct predictions</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-600">Success Rate:</span>
-                        <p className="text-lg font-mono">{modelAccuracy.predictionSuccessRate?.toFixed(2) || 'N/A'}%</p>
-                        <p className="text-xs text-gray-500">Same as accuracy percentage</p>
+                        <span className="font-medium text-gray-600">Multi Test Accuracy:</span>
+                        <p className="text-lg font-mono">{modelAccuracy.multiTestAccuracy}%</p>
                       </div>
                     </div>
                   ) : (

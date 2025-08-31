@@ -195,6 +195,12 @@ export default function PuzzleBrowser() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link href="/discussion">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Discussion
+                </Button>
+              </Link>
               <Link href="/model-examiner">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Grid3X3 className="h-4 w-4" />

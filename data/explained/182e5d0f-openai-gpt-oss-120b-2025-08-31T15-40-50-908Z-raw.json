@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": "Unexpected end of JSON input",
+  "result": null,
+  "processingTimeMs": 44438,
+  "modelName": "openai/gpt-oss-120b",
+  "apiProcessingTimeMs": 44438
+}

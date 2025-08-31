@@ -283,7 +283,7 @@ export class GrokService extends BaseAIService {
     const response = await grok.chat.completions.create({
       model: modelName,
       messages,
-      max_tokens: 8000,
+      max_tokens: 186000,
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 

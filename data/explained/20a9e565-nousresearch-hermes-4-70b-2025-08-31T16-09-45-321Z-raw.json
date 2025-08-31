@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "error": "Unexpected end of JSON input",
+  "result": null,
+  "processingTimeMs": 152564,
+  "modelName": "nousresearch/hermes-4-70b",
+  "apiProcessingTimeMs": 152565
+}
