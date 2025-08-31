@@ -11,9 +11,7 @@ Use `npm run test` to start the dev server and wait 10 seconds for it to properl
 - Database tables auto-create on startup if using PostgreSQL
 
 ### Testing and Validation
--You need to ask the user if you 100% need the dev server started right this instant, if you get permission then start it, but wait for at least 10 seconds before doing any testing.  Use that time to tell the user exactly what you are going to do.
-
-Whenever you run tests you need to wait at least 10 seconds to read the output.  Tell the user a joke about coding while you wait.
+- Whenever you run tests you need to wait at least 20 seconds to read the output.  Tell the user a joke about coding while you wait.
 
 
 ## Architecture Overview
@@ -66,8 +64,8 @@ saturn_log - jsonb
 saturn_events - jsonb
 saturn_success - boolean
 predicted_output_grid - jsonb
-is_prediction_correct - boolean
-prediction_accuracy_score - double precision
+is_prediction_correct - boolean  // This should be used for `accuracy`!!!
+prediction_accuracy_score - double precision  // THIS IS THE `TRUSTWORTHINESS` SCORE
 provider_raw_response - jsonb
 reasoning_items - jsonb
 temperature - double precision
@@ -80,10 +78,10 @@ reasoning_tokens - integer
 total_tokens - integer
 estimated_cost - numeric
 multiple_predicted_outputs - jsonb
-multi_test_results - jsonb
-multi_test_all_correct - boolean
-multi_test_average_accuracy - double precision
-has_multiple_predictions - boolean
+multi_test_results - jsonb 
+multi_test_all_correct - boolean  // THIS should be used for `accuracy`!!!
+multi_test_average_accuracy - double precision  // THIS should be used for `accuracy`!!!
+has_multiple_predictions - boolean // False if there is only one test
 multi_test_prediction_grids - jsonb
 created_at - timestamp with time zone
 
