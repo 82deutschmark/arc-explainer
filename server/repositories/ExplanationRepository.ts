@@ -573,57 +573,40 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
 
     try {
       const result = await this.query(`
-        SELECT 
-          e.puzzle_id,
-          COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) as wrong_count,
-          AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
-          AVG(e.confidence) as avg_confidence,
-          COUNT(DISTINCT e.id) as total_explanations,
-          COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') as negative_feedback,
-          COUNT(f.id) as total_feedback,
-          -- Get latest explanation for each puzzle
-          MAX(e.created_at) as latest_analysis,
-          -- Get worst explanation ID for context
-          MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false 
-                  THEN e.id END) as worst_explanation_id,
-          -- Calculate composite score for ranking (lower is worse)
-          (
-            -- Incorrect predictions weight (5 points per wrong prediction)
-            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
-            -- Low accuracy weight (5 points if accuracy below 0.5)
-            CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 THEN 5.0 ELSE 0.0 END +
-            -- Low confidence weight (3 points if confidence below 50)
-            CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
-            -- Negative feedback weight (2 points per negative feedback)
-            COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') * 2.0
-          ) as composite_score
-        FROM explanations e
-        LEFT JOIN feedback f ON e.id = f.explanation_id
-        WHERE e.puzzle_id IS NOT NULL
-        GROUP BY e.puzzle_id
-        HAVING 
-          -- Only include puzzles with at least one explanation
-          COUNT(DISTINCT e.id) > 0
-          AND (
-            -- Has incorrect predictions
-            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0
-            OR
-            -- Has low accuracy scores
-            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.7
-            OR 
-            -- Has negative feedback
-            COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
-          )
+        SELECT *
+        FROM (
+          SELECT 
+            e.puzzle_id,
+            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) as wrong_count,
+            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
+            AVG(e.confidence) as avg_confidence,
+            COUNT(DISTINCT e.id) as total_explanations,
+            COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') as negative_feedback,
+            COUNT(f.id) as total_feedback,
+            MAX(e.created_at) as latest_analysis,
+            MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,
+            (
+              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
+              CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 THEN 5.0 ELSE 0.0 END +
+              CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
+              COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') * 2.0
+            ) as composite_score
+          FROM explanations e
+          LEFT JOIN feedback f ON e.id = f.explanation_id
+          WHERE e.puzzle_id IS NOT NULL
+          GROUP BY e.puzzle_id
+          HAVING 
+            COUNT(DISTINCT e.id) > 0
+            AND (
+              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
+              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.7 OR
+              COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
+            )
+        ) as performance_data
         ORDER BY
-          CASE 
-            WHEN $2 = 'accuracy' THEN avg_accuracy
-            ELSE NULL
-          END ASC NULLS LAST,
-          CASE 
-            WHEN $2 = 'feedback' THEN negative_feedback
-            ELSE NULL
-          END DESC NULLS LAST,
-          composite_score DESC
+          CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
+          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST,
+          performance_data.composite_score DESC
         LIMIT $1
       `, [limit, sortBy]);
 
