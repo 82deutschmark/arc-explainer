@@ -528,8 +528,7 @@ export default function PuzzleExaminer() {
         customPrompt={customPrompt}
         options={{
           emojiSetKey: emojiSet,
-          omitAnswer,
-          sendAsEmojis
+          omitAnswer
         }}
       />
     </div>

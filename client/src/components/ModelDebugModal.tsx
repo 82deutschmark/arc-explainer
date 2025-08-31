@@ -25,7 +25,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useModels } from '@/hooks/useModels';
-import type { ModelConfig, FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats, ModelConfig } from '@shared/types';
 
 interface ModelDebugModalProps {
   open: boolean;
