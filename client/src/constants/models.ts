@@ -22,7 +22,7 @@ export function formatConfidence(confidence: number | string): string {
   if (typeof confidence === 'string') {
     return confidence;
   }
-  return confidence > 1 
+  return confidence >= 10 
     ? `${Math.round(confidence)}%`
     : `${Math.round(confidence * 100)}%`;
 }
