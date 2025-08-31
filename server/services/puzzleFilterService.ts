@@ -132,8 +132,8 @@ export class PuzzleFilterService {
     if (confidenceMin || confidenceMax) {
       filtered = filtered.filter(exp => {
         const confidence = exp.confidence || 0;
-        if (confidenceMin && confidence < parseInt(confidenceMin)) return false;
-        if (confidenceMax && confidence > parseInt(confidenceMax)) return false;
+        if (confidenceMin && confidence < confidenceMin) return false;
+        if (confidenceMax && confidence > confidenceMax) return false;
         return true;
       });
     }
@@ -142,8 +142,8 @@ export class PuzzleFilterService {
     if (processingTimeMin || processingTimeMax) {
       filtered = filtered.filter(exp => {
         const processingTime = exp.apiProcessingTimeMs || 0;
-        if (processingTimeMin && processingTime < parseInt(processingTimeMin)) return false;
-        if (processingTimeMax && processingTime > parseInt(processingTimeMax)) return false;
+        if (processingTimeMin && processingTime < processingTimeMin) return false;
+        if (processingTimeMax && processingTime > processingTimeMax) return false;
         return true;
       });
     }
@@ -152,8 +152,8 @@ export class PuzzleFilterService {
     if (totalTokensMin || totalTokensMax) {
       filtered = filtered.filter(exp => {
         const totalTokens = exp.totalTokens || 0;
-        if (totalTokensMin && totalTokens < parseInt(totalTokensMin)) return false;
-        if (totalTokensMax && totalTokens > parseInt(totalTokensMax)) return false;
+        if (totalTokensMin && totalTokens < totalTokensMin) return false;
+        if (totalTokensMax && totalTokens > totalTokensMax) return false;
         return true;
       });
     }
@@ -162,8 +162,8 @@ export class PuzzleFilterService {
     if (estimatedCostMin || estimatedCostMax) {
       filtered = filtered.filter(exp => {
         const estimatedCost = exp.estimatedCost || 0;
-        if (estimatedCostMin && estimatedCost < parseFloat(estimatedCostMin)) return false;
-        if (estimatedCostMax && estimatedCost > parseFloat(estimatedCostMax)) return false;
+        if (estimatedCostMin && estimatedCost < estimatedCostMin) return false;
+        if (estimatedCostMax && estimatedCost > estimatedCostMax) return false;
         return true;
       });
     }
@@ -172,8 +172,8 @@ export class PuzzleFilterService {
     if (predictionAccuracyMin || predictionAccuracyMax) {
       filtered = filtered.filter(exp => {
         const accuracyScore = exp.predictionAccuracyScore || 0;
-        if (predictionAccuracyMin && accuracyScore < parseFloat(predictionAccuracyMin)) return false;
-        if (predictionAccuracyMax && accuracyScore > parseFloat(predictionAccuracyMax)) return false;
+        if (predictionAccuracyMin && accuracyScore < predictionAccuracyMin) return false;
+        if (predictionAccuracyMax && accuracyScore > predictionAccuracyMax) return false;
         return true;
       });
     }

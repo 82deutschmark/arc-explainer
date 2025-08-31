@@ -91,7 +91,7 @@ export async function modelSupports(modelKey: string, capability: string): Promi
     case 'temperature':
       return definition.supportsTemperature;
     case 'reasoning':
-      return definition.supportsReasoning ?? false;
+      return definition.isReasoning ?? false;
     case 'premium':
       return definition.premium;
   }
@@ -127,7 +127,7 @@ export function modelSupportsTemperature(modelKey: string): boolean {
 
 export function modelSupportsReasoning(modelKey: string): boolean {
   const definition = ModelLookup.getById(modelKey);
-  return definition?.supportsReasoning ?? false;
+  return definition?.isReasoning ?? false;
 }
 
 export function getApiModelName(modelKey: string): string {
@@ -157,7 +157,7 @@ export const GPT5_CHAT_MODELS = new Set(
 );
 
 export const MODELS_WITH_REASONING = new Set(
-  MODEL_DEFINITIONS.filter(m => m.supportsReasoning).map(m => m.key)
+  MODEL_DEFINITIONS.filter(m => m.isReasoning).map(m => m.key)
 );
 
 export const OPENAI_MODELS = new Set(

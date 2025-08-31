@@ -31,7 +31,7 @@ export interface ModelSelectionState {
   filterCriteria: {
     provider?: string;
     isPremium?: boolean;
-    supportsReasoning?: boolean;
+    isReasoning?: boolean;
     minContextWindow?: number;
     maxCostPerToken?: number;
   };
@@ -180,7 +180,7 @@ export function useModelConfiguration() {
   const supportsBatchProcessing = useCallback((modelKey: string): boolean => {
     // Most models support batch processing, but some may have limitations
     const model = getModelInfo(modelKey);
-    return !model?.isPremium; // Premium models typically don't support batch
+    return !model?.premium; // Premium models typically don't support batch
   }, [getModelInfo]);
 
   // Filtered and processed models
@@ -192,22 +192,22 @@ export function useModelConfiguration() {
     }
 
     if (typeof state.filterCriteria.isPremium === 'boolean') {
-      filtered = filtered.filter(model => model.isPremium === state.filterCriteria.isPremium);
+      filtered = filtered.filter(model => model.premium === state.filterCriteria.isPremium);
     }
 
-    if (typeof state.filterCriteria.supportsReasoning === 'boolean') {
-      filtered = filtered.filter(model => model.isReasoning === state.filterCriteria.supportsReasoning);
+    if (typeof state.filterCriteria.isReasoning === 'boolean') {
+      filtered = filtered.filter(model => model.isReasoning === state.filterCriteria.isReasoning);
     }
 
     if (state.filterCriteria.minContextWindow) {
       filtered = filtered.filter(model => 
-        model.contextWindow >= (state.filterCriteria.minContextWindow || 0)
+        (model.contextWindow ?? 0) >= (state.filterCriteria.minContextWindow || 0)
       );
     }
 
     if (state.filterCriteria.maxCostPerToken) {
       filtered = filtered.filter(model => 
-        (model.cost?.input || 0) <= (state.filterCriteria.maxCostPerToken || Infinity)
+        (Number(model.cost?.input) || 0) <= (state.filterCriteria.maxCostPerToken || Infinity)
       );
     }
 

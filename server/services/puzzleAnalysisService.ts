@@ -13,6 +13,7 @@ import { repositoryService } from '../repositories/RepositoryService';
 import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator';
 import { logger } from '../utils/logger';
 import type { PromptOptions } from './promptBuilder';
+import type { ARCExample, DetailedFeedback } from '../../shared/types';
 
 export interface AnalysisOptions {
   temperature?: number;
@@ -78,7 +79,7 @@ export class PuzzleAnalysisService {
     if (retryContext) {
       promptOptions.retryMode = retryMode;
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
-      if (retryContext.badFeedback?.length > 0) promptOptions.badFeedback = retryContext.badFeedback;
+      if (retryContext.badFeedback?.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
     
     // Build service options
@@ -120,8 +121,8 @@ export class PuzzleAnalysisService {
    */
   private async getRetryContext(taskId: string): Promise<RetryContext | null> {
     try {
-      let previousAnalysis = null;
-      let badFeedback = null;
+      let previousAnalysis: any;
+      let badFeedback: any[] | undefined;
       
       // Get all explanations for this puzzle to find the worst one
       const explanations = await repositoryService.explanations.getExplanationsForPuzzle(taskId);
@@ -144,7 +145,7 @@ export class PuzzleAnalysisService {
       
       logger.debug(`[RETRY-MODE] Found ${previousAnalysis ? '1' : '0'} previous analysis and ${badFeedback ? badFeedback.length : 0} bad feedback entries`);
       
-      return { previousAnalysis, badFeedback };
+      return { previousAnalysis, badFeedback: badFeedback ?? undefined };
     } catch (error) {
       logger.error('[RETRY-MODE] Error fetching context: ' + (error instanceof Error ? error.message : String(error)));
       return null;
@@ -173,7 +174,7 @@ export class PuzzleAnalysisService {
     const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
     if (multiplePredictedOutputs === true) {
       // Multi-test case: AI provided multiple grids
-      const correctAnswers = testCount > 1 ? puzzle.test.map(t => t.output) : [puzzle.test[0].output];
+      const correctAnswers = testCount > 1 ? puzzle.test.map((t: ARCExample) => t.output) : [puzzle.test[0].output];
       const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
       // Add validation results

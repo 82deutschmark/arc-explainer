@@ -11,7 +11,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { getModelConfig, getApiModelName, MODELS } from '../config/models.js';
+import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
 const openrouter = new OpenAI({

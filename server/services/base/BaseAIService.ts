@@ -10,7 +10,7 @@ import { ARCTask } from "../../../shared/types.js";
 import { buildAnalysisPrompt, getDefaultPromptId } from "../promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "../promptBuilder.js";
 import { calculateCost } from "../../utils/costCalculator.js";
-import { getModelConfig } from "../../config/models.js";
+import { getModelConfig } from "../../config/models/index.js";
 
 // Common types for all AI services
 export interface ServiceOptions {

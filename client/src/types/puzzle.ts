@@ -21,7 +21,7 @@ export interface ModelConfig {
     speed: 'fast' | 'moderate' | 'slow';
     estimate?: string;
   };
-  supportsReasoning?: boolean; // Whether model supports reasoning log capture
+  isReasoning?: boolean; // Whether model supports reasoning log capture
 }
 
 /**
