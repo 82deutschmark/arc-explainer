@@ -1,5 +1,15 @@
 ### August 31 2025
 
+## v2.6.1 - Fix PuzzleDiscussion Page Link Handling ✅
+- **CRITICAL FIX**: Fixed "Puzzle undefined not found" error when clicking puzzles in Discussion page
+- **ROOT CAUSE**: getWorstPerformingPuzzles API wasn't ensuring puzzle ID field was preserved in response objects
+- **SOLUTION**: Added explicit `id: puzzleData.puzzleId` assignment when spreading puzzle metadata
+- **TECHNICAL**: Modified puzzleController.ts to guarantee ID field presence in both success and error cases
+- **USER IMPACT**: Discussion page puzzle links now work correctly, allowing users to retry analysis on problematic puzzles
+- **FILES CHANGED**: `server/controllers/puzzleController.ts` line 822 - explicit ID field assignment
+- **TESTING**: Ready for user testing - discussion page should now allow clicking on puzzles
+- Author: Claude Sonnet 4
+
 ## v2.6.0 - Complete PuzzleDiscussion Page Implementation ✅
 - **MAJOR FEATURE**: Implemented complete PuzzleDiscussion page with retry analysis system
 - **BACKEND**: Added sophisticated worst-performing puzzle detection with composite scoring algorithm
