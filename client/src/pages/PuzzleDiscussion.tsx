@@ -41,41 +41,60 @@ export default function PuzzleDiscussion() {
   }, [maxGridSize]);
 
   // Use overview API to get puzzles with explanation data
-  const { data: overviewResponse, isLoading, error } = useQuery<PuzzleOverviewResponse>({
+  const { data: overviewResponse, isLoading, error } = useQuery({
     queryKey: ['puzzle-overview-discussion', queryParams.toString()],
     queryFn: async () => {
       const response = await apiRequest('GET', `/api/puzzle/overview?${queryParams}`);
-      return await response.json();
+      const result = await response.json();
+      console.log('[PuzzleDiscussion] Raw API response:', result);
+      return result;
     },
   });
 
-  const puzzles = overviewResponse?.puzzles || [];
+  const puzzles = overviewResponse?.data?.puzzles || [];
+  console.log('[PuzzleDiscussion] Extracted puzzles:', puzzles);
   
   // Filter and sort to show worst-performing puzzles first
   const problemPuzzles = React.useMemo(() => {
     const allPuzzles = puzzles;
+    console.log(`[PuzzleDiscussion] Processing ${allPuzzles.length} puzzles`);
     
     // Filter to only problematic puzzles
     let filtered = allPuzzles.filter(puzzle => {
       // Must have explanation to be considered problematic
-      if (!puzzle.hasExplanation || !puzzle.latestExplanation) return false;
+      if (!puzzle.hasExplanation || !puzzle.latestExplanation) {
+        console.log(`[PuzzleDiscussion] Skipping ${puzzle.id} - no explanation`);
+        return false;
+      }
       
       const latest = puzzle.latestExplanation;
+      console.log(`[PuzzleDiscussion] Checking ${puzzle.id}: isPredictionCorrect=${latest.isPredictionCorrect}, predictionAccuracyScore=${latest.predictionAccuracyScore}, confidence=${latest.confidence}`);
       
       // Include if:
       // 1. Prediction was incorrect
-      if (latest.isPredictionCorrect === false) return true;
+      if (latest.isPredictionCorrect === false) {
+        console.log(`[PuzzleDiscussion] Including ${puzzle.id} - wrong prediction`);
+        return true;
+      }
       
       // 2. Low trustworthiness score (predictionAccuracyScore)
       if (latest.predictionAccuracyScore !== undefined && latest.predictionAccuracyScore !== null) {
-        if (latest.predictionAccuracyScore < 0.5) return true;
+        if (latest.predictionAccuracyScore < 0.5) {
+          console.log(`[PuzzleDiscussion] Including ${puzzle.id} - low trustworthiness`);
+          return true;
+        }
       }
       
-      // 3. More negative feedback than positive (if we have feedback data)
-      // This would require additional API calls, skip for now
+      // 3. LOW confidence (under 80%)
+      if (latest.confidence !== undefined && latest.confidence < 80) {
+        console.log(`[PuzzleDiscussion] Including ${puzzle.id} - low confidence`);
+        return true;
+      }
       
       return false;
     });
+    
+    console.log(`[PuzzleDiscussion] Filtered to ${filtered.length} problematic puzzles`);
     
     // Sort by "worst" first
     filtered = filtered.sort((a, b) => {
@@ -313,30 +332,35 @@ export default function PuzzleDiscussion() {
                                 {issue}
                               </Badge>
                             ))}
-                            
-                            {puzzle.latestExplanation?.modelName && (
-                              <Badge variant="outline" className="bg-gray-50 text-gray-700 text-xs">
-                                {puzzle.latestExplanation.modelName}
-                              </Badge>
-                            )}
-                            
-                            {puzzle.latestExplanation?.predictionAccuracyScore !== undefined && (
-                              <Badge variant="outline" className={`text-xs ${
-                                puzzle.latestExplanation.predictionAccuracyScore < 0.3 
-                                  ? 'bg-red-50 text-red-700'
-                                  : puzzle.latestExplanation.predictionAccuracyScore < 0.6
-                                    ? 'bg-orange-50 text-orange-700' 
-                                    : 'bg-yellow-50 text-yellow-700'
-                              }`}>
-                                Trust: {Math.round(puzzle.latestExplanation.predictionAccuracyScore * 100)}%
-                              </Badge>
-                            )}
-                            
-                            {puzzle.latestExplanation?.confidence && (
-                              <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
-                                {puzzle.latestExplanation.confidence}% conf
-                              </Badge>
-                            )}
+                          </div>
+                          
+                          {/* Show all tried models */}
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-500 mb-1">Models tried ({puzzle.explanations.length}):</p>
+                            <div className="flex flex-wrap gap-1">
+                              {puzzle.explanations.slice(0, 5).map((exp, idx) => {
+                                const isWorst = exp.id === puzzle.latestExplanation?.id;
+                                const failed = exp.isPredictionCorrect === false || (exp.predictionAccuracyScore && exp.predictionAccuracyScore < 0.5);
+                                return (
+                                  <Badge key={idx} variant="outline" className={`text-xs ${
+                                    isWorst 
+                                      ? 'bg-red-100 text-red-800 border-red-300' 
+                                      : failed
+                                        ? 'bg-orange-100 text-orange-700 border-orange-300'
+                                        : 'bg-gray-50 text-gray-700'
+                                  }`}>
+                                    {exp.modelName}
+                                    {isWorst && ' (worst)'}
+                                    {exp.confidence && ` ${exp.confidence}%`}
+                                  </Badge>
+                                );
+                              })}
+                              {puzzle.explanations.length > 5 && (
+                                <Badge variant="outline" className="text-xs bg-gray-50 text-gray-500">
+                                  +{puzzle.explanations.length - 5} more
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           
                           <div className="space-y-1 text-sm text-gray-600">
