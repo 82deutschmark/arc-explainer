@@ -1,0 +1,170 @@
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Brain, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExplanationData } from '@/types/puzzle';
+import { formatConfidence } from '@/constants/models';
+
+interface AnalysisResultContentProps {
+  result: ExplanationData;
+  isSaturnResult: boolean;
+  showReasoning: boolean;
+  setShowReasoning: (show: boolean) => void;
+  showAlienMeaning: boolean;
+  setShowAlienMeaning: (show: boolean) => void;
+}
+
+export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({ 
+  result, 
+  isSaturnResult, 
+  showReasoning, 
+  setShowReasoning, 
+  showAlienMeaning, 
+  setShowAlienMeaning 
+}) => {
+  const isEmptyResult = !result || (
+    (!result.patternDescription || result.patternDescription.trim() === '') && 
+    (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 
+    (!result.alienMeaning || result.alienMeaning.trim() === '') && 
+    (!result.hints || result.hints.length === 0) &&
+    !result.predictedOutputGrid && 
+    (!result.multiplePredictedOutputs || (Array.isArray(result.multiplePredictedOutputs) && result.multiplePredictedOutputs.length === 0))
+  );
+
+  if (isEmptyResult) {
+    return (
+      <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
+        <p className="text-sm text-yellow-700">
+          No analysis results available. The model may have encountered an error or returned an empty response.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {result.patternDescription && (
+        <div>
+          <div className="flex items-center gap-2">
+            <h5 className="font-semibold">
+              {isSaturnResult ? '🪐 Saturn Visual Analysis' : 'Pattern Description'}
+            </h5>
+            {!isSaturnResult && result.confidence && (
+              <Badge variant="outline" className="text-xs">
+                Confidence: {formatConfidence(result.confidence)}
+              </Badge>
+            )}
+            {!isSaturnResult && (result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null) && (
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${result.predictionAccuracyScore >= 0.8 ? 'bg-green-50 border-green-200 text-green-700' : result.predictionAccuracyScore >= 0.5 ? 'bg-yellow-50 border-yellow-200 text-yellow-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                Trustworthiness: {Math.round(result.predictionAccuracyScore * 100)}%
+              </Badge>
+            )}
+            {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
+              <Badge 
+                variant="outline" 
+                className={`text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
+                {result.saturnSuccess ? 'Puzzle Solved Successfully' : 'Solution Attempt Failed'}
+              </Badge>
+            )}
+          </div>
+          <p className="text-gray-600">{result.patternDescription}</p>
+        </div>
+      )}
+      {result.solvingStrategy && (
+        <div>
+          <h5 className="font-semibold">
+            {isSaturnResult ? 'Visual Solving Process' : 'Solving Strategy'}
+          </h5>
+          <p className="text-gray-600">{result.solvingStrategy}</p>
+        </div>
+      )}
+      {result.hints && result.hints.length > 0 && (
+        <div>
+          <h5 className="font-semibold">
+            {isSaturnResult ? 'Key Observations' : 'Hints'}
+          </h5>
+          <ul className="list-disc list-inside text-gray-600">
+            {result.hints.map((hint, i) => <li key={i}>{hint}</li>)}
+          </ul>
+        </div>
+      )}
+      {result.alienMeaning && (
+        <div className="bg-purple-50 border border-purple-200 rounded">
+          <button
+            onClick={() => setShowAlienMeaning(!showAlienMeaning)}
+            className="w-full flex items-center justify-between p-3 text-left hover:bg-purple-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
+              <Badge variant="outline" className="text-xs bg-purple-50">
+                Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
+              </Badge>
+            </div>
+            {showAlienMeaning ? (
+              <ChevronUp className="h-4 w-4 text-purple-600" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-purple-600" />
+            )}
+          </button>
+          {showAlienMeaning && (
+            <div className="px-3 pb-3">
+              <div className="bg-white p-3 rounded border border-purple-100">
+                <p className="text-purple-700">{result.alienMeaning}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {result.hasReasoningLog && result.reasoningLog && (
+        <div className={`border rounded ${isSaturnResult ? 'bg-indigo-50 border-indigo-200' : 'bg-blue-50 border-blue-200'}`}>
+          <button
+            onClick={() => setShowReasoning(!showReasoning)}
+            className={`w-full flex items-center justify-between p-3 text-left transition-colors ${isSaturnResult ? 'hover:bg-indigo-100' : 'hover:bg-blue-100'}`}>
+            <div className="flex items-center gap-2">
+              {isSaturnResult ? (
+                <>
+                  <span className="text-sm">🪐</span>
+                  <h5 className="font-semibold text-indigo-800">Saturn Visual Reasoning</h5>
+                  <Badge variant="outline" className="text-xs bg-indigo-50 border-indigo-200">
+                    Multi-stage visual analysis
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  <Brain className="h-4 w-4 text-blue-600" />
+                  <h5 className="font-semibold text-blue-800">AI Reasoning Process</h5>
+                  <Badge variant="outline" className="text-xs bg-blue-50">
+                    Step-by-step analysis
+                  </Badge>
+                </>
+              )}
+            </div>
+            {showReasoning ? (
+              <ChevronUp className={`h-4 w-4 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`} />
+            ) : (
+              <ChevronDown className={`h-4 w-4 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`} />
+            )}
+          </button>
+          {showReasoning && (
+            <div className="px-3 pb-3">
+              <div className="bg-white p-3 rounded border border-indigo-100">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+                  {result.reasoningLog}
+                </pre>
+              </div>
+              <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
+                {isSaturnResult 
+                  ? '🔍 This shows Saturn\'s iterative visual analysis process, including image generation and pattern recognition stages.'
+                  : '💡 This shows how the AI model analyzed the puzzle step-by-step to reach its conclusion.'
+                }
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
