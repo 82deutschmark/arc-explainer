@@ -17,7 +17,8 @@ import {
   ArrowDown,
   MessageSquare
 } from 'lucide-react';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
+import type { ModelConfig } from '@shared/types';
 
 interface SearchFiltersProps {
   searchQuery: string;
@@ -124,6 +125,8 @@ export function SearchFilters({
   getSortIcon,
   isLoading
 }: SearchFiltersProps) {
+  const { data: models, isLoading: modelsLoading, error: modelsError } = useModels();
+
   return (
     <Card>
       <CardHeader>
@@ -261,12 +264,18 @@ export function SearchFilters({
                 <SelectValue placeholder="All models" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Models</SelectItem>
-                {MODELS.map((model) => (
-                  <SelectItem key={model.key} value={model.key}>
-                    {model.name} ({model.provider})
-                  </SelectItem>
-                ))}
+                {modelsLoading ? (
+                  <div className="p-2 text-center text-sm text-gray-500">Loading...</div>
+                ) : (
+                  <>
+                    <SelectItem value="all">All Models</SelectItem>
+                    {models?.map((model: ModelConfig) => (
+                      <SelectItem key={model.key} value={model.key}>
+                        {model.name} ({model.provider})
+                      </SelectItem>
+                    ))}
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>

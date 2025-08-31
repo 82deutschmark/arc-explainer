@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../../client/src/constants/models.js";
+import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -50,7 +50,7 @@ export class GeminiService extends BaseAIService {
 
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, options);
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
@@ -74,8 +74,9 @@ export class GeminiService extends BaseAIService {
   }
 
   getModelInfo(modelKey: string): ModelInfo {
-    const modelName = this.models[modelKey] || modelKey;
+    const apiModelName = getApiModelName(modelKey);
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const modelName = apiModelName || modelKey;
     
     // Check if it's a thinking model (Gemini 2.5 Pro/Flash have thinking capabilities)
     const isThinking = modelName.includes('2.5');
@@ -84,7 +85,7 @@ export class GeminiService extends BaseAIService {
       name: modelName,
       isReasoning: isThinking, // Gemini 2.5+ models have thinking capabilities
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxTokens || 2000000, // Gemini typically has large context windows
+      contextWindow: modelConfig?.maxOutputTokens || 8192, // Gemini typically has large context windows
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Gemini doesn't support structured output format
@@ -100,19 +101,22 @@ export class GeminiService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
-    const modelName = this.models[modelKey] || modelKey;
+    const modelName = getApiModelName(modelKey) || modelKey;
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+    const temperature = options?.temperature ?? 0.2; // Default for Gemini
 
     // Build request format for Gemini API
     const messageFormat: any = {
       model: modelName,
       generationConfig: {
-        maxOutputTokens: 8000,
-        ...(modelSupportsTemperature(modelKey) && { temperature })
+        maxOutputTokens: 65000,
+        ...(modelSupportsTemperature(modelKey) && { temperature }),
+        ...(options?.topP && { topP: options.topP }),
+        ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       contents: [
         {
@@ -161,21 +165,24 @@ export class GeminiService extends BaseAIService {
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    options: PromptOptions = {}
   ): Promise<any> {
-    const modelName = this.models[modelKey] || modelKey;
+    const apiModelName = getApiModelName(modelKey);
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
     const model = genai.getGenerativeModel({ 
-      model: modelName,
+      model: apiModelName,
       generationConfig: {
         maxOutputTokens: 8000,
-        ...(modelSupportsTemperature(modelKey) && { temperature })
+        ...(modelSupportsTemperature(modelKey) && { temperature }),
+        ...(options?.topP && { topP: options.topP }),
+        ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       ...(systemMessage && systemPromptMode === 'ARC' && {
-        systemInstruction: { parts: [{ text: systemMessage }] }
+        systemInstruction: systemMessage
       })
     });
 

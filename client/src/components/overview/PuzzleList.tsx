@@ -21,35 +21,7 @@ import {
   BarChart3,
   MessageSquare
 } from 'lucide-react';
-
-interface PuzzleOverviewData {
-  id: string;
-  source: string;
-  maxGridSize: number;
-  gridSizeConsistent: boolean;
-  hasExplanation: boolean;
-  explanations: Array<{
-    id: number;
-    patternDescription: string;
-    solvingStrategy: string;
-    alienMeaning: string;
-    confidence: number;
-    alienMeaningConfidence?: number;
-    modelName: string;
-    hasReasoningLog: boolean;
-    apiProcessingTimeMs?: number;
-    saturnSuccess?: boolean;
-    createdAt: string;
-    // Accuracy and trustworthiness fields
-    isPredictionCorrect?: boolean;
-    predictionAccuracyScore?: number;
-    multiTestAllCorrect?: boolean;
-    multiTestAverageAccuracy?: number;
-  }>;
-  totalExplanations: number;
-  latestExplanation?: any;
-  feedbackCount?: number;
-}
+import type { PuzzleOverviewData } from '@shared/types';
 
 interface PuzzleListProps {
   puzzles?: PuzzleOverviewData[];

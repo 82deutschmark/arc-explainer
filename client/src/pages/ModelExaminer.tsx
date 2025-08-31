@@ -21,7 +21,8 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Play, Pause, Square, Brain, Database, Clock, CheckCircle, XCircle, BarChart3, Settings, Loader2, Eye
 } from 'lucide-react';
-import { MODELS } from '@/constants/models';
+import { useModels } from '@/hooks/useModels';
+import type { ModelConfig } from '@shared/types';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 
@@ -36,6 +37,8 @@ export default function ModelExaminer() {
   useEffect(() => {
     document.title = 'Model Examiner - Batch Analysis';
   }, []);
+
+  const { data: models, isLoading: modelsLoading, error: modelsError } = useModels();
 
   // Use batch analysis hook for main functionality
   const {
@@ -76,7 +79,7 @@ export default function ModelExaminer() {
   });
 
   // Get current model configuration for UI display and validation
-  const currentModel = selectedModel ? MODELS.find(m => m.key === selectedModel) : null;
+  const currentModel = selectedModel ? models?.find((m: ModelConfig) => m.key === selectedModel) : null;
 
   /**
    * Initiates batch analysis using the existing useBatchAnalysis hook
@@ -470,41 +473,45 @@ export default function ModelExaminer() {
                   <SelectValue placeholder="Select a model to test" />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="p-2">
-                    <div className="text-xs text-gray-500 mb-2">OpenAI Models</div>
-                    {MODELS.filter(m => m.provider === 'OpenAI').map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        <div className="flex items-center gap-2 w-full">
-                          <div className={`w-3 h-3 rounded-full ${model.color}`} />
-                          <span>{model.name}</span>
-                          {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
-                        </div>
-                      </SelectItem>
-                    ))}
-                    
-                    <div className="text-xs text-gray-500 mb-2 mt-3">Anthropic Models</div>
-                    {MODELS.filter(m => m.provider === 'Anthropic').map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        <div className="flex items-center gap-2 w-full">
-                          <div className={`w-3 h-3 rounded-full ${model.color}`} />
-                          <span>{model.name}</span>
-                          {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
-                        </div>
-                      </SelectItem>
-                    ))}
-                    
-                    <div className="text-xs text-gray-500 mb-2 mt-3">Other Providers</div>
-                    {MODELS.filter(m => !['OpenAI', 'Anthropic'].includes(m.provider)).map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        <div className="flex items-center gap-2 w-full">
-                          <div className={`w-3 h-3 rounded-full ${model.color}`} />
-                          <span>{model.name}</span>
-                          <span className="text-xs text-gray-500">({model.provider})</span>
-                          {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </div>
+                  {modelsLoading ? (
+                    <div className="p-4 text-center text-sm text-gray-500">Loading models...</div>
+                  ) : (
+                    <div className="p-2">
+                      <div className="text-xs text-gray-500 mb-2">OpenAI Models</div>
+                      {models?.filter((m: ModelConfig) => m.provider === 'OpenAI').map((model: ModelConfig) => (
+                        <SelectItem key={model.key} value={model.key}>
+                          <div className="flex items-center gap-2 w-full">
+                            <div className={`w-3 h-3 rounded-full ${model.color}`} />
+                            <span>{model.name}</span>
+                            {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
+                          </div>
+                        </SelectItem>
+                      ))}
+                      
+                      <div className="text-xs text-gray-500 mb-2 mt-3">Anthropic Models</div>
+                      {models?.filter((m: ModelConfig) => m.provider === 'Anthropic').map((model: ModelConfig) => (
+                        <SelectItem key={model.key} value={model.key}>
+                          <div className="flex items-center gap-2 w-full">
+                            <div className={`w-3 h-3 rounded-full ${model.color}`} />
+                            <span>{model.name}</span>
+                            {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
+                          </div>
+                        </SelectItem>
+                      ))}
+                      
+                      <div className="text-xs text-gray-500 mb-2 mt-3">Other Providers</div>
+                      {models?.filter((m: ModelConfig) => !['OpenAI', 'Anthropic'].includes(m.provider)).map((model: ModelConfig) => (
+                        <SelectItem key={model.key} value={model.key}>
+                          <div className="flex items-center gap-2 w-full">
+                            <div className={`w-3 h-3 rounded-full ${model.color}`} />
+                            <span>{model.name}</span>
+                            <span className="text-xs text-gray-500">({model.provider})</span>
+                            {model.premium && <Badge variant="outline" className="text-xs">Premium</Badge>}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
               {currentModel && (

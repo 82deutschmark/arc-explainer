@@ -36,7 +36,13 @@
       "Bash(npx tsx:*)",
       "Bash(dir:*)",
       "Read(d:\\1Projects\\arc-explainer\\**)",
-      "Read(d:\\1Projects\\arc-explainer/**)"
+      "Read(d:\\1Projects\\arc-explainer/**)",
+      "Read(d:\\1Projects\\arc-explainer\\docs\\**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\components\\puzzle/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\constants/**)",
+      "Read(d:\\1Projects\\arc-explainer\\data\\explained/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\constants/**)",
+      "Read(d:\\1Projects\\arc-explainer\\.claude/**)"
     ],
     "deny": [],
     "ask": [],

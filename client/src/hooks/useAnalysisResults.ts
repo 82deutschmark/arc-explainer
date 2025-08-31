@@ -17,10 +17,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { AnalysisResult, ModelConfig } from '@/types/puzzle';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -40,6 +38,8 @@ export function useAnalysisResults({
   omitAnswer,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
+  const [topP, setTopP] = useState(0.95);
+  const [candidateCount, setCandidateCount] = useState(1);
   const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
@@ -57,11 +57,13 @@ export function useAnalysisResults({
     mutationFn: async (payload: { 
       modelKey: string; 
       temperature?: number; 
+      topP?: number;
+      candidateCount?: number;
       reasoningEffort?: string; 
       reasoningVerbosity?: string; 
       reasoningSummaryType?: string; 
     }) => {
-      const { modelKey, temperature: temp, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
+      const { modelKey, temperature: temp, topP: p, candidateCount: c, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
       
       // Record start time for tracking
       const startTime = Date.now();
@@ -72,6 +74,8 @@ export function useAnalysisResults({
       const requestBody: any = { 
         temperature: temp,
         promptId,
+        ...(p ? { topP: p } : {}),
+        ...(c ? { candidateCount: c } : {}),
         // Analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
@@ -136,12 +140,6 @@ export function useAnalysisResults({
     }
   });
 
-  // Helper function to get provider from model key
-  const getProviderFromKey = (modelKey: string): string => {
-    const model = MODELS.find(m => m.key === modelKey);
-    return model?.provider || 'Unknown';
-  };
-
   // Helper to check if model is GPT-5 reasoning model
   const isGPT5ReasoningModel = (modelKey: string): boolean => {
     return ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(modelKey);
@@ -156,7 +154,7 @@ export function useAnalysisResults({
     
     const payload: any = {
       modelKey,
-      ...(supportsTemperature ? { temperature } : {}),
+      ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
       // Include reasoning parameters only for GPT-5 models
       ...(isGPT5ReasoningModel(modelKey) ? {
         reasoningEffort,
@@ -178,6 +176,10 @@ export function useAnalysisResults({
   return {
     temperature,
     setTemperature,
+    topP,
+    setTopP,
+    candidateCount,
+    setCandidateCount,
     promptId,
     setPromptId,
     customPrompt,
