@@ -17,10 +17,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { AnalysisResult, ModelConfig } from '@/types/puzzle';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { MODELS } from '@/constants/models';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -135,12 +133,6 @@ export function useAnalysisResults({
       // Optionally, show a toast notification to the user here
     }
   });
-
-  // Helper function to get provider from model key
-  const getProviderFromKey = (modelKey: string): string => {
-    const model = MODELS.find(m => m.key === modelKey);
-    return model?.provider || 'Unknown';
-  };
 
   // Helper to check if model is GPT-5 reasoning model
   const isGPT5ReasoningModel = (modelKey: string): boolean => {
