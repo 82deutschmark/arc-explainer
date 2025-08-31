@@ -818,6 +818,8 @@ export const puzzleController = {
             const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
             return {
               ...puzzleMetadata,
+              // Ensure id field is always present and correct
+              id: puzzleData.puzzleId,
               // Add performance metrics
               performanceData: {
                 wrongCount: puzzleData.wrongCount,
