@@ -16,7 +16,8 @@ import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { StatisticsCards } from '@/components/overview/StatisticsCards';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
-import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord, ModelConfig } from '@shared/types';
+import { useConfidenceStats } from '@/hooks/useConfidenceStats';
+import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord, ModelConfig, ConfidenceStats } from '@shared/types';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -164,6 +165,9 @@ export default function PuzzleOverview() {
       return json.data;
     },
   });
+
+  // Fetch confidence statistics
+  const { confidenceStats, isLoading: confidenceLoading } = useConfidenceStats();
 
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
@@ -331,6 +335,7 @@ export default function PuzzleOverview() {
         <StatisticsCards
           feedbackStats={feedbackStats}
           accuracyStats={accuracyStats}
+          confidenceStats={confidenceStats}
           modelRankings={modelRankings}
           onViewAllFeedback={() => {
             setSelectedPuzzleId('');
@@ -341,7 +346,7 @@ export default function PuzzleOverview() {
             setModelDebugModalOpen(true);
           }}
           statsLoading={statsLoading}
-          accuracyLoading={accuracyLoading}
+          accuracyLoading={accuracyLoading || confidenceLoading}
           recentActivity={recentActivity}
         />
 

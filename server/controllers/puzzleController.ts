@@ -726,5 +726,24 @@ export const puzzleController = {
       logger.error('Error fetching real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch real performance stats', 'An error occurred while fetching real performance statistics'));
     }
+  },
+
+  /**
+   * Get CONFIDENCE ANALYSIS STATS - AI confidence patterns
+   *
+   * Analyzes AI confidence levels and patterns across different scenarios,
+   * such as average confidence when predictions are correct vs. incorrect.
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getConfidenceStats(req: Request, res: Response) {
+    try {
+      const confidenceStats = await repositoryService.feedback.getConfidenceStats();
+      res.json(formatResponse.success(confidenceStats));
+    } catch (error) {
+      logger.error('Error fetching confidence stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch confidence stats', 'An error occurred while fetching confidence analysis statistics'));
+    }
   }
 };
