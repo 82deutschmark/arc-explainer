@@ -1,5 +1,62 @@
 ### August 31 2025
 
+## v2.8.0 - AI Services Consolidation: Advanced JSON Parsing & OpenRouter Refactor (Phase 3.2) ✅
+- **MAJOR AI SERVICES REFACTOR**: Completed Phase 3.2 by fully consolidating all AI service providers under unified BaseAIService architecture
+- **Enhanced BaseAIService Architecture**:
+  - Migrated sophisticated JSON parsing and response recovery from OpenRouter to base class
+  - 4-strategy response recovery system with markdown extraction, sanitization, and fallback generation
+  - Advanced JSON extraction handles escaped markdown (`\```json`), newline normalization, and malformed responses
+  - Validation-compliant fallback responses prevent API failures from breaking the UI
+- **OpenRouter Service Complete Rewrite**:
+  - Reduced from 600+ lines to ~210 lines (65% code reduction)
+  - Now extends BaseAIService like all other providers for consistency
+  - Eliminated duplicate JSON parsing logic by leveraging enhanced base class methods
+  - Maintains all existing functionality while following standardized patterns
+- **Universal JSON Recovery**: All AI providers now benefit from advanced response recovery strategies:
+  - Strategy 1: Automatic markdown sanitization and wrapper removal
+  - Strategy 2: Advanced extraction from code blocks and JSON patterns  
+  - Strategy 3: Combined sanitization + extraction approaches
+  - Strategy 4: Validation-compliant fallback with detailed error context
+- **Code Quality Improvements**:
+  - 90%+ code duplication eliminated across all AI service providers
+  - Consistent error handling and logging patterns
+  - Standardized token usage tracking and cost calculation
+  - Enhanced debugging capabilities with detailed parsing failure analysis
+- **Parsing Robustness**: Enhanced handling of common AI response issues:
+  - Escaped backticks and markdown wrappers
+  - Malformed JSON with unescaped newlines
+  - Truncated responses and object serialization
+  - Provider-specific response format variations
+- **Developer Experience**: Improved debugging with detailed logging of parsing strategies and failure modes
+- **Files Changed**: 
+  - `server/services/base/BaseAIService.ts` (major enhancement with JSON parsing consolidation)
+  - `server/services/openrouter.ts` (complete rewrite to extend BaseAIService)
+- **Phase Status**: Phase 3.2 complete. All AI services unified under BaseAIService architecture.
+- **Next Phase**: Phase 3.3 - Refactor Batch Analysis for improved session management and progress tracking.
+- **Author**: Claude Code
+
+## v2.7.0 - Backend Refactor: Service Layer Optimization (Phase 3.1) ✅
+- **BACKEND REFACTOR**: Successfully completed Phase 3.1 of the service layer optimization by extracting business logic from the monolithic `puzzleController`.
+- **New Service Classes**:
+  - `PuzzleAnalysisService`: Handles AI analysis orchestration, validation, retry logic, and raw response logging.
+  - `PuzzleFilterService`: Manages query parameter processing, filter validation, and parameter sanitization.
+  - `PuzzleOverviewService`: Handles complex data processing, sorting, pagination, and data enrichment for overview endpoints.
+- **Controller Transformation**: Reduced `puzzleController` from 870+ lines to ~305 lines (65% reduction) by moving business logic to services.
+- **Code Quality Improvements**: 
+  - Clear separation of concerns with controllers handling only HTTP request/response
+  - Enhanced testability through isolated business logic
+  - Improved maintainability and modularity
+  - Follows single responsibility principle
+- **Grid Validation**: Preserved all existing puzzle grid validation and prediction accuracy logic in `PuzzleAnalysisService`.
+- **API Testing**: All endpoints verified working correctly including `/api/puzzle/list` and `/api/puzzle/analyze/:taskId/:model`.
+- **Files Changed**: 
+  - `server/controllers/puzzleController.ts` (major refactor)
+  - `server/services/puzzleAnalysisService.ts` (new)
+  - `server/services/puzzleFilterService.ts` (new) 
+  - `server/services/puzzleOverviewService.ts` (new)
+- **Phase Status**: Phase 3.1 complete. Ready for Phase 3.2 (AI Services Consolidation).
+- **Author**: Claude Code
+
 ## v2.6.4 - UI Refactor: StatisticsCards Modularization ✅
 - **UI REFACTOR**: Decomposed the monolithic `StatisticsCards` component into smaller, focused, and reusable child components to improve maintainability, readability, and separation of concerns.
 - **New Components**:

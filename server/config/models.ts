@@ -578,19 +578,19 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144
   },
   {
-    key: 'qwen/qwen3-235b-a22b-thinking-2507',
-    name: 'qwen/qwen3-235b-a22b-thinking-2507',
+    key: 'z-ai/glm-4.5',
+    name: 'Z-AI GLM 4.5',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.08', output: '$0.31' },
+    cost: { input: '$0.60', output: '$2.20' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: true,
-    apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
+    apiModelName: 'z-ai/glm-4.5',
     modelType: 'openrouter',
-    maxOutputTokens: 128000,
-    contextWindow: 262144
+    maxOutputTokens: 96000,
+    contextWindow: 131000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
