@@ -683,7 +683,7 @@ export const puzzleController = {
    */
   async getGeneralModelStats(req: Request, res: Response) {
     try {
-      const modelStats = await repositoryService.feedback.getGeneralModelStats();
+      const modelStats = await repositoryService.metrics.getGeneralModelStats();
       res.json(formatResponse.success(modelStats));
     } catch (error) {
       logger.error('Error fetching general model stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -708,11 +708,11 @@ export const puzzleController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      const accuracyStats = await repositoryService.feedback.getAccuracyStats();
+      const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
       logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
-      res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
+      res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching accuracy statistics'));
     }
   },
 
@@ -733,7 +733,7 @@ export const puzzleController = {
    */
   async getRawStats(req: Request, res: Response) {
     try {
-      const rawStats = await repositoryService.feedback.getRawDatabaseStats();
+      const rawStats = await repositoryService.metrics.getRawDatabaseStats();
       res.json(formatResponse.success(rawStats));
     } catch (error) {
       logger.error('Error fetching raw stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -759,7 +759,7 @@ export const puzzleController = {
    */
   async getRealPerformanceStats(req: Request, res: Response) {
     try {
-      const performanceStats = await repositoryService.feedback.getRealPerformanceStats();
+      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStats();
       res.json(formatResponse.success(performanceStats));
     } catch (error) {
       logger.error('Error fetching real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -778,7 +778,7 @@ export const puzzleController = {
    */
   async getConfidenceStats(req: Request, res: Response) {
     try {
-      const confidenceStats = await repositoryService.feedback.getConfidenceStats();
+      const confidenceStats = await repositoryService.trustworthiness.getConfidenceStats();
       res.json(formatResponse.success(confidenceStats));
     } catch (error) {
       logger.error('Error fetching confidence stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');

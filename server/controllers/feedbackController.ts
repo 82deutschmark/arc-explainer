@@ -153,15 +153,12 @@ export const feedbackController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      // Get feedback from repository
-      const stats = await repositoryService.feedback.getAccuracyStats();
+      // Get accuracy stats from repository
+      const stats = await repositoryService.accuracy.getPureAccuracyStats();
       res.json(formatResponse.success(stats));
     } catch (error) {
       console.error('Error getting accuracy stats:', error);
-      res.status(500).json(formatResponse.error(
-        'Failed to retrieve accuracy statistics',
-        error instanceof Error ? error.message : 'Unknown error'
-      ));
+      res.status(500).json({ error: 'Failed to get accuracy stats', details: error });
     }
   },
 
