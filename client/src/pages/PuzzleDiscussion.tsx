@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
-import { usePuzzleList } from '@/hooks/usePuzzle';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,30 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, MessageCircle, Eye, RefreshCw, XCircle, ThumbsDown, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
-import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
-import type { PuzzleMetadata } from '@shared/types';
-import { useHasExplanation } from '@/hooks/useExplanation';
-import { formatProcessingTime } from '@/utils/timeFormatters';
+import type { PuzzleOverviewData, PuzzleOverviewResponse } from '@shared/types';
 
-// Extended type to include feedback counts and processing metadata
-interface EnhancedPuzzleMetadata extends PuzzleMetadata {
-  explanationId?: number;
-  feedbackCount?: number;
-  apiProcessingTimeMs?: number;
-  modelName?: string;
-  createdAt?: string;
-  confidence?: number;
-  estimatedCost?: number;
-  isPredictionCorrect?: boolean;
-  predictionAccuracyScore?: number;
-  multiplePredictedOutputs?: any;
-  multiTestResults?: any;
-  multiTestAllCorrect?: boolean;
-  multiTestAverageAccuracy?: number;
-  hasMultiplePredictions?: boolean;
-  multiTestPredictionGrids?: any;
-}
+// Use PuzzleOverviewData which includes explanation fields
+type ProblematicPuzzle = PuzzleOverviewData;
 
 export default function PuzzleDiscussion() {
   const [maxGridSize, setMaxGridSize] = useState<string>('10');
@@ -47,33 +28,47 @@ export default function PuzzleDiscussion() {
     document.title = 'Puzzle Discussion - Retry Failed Analysis';
   }, []);
 
-  // Create filters object for the hook - focus on problematic puzzles
-  const filters = React.useMemo(() => {
-    const result: any = {};
-    if (maxGridSize) result.maxGridSize = parseInt(maxGridSize);
-    // Only get puzzles that have been analyzed (have explanations)
-    result.hasExplanation = true;
-    return result;
+  // Query parameters for overview API - focus on problematic puzzles
+  const queryParams = React.useMemo(() => {
+    const params = new URLSearchParams();
+    if (maxGridSize) params.set('gridSizeMax', maxGridSize);
+    // Only get puzzles that have explanations
+    params.set('hasExplanation', 'true');
+    // Set limit to get more puzzles for filtering
+    params.set('limit', '100');
+    params.set('offset', '0');
+    return params;
   }, [maxGridSize]);
 
-  const { puzzles, isLoading, error } = usePuzzleList(filters);
+  // Use overview API to get puzzles with explanation data
+  const { data: overviewResponse, isLoading, error } = useQuery<PuzzleOverviewResponse>({
+    queryKey: ['puzzle-overview-discussion', queryParams.toString()],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/puzzle/overview?${queryParams}`);
+      return await response.json();
+    },
+  });
+
+  const puzzles = overviewResponse?.puzzles || [];
   
   // Filter and sort to show worst-performing puzzles first
   const problemPuzzles = React.useMemo(() => {
-    const allPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
+    const allPuzzles = puzzles;
     
     // Filter to only problematic puzzles
     let filtered = allPuzzles.filter(puzzle => {
       // Must have explanation to be considered problematic
-      if (!puzzle.hasExplanation) return false;
+      if (!puzzle.hasExplanation || !puzzle.latestExplanation) return false;
+      
+      const latest = puzzle.latestExplanation;
       
       // Include if:
       // 1. Prediction was incorrect
-      if (puzzle.isPredictionCorrect === false) return true;
+      if (latest.isPredictionCorrect === false) return true;
       
-      // 2. Low trustworthiness score (prediction_accuracy_score)
-      if (puzzle.predictionAccuracyScore !== undefined && puzzle.predictionAccuracyScore !== null) {
-        if (puzzle.predictionAccuracyScore < 0.5) return true;
+      // 2. Low trustworthiness score (predictionAccuracyScore)
+      if (latest.predictionAccuracyScore !== undefined && latest.predictionAccuracyScore !== null) {
+        if (latest.predictionAccuracyScore < 0.5) return true;
       }
       
       // 3. More negative feedback than positive (if we have feedback data)
@@ -84,18 +79,23 @@ export default function PuzzleDiscussion() {
     
     // Sort by "worst" first
     filtered = filtered.sort((a, b) => {
+      const aLatest = a.latestExplanation;
+      const bLatest = b.latestExplanation;
+      
+      if (!aLatest || !bLatest) return 0;
+      
       // Priority 1: Incorrect predictions first
-      if (a.isPredictionCorrect === false && b.isPredictionCorrect !== false) return -1;
-      if (b.isPredictionCorrect === false && a.isPredictionCorrect !== false) return 1;
+      if (aLatest.isPredictionCorrect === false && bLatest.isPredictionCorrect !== false) return -1;
+      if (bLatest.isPredictionCorrect === false && aLatest.isPredictionCorrect !== false) return 1;
       
       // Priority 2: Lower trustworthiness scores first
-      const aScore = a.predictionAccuracyScore || 1.0;
-      const bScore = b.predictionAccuracyScore || 1.0;
+      const aScore = aLatest.predictionAccuracyScore || 1.0;
+      const bScore = bLatest.predictionAccuracyScore || 1.0;
       if (aScore !== bScore) return aScore - bScore;
       
       // Priority 3: Lower confidence first
-      const aConf = a.confidence || 100;
-      const bConf = b.confidence || 100;
+      const aConf = aLatest.confidence || 100;
+      const bConf = bLatest.confidence || 100;
       return aConf - bConf;
     });
     
@@ -103,14 +103,17 @@ export default function PuzzleDiscussion() {
     return filtered.slice(0, 20);
   }, [puzzles]);
 
-  const getProblemBadge = (puzzle: EnhancedPuzzleMetadata) => {
+  const getProblemBadge = (puzzle: ProblematicPuzzle) => {
     const issues = [];
+    const latest = puzzle.latestExplanation;
     
-    if (puzzle.isPredictionCorrect === false) {
+    if (!latest) return issues;
+    
+    if (latest.isPredictionCorrect === false) {
       issues.push('Wrong Answer');
     }
     
-    if (puzzle.predictionAccuracyScore !== undefined && puzzle.predictionAccuracyScore < 0.5) {
+    if (latest.predictionAccuracyScore !== undefined && latest.predictionAccuracyScore < 0.5) {
       issues.push('Low Trustworthiness');
     }
     
@@ -276,7 +279,7 @@ export default function PuzzleDiscussion() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {problemPuzzles.map((puzzle: EnhancedPuzzleMetadata) => {
+                {problemPuzzles.map((puzzle: ProblematicPuzzle) => {
                   const issues = getProblemBadge(puzzle);
                   return (
                     <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-orange-400">
@@ -311,27 +314,27 @@ export default function PuzzleDiscussion() {
                               </Badge>
                             ))}
                             
-                            {puzzle.modelName && (
+                            {puzzle.latestExplanation?.modelName && (
                               <Badge variant="outline" className="bg-gray-50 text-gray-700 text-xs">
-                                {puzzle.modelName}
+                                {puzzle.latestExplanation.modelName}
                               </Badge>
                             )}
                             
-                            {puzzle.predictionAccuracyScore !== undefined && (
+                            {puzzle.latestExplanation?.predictionAccuracyScore !== undefined && (
                               <Badge variant="outline" className={`text-xs ${
-                                puzzle.predictionAccuracyScore < 0.3 
+                                puzzle.latestExplanation.predictionAccuracyScore < 0.3 
                                   ? 'bg-red-50 text-red-700'
-                                  : puzzle.predictionAccuracyScore < 0.6
+                                  : puzzle.latestExplanation.predictionAccuracyScore < 0.6
                                     ? 'bg-orange-50 text-orange-700' 
                                     : 'bg-yellow-50 text-yellow-700'
                               }`}>
-                                Trust: {Math.round(puzzle.predictionAccuracyScore * 100)}%
+                                Trust: {Math.round(puzzle.latestExplanation.predictionAccuracyScore * 100)}%
                               </Badge>
                             )}
                             
-                            {puzzle.confidence && (
+                            {puzzle.latestExplanation?.confidence && (
                               <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
-                                {puzzle.confidence}% conf
+                                {puzzle.latestExplanation.confidence}% conf
                               </Badge>
                             )}
                           </div>
@@ -342,13 +345,15 @@ export default function PuzzleDiscussion() {
                               <span className="font-medium">{puzzle.maxGridSize}×{puzzle.maxGridSize}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Input:</span>
-                              <span className="font-medium">{puzzle.inputSize[0]}×{puzzle.inputSize[1]}</span>
+                              <span>Explanations:</span>
+                              <span className="font-medium">{puzzle.totalExplanations}</span>
                             </div>
-                            <div className="flex justify-between">
-                              <span>Output:</span>
-                              <span className="font-medium">{puzzle.outputSize[0]}×{puzzle.outputSize[1]}</span>
-                            </div>
+                            {puzzle.feedbackCount !== undefined && (
+                              <div className="flex justify-between">
+                                <span>Feedback:</span>
+                                <span className="font-medium">{puzzle.feedbackCount}</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex gap-2">

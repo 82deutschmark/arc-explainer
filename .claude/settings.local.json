@@ -52,7 +52,16 @@
       "Read(d:\\1Projects\\arc-explainer\\docs/**)",
       "Read(d:\\1Projects\\arc-explainer\\client\\src/**)",
       "Read(d:\\1Projects\\arc-explainer\\server\\services/**)",
-      "Read(d:\\1Projects\\arc-explainer\\server/**)"
+      "Read(d:\\1Projects\\arc-explainer\\server/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\repositories/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server/**)",
+      "Read(d:\\1Projects\\arc-explainer\\shared/**)"
     ],
     "deny": [],
     "ask": [],
