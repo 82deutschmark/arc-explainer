@@ -107,9 +107,7 @@ export class GeminiService extends BaseAIService {
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
-    const temperature = options?.temperature ?? 1.0; // Default for Gemini
-    const topP = options?.topP ?? 0.95; // Default for Gemini
-    const candidateCount = options?.candidateCount ?? 1; // Default for Gemini
+    const temperature = options?.temperature ?? 0.2; // Default for Gemini
 
     // Build request format for Gemini API
     const messageFormat: any = {
@@ -117,8 +115,8 @@ export class GeminiService extends BaseAIService {
       generationConfig: {
         maxOutputTokens: 65000,
         ...(modelSupportsTemperature(modelKey) && { temperature }),
-        topP,
-        candidateCount
+        ...(options?.topP && { topP: options.topP }),
+        ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       contents: [
         {

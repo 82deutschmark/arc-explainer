@@ -38,6 +38,8 @@ export function useAnalysisResults({
   omitAnswer,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
+  const [topP, setTopP] = useState(0.95);
+  const [candidateCount, setCandidateCount] = useState(1);
   const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
@@ -55,11 +57,13 @@ export function useAnalysisResults({
     mutationFn: async (payload: { 
       modelKey: string; 
       temperature?: number; 
+      topP?: number;
+      candidateCount?: number;
       reasoningEffort?: string; 
       reasoningVerbosity?: string; 
       reasoningSummaryType?: string; 
     }) => {
-      const { modelKey, temperature: temp, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
+      const { modelKey, temperature: temp, topP: p, candidateCount: c, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
       
       // Record start time for tracking
       const startTime = Date.now();
@@ -70,6 +74,8 @@ export function useAnalysisResults({
       const requestBody: any = { 
         temperature: temp,
         promptId,
+        ...(p ? { topP: p } : {}),
+        ...(c ? { candidateCount: c } : {}),
         // Analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
@@ -148,7 +154,7 @@ export function useAnalysisResults({
     
     const payload: any = {
       modelKey,
-      ...(supportsTemperature ? { temperature } : {}),
+      ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
       // Include reasoning parameters only for GPT-5 models
       ...(isGPT5ReasoningModel(modelKey) ? {
         reasoningEffort,
@@ -170,6 +176,10 @@ export function useAnalysisResults({
   return {
     temperature,
     setTemperature,
+    topP,
+    setTopP,
+    candidateCount,
+    setCandidateCount,
     promptId,
     setPromptId,
     customPrompt,

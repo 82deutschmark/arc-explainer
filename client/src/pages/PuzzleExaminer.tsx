@@ -87,6 +87,10 @@ export default function PuzzleExaminer() {
     reasoningSummaryType,
     setReasoningSummaryType,
     isGPT5ReasoningModel,
+    topP,
+    setTopP,
+    candidateCount,
+    setCandidateCount,
   } = useAnalysisResults({
     taskId,
     refetchExplanations,
@@ -405,8 +409,54 @@ export default function PuzzleExaminer() {
                 />
               </div>
               <div className="text-xs text-gray-600 flex-shrink-0">
-                <div>Controls creativity • GPT-4.1 & older only!!!</div>
+                <div>Controls creativity • Gemini & GPT-4.1 & older only!!!</div>
                 <div className="text-blue-600">💡 Temperature and reasoning are mutually exclusive</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Top P Control */}
+          <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
+            <div className="flex items-center gap-3">
+              <Label htmlFor="topP" className="text-sm font-medium whitespace-nowrap">
+                Top P: {topP.toFixed(2)}
+              </Label>
+              <div className="flex-1 max-w-xs">
+                <Slider
+                  id="topP"
+                  min={0.0}
+                  max={1.0}
+                  step={0.05}
+                  value={[topP]}
+                  onValueChange={(value) => setTopP(value[0])}
+                  className="w-full"
+                />
+              </div>
+              <div className="text-xs text-gray-600 flex-shrink-0">
+                <div>Controls diversity • Gemini only</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Candidate Count Control */}
+          <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
+            <div className="flex items-center gap-3">
+              <Label htmlFor="candidateCount" className="text-sm font-medium whitespace-nowrap">
+                Candidates: {candidateCount}
+              </Label>
+              <div className="flex-1 max-w-xs">
+                <Slider
+                  id="candidateCount"
+                  min={1}
+                  max={8}
+                  step={1}
+                  value={[candidateCount]}
+                  onValueChange={(value) => setCandidateCount(value[0])}
+                  className="w-full"
+                />
+              </div>
+              <div className="text-xs text-gray-600 flex-shrink-0">
+                <div>Number of responses • Gemini only</div>
               </div>
             </div>
           </div>
@@ -528,7 +578,8 @@ export default function PuzzleExaminer() {
         customPrompt={customPrompt}
         options={{
           emojiSetKey: emojiSet,
-          omitAnswer
+          omitAnswer,
+          sendAsEmojis  /// THIS SHOULD EXIST!!!!
         }}
       />
     </div>
