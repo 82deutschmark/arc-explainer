@@ -12,10 +12,11 @@ import {
   Award,
   TrendingUp,
   Star,
-  Database
+  Database,
+  Zap
 } from 'lucide-react';
 import { useModels } from '@/hooks/useModels';
-import type { FeedbackStats, AccuracyStats, ModelConfig } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, ModelConfig, ConfidenceStats } from '@shared/types';
 
 interface ModelRanking {
   modelName: string;
@@ -30,6 +31,7 @@ interface ModelRanking {
 interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
+  confidenceStats?: ConfidenceStats | null;
   modelRankings: ModelRanking[];
   onViewAllFeedback: () => void;
   onModelClick?: (modelName: string) => void;
@@ -47,6 +49,7 @@ interface StatisticsCardsProps {
 export function StatisticsCards({
   feedbackStats,
   accuracyStats,
+  confidenceStats,
   modelRankings,
   onViewAllFeedback,
   onModelClick,
@@ -199,7 +202,7 @@ export function StatisticsCards({
           </CardHeader>
           <CardContent>
             {/* Three Column Layout for Top Models */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-96">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-96">
               {/* Best Puzzle Success (Filtered) Column */}
               <div className="flex flex-col h-full">
                 <h4 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
@@ -296,6 +299,57 @@ export function StatisticsCards({
                     <div className="text-center py-6 text-gray-500">
                       <Star className="h-8 w-8 mx-auto mb-2 opacity-30" />
                       <p className="text-sm">No trustworthiness data</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Confidence Calibration Column */}
+              <div className="flex flex-col h-full">
+                <h4 className="text-sm font-semibold text-orange-700 mb-3 flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-orange-500" />
+                  Confidence Leaders
+                </h4>
+                <div className="h-80 space-y-2 overflow-y-auto pr-1 border-r border-orange-100">
+                  {confidenceStats && confidenceStats.modelConfidenceAnalysis && confidenceStats.modelConfidenceAnalysis.length > 0 ? (
+                    [...confidenceStats.modelConfidenceAnalysis]
+                      .filter(m => m.incorrectPredictions > 0) // Only include models with incorrect predictions
+                      .sort((a, b) => (a.avgConfidenceWhenIncorrect ?? 100) - (b.avgConfidenceWhenIncorrect ?? 100))
+                      .slice(0, 15)
+                      .map((model, index) => {
+                        const modelInfo = models?.find((m: ModelConfig) => m.key === model.modelName);
+                        const displayName = modelInfo ? `${modelInfo.name}` : model.modelName;
+                        
+                        return (
+                          <div 
+                            key={model.modelName} 
+                            className="p-2 rounded-lg bg-orange-50 border border-orange-100 hover:bg-orange-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                            onClick={() => onModelClick?.(model.modelName)}
+                            title={`Avg confidence when incorrect: ${model.avgConfidenceWhenIncorrect?.toFixed(1)}%`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {index === 0 && <Award className="h-3 w-3 text-yellow-500 flex-shrink-0" />}
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-medium text-orange-700 truncate group-hover:text-orange-800">
+                                    {displayName}
+                                  </div>
+                                  <div className="text-xs text-orange-600 group-hover:text-orange-700">
+                                    {model.incorrectPredictions} incorrect • {model.correctPredictions} correct
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge className="text-xs bg-orange-100 text-orange-800 ml-2 flex-shrink-0">
+                                {model.avgConfidenceWhenIncorrect?.toFixed(1)}%
+                              </Badge>
+                            </div>
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="text-center py-6 text-gray-500">
+                      <Zap className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No confidence data</p>
                     </div>
                   )}
                 </div>

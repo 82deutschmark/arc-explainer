@@ -72,6 +72,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // TRUSTWORTHINESS STATISTICS - AI confidence reliability analysis  
   app.get("/api/puzzle/performance-stats", asyncHandler(puzzleController.getRealPerformanceStats));
   // CORRECT: Returns trustworthiness-focused analysis (confidence reliability metrics)
+
+  // CONFIDENCE ANALYSIS STATISTICS - AI confidence patterns
+  app.get("/api/puzzle/confidence-stats", asyncHandler(puzzleController.getConfidenceStats));
   
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
