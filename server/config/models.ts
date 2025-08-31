@@ -259,7 +259,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: true,
     apiModelName: 'grok-4-0709',
     modelType: 'grok',
-    maxOutputTokens: 65536
+    maxOutputTokens: 115536
   },
   {
     key: 'grok-3',
@@ -466,7 +466,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    maxOutputTokens: 16384,
+    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -497,7 +497,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'mistralai/mistral-large',
     modelType: 'openrouter',
-    maxOutputTokens: 66384,
+    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -679,7 +679,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
-    maxOutputTokens: 8192,
+    maxOutputTokens: 18192,
     contextWindow: 32768
   },
   {
