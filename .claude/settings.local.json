@@ -1,54 +1,17 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(npm run test:*)",
-      "Read(d:\\1Projects\\arc-explainer\\**)",
-      "Read(d:\\1Projects\\arc-explainer/**)",
-      "Read(d:\\1Projects\\arc-explainer\\docs\\**)",
-      "Read(d:\\1Projects\\arc-explainer\\client\\src\\components\\puzzle/**)",
-      "Read(d:\\1Projects\\arc-explainer\\client\\src\\constants/**)",
-      "Read(d:\\1Projects\\arc-explainer\\data\\explained/**)",
-      "Read(d:\\1Projects\\arc-explainer\\client\\src\\constants/**)",
-      "Read(d:\\1Projects\\arc-explainer\\.claude/**)",
-      "Bash(taskkill:*)",
-      "Bash(kill:*)",
-      "WebFetch(domain:localhost)",
-      "Bash(node:*)",
-      "Bash(curl:*)",
-      "Bash(npm run check:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm install:*)",
-      "Bash(cmd /c:*)",
-      "Bash(echo \"Exit code: $?\")",
-      "Bash(grep:*)",
-      "Bash(powershell:*)",
-      "Bash(del test-gpt5-responses.js)",
-      "Bash(rm:*)",
-      "WebFetch(domain:docs.anthropic.com)",
-      "Bash(git branch:*)",
-      "Bash(git checkout:*)",
-      "Bash(find:*)",
-      "WebSearch",
-      "Bash(cat:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(gh pr create:*)",
-      "Bash(git log:*)",
-      "Bash(timeout:*)",
-      "WebFetch(domain:openrouter.ai)",
-      "Bash(psql:*)",
-      "Bash(npm run typecheck:*)",
-      "Bash(npm run:*)",
-      "Bash(npx tsx:*)",
-      "Bash(dir:*)"
-      
-    ],
-    "deny": [],
-    "ask": [],
-    "additionalDirectories": [
-      "D:\\",
-      "D:\\1Projects\\arc-explainer"
-    ]
+  "model": "sonnet",
+  
+    "permissions": {
+      "defaultMode": "bypassPermissions",
+      "allow": [
+        "Read",
+        "Edit",
+        "Write",
+        "MultiEdit",
+        "Bash",
+        "WebFetch"
+      ]
+    }
   }
-}
+
+  

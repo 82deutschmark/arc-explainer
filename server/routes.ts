@@ -76,6 +76,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CONFIDENCE ANALYSIS STATISTICS - AI confidence patterns
   app.get("/api/puzzle/confidence-stats", asyncHandler(puzzleController.getConfidenceStats));
   
+  // DISCUSSION PAGE - worst-performing puzzles for retry analysis
+  app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
+  
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
   

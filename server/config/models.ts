@@ -259,7 +259,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: true,
     apiModelName: 'grok-4-0709',
     modelType: 'grok',
-    maxOutputTokens: 65536
+    maxOutputTokens: 115536
   },
   {
     key: 'grok-3',
@@ -466,7 +466,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    maxOutputTokens: 16384,
+    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -497,7 +497,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'mistralai/mistral-large',
     modelType: 'openrouter',
-    maxOutputTokens: 66384,
+    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -578,19 +578,19 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144
   },
   {
-    key: 'qwen/qwen3-30b-a3b-free',
-    name: 'Qwen3 30B A3B (Free)',
+    key: 'qwen/qwen3-235b-a22b-thinking-2507',
+    name: 'qwen/qwen3-235b-a22b-thinking-2507',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    cost: { input: '$0.08', output: '$0.31' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     supportsReasoning: true,
-    apiModelName: 'qwen/qwen3-30b-a3b-free',
+    apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
     modelType: 'openrouter',
-    maxOutputTokens: 65536,
-    contextWindow: 131072
+    maxOutputTokens: 128000,
+    contextWindow: 262144
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
@@ -679,7 +679,7 @@ export const MODELS: ModelConfig[] = [
     supportsReasoning: false,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
-    maxOutputTokens: 8192,
+    maxOutputTokens: 18192,
     contextWindow: 32768
   },
   {

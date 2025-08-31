@@ -86,7 +86,9 @@ export const puzzleController = {
       reasoningVerbosity, 
       reasoningSummaryType,
       // System prompt mode
-      systemPromptMode = 'ARC'
+      systemPromptMode = 'ARC',
+      // Retry mode for enhanced prompting
+      retryMode = false
     } = req.body;
     
     
@@ -96,12 +98,49 @@ export const puzzleController = {
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
     
+    // Fetch previous analysis and bad feedback for retry mode
+    let previousAnalysis = null;
+    let badFeedback = null;
+    
+    if (retryMode) {
+      try {
+        // Get all explanations for this puzzle to find the worst one
+        const explanations = await repositoryService.explanations.getExplanationsForPuzzle(taskId);
+        if (explanations && explanations.length > 0) {
+          // Find the worst analysis (incorrect prediction or lowest trustworthiness)
+          previousAnalysis = explanations.find(exp => exp.isPredictionCorrect === false) || 
+                           explanations.sort((a, b) => (a.predictionAccuracyScore || 1) - (b.predictionAccuracyScore || 1))[0];
+        }
+        
+        // Get bad feedback for this puzzle
+        if (repositoryService.feedback) {
+          const allFeedback = await repositoryService.feedback.getFeedbackForPuzzle(taskId);
+          if (allFeedback && allFeedback.length > 0) {
+            // Filter to get only negative feedback with comments
+            badFeedback = allFeedback.filter(fb => 
+              fb.voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
+            );
+          }
+        }
+        
+        console.log(`[RETRY-MODE] Found ${previousAnalysis ? '1' : '0'} previous analysis and ${badFeedback ? badFeedback.length : 0} bad feedback entries`);
+      } catch (error) {
+        console.error('[RETRY-MODE] Error fetching context:', error);
+        // Continue without context rather than failing
+      }
+    }
+    
     // Build options object for prompt builder
     const options: PromptOptions = {};
     if (emojiSetKey) options.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
     if (topP) options.topP = topP;
     if (candidateCount) options.candidateCount = candidateCount;
+    if (retryMode) {
+      options.retryMode = retryMode;
+      if (previousAnalysis) options.previousAnalysis = previousAnalysis;
+      if (badFeedback && badFeedback.length > 0) options.badFeedback = badFeedback;
+    }
     
     // Build service options including reasoning parameters
     const serviceOpts: any = {};
@@ -644,7 +683,7 @@ export const puzzleController = {
    */
   async getGeneralModelStats(req: Request, res: Response) {
     try {
-      const modelStats = await repositoryService.feedback.getGeneralModelStats();
+      const modelStats = await repositoryService.metrics.getGeneralModelStats();
       res.json(formatResponse.success(modelStats));
     } catch (error) {
       logger.error('Error fetching general model stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -669,11 +708,11 @@ export const puzzleController = {
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      const accuracyStats = await repositoryService.feedback.getAccuracyStats();
+      const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
       res.json(formatResponse.success(accuracyStats));
     } catch (error) {
       logger.error('Error fetching accuracy stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
-      res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching solver mode accuracy statistics'));
+      res.status(500).json(formatResponse.error('Failed to fetch accuracy stats', 'An error occurred while fetching accuracy statistics'));
     }
   },
 
@@ -694,7 +733,7 @@ export const puzzleController = {
    */
   async getRawStats(req: Request, res: Response) {
     try {
-      const rawStats = await repositoryService.feedback.getRawDatabaseStats();
+      const rawStats = await repositoryService.metrics.getRawDatabaseStats();
       res.json(formatResponse.success(rawStats));
     } catch (error) {
       logger.error('Error fetching raw stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -720,7 +759,7 @@ export const puzzleController = {
    */
   async getRealPerformanceStats(req: Request, res: Response) {
     try {
-      const performanceStats = await repositoryService.feedback.getRealPerformanceStats();
+      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStats();
       res.json(formatResponse.success(performanceStats));
     } catch (error) {
       logger.error('Error fetching real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
@@ -739,11 +778,94 @@ export const puzzleController = {
    */
   async getConfidenceStats(req: Request, res: Response) {
     try {
-      const confidenceStats = await repositoryService.feedback.getConfidenceStats();
+      const confidenceStats = await repositoryService.trustworthiness.getConfidenceStats();
       res.json(formatResponse.success(confidenceStats));
     } catch (error) {
       logger.error('Error fetching confidence stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch confidence stats', 'An error occurred while fetching confidence analysis statistics'));
+    }
+  },
+
+  /**
+   * Get worst-performing puzzles for discussion page
+   * Returns puzzles with incorrect predictions, low accuracy, or negative feedback
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getWorstPerformingPuzzles(req: Request, res: Response) {
+    try {
+      const { limit = 20, sortBy = 'composite' } = req.query;
+      const limitNum = Math.min(Math.max(parseInt(limit as string) || 20, 1), 50); // Cap at 50
+
+      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}`, 'puzzle-controller');
+
+      if (!repositoryService.isConnected()) {
+        logger.warn('Database not connected - returning empty list for worst-performing puzzles', 'puzzle-controller');
+        return res.json(formatResponse.success({
+          puzzles: [],
+          total: 0,
+          message: 'Database not available - no performance data'
+        }));
+      }
+
+      const validSortOptions = ['composite', 'feedback', 'accuracy'];
+      const sort = validSortOptions.includes(sortBy as string) ? sortBy as string : 'composite';
+      const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limitNum, sort);
+      
+      // For each puzzle, get the actual puzzle metadata
+      const enrichedPuzzles = await Promise.all(
+        worstPuzzles.map(async (puzzleData) => {
+          try {
+            const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
+            return {
+              ...puzzleMetadata,
+              // Ensure id field is always present and correct
+              id: puzzleData.puzzleId,
+              // Add performance metrics
+              performanceData: {
+                wrongCount: puzzleData.wrongCount,
+                avgAccuracy: puzzleData.avgAccuracy,
+                avgConfidence: puzzleData.avgConfidence,
+                totalExplanations: puzzleData.totalExplanations,
+                negativeFeedback: puzzleData.negativeFeedback,
+                totalFeedback: puzzleData.totalFeedback,
+                latestAnalysis: puzzleData.latestAnalysis,
+                worstExplanationId: puzzleData.worstExplanationId,
+                compositeScore: puzzleData.compositeScore
+              }
+            };
+          } catch (error) {
+            logger.warn(`Could not load metadata for puzzle ${puzzleData.puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
+            // Return basic structure if puzzle metadata fails
+            return {
+              id: puzzleData.puzzleId,
+              error: 'Puzzle metadata not available',
+              performanceData: {
+                wrongCount: puzzleData.wrongCount,
+                avgAccuracy: puzzleData.avgAccuracy,
+                avgConfidence: puzzleData.avgConfidence,
+                totalExplanations: puzzleData.totalExplanations,
+                negativeFeedback: puzzleData.negativeFeedback,
+                totalFeedback: puzzleData.totalFeedback,
+                latestAnalysis: puzzleData.latestAnalysis,
+                worstExplanationId: puzzleData.worstExplanationId,
+                compositeScore: puzzleData.compositeScore
+              }
+            };
+          }
+        })
+      );
+
+      logger.debug(`Found ${enrichedPuzzles.length} worst-performing puzzles`, 'puzzle-controller');
+
+      res.json(formatResponse.success({
+        puzzles: enrichedPuzzles,
+        total: enrichedPuzzles.length
+      }));
+    } catch (error) {
+      logger.error('Error fetching worst-performing puzzles: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch worst-performing puzzles', 'An error occurred while fetching worst-performing puzzle data'));
     }
   }
 };

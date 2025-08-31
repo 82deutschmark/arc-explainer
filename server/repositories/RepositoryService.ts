@@ -4,14 +4,24 @@
  * Provides unified access to all repositories with dependency injection support.
  * Replaces the monolithic DbService with a clean, modular architecture.
  * 
+ * Updated to include separated repositories following Single Responsibility Principle:
+ * - AccuracyRepository: Pure puzzle-solving correctness metrics
+ * - TrustworthinessRepository: AI confidence reliability analysis  
+ * - FeedbackRepository: User feedback about explanation quality
+ * - MetricsRepository: Aggregated analytics from all repositories
+ * 
  * @author Claude
  * @date 2025-08-27
+ * @updated 2025-08-31 - Added separated repositories for Phase 1 refactor
  */
 
 import { initializeDatabase, isDatabaseConnected, getPool } from './base/BaseRepository.ts';
 import { ExplanationRepository } from './ExplanationRepository.ts';
 import { FeedbackRepository } from './FeedbackRepository.ts';
 import { BatchAnalysisRepository } from './BatchAnalysisRepository.ts';
+import { AccuracyRepository } from './AccuracyRepository.ts';
+import { TrustworthinessRepository } from './TrustworthinessRepository.ts';
+import { MetricsRepository } from './MetricsRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
@@ -19,12 +29,18 @@ export class RepositoryService {
   private explanationRepository: ExplanationRepository;
   private feedbackRepository: FeedbackRepository;
   private batchAnalysisRepository: BatchAnalysisRepository;
+  private accuracyRepository: AccuracyRepository;
+  private trustworthinessRepository: TrustworthinessRepository;
+  private metricsRepository: MetricsRepository;
   private initialized = false;
 
   constructor() {
     this.explanationRepository = new ExplanationRepository();
     this.feedbackRepository = new FeedbackRepository();
     this.batchAnalysisRepository = new BatchAnalysisRepository();
+    this.accuracyRepository = new AccuracyRepository();
+    this.trustworthinessRepository = new TrustworthinessRepository();
+    this.metricsRepository = new MetricsRepository();
   }
 
   /**
@@ -99,6 +115,27 @@ export class RepositoryService {
   }
 
   /**
+   * Get accuracy repository (pure puzzle-solving correctness)
+   */
+  get accuracy(): AccuracyRepository {
+    return this.accuracyRepository;
+  }
+
+  /**
+   * Get trustworthiness repository (AI confidence reliability)
+   */
+  get trustworthiness(): TrustworthinessRepository {
+    return this.trustworthinessRepository;
+  }
+
+  /**
+   * Get metrics repository (aggregated analytics)
+   */
+  get metrics(): MetricsRepository {
+    return this.metricsRepository;
+  }
+
+  /**
    * Get database connection status
    */
   isConnected(): boolean {
@@ -152,6 +189,9 @@ export class RepositoryService {
       explanations: boolean;
       feedback: boolean;
       batchAnalysis: boolean;
+      accuracy: boolean;
+      trustworthiness: boolean;
+      metrics: boolean;
     };
     message: string;
   }> {
@@ -159,10 +199,14 @@ export class RepositoryService {
       database: this.isConnected(),
       explanations: false,
       feedback: false,
-      batchAnalysis: false
+      batchAnalysis: false,
+      accuracy: false,
+      trustworthiness: false,
+      metrics: false
     };
 
     let healthyCount = 0;
+    const totalRepositories = 6; // Updated count for all repositories
 
     if (details.database) {
       // Test each repository
@@ -192,6 +236,33 @@ export class RepositoryService {
       } catch (error) {
         logger.warn('Batch analysis repository health check failed', 'database');
       }
+
+      try {
+        // Test accuracy repository with a simple query
+        await this.accuracyRepository.getPureAccuracyStats();
+        details.accuracy = true;
+        healthyCount++;
+      } catch (error) {
+        logger.warn('Accuracy repository health check failed', 'database');
+      }
+
+      try {
+        // Test trustworthiness repository with a simple query
+        await this.trustworthinessRepository.getTrustworthinessStats();
+        details.trustworthiness = true;
+        healthyCount++;
+      } catch (error) {
+        logger.warn('Trustworthiness repository health check failed', 'database');
+      }
+
+      try {
+        // Test metrics repository with a simple query
+        await this.metricsRepository.getRawDatabaseStats();
+        details.metrics = true;
+        healthyCount++;
+      } catch (error) {
+        logger.warn('Metrics repository health check failed', 'database');
+      }
     }
 
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'unhealthy';
@@ -200,12 +271,12 @@ export class RepositoryService {
     if (!details.database) {
       status = 'unhealthy';
       message = 'Database connection failed';
-    } else if (healthyCount === 3) {
+    } else if (healthyCount === totalRepositories) {
       status = 'healthy';
       message = 'All repositories operational';
     } else if (healthyCount > 0) {
       status = 'degraded';
-      message = `${healthyCount}/3 repositories operational`;
+      message = `${healthyCount}/${totalRepositories} repositories operational`;
     }
 
     return {

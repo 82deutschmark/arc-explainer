@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import PuzzleOverview from "@/pages/PuzzleOverview";
+import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import ModelExaminer from "@/pages/ModelExaminer";
 import BatchResults from "@/pages/BatchResults";
@@ -16,6 +17,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={PuzzleBrowser} />
+      <Route path="/browser" component={PuzzleBrowser} />
+      <Route path="/discussion" component={PuzzleDiscussion} />
       <Route path="/overview" component={PuzzleOverview} />
       <Route path="/model-examiner" component={ModelExaminer} />
       <Route path="/batch" component={BatchResults} />

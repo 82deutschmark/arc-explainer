@@ -562,4 +562,70 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
   }
 
+  /**
+   * Get worst-performing puzzles based on composite scoring
+   * Prioritizes incorrect predictions, low accuracy scores, and negative feedback
+   */
+  async getWorstPerformingPuzzles(limit: number = 20, sortBy: string = 'composite'): Promise<any[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT *
+        FROM (
+          SELECT 
+            e.puzzle_id,
+            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) as wrong_count,
+            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
+            AVG(e.confidence) as avg_confidence,
+            COUNT(DISTINCT e.id) as total_explanations,
+            COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') as negative_feedback,
+            COUNT(f.id) as total_feedback,
+            MAX(e.created_at) as latest_analysis,
+            MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,
+            (
+              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
+              CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 THEN 5.0 ELSE 0.0 END +
+              CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
+              COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') * 2.0
+            ) as composite_score
+          FROM explanations e
+          LEFT JOIN feedback f ON e.id = f.explanation_id
+          WHERE e.puzzle_id IS NOT NULL
+          GROUP BY e.puzzle_id
+          HAVING 
+            COUNT(DISTINCT e.id) > 0
+            AND (
+              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
+              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.7 OR
+              COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
+            )
+        ) as performance_data
+        ORDER BY 
+          CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
+          CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
+          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST
+        LIMIT $1
+      `, [limit, sortBy]);
+
+      return result.rows.map(row => ({
+        puzzleId: row.puzzle_id,
+        wrongCount: parseInt(row.wrong_count) || 0,
+        avgAccuracy: parseFloat(row.avg_accuracy) || 0,
+        avgConfidence: parseFloat(row.avg_confidence) || 0,
+        totalExplanations: parseInt(row.total_explanations) || 0,
+        negativeFeedback: parseInt(row.negative_feedback) || 0,
+        totalFeedback: parseInt(row.total_feedback) || 0,
+        latestAnalysis: row.latest_analysis,
+        worstExplanationId: row.worst_explanation_id,
+        compositeScore: parseFloat(row.composite_score) || 0
+      }));
+    } catch (error) {
+      logger.error(`Error getting worst-performing puzzles: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return [];
+    }
+  }
+
 }

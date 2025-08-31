@@ -29,6 +29,7 @@ interface UseAnalysisResultsProps {
   emojiSetKey?: string;
   omitAnswer?: boolean;
   // systemPromptMode removed - now using modular architecture (hardcoded to 'ARC')
+  retryMode?: boolean; // Enhanced prompting for retry analysis
 }
 
 export function useAnalysisResults({
@@ -36,6 +37,7 @@ export function useAnalysisResults({
   refetchExplanations,
   emojiSetKey,
   omitAnswer,
+  retryMode,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
@@ -79,6 +81,7 @@ export function useAnalysisResults({
         // Analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
+        ...(retryMode ? { retryMode } : {}),
         systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
         // GPT-5 reasoning parameters
         ...(effort ? { reasoningEffort: effort } : {}),
