@@ -41,8 +41,18 @@
       "Bash(npm run typecheck:*)",
       "Bash(npm run:*)",
       "Bash(npx tsx:*)",
-      "Bash(dir:*)"
-      
+      "Bash(dir:*)",
+      "Read(d:\\1Projects\\arc-explainer\\docs/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\controllers/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\services/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\pages/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\components\\puzzle/**)",
+      "Read(d:\\1Projects\\arc-explainer\\shared/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src\\components\\puzzle/**)",
+      "Read(d:\\1Projects\\arc-explainer\\docs/**)",
+      "Read(d:\\1Projects\\arc-explainer\\client\\src/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server\\services/**)",
+      "Read(d:\\1Projects\\arc-explainer\\server/**)"
     ],
     "deny": [],
     "ask": [],

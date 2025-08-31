@@ -86,7 +86,9 @@ export const puzzleController = {
       reasoningVerbosity, 
       reasoningSummaryType,
       // System prompt mode
-      systemPromptMode = 'ARC'
+      systemPromptMode = 'ARC',
+      // Retry mode for enhanced prompting
+      retryMode = false
     } = req.body;
     
     
@@ -102,6 +104,7 @@ export const puzzleController = {
     if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
     if (topP) options.topP = topP;
     if (candidateCount) options.candidateCount = candidateCount;
+    if (retryMode) options.retryMode = retryMode;
     
     // Build service options including reasoning parameters
     const serviceOpts: any = {};
