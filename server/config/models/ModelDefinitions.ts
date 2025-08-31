@@ -50,7 +50,7 @@ export const MODEL_CATEGORIES = {
     ModelLookup.getByType('gpt5_chat').map(m => m.key)
   ),
   MODELS_WITH_REASONING: new Set(
-    MODEL_DEFINITIONS.filter(m => m.supportsReasoning).map(m => m.key)
+    MODEL_DEFINITIONS.filter(m => m.isReasoning).map(m => m.key)
   ),
   OPENAI_MODELS: new Set(
     ModelLookup.getByProvider('OpenAI').map(m => m.key)

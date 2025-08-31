@@ -22,7 +22,7 @@ export interface ModelCapabilityStatus {
   isAvailable: boolean;
   features: {
     supportsTemperature: boolean;
-    supportsReasoning: boolean;
+    isReasoning: boolean;
     supportsBatch: boolean;
     supportsStreaming: boolean;
   };
@@ -151,31 +151,31 @@ export class ModelCapabilities {
     return {
       // OpenAI specific overrides
       'gpt-5-2025-08-07': {
-        features: { supportsReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: false },
         limits: { maxConcurrentRequests: 1 } // Reasoning models have lower limits
       },
       'o3-mini-2025-01-31': {
-        features: { supportsReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: false },
         limits: { maxConcurrentRequests: 1 }
       },
       'o4-mini-2025-04-16': {
-        features: { supportsReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: false },
         limits: { maxConcurrentRequests: 1 }
       },
       
       // DeepSeek overrides
       'deepseek-reasoner': {
-        features: { supportsReasoning: true, supportsBatch: false },
+        features: { isReasoning: true, supportsBatch: false },
         limits: { maxConcurrentRequests: 2 }
       },
       
       // Gemini overrides for thinking models
       'gemini-2.5-pro': {
-        features: { supportsReasoning: true },
+        features: { isReasoning: true },
         limits: { maxConcurrentRequests: 3 }
       },
       'gemini-2.5-flash': {
-        features: { supportsReasoning: true },
+        features: { isReasoning: true },
         limits: { maxConcurrentRequests: 5 }
       },
       
@@ -184,7 +184,7 @@ export class ModelCapabilities {
         limits: { maxConcurrentRequests: 2 }
       },
       'deepseek/deepseek-r1-0528:free': {
-        features: { supportsReasoning: true, supportsBatch: false },
+        features: { isReasoning: true, supportsBatch: false },
         limits: { maxConcurrentRequests: 1 }
       }
     };
@@ -264,7 +264,7 @@ export class ModelCapabilities {
       isAvailable: true,
       features: {
         supportsTemperature: modelDef.supportsTemperature,
-        supportsReasoning: modelDef.supportsReasoning ?? false,
+        isReasoning: modelDef.isReasoning ?? false,
         supportsBatch: !modelDef.premium, // Premium models typically don't support batch
         supportsStreaming: true // Most models support streaming
       },

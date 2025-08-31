@@ -525,11 +525,15 @@ export interface ModelConfig {
   supportsTemperature: boolean;
   provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
-  supportsReasoning?: boolean;
+  isReasoning?: boolean;
   apiModelName: string;
   modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
   maxOutputTokens?: number;
   contextWindow?: number;
+  supportsFunctionCalling?: boolean;
+  supportsSystemPrompts?: boolean;
+  supportsStructuredOutput?: boolean;
+  supportsVision?: boolean;
 }
 
 export interface ReasoningItem {
