@@ -39,7 +39,7 @@ export const promptController = {
    * @param res - Express response object
    */
   async preview(req: Request, res: Response) {
-    const { taskId, promptId, customPrompt, emojiSetKey, omitAnswer } = req.body;
+    const { taskId, promptId, customPrompt, emojiSetKey, omitAnswer, topP, candidateCount } = req.body;
     
     console.log(`[PromptController] Generating prompt preview for task ${taskId} with template ${promptId}`);
     
@@ -55,7 +55,9 @@ export const promptController = {
         emojiSetKey,
         omitAnswer: omitAnswer ?? true,
         systemPromptMode: 'ARC', // Use the new architecture
-        useStructuredOutput: true
+        useStructuredOutput: true,
+        topP,
+        candidateCount
       });
 
       console.log(`[PromptController] Generated prompt preview - System: ${promptPackage.systemPrompt.length} chars, User: ${promptPackage.userPrompt.length} chars`);

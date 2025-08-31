@@ -18,6 +18,7 @@ import { ARCTask } from '@shared/types';
 interface PromptOptions {
   emojiSetKey?: string;
   omitAnswer?: boolean;
+  sendAsEmojis?: boolean;
 }
 
 interface PromptPreviewModalProps {

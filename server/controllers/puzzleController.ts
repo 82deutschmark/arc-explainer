@@ -78,6 +78,9 @@ export const puzzleController = {
       customPrompt, 
       emojiSetKey, 
       omitAnswer = true,
+      // Gemini parameters
+      topP,
+      candidateCount,
       // GPT-5 reasoning parameters
       reasoningEffort,
       reasoningVerbosity, 
@@ -97,6 +100,8 @@ export const puzzleController = {
     const options: PromptOptions = {};
     if (emojiSetKey) options.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') options.omitAnswer = omitAnswer;
+    if (topP) options.topP = topP;
+    if (candidateCount) options.candidateCount = candidateCount;
     
     // Build service options including reasoning parameters
     const serviceOpts: any = {};
