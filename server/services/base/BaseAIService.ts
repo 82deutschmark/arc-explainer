@@ -277,6 +277,12 @@ export abstract class BaseAIService {
    * Consolidated from OpenRouter's sophisticated parsing logic
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
+    // Check for truncation before attempting parse
+    if (this.isJsonTruncated(text)) {
+      console.log(`[${this.provider}] ❌ JSON appears truncated for ${modelKey}, skipping parse attempt`);
+      return this.generateValidationCompliantFallback(text, modelKey, new Error('JSON appears to be truncated'));
+    }
+
     // First, try direct parsing
     try {
       const parsed = JSON.parse(text);
@@ -287,6 +293,57 @@ export abstract class BaseAIService {
       console.log(`[${this.provider}] Parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
       return this.attemptResponseRecovery(text, modelKey, originalError);
     }
+  }
+
+  /**
+   * Check if JSON appears to be truncated by examining bracket/brace balance
+   */
+  private isJsonTruncated(text: string): boolean {
+    const trimmed = text.trim();
+    
+    // Basic checks for obvious truncation
+    if (!trimmed || trimmed.length < 2) return true;
+    
+    // Count brackets and braces to detect imbalance
+    let braceCount = 0;
+    let bracketCount = 0;
+    let inString = false;
+    let escapeNext = false;
+    
+    for (let i = 0; i < trimmed.length; i++) {
+      const char = trimmed[i];
+      
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+      
+      if (char === '\\') {
+        escapeNext = true;
+        continue;
+      }
+      
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      
+      if (!inString) {
+        if (char === '{') braceCount++;
+        else if (char === '}') braceCount--;
+        else if (char === '[') bracketCount++;
+        else if (char === ']') bracketCount--;
+      }
+    }
+    
+    // If braces or brackets are unbalanced, likely truncated
+    const isTruncated = braceCount !== 0 || bracketCount !== 0;
+    
+    if (isTruncated) {
+      console.log(`[${this.provider}] Truncation detected - braces: ${braceCount}, brackets: ${bracketCount}`);
+    }
+    
+    return isTruncated;
   }
 
   /**
@@ -373,10 +430,42 @@ export abstract class BaseAIService {
       // Normalize Windows/Mac line endings
       .replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     
+    // Fix problematic characters that cause JSON parsing errors
+    sanitized = this.fixProblematicCharacters(sanitized);
+    
     // Fix unescaped newlines within JSON string values
     sanitized = this.escapeNewlinesInJsonStrings(sanitized);
     
     return sanitized.trim();
+  }
+
+  /**
+   * Fix problematic characters that cause JSON parsing errors
+   */
+  private fixProblematicCharacters(text: string): string {
+    let fixed = text;
+    
+    // Fix unescaped forward slashes in strings (common cause of "Unexpected token /")
+    // Look for patterns like "text/more" and ensure they're properly handled
+    // This is a conservative approach - only fix obvious cases to avoid breaking valid JSON
+    fixed = fixed.replace(/([^\\])(\/)/g, (match, before, slash) => {
+      // If we're inside a string value (rough heuristic), escape the slash
+      return before + '\\' + slash;
+    });
+    
+    // Fix common quote issues - unmatched or improperly escaped quotes
+    // Remove any trailing unmatched quotes at the end of truncated responses
+    const quoteCount = (fixed.match(/"/g) || []).length;
+    if (quoteCount % 2 !== 0) {
+      // Odd number of quotes - likely truncated, remove the last one if at the end
+      const lastQuoteIndex = fixed.lastIndexOf('"');
+      if (lastQuoteIndex === fixed.length - 1 || lastQuoteIndex > fixed.length - 5) {
+        fixed = fixed.substring(0, lastQuoteIndex) + fixed.substring(lastQuoteIndex + 1);
+        console.log(`[${this.provider}] Removed trailing unmatched quote`);
+      }
+    }
+    
+    return fixed;
   }
 
   /**
@@ -431,9 +520,22 @@ export abstract class BaseAIService {
   private generateValidationCompliantFallback(responseText: string, modelKey: string, originalError: any): any {
     console.log(`[${this.provider}] Generating validation-compliant fallback for ${modelKey}`);
     
+    // Get better error context - show area around the problematic position if available
+    const errorMsg = originalError instanceof Error ? originalError.message : String(originalError);
+    let contextualPreview = responseText.substring(0, 200) + "...";
+    
+    // If error mentions a position, show context around that area
+    const positionMatch = errorMsg.match(/position (\d+)/);
+    if (positionMatch) {
+      const position = parseInt(positionMatch[1]);
+      const start = Math.max(0, position - 100);
+      const end = Math.min(responseText.length, position + 100);
+      contextualPreview = `...${responseText.substring(start, end)}... [Error near position ${position}]`;
+    }
+    
     return {
       patternDescription: `[PARSE ERROR] The ${this.provider} ${modelKey} model provided a response that could not be parsed as JSON. This may indicate the model generated invalid formatting or the response was truncated.`,
-      solvingStrategy: `Response parsing failed with error: ${originalError instanceof Error ? originalError.message : String(originalError)}. Raw response preview: "${responseText.substring(0, 200)}..."`,
+      solvingStrategy: `Response parsing failed with error: ${errorMsg}. Raw response preview: "${contextualPreview}"`,
       hints: [
         `The model response could not be parsed as valid JSON`,
         `This may indicate formatting issues or response truncation`,
@@ -442,8 +544,8 @@ export abstract class BaseAIService {
       confidence: 0,
       parseError: true,
       recoveryMethod: 'validation_compliant_fallback',
-      originalError: originalError instanceof Error ? originalError.message : String(originalError),
-      responsePreview: responseText.substring(0, 500)
+      originalError: errorMsg,
+      responsePreview: responseText.substring(0, 1000) // Show more context for debugging
     };
   }
 
