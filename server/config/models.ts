@@ -232,7 +232,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-haiku-20241022',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 7000
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -246,7 +246,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-haiku-20240307',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 4000
   },
 
   // xAI Grok Models
