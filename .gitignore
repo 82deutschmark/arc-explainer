@@ -8,3 +8,4 @@ vite.config.ts.*
 *.pyc
 nul
 /solver/img_tmp
+/data/explained
