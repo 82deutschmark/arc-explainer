@@ -275,8 +275,30 @@ export class DatabaseSchema {
         ALTER TABLE batch_analysis_sessions 
         ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       `);
+
+      // Add system prompt tracking columns to explanations table
+      await client.query(`
+        ALTER TABLE explanations 
+        ADD COLUMN IF NOT EXISTS system_prompt_used TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS user_prompt_used TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS prompt_template_id VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS custom_prompt_text TEXT DEFAULT NULL
+      `);
+
+      // Create indexes for prompt analysis
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_explanations_prompt_template 
+        ON explanations(prompt_template_id) 
+        WHERE prompt_template_id IS NOT NULL
+      `);
+
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_explanations_custom_prompt_hash
+        ON explanations(MD5(custom_prompt_text)) 
+        WHERE custom_prompt_text IS NOT NULL
+      `);
       
-      logger.info('Applied missing column migrations', 'database');
+      logger.info('Applied missing column migrations including system prompt tracking', 'database');
     } catch (error) {
       logger.error(`Error applying column migrations: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;

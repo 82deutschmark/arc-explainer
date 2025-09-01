@@ -47,42 +47,42 @@ Two main tables with Drizzle ORM:
 - Core fields: puzzle_id, pattern_description, solving_strategy, hints[], confidence
 - AI features: reasoning_log, api_processing_time_ms, model_name
 id - integer (PRIMARY KEY)
-puzzle_id - character varying(255)
-pattern_description - text
-solving_strategy - text  
-hints - text[]
-confidence - integer
-alien_meaning_confidence - integer
-alien_meaning - text
+puzzle_id - character varying(255) // Puzzle ID from ARC dataset
+pattern_description - text  // What the LLM says the pattern/transform is
+solving_strategy - text  // What the LLM says the solving strategy is
+hints - text[]  // What the LLM says the hints are or algorithms 
+confidence - integer // How confident the LLM is in the answer, used in multiple calculations including trustworthiness score
+alien_meaning_confidence - integer // How confident the LLM is in the alien meaning it invents, not used in trustworthiness score
+alien_meaning - text // The alien meaning the LLM invents
 model_name - character varying(100)
-reasoning_log - text
-has_reasoning_log - boolean
+reasoning_log - text  // UNKNOWN if this is properly used in the frontend or the backend
+has_reasoning_log - boolean // UNKNOWN if this is properly used in the frontend or the backend
 provider_response_id - text
 api_processing_time_ms - integer
-saturn_images - jsonb
-saturn_log - jsonb
-saturn_events - jsonb
-saturn_success - boolean
-predicted_output_grid - jsonb
-is_prediction_correct - boolean  // This should be used for `accuracy`!!!
+saturn_images - jsonb  // Only used by Saturn Visual Solver
+saturn_log - jsonb  // Only used by Saturn Visual Solver
+saturn_events - jsonb  // Only used by Saturn Visual Solver
+saturn_success - boolean  // Only used by Saturn Visual Solver
+predicted_output_grid - jsonb  // CRITICAL for the project!  This is the predicted output grid.
+is_prediction_correct - boolean  // This is evaluation 1 of 3 that should be used for `accuracy`!!!
 prediction_accuracy_score - double precision  // THIS IS THE `TRUSTWORTHINESS` SCORE
 provider_raw_response - jsonb
-reasoning_items - jsonb
-temperature - double precision
-reasoning_effort - text
-reasoning_verbosity - text
-reasoning_summary_type - text
+reasoning_items - jsonb  // UNKNOWN if this is properly used in the frontend or the backend
+`temperature` - double precision  // should only be applied to certain models and providers and will not always be used
+reasoning_effort - text  // Variable used by GPT-5 only can be minimal, low, medium, or high
+reasoning_verbosity - text  // Variable used by GPT-5 only can be low, medium, or high
+reasoning_summary_type - text  // Variable used by GPT-5 only can be auto, none, or detailed
 input_tokens - integer
 output_tokens - integer
 reasoning_tokens - integer
 total_tokens - integer
-estimated_cost - numeric
-multiple_predicted_outputs - jsonb
-multi_test_results - jsonb 
-multi_test_all_correct - boolean  // THIS should be used for `accuracy`!!!
-multi_test_average_accuracy - double precision  // THIS should be used for `accuracy`!!!
-has_multiple_predictions - boolean // False if there is only one test
-multi_test_prediction_grids - jsonb
+estimated_cost - numeric  // This is calculated by the backend
+multiple_predicted_outputs - jsonb // IMPORTANT FOR PUZZLES WITH MULTIPLE TESTS!!!
+multi_test_results - jsonb // IMPORTANT FOR PUZZLES WITH MULTIPLE TESTS!!!
+multi_test_all_correct - boolean  // THIS is evaluation 2 of 3 that should be used for `accuracy`!!!
+multi_test_average_accuracy - double precision  // THIS is evaluation 3 of 3 that should be used for `accuracy`!!!
+has_multiple_predictions - boolean // False if there is only one test (then multi_test_all_correct and multi_test_average_accuracy are not applicable!!!)
+multi_test_prediction_grids - jsonb // IMPORTANT FOR PUZZLES WITH MULTIPLE TESTS!!!
 created_at - timestamp with time zone
 
 **FEEDBACK Table**:
@@ -97,11 +97,7 @@ Centralized prompt building system (`server/services/promptBuilder.ts`):
 - Consistent behavior across all providers and OpenRouter (INCOMPLETE)
 
 
-### Saturn Visual Solver Integration  (Can be ignored)
-- Python-based visual reasoning solver
-- Streams progress via WebSockets and NDJSON events
-- Requires OPENAI_API_KEY for image analysis
-- Image gallery with real-time updates
+
 
 ## Key Technical Patterns
 
@@ -127,7 +123,7 @@ ARC-AGI datasets loaded in priority order:
 3. ARC1-Eval (evaluation)
 4. ARC1 (training)
 
-### Environment Variables
+### Environment Variables All present and working:
 Required for AI analysis (at least one):
 - `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
 
@@ -150,14 +146,12 @@ app.get("*", (req, res) => {
 });
 ```
 
-### Prompt System Architecture
+### Prompt System Architecture  (NEEDS WORK TO BE MORE ROBUST AND BETTER DOCUMENTED)
 - Single source of truth in `promptBuilder.ts`
 - Provider-agnostic prompt handling, important differentiation between chat completions and responses API and system messages and prompts "user" and "assistant"
 - Template selection with custom prompt override capability
 - Numeric grids by default, emoji mapping only for specific templates
 
-### WebSocket Integration  (POTENTIALLY BREAKING OTHER THINGS AND CAN BE DEPRECATED)
-Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
 
 ### Endpoint difference
 All OpenAI models should be using Responses API, but OpenRouter and other providers still use Chat Completions.
@@ -206,3 +200,11 @@ Failure modes
 Chat Completions: usually just truncates answer if token cap too small
 
 Responses: if misconfigured, you can get only reasoning and no visible reply, or nothing if your parser ignores output[]!!!  This might be where to start investigating.
+
+### Saturn Visual Solver Integration  (Can be ignored)
+- Python-based visual reasoning solver
+- Streams progress via WebSockets and NDJSON events
+- Requires OPENAI_API_KEY for image analysis
+- Image gallery with real-time updates
+### WebSocket Integration  (POTENTIALLY BREAKING OTHER THINGS AND CAN BE DEPRECATED)
+Saturn solver uses WebSocket for real-time progress streaming with event-based updates and image gallery rendering.
