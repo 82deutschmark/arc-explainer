@@ -1,5 +1,19 @@
 ### September 1 2025
 
+## v2.10.2 - FIX: Gemini Health Check API Authentication ✅
+- **HEALTH CHECK FIX**: Resolved Gemini health check failures while models were working correctly
+- **Root Cause**: Health check system wasn't properly handling query-based authentication for Gemini API
+- **Issue Details**:
+  - Gemini API uses `?key=API_KEY` query parameter authentication, not headers
+  - Health check was calling `/models` endpoint without the required API key parameter
+  - This caused all Gemini models to show as "unavailable" in health checks despite working fine
+- **Solution**: Added query parameter support to `checkModelHealth()` method in `ModelCapabilities.ts`
+- **Technical**: Enhanced health check to detect `authMethod: 'query'` and append `?key=${apiKey}` to URL
+- **Impact**: Gemini models now properly report as "healthy" in health check systems
+- **Files Changed**: `server/config/models/ModelCapabilities.ts`
+- **Testing**: Gemini health checks should now pass while maintaining existing functionality
+- Author: Claude Code
+
 ## v2.10.1 - CRITICAL FIX: Gemini and OpenRouter JSON Parsing Failures ✅
 - **PARSING CRISIS RESOLVED**: Fixed widespread JSON parsing failures affecting Gemini and OpenRouter models after recent decomposition/refactor
 - **Root Issues Fixed**:

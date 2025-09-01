@@ -364,7 +364,12 @@ export class ModelCapabilities {
     }
 
     const headers = providerAdapters.getAuthHeaders(modelDef.provider, apiKey || '');
-    const url = `${providerConfig.baseUrl}/models`;
+    let url = `${providerConfig.baseUrl}/models`;
+    
+    // Handle query-based authentication (like Gemini)
+    if (providerConfig.authMethod === 'query' && apiKey) {
+      url += `?key=${apiKey}`;
+    }
 
     try {
       const startTime = Date.now();
