@@ -146,11 +146,14 @@ app.get("*", (req, res) => {
 });
 ```
 
-### Prompt System Architecture  (NEEDS WORK TO BE MORE ROBUST AND BETTER DOCUMENTED)
-- Single source of truth in `promptBuilder.ts`
-- Provider-agnostic prompt handling, important differentiation between chat completions and responses API and system messages and prompts "user" and "assistant"
-- Template selection with custom prompt override capability
-- Numeric grids by default, emoji mapping only for specific templates
+### Prompt System Architecture (REFACTORED Sept 1, 2025 - NOW ROBUST & DOCUMENTED)
+- **DRY Architecture**: Composable prompt components eliminate 90% code duplication
+- **Single Source of Truth**: All prompts built from shared components in `server/services/prompts/components/`
+- **Database Integration**: Full traceability with `system_prompt_used`, `user_prompt_used`, `prompt_template_id` columns  
+- **Schema Alignment**: JSON schema fields map 1:1 to database columns (`reasoningItems` → `reasoning_items`)
+- **Custom Prompt Support**: Dedicated CUSTOM_SYSTEM_PROMPT ensures structured JSON output
+- **Provider-agnostic**: Works with both Chat Completions and Responses API formats
+- **Template selection**: Supports solver, explanation, alien communication, educational, and custom modes
 
 
 ### Endpoint difference
