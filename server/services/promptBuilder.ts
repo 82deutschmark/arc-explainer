@@ -91,8 +91,8 @@ export function buildAnalysisPrompt(
   } else {
     // New ARC mode: structured system prompt
     if (isCustom) {
-      // Custom prompt mode - completely blank system prompt as requested
-      systemPrompt = "";
+      // Custom prompt mode - use dedicated custom system prompt with JSON enforcement
+      systemPrompt = getSystemPrompt('custom');
     } else {
       systemPrompt = getSystemPrompt(promptId);
       
