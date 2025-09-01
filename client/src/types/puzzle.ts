@@ -110,6 +110,7 @@ export interface ExplanationData {
   createdAt: string;
   explanationId?: number; // Add this back as it's used in components
   reasoningLog?: string | null; // Step-by-step reasoning from AI models
+  reasoningItems?: string[] | null; // Structured reasoning steps from OpenAI Responses API
   hasReasoningLog?: boolean; // Whether reasoning log is available
   apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
   // Saturn-specific fields

@@ -161,6 +161,25 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                   : '💡 This shows how the AI model analyzed the puzzle step-by-step to reach its conclusion.'
                 }
               </p>
+              
+              {/* Display structured reasoning items if available */}
+              {result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0 && (
+                <div className="mt-3 border-t pt-3">
+                  <h6 className={`font-semibold text-sm mb-2 ${isSaturnResult ? 'text-indigo-800' : 'text-blue-800'}`}>
+                    Step-by-Step Analysis:
+                  </h6>
+                  <div className="space-y-2">
+                    {result.reasoningItems.map((item, index) => (
+                      <div key={index} className="bg-gray-50 p-2 rounded text-sm border-l-3 border-l-blue-300">
+                        <span className="font-medium text-gray-600">Step {index + 1}:</span> {item}
+                      </div>
+                    ))}
+                  </div>
+                  <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
+                    🧠 These are the structured reasoning steps captured from the AI model's internal thought process.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
