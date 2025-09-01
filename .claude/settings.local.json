@@ -1,17 +1,15 @@
 {
-  "model": "sonnet",
-  
-    "permissions": {
-      "defaultMode": "bypassPermissions",
-      "allow": [
-        "Read",
-        "Edit",
-        "Write",
-        "MultiEdit",
-        "Bash",
-        "WebFetch"
-      ]
-    }
-  }
-
-  
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "Bash",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "model": "sonnet"
+}
