@@ -1,6 +1,9 @@
 /**
- * Centralized model configuration - single source of truth for all AI models
- * Replaces client-side constants and scattered server-side hardcoded lists
+ * models.ts
+ * 
+ * Centralized model configuration - single source of truth for all AI models.
+ * This file contains the raw data array of model configurations.
+ * It is imported by the modular configuration system in `/models/*`.
  * 
  * @author Cascade
  */
@@ -63,7 +66,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'o3-mini-2025-01-31',
     modelType: 'o3_o4',
     maxOutputTokens: 128000,
@@ -78,7 +81,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-3 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'o4-mini-2025-04-16',
     modelType: 'o3_o4',
     maxOutputTokens: 128000,
@@ -93,7 +96,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'o3-2025-04-16',
     modelType: 'o3_o4',
     maxOutputTokens: 128000,
@@ -122,7 +125,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'gpt-5-2025-08-07',
     modelType: 'gpt5',
     maxOutputTokens: 128000,
@@ -137,7 +140,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'gpt-5-chat-latest',
     modelType: 'gpt5_chat',
     maxOutputTokens: 100000,
@@ -152,7 +155,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'gpt-5-mini-2025-08-07',
     modelType: 'gpt5',
     maxOutputTokens: 128000,
@@ -167,7 +170,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'OpenAI',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'gpt-5-nano-2025-08-07',
     modelType: 'gpt5',
     maxOutputTokens: 128000,
@@ -184,7 +187,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Anthropic',
     responseTime: { speed: 'moderate', estimate: '1-3 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
     maxOutputTokens: 20000
@@ -198,7 +201,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Anthropic',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'claude-3-7-sonnet-20250219',
     modelType: 'claude',
     maxOutputTokens: 20000
@@ -212,7 +215,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Anthropic',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'claude-3-5-sonnet-20241022',
     modelType: 'claude',
     maxOutputTokens: 20000
@@ -226,10 +229,10 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Anthropic',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'claude-3-5-haiku-20241022',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 7000
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -240,10 +243,10 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Anthropic',
     responseTime: { speed: 'fast', estimate: '<60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'claude-3-haiku-20240307',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 4000
   },
 
   // xAI Grok Models
@@ -256,7 +259,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'xAI',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'grok-4-0709',
     modelType: 'grok',
     maxOutputTokens: 115536
@@ -311,7 +314,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
     maxOutputTokens: 65536,
@@ -326,7 +329,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash',
     modelType: 'gemini',
     maxOutputTokens: 65536,
@@ -341,7 +344,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash-lite',
     modelType: 'gemini',
     maxOutputTokens: 65536,
@@ -356,7 +359,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash',
     modelType: 'gemini',
     maxOutputTokens: 65536,
@@ -371,7 +374,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'Gemini',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash-lite',
     modelType: 'gemini',
     maxOutputTokens: 65536,
@@ -388,7 +391,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'DeepSeek',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'deepseek-chat',
     modelType: 'deepseek',
     maxOutputTokens: 65536
@@ -402,7 +405,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: false,
     provider: 'DeepSeek',
     responseTime: { speed: 'slow', estimate: '5-10 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
     maxOutputTokens: 65536
@@ -418,7 +421,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'meta-llama/llama-3.3-70b-instruct',
     modelType: 'openrouter',
     maxOutputTokens: 32768,
@@ -433,7 +436,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
     modelType: 'openrouter',
     maxOutputTokens: 32768,
@@ -448,7 +451,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
     maxOutputTokens: 56384,
@@ -463,7 +466,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -478,7 +481,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'nousresearch/hermes-4-70b',
     modelType: 'openrouter',
     maxOutputTokens: 32768,
@@ -494,7 +497,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'mistralai/mistral-large',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -509,7 +512,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'deepseek/deepseek-chat-v3.1',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -526,7 +529,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'x-ai/grok-code-fast-1',
     modelType: 'openrouter',
     maxOutputTokens: 128000,
@@ -541,7 +544,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
     maxOutputTokens: 65500,
@@ -556,7 +559,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'mistralai/codestral-2508',
     modelType: 'openrouter',
     maxOutputTokens: 128000,
@@ -571,26 +574,26 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'qwen/qwen3-30b-a3b-instruct-2507',
     modelType: 'openrouter',
     maxOutputTokens: 131072,
     contextWindow: 262144
   },
   {
-    key: 'qwen/qwen3-235b-a22b-thinking-2507',
-    name: 'qwen/qwen3-235b-a22b-thinking-2507',
+    key: 'z-ai/glm-4.5',
+    name: 'Z-AI GLM 4.5',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.08', output: '$0.31' },
+    cost: { input: '$0.60', output: '$2.20' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: true,
-    apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
+    isReasoning: true,
+    apiModelName: 'z-ai/glm-4.5',
     modelType: 'openrouter',
-    maxOutputTokens: 128000,
-    contextWindow: 262144
+    maxOutputTokens: 96000,
+    contextWindow: 131000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
@@ -601,7 +604,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
     modelType: 'openrouter',
     maxOutputTokens: 131072,
@@ -616,7 +619,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'qwen/qwen3-coder',
     modelType: 'openrouter',
     maxOutputTokens: 131072,
@@ -631,7 +634,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'moonshotai/kimi-k2',
     modelType: 'openrouter',
     maxOutputTokens: 31500,
@@ -646,7 +649,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'moonshotai/kimi-dev-72b:free',
     modelType: 'openrouter',
     maxOutputTokens: 65536,
@@ -661,7 +664,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'x-ai/grok-4',
     modelType: 'openrouter',
     maxOutputTokens: 128000,
@@ -676,7 +679,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: false,
+    isReasoning: false,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
     maxOutputTokens: 18192,
@@ -691,7 +694,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'deepseek/deepseek-prover-v2',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -706,7 +709,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    supportsReasoning: true,
+    isReasoning: true,
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
     maxOutputTokens: 66384,
@@ -714,51 +717,3 @@ export const MODELS: ModelConfig[] = [
   }
 ];
 
-/**
- * Helper functions for model capabilities
- */
-export function getModelConfig(modelKey: string): ModelConfig | undefined {
-  return MODELS.find(m => m.key === modelKey);
-}
-
-export function modelSupportsTemperature(modelKey: string): boolean {
-  const config = getModelConfig(modelKey);
-  return config?.supportsTemperature ?? false;
-}
-
-export function modelSupportsReasoning(modelKey: string): boolean {
-  const config = getModelConfig(modelKey);
-  return config?.supportsReasoning ?? false;
-}
-
-export function getApiModelName(modelKey: string): string {
-  const config = getModelConfig(modelKey);
-  return config?.apiModelName ?? modelKey;
-}
-
-export function getModelsByProvider(provider: string): ModelConfig[] {
-  return MODELS.filter(m => m.provider === provider);
-}
-
-export function getModelsByType(modelType: string): ModelConfig[] {
-  return MODELS.filter(m => m.modelType === modelType);
-}
-
-/**
- * Model type categorization for backward compatibility
- */
-export const O3_O4_REASONING_MODELS = new Set(
-  getModelsByType('o3_o4').map(m => m.key)
-);
-
-export const GPT5_REASONING_MODELS = new Set(
-  getModelsByType('gpt5').map(m => m.key)
-);
-
-export const GPT5_CHAT_MODELS = new Set(
-  getModelsByType('gpt5_chat').map(m => m.key)
-);
-
-export const MODELS_WITH_REASONING = new Set(
-  MODELS.filter(m => m.supportsReasoning).map(m => m.key)
-);

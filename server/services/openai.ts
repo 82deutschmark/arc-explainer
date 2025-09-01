@@ -15,14 +15,15 @@ import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, M
 
 // Import centralized model configuration
 import { 
+  MODELS as MODEL_CONFIGS, 
+  getApiModelName, 
   getModelConfig, 
   modelSupportsTemperature, 
-  getApiModelName,
   O3_O4_REASONING_MODELS,
   GPT5_REASONING_MODELS,
   GPT5_CHAT_MODELS,
   MODELS_WITH_REASONING
-} from '../config/models.ts';
+} from '../config/models/index.js';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

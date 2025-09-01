@@ -1,213 +1,73 @@
 /**
  * batchAnalysisService.ts
  * 
- * Service for managing batch analysis operations.
- * Handles batch processing of puzzles with AI models, progress tracking, and result management.
+ * Refactored orchestration service for batch analysis operations.
+ * Now focuses on coordinating modular components rather than handling all logic directly.
+ * Follows Single Responsibility Principle with significantly reduced complexity.
  * 
- * @author Claude Code Assistant
+ * @author Claude Code (refactored from original 633-line monolith)
  */
 
-import { repositoryService } from '../repositories/RepositoryService';
-import { puzzleService } from './puzzleService';
-import { aiServiceFactory } from './aiServiceFactory';
-import { logger } from '../utils/logger';
 import { EventEmitter } from 'events';
-import { randomUUID } from 'crypto';
-import type { PromptOptions } from './promptBuilder';
-
-interface BatchSessionConfig {
-  modelKey: string;
-  dataset: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'All';
-  promptId?: string;
-  customPrompt?: string;
-  temperature?: number;
-  reasoningEffort?: string;
-  reasoningVerbosity?: string;
-  reasoningSummaryType?: string;
-  batchSize?: number;
-}
-
-interface BatchProgress {
-  sessionId: string;
-  status: 'pending' | 'running' | 'paused' | 'completed' | 'cancelled' | 'error';
-  progress: {
-    total: number;
-    completed: number;
-    successful: number;
-    failed: number;
-    percentage: number;
-  };
-  stats: {
-    averageProcessingTime: number;
-    overallAccuracy: number;
-    eta: number;
-  };
-  startTime?: number;
-  endTime?: number;
-}
-
-interface BatchResult {
-  puzzleId: string;
-  status: 'pending' | 'completed' | 'failed';
-  explanation?: any;
-  processingTime?: number;
-  accuracy?: number;
-  isCorrect?: boolean;
-  error?: string;
-}
+import { logger } from '../utils/logger.js';
+import { batchSessionManager, type BatchSessionConfig } from './batch/BatchSessionManager.js';
+import { batchProgressTracker, type BatchProgress } from './batch/BatchProgressTracker.js';
+import { batchQueueManager } from './batch/BatchQueueManager.js';
+import { repositoryService } from '../repositories/RepositoryService.js';
 
 class BatchAnalysisService extends EventEmitter {
-  private activeSessions: Map<string, BatchProgress> = new Map();
-  private sessionQueues: Map<string, string[]> = new Map();
-  private processingTimers: Map<string, number> = new Map();
   private readonly MAX_CONCURRENT_SESSIONS = 3;
-  private readonly DEFAULT_BATCH_SIZE = 10;
 
   /**
    * Start a new batch analysis session
    */
   async startBatchAnalysis(config: BatchSessionConfig): Promise<{ sessionId: string; error?: string }> {
     try {
-      const sessionId = randomUUID();
-      logger.info(`Starting batch analysis session ${sessionId} for model ${config.modelKey} on dataset ${config.dataset}`, 'batch-analysis');
+      logger.info(`Starting batch analysis for model ${config.modelKey} on dataset ${config.dataset}`, 'batch-service');
 
-      // Get puzzles for the selected dataset
-      logger.info(`Fetching puzzles for dataset: ${config.dataset}`, 'batch-analysis');
-      const puzzles = await this.getPuzzlesForDataset(config.dataset);
-      logger.info(`Found ${puzzles.length} puzzles for dataset ${config.dataset}`, 'batch-analysis');
+      // Create session using SessionManager
+      const sessionResult = await batchSessionManager.createSession(config);
       
-      if (puzzles.length === 0) {
-        logger.error(`FAILED: No puzzles found for dataset ${config.dataset} - NOT adding session to activeSessions`, 'batch-analysis');
-        return { sessionId: '', error: 'No puzzles found for selected dataset' };
+      if (!sessionResult.success || !sessionResult.sessionInfo) {
+        return { sessionId: '', error: sessionResult.error || 'Failed to create session' };
       }
 
-      // Check database connection before creating session
-      logger.info(`Checking database connection status`, 'batch-analysis');
-      try {
-        await repositoryService.batchAnalysis.getBatchSession('test-connection');
-      } catch (error) {
-        logger.error(`FAILED: Database not connected when trying to create session ${sessionId} - NOT adding session to activeSessions`, 'batch-analysis');
-        return { sessionId: '', error: 'Database connection not available' };
-      }
+      const { sessionId, puzzleIds } = sessionResult.sessionInfo;
 
-      // Create database session record
-      logger.info(`Creating database session for ${sessionId}`, 'batch-analysis');
-      const sessionCreated = await repositoryService.batchAnalysis.createBatchSession({
-        sessionId,
-        modelKey: config.modelKey,
-        dataset: config.dataset,
-        promptId: config.promptId,
-        customPrompt: config.customPrompt,
-        temperature: config.temperature,
-        reasoningEffort: config.reasoningEffort,
-        reasoningVerbosity: config.reasoningVerbosity,
-        reasoningSummaryType: config.reasoningSummaryType,
-        totalPuzzles: puzzles.length
-      });
+      // Initialize queue with puzzle IDs
+      batchQueueManager.initializeQueue(sessionId, puzzleIds);
 
-      if (!sessionCreated) {
-        logger.error(`FAILED: Failed to create database session for ${sessionId} - database operation returned false - NOT adding session to activeSessions`, 'batch-analysis');
-        return { sessionId: '', error: 'Failed to create database session' };
-      }
-      logger.info(`Database session created successfully for ${sessionId}`, 'batch-analysis');
+      // Set up event forwarding from queue manager
+      this.setupEventForwarding(sessionId);
 
-      // Initialize progress tracking
-      const progress: BatchProgress = {
-        sessionId,
-        status: 'pending',
-        progress: {
-          total: puzzles.length,
-          completed: 0,
-          successful: 0,
-          failed: 0,
-          percentage: 0
-        },
-        stats: {
-          averageProcessingTime: 0,
-          overallAccuracy: 0,
-          eta: 0
+      // Start processing if within concurrent limits
+      if (batchQueueManager.canStartSession()) {
+        const started = await batchQueueManager.startProcessing(sessionId, config);
+        if (started) {
+          await batchSessionManager.updateSessionStatus(sessionId, 'running', { startedAt: new Date() });
         }
-      };
-
-      this.activeSessions.set(sessionId, progress);
-      this.sessionQueues.set(sessionId, puzzles.map(p => p.id));
-      logger.info(`SUCCESS: Session ${sessionId} added to activeSessions with ${puzzles.length} puzzles`, 'batch-analysis');
-
-      // Create batch result records for all puzzles
-      for (const puzzle of puzzles) {
-        await repositoryService.batchAnalysis.createBatchResult({
-          sessionId,
-          puzzleId: puzzle.id,
-          status: 'pending'
-        });
-      }
-
-      // Start processing if we haven't hit concurrent limit
-      logger.info(`[BATCH-DEBUG] About to start processing. Active sessions: ${this.getActiveSessionCount()}, Max: ${this.MAX_CONCURRENT_SESSIONS}`, 'batch-analysis');
-      if (this.getActiveSessionCount() <= this.MAX_CONCURRENT_SESSIONS) {
-        logger.info(`[BATCH-DEBUG] Starting processBatchSession for ${sessionId}`, 'batch-analysis');
-        this.processBatchSession(sessionId, config);
       } else {
-        logger.warn(`[BATCH-DEBUG] Skipping batch processing - too many active sessions (${this.getActiveSessionCount()})`, 'batch-analysis');
+        logger.info(`Session ${sessionId} queued - concurrent session limit reached`, 'batch-service');
+        await batchSessionManager.updateSessionStatus(sessionId, 'pending');
       }
 
-      logger.info(`SUCCESS: Batch analysis session ${sessionId} fully initialized and ready`, 'batch-analysis');
+      logger.info(`Batch analysis session ${sessionId} created successfully`, 'batch-service');
       return { sessionId };
 
     } catch (error) {
-      logger.error(`EXCEPTION: Error starting batch analysis: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
+      logger.error(`Error starting batch analysis: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
       return { sessionId: '', error: 'Failed to start batch analysis' };
     }
   }
 
   /**
    * Get status of a batch analysis session
-   * Queries database as primary source of truth
    */
   async getBatchStatus(sessionId: string): Promise<BatchProgress | null> {
-    logger.info(`Fetching batch status for session ${sessionId} from database`, 'batch-analysis');
-    
     try {
-      const sessionData = await repositoryService.batchAnalysis.getBatchSession(sessionId);
-      if (!sessionData) {
-        logger.warn(`Session ${sessionId} not found in database`, 'batch-analysis');
-        return null;
-      }
-
-      // Get session stats from repository
-      const stats = await repositoryService.batchAnalysis.getBatchSessionStats(sessionId);
-      const totalPuzzles = sessionData.totalPuzzles || 0;
-      const completedPuzzles = stats.completedCount || 0;
-      const successfulPuzzles = stats.successCount || 0;
-      const failedPuzzles = stats.errorCount || 0;
-
-      const progress: BatchProgress = {
-        sessionId,
-        status: sessionData.status as any || 'pending',
-        progress: {
-          total: totalPuzzles,
-          completed: completedPuzzles,
-          successful: successfulPuzzles, 
-          failed: failedPuzzles,
-          percentage: totalPuzzles > 0 
-            ? Math.round((completedPuzzles / totalPuzzles) * 100)
-            : 0
-        },
-        stats: {
-          averageProcessingTime: stats.averageProcessingTime || 0,
-          overallAccuracy: successfulPuzzles > 0 
-            ? Math.round((successfulPuzzles / Math.max(completedPuzzles, 1)) * 100)
-            : 0,
-          eta: 0 // ETA calculation would need in-memory processing state
-        },
-        startTime: sessionData.createdAt ? new Date(sessionData.createdAt).getTime() : Date.now(),
-        endTime: sessionData.completedAt ? new Date(sessionData.completedAt).getTime() : undefined
-      };
-
-      logger.info(`Database session ${sessionId}: ${progress.status} - ${progress.progress.completed}/${progress.progress.total} puzzles (${progress.progress.percentage}%)`, 'batch-analysis');
-      return progress;
+      return await batchProgressTracker.getProgress(sessionId);
     } catch (error) {
-      logger.error(`Error fetching session ${sessionId} from database: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
+      logger.error(`Error getting batch status for ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
       return null;
     }
   }
@@ -216,417 +76,137 @@ class BatchAnalysisService extends EventEmitter {
    * Control batch analysis session (pause, resume, cancel)
    */
   async controlBatchSession(sessionId: string, action: 'pause' | 'resume' | 'cancel'): Promise<boolean> {
-    const progress = this.activeSessions.get(sessionId);
-    if (!progress) {
-      logger.warn(`Batch session ${sessionId} not found for action ${action}`, 'batch-analysis');
+    try {
+      logger.info(`Controlling batch session ${sessionId}: ${action}`, 'batch-service');
+
+      let success = false;
+
+      switch (action) {
+        case 'pause':
+          success = batchQueueManager.pauseProcessing(sessionId);
+          if (success) {
+            await batchSessionManager.updateSessionStatus(sessionId, 'paused');
+            this.emit('session-paused', sessionId);
+          }
+          break;
+
+        case 'resume':
+          const config = await batchSessionManager.getSessionConfig(sessionId);
+          if (config) {
+            success = await batchQueueManager.resumeProcessing(sessionId, config);
+            if (success) {
+              await batchSessionManager.updateSessionStatus(sessionId, 'running');
+              this.emit('session-resumed', sessionId);
+            }
+          }
+          break;
+
+        case 'cancel':
+          success = batchQueueManager.cancelProcessing(sessionId);
+          if (success) {
+            await batchSessionManager.updateSessionStatus(sessionId, 'cancelled', { completedAt: new Date() });
+            batchQueueManager.cleanup(sessionId);
+            this.emit('session-cancelled', sessionId);
+          }
+          break;
+      }
+
+      return success;
+    } catch (error) {
+      logger.error(`Error controlling batch session ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
       return false;
     }
-
-    logger.info(`Controlling batch session ${sessionId}: ${action}`, 'batch-analysis');
-
-    switch (action) {
-      case 'pause':
-        if (progress.status === 'running') {
-          progress.status = 'paused';
-          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { status: 'paused' });
-          this.emit('session-paused', sessionId);
-          return true;
-        }
-        break;
-
-      case 'resume':
-        if (progress.status === 'paused') {
-          progress.status = 'running';
-          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { status: 'running' });
-          // Resume processing
-          this.processBatchSession(sessionId, await this.getSessionConfig(sessionId));
-          this.emit('session-resumed', sessionId);
-          return true;
-        }
-        break;
-
-      case 'cancel':
-        if (['running', 'paused', 'pending'].includes(progress.status)) {
-          progress.status = 'cancelled';
-          progress.endTime = Date.now();
-          await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
-            status: 'cancelled',
-            completedAt: new Date()
-          });
-          this.cleanup(sessionId);
-          this.emit('session-cancelled', sessionId);
-          return true;
-        }
-        break;
-    }
-
-    return false;
   }
 
   /**
    * Get detailed results for a batch session
    */
   async getBatchResults(sessionId: string) {
-    return await repositoryService.batchAnalysis.getBatchResults(sessionId);
+    try {
+      return await repositoryService.batchAnalysis.getBatchResults(sessionId);
+    } catch (error) {
+      logger.error(`Error getting batch results for ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
+      return [];
+    }
   }
 
   /**
-   * Process a batch analysis session
+   * Get list of all batch sessions (for admin/overview)
    */
-  private async processBatchSession(sessionId: string, config: BatchSessionConfig | null) {
+  async getAllSessions() {
     try {
-      logger.info(`[BATCH-DEBUG] Starting processBatchSession for ${sessionId}`, 'batch-analysis');
-      
-      if (!config) {
-        config = await this.getSessionConfig(sessionId);
-        if (!config) {
-          logger.error(`[BATCH-DEBUG] No config found for session ${sessionId}, exiting`, 'batch-analysis');
-          return;
-        }
-      }
-
-      const progress = this.activeSessions.get(sessionId);
-      logger.info(`[BATCH-DEBUG] Session ${sessionId} progress state: ${progress ? progress.status : 'NOT_FOUND'}`, 'batch-analysis');
-      
-      if (!progress) {
-        logger.error(`[BATCH-DEBUG] No progress found in activeSessions for ${sessionId}, exiting`, 'batch-analysis');
-        return;
-      }
-      
-      if (progress.status === 'cancelled') {
-        logger.info(`[BATCH-DEBUG] Session ${sessionId} is cancelled, exiting`, 'batch-analysis');
-        return;
-      }
+      return await repositoryService.batchAnalysis.getAllBatchSessions();
     } catch (error) {
-      logger.error(`[BATCH-CRITICAL] Exception in processBatchSession setup for ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
-      return;
+      logger.error(`Error getting all batch sessions: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
+      return [];
     }
+  }
 
-    progress.status = 'running';
-    progress.startTime = Date.now();
-    
-    await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
-      status: 'running',
-      startedAt: new Date()
+  /**
+   * Clean up completed or old sessions
+   */
+  async cleanupOldSessions(maxAgeHours: number = 24): Promise<number> {
+    try {
+      const cutoffTime = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000);
+      
+      // Get old completed/cancelled sessions
+      const allSessions = await repositoryService.batchAnalysis.getAllBatchSessions();
+      const oldSessions = allSessions.filter((session: any) => 
+        ['completed', 'cancelled', 'error'].includes(session.status) &&
+        new Date(session.completedAt || session.createdAt) < cutoffTime
+      );
+
+      // Clean up queue manager resources
+      for (const session of oldSessions) {
+        batchQueueManager.cleanup(session.sessionId);
+        batchProgressTracker.invalidateCache(session.sessionId);
+      }
+
+      logger.info(`Cleaned up ${oldSessions.length} old batch sessions`, 'batch-service');
+      return oldSessions.length;
+    } catch (error) {
+      logger.error(`Error cleaning up old sessions: ${error instanceof Error ? error.message : String(error)}`, 'batch-service');
+      return 0;
+    }
+  }
+
+  /**
+   * Set up event forwarding from queue manager to this service
+   */
+  private setupEventForwarding(sessionId: string): void {
+    // Forward key events from queue manager to service consumers
+    batchQueueManager.on('session-started', (startedSessionId) => {
+      if (startedSessionId === sessionId) {
+        this.emit('session-started', { sessionId });
+      }
     });
 
-    logger.info(`Processing batch session ${sessionId} with ${progress.progress.total} puzzles`, 'batch-analysis');
-    this.emit('session-started', { sessionId, progress });
-
-    const queue = this.sessionQueues.get(sessionId) || [];
-    const batchSize = config.batchSize || this.DEFAULT_BATCH_SIZE;
-    const processingTimes: number[] = [];
-
-    // Process puzzles in batches
-    while (queue.length > 0 && progress.status === 'running') {
-      const batch = queue.splice(0, Math.min(batchSize, queue.length));
-      
-      // Process batch concurrently
-      const batchPromises = batch.map(puzzleId => 
-        this.processSinglePuzzle(sessionId, puzzleId, config!)
-      );
-
-      try {
-        const batchResults = await Promise.allSettled(batchPromises);
-        
-        // Update progress based on batch results
-        for (let i = 0; i < batchResults.length; i++) {
-          const result = batchResults[i];
-          const puzzleId = batch[i];
-
-          progress.progress.completed++;
-          
-          if (result.status === 'fulfilled' && result.value.success) {
-            progress.progress.successful++;
-            if (result.value.processingTime) {
-              processingTimes.push(result.value.processingTime);
-            }
-            
-            await repositoryService.batchAnalysis.updateBatchResult(sessionId, puzzleId, {
-              status: 'completed',
-              explanationId: result.value.explanationId,
-              processingTimeMs: result.value.processingTime,
-              completedAt: new Date()
-            });
-            
-          } else {
-            progress.progress.failed++;
-            const error = result.status === 'rejected' ? result.reason.message : 'Unknown error';
-            
-            await repositoryService.batchAnalysis.updateBatchResult(sessionId, puzzleId, {
-              status: 'failed',
-              error: error,
-              completedAt: new Date()
-            });
-          }
-        }
-
-        // Update statistics
-        progress.progress.percentage = Math.round((progress.progress.completed / progress.progress.total) * 100);
-        progress.stats.averageProcessingTime = processingTimes.length > 0 
-          ? Math.round(processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length)
-          : 0;
-        progress.stats.overallAccuracy = progress.progress.completed > 0 
-          ? Math.round((progress.progress.successful / progress.progress.completed) * 100)
-          : 0;
-        
-        // Calculate ETA
-        if (processingTimes.length > 0) {
-          const remainingPuzzles = progress.progress.total - progress.progress.completed;
-          progress.stats.eta = Math.round((remainingPuzzles * progress.stats.averageProcessingTime) / 1000);
-        }
-
-        // Update database with progress
-        await repositoryService.batchAnalysis.updateBatchSession(sessionId, {
-          completedPuzzles: progress.progress.completed,
-          successfulPuzzles: progress.progress.successful,
-          failedPuzzles: progress.progress.failed,
-          averageProcessingTime: progress.stats.averageProcessingTime
-        });
-
-        // Emit progress update
-        this.emit('session-progress', { sessionId, progress });
-
-        // Small delay between batches to prevent overwhelming APIs
-        if (queue.length > 0) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-      } catch (error) {
-        logger.error(`Error processing batch for session ${sessionId}: ${error instanceof Error ? error.message : String(error)}`, 'batch-analysis');
-        progress.status = 'error';
-        await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
-          status: 'error'
-        });
-        break;
+    batchQueueManager.on('session-progress', (data) => {
+      if (data.sessionId === sessionId) {
+        this.emit('session-progress', data);
       }
-    }
+    });
 
-    // Session complete
-    if (progress.status === 'running') {
-      progress.status = 'completed';
-      progress.endTime = Date.now();
-      
-      await repositoryService.batchAnalysis.updateBatchSession(sessionId, { 
-        status: 'completed',
-        completedAt: new Date()
-      });
-      
-      logger.info(`Batch session ${sessionId} completed: ${progress.progress.successful}/${progress.progress.total} successful`, 'batch-analysis');
-      this.emit('session-completed', { sessionId, progress });
-    }
-
-    this.cleanup(sessionId);
-  }
-
-  /**
-   * Process a single puzzle within a batch
-   */
-  private async processSinglePuzzle(sessionId: string, puzzleId: string, config: BatchSessionConfig): Promise<{
-    success: boolean;
-    explanationId?: number;
-    processingTime?: number;
-    accuracy?: number;
-    isCorrect?: boolean;
-    error?: string;
-  }> {
-    try {
-      const startTime = Date.now();
-      
-      // Get puzzle data
-      const puzzle = await puzzleService.getPuzzleById(puzzleId);
-      if (!puzzle) {
-        return { success: false, error: `Puzzle ${puzzleId} not found` };
+    batchQueueManager.on('session-completed', (completedSessionId) => {
+      if (completedSessionId === sessionId) {
+        batchSessionManager.updateSessionStatus(sessionId, 'completed', { completedAt: new Date() });
+        batchQueueManager.cleanup(sessionId);
+        this.emit('session-completed', { sessionId });
       }
+    });
 
-      // Get AI service
-      logger.info(`Getting AI service for model: ${config.modelKey}`, 'batch-analysis');
-      const aiService = aiServiceFactory.getService(config.modelKey);
-      if (!aiService) {
-        logger.error(`AI service for model ${config.modelKey} not available`, 'batch-analysis');
-        return { success: false, error: `AI service for ${config.modelKey} not available` };
+    batchQueueManager.on('session-error', (data) => {
+      if (data.sessionId === sessionId) {
+        batchSessionManager.updateSessionStatus(sessionId, 'error');
+        this.emit('session-error', data);
       }
-      logger.info(`AI service retrieved successfully for ${config.modelKey}`, 'batch-analysis');
+    });
 
-      // Build options for prompt
-      const options: PromptOptions = {};
-      
-      // Build service options
-      const serviceOpts: any = {};
-      if (config.reasoningEffort) serviceOpts.reasoningEffort = config.reasoningEffort;
-      if (config.reasoningVerbosity) serviceOpts.reasoningVerbosity = config.reasoningVerbosity;
-      if (config.reasoningSummaryType) serviceOpts.reasoningSummaryType = config.reasoningSummaryType;
-
-      // Analyze puzzle
-      logger.info(`Starting AI analysis for puzzle ${puzzleId} with model ${config.modelKey}`, 'batch-analysis');
-      const result = await aiService.analyzePuzzleWithModel(
-        puzzle,
-        config.modelKey,
-        config.temperature || 0.2,
-        true, // captureReasoning
-        config.promptId || 'solver',
-        config.customPrompt,
-        options,
-        serviceOpts,
-        puzzleId
-      );
-      logger.info(`AI analysis completed for puzzle ${puzzleId}`, 'batch-analysis');
-
-      const processingTime = Date.now() - startTime;
-
-      // CRITICAL FIX: Preserve original AI response, add validation results separately
-      // Don't modify result.result in-place - preserve the original AI response data
-      let validationResults = {};
-      
-      if (config.promptId === "solver") {
-        const { validateSolverResponse, validateSolverResponseMulti } = await import('./responseValidator');
-        const { puzzleService } = await import('./puzzleService');
-        
-        try {
-          const puzzle = await puzzleService.getPuzzleById(puzzleId);
-          const confidence = result.confidence || result.result?.confidence || 50;
-          const testCount = puzzle.test?.length || 0;
-          
-          // Create validation results without modifying original response
-          if (result.multiplePredictedOutputs === true || result.result?.multiplePredictedOutputs === true) {
-            // Multi-test case
-            const correctAnswers = testCount > 1 ? puzzle.test.map((t: any) => t.output) : [puzzle.test[0].output];
-            const multi = validateSolverResponseMulti(result.result || result, correctAnswers, config.promptId, confidence);
-
-            validationResults = {
-              predictedOutputGrid: null,
-              hasMultiplePredictions: true,
-              multiTestResults: multi.itemResults,
-              multiTestAllCorrect: multi.allCorrect,
-              multiTestAverageAccuracy: multi.averageAccuracyScore
-            };
-          } else {
-            // Single-test case
-            const correctAnswer = puzzle.test[0].output;
-            const validation = validateSolverResponse(result.result || result, correctAnswer, config.promptId, confidence);
-
-            validationResults = {
-              predictedOutputGrid: validation.predictedGrid,
-              hasMultiplePredictions: false,
-              isPredictionCorrect: validation.isPredictionCorrect,
-              predictionAccuracyScore: validation.predictionAccuracyScore
-            };
-          }
-        } catch (validationError) {
-          console.error(`[BATCH-VALIDATION-ERROR] Validation failed for ${puzzleId}, preserving original response:`, validationError);
-          // Continue with original response data if validation fails
-        }
+    batchQueueManager.on('puzzle-completed', (data) => {
+      if (data.sessionId === sessionId) {
+        this.emit('puzzle-completed', data);
       }
-
-      // Save explanation using proper service (ensures correct model name handling)
-      const explanationToSave = {
-        [config.modelKey]: { 
-          ...result.result,    // Preserve original AI response 
-          ...validationResults, // Add validation results separately
-          modelKey: config.modelKey,
-          actualProcessingTime: Math.round(processingTime / 1000)
-        }
-      };
-      
-      // Use explanationService to ensure proper model name recording
-      const { explanationService } = await import('./explanationService');
-      const saveResult = await explanationService.saveExplanation(puzzleId, explanationToSave);
-      const explanationId = saveResult.explanationIds[0];
-      
-      if (!explanationId) {
-        return { success: false, error: 'Failed to save explanation to database' };
-      }
-
-      return {
-        success: true,
-        explanationId,
-        processingTime,
-        accuracy: result.predictionAccuracyScore || result.multiTestAverageAccuracy,
-        isCorrect: result.isPredictionCorrect || result.multiTestAllCorrect
-      };
-
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : String(error) 
-      };
-    }
-  }
-
-  /**
-   * Get puzzles for a dataset
-   */
-  private async getPuzzlesForDataset(dataset: string) {
-    const filters: any = {};
-    
-    switch (dataset) {
-      case 'ARC1':
-        filters.source = 'ARC1';
-        break;
-      case 'ARC1-Eval':
-        filters.source = 'ARC1-Eval';
-        break;
-      case 'ARC2':
-        filters.source = 'ARC2';
-        break;
-      case 'ARC2-Eval':
-        filters.source = 'ARC2-Eval';
-        break;
-      case 'All':
-        // No source filter for all datasets
-        break;
-      default:
-        return [];
-    }
-
-    return await puzzleService.getPuzzleList(filters);
-  }
-
-  /**
-   * Get session configuration from database
-   */
-  private async getSessionConfig(sessionId: string): Promise<BatchSessionConfig | null> {
-    const session = await repositoryService.batchAnalysis.getBatchSession(sessionId);
-    if (!session) return null;
-
-    return {
-      modelKey: session.modelKey,
-      dataset: session.dataset as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'All',
-      promptId: session.promptId,
-      customPrompt: session.customPrompt,
-      temperature: session.temperature,
-      reasoningEffort: session.reasoningEffort,
-      reasoningVerbosity: session.reasoningVerbosity,
-      reasoningSummaryType: session.reasoningSummaryType
-    };
-  }
-
-  /**
-   * Get count of active sessions
-   */
-  private getActiveSessionCount(): number {
-    let count = 0;
-    for (const progress of this.activeSessions.values()) {
-      if (['running', 'pending'].includes(progress.status)) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  /**
-   * Cleanup session resources
-   */
-  private cleanup(sessionId: string) {
-    this.sessionQueues.delete(sessionId);
-    const timer = this.processingTimers.get(sessionId);
-    if (timer) {
-      clearTimeout(timer);
-      this.processingTimers.delete(sessionId);
-    }
-    
-    // Keep session in activeSessions for status queries
-    // Will be cleaned up after some time by a scheduled cleanup process
+    });
   }
 }
 

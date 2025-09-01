@@ -50,6 +50,7 @@ export interface PromptPackage {
   selectedTemplate: PromptTemplate | null;
   isAlienMode: boolean;
   isSolver: boolean;
+  templateName?: string;
 }
 
 /**
@@ -191,7 +192,8 @@ export function buildAnalysisPrompt(
     userPrompt,
     selectedTemplate,
     isAlienMode: isAlien,
-    isSolver
+    isSolver,
+    templateName: selectedTemplate?.name
   };
 }
 
