@@ -182,7 +182,7 @@ export class GeminiService extends BaseAIService {
         ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       ...(systemMessage && systemPromptMode === 'ARC' && {
-        systemInstruction: systemMessage
+        systemInstruction: { role: "system", parts: [{ text: systemMessage }] }
       })
     });
 
