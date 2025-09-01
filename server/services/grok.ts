@@ -302,11 +302,18 @@ export class GrokService extends BaseAIService {
       }
     }
 
+    // Extract reasoningItems from the JSON response
+    let reasoningItems: any[] = [];
+    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+      reasoningItems = result.reasoningItems;
+      console.log(`[Grok] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+
     return { 
       result, 
       tokenUsage, 
       reasoningLog, 
-      reasoningItems: [], 
+      reasoningItems, 
       status, 
       incomplete, 
       incompleteReason 

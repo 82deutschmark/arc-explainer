@@ -169,11 +169,18 @@ export class OpenRouterService extends BaseAIService {
 
     console.log(`[OpenRouter] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
 
+    // Extract reasoningItems from the JSON response
+    let reasoningItems: any[] = [];
+    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+      reasoningItems = result.reasoningItems;
+      console.log(`[OpenRouter] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+
     return { 
       result, 
       tokenUsage, 
       reasoningLog,
-      reasoningItems: []
+      reasoningItems
     };
   }
 

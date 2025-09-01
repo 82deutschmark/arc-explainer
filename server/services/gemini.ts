@@ -249,11 +249,18 @@ export class GeminiService extends BaseAIService {
 
     console.log(`[Gemini] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
     
+    // Extract reasoningItems from the JSON response
+    let reasoningItems: any[] = [];
+    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+      reasoningItems = result.reasoningItems;
+      console.log(`[Gemini] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+    
     return {
       result,
       tokenUsage,
       reasoningLog,
-      reasoningItems: []
+      reasoningItems
     };
   }
 }
