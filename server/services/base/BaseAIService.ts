@@ -277,10 +277,14 @@ export abstract class BaseAIService {
    * Consolidated from OpenRouter's sophisticated parsing logic
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
+    // First, try direct parsing
     try {
-      return JSON.parse(text);
+      const parsed = JSON.parse(text);
+      console.log(`[${this.provider}] ✅ Direct JSON parse successful for ${modelKey}`);
+      return parsed;
     } catch (originalError) {
-      console.log(`[${this.provider}] Initial JSON parse failed for ${modelKey}, attempting recovery...`);
+      console.log(`[${this.provider}] ❌ Initial JSON parse failed for ${modelKey}, attempting recovery...`);
+      console.log(`[${this.provider}] Parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
       return this.attemptResponseRecovery(text, modelKey, originalError);
     }
   }
@@ -343,31 +347,34 @@ export abstract class BaseAIService {
    * Sanitizes response text by removing/replacing problematic characters and fixing common formatting issues
    */
   private sanitizeResponse(text: string): string {
-    let sanitized = text;
+    let sanitized = text.trim();
     
-    // Remove markdown code block wrappers including escaped variants
+    // First, handle markdown code block wrappers more aggressively
+    // Remove markdown code blocks with various patterns
     sanitized = sanitized
-      // Handle escaped backticks: \```json or \\```json 
-      .replace(/^\\+```(?:json)?\s*/, '').replace(/\s*\\+```$/, '')
-      // Handle standard backticks: ```json
-      .replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+      // Standard patterns: ```json\n{...}\n```
+      .replace(/^```json\s*\n?/i, '').replace(/\n?\s*```$/g, '')
+      // Without language specifier: ```\n{...}\n```  
+      .replace(/^```\s*\n?/, '').replace(/\n?\s*```$/g, '')
+      // Escaped patterns: \```json or \\```json
+      .replace(/^\\+```(?:json)?\s*\n?/i, '').replace(/\n?\s*\\+```$/g, '');
     
-    // Remove single backtick wrappers including escaped variants
+    // Remove single backtick wrappers
+    sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/g, '');
+    
+    // Normalize various newline patterns in the text
     sanitized = sanitized
-      .replace(/^\\+`\s*/, '').replace(/\s*\\+`$/, '')
-      .replace(/^`\s*/, '').replace(/\s*`$/, '');
-    
-    // Fix escape sequences BEFORE converting to newlines to prevent corruption
-    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
-    
-    // Now handle literal escape sequences that should be actual newlines
-    sanitized = sanitized
-      // Convert literal \n sequences to actual newlines (but only outside JSON strings)
+      // Convert literal \n sequences to actual newlines
       .replace(/\\n/g, '\n')
-      // Convert literal /n sequences (common typo) to actual newlines  
+      // Convert /n sequences (common typo) to actual newlines  
       .replace(/\/n/g, '\n')
-      // Convert \\n (double escaped) to actual newlines
-      .replace(/\\\\n/g, '\n');
+      // Convert double escaped newlines
+      .replace(/\\\\n/g, '\n')
+      // Normalize Windows/Mac line endings
+      .replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Fix unescaped newlines within JSON string values
+    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
     
     return sanitized.trim();
   }
@@ -376,18 +383,36 @@ export abstract class BaseAIService {
    * Extract JSON from various markdown patterns
    */
   private extractJSONFromMarkdown(text: string): string | null {
-    // Pattern 1: ```json ... ``` blocks
-    let match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    if (match) return match[1];
+    const patterns = [
+      // Pattern 1: ```json ... ``` blocks (case insensitive)
+      /```json\s*\n?([\s\S]*?)\n?\s*```/i,
+      
+      // Pattern 2: ``` ... ``` blocks without language specifier
+      /```\s*\n?([\s\S]*?)\n?\s*```/,
+      
+      // Pattern 3: Escaped markdown blocks
+      /\\```(?:json)?\s*\n?([\s\S]*?)\n?\s*\\```/i,
+      
+      // Pattern 4: Single backticks around JSON
+      /`\s*([\s\S]*?)\s*`/,
+      
+      // Pattern 5: JSON object boundaries (most permissive)
+      /(\{[\s\S]*\})/
+    ];
     
-    // Pattern 2: ``` ... ``` blocks (without json specifier)
-    match = text.match(/```\s*([\s\S]*?)\s*```/);
-    if (match && match[1].trim().startsWith('{')) return match[1];
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        const extracted = match[1].trim();
+        // Validate that it looks like JSON (starts with { or [)
+        if (extracted.startsWith('{') || extracted.startsWith('[')) {
+          console.log(`[${this.provider}] Successfully extracted JSON using pattern ${patterns.indexOf(pattern) + 1}`);
+          return extracted;
+        }
+      }
+    }
     
-    // Pattern 3: Look for JSON object boundaries
-    match = text.match(/\{[\s\S]*\}/);
-    if (match) return match[0];
-    
+    console.log(`[${this.provider}] No JSON patterns matched in markdown extraction`);
     return null;
   }
 

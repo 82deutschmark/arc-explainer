@@ -108,6 +108,7 @@ export class OpenRouterService extends BaseAIService {
     }
 
     console.log(`[OpenRouter] Raw response length: ${responseText.length} chars`);
+    console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 100)}..."`);
 
     // Use enhanced JSON extraction from BaseAIService
     const result = this.extractJsonFromResponse(responseText, modelKey);
@@ -121,13 +122,58 @@ export class OpenRouterService extends BaseAIService {
 
     console.log(`[OpenRouter] Token usage - Input: ${tokenUsage.input}, Output: ${tokenUsage.output}`);
 
-    // OpenRouter typically doesn't provide separate reasoning logs in chat completions
-    const reasoningLog = captureReasoning ? responseText : null;
+    // Extract reasoning log properly - don't store the entire response!
+    let reasoningLog = null;
+    if (captureReasoning) {
+      console.log(`[OpenRouter] Attempting to extract reasoning for model: ${modelKey}`);
+      
+      // For OpenRouter models, look for reasoning patterns in the text before JSON
+      // Many models include reasoning before the JSON response
+      
+      // Try to find text that appears before the JSON block
+      const jsonStartPattern = /```json|```\s*{|\s*{/;
+      const jsonStartMatch = responseText.search(jsonStartPattern);
+      
+      if (jsonStartMatch > 50) { // If there's substantial text before JSON
+        const preJsonText = responseText.substring(0, jsonStartMatch).trim();
+        if (preJsonText.length > 20) { // Meaningful reasoning content
+          reasoningLog = preJsonText;
+          console.log(`[OpenRouter] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
+        }
+      }
+      
+      // Also look for explicit reasoning patterns
+      if (!reasoningLog) {
+        const reasoningPatterns = [
+          /Let me analyze.*?(?=```|\{)/s,
+          /I need to.*?(?=```|\{)/s,
+          /Looking at.*?(?=```|\{)/s,
+          /First.*?(?=```|\{)/s,
+          /To solve.*?(?=```|\{)/s
+        ];
+        
+        for (const pattern of reasoningPatterns) {
+          const match = responseText.match(pattern);
+          if (match && match[0].trim().length > 50) {
+            reasoningLog = match[0].trim();
+            console.log(`[OpenRouter] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
+            break;
+          }
+        }
+      }
+      
+      if (!reasoningLog) {
+        console.log(`[OpenRouter] No explicit reasoning patterns found - model may not provide reasoning`);
+      }
+    }
+
+    console.log(`[OpenRouter] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
 
     return { 
       result, 
       tokenUsage, 
-      reasoningLog: this.validateReasoningLog(reasoningLog)
+      reasoningLog,
+      reasoningItems: []
     };
   }
 
