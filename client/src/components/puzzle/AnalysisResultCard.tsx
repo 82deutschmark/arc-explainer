@@ -93,6 +93,19 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     return { correctCount, totalCount, accuracyLevel };
   }, [multiValidation]);
 
+  const multiDiffMasks = useMemo(() => {
+    if (!predictedGrids || predictedGrids.length === 0) {
+      return [];
+    }
+    return predictedGrids.map((pGrid, index) => {
+      const eGrid = expectedOutputGrids[index];
+      if (!pGrid || !eGrid || pGrid.length !== eGrid.length || pGrid[0]?.length !== eGrid[0]?.length) {
+        return undefined;
+      }
+      return pGrid.map((row, r) => row.map((cell, c) => cell !== eGrid[r][c]));
+    });
+  }, [predictedGrids, expectedOutputGrids]);
+
   const diffMask = useMemo(() => {
     if (!predictedGrid || !expectedOutputGrids[0] || predictedGrid.length !== expectedOutputGrids[0].length || predictedGrid[0].length !== expectedOutputGrids[0][0].length) {
       return undefined;
@@ -151,6 +164,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         multiValidation={multiValidation}
         multiTestStats={multiTestStats}
         diffMask={diffMask}
+        multiDiffMasks={multiDiffMasks}
         showDiff={showDiff}
         setShowDiff={setShowDiff}
         showMultiTest={showMultiTest}

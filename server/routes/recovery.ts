@@ -9,7 +9,8 @@
  */
 
 import { Request, Response } from 'express';
-import { explanationRepository } from '../repositories/ExplanationRepository.js';
+import { ExplanationRepository } from '../repositories/ExplanationRepository.js';
+const explanationRepository = new ExplanationRepository();
 import { formatResponse } from '../utils/responseFormatter.js';
 
 export const recoveryRoutes = {
@@ -46,7 +47,7 @@ export const recoveryRoutes = {
             puzzleId, 
             modelName, 
             status: 'parse_failed', 
-            error: e.message 
+            error: e instanceof Error ? e.message : String(e) 
           });
           continue;
         }

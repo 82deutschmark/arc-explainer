@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS } from "../config/models.js";
+import { MODELS as MODEL_CONFIGS } from "../config/models/index.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -255,7 +255,62 @@ export class GrokService extends BaseAIService {
     const incomplete = status !== 'stop';
     const incompleteReason = incomplete ? status : undefined;
 
-    return { result, tokenUsage, status, incomplete, incompleteReason };
+    // Extract reasoning log if requested
+    let reasoningLog = null;
+    if (captureReasoning) {
+      console.log(`[Grok] Attempting to extract reasoning for model: ${modelKey}`);
+      
+      // For Grok models, look for reasoning patterns in the text before JSON
+      // Grok often includes reasoning before the JSON response
+      
+      // Try to find text that appears before the JSON block
+      const jsonStartPattern = /```json|```\s*{|\s*{/;
+      const jsonStartMatch = content.search(jsonStartPattern);
+      
+      if (jsonStartMatch > 50) { // If there's substantial text before JSON
+        const preJsonText = content.substring(0, jsonStartMatch).trim();
+        if (preJsonText.length > 20) { // Meaningful reasoning content
+          reasoningLog = preJsonText;
+          console.log(`[Grok] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
+        }
+      }
+      
+      // Also look for explicit reasoning patterns
+      if (!reasoningLog) {
+        const reasoningPatterns = [
+          /Let me analyze.*?(?=```|\{)/s,
+          /I need to.*?(?=```|\{)/s,
+          /Looking at.*?(?=```|\{)/s,
+          /First.*?(?=```|\{)/s,
+          /To solve.*?(?=```|\{)/s,
+          /I'll think.*?(?=```|\{)/s,
+          /Analyzing.*?(?=```|\{)/s
+        ];
+        
+        for (const pattern of reasoningPatterns) {
+          const match = content.match(pattern);
+          if (match && match[0].trim().length > 50) {
+            reasoningLog = match[0].trim();
+            console.log(`[Grok] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
+            break;
+          }
+        }
+      }
+      
+      if (!reasoningLog) {
+        console.log(`[Grok] No explicit reasoning patterns found - model may not provide reasoning`);
+      }
+    }
+
+    return { 
+      result, 
+      tokenUsage, 
+      reasoningLog, 
+      reasoningItems: [], 
+      status, 
+      incomplete, 
+      incompleteReason 
+    };
   }
 
   protected async callProviderAPI(

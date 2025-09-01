@@ -587,7 +587,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,
             (
               COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
-              CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 THEN 5.0 ELSE 0.0 END +
+              CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
               CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
               COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') * 2.0
             ) as composite_score
@@ -599,7 +599,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             COUNT(DISTINCT e.id) > 0
             AND (
               COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
-              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.7 OR
+              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
               COUNT(f.id) FILTER (WHERE f.vote_type = 'not_helpful') > 0
             )
         ) as performance_data

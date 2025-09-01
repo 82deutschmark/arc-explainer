@@ -10,7 +10,7 @@ import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models.js";
+import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models/index.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -182,7 +182,7 @@ export class GeminiService extends BaseAIService {
         ...(options?.candidateCount && { candidateCount: options.candidateCount })
       },
       ...(systemMessage && systemPromptMode === 'ARC' && {
-        systemInstruction: systemMessage
+        systemInstruction: { role: "system", parts: [{ text: systemMessage }] }
       })
     });
 
@@ -203,10 +203,18 @@ export class GeminiService extends BaseAIService {
     reasoningLog?: any;
     reasoningItems?: any[];
   } {
-    // Extract text content from Gemini response
-    const textContent = response.text() || '';
+    // Extract text content from Gemini response with better error handling
+    let textContent = '';
+    try {
+      textContent = response.text() || '';
+      console.log(`[Gemini] Raw response length: ${textContent.length} chars`);
+      console.log(`[Gemini] Response preview: "${textContent.substring(0, 100)}..."`);
+    } catch (error) {
+      console.error(`[Gemini] Error extracting text from response:`, error);
+      throw new Error(`Failed to extract text content from Gemini response: ${error}`);
+    }
     
-    // Extract JSON using inherited method
+    // Extract JSON using inherited method (now with improved sanitization)
     const result = this.extractJsonFromResponse(textContent, modelKey);
 
     // Extract token usage (Gemini provides usage info)
@@ -219,20 +227,28 @@ export class GeminiService extends BaseAIService {
     // For thinking models, try to extract reasoning from response
     let reasoningLog = null;
     if (captureReasoning && modelKey.includes('2.5')) {
-      // Thinking models may include reasoning in the response
+      console.log(`[Gemini] Attempting to extract reasoning for thinking model: ${modelKey}`);
+      
       // Look for <thinking> tags or similar patterns
       const thinkingMatch = textContent.match(/<thinking>(.*?)<\/thinking>/s);
       if (thinkingMatch) {
         reasoningLog = thinkingMatch[1].trim();
-      } else if (textContent.includes('Let me think')) {
-        // Extract reasoning sections that start with "Let me think"
+        console.log(`[Gemini] Found <thinking> tags, extracted ${reasoningLog.length} chars of reasoning`);
+      } else if (textContent.includes('Let me think') || textContent.includes('I need to') || 
+                 textContent.includes('First,') || textContent.includes('Looking at')) {
+        // Extract reasoning sections that contain thinking patterns
         const reasoningParts = textContent.split(/Let me think|I need to|First,|Looking at/);
         if (reasoningParts.length > 1) {
           reasoningLog = reasoningParts.slice(0, -1).join('\n\n').trim();
+          console.log(`[Gemini] Found reasoning patterns, extracted ${reasoningLog.length} chars`);
         }
+      } else {
+        console.log(`[Gemini] No explicit reasoning patterns found for thinking model`);
       }
     }
 
+    console.log(`[Gemini] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
+    
     return {
       result,
       tokenUsage,

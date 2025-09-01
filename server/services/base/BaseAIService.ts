@@ -10,7 +10,7 @@ import { ARCTask } from "../../../shared/types.js";
 import { buildAnalysisPrompt, getDefaultPromptId } from "../promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "../promptBuilder.js";
 import { calculateCost } from "../../utils/costCalculator.js";
-import { getModelConfig } from "../../config/models.js";
+import { getModelConfig } from "../../config/models/index.js";
 
 // Common types for all AI services
 export interface ServiceOptions {
@@ -273,25 +273,178 @@ export abstract class BaseAIService {
   }
 
   /**
-   * Simple JSON extraction for non-OpenAI providers
+   * Advanced JSON extraction with multiple recovery strategies
+   * Consolidated from OpenRouter's sophisticated parsing logic
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
+    // First, try direct parsing
     try {
-      return JSON.parse(text);
-    } catch {
-      // Try to find JSON within the text
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch {
-          console.warn(`[${this.provider}] JSON extraction failed for ${modelKey}`);
+      const parsed = JSON.parse(text);
+      console.log(`[${this.provider}] ✅ Direct JSON parse successful for ${modelKey}`);
+      return parsed;
+    } catch (originalError) {
+      console.log(`[${this.provider}] ❌ Initial JSON parse failed for ${modelKey}, attempting recovery...`);
+      console.log(`[${this.provider}] Parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+      return this.attemptResponseRecovery(text, modelKey, originalError);
+    }
+  }
+
+  /**
+   * Advanced response recovery with multiple parsing strategies
+   * Migrated from OpenRouter service for consistency across all providers
+   */
+  private attemptResponseRecovery(responseText: string, modelKey: string, originalError: any): any {
+    console.log(`[${this.provider}] Attempting response recovery for model: ${modelKey}`);
+    console.log(`[${this.provider}] Response preview: "${responseText.substring(0, 200)}..."`);
+    console.log(`[${this.provider}] Original parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+    
+    // Strategy 1: Sanitize and remove markdown wrappers (most common case)
+    try {
+      const sanitized = this.sanitizeResponse(responseText);
+      if (sanitized !== responseText) {
+        console.log(`[${this.provider}] Attempting parse after sanitization`);
+        const parsed = JSON.parse(sanitized);
+        console.log(`[${this.provider}] ✅ Successfully parsed after sanitization`);
+        return parsed;
+      }
+    } catch (sanitizeError) {
+      console.log(`[${this.provider}] ❌ Sanitization strategy failed:`, sanitizeError instanceof Error ? sanitizeError.message : String(sanitizeError));
+    }
+    
+    // Strategy 2: Advanced extraction from various markdown patterns
+    try {
+      const extracted = this.extractJSONFromMarkdown(responseText);
+      if (extracted) {
+        console.log(`[${this.provider}] Attempting parse after advanced markdown extraction`);
+        const parsed = JSON.parse(extracted);
+        console.log(`[${this.provider}] ✅ Successfully parsed after markdown extraction`);
+        return parsed;
+      }
+    } catch (extractError) {
+      console.log(`[${this.provider}] ❌ Advanced extraction strategy failed:`, extractError instanceof Error ? extractError.message : String(extractError));
+    }
+    
+    // Strategy 3: Try combined extraction and sanitization
+    try {
+      const extracted = this.extractJSONFromMarkdown(responseText);
+      if (extracted) {
+        const sanitized = this.sanitizeResponse(extracted);
+        console.log(`[${this.provider}] Attempting parse after combined extraction + sanitization`);
+        const parsed = JSON.parse(sanitized);
+        console.log(`[${this.provider}] ✅ Successfully parsed after combined approach`);
+        return parsed;
+      }
+    } catch (combinedError) {
+      console.log(`[${this.provider}] ❌ Combined strategy failed:`, combinedError instanceof Error ? combinedError.message : String(combinedError));
+    }
+    
+    // Strategy 4: Generate validation-compliant fallback response
+    console.log(`[${this.provider}] ⚠️ All parsing strategies failed, using validation-compliant fallback`);
+    return this.generateValidationCompliantFallback(responseText, modelKey, originalError);
+  }
+
+  /**
+   * Sanitizes response text by removing/replacing problematic characters and fixing common formatting issues
+   */
+  private sanitizeResponse(text: string): string {
+    let sanitized = text.trim();
+    
+    // First, handle markdown code block wrappers more aggressively
+    // Remove markdown code blocks with various patterns
+    sanitized = sanitized
+      // Standard patterns: ```json\n{...}\n```
+      .replace(/^```json\s*\n?/i, '').replace(/\n?\s*```$/g, '')
+      // Without language specifier: ```\n{...}\n```  
+      .replace(/^```\s*\n?/, '').replace(/\n?\s*```$/g, '')
+      // Escaped patterns: \```json or \\```json
+      .replace(/^\\+```(?:json)?\s*\n?/i, '').replace(/\n?\s*\\+```$/g, '');
+    
+    // Remove single backtick wrappers
+    sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/g, '');
+    
+    // Normalize various newline patterns in the text
+    sanitized = sanitized
+      // Convert literal \n sequences to actual newlines
+      .replace(/\\n/g, '\n')
+      // Convert /n sequences (common typo) to actual newlines  
+      .replace(/\/n/g, '\n')
+      // Convert double escaped newlines
+      .replace(/\\\\n/g, '\n')
+      // Normalize Windows/Mac line endings
+      .replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Fix unescaped newlines within JSON string values
+    sanitized = this.escapeNewlinesInJsonStrings(sanitized);
+    
+    return sanitized.trim();
+  }
+
+  /**
+   * Extract JSON from various markdown patterns
+   */
+  private extractJSONFromMarkdown(text: string): string | null {
+    const patterns = [
+      // Pattern 1: ```json ... ``` blocks (case insensitive)
+      /```json\s*\n?([\s\S]*?)\n?\s*```/i,
+      
+      // Pattern 2: ``` ... ``` blocks without language specifier
+      /```\s*\n?([\s\S]*?)\n?\s*```/,
+      
+      // Pattern 3: Escaped markdown blocks
+      /\\```(?:json)?\s*\n?([\s\S]*?)\n?\s*\\```/i,
+      
+      // Pattern 4: Single backticks around JSON
+      /`\s*([\s\S]*?)\s*`/,
+      
+      // Pattern 5: JSON object boundaries (most permissive)
+      /(\{[\s\S]*\})/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        const extracted = match[1].trim();
+        // Validate that it looks like JSON (starts with { or [)
+        if (extracted.startsWith('{') || extracted.startsWith('[')) {
+          console.log(`[${this.provider}] Successfully extracted JSON using pattern ${patterns.indexOf(pattern) + 1}`);
+          return extracted;
         }
       }
-      
-      console.error(`[${this.provider}] All JSON extraction methods failed for ${modelKey}`);
-      throw new Error(`Failed to extract valid JSON response from ${this.provider} ${modelKey}`);
     }
+    
+    console.log(`[${this.provider}] No JSON patterns matched in markdown extraction`);
+    return null;
+  }
+
+  /**
+   * Escape unescaped newlines within JSON string values
+   */
+  private escapeNewlinesInJsonStrings(text: string): string {
+    // This is a simplified approach - in practice, proper JSON parsing would be more complex
+    // but this handles the most common cases
+    return text.replace(/"([^"]*)\n([^"]*)"/g, '"$1\\n$2"');
+  }
+
+  /**
+   * Generate a validation-compliant fallback response when all parsing fails
+   */
+  private generateValidationCompliantFallback(responseText: string, modelKey: string, originalError: any): any {
+    console.log(`[${this.provider}] Generating validation-compliant fallback for ${modelKey}`);
+    
+    return {
+      patternDescription: `[PARSE ERROR] The ${this.provider} ${modelKey} model provided a response that could not be parsed as JSON. This may indicate the model generated invalid formatting or the response was truncated.`,
+      solvingStrategy: `Response parsing failed with error: ${originalError instanceof Error ? originalError.message : String(originalError)}. Raw response preview: "${responseText.substring(0, 200)}..."`,
+      hints: [
+        `The model response could not be parsed as valid JSON`,
+        `This may indicate formatting issues or response truncation`,
+        `Try adjusting temperature or max_output_tokens settings`
+      ],
+      confidence: 0,
+      parseError: true,
+      recoveryMethod: 'validation_compliant_fallback',
+      originalError: originalError instanceof Error ? originalError.message : String(originalError),
+      responsePreview: responseText.substring(0, 500)
+    };
   }
 
   /**
