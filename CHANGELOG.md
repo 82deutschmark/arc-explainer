@@ -1,3 +1,34 @@
+### September 1 2025
+
+## v2.10.1 - CRITICAL FIX: Gemini and OpenRouter JSON Parsing Failures ✅
+- **PARSING CRISIS RESOLVED**: Fixed widespread JSON parsing failures affecting Gemini and OpenRouter models after recent decomposition/refactor
+- **Root Issues Fixed**:
+  - BaseAIService markdown sanitization logic was failing to strip `\```json` wrappers properly
+  - OpenRouter reasoningLog corruption - storing entire JSON response instead of extracting reasoning content
+  - Gemini responses wrapped in markdown blocks were falling back to error responses instead of parsing
+- **BaseAIService Comprehensive Improvements**:
+  - Enhanced `sanitizeResponse()` method with robust regex patterns for all markdown code block variations
+  - Improved `extractJSONFromMarkdown()` with 5-strategy pattern matching system
+  - Better newline normalization for cross-platform compatibility (Windows CRLF handling)
+  - Added comprehensive success/failure logging for debugging parsing pipeline
+- **Gemini Service Fixes**:
+  - Enhanced error handling for `response.text()` extraction with detailed logging
+  - Improved reasoning pattern detection for Gemini 2.5 thinking models
+  - Better debugging output for response parsing and reasoning extraction
+- **OpenRouter Service Critical Fix**:
+  - **MAJOR BUG**: Fixed reasoningLog corruption where full JSON response was stored instead of reasoning
+  - Implemented proper pre-JSON text extraction for models that include reasoning before JSON
+  - Added pattern-based reasoning detection instead of dumping entire response
+  - Enhanced debugging logs for response analysis
+- **Validation & Debugging Enhancements**:
+  - Success indicators distinguish direct JSON parsing vs recovery strategies
+  - Better error reporting with response previews for troubleshooting
+  - Comprehensive logging throughout entire parsing pipeline
+- **Impact**: Resolves parsing failures that were causing models to return "[PARSE ERROR]" fallback responses
+- **Testing**: Users should test Gemini 2.5 Pro/Flash and OpenRouter models to verify proper JSON parsing
+- **Files Changed**: `server/services/base/BaseAIService.ts`, `server/services/gemini.ts`, `server/services/openrouter.ts`
+- Author: Claude Code
+
 ### August 31 2025
 
 ## v2.10.0 - State Management Consolidation: Context Providers & Custom Hooks (Phase 4) ✅

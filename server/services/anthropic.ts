@@ -177,11 +177,55 @@ export class AnthropicService extends BaseAIService {
     const isComplete = stop_reason === 'end_turn';
     const incompleteReason = isComplete ? undefined : stop_reason;
 
-    // For Anthropic, reasoning is not structured, so we pass the raw text if requested.
-    const reasoningLog = captureReasoning ? responseText : undefined;
-
-    // Attempt to extract JSON from the response text.
+    // Extract JSON from the response text first
     const result = this.extractJsonFromResponse(responseText, modelKey);
+
+    // Extract reasoning log properly - don't store the entire response!
+    let reasoningLog = null;
+    if (captureReasoning) {
+      console.log(`[Anthropic] Attempting to extract reasoning for model: ${modelKey}`);
+      
+      // For Anthropic models, look for reasoning patterns in the text before JSON
+      // Many Anthropic responses include reasoning before the JSON response
+      
+      // Try to find text that appears before the JSON block
+      const jsonStartPattern = /```json|```\s*{|\s*{/;
+      const jsonStartMatch = responseText.search(jsonStartPattern);
+      
+      if (jsonStartMatch > 50) { // If there's substantial text before JSON
+        const preJsonText = responseText.substring(0, jsonStartMatch).trim();
+        if (preJsonText.length > 20) { // Meaningful reasoning content
+          reasoningLog = preJsonText;
+          console.log(`[Anthropic] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
+        }
+      }
+      
+      // Also look for explicit reasoning patterns
+      if (!reasoningLog) {
+        const reasoningPatterns = [
+          /Let me analyze.*?(?=```|\{)/s,
+          /I need to.*?(?=```|\{)/s,
+          /Looking at.*?(?=```|\{)/s,
+          /First.*?(?=```|\{)/s,
+          /To solve.*?(?=```|\{)/s,
+          /I'll examine.*?(?=```|\{)/s,
+          /I can see.*?(?=```|\{)/s
+        ];
+        
+        for (const pattern of reasoningPatterns) {
+          const match = responseText.match(pattern);
+          if (match && match[0].trim().length > 50) {
+            reasoningLog = match[0].trim();
+            console.log(`[Anthropic] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
+            break;
+          }
+        }
+      }
+      
+      if (!reasoningLog) {
+        console.log(`[Anthropic] No explicit reasoning patterns found - model may not provide reasoning`);
+      }
+    }
 
     return {
       result,
