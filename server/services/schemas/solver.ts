@@ -253,7 +253,7 @@ export function extractPredictions(response: any, testCaseCount: number): {
 export function createSampleSolverResponse(testCaseCount: number = 1) {
   const base = {
     solvingStrategy: "I analyzed the training examples and found a pattern where...",
-    keySteps: [
+    reasoningItems: [
       "Identified transformation pattern in training examples",
       "Applied pattern logic to test case input", 
       "Generated predicted output grid"

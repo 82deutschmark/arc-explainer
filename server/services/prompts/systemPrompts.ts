@@ -58,7 +58,7 @@ JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs fiel
 
 Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Your complete analysis process, including 
-- keySteps: Step-by-step analysis progression and insights, including incorrect approaches and insights 
+- reasoningItems: Step-by-step analysis progression and insights, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
 - hints: Describe three pseudo-code algorithms you considered, starting with the best one, one as math and one as emojis
 - confidence: Your certainty level (0-100)`;
@@ -158,7 +158,7 @@ ${JSON_OUTPUT_INSTRUCTIONS}
 
 - **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
 - **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
-- **keySteps**: A short song that captures the essence of your approach.
+- **reasoningItems**: A short song that captures the essence of your approach.
 - **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
 - **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
 
