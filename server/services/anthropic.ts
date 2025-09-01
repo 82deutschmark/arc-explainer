@@ -227,6 +227,13 @@ export class AnthropicService extends BaseAIService {
       }
     }
 
+    // Extract reasoningItems from the JSON response
+    let reasoningItems: any[] = [];
+    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+      reasoningItems = result.reasoningItems;
+      console.log(`[Anthropic] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+
     return {
       result,
       tokenUsage,
@@ -234,7 +241,7 @@ export class AnthropicService extends BaseAIService {
       status: isComplete ? 'completed' : 'incomplete',
       incomplete: !isComplete,
       incompleteReason,
-      reasoningItems: []
+      reasoningItems
     };
   }
 }

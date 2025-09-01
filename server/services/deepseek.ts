@@ -233,11 +233,18 @@ export class DeepSeekService extends BaseAIService {
     const isComplete = response.choices[0].finish_reason === 'stop';
     const incompleteReason = isComplete ? undefined : response.choices[0].finish_reason;
 
+    // Extract reasoningItems from the JSON response
+    let reasoningItems: any[] = [];
+    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+      reasoningItems = result.reasoningItems;
+      console.log(`[DeepSeek] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+
     return {
       result,
       tokenUsage,
       reasoningLog,
-      reasoningItems: [],
+      reasoningItems,
       status: isComplete ? 'completed' : 'incomplete',
       incomplete: !isComplete,
       incompleteReason
