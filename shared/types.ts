@@ -34,7 +34,7 @@ export interface PuzzleMetadata {
   outputSize: [number, number];
   hasExplanation?: boolean;
   description?: string;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
 }
 
 export interface PuzzleAnalysis {

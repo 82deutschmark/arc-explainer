@@ -21,14 +21,14 @@ interface PuzzleInfo {
   inputSize: [number, number];
   outputSize: [number, number];
   hasExplanation: boolean;
-  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
   testCaseCount: number;
 }
 
 interface DataSource {
   name: string;
   directory: string;
-  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
   priority: number;
 }
 
@@ -64,6 +64,12 @@ export class PuzzleLoader {
       directory: path.join(process.cwd(), 'data', 'training2'),
       source: 'ARC2',
       priority: 4
+    },
+    {
+      name: 'ARC-Heavy',
+      directory: path.join(process.cwd(), 'data', 'arc-heavy'),
+      source: 'ARC-Heavy',
+      priority: 5
     }
   ];
 
@@ -154,7 +160,7 @@ export class PuzzleLoader {
     return files.length;
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval'): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy'): PuzzleInfo {
     const { maxGridSize, gridSizeConsistent, inputSize, outputSize } = this.getGridDimensions(task);
     const hasExplanation = this.checkHasExplanation(taskId);
 
@@ -253,7 +259,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
     multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
@@ -272,7 +278,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
     multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     if (filters.maxGridSize !== undefined) {
