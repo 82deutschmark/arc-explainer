@@ -281,13 +281,25 @@ export class DatabaseSchema {
       await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
       await client.query(`ALTER TABLE feedback ALTER COLUMN comment DROP NOT NULL;`);
       
-      // Rename vote_type to feedback_type if it exists
-      const result = await client.query(`
+      // Safely rename vote_type to feedback_type if it exists
+      const voteTypeColumn = await client.query(`
         SELECT 1 FROM information_schema.columns 
         WHERE table_name='feedback' AND column_name='vote_type'
       `);
-      if (result && result.rowCount > 0) {
-        await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
+
+      if (voteTypeColumn && voteTypeColumn.rowCount && voteTypeColumn.rowCount > 0) {
+        // If feedback_type column already exists, drop vote_type to avoid conflicts.
+        const feedbackTypeColumn = await client.query(`
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='feedback' AND column_name='feedback_type'
+        `);
+        if (feedbackTypeColumn && feedbackTypeColumn.rowCount && feedbackTypeColumn.rowCount > 0) {
+          await client.query(`ALTER TABLE feedback DROP COLUMN vote_type;`);
+          logger.info('Dropped legacy vote_type column as feedback_type already exists.', 'database');
+        } else {
+          await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
+          logger.info('Renamed vote_type to feedback_type.', 'database');
+        }
       }
 
       // Add updated_at column to batch_analysis_sessions if missing
