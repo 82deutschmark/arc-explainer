@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database, Target } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database, Target, Download } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -219,6 +219,20 @@ export default function PuzzleBrowser() {
                   Kaggle Readiness
                 </Button>
               </Link>
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={() => {
+                  toast({
+                    title: "Dataset Import",
+                    description: "Use the configurable import script: node scripts/importDataset.js --config configs/your-config.json --dry-run",
+                    duration: 8000
+                  });
+                }}
+              >
+                <Download className="h-4 w-4" />
+                Import Dataset
+              </Button>
             </div>
           </div>
           
@@ -486,6 +500,14 @@ export default function PuzzleBrowser() {
                               {puzzle.gridSizeConsistent ? 'Yes' : 'No'}
                             </span>
                           </div>
+                          {puzzle.importSource && (
+                            <div className="flex justify-between">
+                              <span>Import:</span>
+                              <span className="font-medium text-xs text-gray-500" title={puzzle.importSource}>
+                                {puzzle.importSource.includes('/') ? puzzle.importSource.split('/')[1] : puzzle.importSource}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex gap-2">

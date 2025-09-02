@@ -1,0 +1,27 @@
+{
+  "name": "ARC-Heavy",
+  "description": "ARC-Heavy dataset from neoneye/arc-dataset-collection - 300 challenging puzzles generated using advanced techniques",
+  "source": {
+    "type": "github",
+    "repo": "neoneye/arc-dataset-collection",
+    "path": "/dataset/ARC-Heavy/data/b",
+    "branch": "main"
+  },
+  "files": {
+    "pattern": "data_suggestfunction_100k_task{0-299}.json",
+    "count": 300,
+    "startIndex": 0,
+    "endIndex": 299
+  },
+  "output": {
+    "directory": "arc-heavy",
+    "namePattern": "task_{index}.json",
+    "sourceType": "ARC-Heavy",
+    "addMetadata": true
+  },
+  "validation": {
+    "validateARCFormat": true,
+    "requireTrainTest": true,
+    "minExamples": 1
+  }
+}

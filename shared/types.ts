@@ -35,6 +35,8 @@ export interface PuzzleMetadata {
   hasExplanation?: boolean;
   description?: string;
   source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  importSource?: string; // Track which import/dataset this came from
+  importDate?: Date;     // When it was imported
 }
 
 export interface PuzzleAnalysis {
