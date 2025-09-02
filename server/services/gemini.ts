@@ -113,15 +113,30 @@ export class GeminiService extends BaseAIService {
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     const maxTokens = modelConfig?.maxOutputTokens || 65536;
 
+    // Build generation config with thinking support for 2.5+ models
+    const generationConfig: any = {
+      maxOutputTokens: maxTokens,
+      ...(modelSupportsTemperature(modelKey) && { temperature }),
+      ...(options?.topP && { topP: options.topP }),
+      ...(options?.candidateCount && { candidateCount: options.candidateCount })
+    };
+
+    // Add thinking config for Gemini 2.5+ models if thinkingBudget is specified
+    if (modelName.includes('2.5') && options?.thinkingBudget !== undefined) {
+      generationConfig.thinking_config = {
+        thinking_budget: options.thinkingBudget
+      };
+    } else if (modelName.includes('2.5') && options?.thinkingBudget === undefined) {
+      // Default to dynamic thinking (-1) for 2.5+ models when not specified
+      generationConfig.thinking_config = {
+        thinking_budget: -1
+      };
+    }
+
     // Build request format for Gemini API
     const messageFormat: any = {
       model: modelName,
-      generationConfig: {
-        maxOutputTokens: maxTokens,
-        ...(modelSupportsTemperature(modelKey) && { temperature }),
-        ...(options?.topP && { topP: options.topP }),
-        ...(options?.candidateCount && { candidateCount: options.candidateCount })
-      },
+      generationConfig,
       contents: [
         {
           role: "user",
@@ -140,8 +155,11 @@ export class GeminiService extends BaseAIService {
         ? "System Prompt Mode: {ARC} - Using systemInstruction parameter"
         : "System Prompt Mode: {None} - All content in user message",
       "JSON extraction via regex parsing (no structured output support)",
-      modelName.includes('2.5') ? "Thinking model - supports internal reasoning" : "Standard model"
-    ];
+      modelName.includes('2.5') ? "Thinking model - supports internal reasoning" : "Standard model",
+      modelName.includes('2.5') && generationConfig.thinking_config 
+        ? `Thinking Budget: ${generationConfig.thinking_config.thinking_budget === -1 ? 'Dynamic' : generationConfig.thinking_config.thinking_budget}`
+        : ""
+    ].filter(note => note); // Remove empty strings
 
     const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
 
@@ -181,14 +199,31 @@ export class GeminiService extends BaseAIService {
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     const maxTokens = modelConfig?.maxOutputTokens || 65536;
 
+    // Build generation config with thinking support for 2.5+ models
+    const generationConfig: any = {
+      maxOutputTokens: maxTokens,
+      ...(modelSupportsTemperature(modelKey) && { temperature }),
+      ...(options?.topP && { topP: options.topP }),
+      ...(options?.candidateCount && { candidateCount: options.candidateCount })
+    };
+
+    // Add thinking config for Gemini 2.5+ models if thinkingBudget is specified
+    if (modelKey.includes('2.5') && options?.thinkingBudget !== undefined) {
+      generationConfig.thinking_config = {
+        thinking_budget: options.thinkingBudget
+      };
+      console.log(`[Gemini] Setting thinking_budget to ${options.thinkingBudget} for model ${modelKey}`);
+    } else if (modelKey.includes('2.5') && options?.thinkingBudget === undefined) {
+      // Default to dynamic thinking (-1) for 2.5+ models when not specified
+      generationConfig.thinking_config = {
+        thinking_budget: -1
+      };
+      console.log(`[Gemini] Defaulting to dynamic thinking (budget: -1) for model ${modelKey}`);
+    }
+
     const model = genai.getGenerativeModel({ 
       model: apiModelName,
-      generationConfig: {
-        maxOutputTokens: maxTokens,
-        ...(modelSupportsTemperature(modelKey) && { temperature }),
-        ...(options?.topP && { topP: options.topP }),
-        ...(options?.candidateCount && { candidateCount: options.candidateCount })
-      },
+      generationConfig,
       ...(systemMessage && systemPromptMode === 'ARC' && {
         systemInstruction: { role: "system", parts: [{ text: systemMessage }] }
       })

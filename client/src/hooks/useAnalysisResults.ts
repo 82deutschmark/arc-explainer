@@ -42,6 +42,7 @@ export function useAnalysisResults({
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
   const [candidateCount, setCandidateCount] = useState(1);
+  const [thinkingBudget, setThinkingBudget] = useState(-1); // Default to dynamic thinking
   const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
@@ -61,11 +62,12 @@ export function useAnalysisResults({
       temperature?: number; 
       topP?: number;
       candidateCount?: number;
+      thinkingBudget?: number;
       reasoningEffort?: string; 
       reasoningVerbosity?: string; 
       reasoningSummaryType?: string; 
     }) => {
-      const { modelKey, temperature: temp, topP: p, candidateCount: c, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
+      const { modelKey, temperature: temp, topP: p, candidateCount: c, thinkingBudget: tb, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
       
       // Record start time for tracking
       const startTime = Date.now();
@@ -78,6 +80,7 @@ export function useAnalysisResults({
         promptId,
         ...(p ? { topP: p } : {}),
         ...(c ? { candidateCount: c } : {}),
+        ...(typeof tb === 'number' ? { thinkingBudget: tb } : {}),
         // Analysis options forwarded end-to-end
         ...(emojiSetKey ? { emojiSetKey } : {}),
         ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
@@ -158,6 +161,7 @@ export function useAnalysisResults({
     const payload: any = {
       modelKey,
       ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
+      thinkingBudget, // Always include for Gemini models
       // Include reasoning parameters only for GPT-5 models
       ...(isGPT5ReasoningModel(modelKey) ? {
         reasoningEffort,
@@ -183,6 +187,8 @@ export function useAnalysisResults({
     setTopP,
     candidateCount,
     setCandidateCount,
+    thinkingBudget,
+    setThinkingBudget,
     promptId,
     setPromptId,
     customPrompt,
