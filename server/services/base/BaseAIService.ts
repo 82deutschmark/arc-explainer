@@ -228,27 +228,50 @@ export abstract class BaseAIService {
   /**
    * Validate reasoning log format to prevent "[object Object]" corruption
    * Ensures reasoningLog is always a string or null before database storage
+   * Fixed: Properly handles OpenAI Responses API objects without corrupting Chat Completions
    */
   protected validateReasoningLog(reasoningLog: any): string | null {
     if (!reasoningLog) {
       return null;
     }
 
-    // If already a string, return as-is (most common case)
+    // If already a string, return as-is (Chat Completions case - most common)
     if (typeof reasoningLog === 'string') {
       return reasoningLog.trim() || null;
     }
 
-    // Handle arrays - join with newlines for readability
+    // Handle arrays - extract text from objects properly (Responses API case)
     if (Array.isArray(reasoningLog)) {
       const processed = reasoningLog
-        .map(item => typeof item === 'string' ? item : String(item))
+        .map(item => {
+          if (typeof item === 'string') {
+            return item;
+          }
+          // Handle objects properly - extract text content instead of String(object)
+          if (typeof item === 'object' && item !== null) {
+            // Try to extract meaningful content from object structures
+            if (item.text) return item.text;
+            if (item.content) return item.content; 
+            if (item.message) return item.message;
+            if (item.summary) return item.summary;
+            if (item.value) return item.value;
+            // For structured objects, try JSON stringification
+            try {
+              return JSON.stringify(item, null, 2);
+            } catch {
+              console.warn(`[${this.provider}] Cannot extract text from reasoning object:`, item);
+              return null;
+            }
+          }
+          // For primitives, convert safely
+          return String(item);
+        })
         .filter(Boolean)
         .join('\n\n');
       return processed || null;
     }
 
-    // Handle objects - convert to string but warn about potential issues
+    // Handle single objects - convert to string but warn about potential issues  
     if (typeof reasoningLog === 'object' && reasoningLog !== null) {
       console.warn(`[${this.provider}] reasoningLog is an object, converting to string. Consider updating the provider to return a string.`);
       
@@ -267,7 +290,7 @@ export abstract class BaseAIService {
       }
     }
 
-    // For any other type, convert to string
+    // For any other type, convert to string safely
     const stringValue = String(reasoningLog);
     return stringValue !== '[object Object]' ? stringValue : null;
   }
