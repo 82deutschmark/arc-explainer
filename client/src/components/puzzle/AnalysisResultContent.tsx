@@ -177,7 +177,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                     Step-by-Step Analysis:
                   </h6>
                   <div className="space-y-2">
-                    {result.reasoningItems.map((item, index) => {
+                    {result.reasoningItems.map((item: any, index) => {
                       // Handle different reasoning item formats from different providers
                       let displayContent = '';
                       
