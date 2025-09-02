@@ -118,7 +118,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
         </div>
       )}
       
-      {result.hasReasoningLog && result.reasoningLog && (
+      {((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)) && (
         <div className={`border rounded ${isSaturnResult ? 'bg-indigo-50 border-indigo-200' : 'bg-blue-50 border-blue-200'}`}>
           <button
             onClick={() => setShowReasoning(!showReasoning)}
@@ -152,7 +152,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="px-3 pb-3">
               <div className="bg-white p-3 rounded border border-indigo-100">
                 <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
-                  {result.reasoningLog}
+                  {result.reasoningLog || (result.reasoningItems && result.reasoningItems.length > 0 ? 'Structured reasoning steps shown below.' : '')}
                 </pre>
               </div>
               <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
