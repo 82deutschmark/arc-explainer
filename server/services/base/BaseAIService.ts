@@ -434,6 +434,8 @@ export abstract class BaseAIService {
     sanitized = sanitized
       // Standard patterns: ```json\n{...}\n``` AND ```json{...}``` (Gemini's new format)
       .replace(/^```json\s*/i, '').replace(/\n?\s*```$/g, '')
+      // Gemini 2.0 Flash-Lite specific: ```json { ... (no newline between json and {)
+      .replace(/^```json\s*\{/, '{')
       // Without language specifier: ```\n{...}\n``` AND ```{...}```  
       .replace(/^```\s*/, '').replace(/\n?\s*```$/g, '')
       // Escaped patterns: \```json or \\```json
