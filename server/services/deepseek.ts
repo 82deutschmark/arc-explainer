@@ -209,25 +209,14 @@ export class DeepSeekService extends BaseAIService {
       reasoning: response.usage?.reasoning_tokens
     };
 
-    // For reasoning models, try to extract reasoning from response
+    // Extract reasoning for reasoning models - let BaseAIService handle the processing
     let reasoningLog = null;
     if (captureReasoning && (modelKey.includes('reasoner') || modelKey.includes('prover'))) {
       // Check if DeepSeek provides reasoning in the message
       if (choice?.message?.reasoning_content) {
         reasoningLog = choice.message.reasoning_content;
-      } else if (textContent.includes('<think>') && textContent.includes('</think>')) {
-        // Extract reasoning from <think> tags
-        const thinkMatch = textContent.match(/<think>(.*?)<\/think>/s);
-        if (thinkMatch) {
-          reasoningLog = thinkMatch[1].trim();
-        }
-      } else if (textContent.includes('Let me think') || textContent.includes('I need to analyze')) {
-        // Extract reasoning sections from response text
-        const reasoningParts = textContent.split(/Let me think|I need to analyze|First, let me|Looking at this/);
-        if (reasoningParts.length > 1) {
-          reasoningLog = reasoningParts.slice(1).join('\n').trim(); // Take reasoning content, not pre-reasoning text
-        }
       }
+      // For other reasoning patterns, let BaseAIService.validateReasoningLog() handle extraction
     }
 
     const isComplete = response.choices[0].finish_reason === 'stop';
