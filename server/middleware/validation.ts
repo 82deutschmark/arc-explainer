@@ -44,7 +44,7 @@ export const validation = {
     // Extract explanationId from either body or params
     // This makes the API more flexible - it can accept the ID from either source
     let explanationId = req.body.explanationId;
-    const { voteType, comment } = req.body;
+    const { feedbackType, comment } = req.body;
     
     // If explanationId is missing from body but present in params, use that one
     if ((!explanationId && explanationId !== 0) && req.params.explanationId) {
@@ -55,17 +55,18 @@ export const validation = {
     
     const MINIMUM_COMMENT_LENGTH = 20;
     
-    // Final validation check
-    if ((!explanationId && explanationId !== 0)) {
+    // Final validation check - explanationId is optional for solution_explanation type
+    if ((!explanationId && explanationId !== 0) && feedbackType !== 'solution_explanation') {
       throw new AppError('Missing required field: explanationId', 400, 'VALIDATION_ERROR');
     }
     
-    if (!voteType) {
-      throw new AppError('Missing required field: voteType', 400, 'VALIDATION_ERROR');
+    if (!feedbackType) {
+      throw new AppError('Missing required field: feedbackType', 400, 'VALIDATION_ERROR');
     }
     
-    if (voteType !== 'helpful' && voteType !== 'not_helpful') {
-      throw new AppError('Invalid vote type. Must be "helpful" or "not_helpful"', 400, 'VALIDATION_ERROR');
+    const validFeedbackTypes = ['helpful', 'not_helpful', 'solution_explanation'];
+    if (!validFeedbackTypes.includes(feedbackType)) {
+      throw new AppError(`Invalid feedback type. Must be one of: ${validFeedbackTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
     }
     
     if (!comment || comment.trim().length < MINIMUM_COMMENT_LENGTH) {
@@ -262,6 +263,33 @@ export const validation = {
     const validActions = ['pause', 'resume', 'cancel'];
     if (!action || !validActions.includes(action)) {
       throw new AppError(`Invalid action. Must be one of: ${validActions.join(', ')}`, 400, 'VALIDATION_ERROR');
+    }
+
+    next();
+  },
+
+  /**
+   * Validates solution submission request
+   */
+  solutionSubmission: (req: Request, res: Response, next: NextFunction) => {
+    const { puzzleId } = req.params;
+    const { comment } = req.body;
+
+    if (!puzzleId || puzzleId.trim() === '') {
+      throw new AppError('Missing required parameter: puzzleId', 400, 'VALIDATION_ERROR');
+    }
+
+    if (!comment || typeof comment !== 'string' || comment.trim().length === 0) {
+      throw new AppError('Solution explanation is required', 400, 'VALIDATION_ERROR');
+    }
+
+    const MINIMUM_SOLUTION_LENGTH = 10;
+    if (comment.trim().length < MINIMUM_SOLUTION_LENGTH) {
+      throw new AppError(
+        `Solution explanation must be at least ${MINIMUM_SOLUTION_LENGTH} characters long`,
+        400, 
+        'VALIDATION_ERROR'
+      );
     }
 
     next();
