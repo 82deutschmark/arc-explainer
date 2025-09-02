@@ -185,6 +185,25 @@ export const explanationService = {
         console.log(`🎯 [REASONING-ITEMS-DEBUG] Final reasoningItems:`, finalReasoningItems);
         console.log(`📊 [REASONING-ITEMS-DEBUG] Final reasoningItems type: ${typeof finalReasoningItems}, isArray: ${Array.isArray(finalReasoningItems)}, length: ${finalReasoningItems?.length || 'N/A'}`);
 
+        // Extract reasoningLog from AI service response
+        let finalReasoningLog = null;
+        
+        // Priority 1: Direct reasoningLog from sourceData (top-level)
+        if (sourceData.reasoningLog && typeof sourceData.reasoningLog === 'string') {
+          finalReasoningLog = sourceData.reasoningLog;
+          console.log(`✅ [REASONING-LOG-DEBUG] Using sourceData.reasoningLog (${finalReasoningLog.length} chars)`);
+        }
+        // Priority 2: reasoningLog from nested analysisData
+        else if (analysisData.reasoningLog && typeof analysisData.reasoningLog === 'string') {
+          finalReasoningLog = analysisData.reasoningLog;
+          console.log(`✅ [REASONING-LOG-DEBUG] Using analysisData.reasoningLog (${finalReasoningLog.length} chars)`);
+        }
+        else {
+          console.log(`❌ [REASONING-LOG-DEBUG] No valid reasoningLog found for ${modelKey}`);
+        }
+        
+        console.log(`🎯 [REASONING-LOG-DEBUG] Final reasoningLog: ${finalReasoningLog ? `${finalReasoningLog.substring(0, 100)}...` : 'NULL'}`);
+
         // Handle both flat and nested response structures
         const explanationData = {
           patternDescription: analysisData.patternDescription ?? null,
@@ -193,7 +212,7 @@ export const explanationService = {
           confidence: analysisData.confidence ?? 50,
           modelName: sourceData.modelName ?? modelKey,
           reasoningItems: finalReasoningItems,
-          reasoningLog: null,
+          reasoningLog: finalReasoningLog,
           predictedOutputGrid: collectedGrids.length > 1 ? collectedGrids : collectedGrids[0],
           isPredictionCorrect: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
           predictionAccuracyScore: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
