@@ -144,15 +144,95 @@ export class AnthropicService extends BaseAIService {
     const apiModelName = getApiModelName(modelKey);
     const supportsTemp = modelConfig?.supportsTemperature ?? false;
 
+    // Define analysis tool for structured output - enforces reasoningItems
+    const analysisTools = [{
+      name: "provide_puzzle_analysis",
+      description: "Analyze the ARC puzzle and provide structured analysis including reasoning steps",
+      input_schema: {
+        type: "object",
+        properties: {
+          patternDescription: {
+            type: "string",
+            description: "Description of transformations identified. One or two short sentences even a small child could understand."
+          },
+          solvingStrategy: {
+            type: "string", 
+            description: "Clear explanation of the solving approach, written as pseudo-code"
+          },
+          reasoningItems: {
+            type: "array",
+            items: { type: "string" },
+            description: "REQUIRED: Step-by-step analysis progression and insights, including incorrect approaches and insights"
+          },
+          hints: {
+            type: "array",
+            items: { type: "string" },
+            description: "Three hints: one algorithm, one description, one as emojis"
+          },
+          confidence: {
+            type: "integer",
+            minimum: 0,
+            maximum: 100,
+            description: "Confidence level in the solution (0-100)"
+          },
+          // Include prediction fields based on task structure
+          multiplePredictedOutputs: {
+            type: "boolean",
+            description: "Whether multiple test outputs are predicted"
+          },
+          predictedOutput: {
+            type: "array",
+            items: {
+              type: "array", 
+              items: { type: "integer" }
+            },
+            description: "Predicted output grid for single test"
+          },
+          predictedOutput1: {
+            type: "array",
+            items: {
+              type: "array",
+              items: { type: "integer" }
+            },
+            description: "First predicted output for multiple tests"
+          },
+          predictedOutput2: {
+            type: "array", 
+            items: {
+              type: "array",
+              items: { type: "integer" }
+            },
+            description: "Second predicted output for multiple tests"
+          },
+          predictedOutput3: {
+            type: "array",
+            items: {
+              type: "array", 
+              items: { type: "integer" }
+            },
+            description: "Third predicted output for multiple tests"
+          }
+        },
+        required: ["patternDescription", "solvingStrategy", "reasoningItems", "hints", "confidence", "multiplePredictedOutputs", "predictedOutput", "predictedOutput1", "predictedOutput2", "predictedOutput3"]
+      }
+    }];
+
     const requestBody: Anthropic.Messages.MessageCreateParams = {
       model: apiModelName,
       max_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || 4096,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: [{ 
+        role: 'user', 
+        content: `${userPrompt}\n\nIMPORTANT: You must use the provide_puzzle_analysis tool to respond with structured analysis. Include detailed reasoningItems showing your step-by-step analysis.`
+      }],
+      tools: analysisTools,
+      tool_choice: { type: "tool", name: "provide_puzzle_analysis" },
       ...(supportsTemp && { temperature }),
     };
 
     this.logAnalysisStart(modelKey, temperature, userPrompt.length, serviceOpts);
+    console.log(`[${this.provider}] Using Tool Use API to enforce structured output with required reasoningItems`);
+    
     const startTime = Date.now();
     const response = await anthropic.messages.create(requestBody);
     const processingTime = Date.now() - startTime;
@@ -167,7 +247,6 @@ export class AnthropicService extends BaseAIService {
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
     const { content, usage, stop_reason } = response;
-    const responseText = content[0]?.text || '';
 
     const tokenUsage: TokenUsage = {
       input: usage.input_tokens,
@@ -177,62 +256,65 @@ export class AnthropicService extends BaseAIService {
     const isComplete = stop_reason === 'end_turn';
     const incompleteReason = isComplete ? undefined : stop_reason;
 
-    // Extract JSON from the response text first
-    const result = this.extractJsonFromResponse(responseText, modelKey);
-
-    // Extract reasoning log properly - don't store the entire response!
+    let result: any = {};
     let reasoningLog = null;
-    if (captureReasoning) {
-      console.log(`[Anthropic] Attempting to extract reasoning for model: ${modelKey}`);
+    let reasoningItems: any[] = [];
+
+    console.log(`[Anthropic] Parsing response with ${content?.length || 0} content blocks`);
+
+    // Check for tool use response (structured output)
+    const toolUseContent = content?.find((block: any) => block.type === 'tool_use');
+    if (toolUseContent && toolUseContent.name === 'provide_puzzle_analysis') {
+      console.log(`[Anthropic] Found tool use response with structured data`);
+      result = toolUseContent.input || {};
       
-      // For Anthropic models, look for reasoning patterns in the text before JSON
-      // Many Anthropic responses include reasoning before the JSON response
-      
-      // Try to find text that appears before the JSON block
-      const jsonStartPattern = /```json|```\s*{|\s*{/;
-      const jsonStartMatch = responseText.search(jsonStartPattern);
-      
-      if (jsonStartMatch > 50) { // If there's substantial text before JSON
-        const preJsonText = responseText.substring(0, jsonStartMatch).trim();
-        if (preJsonText.length > 20) { // Meaningful reasoning content
-          reasoningLog = preJsonText;
-          console.log(`[Anthropic] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
-        }
+      // Extract reasoningItems from tool use input (guaranteed by schema)
+      if (result.reasoningItems && Array.isArray(result.reasoningItems)) {
+        reasoningItems = result.reasoningItems;
+        console.log(`[Anthropic] ✅ Extracted ${reasoningItems.length} reasoning items from tool use (schema enforced)`);
       }
+
+      // Create reasoning log from reasoningItems for compatibility
+      if (captureReasoning && reasoningItems.length > 0) {
+        reasoningLog = reasoningItems.join('\n\n');
+        console.log(`[Anthropic] Created reasoning log from tool reasoning items: ${reasoningLog.length} chars`);
+      }
+    } else {
+      // Fallback to text parsing for models that don't use tool use
+      console.log(`[Anthropic] No tool use found, falling back to text parsing`);
+      const responseText = content[0]?.text || '';
       
-      // Also look for explicit reasoning patterns
-      if (!reasoningLog) {
-        const reasoningPatterns = [
-          /Let me analyze.*?(?=```|\{)/s,
-          /I need to.*?(?=```|\{)/s,
-          /Looking at.*?(?=```|\{)/s,
-          /First.*?(?=```|\{)/s,
-          /To solve.*?(?=```|\{)/s,
-          /I'll examine.*?(?=```|\{)/s,
-          /I can see.*?(?=```|\{)/s
-        ];
+      // Extract JSON from the response text
+      result = this.extractJsonFromResponse(responseText, modelKey);
+
+      // Extract reasoning log from text patterns
+      if (captureReasoning) {
+        const jsonStartPattern = /```json|```\s*{|\s*{/;
+        const jsonStartMatch = responseText.search(jsonStartPattern);
         
-        for (const pattern of reasoningPatterns) {
-          const match = responseText.match(pattern);
-          if (match && match[0].trim().length > 50) {
-            reasoningLog = match[0].trim();
-            console.log(`[Anthropic] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
-            break;
+        if (jsonStartMatch > 50) {
+          const preJsonText = responseText.substring(0, jsonStartMatch).trim();
+          if (preJsonText.length > 20) {
+            reasoningLog = preJsonText;
+            console.log(`[Anthropic] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
           }
         }
       }
-      
-      if (!reasoningLog) {
-        console.log(`[Anthropic] No explicit reasoning patterns found - model may not provide reasoning`);
+
+      // Extract reasoningItems from JSON response (fallback)
+      if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
+        reasoningItems = result.reasoningItems;
+        console.log(`[Anthropic] Extracted ${reasoningItems.length} reasoning items from JSON fallback`);
       }
     }
 
-    // Extract reasoningItems from the JSON response
-    let reasoningItems: any[] = [];
-    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
-      reasoningItems = result.reasoningItems;
-      console.log(`[Anthropic] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    // Additional text content logging
+    const textContent = content?.find((block: any) => block.type === 'text');
+    if (textContent?.text) {
+      console.log(`[Anthropic] Additional text content: ${textContent.text.substring(0, 200)}...`);
     }
+
+    console.log(`[Anthropic] Parse complete - reasoningItems: ${reasoningItems.length}, result keys: ${Object.keys(result).join(', ')}`);
 
     return {
       result,
