@@ -202,30 +202,48 @@ export class DeepSeekService extends BaseAIService {
     incomplete?: boolean;
     incompleteReason?: string;
   } {
-    // Extract text content from DeepSeek response (OpenAI format)
     const choice = response.choices[0];
-    const textContent = choice?.message?.content || '';
+    let result: any = {};
+    let reasoningLog = null;
+
+    // DeepSeek-R1 (deepseek-reasoner) returns two separate fields:
+    // 1. reasoning_content = Chain of Thought reasoning steps
+    // 2. content = Final JSON answer (not text containing JSON)
+    const isReasoningModel = modelKey.includes('reasoner') || modelKey.includes('prover');
     
-    // Extract JSON using inherited method
-    const result = this.extractJsonFromResponse(textContent, modelKey);
+    if (isReasoningModel) {
+      // For reasoning models, content field IS the JSON response
+      const contentField = choice?.message?.content || '';
+      console.log(`[DeepSeek] Raw content field length: ${contentField.length}`);
+      console.log(`[DeepSeek] Content preview: "${contentField.substring(0, 200)}..."`);
+      
+      try {
+        // Try parsing content directly as JSON
+        result = JSON.parse(contentField);
+        console.log(`[DeepSeek] Successfully parsed content as JSON`);
+      } catch (error) {
+        console.log(`[DeepSeek] Content not direct JSON, attempting extraction...`);
+        // Fallback to inherited JSON extraction if content is wrapped in text
+        result = this.extractJsonFromResponse(contentField, modelKey);
+      }
+      
+      // Extract reasoning from reasoning_content field
+      if (captureReasoning && choice?.message?.reasoning_content) {
+        reasoningLog = choice.message.reasoning_content;
+        console.log(`[DeepSeek] Extracted reasoning log: ${reasoningLog.length} chars`);
+      }
+    } else {
+      // For non-reasoning models, use standard text extraction
+      const textContent = choice?.message?.content || '';
+      result = this.extractJsonFromResponse(textContent, modelKey);
+    }
 
     // Extract token usage
     const tokenUsage: TokenUsage = {
       input: response.usage?.prompt_tokens || 0,
       output: response.usage?.completion_tokens || 0,
-      // DeepSeek may provide reasoning tokens for reasoning models
       reasoning: response.usage?.reasoning_tokens
     };
-
-    // Extract reasoning for reasoning models - let BaseAIService handle the processing
-    let reasoningLog = null;
-    if (captureReasoning && (modelKey.includes('reasoner') || modelKey.includes('prover'))) {
-      // Check if DeepSeek provides reasoning in the message
-      if (choice?.message?.reasoning_content) {
-        reasoningLog = choice.message.reasoning_content;
-      }
-      // For other reasoning patterns, let BaseAIService.validateReasoningLog() handle extraction
-    }
 
     const isComplete = response.choices[0].finish_reason === 'stop';
     const incompleteReason = isComplete ? undefined : response.choices[0].finish_reason;
@@ -236,6 +254,8 @@ export class DeepSeekService extends BaseAIService {
       reasoningItems = result.reasoningItems;
       console.log(`[DeepSeek] Extracted ${reasoningItems.length} reasoning items from JSON response`);
     }
+
+    console.log(`[DeepSeek] Parse complete - result keys: ${Object.keys(result || {}).join(', ')}`);
 
     return {
       result,
