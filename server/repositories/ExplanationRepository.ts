@@ -30,7 +30,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       const result = await this.query(`
         INSERT INTO explanations (
           puzzle_id, pattern_description, solving_strategy, hints, confidence,
-          model_name, reasoning_log, has_reasoning_log, api_processing_time_ms, estimated_cost,
+          model_name, reasoning_log, has_reasoning_log, reasoning_items, api_processing_time_ms, estimated_cost,
           temperature, reasoning_effort, reasoning_verbosity, reasoning_summary_type,
           input_tokens, output_tokens, reasoning_tokens, total_tokens,
           predicted_output_grid, multiple_predicted_outputs, multi_test_results,
@@ -41,7 +41,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25,
-          $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36
+          $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -52,6 +52,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.modelName || null,
         this.processReasoningLog(data.reasoningLog),
         !!data.reasoningLog,
+        this.safeJsonStringify(data.reasoningItems),
         data.apiProcessingTimeMs || null,
         data.estimatedCost || null,
         data.temperature || null,
