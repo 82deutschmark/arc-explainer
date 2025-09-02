@@ -225,7 +225,7 @@ export class DeepSeekService extends BaseAIService {
         // Extract reasoning sections from response text
         const reasoningParts = textContent.split(/Let me think|I need to analyze|First, let me|Looking at this/);
         if (reasoningParts.length > 1) {
-          reasoningLog = reasoningParts[0].trim();
+          reasoningLog = reasoningParts.slice(1).join('\n').trim(); // Take reasoning content, not pre-reasoning text
         }
       }
     }
