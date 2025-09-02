@@ -50,7 +50,7 @@ export function FeedbackModal({
   const [filters, setFilters] = useState<FeedbackFilters>({
     puzzleId: initialPuzzleId || '',
     modelName: '',
-    voteType: undefined,
+    feedbackType: undefined,
     limit: 20,
     offset: 0
   });
@@ -122,7 +122,7 @@ export function FeedbackModal({
     setFilters({
       puzzleId: '',
       modelName: '',
-      voteType: undefined,
+      feedbackType: undefined,
       limit: 20,
       offset: 0
     });
@@ -134,12 +134,12 @@ export function FeedbackModal({
     if (!filteredFeedback) return;
     
     const csvContent = [
-      'ID,Puzzle ID,Model,Vote Type,Comment,Created At,Confidence,Pattern Description',
+      'ID,Puzzle ID,Model,Feedback Type,Comment,Created At,Confidence,Pattern Description',
       ...filteredFeedback.map(feedback => [
         feedback.id,
         feedback.puzzleId,
         feedback.modelName,
-        feedback.voteType,
+        feedback.feedbackType,
         `"${feedback.comment?.replace(/"/g, '""') || ''}"`,
         feedback.createdAt,
         feedback.confidence,
@@ -214,16 +214,17 @@ export function FeedbackModal({
               </Select>
 
               <Select 
-                value={filters.voteType || ''} 
-                onValueChange={(value) => handleFilterChange('voteType', value as 'helpful' | 'not_helpful' | undefined)}
+                value={filters.feedbackType || ''} 
+                onValueChange={(value) => handleFilterChange('feedbackType', value as 'helpful' | 'not_helpful' | 'solution_explanation' | undefined)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Vote type" />
+                  <SelectValue placeholder="Feedback type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All votes</SelectItem>
+                  <SelectItem value="">All types</SelectItem>
                   <SelectItem value="helpful">Helpful</SelectItem>
                   <SelectItem value="not_helpful">Not Helpful</SelectItem>
+                  <SelectItem value="solution_explanation">Solution Explanation</SelectItem>
                 </SelectContent>
               </Select>
             </div>
