@@ -275,7 +275,8 @@ export class DatabaseSchema {
         ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS puzzle_id VARCHAR(255) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) DEFAULT 'helpful';
+        ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) DEFAULT 'helpful',
+        ADD COLUMN IF NOT EXISTS reference_feedback_id INTEGER DEFAULT NULL;
       `);
       
       // Update feedback_type to NOT NULL and add constraint after adding the column

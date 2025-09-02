@@ -31,12 +31,13 @@ import { logger } from '../utils/logger.ts';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types.ts';
 
 export interface AddFeedbackData {
-  puzzleId: string;
-  explanationId?: number;
+  puzzleId: string | null;
+  explanationId?: number | null;
   feedbackType: 'helpful' | 'not_helpful' | 'solution_explanation';
-  comment?: string;
+  comment?: string | null;
   userAgent?: string;
   sessionId?: string;
+  referenceFeedbackId?: number; // Reference to another feedback entry (for voting on solutions)
 }
 
 export class FeedbackRepository extends BaseRepository {
@@ -52,9 +53,22 @@ export class FeedbackRepository extends BaseRepository {
     const client = await this.getClient();
     
     try {
+      // If this is a vote on a solution, we need to get the puzzleId from the referenced solution
+      if (data.referenceFeedbackId && (!data.puzzleId || data.puzzleId === null)) {
+        const referenceResult = await this.query(`
+          SELECT puzzle_id FROM feedback WHERE id = $1
+        `, [data.referenceFeedbackId], client);
+        
+        if (referenceResult.rows.length > 0) {
+          data.puzzleId = referenceResult.rows[0].puzzle_id;
+        } else {
+          throw new Error(`Referenced feedback ID ${data.referenceFeedbackId} not found`);
+        }
+      }
+      
       const result = await this.query(`
-        INSERT INTO feedback (puzzle_id, explanation_id, feedback_type, comment, user_agent, session_id)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO feedback (puzzle_id, explanation_id, feedback_type, comment, user_agent, session_id, reference_feedback_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
       `, [
         data.puzzleId,
@@ -62,7 +76,8 @@ export class FeedbackRepository extends BaseRepository {
         data.feedbackType,
         data.comment || null,
         data.userAgent || null,
-        data.sessionId || null
+        data.sessionId || null,
+        data.referenceFeedbackId || null
       ], client);
 
       if (result.rows.length === 0) {
@@ -367,29 +382,78 @@ export class FeedbackRepository extends BaseRepository {
   }
 
   /**
-   * Get recent feedback activity
+   * Get solutions (solution_explanation feedback type) for a specific puzzle
+   * Also includes vote counts for each solution
    */
-  async getSolutionsForPuzzle(puzzleId: string): Promise<Feedback[]> {
+  async getSolutionsForPuzzle(puzzleId: string): Promise<any[]> {
     if (!this.isConnected()) {
-      return [];
+      throw new Error('Database not available');
     }
 
-    const result = await this.query(`
-      SELECT * FROM feedback 
-      WHERE puzzle_id = $1 AND feedback_type = 'solution_explanation'
-      ORDER BY created_at DESC
-    `, [puzzleId]);
+    try {
+      // Get all solutions
+      const result = await this.query(`
+        SELECT 
+          id, 
+          puzzle_id, 
+          feedback_type, 
+          comment, 
+          created_at,
+          (SELECT COUNT(*) FROM feedback WHERE reference_feedback_id = f.id AND feedback_type = 'helpful') as helpful_count,
+          (SELECT COUNT(*) FROM feedback WHERE reference_feedback_id = f.id AND feedback_type = 'not_helpful') as not_helpful_count
+        FROM feedback f
+        WHERE puzzle_id = $1 
+          AND feedback_type = 'solution_explanation'
+        ORDER BY 
+          (SELECT COUNT(*) FROM feedback WHERE reference_feedback_id = f.id AND feedback_type = 'helpful') DESC,
+          created_at DESC
+      `, [puzzleId]);
+      
+      return result.rows;
+    } catch (error) {
+      // Return empty array instead of throwing to avoid crashing
+      logger.error(`Error getting solutions for puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return [];
+    }
+  }
 
-    return result.rows.map(row => ({
-      id: row.id,
-      puzzleId: row.puzzle_id,
-      explanationId: row.explanation_id,
-      feedbackType: row.feedback_type,
-      comment: row.comment,
-      createdAt: row.created_at,
-      userAgent: row.user_agent,
-      sessionId: row.session_id
-    }));
+  /**
+   * Get vote counts for a specific solution
+   */
+  async getSolutionVotes(solutionId: number): Promise<{helpful: number, notHelpful: number}> {
+    if (!this.isConnected()) {
+      throw new Error('Database not available');
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT 
+          feedback_type,
+          COUNT(*) as count
+        FROM feedback
+        WHERE reference_feedback_id = $1
+        AND feedback_type IN ('helpful', 'not_helpful')
+        GROUP BY feedback_type
+      `, [solutionId]);
+      
+      // Initialize counts
+      let helpful = 0;
+      let notHelpful = 0;
+      
+      // Process results
+      result.rows.forEach(row => {
+        if (row.feedback_type === 'helpful') {
+          helpful = parseInt(row.count);
+        } else if (row.feedback_type === 'not_helpful') {
+          notHelpful = parseInt(row.count);
+        }
+      });
+      
+      return { helpful, notHelpful };
+    } catch (error) {
+      logger.error(`Error getting vote counts for solution ${solutionId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return { helpful: 0, notHelpful: 0 };
+    }
   }
 
   /**
