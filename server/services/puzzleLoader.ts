@@ -23,6 +23,8 @@ interface PuzzleInfo {
   hasExplanation: boolean;
   source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
   testCaseCount: number;
+  importSource?: string; // Track which import/dataset this came from
+  importDate?: Date;     // When it was imported
 }
 
 interface DataSource {
@@ -30,6 +32,7 @@ interface DataSource {
   directory: string;
   source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
   priority: number;
+  importSource?: string; // For imported datasets, track the original import source
 }
 
 export class PuzzleLoader {
@@ -69,7 +72,8 @@ export class PuzzleLoader {
       name: 'ARC-Heavy',
       directory: path.join(process.cwd(), 'data', 'arc-heavy'),
       source: 'ARC-Heavy',
-      priority: 5
+      priority: 5,
+      importSource: 'neoneye/arc-dataset-collection'
     }
   ];
 
@@ -149,7 +153,7 @@ export class PuzzleLoader {
         const data = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as ARCTask;
         
         // Analyze the puzzle to get metadata
-        const metadata = this.analyzePuzzleMetadata(taskId, data, dataSource.source);
+        const metadata = this.analyzePuzzleMetadata(taskId, data, dataSource.source, dataSource);
         this.puzzleMetadata.set(taskId, metadata);
         loadedCount++;
       } catch (error) {
@@ -160,9 +164,21 @@ export class PuzzleLoader {
     return files.length;
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy'): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy', dataSource: DataSource): PuzzleInfo {
     const { maxGridSize, gridSizeConsistent, inputSize, outputSize } = this.getGridDimensions(task);
     const hasExplanation = this.checkHasExplanation(taskId);
+
+    // Extract import metadata if present in the task data
+    let importSource: string | undefined;
+    let importDate: Date | undefined;
+    
+    if ((task as any)._import) {
+      importSource = (task as any)._import.source;
+      importDate = new Date((task as any)._import.imported);
+    } else if (dataSource.importSource) {
+      // Use dataSource import info as fallback
+      importSource = dataSource.importSource;
+    }
 
     // Fix for ARC1-Eval categorization issue
     if (source === 'ARC1-Eval') {
@@ -181,7 +197,9 @@ export class PuzzleLoader {
       outputSize,
       hasExplanation,
       source,
-      testCaseCount: task.test ? task.test.length : 0
+      testCaseCount: task.test ? task.test.length : 0,
+      importSource,
+      importDate
     };
   }
 
