@@ -195,6 +195,82 @@ export const feedbackController = {
   },
 
   /**
+   * Get user-submitted solutions for a puzzle (solution_explanation feedback type)
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getSolutions(req: Request, res: Response) {
+    try {
+      const { puzzleId } = req.params;
+
+      if (!puzzleId) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid puzzle ID',
+          'Puzzle ID is required'
+        ));
+      }
+
+      // Get solution explanations from repository
+      const solutions = await repositoryService.feedback.getSolutionsForPuzzle(puzzleId);
+      res.json(formatResponse.success(solutions));
+    } catch (error) {
+      console.error('Error getting solutions:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve solutions',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Submit a new user solution for a puzzle
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async submitSolution(req: Request, res: Response) {
+    try {
+      const { puzzleId } = req.params;
+      const { comment } = req.body;
+
+      if (!puzzleId) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid puzzle ID',
+          'Puzzle ID is required'
+        ));
+      }
+
+      if (!comment || comment.trim().length === 0) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid solution',
+          'Solution explanation is required'
+        ));
+      }
+
+      // Submit solution as feedback with solution_explanation type
+      const result = await feedbackService.addFeedback({
+        puzzleId,
+        explanationId: null, // No explanation ID for user solutions
+        feedbackType: 'solution_explanation',
+        comment: comment.trim(),
+        userAgent: req.get('User-Agent'),
+        sessionId: undefined,
+      });
+      
+      res.json(formatResponse.success({
+        feedbackId: result.feedbackId
+      }, result.message));
+    } catch (error) {
+      console.error('Error submitting solution:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to submit solution',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
    * Helper method to build filters from query parameters
    * 
    * @param query - Express query object
