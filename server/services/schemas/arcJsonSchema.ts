@@ -1,6 +1,16 @@
 /**
  * JSON Schema for ARC puzzle analysis structured output
  * Used with OpenAI's structured output format to ensure consistent parsing
+ * This schema is used by both the solver and explanation modes and anytime the research mode omits the solution 
+ * from the prompt.
+ * 
+ * The custom prompt mode allows the user to provide a custom prompt to the LLM. In this case only 
+ * enforce the predictedOutput or multiplePredictedOutputs fields logic and validation.  Do not enforce
+ * hints or confidence fields or solvingStrategy or patternDescription.
+ * 
+ * IMPORTANT:  The predictedOutput field is used in the database and frontend to display the predicted output grid.
+ * It is also used in the explanation mode to evaluate the accuracy of the predicted output.  It is CRITICAL for the project!
+ * 
  * 
  * @author Cascade
  */
@@ -38,7 +48,7 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "If the task has more than a single test input, Second predicted output grid for second test input"
+        description: "If the task has more than a single test input, this is the second predicted output grid for second test input"
       },
       predictedOutput3: {
         type: "array",
@@ -46,28 +56,36 @@ export const ARC_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "If the task has more than a single test input, Third predicted output grid for third test input"
+        description: "If the task has more than two test inputs, this is the third predicted output grid for third test input"
       },
       
       // Analysis fields
       solvingStrategy: {
         type: "string",
-        description: "Detailed explanation of the solving approach"
+        description: "Clear explanation of the solving approach, written as pseudo-code"
       },
-      keySteps: {
+
+      // REASONING ITEMS - MAPS TO DATABASE reasoning_items JSONB FIELD
+      reasoningItems: {
         type: "array",
         items: { type: "string" },
-        description: "Key steps in the solution process"
+        description: "Structured step-by-step reasoning process and insights"
       },
+
+      // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       patternDescription: {
         type: "string",
-        description: "Description of the pattern identified"
+        description: "Description of the transformations identified. One or two short sentences even a small child could understand."
       },
+
+      // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       hints: {
         type: "array",
         items: { type: "string" },
         description: "Three hints for understanding the transformation rules, one as an algorithm, one as a description, and one as only emojis"
       },
+
+      // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       confidence: {
         type: "integer",
         minimum: 0,
@@ -82,7 +100,7 @@ export const ARC_JSON_SCHEMA = {
       "predictedOutput2", 
       "predictedOutput3",
       "solvingStrategy",
-      "keySteps",
+      "reasoningItems",
       "patternDescription",
       "hints", 
       "confidence"

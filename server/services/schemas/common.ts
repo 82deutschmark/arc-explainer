@@ -23,7 +23,7 @@ export const COMMON_PROPERTIES = {
     type: "string",
     description: "Detailed reasoning and analysis process. For OpenAI reasoning models, this captures the complete reasoning log."
   },
-  keySteps: {
+  reasoningItems: {
     type: "array",
     items: { type: "string" },
     description: "Step-by-step breadcrumbs showing the analysis progression"
@@ -147,7 +147,7 @@ export function extractReasoningLog(response: any): {
   reasoningItems: string[];
 } {
   const reasoningLog = response.solvingStrategy || '';
-  const reasoningItems = response.keySteps || [];
+  const reasoningItems = response.reasoningItems || [];
   
   return {
     reasoningLog,

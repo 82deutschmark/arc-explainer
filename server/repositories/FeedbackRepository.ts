@@ -31,9 +31,10 @@ import { logger } from '../utils/logger.ts';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types.ts';
 
 export interface AddFeedbackData {
-  explanationId: number;
-  voteType: 'helpful' | 'not_helpful';
-  comment: string;
+  puzzleId: string;
+  explanationId?: number;
+  feedbackType: 'helpful' | 'not_helpful' | 'solution_explanation';
+  comment?: string;
   userAgent?: string;
   sessionId?: string;
 }
@@ -52,13 +53,14 @@ export class FeedbackRepository extends BaseRepository {
     
     try {
       const result = await this.query(`
-        INSERT INTO feedback (explanation_id, vote_type, comment, user_agent, session_id)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO feedback (puzzle_id, explanation_id, feedback_type, comment, user_agent, session_id)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
       `, [
-        data.explanationId,
-        data.voteType,
-        data.comment,
+        data.puzzleId,
+        data.explanationId || null,
+        data.feedbackType,
+        data.comment || null,
         data.userAgent || null,
         data.sessionId || null
       ], client);
@@ -69,8 +71,9 @@ export class FeedbackRepository extends BaseRepository {
 
       const feedback: Feedback = {
         id: result.rows[0].id,
+        puzzleId: result.rows[0].puzzle_id,
         explanationId: result.rows[0].explanation_id,
-        voteType: result.rows[0].vote_type,
+        feedbackType: result.rows[0].feedback_type,
         comment: result.rows[0].comment,
         createdAt: result.rows[0].created_at,
         userAgent: result.rows[0].user_agent,
@@ -102,8 +105,9 @@ export class FeedbackRepository extends BaseRepository {
 
     return result.rows.map(row => ({
       id: row.id,
+      puzzleId: row.puzzle_id,
       explanationId: row.explanation_id,
-      voteType: row.vote_type,
+      feedbackType: row.feedback_type,
       comment: row.comment,
       createdAt: row.created_at,
       userAgent: row.user_agent,
@@ -135,7 +139,7 @@ export class FeedbackRepository extends BaseRepository {
     return result.rows.map(row => ({
       id: row.id,
       explanationId: row.explanation_id,
-      voteType: row.vote_type,
+      feedbackType: row.feedback_type,
       comment: row.comment,
       createdAt: row.created_at,
       userAgent: row.user_agent,
@@ -170,9 +174,9 @@ export class FeedbackRepository extends BaseRepository {
     const params: any[] = [];
     let paramCount = 0;
 
-    if (filters.voteType) {
-      query += ` AND f.vote_type = $${++paramCount}`;
-      params.push(filters.voteType);
+    if (filters.feedbackType) {
+      query += ` AND f.feedback_type = $${++paramCount}`;
+      params.push(filters.feedbackType);
     }
 
     if (filters.modelName) {
@@ -207,7 +211,7 @@ export class FeedbackRepository extends BaseRepository {
     return result.rows.map(row => ({
       id: row.id,
       explanationId: row.explanation_id,
-      voteType: row.vote_type,
+      feedbackType: row.feedback_type,
       comment: row.comment,
       createdAt: row.created_at,
       userAgent: row.user_agent,
@@ -247,8 +251,8 @@ export class FeedbackRepository extends BaseRepository {
       const basicStats = await this.query(`
         SELECT 
           COUNT(*) as total_feedback,
-          SUM(CASE WHEN vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
-          SUM(CASE WHEN vote_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
+          SUM(CASE WHEN feedback_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
+          SUM(CASE WHEN feedback_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
           AVG(LENGTH(comment)) as avg_comment_length
         FROM feedback
       `);
@@ -258,8 +262,8 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as feedback_count,
-          SUM(CASE WHEN f.vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
-          SUM(CASE WHEN f.vote_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
+          SUM(CASE WHEN f.feedback_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count,
+          SUM(CASE WHEN f.feedback_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful_count,
           AVG(e.confidence) as avg_confidence
         FROM feedback f
         JOIN explanations e ON f.explanation_id = e.id
@@ -274,7 +278,7 @@ export class FeedbackRepository extends BaseRepository {
         SELECT 
           DATE(created_at) as date,
           COUNT(*) as count,
-          SUM(CASE WHEN vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count
+          SUM(CASE WHEN feedback_type = 'helpful' THEN 1 ELSE 0 END) as helpful_count
         FROM feedback
         WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
         GROUP BY DATE(created_at)
@@ -344,8 +348,8 @@ export class FeedbackRepository extends BaseRepository {
       const result = await this.query(`
         SELECT 
           COUNT(*) as total,
-          SUM(CASE WHEN vote_type = 'helpful' THEN 1 ELSE 0 END) as helpful,
-          SUM(CASE WHEN vote_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful
+          SUM(CASE WHEN feedback_type = 'helpful' THEN 1 ELSE 0 END) as helpful,
+          SUM(CASE WHEN feedback_type = 'not_helpful' THEN 1 ELSE 0 END) as not_helpful
         FROM feedback
         WHERE explanation_id = $1
       `, [explanationId]);
@@ -360,6 +364,32 @@ export class FeedbackRepository extends BaseRepository {
       logger.error(`Error getting feedback count for explanation ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
+  }
+
+  /**
+   * Get recent feedback activity
+   */
+  async getSolutionsForPuzzle(puzzleId: string): Promise<Feedback[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    const result = await this.query(`
+      SELECT * FROM feedback 
+      WHERE puzzle_id = $1 AND feedback_type = 'solution_explanation'
+      ORDER BY created_at DESC
+    `, [puzzleId]);
+
+    return result.rows.map(row => ({
+      id: row.id,
+      puzzleId: row.puzzle_id,
+      explanationId: row.explanation_id,
+      feedbackType: row.feedback_type,
+      comment: row.comment,
+      createdAt: row.created_at,
+      userAgent: row.user_agent,
+      sessionId: row.session_id
+    }));
   }
 
   /**
@@ -387,7 +417,7 @@ export class FeedbackRepository extends BaseRepository {
       return result.rows.map(row => ({
         id: row.id,
         explanationId: row.explanation_id,
-        voteType: row.vote_type,
+        feedbackType: row.feedback_type,
         comment: row.comment,
         createdAt: row.created_at,
         userAgent: row.user_agent,

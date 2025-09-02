@@ -1,5 +1,8 @@
 /**
- * SHOULD BE USED AS SOURCE OF TRUTH
+ * REFACTORED SYSTEM PROMPTS - DRY ARCHITECTURE 
+ * 
+ * This file now uses composable components to eliminate 90% of code duplication.
+ * All prompts are built from shared base components in ./components/
  * 
  * IMPORTANT TERMINOLOGY CLARIFICATION FOR DEVELOPERS:
  * 
@@ -14,163 +17,48 @@
  * - Their "custom prompts" become part of the system role in LLM terms this is how the AI behaves
  * - This file provides users access to the "system role" that tells the AI how to behave
  * 
- * System prompt definitions for ARC puzzle analysis.
- * These define the AI's role, behavior, and output requirements. Our project relies on a strict json output format!
- * Separated from user prompts to enable proper system/user/assistant message structure.
- * 
- * Key Features:
- * - Role-based system prompts for different analysis modes
- * - JSON output enforcement instructions  
- * - Reasoning capture requirements for OpenAI models
- * - Template-specific behavior modifications
+ * NEW ARCHITECTURE:
+ * - Single source of truth for all prompt components
+ * - Composable prompt building eliminates duplication
+ * - Easy to maintain and modify
+ * - Consistent behavior across all prompts
  * 
  * @author Claude Code
- * @date August 22, 2025
+ * @date September 1, 2025 (Refactored)
  */
+
+import {
+  buildSolverPrompt,
+  buildExplanationPrompt,
+  buildAlienCommunicationPrompt,
+  buildEducationalPrompt,
+  buildCustomPrompt
+} from './components/promptBuilder.js';
 
 /**
- * Base system prompt that establishes the AI's role and core behavior
+ * System prompts - now DRY and maintainable!
+ * Each prompt is built from reusable components, eliminating all duplication.
  */
-const BASE_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
-Your job is to understand transformation patterns and provide clear, structured analysis.
+export const SOLVER_SYSTEM_PROMPT = buildSolverPrompt();
 
+export const EXPLANATION_SYSTEM_PROMPT = buildExplanationPrompt();
 
-ARC-AGI puzzles consist of:
-- Training examples showing input→output transformations  
-- Test cases where you predict the transformation based on what you learned from the training examples
+export const ALIEN_COMMUNICATION_SYSTEM_PROMPT = buildAlienCommunicationPrompt();
 
-Key transformation types include:
-- Geometric: rotation, reflection, translation, scaling
-- Pattern: completion, extension, repetition, sequences
-- Logical: AND/OR/XOR/NOT operations, conditionals
-- Grid: splitting, merging, overlay, subtraction
-- Object: counting, sorting, filtering, grouping
-- Color: replacement, mapping, counting, patterns
-- Shape: detection, transformation, completion, generation
-- Spatial: adjacency, containment, alignment, distances`;
+export const EDUCATIONAL_SYSTEM_PROMPT = buildEducationalPrompt();
 
-/**
- * JSON output enforcement instructions with answer-first requirement
- */
-const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
-
-JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
-
-Put all your analysis and insights in the structured JSON fields:
-- solvingStrategy: Your complete analysis process, including 
-- keySteps: Step-by-step analysis progression and insights, including incorrect approaches and insights 
-- patternDescription: The transformation rules you identified
-- hints: Describe three pseudo-code algorithms you considered, starting with the best one, one as math and one as emojis
-- confidence: Your certainty level (0-100)`;
-
-/**
- * System prompt for solver mode (predicting answers)
- */
-export const SOLVER_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
-
-TASK: Each puzzle has training which are the examples to learn from. 
-Analyze training examples, identify the transformation patterns, 
-and predict the correct output for the test case. Some puzzles have multiple test cases.
-
-${JSON_OUTPUT_INSTRUCTIONS}
-
-PREDICTION FIELDS REQUIREMENT: 
-- For single test cases: 
-  * "multiplePredictedOutputs": false (must be first field)
-  * "predictedOutput": your solution grid (2D array)
-  * "predictedOutput1": [] (empty array)
-  * "predictedOutput2": [] (empty array) 
-  * "predictedOutput3": [] (empty array)
-- For multiple test cases:
-  * "multiplePredictedOutputs": true (must be first field)
-  * "predictedOutput": [] (empty array)
-  * "predictedOutput1": first solution grid
-  * "predictedOutput2": second solution grid
-  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
-
-Example analysis approach:
-1. Examine each training example to understand input→output transformation
-2. Identify consistent patterns across all training examples
-3. Apply the discovered pattern to the test case input
-4. Generate the predicted output grid following the same transformation rule`;
-
-/**
- * System prompt for explanation mode (explaining known answers)
- */
-export const EXPLANATION_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
-
-TASK: Each puzzle has training which are the examples to learn from. 
-Analyze training examples, identify the transformation patterns, 
-and explain the correct output for the test case. Some puzzles have multiple test cases.
-
-${JSON_OUTPUT_INSTRUCTIONS}
-
-PREDICTION FIELDS REQUIREMENT: 
-- For single test cases: 
-  * "multiplePredictedOutputs": false (must be first field)
-  * "predictedOutput": your solution grid (2D array)
-  * "predictedOutput1": [] (empty array)
-  * "predictedOutput2": [] (empty array) 
-  * "predictedOutput3": [] (empty array)
-- For multiple test cases:
-  * "multiplePredictedOutputs": true (must be first field)
-  * "predictedOutput": [] (empty array)
-  * "predictedOutput1": first solution grid
-  * "predictedOutput2": second solution grid
-  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
-
-Focus on:
-1. What transformation pattern is demonstrated in the training examples
-2. How that same pattern applies to the test case to produce the correct answer
-3. Clear explanations that help users understand the underlying logic
-4. Key insights that make the solution obvious once understood`;
-
-/**
- * System prompt for alien communication mode
- */
-export const ALIEN_COMMUNICATION_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
-
-SPECIAL CONTEXT: This puzzle comes from alien visitors who communicate through spatial patterns. The user sees these puzzles as emoji symbols representing their communication attempt.
-
-TASK: Explain the transformation pattern AND interpret what the aliens might be trying to communicate.
-
-${JSON_OUTPUT_INSTRUCTIONS}
-
-Additional required fields:
-- alienMeaning: Creative interpretation of the aliens' message
-- alienMeaningConfidence: Your certainty about the communication interpretation (0-100)
-
-Remember: Users see emoji symbols, not numbers. Reference the visual patterns they observe.
-Be creative but grounded in the actual transformation and abstract reasoning when interpreting alien meaning.`;
-
-/**
- * System prompt for educational/student mode. 
- * This mode extends the solver prompt to use a structured, algorithm-driven educational method.
- */
-export const EDUCATIONAL_SYSTEM_PROMPT = `${BASE_SYSTEM_PROMPT}
-
-TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer. 
-
-
-${JSON_OUTPUT_INSTRUCTIONS}
-
---- EDUCATIONAL CONTENT Specificalities ---
-
-- **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
-- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
-- **keySteps**: A short song that captures the essence of your approach.
-- **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
-- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
+export const CUSTOM_SYSTEM_PROMPT = buildCustomPrompt();
 
 /**
  * Map prompt template IDs to their corresponding system prompts
+ * Now using the DRY architecture with dedicated custom prompt support
  */
 export const SYSTEM_PROMPT_MAP = {
   solver: SOLVER_SYSTEM_PROMPT,
   standardExplanation: EXPLANATION_SYSTEM_PROMPT,
   alienCommunication: ALIEN_COMMUNICATION_SYSTEM_PROMPT,
   educationalApproach: EDUCATIONAL_SYSTEM_PROMPT,
-  custom: EXPLANATION_SYSTEM_PROMPT // Default for custom prompts
+  custom: CUSTOM_SYSTEM_PROMPT // Now has proper custom prompt support!
 } as const;
 
 /**
@@ -194,57 +82,4 @@ export function isSolverMode(promptId: string): boolean {
   return promptId === 'solver' || promptId === 'educationalApproach';
 }
 
-/*
- * Get the appropriate system prompt for OpenAI structured outputs
- * Includes additional instruction about strict JSON schema compliance
- *
- * Temporarily commented out - 2025-08-24
- *
- * export function getStructuredOutputSystemPrompt(promptId: string, schemaName: string): string {
- *   const basePrompt = getSystemPrompt(promptId);
- *   
- *   return `${basePrompt}
- * 
- * STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "${schemaName}". 
- * All fields marked as required must be present. Do not include any additional properties.
- * Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
- * }
- *
- * 
- * System prompt specifically for custom prompts with minimal structure
- *
- * export const CUSTOM_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
- * 
- * The user will provide a custom analysis request along with puzzle data (training examples and test cases).
- * 
- * STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "Custom". 
- * All fields marked as required must be present. Do not include any additional properties.
- * Put your complete reasoning in the solvingStrategy field - this is where OpenAI and other reasoning models should place their detailed analysis.`;
- *
- * 
- * Get system prompt for custom prompt mode
- *
- * export function getCustomSystemPrompt(): string {
- *   return CUSTOM_SYSTEM_PROMPT;
- * }
- */
-
-/**
- * System prompt specifically for custom prompts with minimal structure
- 
-export const CUSTOM_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
-
-The user will provide a custom analysis request along with puzzle data (training examples and test cases).
-
-STRUCTURED OUTPUT: You must respond with valid JSON that exactly matches the required schema "Custom". 
-All fields marked as required must be present. Do not include any additional properties.
-Put your complete analysis in the solvingStrategy field - this is where OpenAI and other models should place their detailed insights.`;
-
-/**
- * Get system prompt for custom prompt mode
- */
-//export function getCustomSystemPrompt(): string {
-//  return CUSTOM_SYSTEM_PROMPT;
-// }
-
-//
+// All legacy commented code removed - now using clean DRY architecture

@@ -22,6 +22,14 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   showAlienMeaning, 
   setShowAlienMeaning 
 }) => {
+  // Debug logging to see what result actually contains
+  console.log('[REASONING-DEBUG] result object:', result);
+  console.log('[REASONING-DEBUG] hasReasoningLog:', result.hasReasoningLog);
+  console.log('[REASONING-DEBUG] reasoningLog:', result.reasoningLog);
+  console.log('[REASONING-DEBUG] reasoningItems:', result.reasoningItems);
+  console.log('[REASONING-DEBUG] reasoningItems type:', typeof result.reasoningItems);
+  console.log('[REASONING-DEBUG] reasoningItems length:', result.reasoningItems?.length);
+  console.log('[REASONING-DEBUG] condition result:', ((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)));
   const isEmptyResult = !result || (
     (!result.patternDescription || result.patternDescription.trim() === '') && 
     (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 
@@ -118,7 +126,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
         </div>
       )}
       
-      {result.hasReasoningLog && result.reasoningLog && (
+      {true && (
         <div className={`border rounded ${isSaturnResult ? 'bg-indigo-50 border-indigo-200' : 'bg-blue-50 border-blue-200'}`}>
           <button
             onClick={() => setShowReasoning(!showReasoning)}
@@ -152,7 +160,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="px-3 pb-3">
               <div className="bg-white p-3 rounded border border-indigo-100">
                 <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
-                  {result.reasoningLog}
+                  {result.reasoningLog || (result.reasoningItems && result.reasoningItems.length > 0 ? 'Structured reasoning steps shown below.' : '')}
                 </pre>
               </div>
               <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
@@ -161,6 +169,52 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                   : '💡 This shows how the AI model analyzed the puzzle step-by-step to reach its conclusion.'
                 }
               </p>
+              
+              {/* Display structured reasoning items if available */}
+              {result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0 && (
+                <div className="mt-3 border-t pt-3">
+                  <h6 className={`font-semibold text-sm mb-2 ${isSaturnResult ? 'text-indigo-800' : 'text-blue-800'}`}>
+                    Step-by-Step Analysis:
+                  </h6>
+                  <div className="space-y-2">
+                    {result.reasoningItems.map((item: any, index) => {
+                      // Handle different reasoning item formats from different providers
+                      let displayContent = '';
+                      
+                      if (typeof item === 'string') {
+                        // OpenRouter, OpenAI Responses: simple strings
+                        displayContent = item;
+                      } else if (typeof item === 'object' && item !== null) {
+                        // Gemini: objects with step, observation, insight
+                        if (item.observation && item.insight) {
+                          displayContent = `${item.observation} → ${item.insight}`;
+                        } else if (item.text) {
+                          displayContent = item.text;
+                        } else if (item.content) {
+                          displayContent = item.content; 
+                        } else if (item.message) {
+                          displayContent = item.message;
+                        } else {
+                          // Fallback: JSON stringify for structured objects
+                          displayContent = JSON.stringify(item, null, 2);
+                        }
+                      } else {
+                        // Fallback: convert to string
+                        displayContent = String(item);
+                      }
+                      
+                      return (
+                        <div key={index} className="bg-gray-50 p-2 rounded text-sm border-l-3 border-l-blue-300">
+                          <span className="font-medium text-gray-600">Step {index + 1}:</span> {displayContent}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
+                    🧠 These are the structured reasoning steps captured from the AI model's internal thought process.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

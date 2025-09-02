@@ -36,6 +36,7 @@ export interface PromptOptions {
   temperature?: number;
   topP?: number;
   candidateCount?: number;
+  thinkingBudget?: number; // Gemini thinking budget: -1 = dynamic, 0 = disabled, >0 = specific tokens
   retryMode?: boolean; // Enhanced prompting for retry analysis
   previousAnalysis?: any; // Previous failed analysis data
   badFeedback?: any[]; // Bad feedback entries for context
@@ -91,8 +92,8 @@ export function buildAnalysisPrompt(
   } else {
     // New ARC mode: structured system prompt
     if (isCustom) {
-      // Custom prompt mode - completely blank system prompt as requested
-      systemPrompt = "";
+      // Custom prompt mode - use dedicated custom system prompt with JSON enforcement
+      systemPrompt = getSystemPrompt('custom');
     } else {
       systemPrompt = getSystemPrompt(promptId);
       

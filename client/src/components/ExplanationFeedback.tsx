@@ -17,11 +17,12 @@ import { ThumbsUp, ThumbsDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ExplanationFeedbackProps {
+  puzzleId: string;
   explanationId: number;
   onFeedbackSubmitted?: () => void;
 }
 
-export function ExplanationFeedback({ explanationId, onFeedbackSubmitted }: ExplanationFeedbackProps) {
+export function ExplanationFeedback({ puzzleId, explanationId, onFeedbackSubmitted }: ExplanationFeedbackProps) {
   const [vote, setVote] = useState<'helpful' | 'not_helpful' | null>(null);
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -53,8 +54,9 @@ export function ExplanationFeedback({ explanationId, onFeedbackSubmitted }: Expl
       
       // Create payload with numeric explanationId
       const payload = {
+        puzzleId: puzzleId,
         explanationId: numericExplanationId,
-        voteType: vote,
+        feedbackType: vote,
         comment: comment.trim()
       };
       
