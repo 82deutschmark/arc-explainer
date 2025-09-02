@@ -80,8 +80,9 @@ export interface PromptTemplate {
  */
 export interface Feedback {
   id: number;
-  explanationId: number;
-  voteType: 'helpful' | 'not_helpful';
+  puzzleId: string;
+  explanationId?: number | null;
+  feedbackType: 'helpful' | 'not_helpful' | 'solution_explanation';
   comment: string | null;
   createdAt: string;
   userAgent?: string;
@@ -92,7 +93,6 @@ export interface Feedback {
  * Interface for detailed feedback with explanation context
  */
 export interface DetailedFeedback extends Feedback {
-  puzzleId: string;
   modelName: string;
   confidence: number;
   patternDescription: string;
@@ -104,7 +104,7 @@ export interface DetailedFeedback extends Feedback {
 export interface FeedbackFilters {
   puzzleId?: string;
   modelName?: string;
-  voteType?: 'helpful' | 'not_helpful';
+  feedbackType?: 'helpful' | 'not_helpful' | 'solution_explanation';
   limit?: number;
   offset?: number;
   startDate?: string;
@@ -158,7 +158,7 @@ export interface DatabaseExplanation {
   is_prediction_correct: boolean | null;
   prediction_accuracy_score: number | null;
   provider_raw_response: any | null;
-  reasoning_items: any | null;
+  reasoning_items: string[] | null;
   temperature: number | null;
   reasoning_effort: string | null;
   reasoning_verbosity: string | null;
@@ -202,7 +202,7 @@ export interface ExplanationRecord {
   isPredictionCorrect: boolean | null;
   predictionAccuracyScore: number | null;
   providerRawResponse: any | null;
-  reasoningItems: any | null;
+  reasoningItems: string[] | null;
   temperature: number | null;
   reasoningEffort: string | null;
   reasoningVerbosity: string | null;
