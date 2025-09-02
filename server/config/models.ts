@@ -218,7 +218,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-sonnet-20241022',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 8192
   },
   { 
     key: 'claude-3-5-haiku-20241022', 
@@ -232,7 +232,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-haiku-20241022',
     modelType: 'claude',
-    maxOutputTokens: 7000
+    maxOutputTokens: 4000
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -451,7 +451,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: false,
+    isReasoning: true,
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
     maxOutputTokens: 56384,
@@ -497,7 +497,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: false,
+    isReasoning: true,
     apiModelName: 'mistralai/mistral-large',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -512,7 +512,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
-    isReasoning: false,
+    isReasoning: true,
     apiModelName: 'deepseek/deepseek-chat-v3.1',
     modelType: 'openrouter',
     maxOutputTokens: 116384,
@@ -679,7 +679,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: false,
+    isReasoning: true,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
     maxOutputTokens: 18192,
