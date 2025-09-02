@@ -154,9 +154,10 @@ export class DatabaseSchema {
     await client.query(`
       CREATE TABLE IF NOT EXISTS feedback (
         id SERIAL PRIMARY KEY,
-        explanation_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
-        vote_type VARCHAR(20) NOT NULL CHECK (vote_type IN ('helpful', 'not_helpful')),
-        comment TEXT NOT NULL,
+        puzzle_id VARCHAR(255) NOT NULL,
+        explanation_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
+        feedback_type VARCHAR(50) NOT NULL CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation')),
+        comment TEXT,
         user_agent TEXT DEFAULT NULL,
         session_id VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -170,8 +171,13 @@ export class DatabaseSchema {
     `);
     
     await client.query(`
-      CREATE INDEX IF NOT EXISTS idx_feedback_vote_type 
-      ON feedback(vote_type)
+      CREATE INDEX IF NOT EXISTS idx_feedback_puzzle_id 
+      ON feedback(puzzle_id)
+    `);
+    
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_feedback_feedback_type 
+      ON feedback(feedback_type)
     `);
     
     await client.query(`
@@ -267,8 +273,22 @@ export class DatabaseSchema {
       await client.query(`
         ALTER TABLE feedback 
         ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) DEFAULT NULL
+        ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS puzzle_id VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) NOT NULL DEFAULT 'helpful';
       `);
+
+      await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
+      await client.query(`ALTER TABLE feedback ALTER COLUMN comment DROP NOT NULL;`);
+      
+      // Rename vote_type to feedback_type if it exists
+      const result = await client.query(`
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name='feedback' AND column_name='vote_type'
+      `);
+      if (result && result.rowCount > 0) {
+        await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
+      }
 
       // Add updated_at column to batch_analysis_sessions if missing
       await client.query(`

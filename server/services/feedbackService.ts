@@ -21,45 +21,49 @@ export const feedbackService = {
    * @returns Object with feedback ID and success message
    * @throws AppError if feedback cannot be added
    */
-  async addFeedback(explanationId: number | string, voteType: string, comment: string) {
-    // Convert explanationId to number if it's a string
-    const numericExplanationId = typeof explanationId === 'string' ? 
-      parseInt(explanationId) : explanationId;
-    
+  async addFeedback(explanationId: number | string, feedbackType: 'helpful' | 'not_helpful' | 'solution_explanation', comment: string, puzzleId?: string) {
+    const numericExplanationId = typeof explanationId === 'string' ? parseInt(explanationId, 10) : explanationId;
+
     try {
-      // First, record the feedback
+      let finalPuzzleId = puzzleId;
+      if (!finalPuzzleId) {
+        const explanation = await repositoryService.explanations.getExplanationById(numericExplanationId);
+        if (!explanation) {
+          throw new AppError('Explanation not found', 404, 'NOT_FOUND');
+        }
+        finalPuzzleId = explanation.puzzleId;
+      }
+
       const feedbackResult = await repositoryService.feedback.addFeedback({
+        puzzleId: finalPuzzleId,
         explanationId: numericExplanationId,
-        voteType: voteType as 'helpful' | 'not_helpful',
-        comment
+        feedbackType: feedbackType,
+        comment,
       });
+
       const feedbackId = feedbackResult.feedback?.id;
-      
-      // If feedback is "not helpful", trigger retry analysis
-      if (voteType === 'not_helpful') {
+
+      if (feedbackType === 'not_helpful') {
         try {
-          // Get the original explanation to extract puzzle details
           const originalExplanation = await repositoryService.explanations.getExplanationById(numericExplanationId);
           if (originalExplanation) {
-            // Trigger retry analysis with user feedback as guidance
             await explanationService.retryAnalysis(
-              originalExplanation.taskId,
+              originalExplanation.puzzleId,
               originalExplanation.modelName || 'gpt-4',
-              comment // User feedback as guidance for improvement
+              comment
             );
           }
         } catch (retryError) {
-          // Log retry failure but don't fail the feedback submission
           console.warn('Failed to trigger retry analysis:', retryError);
         }
       }
-      
+
       return {
         success: true,
-        message: voteType === 'not_helpful' 
-          ? 'Feedback recorded. Generating improved explanation...' 
+        message: feedbackType === 'not_helpful'
+          ? 'Feedback recorded. Generating improved explanation...'
           : 'Feedback recorded successfully',
-        feedbackId
+        feedbackId,
       };
     } catch (error) {
       throw new AppError(

@@ -11,7 +11,7 @@ Use `npm run test` to start the dev server and wait 10 seconds for it to properl
 - Database tables auto-create on startup if using PostgreSQL
 
 ### Testing and Validation
-- Whenever you run tests you need to wait at least 20 seconds to read the output.  Tell the user a joke about coding while you wait.
+- Whenever you run tests you need to wait at least 20 seconds to read the output.  Tell the user a joke about coding while you wait.  The user will do testing and expect you to be watching the console.  The user is not a professional software dev and may suggest ideas that are very bad and violate best practices.  You should always second-guess the user's ideas and think carefully about what the user really wants to achieve and the current problem you are trying to solve.
 
 
 ## Architecture Overview
