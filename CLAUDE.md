@@ -55,8 +55,8 @@ confidence - integer // How confident the LLM is in the answer, used in multiple
 alien_meaning_confidence - integer // How confident the LLM is in the alien meaning it invents, not used in trustworthiness score
 alien_meaning - text // The alien meaning the LLM invents
 model_name - character varying(100)
-reasoning_log - text  // UNKNOWN if this is properly used in the frontend or the backend
-has_reasoning_log - boolean // UNKNOWN if this is properly used in the frontend or the backend
+reasoning_log - text  // UNKNOWN HOW this is properly used in the frontend or the backend
+has_reasoning_log - boolean // UNKNOWN HOW this is properly used in the frontend or the backend
 provider_response_id - text
 api_processing_time_ms - integer
 saturn_images - jsonb  // Only used by Saturn Visual Solver
