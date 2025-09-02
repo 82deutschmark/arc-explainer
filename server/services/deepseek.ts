@@ -27,6 +27,7 @@ export class DeepSeekService extends BaseAIService {
   protected provider = "DeepSeek";
   protected models = {}; // Required by BaseAIService, but we use centralized getApiModelName
 
+
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
@@ -248,11 +249,16 @@ export class DeepSeekService extends BaseAIService {
     const isComplete = response.choices[0].finish_reason === 'stop';
     const incompleteReason = isComplete ? undefined : response.choices[0].finish_reason;
 
-    // Extract reasoningItems from the JSON response
+    // Extract reasoningItems from the JSON response (structured content only)
     let reasoningItems: any[] = [];
     if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
       reasoningItems = result.reasoningItems;
-      console.log(`[DeepSeek] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+      console.log(`[DeepSeek] ✅ Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    } else {
+      console.log(`[DeepSeek] ❌ No reasoningItems found in JSON response - model may not be following structured format`);
+      if (isReasoningModel) {
+        console.log(`[DeepSeek] ⚠️ DeepSeek reasoning model ${modelKey} should provide reasoningItems in JSON structure`);
+      }
     }
 
     console.log(`[DeepSeek] Parse complete - result keys: ${Object.keys(result || {}).join(', ')}`);
