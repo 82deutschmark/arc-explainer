@@ -169,11 +169,38 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                     Step-by-Step Analysis:
                   </h6>
                   <div className="space-y-2">
-                    {result.reasoningItems.map((item, index) => (
-                      <div key={index} className="bg-gray-50 p-2 rounded text-sm border-l-3 border-l-blue-300">
-                        <span className="font-medium text-gray-600">Step {index + 1}:</span> {item}
-                      </div>
-                    ))}
+                    {result.reasoningItems.map((item, index) => {
+                      // Handle different reasoning item formats from different providers
+                      let displayContent = '';
+                      
+                      if (typeof item === 'string') {
+                        // OpenRouter, OpenAI Responses: simple strings
+                        displayContent = item;
+                      } else if (typeof item === 'object' && item !== null) {
+                        // Gemini: objects with step, observation, insight
+                        if (item.observation && item.insight) {
+                          displayContent = `${item.observation} → ${item.insight}`;
+                        } else if (item.text) {
+                          displayContent = item.text;
+                        } else if (item.content) {
+                          displayContent = item.content; 
+                        } else if (item.message) {
+                          displayContent = item.message;
+                        } else {
+                          // Fallback: JSON stringify for structured objects
+                          displayContent = JSON.stringify(item, null, 2);
+                        }
+                      } else {
+                        // Fallback: convert to string
+                        displayContent = String(item);
+                      }
+                      
+                      return (
+                        <div key={index} className="bg-gray-50 p-2 rounded text-sm border-l-3 border-l-blue-300">
+                          <span className="font-medium text-gray-600">Step {index + 1}:</span> {displayContent}
+                        </div>
+                      );
+                    })}
                   </div>
                   <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
                     🧠 These are the structured reasoning steps captured from the AI model's internal thought process.
