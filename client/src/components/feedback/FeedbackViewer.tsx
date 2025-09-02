@@ -9,7 +9,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ThumbsUp, ThumbsDown, Clock, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, User, Lightbulb } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { Feedback, DetailedFeedback } from '@shared/types';
 
@@ -65,24 +65,47 @@ interface FeedbackItemProps {
 }
 
 function FeedbackItem({ feedback, showExplanationContext }: FeedbackItemProps) {
-  const isDetailed = 'puzzleId' in feedback;
-  const isHelpful = feedback.voteType === 'helpful';
-  
+  const isDetailed = 'modelName' in feedback;
+
+  const getFeedbackDisplay = () => {
+    switch (feedback.feedbackType) {
+      case 'helpful':
+        return {
+          icon: <ThumbsUp className="h-4 w-4 text-green-600" />,
+          text: 'Helpful',
+          variant: 'default' as const,
+        };
+      case 'not_helpful':
+        return {
+          icon: <ThumbsDown className="h-4 w-4 text-red-600" />,
+          text: 'Not Helpful',
+          variant: 'destructive' as const,
+        };
+      case 'solution_explanation':
+        return {
+          icon: <Lightbulb className="h-4 w-4 text-yellow-500" />,
+          text: 'Solution Explanation',
+          variant: 'secondary' as const,
+        };
+      default:
+        return {
+          icon: null,
+          text: '',
+          variant: 'outline' as const,
+        };
+    }
+  };
+
+  const { icon, text, variant } = getFeedbackDisplay();
+
   return (
     <Card className="border-l-4 border-l-transparent hover:border-l-blue-200 transition-colors">
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-shrink-0">
-            {isHelpful ? (
-              <ThumbsUp className="h-4 w-4 text-green-600" />
-            ) : (
-              <ThumbsDown className="h-4 w-4 text-red-600" />
-            )}
-            <Badge 
-              variant={isHelpful ? "default" : "destructive"}
-              className="text-xs"
-            >
-              {isHelpful ? "Helpful" : "Not Helpful"}
+            {icon}
+            <Badge variant={variant} className="text-xs">
+              {text}
             </Badge>
           </div>
           
