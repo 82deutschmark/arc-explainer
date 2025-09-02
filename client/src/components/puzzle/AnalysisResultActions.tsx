@@ -18,7 +18,7 @@ export const AnalysisResultActions: React.FC<AnalysisResultActionsProps> = ({ re
 
   return (
     <div className="space-y-3">
-      <ExplanationFeedback explanationId={result.id} />
+      <ExplanationFeedback puzzleId={result.puzzleId} explanationId={result.id} />
       {showExistingFeedback && (
         <div className="border-t pt-3">
           <h6 className="font-semibold mb-2">Existing Feedback</h6>
