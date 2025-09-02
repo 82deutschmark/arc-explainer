@@ -2,7 +2,9 @@
  * AnalysisResultCard Component
  * Displays the results of a puzzle analysis from an AI model
  * Includes proper error handling for empty or incomplete results
- * Now supports displaying reasoning logs from AI models that provide step-by-step reasoning
+ * Now supports displaying reasoning logs and structured reasoning items from AI models
+ * 
+ * 
  * Now displays API processing time metrics for model performance analysis
  * Author: Cascade
  */

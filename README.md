@@ -5,6 +5,8 @@
   Author: Cascade
 -->
 
+Last updated: August ??? 2025
+
 # ARC-AGI Puzzle Explorer - Colorblindness Aid 🛸
 
 ## 🌟 Project Overview

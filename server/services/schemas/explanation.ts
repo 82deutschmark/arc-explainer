@@ -96,11 +96,11 @@ export function validateExplanationResponse(response: any, isAlienMode: boolean 
     errors.push('all hints must be strings');
   }
   
-  // Validate keySteps if present
-  if (response.keySteps && !Array.isArray(response.keySteps)) {
-    errors.push('keySteps must be an array of strings');
-  } else if (response.keySteps && response.keySteps.some((step: any) => typeof step !== 'string')) {
-    errors.push('all keySteps must be strings');
+  // Validate reasoningItems if present
+  if (response.reasoningItems && !Array.isArray(response.reasoningItems)) {
+    errors.push('reasoningItems must be an array of strings');
+  } else if (response.reasoningItems && response.reasoningItems.some((step: any) => typeof step !== 'string')) {
+    errors.push('all reasoningItems must be strings');
   }
   
   return {
@@ -117,7 +117,7 @@ export function extractExplanationData(response: any): {
   solvingStrategy: string;
   hints: string[];
   confidence: number;
-  keySteps?: string[];
+  reasoningItems?: string[];
   alienMeaning?: string;
   alienMeaningConfidence?: number;
 } {
@@ -130,7 +130,7 @@ export function extractExplanationData(response: any): {
   
   // Add optional fields if present
   const optional: any = {};
-  if (response.keySteps) optional.keySteps = response.keySteps;
+  if (response.reasoningItems) optional.reasoningItems = response.reasoningItems;
   if (response.alienMeaning) optional.alienMeaning = response.alienMeaning;
   if (response.alienMeaningConfidence !== undefined) {
     optional.alienMeaningConfidence = response.alienMeaningConfidence;
@@ -145,7 +145,7 @@ export function extractExplanationData(response: any): {
 export function createSampleExplanationResponse(isAlienMode: boolean = false) {
   const base = {
     solvingStrategy: "The transformation rule applies a 90-degree clockwise rotation to all objects in the grid. This pattern is consistent across all training examples...",
-    keySteps: [
+    reasoningItems: [
       "Analyzed geometric relationships in training examples",
       "Identified consistent rotation transformation",
       "Verified pattern applies to test case"

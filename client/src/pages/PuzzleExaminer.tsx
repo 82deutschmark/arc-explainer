@@ -94,6 +94,8 @@ export default function PuzzleExaminer() {
     setTopP,
     candidateCount,
     setCandidateCount,
+    thinkingBudget,
+    setThinkingBudget,
   } = useAnalysisResults({
     taskId,
     refetchExplanations,
@@ -471,6 +473,37 @@ export default function PuzzleExaminer() {
               </div>
               <div className="text-xs text-gray-600 flex-shrink-0">
                 <div>Number of responses • Gemini only</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Thinking Budget Control */}
+          <div className="mb-2 p-2 bg-purple-50 border border-purple-200 rounded">
+            <div className="flex items-center gap-3">
+              <Label htmlFor="thinkingBudget" className="text-sm font-medium whitespace-nowrap">
+                Thinking Budget: {thinkingBudget === -1 ? 'Dynamic' : thinkingBudget === 0 ? 'Disabled' : thinkingBudget}
+              </Label>
+              <div className="flex-1 max-w-xs">
+                <Select value={thinkingBudget.toString()} onValueChange={(value) => setThinkingBudget(parseInt(value))}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="-1">Dynamic (Model Chooses)</SelectItem>
+                    <SelectItem value="0">Disabled</SelectItem>
+                    <SelectItem value="512">512 tokens</SelectItem>
+                    <SelectItem value="1024">1024 tokens</SelectItem>
+                    <SelectItem value="2048">2048 tokens</SelectItem>
+                    <SelectItem value="4096">4096 tokens</SelectItem>
+                    <SelectItem value="8192">8192 tokens</SelectItem>
+                    <SelectItem value="16384">16384 tokens</SelectItem>
+                    <SelectItem value="24576">24576 tokens (Max Flash)</SelectItem>
+                    <SelectItem value="32768">32768 tokens (Max Pro)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="text-xs text-gray-600 flex-shrink-0">
+                <div>Internal reasoning tokens • Gemini 2.5+ only</div>
               </div>
             </div>
           </div>

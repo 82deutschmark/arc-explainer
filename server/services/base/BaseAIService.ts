@@ -228,27 +228,50 @@ export abstract class BaseAIService {
   /**
    * Validate reasoning log format to prevent "[object Object]" corruption
    * Ensures reasoningLog is always a string or null before database storage
+   * Fixed: Properly handles OpenAI Responses API objects without corrupting Chat Completions
    */
   protected validateReasoningLog(reasoningLog: any): string | null {
     if (!reasoningLog) {
       return null;
     }
 
-    // If already a string, return as-is (most common case)
+    // If already a string, return as-is (Chat Completions case - most common)
     if (typeof reasoningLog === 'string') {
       return reasoningLog.trim() || null;
     }
 
-    // Handle arrays - join with newlines for readability
+    // Handle arrays - extract text from objects properly (Responses API case)
     if (Array.isArray(reasoningLog)) {
       const processed = reasoningLog
-        .map(item => typeof item === 'string' ? item : String(item))
+        .map(item => {
+          if (typeof item === 'string') {
+            return item;
+          }
+          // Handle objects properly - extract text content instead of String(object)
+          if (typeof item === 'object' && item !== null) {
+            // Try to extract meaningful content from object structures
+            if (item.text) return item.text;
+            if (item.content) return item.content; 
+            if (item.message) return item.message;
+            if (item.summary) return item.summary;
+            if (item.value) return item.value;
+            // For structured objects, try JSON stringification
+            try {
+              return JSON.stringify(item, null, 2);
+            } catch {
+              console.warn(`[${this.provider}] Cannot extract text from reasoning object:`, item);
+              return null;
+            }
+          }
+          // For primitives that aren't objects, convert safely
+          return typeof item === 'object' ? null : String(item);
+        })
         .filter(Boolean)
         .join('\n\n');
       return processed || null;
     }
 
-    // Handle objects - convert to string but warn about potential issues
+    // Handle single objects - convert to string but warn about potential issues  
     if (typeof reasoningLog === 'object' && reasoningLog !== null) {
       console.warn(`[${this.provider}] reasoningLog is an object, converting to string. Consider updating the provider to return a string.`);
       
@@ -267,7 +290,7 @@ export abstract class BaseAIService {
       }
     }
 
-    // For any other type, convert to string
+    // For any other type, convert to string safely
     const stringValue = String(reasoningLog);
     return stringValue !== '[object Object]' ? stringValue : null;
   }
@@ -277,13 +300,7 @@ export abstract class BaseAIService {
    * Consolidated from OpenRouter's sophisticated parsing logic
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
-    // Check for truncation before attempting parse
-    if (this.isJsonTruncated(text)) {
-      console.log(`[${this.provider}] ❌ JSON appears truncated for ${modelKey}, skipping parse attempt`);
-      return this.generateValidationCompliantFallback(text, modelKey, new Error('JSON appears to be truncated'));
-    }
-
-    // First, try direct parsing
+    // First, try direct parsing - don't preemptively reject based on truncation detection
     try {
       const parsed = JSON.parse(text);
       console.log(`[${this.provider}] ✅ Direct JSON parse successful for ${modelKey}`);
@@ -291,6 +308,12 @@ export abstract class BaseAIService {
     } catch (originalError) {
       console.log(`[${this.provider}] ❌ Initial JSON parse failed for ${modelKey}, attempting recovery...`);
       console.log(`[${this.provider}] Parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+      
+      // Only check truncation as diagnostic info, not as a blocker
+      if (this.isJsonTruncated(text)) {
+        console.log(`[${this.provider}] Diagnostic: JSON appears truncated for ${modelKey}`);
+      }
+      
       return this.attemptResponseRecovery(text, modelKey, originalError);
     }
   }
@@ -409,12 +432,14 @@ export abstract class BaseAIService {
     // First, handle markdown code block wrappers more aggressively
     // Remove markdown code blocks with various patterns
     sanitized = sanitized
-      // Standard patterns: ```json\n{...}\n```
-      .replace(/^```json\s*\n?/i, '').replace(/\n?\s*```$/g, '')
-      // Without language specifier: ```\n{...}\n```  
-      .replace(/^```\s*\n?/, '').replace(/\n?\s*```$/g, '')
+      // Standard patterns: ```json\n{...}\n``` AND ```json{...}``` (Gemini's new format)
+      .replace(/^```json\s*/i, '').replace(/\n?\s*```$/g, '')
+      // Gemini 2.0 Flash-Lite specific: ```json { ... (no newline between json and {)
+      .replace(/^```json\s*\{/, '{')
+      // Without language specifier: ```\n{...}\n``` AND ```{...}```  
+      .replace(/^```\s*/, '').replace(/\n?\s*```$/g, '')
       // Escaped patterns: \```json or \\```json
-      .replace(/^\\+```(?:json)?\s*\n?/i, '').replace(/\n?\s*\\+```$/g, '');
+      .replace(/^\\+```(?:json)?\s*/i, '').replace(/\n?\s*\\+```$/g, '');
     
     // Remove single backtick wrappers
     sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/g, '');

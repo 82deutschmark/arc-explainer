@@ -132,11 +132,15 @@ export class OpenAIService extends BaseAIService {
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
     const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
 
+    // Get model configuration for max tokens
+    const modelConfig = getModelConfig(modelKey);
+    const maxTokens = modelConfig?.maxOutputTokens || 128000;
+
     // Build message format for Responses API
     const messageFormat: any = {
       model: modelName,
       input: messages,
-      max_output_tokens: 100000,
+      max_output_tokens: maxTokens,
       ...(isReasoningModel && {
         reasoning: isGPT5Model 
           ? { 
@@ -202,6 +206,7 @@ export class OpenAIService extends BaseAIService {
     const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
     const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
     const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+    const modelConfig = getModelConfig(modelKey);
 
     let reasoningConfig = undefined;
     let textConfig = undefined;
@@ -233,7 +238,7 @@ export class OpenAIService extends BaseAIService {
         temperature: temperature || 0.2,
         ...(isGPT5ChatModel && { top_p: 1.00 })
       }),
-      max_output_tokens: serviceOpts.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
+      max_output_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
     };
 
     // Retry logic with exponential backoff
@@ -382,7 +387,7 @@ export class OpenAIService extends BaseAIService {
         parallel_tool_calls: false,
         truncation: "auto",
         previous_response_id: request.previous_response_id,
-        max_output_tokens: Math.max(256, request.max_output_tokens ?? 128000),
+        max_output_tokens: Math.max(256, request.max_output_tokens ?? getModelConfig(modelKey)?.maxOutputTokens ?? 128000),
         store: request.store !== false // Default to true unless explicitly set to false
       };
 
