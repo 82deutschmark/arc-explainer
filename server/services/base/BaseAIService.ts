@@ -300,13 +300,7 @@ export abstract class BaseAIService {
    * Consolidated from OpenRouter's sophisticated parsing logic
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
-    // Check for truncation before attempting parse
-    if (this.isJsonTruncated(text)) {
-      console.log(`[${this.provider}] ❌ JSON appears truncated for ${modelKey}, skipping parse attempt`);
-      return this.generateValidationCompliantFallback(text, modelKey, new Error('JSON appears to be truncated'));
-    }
-
-    // First, try direct parsing
+    // First, try direct parsing - don't preemptively reject based on truncation detection
     try {
       const parsed = JSON.parse(text);
       console.log(`[${this.provider}] ✅ Direct JSON parse successful for ${modelKey}`);
@@ -314,6 +308,12 @@ export abstract class BaseAIService {
     } catch (originalError) {
       console.log(`[${this.provider}] ❌ Initial JSON parse failed for ${modelKey}, attempting recovery...`);
       console.log(`[${this.provider}] Parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+      
+      // Only check truncation as diagnostic info, not as a blocker
+      if (this.isJsonTruncated(text)) {
+        console.log(`[${this.provider}] Diagnostic: JSON appears truncated for ${modelKey}`);
+      }
+      
       return this.attemptResponseRecovery(text, modelKey, originalError);
     }
   }

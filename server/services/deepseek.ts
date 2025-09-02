@@ -211,7 +211,7 @@ export class DeepSeekService extends BaseAIService {
 
     // For reasoning models, try to extract reasoning from response
     let reasoningLog = null;
-    if (captureReasoning && modelKey.includes('reasoner')) {
+    if (captureReasoning && (modelKey.includes('reasoner') || modelKey.includes('prover'))) {
       // Check if DeepSeek provides reasoning in the message
       if (choice?.message?.reasoning_content) {
         reasoningLog = choice.message.reasoning_content;
