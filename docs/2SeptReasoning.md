@@ -128,14 +128,14 @@ Clean up or implement proper functionality in utils files.
 ## Files to Modify
 
 ### High Priority
-1. `server/services/explanationService.ts` - Fix data transformation
-2. `server/services/schemas/solver.ts` - Audit and clean up
+1. `server/services/explanationService.ts` - Fix data transformation ( NEEDS CAREFUL PLANNING)
+2. `server/services/schemas/solver.ts` - Audit and clean up  (NOT SURE ABOUT THIS!!!)
 
 ### Medium Priority  
 3. `server/utils/dataTransformers.ts` - Review and implement or remove
 4. `server/utils/responseFormatter.ts` - Review and implement or remove
 
-### Low Priority
+### HIGH Priority
 5. Add documentation for data flow pipeline
 
 ## Testing Strategy
