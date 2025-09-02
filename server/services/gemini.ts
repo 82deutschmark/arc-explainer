@@ -109,11 +109,15 @@ export class GeminiService extends BaseAIService {
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
     const temperature = options?.temperature ?? 0.2; // Default for Gemini
 
+    // Get model configuration for max tokens
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const maxTokens = modelConfig?.maxOutputTokens || 65536;
+
     // Build request format for Gemini API
     const messageFormat: any = {
       model: modelName,
       generationConfig: {
-        maxOutputTokens: 65000,
+        maxOutputTokens: maxTokens,
         ...(modelSupportsTemperature(modelKey) && { temperature }),
         ...(options?.topP && { topP: options.topP }),
         ...(options?.candidateCount && { candidateCount: options.candidateCount })
@@ -173,10 +177,14 @@ export class GeminiService extends BaseAIService {
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
+    // Get model configuration for max tokens
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const maxTokens = modelConfig?.maxOutputTokens || 65536;
+
     const model = genai.getGenerativeModel({ 
       model: apiModelName,
       generationConfig: {
-        maxOutputTokens: 8000,
+        maxOutputTokens: maxTokens,
         ...(modelSupportsTemperature(modelKey) && { temperature }),
         ...(options?.topP && { topP: options.topP }),
         ...(options?.candidateCount && { candidateCount: options.candidateCount })
