@@ -15,7 +15,7 @@ import { randomUUID } from 'crypto';
 
 export interface BatchSessionConfig {
   modelKey: string;
-  dataset: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'All';
+  dataset: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'All';
   promptId?: string;
   customPrompt?: string;
   temperature?: number;
@@ -170,6 +170,9 @@ export class BatchSessionManager {
         break;
       case 'ARC2-Eval':
         filters.source = 'ARC2-Eval';
+        break;
+      case 'ARC-Heavy':
+        filters.source = 'ARC-Heavy';
         break;
       case 'All':
         // No source filter for all datasets

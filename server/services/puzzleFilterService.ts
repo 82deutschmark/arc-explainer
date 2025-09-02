@@ -16,7 +16,7 @@ export interface PuzzleFilters {
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
   prioritizeExplained?: boolean;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
   multiTestFilter?: 'single' | 'multi';
 }
 
@@ -61,8 +61,8 @@ export class PuzzleFilterService {
     if (gridSizeConsistent) filters.gridSizeConsistent = gridSizeConsistent === 'true';
     if (prioritizeUnexplained) filters.prioritizeUnexplained = prioritizeUnexplained === 'true';
     if (prioritizeExplained) filters.prioritizeExplained = prioritizeExplained === 'true';
-    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
-      filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source as string)) {
+      filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
     }
     if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
       filters.multiTestFilter = multiTestFilter as 'single' | 'multi';
@@ -80,8 +80,8 @@ export class PuzzleFilterService {
     
     const filters: OverviewFilters = {};
     
-    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)) {
-      filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval';
+    if (source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source as string)) {
+      filters.source = source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
     }
     if (multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)) {
       filters.multiTestFilter = multiTestFilter as 'single' | 'multi';
