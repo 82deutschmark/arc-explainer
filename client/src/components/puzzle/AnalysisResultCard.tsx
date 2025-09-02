@@ -53,16 +53,23 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result.predictedOutputGrid]);
 
   const predictedGrids = useMemo(() => {
-    if (result.predictedOutputGrids) {
+    if (result.predictedOutputGrid) {
       try {
-        return result.predictedOutputGrids.map(g => g ? (Array.isArray(g) ? g : JSON.parse(g as any)) : null).filter(g => g !== null) as number[][][];
+        const parsed = Array.isArray(result.predictedOutputGrid) ? result.predictedOutputGrid : JSON.parse(result.predictedOutputGrid as any);
+        // Check if this is a multi-test case (3D array) or single test (2D array)
+        if (parsed.length > 0 && Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
+          // This is a 3D array (multi-test case): number[][][]
+          return parsed as number[][][];
+        }
+        // This might be a single 2D grid stored in the multi-test format, return empty for this component
+        return [];
       } catch (e) {
-        console.error("Failed to parse predictedOutputGrids", e);
+        console.error("Failed to parse predictedOutputGrid for multi-test", e);
         return [];
       }
     }
     return [];
-  }, [result.predictedOutputGrids]);
+  }, [result.predictedOutputGrid]);
 
   const multiValidation = useMemo(() => {
     if (result.multiValidation) {
