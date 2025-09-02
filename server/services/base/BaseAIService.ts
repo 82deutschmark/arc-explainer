@@ -263,8 +263,8 @@ export abstract class BaseAIService {
               return null;
             }
           }
-          // For primitives, convert safely
-          return String(item);
+          // For primitives that aren't objects, convert safely
+          return typeof item === 'object' ? null : String(item);
         })
         .filter(Boolean)
         .join('\n\n');
