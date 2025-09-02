@@ -142,9 +142,10 @@ export class OpenRouterService extends BaseAIService {
         }
       }
       
-      // Also look for explicit reasoning patterns
+      // Also look for explicit reasoning patterns including <think> tags
       if (!reasoningLog) {
         const reasoningPatterns = [
+          /<think>(.*?)<\/think>/s,  // Qwen thinking model format
           /Let me analyze.*?(?=```|\{)/s,
           /I need to.*?(?=```|\{)/s,
           /Looking at.*?(?=```|\{)/s,
@@ -155,8 +156,14 @@ export class OpenRouterService extends BaseAIService {
         for (const pattern of reasoningPatterns) {
           const match = responseText.match(pattern);
           if (match && match[0].trim().length > 50) {
-            reasoningLog = match[0].trim();
-            console.log(`[OpenRouter] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
+            // Special handling for <think> tags - extract content inside
+            if (pattern.source.includes('<think>')) {
+              reasoningLog = match[1]?.trim() || match[0].trim(); // Use captured group (content inside tags)
+              console.log(`[OpenRouter] Extracted <think> tag reasoning: ${reasoningLog.length} chars`);
+            } else {
+              reasoningLog = match[0].trim();
+              console.log(`[OpenRouter] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
+            }
             break;
           }
         }
