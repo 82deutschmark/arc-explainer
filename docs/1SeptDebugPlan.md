@@ -1,7 +1,7 @@
 # Chat Completions Providers Regression Debug Plan - September 2, 2025
 
 ## Issue Summary
-Chat Completions providers (DeepSeek, Grok, OpenRouter, Gemini) stopped capturing reasoning items properly after OpenAI migration to Responses API. Records show reasoning extraction working but display broken.
+Chat Completions providers (DeepSeek, Grok, OpenRouter, Gemini) stopped capturing reasoning items properly after OpenAI migration to Responses API. Records show reasoning extraction sometimes working but display broken.
 
 ## Evidence from Console Logs
 

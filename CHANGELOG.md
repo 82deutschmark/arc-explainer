@@ -1,3 +1,25 @@
+### September 2 2025
+
+## v2.10.3 - CRITICAL FIX: Gemini Reasoning Extraction from Thought Parts ✅
+- **REASONING EXTRACTION BREAKTHROUGH**: Implemented proper extraction of internal reasoning from Gemini's `thought: true` response parts
+- **Root Problem**: Gemini service was completely ignoring reasoning parts marked with `thought: true`, causing null/undetermined reasoning in debug logs
+- **Technical Deep Dive**:
+  - Gemini 2.5+ thinking models structure responses as `Content` → `parts[]` where each part has a `thought` boolean flag
+  - `thought: true` parts contain internal reasoning (not displayed to users but crucial for analysis)
+  - `thought !== true` parts contain the final answer/JSON response
+  - Previous implementation only extracted answer parts, completely missing reasoning content
+- **Implementation Details**:
+  - **Proper Parts Separation**: Now correctly filters reasoning parts (`thought: true`) from answer parts
+  - **Human-Readable Reasoning**: Extracts actual text content from reasoning parts instead of opaque `thoughtSignature`
+  - **Enhanced Reasoning Items**: Creates structured reasoning steps from thought parts when JSON doesn't provide them
+  - **Multi-Turn Support**: Preserves `thoughtSignature` tokens for conversation continuity (per Gemini API docs)
+- **Debug Improvements**: Added comprehensive logging to track reasoning part detection and extraction
+- **Impact**: Resolves issue where Gemini reasoning showed as null/undetermined, now properly captures and displays internal model reasoning
+- **Testing**: Test Gemini 2.5 Pro/Flash models - should now show actual reasoning content in analysis results
+- **Files Changed**: `server/services/gemini.ts`
+- **Research Credit**: Based on detailed Gemini API `thought` flag documentation and response structure analysis
+- Author: Claude Code
+
 ### September 1 2025
 
 ## v2.10.2 - FIX: Gemini Health Check API Authentication ✅
