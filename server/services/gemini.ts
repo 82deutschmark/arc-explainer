@@ -265,12 +265,26 @@ export class GeminiService extends BaseAIService {
           console.log(`[Gemini] Found thoughtSignature: ${thoughtSignature}`);
         }
         
-        // Extract text from parts
+        // Extract reasoning and answer parts using proper Gemini structure
         if (content && content.parts) {
-          textContent = content.parts
+          const parts = content.parts;
+          
+          // Extract reasoning parts (thought: true) and answer parts (thought !== true)
+          const reasoningParts = parts.filter((p: any) => p.thought === true);
+          const answerParts = parts.filter((p: any) => p.thought !== true);
+          
+          console.log(`[Gemini] Found ${reasoningParts.length} reasoning parts and ${answerParts.length} answer parts`);
+          
+          // Extract text content from answer parts only
+          textContent = answerParts
             .filter((part: any) => part.text)
             .map((part: any) => part.text)
             .join('');
+            
+          // Store reasoning parts for later extraction
+          (response as any)._reasoningParts = reasoningParts;
+          
+          console.log(`[Gemini] Reasoning parts preview:`, reasoningParts.slice(0, 2));
         }
       }
       
@@ -298,20 +312,52 @@ export class GeminiService extends BaseAIService {
       reasoning: response.usageMetadata?.reasoningTokenCount || 0, // May be available for thinking models
     };
 
-    // Use thoughtSignature as reasoning_log for thinking models
+    // Extract reasoning log from reasoning parts (thought: true)
     let reasoningLog = null;
-    if (captureReasoning && thoughtSignature) {
-      reasoningLog = thoughtSignature;
-      console.log(`[Gemini] Using thoughtSignature as reasoning_log: ${thoughtSignature.length || 0} chars`);
+    if (captureReasoning) {
+      const reasoningParts = (response as any)._reasoningParts || [];
+      
+      if (reasoningParts.length > 0) {
+        // Extract text from reasoning parts and combine
+        const reasoningTexts = reasoningParts
+          .filter((part: any) => part.text)
+          .map((part: any) => part.text)
+          .filter(Boolean);
+          
+        if (reasoningTexts.length > 0) {
+          reasoningLog = reasoningTexts.join('\n\n');
+          console.log(`[Gemini] Extracted reasoning from ${reasoningTexts.length} thought parts: ${reasoningLog.length} chars`);
+        }
+      }
+      
+      // Store thoughtSignatures for potential continuation (but don't use as reasoning log)
+      if (thoughtSignature && modelKey.includes('2.5')) {
+        (response as any)._thoughtSignatures = [thoughtSignature];
+        console.log(`[Gemini] Stored thoughtSignature for continuation: ${thoughtSignature.substring(0, 50)}...`);
+      }
     }
 
     console.log(`[Gemini] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
     
-    // Extract reasoningItems from the JSON response
+    // Extract reasoningItems from both JSON response and reasoning parts
     let reasoningItems: any[] = [];
+    
+    // Priority 1: Extract from JSON response if available
     if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
       reasoningItems = result.reasoningItems;
       console.log(`[Gemini] Extracted ${reasoningItems.length} reasoning items from JSON response`);
+    }
+    // Priority 2: If no JSON reasoning items, create from reasoning parts
+    else if (captureReasoning) {
+      const reasoningParts = (response as any)._reasoningParts || [];
+      if (reasoningParts.length > 0) {
+        reasoningItems = reasoningParts
+          .filter((part: any) => part.text && part.text.trim().length > 10)
+          .map((part: any, index: number) => `Reasoning step ${index + 1}: ${part.text.trim()}`)
+          .slice(0, 10); // Limit to prevent overflow
+          
+        console.log(`[Gemini] Created ${reasoningItems.length} reasoning items from thought parts`);
+      }
     }
     
     return {
