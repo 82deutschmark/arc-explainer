@@ -252,7 +252,7 @@ export function extractPredictions(response: any, testCaseCount: number): {
  */
 export function createSampleSolverResponse(testCaseCount: number = 1) {
   const base = {
-    solvingStrategy: "I analyzed the training examples and found a pattern where...",
+    solvingStrategy: "Let me analyze this step by step:\n\n1. Looking at the training examples, I notice that each input grid undergoes a 90-degree clockwise rotation.\n2. In example 1: the 2x2 pattern [[1,0],[0,1]] becomes [[0,1],[1,0]] when rotated.\n3. This pattern is consistent across all training examples.\n4. Applying this transformation to the test input: I rotate the entire grid 90 degrees clockwise.\n5. The colors remain unchanged, only the spatial arrangement changes.\n\nTherefore, the solution involves applying this geometric transformation rule.",
     reasoningItems: [
       "Identified transformation pattern in training examples",
       "Applied pattern logic to test case input", 
