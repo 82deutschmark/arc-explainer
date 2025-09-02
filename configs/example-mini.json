@@ -1,0 +1,27 @@
+{
+  "name": "Example-Mini",
+  "description": "Example configuration for a small dataset - demonstrates the configurable import system",
+  "source": {
+    "type": "github",
+    "repo": "username/repository-name",
+    "path": "/path/to/puzzle/files",
+    "branch": "main"
+  },
+  "files": {
+    "pattern": "puzzle_{0-9}.json",
+    "count": 10,
+    "startIndex": 0,
+    "endIndex": 9
+  },
+  "output": {
+    "directory": "example-mini",
+    "namePattern": "task_{index}.json",
+    "sourceType": "Example-Mini",
+    "addMetadata": true
+  },
+  "validation": {
+    "validateARCFormat": true,
+    "requireTrainTest": true,
+    "minExamples": 1
+  }
+}
