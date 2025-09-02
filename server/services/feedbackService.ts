@@ -82,24 +82,26 @@ export const feedbackService = {
    * @param comment - User's comment
    * @throws AppError if validation fails
    */
-  validateFeedback(explanationId: any, voteType: string, comment: string) {
+  validateFeedback(data: { puzzleId?: string, explanationId?: any, feedbackType: string, comment?: string }) {
+    const { puzzleId, explanationId, feedbackType, comment } = data;
     const MINIMUM_COMMENT_LENGTH = 20;
-    
-    if (!explanationId) {
-      throw new AppError('Missing required field: explanationId', 400, 'VALIDATION_ERROR');
+
+    if (!puzzleId && !explanationId) {
+      throw new AppError('Either puzzleId or explanationId is required', 400, 'VALIDATION_ERROR');
     }
-    
-    if (!voteType) {
-      throw new AppError('Missing required field: voteType', 400, 'VALIDATION_ERROR');
+
+    if (!feedbackType) {
+      throw new AppError('Missing required field: feedbackType', 400, 'VALIDATION_ERROR');
     }
-    
-    if (voteType !== 'helpful' && voteType !== 'not_helpful') {
-      throw new AppError('Invalid vote type. Must be "helpful" or "not_helpful"', 400, 'VALIDATION_ERROR');
+
+    const validFeedbackTypes = ['helpful', 'not_helpful', 'solution_explanation'];
+    if (!validFeedbackTypes.includes(feedbackType)) {
+      throw new AppError(`Invalid feedback type. Must be one of: ${validFeedbackTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
     }
-    
-    if (!comment || comment.trim().length < MINIMUM_COMMENT_LENGTH) {
+
+    if (feedbackType === 'not_helpful' && (!comment || comment.trim().length < MINIMUM_COMMENT_LENGTH)) {
       throw new AppError(
-        `A meaningful comment of at least ${MINIMUM_COMMENT_LENGTH} characters is required`,
+        `A meaningful comment of at least ${MINIMUM_COMMENT_LENGTH} characters is required for 'not_helpful' feedback`,
         400,
         'VALIDATION_ERROR'
       );
