@@ -119,11 +119,15 @@ export class GrokService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
+    // Get model configuration for max tokens
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const maxTokens = modelConfig?.maxOutputTokens || 65536;
+
     // Build message format for Grok API
     const messageFormat: any = {
       model: modelName,
       messages,
-      max_tokens: 8000
+      max_tokens: maxTokens
     };
 
     const providerSpecificNotes = [
@@ -341,11 +345,15 @@ export class GrokService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
+    // Get model configuration for max tokens
+    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const maxTokens = modelConfig?.maxOutputTokens || 65536;
+
     // Make the API call to Grok
     const response = await grok.chat.completions.create({
       model: modelName,
       messages,
-      max_tokens: 186000,
+      max_tokens: maxTokens,
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 
