@@ -432,12 +432,12 @@ export abstract class BaseAIService {
     // First, handle markdown code block wrappers more aggressively
     // Remove markdown code blocks with various patterns
     sanitized = sanitized
-      // Standard patterns: ```json\n{...}\n```
-      .replace(/^```json\s*\n?/i, '').replace(/\n?\s*```$/g, '')
-      // Without language specifier: ```\n{...}\n```  
-      .replace(/^```\s*\n?/, '').replace(/\n?\s*```$/g, '')
+      // Standard patterns: ```json\n{...}\n``` AND ```json{...}``` (Gemini's new format)
+      .replace(/^```json\s*/i, '').replace(/\n?\s*```$/g, '')
+      // Without language specifier: ```\n{...}\n``` AND ```{...}```  
+      .replace(/^```\s*/, '').replace(/\n?\s*```$/g, '')
       // Escaped patterns: \```json or \\```json
-      .replace(/^\\+```(?:json)?\s*\n?/i, '').replace(/\n?\s*\\+```$/g, '');
+      .replace(/^\\+```(?:json)?\s*/i, '').replace(/\n?\s*\\+```$/g, '');
     
     // Remove single backtick wrappers
     sanitized = sanitized.replace(/^`\s*/, '').replace(/\s*`$/g, '');
