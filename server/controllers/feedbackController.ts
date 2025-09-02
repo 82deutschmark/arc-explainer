@@ -23,13 +23,17 @@ export const feedbackController = {
    */
   async create(req: Request, res: Response) {
     try {
-      const { explanationId, voteType, comment } = req.body;
+      const { puzzleId, explanationId, feedbackType, comment } = req.body;
 
-      // Validate feedback data
-      feedbackService.validateFeedback(explanationId, voteType, comment);
-      
-      // Add feedback using repository
-      const result = await feedbackService.addFeedback(explanationId, voteType, comment);
+      // The service layer will handle validation.
+      const result = await feedbackService.addFeedback({
+        puzzleId,
+        explanationId,
+        feedbackType,
+        comment,
+        userAgent: req.get('User-Agent'),
+        sessionId: undefined,
+      });
       
       res.json(formatResponse.success({
         feedbackId: result.feedbackId
@@ -207,9 +211,9 @@ export const feedbackController = {
       filters.modelName = query.modelName;
     }
 
-    // Vote type filter with validation
-    if (query.voteType && ['helpful', 'not_helpful'].includes(query.voteType)) {
-      filters.voteType = query.voteType as 'helpful' | 'not_helpful';
+    // Feedback type filter with validation
+    if (query.feedbackType && ['helpful', 'not_helpful', 'solution_explanation'].includes(query.feedbackType)) {
+      filters.feedbackType = query.feedbackType as 'helpful' | 'not_helpful' | 'solution_explanation';
     }
 
     // Numeric filters with validation
