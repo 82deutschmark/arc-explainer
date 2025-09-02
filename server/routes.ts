@@ -98,9 +98,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/feedback", asyncHandler(feedbackController.getAll));
   app.get("/api/feedback/stats", asyncHandler(feedbackController.getStats));
   
-  // Solution submission routes (from Gemini plan)
+  // Solution submission and voting routes (from Gemini plan)
   app.get("/api/puzzles/:puzzleId/solutions", asyncHandler(feedbackController.getSolutions));
   app.post("/api/puzzles/:puzzleId/solutions", validation.solutionSubmission, asyncHandler(feedbackController.submitSolution));
+  app.post("/api/solutions/:solutionId/vote", validation.solutionVote, asyncHandler(feedbackController.voteSolution));
+  app.get("/api/solutions/:solutionId/votes", asyncHandler(feedbackController.getSolutionVotes));
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));

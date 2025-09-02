@@ -35,6 +35,9 @@ interface Solution {
   createdAt: string;
   updatedAt: string;
   feedbackType: string;
+  helpful_count?: number;
+  not_helpful_count?: number;
+  userVote?: 'helpful' | 'not_helpful' | null;
 }
 
 export default function PuzzleDBViewer() {
@@ -46,6 +49,7 @@ export default function PuzzleDBViewer() {
   const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
   const [solutionInput, setSolutionInput] = useState('');
   const [isSubmittingSolution, setIsSubmittingSolution] = useState(false);
+  const [isVoting, setIsVoting] = useState<Record<string, boolean>>({});
   
   // Set page title with puzzle ID
   React.useEffect(() => {
@@ -67,7 +71,26 @@ export default function PuzzleDBViewer() {
       setIsLoadingSolutions(true);
       const response = await axios.get(`/api/puzzles/${taskId}/solutions`);
       if (response.data.success) {
-        setSolutions(response.data.data);
+        // Process the solutions to include vote counts
+        const solutionsWithVotes = await Promise.all(response.data.data.map(async (solution: Solution) => {
+          try {
+            // Fetch vote counts for each solution
+            const votesResponse = await axios.get(`/api/solutions/${solution.id}/votes`);
+            if (votesResponse.data.success) {
+              return {
+                ...solution,
+                helpful_count: votesResponse.data.data.helpful || 0,
+                not_helpful_count: votesResponse.data.data.notHelpful || 0
+              };
+            }
+            return solution;
+          } catch (err) {
+            console.error(`Failed to fetch votes for solution ${solution.id}:`, err);
+            return solution;
+          }
+        }));
+        
+        setSolutions(solutionsWithVotes);
       }
     } catch (error) {
       console.error('Failed to fetch solutions:', error);
@@ -78,6 +101,72 @@ export default function PuzzleDBViewer() {
       });
     } finally {
       setIsLoadingSolutions(false);
+    }
+  };
+  
+  const handleVote = async (solutionId: string, voteType: 'helpful' | 'not_helpful') => {
+    try {
+      // Set voting state for this solution
+      setIsVoting(prev => ({ ...prev, [solutionId]: true }));
+      
+      // Submit the vote
+      const response = await axios.post(`/api/solutions/${solutionId}/vote`, {
+        feedbackType: voteType
+      });
+      
+      if (response.data.success) {
+        // Update the solution in state
+        setSolutions(prev => prev.map(solution => {
+          if (solution.id === solutionId) {
+            // Toggle vote or set new vote
+            const isRemovingVote = solution.userVote === voteType;
+            
+            // Calculate new vote counts
+            let helpful_count = solution.helpful_count || 0;
+            let not_helpful_count = solution.not_helpful_count || 0;
+            
+            // Remove old vote if exists
+            if (solution.userVote === 'helpful' && voteType !== 'helpful') {
+              helpful_count--;
+            } else if (solution.userVote === 'not_helpful' && voteType !== 'not_helpful') {
+              not_helpful_count--;
+            }
+            
+            // Add new vote if not removing
+            if (!isRemovingVote) {
+              if (voteType === 'helpful') {
+                helpful_count++;
+              } else {
+                not_helpful_count++;
+              }
+            }
+            
+            return {
+              ...solution,
+              userVote: isRemovingVote ? null : voteType,
+              helpful_count,
+              not_helpful_count
+            };
+          }
+          return solution;
+        }));
+        
+        toast({
+          title: "Success",
+          description: `Vote ${voteType === 'helpful' ? '👍' : '👎'} recorded`,
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to vote on solution ${solutionId}:`, error);
+      toast({
+        title: "Error",
+        description: "Failed to submit vote. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      // Clear voting state
+      setIsVoting(prev => ({ ...prev, [solutionId]: false }));
     }
   };
 
@@ -298,15 +387,45 @@ export default function PuzzleDBViewer() {
                         <div className="text-sm text-gray-500">
                           Submitted on {formatDate(solution.createdAt)}
                         </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>Helpful</span>
-                          </Button>
-                          <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <ThumbsDown className="h-4 w-4" />
-                            <span>Not Helpful</span>
-                          </Button>
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <ThumbsUp className="h-4 w-4 text-green-500" />
+                            <span>{solution.helpful_count || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <ThumbsDown className="h-4 w-4 text-red-500" />
+                            <span>{solution.not_helpful_count || 0}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant={solution.userVote === 'helpful' ? "default" : "outline"} 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => handleVote(solution.id, 'helpful')}
+                              disabled={isVoting[solution.id]}
+                            >
+                              {isVoting[solution.id] ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <ThumbsUp className="h-4 w-4" />
+                              )}
+                              <span>Helpful</span>
+                            </Button>
+                            <Button 
+                              variant={solution.userVote === 'not_helpful' ? "default" : "outline"} 
+                              size="sm" 
+                              className="flex items-center gap-1"
+                              onClick={() => handleVote(solution.id, 'not_helpful')}
+                              disabled={isVoting[solution.id]}
+                            >
+                              {isVoting[solution.id] ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <ThumbsDown className="h-4 w-4" />
+                              )}
+                              <span>Not Helpful</span>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                       <div className="text-gray-800 whitespace-pre-line">

@@ -276,6 +276,84 @@ export const feedbackController = {
    * @param query - Express query object
    * @returns Cleaned FeedbackFilters object
    */
+  /**
+   * Vote on a solution (helpful or not helpful)
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async voteSolution(req: Request, res: Response) {
+    try {
+      const { solutionId } = req.params;
+      const { voteType } = req.body;
+      
+      if (!solutionId) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid solution ID',
+          'Solution ID is required'
+        ));
+      }
+
+      // Validate vote type
+      if (!voteType || !['helpful', 'not_helpful'].includes(voteType)) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid vote type',
+          'Vote type must be either "helpful" or "not_helpful"'
+        ));
+      }
+
+      // Submit vote as feedback on the solution
+      const result = await feedbackService.addFeedback({
+        puzzleId: undefined, // Will be retrieved from the solution feedback
+        explanationId: null, // No explanation ID for solution votes
+        feedbackType: voteType as 'helpful' | 'not_helpful',
+        comment: null,
+        userAgent: req.get('User-Agent'),
+        sessionId: undefined,
+        referenceFeedbackId: parseInt(solutionId) // Reference to the solution being voted on
+      });
+      
+      res.json(formatResponse.success({
+        feedbackId: result.feedbackId
+      }, 'Vote recorded successfully'));
+    } catch (error) {
+      console.error('Error voting on solution:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to record vote',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Get vote counts for a solution
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getSolutionVotes(req: Request, res: Response) {
+    try {
+      const { solutionId } = req.params;
+      
+      if (!solutionId) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid solution ID',
+          'Solution ID is required'
+        ));
+      }
+
+      // Get vote counts from repository
+      const votes = await repositoryService.feedback.getSolutionVotes(parseInt(solutionId));
+      res.json(formatResponse.success(votes));
+    } catch (error) {
+      console.error('Error getting solution votes:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to retrieve vote counts',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+  
   buildFiltersFromQuery(query: any): FeedbackFilters {
     const filters: FeedbackFilters = {};
 

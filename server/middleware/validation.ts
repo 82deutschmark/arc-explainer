@@ -293,5 +293,28 @@ export const validation = {
     }
 
     next();
+  },
+
+  /**
+   * Validates solution vote request
+   */
+  solutionVote: (req: Request, res: Response, next: NextFunction) => {
+    const { solutionId } = req.params;
+    const { feedbackType } = req.body;
+
+    if (!solutionId || solutionId.trim() === '') {
+      throw new AppError('Missing required parameter: solutionId', 400, 'VALIDATION_ERROR');
+    }
+
+    if (!feedbackType) {
+      throw new AppError('Missing required field: feedbackType', 400, 'VALIDATION_ERROR');
+    }
+
+    const validVoteTypes = ['helpful', 'not_helpful'];
+    if (!validVoteTypes.includes(feedbackType)) {
+      throw new AppError(`Invalid vote type. Must be one of: ${validVoteTypes.join(', ')}`, 400, 'VALIDATION_ERROR');
+    }
+
+    next();
   }
 };
