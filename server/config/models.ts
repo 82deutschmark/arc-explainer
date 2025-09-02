@@ -317,7 +317,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
-    maxOutputTokens: 65536,
+    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -332,7 +332,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash',
     modelType: 'gemini',
-    maxOutputTokens: 65536,
+    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -347,7 +347,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash-lite',
     modelType: 'gemini',
-    maxOutputTokens: 65536,
+    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -362,7 +362,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash',
     modelType: 'gemini',
-    maxOutputTokens: 65536,
+    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -377,7 +377,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash-lite',
     modelType: 'gemini',
-    maxOutputTokens: 65536,
+    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   

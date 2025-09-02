@@ -246,48 +246,63 @@ export class GeminiService extends BaseAIService {
     reasoningLog?: any;
     reasoningItems?: any[];
   } {
-    // Extract text content from Gemini response with better error handling
+    console.log(`[Gemini] Parsing response structure for model: ${modelKey}`);
+    
+    // Parse candidates[].content.parts[] structure instead of regex textContent
     let textContent = '';
+    let thoughtSignature = null;
+    
     try {
-      textContent = response.text() || '';
-      console.log(`[Gemini] Raw response length: ${textContent.length} chars`);
-      console.log(`[Gemini] Response preview: "${textContent.substring(0, 100)}..."`);
+      // Access the structured response
+      const candidates = response.candidates || [];
+      if (candidates.length > 0) {
+        const candidate = candidates[0];
+        const content = candidate.content;
+        
+        // Extract thoughtSignature if available (Gemini 2.5+ thinking models)
+        if (candidate.thoughtSignature && modelKey.includes('2.5')) {
+          thoughtSignature = candidate.thoughtSignature;
+          console.log(`[Gemini] Found thoughtSignature: ${thoughtSignature}`);
+        }
+        
+        // Extract text from parts
+        if (content && content.parts) {
+          textContent = content.parts
+            .filter((part: any) => part.text)
+            .map((part: any) => part.text)
+            .join('');
+        }
+      }
+      
+      if (!textContent) {
+        // Fallback to legacy text() method if structured parsing fails
+        textContent = response.text() || '';
+        console.log(`[Gemini] Fallback to legacy text() method`);
+      }
+      
+      console.log(`[Gemini] Extracted text content: ${textContent.length} chars`);
+      console.log(`[Gemini] Preview: "${textContent.substring(0, 100)}..."`);
+      
     } catch (error) {
-      console.error(`[Gemini] Error extracting text from response:`, error);
-      throw new Error(`Failed to extract text content from Gemini response: ${error}`);
+      console.error(`[Gemini] Error parsing structured response:`, error);
+      throw new Error(`Failed to parse Gemini response structure: ${error}`);
     }
     
-    // Extract JSON using inherited method (now with improved sanitization)
+    // Extract JSON using inherited method
     const result = this.extractJsonFromResponse(textContent, modelKey);
 
     // Extract token usage (Gemini provides usage info)
     const tokenUsage: TokenUsage = {
       input: response.usageMetadata?.promptTokenCount || 0,
       output: response.usageMetadata?.candidatesTokenCount || 0,
-      // Gemini doesn't provide separate reasoning tokens
+      reasoning: response.usageMetadata?.reasoningTokenCount || 0, // May be available for thinking models
     };
 
-    // For thinking models, try to extract reasoning from response
+    // Use thoughtSignature as reasoning_log for thinking models
     let reasoningLog = null;
-    if (captureReasoning && modelKey.includes('2.5')) {
-      console.log(`[Gemini] Attempting to extract reasoning for thinking model: ${modelKey}`);
-      
-      // Look for <thinking> tags or similar patterns
-      const thinkingMatch = textContent.match(/<thinking>(.*?)<\/thinking>/s);
-      if (thinkingMatch) {
-        reasoningLog = thinkingMatch[1].trim();
-        console.log(`[Gemini] Found <thinking> tags, extracted ${reasoningLog.length} chars of reasoning`);
-      } else if (textContent.includes('Let me think') || textContent.includes('I need to') || 
-                 textContent.includes('First,') || textContent.includes('Looking at')) {
-        // Extract reasoning sections that contain thinking patterns
-        const reasoningParts = textContent.split(/Let me think|I need to|First,|Looking at/);
-        if (reasoningParts.length > 1) {
-          reasoningLog = reasoningParts.slice(0, -1).join('\n\n').trim();
-          console.log(`[Gemini] Found reasoning patterns, extracted ${reasoningLog.length} chars`);
-        }
-      } else {
-        console.log(`[Gemini] No explicit reasoning patterns found for thinking model`);
-      }
+    if (captureReasoning && thoughtSignature) {
+      reasoningLog = thoughtSignature;
+      console.log(`[Gemini] Using thoughtSignature as reasoning_log: ${thoughtSignature.length || 0} chars`);
     }
 
     console.log(`[Gemini] Parse complete - result keys: ${Object.keys(result).join(', ')}`);

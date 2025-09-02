@@ -991,41 +991,297 @@
     ]
   },
   "explanations": {
-    "unknown": {
-      "id": 58,
-      "modelKey": "unknown",
-      "patternDescription": "The pattern shows that the aliens are copying certain symbols from one part of the grid to another, specifically moving or repeating some symbols in specific spots to complete a pattern or mirror parts of the grid.",
-      "solvingStrategy": "Think of the grid as a map of emojis representing numbers. First, notice where the symbols like ✅, 👽, 👤, and 🪐 are in the original. The aliens are making the pattern more complete by copying some of these symbols to nearby empty spots. To solve it, identify which symbols are repeated or moved and then fill in those spots with the same symbols, creating symmetry or completing the pattern. Basically, you're just copying and placing symbols to match a pattern, like completing a puzzle.",
-      "hints": [
-        "Look for symbols that appear multiple times and see where they are missing in the new grid.",
-        "The aliens are copying certain symbols to make the pattern more complete or symmetrical.",
-        "Imagine you're playing a matching game, filling in missing pieces with the same symbols."
+    "qwen/qwen3-coder": {
+      "model": "qwen/qwen3-coder",
+      "reasoningLog": null,
+      "hasReasoningLog": false,
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 2003,
+      "outputTokens": 1265,
+      "reasoningTokens": null,
+      "totalTokens": 3268,
+      "estimatedCost": 0.0014126000000000002,
+      "reasoningItems": [
+        "In Example 1, row 1 (0,0,3,0,8,0,0,0,0,0) is duplicated to row 5 (0,0,3,0,8,0,3,0,0,0) with some modifications, specifically copying the first non-zero elements to the corresponding positions.",
+        "In Example 2, row 2 (0,0,2,0,3,0,0,0,0,0) is duplicated to row 6 (0,0,2,0,3,0,2,0,0,0) with similar modifications.",
+        "In Example 3, row 3 (0,0,0,0,4,0,0,0,0,0) is duplicated to row 4 (0,0,0,0,4,0,4,0,0,0) but also to row 1 (0,0,0,8,0,8,0,8,0,0) which is more complex.",
+        "Looking at the test case, row 2 (0,1,0,4,0,1,0,0,0,0) and row 5 (0,1,0,0,0,1,0,0,0,0) seem to be candidates for duplication. Row 2 has a symmetric pattern with 1s and 4s, and row 5 has 1s.",
+        "The pattern suggests that row 2 should be duplicated to row 6 (0,0,2,0,2,0,0,0,0,0) which is already present, or row 5 should be duplicated to row 2 which doesn't make sense.",
+        "Reconsidering, the pattern might be that the row with the most symmetric elements (row 2) is duplicated to the row that has the same outer elements but missing the middle ones (row 6).",
+        "So, row 2 (0,1,0,4,0,1,0,0,0,0) should be duplicated to row 6 (0,1,0,0,0,1,0,0,0,0) but since row 6 already has (0,0,2,0,2,0,0,0,0,0), it's more likely that row 2 is duplicated to row 6 with modifications.",
+        "Actually, looking more carefully, row 6 (0,0,2,0,2,0,0,0,0,0) is duplicated from row 3 (0,0,2,0,2,0,0,0,0,0) in the output of Example 2. This suggests that rows with symmetric elements are duplicated vertically.",
+        "In the test case, row 2 (0,1,0,4,0,1,0,0,0,0) has symmetric 1s and a 4 in the middle. Row 5 (0,1,0,0,0,1,0,0,0,0) has symmetric 1s but no middle element. The pattern suggests duplicating row 2 to row 6.",
+        "Therefore, the output should have row 2 (0,1,0,4,0,1,0,0,0,0) duplicated to row 6, replacing (0,1,0,0,0,1,0,0,0,0) with (0,1,0,4,0,1,0,0,0,0)."
       ],
-      "alienMeaning": "The aliens might be trying to tell us that they value symmetry, repetition, or completeness. They could be showing us how to recognize patterns by copying or mirroring symbols. This might be a way of saying they want us to understand their language by noticing how symbols are duplicated or moved, possibly to build trust or communicate friendship, not hostility.",
-      "confidence": 75,
-      "explanationId": 58,
-      "helpfulVotes": "0",
-      "notHelpfulVotes": "1"
-    },
-    "o3-2025-04-16": {
-      "model": "o3-2025-04-16",
-      "patternDescription": "Every picture is made of 3-row ‘stripes’.  In each stripe the LEFT-and-RIGHT squares of a row must be the same colour and they have to be a mirror image around one special middle column.  Going down the three rows the colours flip in a simple ABA / BAB / ABA way (top and bottom rows identical, the middle row has the two colours swapped).  The task is just to put back the twins that are missing so that this horizontal mirror and the ABA-pattern are perfect again.",
-      "solvingStrategy": "1. (Work with numbers first – it is easier, then translate back to emojis.)\n2. Scan each row and find the one that already looks like “a b a” (two identical numbers with a different number exactly two steps between them).  The centre of that little pattern tells you which column is the mirror axis for the whole puzzle.\n3. Treat the rows in groups of three (row k , row k+2 , row k+4 …).  In every trio the rule is:\n      • Row 1  :  a b a\n      • Row 2  :  b a b\n      • Row 3  :  a b a\n4. For every coloured square that appears on one side of the axis, put its twin on the opposite side so the row becomes a left-right palindrome that follows the rule above.\n5. Do this for the whole grid, then change the numbers back to the emojis the user sees.",
-      "hints": [
-        "Look for a row that already shows the pattern colour-1 / colour-2 / colour-1 – it gives away the ‘mirror column’.",
-        "Rows come in packs of three; the top and bottom member of the pack must end up identical.",
-        "Whatever you see on the left of the mirror must also exist the same distance on the right – if it’s missing, draw it in."
+      "multiplePredictedOutputs": null,
+      "predictedOutput": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
       ],
-      "alienMeaning": "The aliens seem to be demonstrating harmony through symmetry: ‘what you give, we give back’ (the horizontal mirror), and alternation or turn-taking (the ABA / BAB flipping).  It feels like a friendly message saying: “We imitate and complement each other – cooperation, not conflict.”  Nothing looks threatening here – they just want to show they understand balance and reciprocity.",
-      "confidence": 37,
-      "alienMeaningConfidence": 42,
-      "modelKey": "o3-2025-04-16",
-      "explanationId": 0
+      "predictedOutput1": [],
+      "predictedOutput2": [],
+      "predictedOutput3": [],
+      "solvingStrategy": "I analyzed the training examples to identify a pattern where specific rows are duplicated based on the presence of certain shapes or configurations. In each example, there's a vertical symmetry or reflection pattern where a row containing specific elements is mirrored to another row. I looked for similar patterns in the test case.",
+      "patternDescription": "The transformation involves duplicating rows with symmetric elements to other rows in the grid. Specifically, if a row has symmetric non-zero elements (like 1,0,4,0,1), it is duplicated to another row that has the same outer elements but missing the middle ones, effectively completing the symmetric pattern vertically.",
+      "hints": [
+        "Identify rows with symmetric non-zero elements and duplicate them to corresponding rows with matching outer elements but missing centers.",
+        "For each row i, if row[i] has symmetric elements at positions (a,b,c,b,a), and row[j] has elements (a,b,0,b,a), then set row[j] = row[i].",
+        "🔍🔁↕️: Find rows with symmetric 🔢, then copy them to matching rows below/above."
+      ],
+      "confidence": 85,
+      "apiProcessingTimeMs": 33554,
+      "predictedOutputGrid": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "hasMultiplePredictions": false,
+      "isPredictionCorrect": false,
+      "predictionAccuracyScore": 0.15000000000000002,
+      "modelKey": "qwen/qwen3-coder",
+      "actualProcessingTime": 34
     }
   },
-  "exportedAt": "2025-07-12T16:27:14.108Z",
+  "exportedAt": "2025-09-02T04:06:13.961Z",
   "models": [
-    "unknown",
-    "o3-2025-04-16"
+    "qwen/qwen3-coder"
   ]
 }
