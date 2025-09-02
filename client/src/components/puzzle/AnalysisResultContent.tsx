@@ -126,7 +126,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
         </div>
       )}
       
-      {((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)) && (
+      {true && (
         <div className={`border rounded ${isSaturnResult ? 'bg-indigo-50 border-indigo-200' : 'bg-blue-50 border-blue-200'}`}>
           <button
             onClick={() => setShowReasoning(!showReasoning)}
