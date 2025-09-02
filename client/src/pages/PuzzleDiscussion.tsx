@@ -257,9 +257,15 @@ export default function PuzzleDiscussion() {
 
                         <div className="flex gap-2">
                           <Button asChild size="sm" className="flex-1 bg-red-600 hover:bg-red-700">
-                            <Link href={`/puzzle/${puzzle.id}`}>
+                            <Link href={`/puzzle/${puzzle.id}/retry`}>
                               <Eye className="h-4 w-4 mr-1" />
                               Retry Analysis
+                            </Link>
+                          </Button>
+                          <Button asChild size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                            <Link href={`/puzzle/${puzzle.id}/view`}>
+                              <MessageSquare className="h-4 w-4 mr-1" />
+                              View Solutions
                             </Link>
                           </Button>
                         </div>
