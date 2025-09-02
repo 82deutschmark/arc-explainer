@@ -274,8 +274,33 @@ export class DatabaseSchema {
         ALTER TABLE feedback 
         ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS puzzle_id VARCHAR(255),
-        ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) NOT NULL DEFAULT 'helpful';
+        ADD COLUMN IF NOT EXISTS puzzle_id VARCHAR(255) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) DEFAULT 'helpful';
+      `);
+      
+      // Update feedback_type to NOT NULL and add constraint after adding the column
+      await client.query(`
+        UPDATE feedback SET feedback_type = 'helpful' WHERE feedback_type IS NULL;
+      `);
+      
+      await client.query(`
+        ALTER TABLE feedback 
+        ALTER COLUMN feedback_type SET NOT NULL;
+      `);
+      
+      await client.query(`
+        ALTER TABLE feedback 
+        ADD CONSTRAINT IF NOT EXISTS feedback_type_check 
+        CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation'));
+      `);
+
+      // Update puzzle_id for existing feedback records that have explanation_id
+      await client.query(`
+        UPDATE feedback 
+        SET puzzle_id = e.puzzle_id 
+        FROM explanations e 
+        WHERE feedback.explanation_id = e.id 
+          AND feedback.puzzle_id IS NULL;
       `);
 
       await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
