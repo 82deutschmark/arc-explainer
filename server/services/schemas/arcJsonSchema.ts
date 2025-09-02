@@ -65,7 +65,8 @@ export const ARC_JSON_SCHEMA = {
         description: "Clear explanation of the solving approach, written as pseudo-code"
       },
 
-      // REASONING ITEMS - MAPS TO DATABASE reasoning_items JSONB FIELD
+      // REASONING ITEMS - MAPS TO DATABASE reasoning_items JSONB FIELD BUT MAY NOT BE THE SAME
+      // AS THE REASONING ITEMS RETURNED BY OPENAI  
       reasoningItems: {
         type: "array",
         items: { type: "string" },
@@ -82,7 +83,7 @@ export const ARC_JSON_SCHEMA = {
       hints: {
         type: "array",
         items: { type: "string" },
-        description: "Three hints for understanding the transformation rules, one as an algorithm, one as a description, and one as only emojis"
+        description: "Three hints for understanding the transformation rules."
       },
 
       // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
