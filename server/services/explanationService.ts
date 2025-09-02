@@ -147,6 +147,44 @@ export const explanationService = {
         const tokenUsage = sourceData.tokenUsage;
         const costData = sourceData.cost;
 
+        // === STEP 1 & 2: FIX REASONING ITEMS PRESERVATION WITH COMPREHENSIVE LOGGING ===
+        
+        // Debug log the reasoning items extraction process
+        console.log(`\n🧠 [REASONING-ITEMS-DEBUG] Model: ${modelKey}`);
+        console.log(`🔍 [REASONING-ITEMS-DEBUG] sourceData.reasoningItems:`, sourceData.reasoningItems);
+        console.log(`🔍 [REASONING-ITEMS-DEBUG] analysisData.reasoningItems:`, analysisData.reasoningItems);
+        console.log(`🔍 [REASONING-ITEMS-DEBUG] analysisData.reasoningLog:`, analysisData.reasoningLog);
+        
+        // Extract reasoningItems with proper fallback logic
+        let finalReasoningItems = null;
+        
+        // Priority 1: Direct reasoningItems from sourceData (top-level)
+        if (sourceData.reasoningItems && Array.isArray(sourceData.reasoningItems) && sourceData.reasoningItems.length > 0) {
+          finalReasoningItems = sourceData.reasoningItems;
+          console.log(`✅ [REASONING-ITEMS-DEBUG] Using sourceData.reasoningItems (${finalReasoningItems.length} items)`);
+        }
+        // Priority 2: reasoningItems from nested analysisData
+        else if (analysisData.reasoningItems && Array.isArray(analysisData.reasoningItems) && analysisData.reasoningItems.length > 0) {
+          finalReasoningItems = analysisData.reasoningItems;
+          console.log(`✅ [REASONING-ITEMS-DEBUG] Using analysisData.reasoningItems (${finalReasoningItems.length} items)`);
+        }
+        // Priority 3: Check if reasoningItems got nested deeper in result structure
+        else if (sourceData.result && sourceData.result.reasoningItems && Array.isArray(sourceData.result.reasoningItems) && sourceData.result.reasoningItems.length > 0) {
+          finalReasoningItems = sourceData.result.reasoningItems;
+          console.log(`✅ [REASONING-ITEMS-DEBUG] Using sourceData.result.reasoningItems (${finalReasoningItems.length} items)`);
+        }
+        // Priority 4: Fallback to reasoningLog if it's an array (some providers return it as array)
+        else if (analysisData.reasoningLog && Array.isArray(analysisData.reasoningLog) && analysisData.reasoningLog.length > 0) {
+          finalReasoningItems = analysisData.reasoningLog;
+          console.log(`✅ [REASONING-ITEMS-DEBUG] Using analysisData.reasoningLog as array (${finalReasoningItems.length} items)`);
+        }
+        else {
+          console.log(`❌ [REASONING-ITEMS-DEBUG] No valid reasoningItems found for ${modelKey}`);
+        }
+        
+        console.log(`🎯 [REASONING-ITEMS-DEBUG] Final reasoningItems:`, finalReasoningItems);
+        console.log(`📊 [REASONING-ITEMS-DEBUG] Final reasoningItems type: ${typeof finalReasoningItems}, isArray: ${Array.isArray(finalReasoningItems)}, length: ${finalReasoningItems?.length || 'N/A'}`);
+
         // Handle both flat and nested response structures
         const explanationData = {
           patternDescription: analysisData.patternDescription ?? null,
@@ -154,7 +192,7 @@ export const explanationService = {
           hints: analysisData.hints ?? null,
           confidence: analysisData.confidence ?? 50,
           modelName: sourceData.modelName ?? modelKey,
-          reasoningItems: sourceData.reasoningItems ?? analysisData.reasoningItems ?? analysisData.reasoningLog ?? null,
+          reasoningItems: finalReasoningItems,
           reasoningLog: null,
           predictedOutputGrid: collectedGrids.length > 1 ? collectedGrids : collectedGrids[0],
           isPredictionCorrect: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,

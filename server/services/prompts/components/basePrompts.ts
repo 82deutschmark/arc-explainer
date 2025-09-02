@@ -38,7 +38,7 @@ export const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No ma
 JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
 
 Put all your analysis and insights in the structured JSON fields:
-- solvingStrategy: Your complete analysis process and approach
+- solvingStrategy: Create a domain specific language to solve the puzzle
 - reasoningItems: Step-by-step analysis progression and insights, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified
 - hints: Describe three pseudo-code algorithms you considered, starting with the best one, one as math and one as emojis
