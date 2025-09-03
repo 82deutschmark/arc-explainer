@@ -206,7 +206,7 @@ export abstract class BaseAIService {
     
     return {
       model: modelKey,
-      reasoningLog: this.validateReasoningLog(reasoningLog),
+      reasoningLog: reasoningLog,
       hasReasoningLog,
       temperature,
       reasoningEffort: serviceOpts.reasoningEffort || null,
@@ -226,45 +226,6 @@ export abstract class BaseAIService {
   }
 
   /**
-   * Validates the reasoning log format to prevent "[object Object]" corruption.
-   * This is a wrapper around processReasoningLog for backward compatibility.
-   * @deprecated Use processReasoningLog instead
-   */
-  protected validateReasoningLog(reasoningLog: unknown): string | null {
-    return this.processReasoningLog(reasoningLog);
-  }
-
-  /**
-   * Process reasoning log format to prevent "[object Object]" corruption
-   * Ensures reasoningLog is always a string or null before database storage
-   * Fixed: Properly handles OpenAI Responses API objects without corrupting Chat Completions
-   */
-  private processReasoningLog(reasoningLog: unknown): string | null {
-    if (!reasoningLog) return null;
-    if (typeof reasoningLog === 'string') return reasoningLog.trim() || null;
-    
-    if (Array.isArray(reasoningLog)) {
-      const result = reasoningLog
-        .map(item => {
-          if (typeof item === 'string') return item;
-          if (item && typeof item === 'object') {
-            return JSON.stringify(item);
-          }
-          return String(item);
-        })
-        .filter(Boolean)
-        .join('\n');
-      return result || null;
-    }
-
-    if (typeof reasoningLog === 'object' && reasoningLog !== null) {
-      return JSON.stringify(reasoningLog);
-    }
-
-    const stringValue = String(reasoningLog);
-    return stringValue !== 'undefined' && stringValue !== '[object Object]' ? stringValue : null;
-  }
-
   /**
    * Advanced JSON extraction with multiple recovery strategies
    * Consolidated from OpenRouter's sophisticated parsing logic
