@@ -8,7 +8,8 @@
 
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types.js";
-import { getDefaultPromptId } from "./prompts/systemPrompts.js";
+// Default prompt ID to use when none is specified
+const DEFAULT_PROMPT_ID = 'standardExplanation';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
@@ -42,7 +43,7 @@ export class OpenAIService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = DEFAULT_PROMPT_ID,
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
@@ -112,7 +113,7 @@ export class OpenAIService extends BaseAIService {
   generatePromptPreview(
     task: ARCTask,
     modelKey: string,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = DEFAULT_PROMPT_ID,
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
