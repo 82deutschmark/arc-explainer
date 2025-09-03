@@ -385,7 +385,9 @@ export class MetricsRepository extends BaseRepository {
           helpfulPercentage: feedbackStats.helpfulPercentage,
           topRatedModels: feedbackStats.topModels.slice(0, 5).map(model => ({
             modelName: model.modelName,
-            helpfulPercentage: model.helpfulPercentage,
+            helpfulPercentage: model.feedbackCount > 0 
+              ? Math.round((model.helpfulCount / model.feedbackCount) * 100)
+              : 0,
             feedbackCount: model.feedbackCount
           }))
         },
@@ -433,7 +435,7 @@ export class MetricsRepository extends BaseRepository {
           SELECT 
             e.model_name,
             COUNT(f.id) as feedback_count,
-            AVG(CASE WHEN f.vote_type = 'helpful' THEN 1.0 ELSE 0.0 END) as user_satisfaction
+            AVG(CASE WHEN f.feedback_type = 'helpful' THEN 1.0 ELSE 0.0 END) as user_satisfaction
           FROM explanations e
           LEFT JOIN feedback f ON e.id = f.explanation_id
           WHERE e.model_name IS NOT NULL

@@ -8,7 +8,8 @@
 
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types.js";
-import { getDefaultPromptId } from "./promptBuilder.js";
+// Default prompt ID to use when none is specified
+const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
@@ -42,16 +43,18 @@ export class OpenAIService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    captureReasoning: boolean = true,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = DEFAULT_PROMPT_ID,
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
     const modelName = getApiModelName(modelKey);
 
+    // For models with native reasoning, disable reasoning instructions in the prompt
+    const usePromptReasoning = !MODELS_WITH_REASONING.has(modelKey);
+
     // Build prompt package using inherited method
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
     
     // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
@@ -62,7 +65,7 @@ export class OpenAIService extends BaseAIService {
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey);
 
       // Validate response completeness
       const completeness = this.validateResponseCompleteness(response, modelKey);
@@ -110,13 +113,14 @@ export class OpenAIService extends BaseAIService {
   generatePromptPreview(
     task: ARCTask,
     modelKey: string,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = DEFAULT_PROMPT_ID,
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey);
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    const usePromptReasoning = !MODELS_WITH_REASONING.has(modelKey);
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
@@ -312,8 +316,16 @@ export class OpenAIService extends BaseAIService {
       }
     }
 
-    // Extract reasoning items
-    reasoningItems = response.output_reasoning?.items ?? [];
+    // Extract reasoning items and convert them to an array of strings
+    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+      reasoningItems = response.output_reasoning.items.map((item: any) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && item.text) return item.text;
+        return JSON.stringify(item);
+      });
+    } else {
+      reasoningItems = [];
+    }
 
     // Validate reasoning data types and fix corruption
     if (reasoningLog && typeof reasoningLog !== 'string') {

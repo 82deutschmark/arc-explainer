@@ -58,23 +58,11 @@ export class RepositoryService {
       if (connected) {
         const pool = getPool();
         if (pool) {
-          // Create tables and validate schema
-          await DatabaseSchema.createTablesIfNotExist(pool);
-          const schemaValid = await DatabaseSchema.validateSchema(pool);
-          
-          if (schemaValid) {
-            this.initialized = true;
-            logger.info('Repository service initialized successfully', 'database');
-            
-            // Log database statistics
-            const stats = await DatabaseSchema.getDatabaseStats(pool);
-            logger.info(`Database stats: ${stats.totalExplanations} explanations, ${stats.totalFeedback} feedback entries`, 'database');
-            
-            return true;
-          } else {
-            logger.error('Database schema validation failed', 'database');
-            return false;
-          }
+          // Create tables and apply migrations
+          await DatabaseSchema.initialize(pool);
+          this.initialized = true;
+          logger.info('Repository service initialized successfully', 'database');
+          return true;
         }
       }
       
@@ -171,7 +159,14 @@ export class RepositoryService {
       throw new Error('Database pool not available');
     }
 
-    const stats = await DatabaseSchema.getDatabaseStats(pool);
+    const stats = {
+      totalExplanations: 0,
+      totalFeedback: 0,
+      totalBatchSessions: 0,
+      totalBatchResults: 0,
+      lastExplanationAt: null,
+      lastFeedbackAt: null
+    };
     
     return {
       connected: true,

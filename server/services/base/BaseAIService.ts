@@ -7,8 +7,9 @@
  */
 
 import { ARCTask } from "../../../shared/types.js";
-import { buildAnalysisPrompt, getDefaultPromptId } from "../promptBuilder.js";
-import type { PromptOptions, PromptPackage } from "../promptBuilder.js";
+import { getSystemPrompt } from '../prompts/systemPrompts.js';
+import { buildCustomPrompt } from '../prompts/components/promptBuilder.js';
+import { buildAnalysisPrompt, getDefaultPromptId, PromptOptions, PromptPackage } from '../promptBuilder.js';
 import { calculateCost } from "../../utils/costCalculator.js";
 import { getModelConfig } from "../../config/models/index.js";
 
@@ -97,7 +98,6 @@ export abstract class BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature?: number,
-    captureReasoning?: boolean,
     promptId?: string,
     customPrompt?: string,
     options?: PromptOptions,
@@ -148,15 +148,18 @@ export abstract class BaseAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: ServiceOptions
+    serviceOpts: ServiceOptions = {},
+    usePromptReasoning: boolean = true
   ): PromptPackage {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
-    return buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: true
-    });
+    const systemPrompt = customPrompt 
+      ? buildCustomPrompt(usePromptReasoning) 
+      : getSystemPrompt(promptId, usePromptReasoning);
+
+    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+
+    return promptPackage;
   }
 
   /**
@@ -206,7 +209,7 @@ export abstract class BaseAIService {
     
     return {
       model: modelKey,
-      reasoningLog: this.validateReasoningLog(reasoningLog),
+      reasoningLog: reasoningLog,
       hasReasoningLog,
       temperature,
       reasoningEffort: serviceOpts.reasoningEffort || null,
@@ -226,75 +229,6 @@ export abstract class BaseAIService {
   }
 
   /**
-   * Validate reasoning log format to prevent "[object Object]" corruption
-   * Ensures reasoningLog is always a string or null before database storage
-   * Fixed: Properly handles OpenAI Responses API objects without corrupting Chat Completions
-   */
-  protected validateReasoningLog(reasoningLog: any): string | null {
-    if (!reasoningLog) {
-      return null;
-    }
-
-    // If already a string, return as-is (Chat Completions case - most common)
-    if (typeof reasoningLog === 'string') {
-      return reasoningLog.trim() || null;
-    }
-
-    // Handle arrays - extract text from objects properly (Responses API case)
-    if (Array.isArray(reasoningLog)) {
-      const processed = reasoningLog
-        .map(item => {
-          if (typeof item === 'string') {
-            return item;
-          }
-          // Handle objects properly - extract text content instead of String(object)
-          if (typeof item === 'object' && item !== null) {
-            // Try to extract meaningful content from object structures
-            if (item.text) return item.text;
-            if (item.content) return item.content; 
-            if (item.message) return item.message;
-            if (item.summary) return item.summary;
-            if (item.value) return item.value;
-            // For structured objects, try JSON stringification
-            try {
-              return JSON.stringify(item, null, 2);
-            } catch {
-              console.warn(`[${this.provider}] Cannot extract text from reasoning object:`, item);
-              return null;
-            }
-          }
-          // For primitives that aren't objects, convert safely
-          return typeof item === 'object' ? null : String(item);
-        })
-        .filter(Boolean)
-        .join('\n\n');
-      return processed || null;
-    }
-
-    // Handle single objects - convert to string but warn about potential issues  
-    if (typeof reasoningLog === 'object' && reasoningLog !== null) {
-      console.warn(`[${this.provider}] reasoningLog is an object, converting to string. Consider updating the provider to return a string.`);
-      
-      // Try to extract meaningful content from common object structures
-      if (reasoningLog.text) return reasoningLog.text;
-      if (reasoningLog.content) return reasoningLog.content;
-      if (reasoningLog.message) return reasoningLog.message;
-      if (reasoningLog.summary) return reasoningLog.summary;
-
-      // Last resort: proper JSON stringification
-      try {
-        return JSON.stringify(reasoningLog, null, 2);
-      } catch {
-        console.error(`[${this.provider}] Failed to stringify reasoning log object`);
-        return null;
-      }
-    }
-
-    // For any other type, convert to string safely
-    const stringValue = String(reasoningLog);
-    return stringValue !== '[object Object]' ? stringValue : null;
-  }
-
   /**
    * Advanced JSON extraction with multiple recovery strategies
    * Consolidated from OpenRouter's sophisticated parsing logic
@@ -511,7 +445,10 @@ export abstract class BaseAIService {
       /`\s*([\s\S]*?)\s*`/,
       
       // Pattern 5: JSON object boundaries (most permissive)
-      /(\{[\s\S]*\})/
+      /(\{[\s\S]*\})/,
+      
+      // Pattern 6: OpenRouter specific pattern
+      /"output":\s*([\s\S]*?)\s*,\s*"reasoning"/,
     ];
     
     for (const pattern of patterns) {
