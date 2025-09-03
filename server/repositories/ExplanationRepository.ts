@@ -447,9 +447,20 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       }
     }
 
-    // For any other type, convert to string if meaningful
+    // For any other type, convert to string and if it's [object Object], try to stringify as JSON
     const stringValue = String(reasoningLog);
-    if (stringValue && stringValue !== '[object Object]' && stringValue !== 'undefined') {
+    if (stringValue === '[object Object]') {
+      try {
+        const jsonString = JSON.stringify(reasoningLog, null, 2);
+        if (jsonString && jsonString !== '{}' && jsonString !== 'null') {
+          return jsonString;
+        }
+      } catch (error) {
+        // Ignore and return null
+      }
+      return null;
+    }
+    if (stringValue && stringValue !== 'undefined') {
       return stringValue;
     }
 

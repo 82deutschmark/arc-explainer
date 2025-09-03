@@ -27,45 +27,35 @@
  * @date September 1, 2025 (Refactored)
  */
 
-import {
-  buildSolverPrompt,
-  buildExplanationPrompt,
-  buildAlienCommunicationPrompt,
-  buildEducationalPrompt,
-  buildCustomPrompt
+import { 
+  buildCustomPrompt,
+  buildSystemPrompt
 } from './components/promptBuilder.js';
+import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePrompts.js';
 
 /**
  * System prompts - now DRY and maintainable!
  * Each prompt is built from reusable components, eliminating all duplication.
  */
-export const SOLVER_SYSTEM_PROMPT = buildSolverPrompt();
-
-export const EXPLANATION_SYSTEM_PROMPT = buildExplanationPrompt();
-
-export const ALIEN_COMMUNICATION_SYSTEM_PROMPT = buildAlienCommunicationPrompt();
-
-export const EDUCATIONAL_SYSTEM_PROMPT = buildEducationalPrompt();
-
-export const CUSTOM_SYSTEM_PROMPT = buildCustomPrompt();
 
 /**
  * Map prompt template IDs to their corresponding system prompts
  * Now using the DRY architecture with dedicated custom prompt support
  */
 export const SYSTEM_PROMPT_MAP = {
-  solver: SOLVER_SYSTEM_PROMPT,
-  standardExplanation: EXPLANATION_SYSTEM_PROMPT,
-  alienCommunication: ALIEN_COMMUNICATION_SYSTEM_PROMPT,
-  educationalApproach: EDUCATIONAL_SYSTEM_PROMPT,
-  custom: CUSTOM_SYSTEM_PROMPT // Now has proper custom prompt support!
+  solver: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.solver, additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver, usePromptReasoning }),
+  standardExplanation: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.explanation, additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation, usePromptReasoning }),
+  alienCommunication: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication, usePromptReasoning }),
+  educationalApproach: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational, usePromptReasoning }),
+  custom: (usePromptReasoning?: boolean) => buildCustomPrompt(usePromptReasoning)
 } as const;
 
 /**
  * Get system prompt for a given template ID
  */
-export function getSystemPrompt(promptId: string): string {
-  return SYSTEM_PROMPT_MAP[promptId as keyof typeof SYSTEM_PROMPT_MAP] || EXPLANATION_SYSTEM_PROMPT;
+export function getSystemPrompt(promptId: string, usePromptReasoning: boolean = true): string {
+  const promptBuilder = SYSTEM_PROMPT_MAP[promptId as keyof typeof SYSTEM_PROMPT_MAP] || SYSTEM_PROMPT_MAP.standardExplanation;
+  return promptBuilder(usePromptReasoning);
 }
 
 /**
