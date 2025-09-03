@@ -5,6 +5,78 @@
       {
         "input": [
           [
+            2,
+            0,
+            2
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            2,
+            0,
+            2
+          ]
+        ],
+        "output": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ]
+        ],
+        "output": [
+          [
+            7
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            2,
+            0,
+            2
+          ],
+          [
+            2,
+            0,
+            2
+          ],
+          [
+            2,
+            0,
+            2
+          ]
+        ],
+        "output": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
             0,
             0,
             0
@@ -71,78 +143,6 @@
         "output": [
           [
             7
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            2,
-            0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
-          ],
-          [
-            0,
-            2,
-            0
-          ]
-        ],
-        "output": [
-          [
-            7
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            2,
-            0,
-            2
-          ],
-          [
-            2,
-            0,
-            2
-          ],
-          [
-            2,
-            0,
-            2
-          ]
-        ],
-        "output": [
-          [
-            1
-          ]
-        ]
-      },
-      {
-        "input": [
-          [
-            2,
-            0,
-            2
-          ],
-          [
-            0,
-            2,
-            0
-          ],
-          [
-            2,
-            0,
-            2
-          ]
-        ],
-        "output": [
-          [
-            1
           ]
         ]
       }
@@ -151,154 +151,131 @@
       {
         "input": [
           [
+            2,
             0,
-            0,
-            0
+            2
+          ],
+          [
+            2,
+            2,
+            2
           ],
           [
             2,
             0,
-            0
-          ],
-          [
-            2,
-            0,
-            0
+            2
           ]
         ],
         "output": [
           [
-            7
+            1
           ]
         ]
       },
       {
         "input": [
           [
-            2,
             0,
-            2
-          ],
-          [
-            2,
-            2,
-            2
+            0,
+            0
           ],
           [
             2,
             0,
-            2
+            0
+          ],
+          [
+            2,
+            0,
+            0
           ]
         ],
         "output": [
           [
-            1
+            7
           ]
         ]
       }
     ]
   },
   "explanations": {
-    "gpt-4.1-2025-04-14": {
-      "model": "gpt-4.1-2025-04-14",
-      "reasoningLog": null,
-      "hasReasoningLog": false,
-      "providerResponseId": "resp_68a7d3251bf48190a16def92f29c6dc90a674cfb66a658e1",
-      "providerRawResponse": {
-        "id": "resp_68a7d3251bf48190a16def92f29c6dc90a674cfb66a658e1",
-        "object": "response",
-        "created_at": 1755829029,
-        "status": "completed",
-        "background": false,
-        "error": null,
-        "incomplete_details": null,
-        "instructions": null,
-        "max_output_tokens": 128000,
-        "max_tool_calls": null,
-        "model": "gpt-4.1-2025-04-14",
-        "output": [
-          {
-            "id": "msg_68a7d3263c148190ae81e66e8e4a67090a674cfb66a658e1",
-            "type": "message",
-            "status": "completed",
-            "content": [
-              {
-                "type": "output_text",
-                "annotations": [],
-                "logprobs": [],
-                "text": "{\n  \"predictedOutputs\": [\n    [[7]],\n    [[1]]\n  ],\n  \"patternDescription\": \"If the input grid contains at least one '0' in each row and column, and no row or column is completely filled with '2's, output is 1. If there is any row or column filled entirely with '2's, or if '2's are concentrated mostly in one area (side or corner), output is 7.\",\n  \"solvingStrategy\": \"Looking at the training examples, when the '2's are spread evenly (such as corners, edges, or forming a plus sign with zeros), the output is 1. Whenever there is a grouping of '2's along an edge or corner, especially making a block, line, or cluster, the output is 7. For the first test input [[0,0,0],[2,0,0],[2,0,0]], the left column has a vertical alignment of '2's, resembling the examples producing 7, so output is [[7]]. For the second test input [[2,0,2],[2,2,2],[2,0,2]], the '2's form a border or a plus-like formation, matching patterns that result in 1, so output is [[1]].\",\n  \"hints\": [\n    \"Training outputs are single-value grids (1x1) with either 1 or 7.\",\n    \"'2's concentrated along a side or as a contiguous block/corner usually lead to 7.\",\n    \"Even or symmetric distribution of '2's (like a plus or corners) leads to 1.\"\n  ],\n  \"confidence\": 90\n}"
-              }
-            ],
-            "role": "assistant"
-          }
-        ],
-        "parallel_tool_calls": true,
-        "previous_response_id": null,
-        "prompt_cache_key": null,
-        "reasoning": {
-          "effort": null,
-          "summary": null
-        },
-        "safety_identifier": null,
-        "service_tier": "default",
-        "store": true,
-        "temperature": 1,
-        "text": {
-          "format": {
-            "type": "text"
-          },
-          "verbosity": "medium"
-        },
-        "tool_choice": "auto",
-        "tools": [],
-        "top_logprobs": 0,
-        "top_p": 1,
-        "truncation": "disabled",
-        "usage": {
-          "input_tokens": 800,
-          "input_tokens_details": {
-            "cached_tokens": 0
-          },
-          "output_tokens": 349,
-          "output_tokens_details": {
-            "reasoning_tokens": 0
-          },
-          "total_tokens": 1149
-        },
-        "user": null,
-        "metadata": {}
-      },
-      "reasoningItems": [],
-      "predictedOutputs": [
+    "o4-mini-2025-04-16": {
+      "model": "o4-mini-2025-04-16",
+      "reasoningLog": "[object Object],[object Object],[object Object]",
+      "hasReasoningLog": true,
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 1158,
+      "outputTokens": 1745,
+      "reasoningTokens": 1408,
+      "totalTokens": 4311,
+      "estimatedCost": 0.008951800000000001,
+      "status": "completed",
+      "incomplete": false,
+      "reasoningItems": [
+        "Observed that outputs are only 1 or 7.",
+        "Examined training patterns of '2's and noted symmetric arrangements always map to 1.",
+        "Asymmetric or irregular shapes map to 7.",
+        "Test1 is fully symmetric across both axes → should yield 1.",
+        "Test2 has '2's only on one side → asymmetric → yield 7."
+      ],
+      "multiplePredictedOutputs": [
         [
           [
-            7
+            1
           ]
         ],
         [
           [
-            1
+            7
           ]
         ]
       ],
-      "patternDescription": "If the input grid contains at least one '0' in each row and column, and no row or column is completely filled with '2's, output is 1. If there is any row or column filled entirely with '2's, or if '2's are concentrated mostly in one area (side or corner), output is 7.",
-      "solvingStrategy": "Looking at the training examples, when the '2's are spread evenly (such as corners, edges, or forming a plus sign with zeros), the output is 1. Whenever there is a grouping of '2's along an edge or corner, especially making a block, line, or cluster, the output is 7. For the first test input [[0,0,0],[2,0,0],[2,0,0]], the left column has a vertical alignment of '2's, resembling the examples producing 7, so output is [[7]]. For the second test input [[2,0,2],[2,2,2],[2,0,2]], the '2's form a border or a plus-like formation, matching patterns that result in 1, so output is [[1]].",
-      "hints": [
-        "Training outputs are single-value grids (1x1) with either 1 or 7.",
-        "'2's concentrated along a side or as a contiguous block/corner usually lead to 7.",
-        "Even or symmetric distribution of '2's (like a plus or corners) leads to 1."
+      "predictedOutput": [],
+      "predictedOutput1": [
+        [
+          1
+        ]
       ],
-      "confidence": 90,
-      "apiProcessingTimeMs": 5816,
-      "predictedOutputGrids": [
+      "predictedOutput2": [
+        [
+          7
+        ]
+      ],
+      "predictedOutput3": [],
+      "solvingStrategy": "for each test grid:\n  collect coordinates of cells with value 2\n  check symmetry:\n    for each coordinate (r,c):\n      if there is no matching cell (r, width-1-c) for vertical symmetry and no matching cell (height-1-r, c) for horizontal symmetry:\n        set symmetric=false\n        break\n  if symmetric: output = 1 else output = 7\n  return [[output]]",
+      "patternDescription": "If the arrangement of 2's is symmetric across the central row or column, output 1; otherwise output 7.",
+      "hints": [
+        "1. Check horizontal and vertical symmetry of the 2's: if symmetric return 1 else return 7.",
+        "2. Count 2's in each quadrant and compare counts: good heuristic but fails for symmetric patterns that span quadrants uniformly.",
+        "3. Match the shape of 2's against a catalog of known shapes (cross, line, L, Z): too complex to implement for arbitrary patterns."
+      ],
+      "confidence": 80,
+      "apiProcessingTimeMs": 19554,
+      "predictedOutputGrid": [
         [
           [
-            7
+            1
           ]
         ],
         [
           [
+            7
+          ]
+        ]
+      ],
+      "hasMultiplePredictions": true,
+      "predictedOutputGrids": [
+        [
+          [
             1
+          ]
+        ],
+        [
+          [
+            7
           ]
         ]
       ],
@@ -307,12 +284,12 @@
           "index": 0,
           "predictedGrid": [
             [
-              7
+              1
             ]
           ],
           "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.95,
-          "extractionMethod": "direct_predicted_outputs_field",
+          "predictionAccuracyScore": 0.9,
+          "extractionMethod": "arcJsonSchema_clean",
           "expectedDimensions": {
             "rows": 1,
             "cols": 1
@@ -322,27 +299,58 @@
           "index": 1,
           "predictedGrid": [
             [
-              1
+              7
             ]
           ],
           "isPredictionCorrect": true,
-          "predictionAccuracyScore": 0.95,
-          "extractionMethod": "direct_predicted_outputs_field",
+          "predictionAccuracyScore": 0.9,
+          "extractionMethod": "arcJsonSchema_clean",
           "expectedDimensions": {
             "rows": 1,
             "cols": 1
           }
         }
       ],
-      "allPredictionsCorrect": true,
-      "averagePredictionAccuracyScore": 0.95,
-      "extractionMethod": "direct_predicted_outputs_field",
-      "modelKey": "gpt-4.1-2025-04-14",
-      "actualProcessingTime": 6
+      "multiTestResults": [
+        {
+          "index": 0,
+          "predictedGrid": [
+            [
+              1
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.9,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        },
+        {
+          "index": 1,
+          "predictedGrid": [
+            [
+              7
+            ]
+          ],
+          "isPredictionCorrect": true,
+          "predictionAccuracyScore": 0.9,
+          "extractionMethod": "arcJsonSchema_clean",
+          "expectedDimensions": {
+            "rows": 1,
+            "cols": 1
+          }
+        }
+      ],
+      "multiTestAllCorrect": true,
+      "multiTestAverageAccuracy": 0.9,
+      "modelKey": "o4-mini-2025-04-16",
+      "actualProcessingTime": 20
     }
   },
-  "exportedAt": "2025-08-22T02:17:14.515Z",
+  "exportedAt": "2025-09-03T17:19:08.336Z",
   "models": [
-    "gpt-4.1-2025-04-14"
+    "o4-mini-2025-04-16"
   ]
 }

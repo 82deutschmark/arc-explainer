@@ -33,16 +33,26 @@ Key transformation types include:
  * JSON output enforcement instructions with answer-first requirement
  * SINGLE DEFINITION - used by all system prompts
  */
-export const JSON_OUTPUT_INSTRUCTIONS = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
+export const JSON_HEADER = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
 
-JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.
+JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`;
 
-Put all your analysis and insights in the structured JSON fields:
+export const JSON_REASONING_INSTRUCTION = `- reasoningItems: Array of strings detailing the step-by-step analysis, insights, and even incorrect approaches explored.`;
+
+export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
-- reasoningItems: Step-by-step analysis progression and insights, including incorrect approaches and insights 
 - patternDescription: The transformation rules you identified, simply stated.
 - hints: Describe three pseudo-code algorithms you considered, starting with the best one. Explain why you rejected the other algorithms. 
 - confidence: Your certainty level (0-100)`;
+
+/**
+ * @deprecated Use the composable parts: JSON_HEADER, JSON_REASONING_INSTRUCTION, JSON_FIELDS_INSTRUCTIONS
+ */
+export const JSON_OUTPUT_INSTRUCTIONS = [
+  JSON_HEADER,
+  JSON_FIELDS_INSTRUCTIONS,
+  JSON_REASONING_INSTRUCTION
+].join('\n');
 
 /**
  * Prediction field instructions - used by both solver and explanation modes
