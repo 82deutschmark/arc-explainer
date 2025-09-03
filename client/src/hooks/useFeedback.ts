@@ -94,8 +94,8 @@ export function useFeedbackPreview(explanationId: number | undefined, maxItems =
   const hasMore = (feedback?.length || 0) > maxItems;
   const summary = {
     total: feedback?.length || 0,
-    helpful: feedback?.filter(f => f.voteType === 'helpful').length || 0,
-    notHelpful: feedback?.filter(f => f.voteType === 'not_helpful').length || 0,
+    helpful: feedback?.filter(f => f.feedbackType === 'helpful').length || 0,
+    notHelpful: feedback?.filter(f => f.feedbackType === 'not_helpful').length || 0,
   };
 
   return {
@@ -117,8 +117,8 @@ export function usePuzzleFeedbackSummary(puzzleId: string | undefined) {
   
   const summary = {
     total: feedback?.length || 0,
-    helpful: feedback?.filter(f => f.voteType === 'helpful').length || 0,
-    notHelpful: feedback?.filter(f => f.voteType === 'not_helpful').length || 0,
+    helpful: feedback?.filter(f => f.feedbackType === 'helpful').length || 0,
+    notHelpful: feedback?.filter(f => f.feedbackType === 'not_helpful').length || 0,
     recentFeedback: feedback?.slice(0, 5) || [],
     modelBreakdown: {} as Record<string, { helpful: number; notHelpful: number }>
   };
@@ -129,9 +129,9 @@ export function usePuzzleFeedbackSummary(puzzleId: string | undefined) {
       if (!summary.modelBreakdown[f.modelName]) {
         summary.modelBreakdown[f.modelName] = { helpful: 0, notHelpful: 0 };
       }
-      if (f.voteType === 'helpful') {
+      if (f.feedbackType === 'helpful') {
         summary.modelBreakdown[f.modelName].helpful++;
-      } else {
+      } else if (f.feedbackType === 'not_helpful') {
         summary.modelBreakdown[f.modelName].notHelpful++;
       }
     });
