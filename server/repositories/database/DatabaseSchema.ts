@@ -303,12 +303,11 @@ export class DatabaseSchema {
       
       // Populate puzzle_id from explanations table for existing records
       await client.query(`
-        UPDATE feedback 
-        SET puzzle_id = e.puzzle_id 
-        FROM explanations e 
-        WHERE feedback.explanation_id = e.id 
-          AND feedback.puzzle_id IS NULL
-          AND feedback.explanation_id IS NOT NULL;
+        UPDATE feedback f
+        SET puzzle_id = e.puzzle_id
+        FROM explanations e
+        WHERE f.explanation_id = e.id
+          AND f.puzzle_id IS NULL;
       `);
 
       // Set default feedback_type for any NULL values
