@@ -9,7 +9,7 @@
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
-const DEFAULT_PROMPT_ID = 'standardExplanation';
+const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
