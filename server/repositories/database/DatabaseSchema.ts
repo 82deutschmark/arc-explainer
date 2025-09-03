@@ -160,7 +160,7 @@ export class DatabaseSchema {
   private static async applySchemaMigrations(client: PoolClient): Promise<void> {
     // Migration: Rename 'vote_type' to 'feedback_type' if it exists
     const voteTypeColumn = await client.query(`SELECT 1 FROM information_schema.columns WHERE table_name='feedback' AND column_name='vote_type'`);
-    if (voteTypeColumn && voteTypeColumn.rowCount > 0) {
+    if (voteTypeColumn && typeof voteTypeColumn.rowCount === 'number' && voteTypeColumn.rowCount > 0) {
       await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
       logger.info("Renamed column 'vote_type' to 'feedback_type' in 'feedback' table.", 'database');
     }
