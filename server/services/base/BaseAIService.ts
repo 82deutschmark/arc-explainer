@@ -226,73 +226,43 @@ export abstract class BaseAIService {
   }
 
   /**
-   * Validate reasoning log format to prevent "[object Object]" corruption
+   * Validates the reasoning log format to prevent "[object Object]" corruption.
+   * This is a wrapper around processReasoningLog for backward compatibility.
+   * @deprecated Use processReasoningLog instead
+   */
+  protected validateReasoningLog(reasoningLog: unknown): string | null {
+    return this.processReasoningLog(reasoningLog);
+  }
+
+  /**
+   * Process reasoning log format to prevent "[object Object]" corruption
    * Ensures reasoningLog is always a string or null before database storage
    * Fixed: Properly handles OpenAI Responses API objects without corrupting Chat Completions
    */
-  protected validateReasoningLog(reasoningLog: any): string | null {
-    if (!reasoningLog) {
-      return null;
-    }
-
-    // If already a string, return as-is (Chat Completions case - most common)
-    if (typeof reasoningLog === 'string') {
-      return reasoningLog.trim() || null;
-    }
-
-    // Handle arrays - extract text from objects properly (Responses API case)
+  private processReasoningLog(reasoningLog: unknown): string | null {
+    if (!reasoningLog) return null;
+    if (typeof reasoningLog === 'string') return reasoningLog.trim() || null;
+    
     if (Array.isArray(reasoningLog)) {
-      const processed = reasoningLog
+      const result = reasoningLog
         .map(item => {
-          if (typeof item === 'string') {
-            return item;
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object') {
+            return JSON.stringify(item);
           }
-          // Handle objects properly - extract text content instead of String(object)
-          if (typeof item === 'object' && item !== null) {
-            // Try to extract meaningful content from object structures
-            if (item.text) return item.text;
-            if (item.content) return item.content; 
-            if (item.message) return item.message;
-            if (item.summary) return item.summary;
-            if (item.value) return item.value;
-            // For structured objects, try JSON stringification
-            try {
-              return JSON.stringify(item, null, 2);
-            } catch {
-              console.warn(`[${this.provider}] Cannot extract text from reasoning object:`, item);
-              return null;
-            }
-          }
-          // For primitives that aren't objects, convert safely
-          return typeof item === 'object' ? null : String(item);
+          return String(item);
         })
         .filter(Boolean)
-        .join('\n\n');
-      return processed || null;
+        .join('\n');
+      return result || null;
     }
 
-    // Handle single objects - convert to string but warn about potential issues  
     if (typeof reasoningLog === 'object' && reasoningLog !== null) {
-      console.warn(`[${this.provider}] reasoningLog is an object, converting to string. Consider updating the provider to return a string.`);
-      
-      // Try to extract meaningful content from common object structures
-      if (reasoningLog.text) return reasoningLog.text;
-      if (reasoningLog.content) return reasoningLog.content;
-      if (reasoningLog.message) return reasoningLog.message;
-      if (reasoningLog.summary) return reasoningLog.summary;
-
-      // Last resort: proper JSON stringification
-      try {
-        return JSON.stringify(reasoningLog, null, 2);
-      } catch {
-        console.error(`[${this.provider}] Failed to stringify reasoning log object`);
-        return null;
-      }
+      return JSON.stringify(reasoningLog);
     }
 
-    // For any other type, convert to string safely
     const stringValue = String(reasoningLog);
-    return stringValue !== '[object Object]' ? stringValue : null;
+    return stringValue !== 'undefined' && stringValue !== '[object Object]' ? stringValue : null;
   }
 
   /**
@@ -511,7 +481,10 @@ export abstract class BaseAIService {
       /`\s*([\s\S]*?)\s*`/,
       
       // Pattern 5: JSON object boundaries (most permissive)
-      /(\{[\s\S]*\})/
+      /(\{[\s\S]*\})/,
+      
+      // Pattern 6: OpenRouter specific pattern
+      /"output":\s*([\s\S]*?)\s*,\s*"reasoning"/,
     ];
     
     for (const pattern of patterns) {
