@@ -7,8 +7,9 @@
  */
 
 import { ARCTask } from "../../../shared/types.js";
-import { buildAnalysisPrompt, getDefaultPromptId } from "../promptBuilder.js";
-import type { PromptOptions, PromptPackage } from "../promptBuilder.js";
+import { getSystemPrompt } from '../prompts/systemPrompts.js';
+import { buildCustomPrompt } from '../prompts/components/promptBuilder.js';
+import { buildAnalysisPrompt, getDefaultPromptId, PromptOptions, PromptPackage } from '../promptBuilder.js';
 import { calculateCost } from "../../utils/costCalculator.js";
 import { getModelConfig } from "../../config/models/index.js";
 
@@ -97,7 +98,6 @@ export abstract class BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature?: number,
-    captureReasoning?: boolean,
     promptId?: string,
     customPrompt?: string,
     options?: PromptOptions,
@@ -148,15 +148,18 @@ export abstract class BaseAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts?: ServiceOptions
+    serviceOpts: ServiceOptions = {},
+    usePromptReasoning: boolean = true
   ): PromptPackage {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
-    return buildAnalysisPrompt(task, promptId, customPrompt, {
-      ...options,
-      systemPromptMode,
-      useStructuredOutput: true
-    });
+    const systemPrompt = customPrompt 
+      ? buildCustomPrompt(usePromptReasoning) 
+      : getSystemPrompt(promptId, usePromptReasoning);
+
+    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+
+    return promptPackage;
   }
 
   /**
