@@ -159,12 +159,9 @@ export class RepositoryService {
       throw new Error('Database pool not available');
     }
 
-    // Get basic stats from repositories
-    const explanationCount = await this.explanationRepository.getExplanationCount();
-    const feedbackCount = await this.feedbackRepository.getFeedbackCount();
     const stats = {
-      totalExplanations: explanationCount,
-      totalFeedback: feedbackCount,
+      totalExplanations: 0,
+      totalFeedback: 0,
       totalBatchSessions: 0,
       totalBatchResults: 0,
       lastExplanationAt: null,
