@@ -291,16 +291,51 @@ export class DatabaseSchema {
         }
       }
 
+      // --- Phase 1: Schema Alterations ---
+      logger.info('Starting schema alteration phase...', 'database');
+
       // Add missing columns to feedback table
       await client.query(`
-        ALTER TABLE feedback 
+        ALTER TABLE feedback
         ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS puzzle_id VARCHAR(255) DEFAULT NULL,
         ADD COLUMN IF NOT EXISTS feedback_type VARCHAR(50) DEFAULT 'helpful',
         ADD COLUMN IF NOT EXISTS reference_feedback_id INTEGER DEFAULT NULL;
       `);
-      
+
+      // Add updated_at column to batch_analysis_sessions if missing
+      await client.query(`
+        ALTER TABLE batch_analysis_sessions
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+      `);
+
+      // Add system prompt tracking columns to explanations table
+      await client.query(`
+        ALTER TABLE explanations
+        ADD COLUMN IF NOT EXISTS system_prompt_used TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS user_prompt_used TEXT DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS prompt_template_id VARCHAR(50) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS custom_prompt_text TEXT DEFAULT NULL;
+      `);
+
+      // Make sure explanation_id and comment are nullable
+      await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
+      await client.query(`ALTER TABLE feedback ALTER COLUMN comment DROP NOT NULL;`);
+
+      // Add constraint for feedback_type
+      await client.query(`ALTER TABLE feedback DROP CONSTRAINT IF EXISTS feedback_type_check;`);
+      await client.query(`
+        ALTER TABLE feedback
+        ADD CONSTRAINT feedback_type_check
+        CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation'));
+      `);
+
+      logger.info('Schema alteration phase completed.', 'database');
+
+      // --- Phase 2: Data Population and Cleanup ---
+      logger.info('Starting data population phase...', 'database');
+
       // Populate puzzle_id from explanations table for existing records
       await client.query(`
         UPDATE feedback f
@@ -312,43 +347,13 @@ export class DatabaseSchema {
 
       // Set default feedback_type for any NULL values
       await client.query(`
-        UPDATE feedback 
-        SET feedback_type = COALESCE(feedback_type, 'helpful') 
+        UPDATE feedback
+        SET feedback_type = COALESCE(feedback_type, 'helpful')
         WHERE feedback_type IS NULL;
       `);
-      
-      // Add constraint for feedback_type
-      await client.query(`
-        ALTER TABLE feedback 
-        DROP CONSTRAINT IF EXISTS feedback_type_check;
-      `);
-      
-      await client.query(`
-        ALTER TABLE feedback 
-        ADD CONSTRAINT feedback_type_check 
-        CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation'));
-      `);
 
-      // Make sure explanation_id and comment are nullable
-      await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
-      await client.query(`ALTER TABLE feedback ALTER COLUMN comment DROP NOT NULL;`);
-      
-      logger.info('Successfully applied feedback table migrations', 'database');
-
-      // Add updated_at column to batch_analysis_sessions if missing
-      await client.query(`
-        ALTER TABLE batch_analysis_sessions 
-        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      `);
-
-      // Add system prompt tracking columns to explanations table
-      await client.query(`
-        ALTER TABLE explanations 
-        ADD COLUMN IF NOT EXISTS system_prompt_used TEXT DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS user_prompt_used TEXT DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS prompt_template_id VARCHAR(50) DEFAULT NULL,
-        ADD COLUMN IF NOT EXISTS custom_prompt_text TEXT DEFAULT NULL
-      `);
+      logger.info('Data population phase completed.', 'database');
+      logger.info('Successfully applied all column migrations.', 'database');
 
       // Create indexes for prompt analysis
       await client.query(`
