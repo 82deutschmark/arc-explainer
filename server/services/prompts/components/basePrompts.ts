@@ -39,7 +39,7 @@ JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs fiel
 
 Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
-- reasoningItems: Step-by-step analysis progression and insights, including incorrect approaches and insights 
+- reasoningItems: Array of strings detailing the step-by-step analysis, insights, and even incorrect approaches explored. 
 - patternDescription: The transformation rules you identified, simply stated.
 - hints: Describe three pseudo-code algorithms you considered, starting with the best one. Explain why you rejected the other algorithms. 
 - confidence: Your certainty level (0-100)`;
