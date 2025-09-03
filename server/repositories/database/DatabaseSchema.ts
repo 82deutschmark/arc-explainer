@@ -154,12 +154,13 @@ export class DatabaseSchema {
     await client.query(`
       CREATE TABLE IF NOT EXISTS feedback (
         id SERIAL PRIMARY KEY,
-        puzzle_id VARCHAR(255) NOT NULL,
-        explanation_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
-        feedback_type VARCHAR(50) NOT NULL CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation')),
-        comment TEXT,
+        puzzle_id VARCHAR(255) DEFAULT NULL,
+        explanation_id INTEGER DEFAULT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        feedback_type VARCHAR(50) DEFAULT 'helpful' CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation')),
+        comment TEXT DEFAULT NULL,
         user_agent TEXT DEFAULT NULL,
         session_id VARCHAR(255) DEFAULT NULL,
+        reference_feedback_id INTEGER DEFAULT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -269,7 +270,28 @@ export class DatabaseSchema {
    */
   private static async applyMissingColumnMigrations(client: PoolClient): Promise<void> {
     try {
-      // Add user_agent and session_id to feedback table if missing
+      // First, handle vote_type to feedback_type rename
+      const voteTypeColumn = await client.query(`
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name='feedback' AND column_name='vote_type'
+      `);
+
+      if (voteTypeColumn && voteTypeColumn.rowCount && voteTypeColumn.rowCount > 0) {
+        const feedbackTypeColumn = await client.query(`
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='feedback' AND column_name='feedback_type'
+        `);
+        
+        if (!feedbackTypeColumn || feedbackTypeColumn.rowCount === 0) {
+          await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
+          logger.info('Renamed vote_type to feedback_type.', 'database');
+        } else {
+          await client.query(`ALTER TABLE feedback DROP COLUMN vote_type;`);
+          logger.info('Dropped legacy vote_type column as feedback_type already exists.', 'database');
+        }
+      }
+
+      // Add missing columns to feedback table
       await client.query(`
         ALTER TABLE feedback 
         ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL,
@@ -279,54 +301,40 @@ export class DatabaseSchema {
         ADD COLUMN IF NOT EXISTS reference_feedback_id INTEGER DEFAULT NULL;
       `);
       
-      // Update feedback_type to NOT NULL and add constraint after adding the column
-      await client.query(`
-        UPDATE feedback SET feedback_type = 'helpful' WHERE feedback_type IS NULL;
-      `);
-      
-      await client.query(`
-        ALTER TABLE feedback 
-        ALTER COLUMN feedback_type SET NOT NULL;
-      `);
-      
-      await client.query(`
-        ALTER TABLE feedback 
-        ADD CONSTRAINT IF NOT EXISTS feedback_type_check 
-        CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation'));
-      `);
-
-      // Update puzzle_id for existing feedback records that have explanation_id
+      // Populate puzzle_id from explanations table for existing records
       await client.query(`
         UPDATE feedback 
         SET puzzle_id = e.puzzle_id 
         FROM explanations e 
         WHERE feedback.explanation_id = e.id 
-          AND feedback.puzzle_id IS NULL;
+          AND feedback.puzzle_id IS NULL
+          AND feedback.explanation_id IS NOT NULL;
       `);
 
+      // Set default feedback_type for any NULL values
+      await client.query(`
+        UPDATE feedback 
+        SET feedback_type = COALESCE(feedback_type, 'helpful') 
+        WHERE feedback_type IS NULL;
+      `);
+      
+      // Add constraint for feedback_type
+      await client.query(`
+        ALTER TABLE feedback 
+        DROP CONSTRAINT IF EXISTS feedback_type_check;
+      `);
+      
+      await client.query(`
+        ALTER TABLE feedback 
+        ADD CONSTRAINT feedback_type_check 
+        CHECK (feedback_type IN ('helpful', 'not_helpful', 'solution_explanation'));
+      `);
+
+      // Make sure explanation_id and comment are nullable
       await client.query(`ALTER TABLE feedback ALTER COLUMN explanation_id DROP NOT NULL;`);
       await client.query(`ALTER TABLE feedback ALTER COLUMN comment DROP NOT NULL;`);
       
-      // Safely rename vote_type to feedback_type if it exists
-      const voteTypeColumn = await client.query(`
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name='feedback' AND column_name='vote_type'
-      `);
-
-      if (voteTypeColumn && voteTypeColumn.rowCount && voteTypeColumn.rowCount > 0) {
-        // If feedback_type column already exists, drop vote_type to avoid conflicts.
-        const feedbackTypeColumn = await client.query(`
-          SELECT 1 FROM information_schema.columns 
-          WHERE table_name='feedback' AND column_name='feedback_type'
-        `);
-        if (feedbackTypeColumn && feedbackTypeColumn.rowCount && feedbackTypeColumn.rowCount > 0) {
-          await client.query(`ALTER TABLE feedback DROP COLUMN vote_type;`);
-          logger.info('Dropped legacy vote_type column as feedback_type already exists.', 'database');
-        } else {
-          await client.query(`ALTER TABLE feedback RENAME COLUMN vote_type TO feedback_type;`);
-          logger.info('Renamed vote_type to feedback_type.', 'database');
-        }
-      }
+      logger.info('Successfully applied feedback table migrations', 'database');
 
       // Add updated_at column to batch_analysis_sessions if missing
       await client.query(`
