@@ -2,9 +2,9 @@
  * PuzzleDBViewer.tsx
  * 
  * @author Cascade
- * @description This component displays puzzle details and allows users to submit their own solutions.
- * It reuses many elements from PuzzleExaminer but focuses on solution viewing/submission rather than AI analysis.
- * Part of the solution submission system outlined in the Gemini plan.
+ * @description This component displays puzzle details and shows all LLM analysis results from the database.
+ * Primary focus is showing which LLMs analyzed a puzzle and their results. User solution submission is secondary.
+ * Shows comprehensive database view of all AI attempts on this puzzle.
  */
 
 import React, { useState } from 'react';
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Eye, ArrowLeft, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Loader2, Eye, ArrowLeft, MessageSquare, ThumbsUp, ThumbsDown, Brain, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +40,23 @@ interface Solution {
   userVote?: 'helpful' | 'not_helpful' | null;
 }
 
+// Define the explanation type for LLM analysis results
+interface Explanation {
+  id: string;
+  puzzleId: string;
+  modelName: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  confidence: number;
+  isPredictionCorrect: boolean;
+  multiTestAllCorrect?: boolean;
+  predictionAccuracyScore?: number;
+  createdAt: string;
+  processingTime?: number;
+  estimatedCost?: number;
+}
+
 export default function PuzzleDBViewer() {
   const { taskId } = useParams<{ taskId: string }>();
   const { toast } = useToast();
@@ -50,21 +67,43 @@ export default function PuzzleDBViewer() {
   const [solutionInput, setSolutionInput] = useState('');
   const [isSubmittingSolution, setIsSubmittingSolution] = useState(false);
   const [isVoting, setIsVoting] = useState<Record<string, boolean>>({});
+  const [explanations, setExplanations] = useState<Explanation[]>([]);
+  const [isLoadingExplanations, setIsLoadingExplanations] = useState(false);
   
   // Set page title with puzzle ID
   React.useEffect(() => {
-    document.title = taskId ? `ARC Puzzle ${taskId} - Solutions` : 'ARC Puzzle Solutions';
+    document.title = taskId ? `ARC Puzzle ${taskId} - Database View` : 'ARC Puzzle Database';
   }, [taskId]);
 
   // Fetch puzzle data
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
 
-  // Fetch solutions for this puzzle
+  // Fetch solutions and explanations for this puzzle
   React.useEffect(() => {
     if (taskId) {
+      fetchExplanations();
       fetchSolutions();
     }
   }, [taskId]);
+
+  const fetchExplanations = async () => {
+    try {
+      setIsLoadingExplanations(true);
+      const response = await axios.get(`/api/puzzle/${taskId}/explanations`);
+      if (response.data.success) {
+        setExplanations(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch explanations:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load LLM analysis results. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingExplanations(false);
+    }
+  };
 
   const fetchSolutions = async () => {
     try {
@@ -264,17 +303,17 @@ export default function PuzzleDBViewer() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">
-              Puzzle {taskId} - Solutions
+              Puzzle {taskId} - Database View
             </h1>
             <p className="text-gray-600">
-              View community solutions and submit your own
+              LLM analysis results and community solutions
             </p>
           </div>
         </div>
         
         <div className="flex items-center gap-3">
           <Link href={`/examine/${taskId}`}>
-            <Button variant="ghost" size="sm" className="flex items-center gap-2">
+            <Button variant="default" size="sm" className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
               Analyze with AI
             </Button>
@@ -352,20 +391,135 @@ export default function PuzzleDBViewer() {
         </CardContent>
       </Card>
 
-      {/* Solution Submission & Viewing */}
-      <Tabs defaultValue="view" className="w-full">
-        <TabsList className="grid grid-cols-2 mb-2">
-          <TabsTrigger value="view">View Solutions</TabsTrigger>
-          <TabsTrigger value="submit">Submit Your Solution</TabsTrigger>
+      {/* LLM Analysis Results & Community Solutions */}
+      <Tabs defaultValue="llm-analysis" className="w-full">
+        <TabsList className="grid grid-cols-3 mb-2">
+          <TabsTrigger value="llm-analysis">LLM Analysis Results</TabsTrigger>
+          <TabsTrigger value="community">Community Solutions</TabsTrigger>
+          <TabsTrigger value="submit">Submit Solution</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="view">
+        <TabsContent value="llm-analysis">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                LLM Analysis Results
+                {!isLoadingExplanations && (
+                  <Badge variant="outline" className="ml-2">
+                    {explanations.length} analysis{explanations.length !== 1 ? 'es' : ''}
+                  </Badge>
+                )}
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                Database records of all AI model attempts on this puzzle
+              </p>
+            </CardHeader>
+            <CardContent>
+              {isLoadingExplanations ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                  <span>Loading LLM analysis results...</span>
+                </div>
+              ) : explanations.length === 0 ? (
+                <div className="text-center py-8 border border-dashed border-gray-200 rounded-md">
+                  <Brain className="h-12 w-12 text-gray-300 mx-auto mb-2" />
+                  <h3 className="font-medium text-gray-700">No LLM analysis yet</h3>
+                  <p className="text-gray-500 text-sm mt-1">This puzzle hasn't been analyzed by any AI models</p>
+                  <Link href={`/examine/${taskId}`}>
+                    <Button className="mt-3" size="sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Run Analysis
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {explanations.map((explanation) => (
+                    <div key={explanation.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className="font-mono text-sm">
+                              {explanation.modelName}
+                            </Badge>
+                            {explanation.isPredictionCorrect ? (
+                              <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3" />
+                                Correct
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+                                <XCircle className="h-3 w-3" />
+                                Incorrect
+                              </Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {explanation.confidence}% confidence
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {new Date(explanation.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="text-right text-sm text-gray-500 space-y-1">
+                          {explanation.processingTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {(explanation.processingTime / 1000).toFixed(1)}s
+                            </div>
+                          )}
+                          {explanation.estimatedCost && (
+                            <div>${explanation.estimatedCost.toFixed(4)}</div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div>
+                          <h4 className="font-medium text-gray-800 text-sm">Pattern Description:</h4>
+                          <p className="text-gray-700 text-sm">{explanation.patternDescription || 'No description provided'}</p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium text-gray-800 text-sm">Solving Strategy:</h4>
+                          <p className="text-gray-700 text-sm">{explanation.solvingStrategy || 'No strategy provided'}</p>
+                        </div>
+                        
+                        {explanation.hints && explanation.hints.length > 0 && (
+                          <div>
+                            <h4 className="font-medium text-gray-800 text-sm">Hints:</h4>
+                            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                              {explanation.hints.map((hint, index) => (
+                                <li key={index}>{hint}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="community">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Community Solutions
+                {!isLoadingSolutions && (
+                  <Badge variant="outline" className="ml-2">
+                    {solutions.length} solution{solutions.length !== 1 ? 's' : ''}
+                  </Badge>
+                )}
               </CardTitle>
+              <p className="text-sm text-gray-600">
+                Human-submitted explanations and approaches
+              </p>
             </CardHeader>
             <CardContent>
               {isLoadingSolutions ? (
