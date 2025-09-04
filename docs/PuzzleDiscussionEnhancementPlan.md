@@ -22,7 +22,7 @@ Transform the PuzzleDiscussion page from a simple list into a powerful research 
 - [ ] Update backend API to accept min/max accuracy parameters
 - [ ] Modify database query to filter by accuracy ranges
 - [ ] Add preset accuracy buttons (0%, 0-10%, 10-30%, 30-50%, 50%+)
-- [ ] Test with different accuracy ranges
+- [ ] User will Test with different accuracy ranges
 
 **Files to modify**:
 - `client/src/pages/PuzzleDiscussion.tsx` - Add slider UI
@@ -33,7 +33,7 @@ Transform the PuzzleDiscussion page from a simple list into a powerful research 
 **Complexity**: Low | **Time Estimate**: 30 minutes
 
 **Implementation Steps**:
-- [ ] Add "Only Unsolved (0%)" toggle checkbox
+- [ ] Add "Only Unsolved (0%)" toggle checkbox (should not show puzzles that have NEVER been attempted)
 - [ ] Update state management for zero accuracy filter
 - [ ] Add visual indicator when zero accuracy filter is active
 - [ ] Test filtering functionality

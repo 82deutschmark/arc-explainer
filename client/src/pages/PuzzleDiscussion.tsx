@@ -4,6 +4,7 @@ import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
 import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -11,13 +12,21 @@ export default function PuzzleDiscussion() {
   const [selectedLimit, setSelectedLimit] = useState<number>(50);
   const [sortBy, setSortBy] = useState<string>('accuracy');
   const [compactView, setCompactView] = useState<boolean>(false);
+  const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
+  const [zeroAccuracyOnly, setZeroAccuracyOnly] = useState<boolean>(false);
   
   // Set page title
   React.useEffect(() => {
     document.title = 'ARC Puzzle Discussion - Lowest Accuracy Puzzles';
   }, []);
 
-  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(selectedLimit, sortBy);
+  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(
+    selectedLimit, 
+    sortBy, 
+    accuracyRange[0], 
+    accuracyRange[1], 
+    zeroAccuracyOnly
+  );
 
   if (error) {
     return (
@@ -78,7 +87,7 @@ export default function PuzzleDiscussion() {
                 </Button>
               </Link>
               <a
-                href="https://github.com/your-github-username/arc-explainer"
+                href="https://github.com/82deutschmark/arc-explainer"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -113,8 +122,9 @@ export default function PuzzleDiscussion() {
               Difficulty Filters
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
+          <CardContent className="space-y-4">
+            {/* First row - existing controls */}
+            <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2">
                 <label htmlFor="limit-select" className="text-sm font-medium">
                   Show hardest:
@@ -160,6 +170,108 @@ export default function PuzzleDiscussion() {
                 />
                 <span className="text-xs text-gray-500">{compactView ? 'On' : 'Off'}</span>
               </div>
+            </div>
+
+            {/* Second row - accuracy filtering */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-6 flex-wrap">
+                {/* Zero accuracy quick filter */}
+                <div className="flex items-center gap-2">
+                  <input
+                    id="zero-accuracy-toggle"
+                    type="checkbox"
+                    checked={zeroAccuracyOnly}
+                    onChange={(e) => setZeroAccuracyOnly(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <label htmlFor="zero-accuracy-toggle" className="text-sm font-medium text-red-700">
+                    Only Unsolved (0%)
+                  </label>
+                  {zeroAccuracyOnly && (
+                    <Badge variant="destructive" className="text-xs">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Accuracy range slider */}
+                {!zeroAccuracyOnly && (
+                  <div className="flex items-center gap-4 flex-1 min-w-80">
+                    <label className="text-sm font-medium whitespace-nowrap">
+                      Accuracy Range:
+                    </label>
+                    <div className="flex-1">
+                      <Slider
+                        value={accuracyRange}
+                        onValueChange={(value) => setAccuracyRange(value as [number, number])}
+                        max={100}
+                        min={0}
+                        step={5}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>{accuracyRange[0]}%</span>
+                        <span>{accuracyRange[1]}%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Preset accuracy buttons */}
+              {!zeroAccuracyOnly && (
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-xs text-gray-500">Quick select:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([0, 0])}
+                    className="text-xs h-7"
+                  >
+                    0%
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([0, 10])}
+                    className="text-xs h-7"
+                  >
+                    0-10%
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([10, 30])}
+                    className="text-xs h-7"
+                  >
+                    10-30%
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([30, 50])}
+                    className="text-xs h-7"
+                  >
+                    30-50%
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([50, 100])}
+                    className="text-xs h-7"
+                  >
+                    50%+
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAccuracyRange([0, 100])}
+                    className="text-xs h-7"
+                  >
+                    All
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

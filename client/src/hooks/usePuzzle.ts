@@ -121,11 +121,28 @@ export function usePuzzleList(filters?: {
   };
 }
 
-export function useWorstPerformingPuzzles(limit: number = 20, sortBy: string = 'composite') {
+export function useWorstPerformingPuzzles(
+  limit: number = 20, 
+  sortBy: string = 'composite',
+  minAccuracy?: number,
+  maxAccuracy?: number,
+  zeroAccuracyOnly?: boolean
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.set('limit', limit.toString());
+  queryParams.set('sortBy', sortBy);
+  
+  if (minAccuracy !== undefined) queryParams.set('minAccuracy', (minAccuracy / 100).toString());
+  if (maxAccuracy !== undefined) queryParams.set('maxAccuracy', (maxAccuracy / 100).toString());
+  if (zeroAccuracyOnly) queryParams.set('zeroAccuracyOnly', 'true');
+  
+  const queryString = queryParams.toString();
+  const url = `/api/puzzle/worst-performing?${queryString}`;
+  
   const { data: responseData, isLoading, error } = useQuery({
-    queryKey: [`/api/puzzle/worst-performing?limit=${limit}&sortBy=${sortBy}`],
+    queryKey: [url],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/puzzle/worst-performing?limit=${limit}&sortBy=${sortBy}`);
+      const response = await apiRequest('GET', url);
       return await response.json();
     },
   });

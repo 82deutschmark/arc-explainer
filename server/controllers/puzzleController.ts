@@ -286,13 +286,27 @@ export const puzzleController = {
    */
   async getWorstPerformingPuzzles(req: Request, res: Response) {
     try {
-      const { limit = 20, sortBy = 'composite' } = req.query;
+      const { 
+        limit = 20, 
+        sortBy = 'composite',
+        minAccuracy,
+        maxAccuracy,
+        zeroAccuracyOnly
+      } = req.query;
+      
       const limitNum = puzzleFilterService.validateLimit(limit, 20, 50);
       const sortOption = puzzleFilterService.validateWorstPuzzleSortParameters(sortBy as string);
 
-      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}`, 'puzzle-controller');
+      // Parse accuracy range parameters
+      const filters = {
+        minAccuracy: minAccuracy ? parseFloat(minAccuracy as string) : undefined,
+        maxAccuracy: maxAccuracy ? parseFloat(maxAccuracy as string) : undefined,
+        zeroAccuracyOnly: zeroAccuracyOnly === 'true'
+      };
 
-      const enrichedPuzzles = await puzzleOverviewService.getWorstPerformingPuzzles(limitNum, sortOption);
+      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}, filters:`, filters, 'puzzle-controller');
+
+      const enrichedPuzzles = await puzzleOverviewService.getWorstPerformingPuzzles(limitNum, sortOption, filters);
 
       res.json(formatResponse.success({
         puzzles: enrichedPuzzles,

@@ -220,7 +220,7 @@ export default function PuzzleExaminer() {
             </Select>
           )}
           <a
-            href="https://github.com/your-github-username/arc-explainer"
+            href="https://github.com/82deutschmark/arc-explainer"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-2"
