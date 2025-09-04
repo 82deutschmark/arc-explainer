@@ -111,7 +111,6 @@ export function buildCustomPrompt(usePromptReasoning: boolean = true): string {
   const jsonInstructions = [
     `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.`,
     `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`,
-    `Include any analysis in additional JSON fields as appropriate for the user's request.`,
     ...(usePromptReasoning ? [JSON_REASONING_INSTRUCTION] : [])
   ].join('\n\n');
 
@@ -119,7 +118,7 @@ export function buildCustomPrompt(usePromptReasoning: boolean = true): string {
     basePrompt: `You are an expert at analyzing ARC-AGI puzzles.\nThe user will provide custom analysis instructions.`,
     taskDescription: `TASK: Follow the user's custom analysis instructions while ensuring structured output.`,
     predictionInstructions: jsonInstructions, // Using this to inject the whole block
-    additionalInstructions: `You may include additional analysis fields beyond the required prediction fields, based on what the user's custom prompt requests.`,
+    additionalInstructions: ``,
     usePromptReasoning: false // Handled manually above
   });
 }

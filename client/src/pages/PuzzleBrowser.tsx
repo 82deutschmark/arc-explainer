@@ -219,20 +219,6 @@ export default function PuzzleBrowser() {
                   Kaggle Readiness
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2"
-                onClick={() => {
-                  toast({
-                    title: "Dataset Import",
-                    description: "Use the configurable import script: node scripts/importDataset.js --config configs/your-config.json --dry-run",
-                    duration: 8000
-                  });
-                }}
-              >
-                <Download className="h-4 w-4" />
-                Import Dataset
-              </Button>
             </div>
           </div>
           
