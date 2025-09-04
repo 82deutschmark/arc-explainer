@@ -33,7 +33,7 @@ Transform the PuzzleDiscussion page from a simple list into a powerful research 
 **Complexity**: Low | **Time Estimate**: 30 minutes
 
 **Implementation Steps**:
-- [ ] Add "Only Unsolved (0%)" toggle checkbox
+- [ ] Add "Only Unsolved (0%)" toggle checkbox (should not show puzzles that have NEVER been attempted)
 - [ ] Update state management for zero accuracy filter
 - [ ] Add visual indicator when zero accuracy filter is active
 - [ ] Test filtering functionality
