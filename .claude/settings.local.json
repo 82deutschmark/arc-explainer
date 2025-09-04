@@ -1,13 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Read",
+      "Read**",
       "Edit",
       "Write",
       "MultiEdit",
       "Bash",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Read(/D:\\1Projects\\arc-explainer\\server\\services\\base/**)",
+      "Read(/D:\\1Projects\\arc-explainer\\server\\services/**)"
     ],
     "defaultMode": "bypassPermissions"
   },
