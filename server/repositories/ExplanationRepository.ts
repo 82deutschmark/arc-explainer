@@ -650,13 +650,19 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           paramIndex++;
         }
         
-        // If no specific filters, keep original filter logic
+        // If no specific filters, apply different filter logic based on sort type
         if (filters?.minAccuracy === undefined && filters?.maxAccuracy === undefined) {
-          havingConditions.push(`(
-            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
-            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
-            COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
-          )`);
+          if (sortBy === 'confidence') {
+            // For confidence sorting, show puzzles with low confidence (1-25%) and exclude 0/null
+            havingConditions.push('AVG(e.confidence) > 0 AND AVG(e.confidence) <= 25');
+          } else {
+            // Original filter logic for other sort types
+            havingConditions.push(`(
+              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
+              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
+              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
+            )`);
+          }
         }
       }
 
@@ -688,6 +694,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         ORDER BY 
           CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
           CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
+          CASE WHEN $2 = 'confidence' THEN performance_data.avg_confidence END ASC NULLS LAST,
           CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST
         LIMIT $1
       `, queryParams);
