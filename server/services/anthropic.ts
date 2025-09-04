@@ -95,7 +95,7 @@ export class AnthropicService extends BaseAIService {
 
     const messageFormat: any = {
       model: apiModelName,
-      max_tokens: 20000,
+      max_tokens: getModelConfig(modelKey)?.maxOutputTokens || 20000,
       messages: [{ role: "user", content: userMessage }],
       ...(systemMessage && { system: systemMessage }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
