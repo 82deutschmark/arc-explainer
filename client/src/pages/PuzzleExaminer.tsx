@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw, Github } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -219,6 +219,17 @@ export default function PuzzleExaminer() {
               </SelectContent>
             </Select>
           )}
+          <a
+            href="https://github.com/your-github-username/arc-explainer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2"
+          >
+            <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
+              <Github className="h-4 w-4" />
+              <span className="text-xs">Open Source</span>
+            </Button>
+          </a>
         </div>
       </div>
 
