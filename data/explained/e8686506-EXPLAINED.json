@@ -817,53 +817,128 @@
     ]
   },
   "explanations": {
-    "gpt-4.1-nano-2025-04-14": {
+    "qwen/qwen-2.5-coder-32b-instruct": {
+      "model": "qwen/qwen-2.5-coder-32b-instruct",
+      "reasoningLog": null,
+      "hasReasoningLog": false,
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 1860,
+      "outputTokens": 517,
+      "reasoningTokens": null,
+      "totalTokens": 2377,
+      "estimatedCost": 0.0007131,
+      "reasoningItems": [
+        "The output grid is consistently a 5x5 subgrid extracted from the input grid.",
+        "The values in the output grid are a subset of the values in the input grid, specifically 4, 3, 8, and 1.",
+        "The position of the extracted subgrid is consistent across the training examples, being the central 5x5 area of the input grid.",
+        "The values in the output grid are not transformed but rather selected based on their presence in the input grid.",
+        "The algorithm to extract the central 5x5 area and filter the values was tested and matched the output for both training examples."
+      ],
+      "multiplePredictedOutputs": null,
+      "predictedOutput": [
+        [
+          4,
+          4,
+          8,
+          4,
+          4
+        ],
+        [
+          4,
+          3,
+          8,
+          3,
+          4
+        ],
+        [
+          4,
+          3,
+          8,
+          3,
+          4
+        ],
+        [
+          4,
+          3,
+          8,
+          3,
+          4
+        ],
+        [
+          4,
+          4,
+          8,
+          4,
+          4
+        ]
+      ],
+      "predictedOutput1": [
+        0
+      ],
+      "predictedOutput2": [
+        0
+      ],
+      "predictedOutput3": [
+        0
+      ],
+      "solvingStrategy": "The puzzle involves reducing a large grid to a smaller grid by focusing on specific patterns and values. The output grid is derived by selecting certain cells from the input grid based on their values and positions.",
+      "patternDescription": "The output grid is a 5x5 subgrid extracted from the input grid. The extraction follows a specific pattern where the central 5x5 area of the input grid is taken, but only certain cells are selected based on their values and positions. The cells with values 4, 3, 8, and 1 are kept, while others are not included in the output grid.",
+      "hints": [
+        "Algorithm 1: Extract the central 5x5 area of the input grid and keep only cells with values 4, 3, 8, and 1. This algorithm was chosen because it aligns with the observed pattern in the training examples.",
+        "Algorithm 2: Extract the central 5x5 area of the input grid and apply a transformation to the values. This algorithm was rejected because the transformation rules were not consistent across the training examples.",
+        "Algorithm 3: Extract a different subgrid from the input grid based on a different pattern. This algorithm was rejected because it did not match the observed pattern in the training examples."
+      ],
+      "confidence": 95,
+      "apiProcessingTimeMs": 11838,
       "predictedOutputGrid": [
         [
           4,
           4,
-          4,
-          4,
-          4
-        ],
-        [
-          4,
-          4,
-          4,
+          8,
           4,
           4
         ],
         [
           4,
+          3,
+          8,
+          3,
+          4
+        ],
+        [
           4,
+          3,
+          8,
+          3,
+          4
+        ],
+        [
           4,
-          4,
+          3,
+          8,
+          3,
           4
         ],
         [
           4,
           4,
-          4,
-          4,
-          4
-        ],
-        [
-          4,
-          4,
-          4,
+          8,
           4,
           4
         ]
       ],
       "hasMultiplePredictions": false,
       "isPredictionCorrect": false,
-      "predictionAccuracyScore": 0.15000000000000002,
-      "modelKey": "gpt-4.1-nano-2025-04-14",
-      "actualProcessingTime": 4
+      "predictionAccuracyScore": 0.050000000000000044,
+      "modelKey": "qwen/qwen-2.5-coder-32b-instruct",
+      "actualProcessingTime": 12
     }
   },
-  "exportedAt": "2025-08-28T03:33:50.446Z",
+  "exportedAt": "2025-09-04T15:03:55.275Z",
   "models": [
-    "gpt-4.1-nano-2025-04-14"
+    "qwen/qwen-2.5-coder-32b-instruct"
   ]
 }

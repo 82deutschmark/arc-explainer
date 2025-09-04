@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BarChart3 } from 'lucide-react';
+import { ArrowLeft, BarChart3, Github } from 'lucide-react';
 import { useModels } from '@/hooks/useModels';
 import type { ModelConfig } from '@shared/types';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
@@ -120,12 +120,24 @@ export default function ModelExaminer() {
             <p className="text-gray-600">Batch test AI models against puzzle datasets</p>
           </div>
         </div>
-        <Link href="/batch">
-          <Button variant="outline" size="sm">
-            <BarChart3 className="h-4 w-4 mr-2" />
-            View Results Dashboard
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/batch">
+            <Button variant="outline" size="sm">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Results Dashboard
+            </Button>
+          </Link>
+          <a
+            href="https://github.com/your-github-username/arc-explainer"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="ghost" size="sm" className="flex items-center gap-2">
+              <Github className="h-4 w-4" />
+              <span className="text-xs">Open Source</span>
+            </Button>
+          </a>
+        </div>
       </div>
 
       {/* Progress Display */}

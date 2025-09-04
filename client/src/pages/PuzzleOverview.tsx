@@ -6,7 +6,8 @@ import {
   Database, 
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Github
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
@@ -323,11 +324,23 @@ export default function PuzzleOverview() {
                 Browse all puzzles and their explanations stored in the database
               </p>
             </div>
-            <Link href="/">
-              <Button variant="outline">
-                ← Back to Browser
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/">
+                <Button variant="outline">
+                  ← Back to Browser
+                </Button>
+              </Link>
+              <a
+                href="https://github.com/your-github-username/arc-explainer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <Github className="h-4 w-4" />
+                  <span className="text-xs">Open Source</span>
+                </Button>
+              </a>
+            </div>
           </div>
         </header>
 
