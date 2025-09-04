@@ -160,7 +160,24 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="px-3 pb-3">
               <div className="bg-white p-3 rounded border border-indigo-100">
                 <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
-                  {result.reasoningLog || (result.reasoningItems && result.reasoningItems.length > 0 ? 'Structured reasoning steps shown below.' : '')}
+                  {(() => {
+                    let displayText = result.reasoningLog || '';
+                    
+                    // Try to parse OpenAI reasoning log format: [{"type":"summary_text","text":"..."}]
+                    if (displayText && typeof displayText === 'string' && displayText.startsWith('[')) {
+                      try {
+                        const parsed = JSON.parse(displayText);
+                        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].text) {
+                          // Extract text from OpenAI format and clean up \n
+                          displayText = parsed.map(item => item.text).join('\n').replace(/\\n/g, '\n');
+                        }
+                      } catch (e) {
+                        // If parsing fails, keep original text
+                      }
+                    }
+                    
+                    return displayText || (result.reasoningItems && result.reasoningItems.length > 0 ? 'Structured reasoning steps shown below.' : '');
+                  })()}
                 </pre>
               </div>
               <p className={`text-xs mt-2 ${isSaturnResult ? 'text-indigo-600' : 'text-blue-600'}`}>
