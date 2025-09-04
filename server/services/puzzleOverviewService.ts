@@ -153,13 +153,21 @@ export class PuzzleOverviewService {
   /**
    * Get worst-performing puzzles with enriched metadata
    */
-  async getWorstPerformingPuzzles(limit: number, sortBy: string): Promise<any[]> {
+  async getWorstPerformingPuzzles(
+    limit: number, 
+    sortBy: string, 
+    filters?: {
+      minAccuracy?: number;
+      maxAccuracy?: number;
+      zeroAccuracyOnly?: boolean;
+    }
+  ): Promise<any[]> {
     if (!repositoryService.isConnected()) {
       logger.warn('Database not connected - returning empty list for worst-performing puzzles', 'puzzle-overview-service');
       return [];
     }
 
-    const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limit, sortBy);
+    const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limit, sortBy, filters);
     
     // Enrich each puzzle with metadata
     const enrichedPuzzles = await Promise.all(
