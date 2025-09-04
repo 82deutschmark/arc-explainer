@@ -75,7 +75,7 @@ DATABASE_URL=postgresql://user:password@host:port/database
 ### Development
 
 ```bash
-npm run dev    # Start development server
+npm run test    # Start development server
 ```
 
 ### Production Deployment
