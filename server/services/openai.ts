@@ -693,7 +693,22 @@ export class OpenAIService extends BaseAIService {
           );
           return textContent?.text || '';
         }
-        return block.content || block.text;
+        
+        // CRITICAL FIX: Properly handle object values instead of returning them directly
+        const candidates = [block.content, block.text];
+        for (const candidate of candidates) {
+          if (typeof candidate === 'string') {
+            return candidate;
+          } else if (candidate && typeof candidate === 'object') {
+            // Extract text from common object patterns
+            if (candidate.text) return candidate.text;
+            if (candidate.content) return candidate.content;
+            if (candidate.message) return candidate.message;
+            // Last resort: JSON stringify instead of allowing [object Object]
+            return JSON.stringify(candidate);
+          }
+        }
+        return '';
       })
       .filter(Boolean)
       .join('\n');
@@ -714,7 +729,22 @@ export class OpenAIService extends BaseAIService {
           const textContent = block.content.find((c: any) => c.type === 'text');
           return textContent?.text || '';
         }
-        return block.content || block.text || block.summary || '';
+        
+        // CRITICAL FIX: Properly handle object values instead of returning them directly
+        const candidates = [block.content, block.text, block.summary];
+        for (const candidate of candidates) {
+          if (typeof candidate === 'string') {
+            return candidate;
+          } else if (candidate && typeof candidate === 'object') {
+            // Extract text from common object patterns
+            if (candidate.text) return candidate.text;
+            if (candidate.content) return candidate.content;
+            if (candidate.message) return candidate.message;
+            // Last resort: JSON stringify instead of allowing [object Object]
+            return JSON.stringify(candidate);
+          }
+        }
+        return '';
       })
       .filter(Boolean)
       .join('\n');
