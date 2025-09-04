@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database, Target, Download } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database, Target, Download, Github } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -219,6 +219,16 @@ export default function PuzzleBrowser() {
                   Kaggle Readiness
                 </Button>
               </Link>
+              <a
+                href="https://github.com/your-github-username/arc-explainer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Github className="h-4 w-4" />
+                  <span className="hidden sm:inline">Open Source</span>
+                </Button>
+              </a>
             </div>
           </div>
           
