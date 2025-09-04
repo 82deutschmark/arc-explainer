@@ -203,7 +203,7 @@ export default function PuzzleDiscussion() {
                     <div className="flex-1">
                       <Slider
                         value={accuracyRange}
-                        onValueChange={setAccuracyRange}
+                        onValueChange={(value) => setAccuracyRange(value as [number, number])}
                         max={100}
                         min={0}
                         step={5}
