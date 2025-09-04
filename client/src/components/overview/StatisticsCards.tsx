@@ -6,7 +6,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useModels } from '@/hooks/useModels';
-import type { FeedbackStats, AccuracyStats } from '@shared/types';
+import type { FeedbackStats, AccuracyStats, ConfidenceStats } from '@shared/types';
 
 import SolverPerformanceCard from './statistics/SolverPerformanceCard';
 import DatabaseOverviewCard from './statistics/DatabaseOverviewCard';
@@ -16,6 +16,12 @@ import RecentActivityCard from './statistics/RecentActivityCard';
 interface StatisticsCardsProps {
   feedbackStats?: FeedbackStats;
   accuracyStats?: AccuracyStats;
+  confidenceStats?: ConfidenceStats | null;
+  modelRankings?: Array<{
+    modelName: string;
+    helpfulPercentage: number;
+    totalFeedback: number;
+  }>;
   onViewAllFeedback: () => void;
   onModelClick: (modelName: string) => void;
   statsLoading: boolean;
@@ -32,6 +38,8 @@ interface StatisticsCardsProps {
 export function StatisticsCards({
   feedbackStats,
   accuracyStats,
+  confidenceStats,
+  modelRankings,
   onViewAllFeedback,
   onModelClick,
   statsLoading,
