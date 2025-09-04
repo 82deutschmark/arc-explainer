@@ -4,12 +4,13 @@ import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function PuzzleDiscussion() {
-  const [selectedLimit, setSelectedLimit] = useState<number>(20);
+  const [selectedLimit, setSelectedLimit] = useState<number>(50);
   const [sortBy, setSortBy] = useState<string>('accuracy');
+  const [compactView, setCompactView] = useState<boolean>(false);
   
   // Set page title
   React.useEffect(() => {
@@ -76,6 +77,16 @@ export default function PuzzleDiscussion() {
                   Database Overview
                 </Button>
               </Link>
+              <a
+                href="https://github.com/your-github-username/arc-explainer"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Github className="h-4 w-4" />
+                  <span className="hidden sm:inline">Open Source</span>
+                </Button>
+              </a>
             </div>
           </div>
 
@@ -114,10 +125,12 @@ export default function PuzzleDiscussion() {
                   onChange={(e) => setSelectedLimit(parseInt(e.target.value))}
                   className="px-3 py-2 border border-gray-200 rounded-md text-sm"
                 >
-                  <option value={10}>10 puzzles</option>
-                  <option value={20}>20 puzzles</option>
-                  <option value={30}>30 puzzles</option>
+                  <option value={25}>25 puzzles</option>
                   <option value={50}>50 puzzles</option>
+                  <option value={75}>75 puzzles</option>
+                  <option value={100}>100 puzzles</option>
+                  <option value={150}>150 puzzles</option>
+                  <option value={200}>200 puzzles</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
@@ -133,6 +146,19 @@ export default function PuzzleDiscussion() {
                   <option value="accuracy">Lowest Accuracy</option>
                   <option value="feedback">Most Negative Feedback</option>
                 </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <label htmlFor="compact-toggle" className="text-sm font-medium">
+                  Compact view:
+                </label>
+                <input
+                  id="compact-toggle"
+                  type="checkbox"
+                  checked={compactView}
+                  onChange={(e) => setCompactView(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-xs text-gray-500">{compactView ? 'On' : 'Off'}</span>
               </div>
             </div>
           </CardContent>
@@ -168,11 +194,15 @@ export default function PuzzleDiscussion() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className={`grid gap-4 ${
+                compactView 
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
+                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
                 {puzzles.map((puzzle: any) => (
                   <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-red-400">
-                    <CardContent className="p-4">
-                      <div className="space-y-3">
+                    <CardContent className={compactView ? "p-3" : "p-4"}>
+                      <div className={compactView ? "space-y-2" : "space-y-3"}>
                         <div className="flex items-center justify-between">
                           <code className="text-sm font-mono bg-red-100 px-2 py-1 rounded text-red-800">
                             {puzzle.id}
