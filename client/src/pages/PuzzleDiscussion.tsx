@@ -154,6 +154,7 @@ export default function PuzzleDiscussion() {
                   className="px-3 py-2 border border-gray-200 rounded-md text-sm"
                 >
                   <option value="accuracy">Lowest Accuracy</option>
+                  <option value="confidence">Lowest Confidence (1-25%)</option>
                   <option value="feedback">Most Negative Feedback</option>
                 </select>
               </div>
@@ -418,8 +419,8 @@ export default function PuzzleDiscussion() {
                 <ul className="space-y-1 text-slate-600">
                   <li>• <strong>0% Accuracy:</strong> No LLM got it right</li>
                   <li>• <strong>Low Accuracy (&lt;30%):</strong> Very few correct predictions</li>
-                  <li>• <strong>Medium Accuracy (30-60%):</strong> Some success</li>
-                  <li>• <strong>High Accuracy (&gt;60%):</strong> Most LLMs succeeded</li>
+                  <li>• <strong>Low Confidence (1-25%):</strong> LLMs very unsure of their answers</li>
+                  <li>• <strong>Negative Feedback:</strong> Human reviewers found issues</li>
                 </ul>
               </div>
               <div>
