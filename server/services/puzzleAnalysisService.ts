@@ -89,16 +89,16 @@ export class PuzzleAnalysisService {
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
     if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
     
+    // CRITICAL FIX: Correct parameter order to match BaseAIService interface
+    // analyzePuzzleWithModel(task, modelKey, temperature, promptId, customPrompt, options, serviceOpts)
     const result = await aiService.analyzePuzzleWithModel(
-      puzzle, 
-      model, 
-      temperature, 
-      captureReasoning, 
-      promptId, 
-      customPrompt, 
-      promptOptions, 
-      serviceOpts, 
-      taskId
+      puzzle,        // task: ARCTask
+      model,         // modelKey: string
+      temperature,   // temperature?: number
+      promptId,      // promptId?: string
+      customPrompt,  // customPrompt?: string
+      promptOptions, // options?: PromptOptions
+      serviceOpts    // serviceOpts?: ServiceOptions - THIS WAS WRONG BEFORE!
     );
     
     // Calculate API processing time
@@ -276,15 +276,15 @@ export class PuzzleAnalysisService {
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
     if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
 
+    // FIX: Correct parameter order for generatePromptPreview method
+    // generatePromptPreview(task, modelKey, promptId, customPrompt, options, serviceOpts)
     return await aiService.generatePromptPreview(
-      puzzle, 
-      provider, 
-      temperature, 
-      captureReasoning, 
-      promptId, 
-      customPrompt,
-      promptOptions,
-      serviceOpts
+      puzzle,         // task: ARCTask
+      provider,       // modelKey: string 
+      promptId,       // promptId?: string
+      customPrompt,   // customPrompt?: string
+      promptOptions,  // options?: PromptOptions
+      serviceOpts     // serviceOpts?: ServiceOptions
     );
   }
 }

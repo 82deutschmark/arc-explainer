@@ -50,6 +50,17 @@ export class OpenAIService extends BaseAIService {
   ): Promise<AIResponse> {
     const modelName = getApiModelName(modelKey);
 
+    // ===== COMPREHENSIVE DEBUG LOGGING PHASE 1 =====
+    console.log(`\n🔍 [${this.provider}-DEBUG] ===== ANALYSIS START =====`);
+    console.log(`🔍 [${this.provider}-DEBUG] Model: ${modelKey} → API: ${modelName}`);
+    console.log(`🔍 [${this.provider}-DEBUG] Temperature: ${temperature}`);
+    console.log(`🔍 [${this.provider}-DEBUG] ServiceOpts received:`, JSON.stringify(serviceOpts, null, 2));
+    console.log(`🔍 [${this.provider}-DEBUG] GPT-5 Parameters:`);
+    console.log(`🔍 [${this.provider}-DEBUG]   reasoningEffort: ${serviceOpts.reasoningEffort}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   reasoningVerbosity: ${serviceOpts.reasoningVerbosity}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   reasoningSummaryType: ${serviceOpts.reasoningSummaryType}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   maxOutputTokens: ${serviceOpts.maxOutputTokens}`);
+
     // For models with native reasoning, disable reasoning instructions in the prompt
     const usePromptReasoning = !MODELS_WITH_REASONING.has(modelKey);
 
@@ -64,8 +75,9 @@ export class OpenAIService extends BaseAIService {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
       // Parse response using provider-specific method
+      // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey);
+        this.parseProviderResponse(response, modelKey, true);
 
       // Validate response completeness
       const completeness = this.validateResponseCompleteness(response, modelKey);
@@ -74,7 +86,7 @@ export class OpenAIService extends BaseAIService {
       }
 
       // Build standard response using inherited method
-      return this.buildStandardResponse(
+      const finalResponse = this.buildStandardResponse(
         modelKey,
         temperature,
         result,
@@ -87,6 +99,25 @@ export class OpenAIService extends BaseAIService {
         !completeness.isComplete,
         incompleteReason || completeness.suggestion
       );
+
+      // ===== DEBUG LOGGING PHASE 8: FINAL AI RESPONSE =====
+      console.log(`\n🔍 [${this.provider}-DEBUG] ===== FINAL AI RESPONSE =====`);
+      console.log(`🔍 [${this.provider}-DEBUG] Final AIResponse object:`);
+      console.log(`🔍 [${this.provider}-DEBUG]   model: ${finalResponse.model}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   temperature: ${finalResponse.temperature}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   reasoningEffort: ${finalResponse.reasoningEffort}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   reasoningVerbosity: ${finalResponse.reasoningVerbosity}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   reasoningSummaryType: ${finalResponse.reasoningSummaryType}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   hasReasoningLog: ${finalResponse.hasReasoningLog}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   reasoningItems: ${finalResponse.reasoningItems?.length || 0} items`);
+      console.log(`🔍 [${this.provider}-DEBUG]   inputTokens: ${finalResponse.inputTokens}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   outputTokens: ${finalResponse.outputTokens}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   reasoningTokens: ${finalResponse.reasoningTokens}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   totalTokens: ${finalResponse.totalTokens}`);
+      console.log(`🔍 [${this.provider}-DEBUG]   estimatedCost: ${finalResponse.estimatedCost}`);
+      console.log(`🔍 [${this.provider}-DEBUG] ===== ANALYSIS COMPLETE =====\n`);
+
+      return finalResponse;
 
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
@@ -212,6 +243,14 @@ export class OpenAIService extends BaseAIService {
     const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
     const modelConfig = getModelConfig(modelKey);
 
+    // ===== DEBUG LOGGING PHASE 2: REASONING CONFIG =====
+    console.log(`\n🔍 [${this.provider}-DEBUG] ===== REASONING CONFIG BUILD =====`);
+    console.log(`🔍 [${this.provider}-DEBUG] Model Classifications:`);
+    console.log(`🔍 [${this.provider}-DEBUG]   isReasoningModel: ${isReasoningModel}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   isGPT5Model: ${isGPT5Model}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   isO3O4Model: ${isO3O4Model}`);
+    console.log(`🔍 [${this.provider}-DEBUG]   isGPT5ChatModel: ${isGPT5ChatModel}`);
+
     let reasoningConfig = undefined;
     let textConfig = undefined;
     
@@ -224,11 +263,16 @@ export class OpenAIService extends BaseAIService {
         textConfig = {
           verbosity: serviceOpts.reasoningVerbosity || 'high'
         };
+        console.log(`🔍 [${this.provider}-DEBUG] GPT-5 reasoningConfig built:`, JSON.stringify(reasoningConfig, null, 2));
+        console.log(`🔍 [${this.provider}-DEBUG] GPT-5 textConfig built:`, JSON.stringify(textConfig, null, 2));
       } else if (isO3O4Model) {
         reasoningConfig = {
           summary: serviceOpts.reasoningSummary || 'auto'
         };
+        console.log(`🔍 [${this.provider}-DEBUG] O3/O4 reasoningConfig built:`, JSON.stringify(reasoningConfig, null, 2));
       }
+    } else {
+      console.log(`🔍 [${this.provider}-DEBUG] Non-reasoning model - no reasoning config`);
     }
 
     const request = {
@@ -244,6 +288,15 @@ export class OpenAIService extends BaseAIService {
       }),
       max_output_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
     };
+
+    // ===== DEBUG LOGGING PHASE 3: API REQUEST =====
+    console.log(`\n🔍 [${this.provider}-DEBUG] ===== API REQUEST BUILD =====`);
+    console.log(`🔍 [${this.provider}-DEBUG] Final API request:`, JSON.stringify(request, null, 2));
+    console.log(`🔍 [${this.provider}-DEBUG] Request includes reasoning config: ${!!request.reasoning}`);
+    console.log(`🔍 [${this.provider}-DEBUG] Request includes text config: ${!!request.text}`);
+    console.log(`🔍 [${this.provider}-DEBUG] Max output tokens: ${request.max_output_tokens}`);
+    console.log(`🔍 [${this.provider}-DEBUG] Temperature: ${request.temperature || 'not set'}`);
+    console.log(`🔍 [${this.provider}-DEBUG] About to call callResponsesAPI...`);
 
     // Retry logic with exponential backoff
     const maxRetries = Math.max(0, serviceOpts.maxRetries ?? 2);
@@ -278,6 +331,20 @@ export class OpenAIService extends BaseAIService {
     incomplete?: boolean;
     incompleteReason?: string;
   } {
+    // ===== DEBUG LOGGING PHASE 6: RESPONSE PARSING =====
+    console.log(`\n🔍 [${this.provider}-PARSE-DEBUG] ===== RESPONSE PARSING START =====`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Model: ${modelKey}`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Capture reasoning: ${captureReasoning}`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Response structure:`, {
+      hasOutputParsed: !!response.output_parsed,
+      hasOutputText: !!response.output_text,
+      hasOutput: !!response.output && Array.isArray(response.output),
+      outputCount: response.output?.length || 0,
+      hasOutputReasoning: !!response.output_reasoning,
+      reasoningItemsCount: response.output_reasoning?.items?.length || 0,
+      reasoningSummaryType: typeof response.output_reasoning?.summary
+    });
+
     let result: any = {};
     let reasoningLog = null;
     let reasoningItems: any[] = [];
@@ -302,29 +369,44 @@ export class OpenAIService extends BaseAIService {
     }
 
     // Extract reasoning log from API response
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Starting reasoning log extraction...`);
     if (captureReasoning && response.output_reasoning?.summary) {
       const summary = response.output_reasoning.summary;
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Found summary, type: ${typeof summary}, isArray: ${Array.isArray(summary)}`);
+      
       if (Array.isArray(summary)) {
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Processing summary array with ${summary.length} items`);
         reasoningLog = summary.map((s: any) => {
           if (typeof s === 'string') return s;
           if (s && typeof s === 'object' && s.text) return s.text;
           if (s && typeof s === 'object' && s.content) return s.content;
           return typeof s === 'object' ? JSON.stringify(s) : String(s);
         }).filter(Boolean).join('\n\n');
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Processed array summary into ${reasoningLog ? reasoningLog.length : 0} char string`);
       } else if (typeof summary === 'string') {
         reasoningLog = summary;
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Used string summary directly: ${reasoningLog.length} chars`);
       }
+    } else {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] No reasoning log: captureReasoning=${captureReasoning}, hasSummary=${!!response.output_reasoning?.summary}`);
     }
 
     // Extract reasoning items and convert them to an array of strings
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Starting reasoning items extraction...`);
     if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Found reasoning items array with ${response.output_reasoning.items.length} items`);
       reasoningItems = response.output_reasoning.items.map((item: any) => {
         if (typeof item === 'string') return item;
         if (item && typeof item === 'object' && item.text) return item.text;
         return JSON.stringify(item);
       });
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Processed reasoning items: ${reasoningItems.length} final items`);
+      if (reasoningItems.length > 0) {
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] First reasoning item preview: ${reasoningItems[0]?.substring(0, 100)}...`);
+      }
     } else {
       reasoningItems = [];
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] No reasoning items found`);
     }
 
     // Validate reasoning data types and fix corruption
@@ -350,6 +432,26 @@ export class OpenAIService extends BaseAIService {
     const incomplete = status === 'incomplete';
     const incompleteReason = response.incomplete_details?.reason;
 
+    // ===== DEBUG LOGGING PHASE 7: FINAL PARSE RESULT =====
+    console.log(`\n🔍 [${this.provider}-PARSE-DEBUG] ===== PARSE RESULT SUMMARY =====`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] Final parsing results:`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   result keys: [${Object.keys(result).join(', ')}]`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   tokenUsage:`, JSON.stringify(tokenUsage, null, 2));
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   reasoningLog: ${reasoningLog ? `${reasoningLog.length} chars` : 'null'}`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   reasoningItems: ${reasoningItems.length} items`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   status: ${status}`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   incomplete: ${incomplete}`);
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG]   incompleteReason: ${incompleteReason}`);
+    
+    if (reasoningLog) {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Reasoning log preview: ${reasoningLog.substring(0, 200)}...`);
+    }
+    
+    if (reasoningItems.length > 0) {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Reasoning items preview:`, reasoningItems.slice(0, 3));
+    }
+    console.log(`🔍 [${this.provider}-PARSE-DEBUG] ===== PARSE COMPLETE =====\n`);
+
     return {
       result,
       tokenUsage,
@@ -367,12 +469,18 @@ export class OpenAIService extends BaseAIService {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    console.log(`[${this.provider}-RESPONSES-DEBUG] Making Responses API call:`, {
+    // ===== DEBUG LOGGING PHASE 4: API CALL =====
+    console.log(`\n🔍 [${this.provider}-RESPONSES-DEBUG] ===== API CALL START =====`);
+    console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Making Responses API call:`, {
       model: request.model,
       maxSteps: request.max_steps,
       hasPreviousId: !!request.previous_response_id,
       maxOutputTokens: request.max_output_tokens ?? 'default'
     });
+    console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Request has reasoning config:`, !!request.reasoning);
+    console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Reasoning config:`, JSON.stringify(request.reasoning, null, 2));
+    console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Request has text config:`, !!request.text);
+    console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Text config:`, JSON.stringify(request.text, null, 2));
 
     try {
       // Check if model supports structured JSON schema
@@ -426,6 +534,25 @@ export class OpenAIService extends BaseAIService {
 
       const result = await response.json();
       
+      // ===== DEBUG LOGGING PHASE 5: API RESPONSE =====
+      console.log(`\n🔍 [${this.provider}-RESPONSES-DEBUG] ===== API RESPONSE RECEIVED =====`);
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Raw API response keys:`, Object.keys(result));
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Response ID: ${result.id}`);
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Response status: ${result.status}`);
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Has output_reasoning: ${!!result.output_reasoning}`);
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Has output_text: ${!!result.output_text}`);
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Has output array: ${!!result.output}`);
+      
+      if (result.output_reasoning) {
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] output_reasoning structure:`, JSON.stringify(result.output_reasoning, null, 2));
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] output_reasoning.items count: ${result.output_reasoning.items?.length || 0}`);
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] output_reasoning.summary exists: ${!!result.output_reasoning.summary}`);
+      }
+      
+      if (result.usage) {
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Token usage:`, JSON.stringify(result.usage, null, 2));
+      }
+      
       // Extract token usage from OpenAI Responses API response
       let tokenUsage: TokenUsage = { input: 0, output: 0 };
       let cost: any = undefined;
@@ -441,11 +568,14 @@ export class OpenAIService extends BaseAIService {
           reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
         };
 
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Extracted token usage:`, JSON.stringify(tokenUsage, null, 2));
+
         // Calculate cost using inherited method
         cost = this.calculateResponseCost(modelKey, tokenUsage);
+        console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Calculated cost:`, cost);
       }
       
-      console.log(`[${this.provider}-RESPONSES-DEBUG] API Response:`, {
+      console.log(`🔍 [${this.provider}-RESPONSES-DEBUG] Summary - API Response analysis:`, {
         id: result.id,
         status: result.status,
         hasOutputReasoning: !!result.output_reasoning,
