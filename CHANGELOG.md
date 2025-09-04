@@ -1,3 +1,24 @@
+### September 4 2025
+
+## v2.10.6 - FEATURE: Enhanced Puzzle Accuracy Filtering 
+- **NEW FEATURE**: Added "Low Accuracy (<25%)" option to Prediction Accuracy filter dropdown
+- **Improvement**: Users can now filter puzzles showing poor AI performance (< 25% accuracy)
+- **Previous Issue**: Filter only showed binary correct/incorrect options (0% or 100%)
+- **Solution**: New filter shows puzzles with quantified accuracy scores below 25% threshold
+
+### Technical Implementation:
+- **Frontend**: Added "Low Accuracy (<25%)" option to SearchFilters dropdown
+- **Backend**: Enhanced `puzzleFilterService.applyExplanationFilters()` with `low_accuracy` handling
+- **Data Sources**: Checks both `predictionAccuracyScore` and `multiTestAverageAccuracy` fields
+- **Logic**: Uses 0.25 threshold, excludes explanations with no accuracy metrics
+
+### Testing Instructions:
+- Navigate to Puzzle Overview page (/overview)
+- Select "Prediction Accuracy" filter dropdown
+- Choose "Low Accuracy (<25%)" option
+- Verify results show puzzles with accuracy scores between 0% and 25%
+- Test that puzzles with null/undefined accuracy scores are excluded
+
 ### September 2 2025
 
 ## v2.10.5 - COMPLETE REASONING SOLUTION: All Providers Fixed ✅
