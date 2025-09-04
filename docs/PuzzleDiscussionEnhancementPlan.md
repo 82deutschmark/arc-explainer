@@ -22,7 +22,7 @@ Transform the PuzzleDiscussion page from a simple list into a powerful research 
 - [ ] Update backend API to accept min/max accuracy parameters
 - [ ] Modify database query to filter by accuracy ranges
 - [ ] Add preset accuracy buttons (0%, 0-10%, 10-30%, 30-50%, 50%+)
-- [ ] Test with different accuracy ranges
+- [ ] User will Test with different accuracy ranges
 
 **Files to modify**:
 - `client/src/pages/PuzzleDiscussion.tsx` - Add slider UI
