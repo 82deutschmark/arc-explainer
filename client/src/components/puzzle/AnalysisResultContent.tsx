@@ -199,8 +199,16 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                           displayContent = JSON.stringify(item, null, 2);
                         }
                       } else {
-                        // Fallback: convert to string
-                        displayContent = String(item);
+                        // Fallback: try to stringify objects, or convert other types to string
+                        if (typeof item === 'object' && item !== null) {
+                          try {
+                            displayContent = JSON.stringify(item, null, 2);
+                          } catch (error) {
+                            displayContent = `[Unable to parse reasoning item: ${typeof item}]`;
+                          }
+                        } else {
+                          displayContent = String(item);
+                        }
                       }
                       
                       return (

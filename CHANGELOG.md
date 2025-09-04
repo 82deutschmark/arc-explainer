@@ -1,5 +1,58 @@
 ### September 4 2025
 
+## v2.10.9 - ✅ CONFIRMED FIX: [object Object] OpenAI Reasoning Corruption RESOLVED 🎯
+- **STATUS**: ✅ **CONFIRMED WORKING** - User verified fix resolves the issue
+- **REAL ROOT CAUSE FOUND**: Issue was NOT in main parsing logic but in fallback extraction functions
+- **EXACT LOCATION**: `extractReasoningFromOutputBlocks()` line 717 and `extractTextFromOutputBlocks()` line 696
+- **THE BUG**: Both functions directly returned `block.content || block.text || block.summary` without type checking
+- **WHY PREVIOUS FIXES FAILED**: They targeted the wrong code paths - the corruption occurred in fallback extraction when `output_reasoning` was missing
+- **COMPLETE SOLUTION**: 
+  - Enhanced both extraction functions to check if values are strings before returning
+  - Added proper object pattern extraction (text, content, message fields)
+  - JSON stringify objects as last resort instead of allowing [object Object] corruption
+  - Return empty strings for invalid values
+- **TECHNICAL INSIGHT**: OpenAI Responses API returns complex nested objects in `output[]` array that require careful parsing
+- **COMPLIANCE**: Now fully aligned with OpenAI Responses API specification from ResponsesAPI.md
+- **VERIFICATION**: Console logs show `reasoningLog: 4231 chars` with clean string processing, no corruption
+- **IMPACT**: OpenAI o3, GPT-5, and nano models now display readable reasoning instead of "[object Object]" arrays
+- **FILES**: `server/services/openai.ts` (lines 696-732)
+- **CONFIDENCE**: ✅ **CONFIRMED** - User testing validates complete resolution
+- Author: Claude Code (after systematic analysis of ResponsesAPI.md + Ultra-thin Plan debugging)
+
+## v2.10.8 - CRITICAL FIX: Resolve OpenAI [object Object] Reasoning Corruption ⚡
+- **ROOT CAUSE IDENTIFIED**: OpenAI service `String(reasoningLog)` conversion produced "[object Object]" corruption
+- **TECHNICAL DISCOVERY**: After deep commit history analysis (August 23-Present), found corruption in `parseProviderResponse` line 415
+- **Primary Fix**: Replaced `String(reasoningLog)` with `JSON.stringify(reasoningLog, null, 2)` to preserve object structure
+- **Fallback Mechanism**: Added reasoningItems → reasoningLog conversion when primary reasoning extraction fails
+- **Enhanced Error Handling**: Try/catch for JSON stringification with graceful degradation
+- **IMPACT**: OpenAI o3/GPT-5 reasoning models now display proper structured reasoning instead of "[object Object]"
+- **FILES**: `server/services/openai.ts` (lines 415-444)
+- **TESTING REQUIRED**: Verify OpenAI o3-2025-04-16 shows readable reasoning instead of "[object Object]"
+- Author: Claude Code (after extensive commit forensics)
+
+## v2.10.7 - CRITICAL FIX: Resolve Persistent OpenRouter Parsing + [object Object] UI Corruption ✅
+- **DUAL BUG RESOLUTION**: Fixed two separate but related issues causing reasoning display problems
+- **OpenRouter Interface Mismatch Fix**:
+  - Fixed `parseProviderResponse` method signature missing required `captureReasoning` parameter
+  - OpenRouter service now properly matches BaseAIService abstract interface (3 params vs previous 2)
+  - Added proper reasoning extraction logic with captureReasoning conditional handling
+  - Aligned with Anthropic, DeepSeek, Gemini, and Grok services implementation pattern
+- **Frontend [object Object] Display Fix**:
+  - **Root Cause**: `String(item)` conversion on line 203 of AnalysisResultContent.tsx caused objects to display as "[object Object]"
+  - **Solution**: Added proper JSON.stringify() handling for complex reasoning objects with error handling
+  - Enhanced fallback logic to preserve structured reasoning content display
+  - Try/catch wrapper prevents JSON stringification failures from breaking UI
+- **Technical Impact**:
+  - OpenRouter models now properly extract and pass reasoning data to database
+  - All AI reasoning displays show proper structured content instead of useless "[object Object]" strings
+  - Maintains backward compatibility with string and primitive reasoning items
+  - Improved error visibility with descriptive messages for unparseable reasoning items
+- **Files Changed**: `server/services/openrouter.ts`, `client/src/components/puzzle/AnalysisResultContent.tsx`
+- **Testing**: All OpenRouter models should now display proper reasoning instead of parsing errors
+- Author: Claude Code
+
+### September 4 2025
+
 ## v2.10.6 - FEATURE: Enhanced Puzzle Accuracy Filtering 
 - **NEW FEATURE**: Added "Low Accuracy (<25%)" option to Prediction Accuracy filter dropdown
 - **Improvement**: Users can now filter puzzles showing poor AI performance (< 25% accuracy)

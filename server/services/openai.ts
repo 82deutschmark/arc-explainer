@@ -386,6 +386,19 @@ export class OpenAIService extends BaseAIService {
       } else if (typeof summary === 'string') {
         reasoningLog = summary;
         console.log(`🔍 [${this.provider}-PARSE-DEBUG] Used string summary directly: ${reasoningLog.length} chars`);
+      } else if (summary && typeof summary === 'object') {
+        // Handle object summary (this was the missing case causing [object Object])
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Found object summary, attempting to extract content`);
+        if (summary.text) {
+          reasoningLog = summary.text;
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] Extracted summary.text: ${reasoningLog.length} chars`);
+        } else if (summary.content) {
+          reasoningLog = summary.content;
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] Extracted summary.content: ${reasoningLog.length} chars`);
+        } else {
+          reasoningLog = JSON.stringify(summary, null, 2);
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] JSON stringified object summary: ${reasoningLog.length} chars`);
+        }
       }
     } else {
       console.log(`🔍 [${this.provider}-PARSE-DEBUG] No reasoning log: captureReasoning=${captureReasoning}, hasSummary=${!!response.output_reasoning?.summary}`);
@@ -412,12 +425,35 @@ export class OpenAIService extends BaseAIService {
     // Validate reasoning data types and fix corruption
     if (reasoningLog && typeof reasoningLog !== 'string') {
       console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
-      reasoningLog = String(reasoningLog);
+      // Use JSON.stringify instead of String() to avoid "[object Object]" corruption
+      try {
+        reasoningLog = JSON.stringify(reasoningLog, null, 2);
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+      } catch (error) {
+        console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
+        reasoningLog = null;
+      }
     }
     
     if (reasoningItems && !Array.isArray(reasoningItems)) {
       console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
       reasoningItems = [];
+    }
+
+    // Fallback: If reasoningLog is empty but we have reasoningItems, create a readable log
+    if (!reasoningLog && reasoningItems && reasoningItems.length > 0) {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Creating fallback reasoningLog from ${reasoningItems.length} reasoning items`);
+      reasoningLog = reasoningItems
+        .filter(item => item && typeof item === 'string' && item.trim().length > 0)
+        .map((item, index) => `Step ${index + 1}: ${item}`)
+        .join('\n\n');
+      
+      if (reasoningLog && reasoningLog.length > 0) {
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Generated fallback reasoningLog: ${reasoningLog.length} chars`);
+      } else {
+        reasoningLog = null;
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Failed to generate fallback reasoningLog - no valid string items`);
+      }
     }
 
     // Extract token usage
@@ -657,7 +693,22 @@ export class OpenAIService extends BaseAIService {
           );
           return textContent?.text || '';
         }
-        return block.content || block.text;
+        
+        // CRITICAL FIX: Properly handle object values instead of returning them directly
+        const candidates = [block.content, block.text];
+        for (const candidate of candidates) {
+          if (typeof candidate === 'string') {
+            return candidate;
+          } else if (candidate && typeof candidate === 'object') {
+            // Extract text from common object patterns
+            if (candidate.text) return candidate.text;
+            if (candidate.content) return candidate.content;
+            if (candidate.message) return candidate.message;
+            // Last resort: JSON stringify instead of allowing [object Object]
+            return JSON.stringify(candidate);
+          }
+        }
+        return '';
       })
       .filter(Boolean)
       .join('\n');
@@ -678,7 +729,22 @@ export class OpenAIService extends BaseAIService {
           const textContent = block.content.find((c: any) => c.type === 'text');
           return textContent?.text || '';
         }
-        return block.content || block.text || block.summary || '';
+        
+        // CRITICAL FIX: Properly handle object values instead of returning them directly
+        const candidates = [block.content, block.text, block.summary];
+        for (const candidate of candidates) {
+          if (typeof candidate === 'string') {
+            return candidate;
+          } else if (candidate && typeof candidate === 'object') {
+            // Extract text from common object patterns
+            if (candidate.text) return candidate.text;
+            if (candidate.content) return candidate.content;
+            if (candidate.message) return candidate.message;
+            // Last resort: JSON stringify instead of allowing [object Object]
+            return JSON.stringify(candidate);
+          }
+        }
+        return '';
       })
       .filter(Boolean)
       .join('\n');

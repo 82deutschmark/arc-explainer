@@ -45,8 +45,10 @@ export class OpenRouterService extends BaseAIService {
     try {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
+      // For OpenRouter, reasoning is always included in the prompt.
+      const captureReasoning = true;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey);
+        this.parseProviderResponse(response, modelKey, captureReasoning);
 
       return this.buildStandardResponse(
         modelKey,
@@ -95,7 +97,8 @@ export class OpenRouterService extends BaseAIService {
 
   protected parseProviderResponse(
     response: any,
-    modelKey: string
+    modelKey: string,
+    captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     const choice = response.choices?.[0];
     if (!choice) {
@@ -120,26 +123,32 @@ export class OpenRouterService extends BaseAIService {
 
     console.log(`[OpenRouter] Token usage - Input: ${tokenUsage.input}, Output: ${tokenUsage.output}`);
 
-    // Standardized reasoning extraction
+    // Standardized reasoning extraction with captureReasoning parameter
     let reasoningLog = null;
-    if (result.reasoning) {
-      reasoningLog = typeof result.reasoning === 'string' ? result.reasoning : JSON.stringify(result.reasoning);
-      console.log(`[OpenRouter] Extracted reasoning from JSON 'reasoning' field: ${reasoningLog.length} chars`);
-    } else {
-      // Fallback to pre-JSON text extraction
-      const jsonStartPattern = /```json|```\s*{|\s*{/;
-      const jsonStartMatch = responseText.search(jsonStartPattern);
-      if (jsonStartMatch > 20) { // If there's meaningful text before JSON
-        const preJsonText = responseText.substring(0, jsonStartMatch).trim();
-        if (preJsonText.length > 20) {
-          reasoningLog = preJsonText;
-          console.log(`[OpenRouter] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
+    if (captureReasoning) {
+      console.log(`[OpenRouter] Reasoning extraction enabled for model: ${modelKey}`);
+      
+      if (result.reasoning) {
+        reasoningLog = typeof result.reasoning === 'string' ? result.reasoning : JSON.stringify(result.reasoning);
+        console.log(`[OpenRouter] Extracted reasoning from JSON 'reasoning' field: ${reasoningLog.length} chars`);
+      } else {
+        // Fallback to pre-JSON text extraction
+        const jsonStartPattern = /```json|```\s*{|\s*{/;
+        const jsonStartMatch = responseText.search(jsonStartPattern);
+        if (jsonStartMatch > 20) { // If there's meaningful text before JSON
+          const preJsonText = responseText.substring(0, jsonStartMatch).trim();
+          if (preJsonText.length > 20) {
+            reasoningLog = preJsonText;
+            console.log(`[OpenRouter] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
+          }
         }
       }
-    }
 
-    if (!reasoningLog) {
-      console.log(`[OpenRouter] No reasoning log found.`);
+      if (!reasoningLog) {
+        console.log(`[OpenRouter] No reasoning log found despite captureReasoning=true`);
+      }
+    } else {
+      console.log(`[OpenRouter] Reasoning extraction disabled (captureReasoning=false)`);
     }
 
     console.log(`[OpenRouter] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
