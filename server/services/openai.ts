@@ -386,6 +386,19 @@ export class OpenAIService extends BaseAIService {
       } else if (typeof summary === 'string') {
         reasoningLog = summary;
         console.log(`🔍 [${this.provider}-PARSE-DEBUG] Used string summary directly: ${reasoningLog.length} chars`);
+      } else if (summary && typeof summary === 'object') {
+        // Handle object summary (this was the missing case causing [object Object])
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Found object summary, attempting to extract content`);
+        if (summary.text) {
+          reasoningLog = summary.text;
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] Extracted summary.text: ${reasoningLog.length} chars`);
+        } else if (summary.content) {
+          reasoningLog = summary.content;
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] Extracted summary.content: ${reasoningLog.length} chars`);
+        } else {
+          reasoningLog = JSON.stringify(summary, null, 2);
+          console.log(`🔍 [${this.provider}-PARSE-DEBUG] JSON stringified object summary: ${reasoningLog.length} chars`);
+        }
       }
     } else {
       console.log(`🔍 [${this.provider}-PARSE-DEBUG] No reasoning log: captureReasoning=${captureReasoning}, hasSummary=${!!response.output_reasoning?.summary}`);
