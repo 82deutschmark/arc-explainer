@@ -88,7 +88,7 @@ export class OpenRouterService extends BaseAIService {
         }
       ],
       temperature: temperature,
-      max_tokens: serviceOpts.maxOutputTokens || 4000,
+      max_tokens: serviceOpts.maxOutputTokens || getModelConfig(modelKey)?.maxOutputTokens || 32768,
       response_format: { type: "json_object" }
     });
 
