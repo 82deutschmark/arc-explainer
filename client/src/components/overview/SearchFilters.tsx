@@ -420,6 +420,7 @@ export function SearchFilters({
                 <SelectItem value="all">Any</SelectItem>
                 <SelectItem value="correct">Correct Predictions</SelectItem>
                 <SelectItem value="incorrect">Incorrect Predictions</SelectItem>
+                <SelectItem value="low_accuracy">Low Accuracy (&lt;25%)</SelectItem>
               </SelectContent>
             </Select>
           </div>
