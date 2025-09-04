@@ -9,11 +9,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function PuzzleDiscussion() {
   const [selectedLimit, setSelectedLimit] = useState<number>(20);
-  const [sortBy, setSortBy] = useState<string>('composite');
+  const [sortBy, setSortBy] = useState<string>('accuracy');
   
   // Set page title
   React.useEffect(() => {
-    document.title = 'ARC Puzzle Discussion - Retry Analysis';
+    document.title = 'ARC Puzzle Discussion - Lowest Accuracy Puzzles';
   }, []);
 
   const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(selectedLimit, sortBy);
@@ -33,14 +33,14 @@ export default function PuzzleDiscussion() {
     );
   }
 
-  const formatPerformanceScore = (score: number) => {
-    return Math.round(score * 10) / 10;
+  const formatAccuracy = (accuracy: number) => {
+    return Math.round(accuracy * 100) + '%';
   };
 
-  const getPerformanceBadgeColor = (score: number) => {
-    if (score >= 15) return 'bg-red-100 text-red-800';
-    if (score >= 10) return 'bg-orange-100 text-orange-800';
-    if (score >= 5) return 'bg-yellow-100 text-yellow-800';
+  const getAccuracyBadgeColor = (accuracy: number) => {
+    if (accuracy === 0) return 'bg-red-100 text-red-800';
+    if (accuracy < 0.3) return 'bg-orange-100 text-orange-800';
+    if (accuracy < 0.6) return 'bg-yellow-100 text-yellow-800';
     return 'bg-blue-100 text-blue-800';
   };
 
@@ -51,10 +51,10 @@ export default function PuzzleDiscussion() {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h1 className="text-5xl font-bold bg-gradient-to-r from-red-900 to-orange-800 bg-clip-text text-transparent">
-                ARC Puzzle Discussion
+                Most Difficult Puzzles
               </h1>
               <p className="text-lg text-slate-600 mt-2">
-                Retry Analysis for Problematic Puzzles
+                Puzzles with the Lowest LLM Accuracy Rates
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -84,11 +84,10 @@ export default function PuzzleDiscussion() {
             <div className="flex items-start gap-3">
               <MessageSquare className="h-5 w-5 text-orange-600 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-slate-800 mb-2">Discussion & Retry Analysis</h3>
+                <h3 className="font-semibold text-slate-800 mb-2">Most Challenging Puzzles</h3>
                 <p>
-                  This page shows puzzles with poor AI analysis results - incorrect predictions, low trustworthiness scores, 
-                  or negative user feedback. Use the enhanced retry system to run new analysis with improved prompting that 
-                  includes context about previous failures.
+                  This page shows puzzles where LLMs have the most difficulty - sorted by lowest accuracy rates. 
+                  These are the hardest puzzles for AI models to solve correctly, with 0% accuracy puzzles at the top.
                 </p>
               </div>
             </div>
@@ -100,14 +99,14 @@ export default function PuzzleDiscussion() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-slate-800">
               <TrendingDown className="h-5 w-5 text-red-600" />
-              Performance Filters
+              Difficulty Filters
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <label htmlFor="limit-select" className="text-sm font-medium">
-                  Show worst:
+                  Show hardest:
                 </label>
                 <select
                   id="limit-select"
@@ -131,9 +130,8 @@ export default function PuzzleDiscussion() {
                   onChange={(e) => setSortBy(e.target.value)}
                   className="px-3 py-2 border border-gray-200 rounded-md text-sm"
                 >
-                  <option value="composite">Performance Score</option>
-                  <option value="feedback">Negative Feedback</option>
                   <option value="accuracy">Lowest Accuracy</option>
+                  <option value="feedback">Most Negative Feedback</option>
                 </select>
               </div>
             </div>
@@ -144,7 +142,7 @@ export default function PuzzleDiscussion() {
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-slate-800">
-              Worst-Performing Puzzles
+              Most Difficult Puzzles
               {!isLoading && (
                 <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
                   {total} found
@@ -152,21 +150,21 @@ export default function PuzzleDiscussion() {
               )}
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Puzzles requiring improved analysis - retry with enhanced prompting
+              Puzzles with lowest LLM accuracy rates - sorted by difficulty
             </p>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading worst-performing puzzles...</p>
+                <p>Loading most difficult puzzles...</p>
               </div>
             ) : puzzles.length === 0 ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No problematic puzzles found.</p>
+                <p className="text-gray-600">No analyzed puzzles found.</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  All analyzed puzzles are performing well!
+                  Run some AI analyses first!
                 </p>
               </div>
             ) : (
@@ -196,27 +194,20 @@ export default function PuzzleDiscussion() {
                           </div>
                         </div>
                         
-                        {/* Performance Issues */}
+                        {/* Difficulty Metrics */}
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <AlertTriangle className="h-4 w-4 text-red-500" />
-                            <span className="text-sm font-medium text-red-700">Performance Issues</span>
+                            <span className="text-sm font-medium text-red-700">LLM Difficulty</span>
                           </div>
                           
                           <div className="flex flex-wrap gap-1">
+                            <Badge variant="outline" className={`text-xs ${getAccuracyBadgeColor(puzzle.performanceData?.avgAccuracy || 0)}`}>
+                              {formatAccuracy(puzzle.performanceData?.avgAccuracy || 0)} accuracy
+                            </Badge>
                             {puzzle.performanceData?.wrongCount > 0 && (
                               <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
-                                {puzzle.performanceData.wrongCount} wrong predictions
-                              </Badge>
-                            )}
-                            {puzzle.performanceData?.avgAccuracy < 0.7 && (
-                              <Badge variant="outline" className="bg-orange-50 text-orange-700 text-xs">
-                                {Math.round(puzzle.performanceData.avgAccuracy * 100)}% accuracy
-                              </Badge>
-                            )}
-                            {puzzle.performanceData?.avgConfidence < 50 && (
-                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 text-xs">
-                                {Math.round(puzzle.performanceData.avgConfidence)}% confidence
+                                {puzzle.performanceData.wrongCount} wrong
                               </Badge>
                             )}
                             {puzzle.performanceData?.negativeFeedback > 0 && (
@@ -225,14 +216,6 @@ export default function PuzzleDiscussion() {
                                 {puzzle.performanceData.negativeFeedback} negative
                               </Badge>
                             )}
-                          </div>
-
-                          {/* Composite Score */}
-                          <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                            <span className="text-xs text-gray-600">Performance Score:</span>
-                            <Badge className={`text-xs ${getPerformanceBadgeColor(puzzle.performanceData?.compositeScore || 0)}`}>
-                              {formatPerformanceScore(puzzle.performanceData?.compositeScore || 0)}
-                            </Badge>
                           </div>
                         </div>
                         
@@ -257,15 +240,15 @@ export default function PuzzleDiscussion() {
 
                         <div className="flex gap-2">
                           <Button asChild size="sm" className="flex-1 bg-red-600 hover:bg-red-700">
-                            <Link href={`/puzzle/${puzzle.id}/retry`}>
+                            <Link href={`/examine/${puzzle.id}`}>
                               <Eye className="h-4 w-4 mr-1" />
-                              Retry Analysis
+                              Analyze Puzzle
                             </Link>
                           </Button>
                           <Button asChild size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
                             <Link href={`/puzzle/${puzzle.id}/view`}>
                               <MessageSquare className="h-4 w-4 mr-1" />
-                              View Solutions
+                              View Database
                             </Link>
                           </Button>
                         </div>
@@ -283,35 +266,35 @@ export default function PuzzleDiscussion() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <RefreshCw className="h-5 w-5 text-orange-600" />
-              How to Use the Discussion Page
+              Understanding Puzzle Difficulty
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <p className="font-semibold text-slate-800 mb-2">📊 Performance Scoring</p>
+                <p className="font-semibold text-slate-800 mb-2">📊 Accuracy Scoring</p>
                 <ul className="space-y-1 text-slate-600">
-                  <li>• <strong>Wrong Predictions:</strong> 5 points per incorrect result</li>
-                  <li>• <strong>Low Accuracy:</strong> 5 points if trustworthiness &lt; 50%</li>
-                  <li>• <strong>Low Confidence:</strong> 3 points if confidence &lt; 50%</li>
-                  <li>• <strong>Negative Feedback:</strong> 2 points per negative vote</li>
+                  <li>• <strong>0% Accuracy:</strong> No LLM got it right</li>
+                  <li>• <strong>Low Accuracy (&lt;30%):</strong> Very few correct predictions</li>
+                  <li>• <strong>Medium Accuracy (30-60%):</strong> Some success</li>
+                  <li>• <strong>High Accuracy (&gt;60%):</strong> Most LLMs succeeded</li>
                 </ul>
               </div>
               <div>
-                <p className="font-semibold text-slate-800 mb-2">🔄 Retry Process</p>
+                <p className="font-semibold text-slate-800 mb-2">🔍 Analysis Options</p>
                 <ul className="space-y-1 text-slate-600">
-                  <li>• Click "Retry Analysis" to examine a problematic puzzle</li>
-                  <li>• Use enhanced prompting with failure context</li>
-                  <li>• Compare new results with original failed analyses</li>
-                  <li>• Provide feedback on improvement quality</li>
+                  <li>• Click "Analyze Puzzle" to run AI analysis</li>
+                  <li>• Click "View Database" to see all LLM attempts</li>
+                  <li>• Try different models on challenging puzzles</li>
+                  <li>• Compare results across different approaches</li>
                 </ul>
               </div>
             </div>
             
             <div className="bg-white/70 rounded p-3 mt-4">
               <p className="font-medium text-orange-800">
-                💡 Enhanced Prompting: The retry system automatically includes context about previous failures, 
-                negative feedback comments, and specific issues to help AI models provide better analysis.
+                💡 These puzzles represent the current frontier of AI reasoning ability. 
+                0% accuracy puzzles are completely unsolved by current LLMs.
               </p>
             </div>
           </CardContent>
