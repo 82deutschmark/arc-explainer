@@ -412,12 +412,35 @@ export class OpenAIService extends BaseAIService {
     // Validate reasoning data types and fix corruption
     if (reasoningLog && typeof reasoningLog !== 'string') {
       console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
-      reasoningLog = String(reasoningLog);
+      // Use JSON.stringify instead of String() to avoid "[object Object]" corruption
+      try {
+        reasoningLog = JSON.stringify(reasoningLog, null, 2);
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+      } catch (error) {
+        console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
+        reasoningLog = null;
+      }
     }
     
     if (reasoningItems && !Array.isArray(reasoningItems)) {
       console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
       reasoningItems = [];
+    }
+
+    // Fallback: If reasoningLog is empty but we have reasoningItems, create a readable log
+    if (!reasoningLog && reasoningItems && reasoningItems.length > 0) {
+      console.log(`🔍 [${this.provider}-PARSE-DEBUG] Creating fallback reasoningLog from ${reasoningItems.length} reasoning items`);
+      reasoningLog = reasoningItems
+        .filter(item => item && typeof item === 'string' && item.trim().length > 0)
+        .map((item, index) => `Step ${index + 1}: ${item}`)
+        .join('\n\n');
+      
+      if (reasoningLog && reasoningLog.length > 0) {
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Generated fallback reasoningLog: ${reasoningLog.length} chars`);
+      } else {
+        reasoningLog = null;
+        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Failed to generate fallback reasoningLog - no valid string items`);
+      }
     }
 
     // Extract token usage
