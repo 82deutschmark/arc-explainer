@@ -75,8 +75,9 @@ export class OpenAIService extends BaseAIService {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
       // Parse response using provider-specific method
+      // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey);
+        this.parseProviderResponse(response, modelKey, true);
 
       // Validate response completeness
       const completeness = this.validateResponseCompleteness(response, modelKey);
