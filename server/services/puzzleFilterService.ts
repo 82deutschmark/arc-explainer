@@ -190,6 +190,23 @@ export class PuzzleFilterService {
       filtered = filtered.filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true);
     } else if (predictionAccuracy === 'incorrect') {
       filtered = filtered.filter(exp => exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false);
+    } else if (predictionAccuracy === 'low_accuracy') {
+      filtered = filtered.filter(exp => {
+        // Check prediction accuracy score (0.0 to 1.0 scale)
+        const accuracyScore = exp.predictionAccuracyScore;
+        if (accuracyScore !== null && accuracyScore !== undefined) {
+          return accuracyScore < 0.25;
+        }
+        
+        // Check multi-test average accuracy (0.0 to 1.0 scale)
+        const multiTestAccuracy = exp.multiTestAverageAccuracy;
+        if (multiTestAccuracy !== null && multiTestAccuracy !== undefined) {
+          return multiTestAccuracy < 0.25;
+        }
+        
+        // If both accuracy metrics are missing, exclude the explanation
+        return false;
+      });
     }
     
     return filtered;
