@@ -220,7 +220,7 @@ export default function PuzzleBrowser() {
                 </Button>
               </Link>
               <a
-                href="https://github.com/your-github-username/arc-explainer"
+                href="https://github.com/82deutschmark/arc-explainer"
                 target="_blank"
                 rel="noopener noreferrer"
               >

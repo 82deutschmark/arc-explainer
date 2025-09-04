@@ -612,13 +612,54 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
   /**
    * Get worst-performing puzzles based on composite scoring
    * Prioritizes incorrect predictions, low accuracy scores, and negative feedback
+   * Supports accuracy range filtering
    */
-  async getWorstPerformingPuzzles(limit: number = 20, sortBy: string = 'composite'): Promise<any[]> {
+  async getWorstPerformingPuzzles(
+    limit: number = 20, 
+    sortBy: string = 'composite',
+    filters?: {
+      minAccuracy?: number;
+      maxAccuracy?: number;
+      zeroAccuracyOnly?: boolean;
+    }
+  ): Promise<any[]> {
     if (!this.isConnected()) {
       return [];
     }
 
     try {
+      // Build the HAVING clause based on filters
+      let havingConditions = ['COUNT(DISTINCT e.id) > 0'];
+      const queryParams = [limit, sortBy];
+      let paramIndex = 3;
+
+      if (filters?.zeroAccuracyOnly) {
+        // Only show puzzles with 0% accuracy
+        havingConditions.push('AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) = 0');
+      } else {
+        // Apply accuracy range filters if provided
+        if (filters?.minAccuracy !== undefined) {
+          havingConditions.push(`AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) >= $${paramIndex}`);
+          queryParams.push(filters.minAccuracy);
+          paramIndex++;
+        }
+        
+        if (filters?.maxAccuracy !== undefined) {
+          havingConditions.push(`AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) <= $${paramIndex}`);
+          queryParams.push(filters.maxAccuracy);
+          paramIndex++;
+        }
+        
+        // If no specific filters, keep original filter logic
+        if (filters?.minAccuracy === undefined && filters?.maxAccuracy === undefined) {
+          havingConditions.push(`(
+            COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
+            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
+            COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
+          )`);
+        }
+      }
+
       const result = await this.query(`
         SELECT *
         FROM (
@@ -642,20 +683,14 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           LEFT JOIN feedback f ON e.id = f.explanation_id
           WHERE e.puzzle_id IS NOT NULL
           GROUP BY e.puzzle_id
-          HAVING 
-            COUNT(DISTINCT e.id) > 0
-            AND (
-              COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
-              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
-              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
-            )
+          HAVING ${havingConditions.join(' AND ')}
         ) as performance_data
         ORDER BY 
           CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
           CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
           CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST
         LIMIT $1
-      `, [limit, sortBy]);
+      `, queryParams);
 
       return result.rows.map(row => ({
         puzzleId: row.puzzle_id,
