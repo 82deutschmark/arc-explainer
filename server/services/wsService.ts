@@ -38,7 +38,14 @@ function parseSessionId(url?: string | null): string | null {
 export function attach(server: Server) {
   if (wss) return wss;
   // Attach on specific path; clients should connect to ws(s)://host/api/saturn/progress?sessionId=...
-  wss = new WebSocketServer({ server, path: '/api/saturn/progress' });
+  wss = new WebSocketServer({ 
+    server, 
+    path: '/api/saturn/progress',
+    // Allow WebSocket connections from all origins
+    verifyClient: (info, cb) => {
+      cb(true);  // Allow all WebSocket connections
+    }
+  });
 
   wss.on('connection', (ws, req) => {
     const url = req.url || '';

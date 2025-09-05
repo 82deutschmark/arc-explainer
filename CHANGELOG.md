@@ -1,3 +1,21 @@
+### September 5 2025
+
+## v2.12.0 - 🌐 CORS: Removed All API Access Restrictions
+- **ISSUE RESOLVED**: Fixed CORS blocking preventing external apps from accessing the API
+- **CHANGES MADE**:
+  - Main server CORS configuration simplified: removed origin whitelist, now allows all origins (`origin: true`)
+  - Removed redundant manual CORS headers middleware that was causing conflicts
+  - WebSocket CORS verification updated to allow connections from any origin
+  - Eliminated complex origin checking logic for both HTTP and WebSocket connections
+- **IMPACT**: API now accessible from https://sfmc.bhhc.us and any other external domain
+- **TESTING**: Verify that your other app at https://sfmc.bhhc.us can now successfully call:
+  - `GET /api/puzzle/worst-performing?limit=1000`
+  - All other API endpoints without CORS errors
+  - WebSocket connections to `/api/saturn/progress`
+- **FILES MODIFIED**: 
+  - `server/index.ts` - Updated main CORS configuration and removed manual headers
+  - `server/services/wsService.ts` - Simplified WebSocket origin verification
+
 ### September 4 2025
 
 ## v2.11.0 - ✨ ENHANCED: PuzzleDiscussion Advanced Filtering System (Task 1.1 COMPLETED) 🎯
