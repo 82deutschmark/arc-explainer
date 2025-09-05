@@ -35,8 +35,6 @@ export interface ModelCapabilityStatus {
   limits: {
     maxConcurrentRequests: number;
     rateLimit?: number;
-    contextWindow: number;
-    maxOutputTokens?: number;
   };
 }
 
@@ -275,8 +273,8 @@ export class ModelCapabilities {
       },
       limits: {
         maxConcurrentRequests: modelDef.premium ? 1 : 3,
-        contextWindow: modelDef.contextWindow ?? 32000,
-        maxOutputTokens: modelDef.maxOutputTokens
+      
+       
       }
     };
   }
