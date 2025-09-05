@@ -22,43 +22,9 @@ logger.debug('__dirname: ' + __dirname, 'startup');
 
 const app = express();
 
-// Configure CORS
+// Configure CORS - Allow all origins
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // In development, allow requests from common local ports and undefined origins (like Postman)
-    if (process.env.NODE_ENV !== 'production') {
-      const devOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5173'];
-      if (!origin || devOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-    }
-
-    // In production, only allow requests from the whitelisted domains
-    const allowedOrigins = [
-      'https://sfmc.bhhc.us',                          // Production SFMC domain
-      'https://sfmc-production.up.railway.app',        // Production SFMC on Railway
-      'https://arc-explainer-production.up.railway.app',  // This API's own domain
-      'https://arc-explainer.up.railway.app'            // Fallback/previous app domain
-    ];
-
-    if (origin && allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // Log the blocked origin for debugging purposes
-      if (origin) {
-        logger.warn(`CORS: Blocked origin: ${origin}`, 'security');
-      } else if (process.env.NODE_ENV === 'production') {
-        logger.warn(`CORS: Blocked request with no origin`, 'security');
-      }
-      // For production, block requests from non-whitelisted origins
-      // In development, this part is not reached due to the check above, but as a fallback:
-      if (process.env.NODE_ENV === 'production') {
-        callback(new Error('Not allowed by CORS'));
-      } else {
-        callback(null, true); // Allow other origins in dev
-      }
-    }
-  },
+  origin: true,  // Allow all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   exposedHeaders: ['Content-Length', 'Content-Type'],
@@ -70,20 +36,7 @@ const corsOptions = {
 // Apply CORS middleware first before any other middleware
 app.use(cors(corsOptions));
 
-// Add a specific middleware to ensure CORS headers are set
-app.use((req, res, next) => {
-  // Ensure CORS headers are set for all responses, including error responses
-  res.header('Access-Control-Allow-Origin', req.get('origin') || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
-  next();
-});
+// CORS middleware handles all headers automatically - no manual headers needed
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
