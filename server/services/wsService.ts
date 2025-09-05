@@ -38,7 +38,34 @@ function parseSessionId(url?: string | null): string | null {
 export function attach(server: Server) {
   if (wss) return wss;
   // Attach on specific path; clients should connect to ws(s)://host/api/saturn/progress?sessionId=...
-  wss = new WebSocketServer({ server, path: '/api/saturn/progress' });
+  wss = new WebSocketServer({ 
+    server, 
+    path: '/api/saturn/progress',
+    // Handle WebSocket CORS
+    verifyClient: (info, cb) => {
+      const origin = info.req.headers.origin;
+      const allowedOrigins = [
+        'https://sfmc.bhhc.us',
+        'https://sfmc-production.up.railway.app',
+        'https://arc-explainer-production.up.railway.app',
+        'https://arc-explainer.up.railway.app'
+      ];
+      
+      // In development, allow local connections
+      if (process.env.NODE_ENV !== 'production') {
+        cb(true);
+        return;
+      }
+
+      // In production, verify origin is allowed
+      if (origin && allowedOrigins.includes(origin)) {
+        cb(true);
+      } else {
+        console.warn(`WebSocket: Blocked connection from origin: ${origin || 'unknown'}`);
+        cb(false, 403, 'Origin not allowed');
+      }
+    }
+  });
 
   wss.on('connection', (ws, req) => {
     const url = req.url || '';
