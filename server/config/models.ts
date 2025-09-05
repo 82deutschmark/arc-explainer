@@ -541,13 +541,13 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-blue-400',
     premium: false,
     cost: { input: '$0.072', output: '$0.28' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     isReasoning: true,
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
-    maxOutputTokens: 65500,
+    maxOutputTokens: 121500,
     contextWindow: 131000
   },
   {
