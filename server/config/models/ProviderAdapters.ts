@@ -367,7 +367,7 @@ class AnthropicTransformer implements RequestTransformer {
     
     return {
       model: modelDef?.apiModelName || modelKey,
-      max_tokens: request.max_tokens || 4096,
+      max_tokens: request.max_tokens,
       messages: request.messages,
       temperature: request.temperature,
       system: request.system
@@ -426,7 +426,7 @@ class GeminiTransformer implements RequestTransformer {
     return {
       model: modelDef?.apiModelName || modelKey,
       generationConfig: {
-        maxOutputTokens: request.max_tokens || 8192,
+        maxOutputTokens: request.max_tokens,
         temperature: request.temperature,
         topP: request.topP
       },
@@ -462,7 +462,7 @@ class DeepSeekTransformer implements RequestTransformer {
     return {
       ...request,
       model: modelDef?.apiModelName || modelKey,
-      max_tokens: Math.min(request.max_tokens || 8192, 8192) // DeepSeek limit
+      max_tokens: request.max_tokens
     };
   }
 
