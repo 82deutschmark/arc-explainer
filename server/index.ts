@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import cors from 'cors';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
@@ -20,8 +21,26 @@ logger.debug('Current working directory: ' + process.cwd(), 'startup');
 logger.debug('__dirname: ' + __dirname, 'startup');
 
 const app = express();
+
+// Configure CORS
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://61qsfh3g.up.railway.app',       // The external app that needs access
+        'https://arc-explainer.up.railway.app' // This app's own frontend
+      ]
+    : '*', // Allow all origins in development
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 app.use((req, res, next) => {
   const start = Date.now();
