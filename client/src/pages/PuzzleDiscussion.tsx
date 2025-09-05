@@ -54,6 +54,17 @@ export default function PuzzleDiscussion() {
     return 'bg-blue-100 text-blue-800';
   };
 
+  const getConfidenceBadgeColor = (confidence: number) => {
+    if (confidence < 0.1) return 'bg-red-100 text-red-800 border-red-200';
+    if (confidence < 0.25) return 'bg-orange-100 text-orange-800 border-orange-200';
+    if (confidence < 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    return 'bg-green-100 text-green-800 border-green-200';
+  };
+
+  const formatConfidence = (confidence: number) => {
+    return Math.round(confidence * 100) + '%';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -357,6 +368,15 @@ export default function PuzzleDiscussion() {
                               <Badge variant="outline" className="bg-pink-50 text-pink-700 text-xs flex items-center gap-1">
                                 <MessageSquare className="h-3 w-3" />
                                 {puzzle.performanceData.negativeFeedback} negative
+                              </Badge>
+                            )}
+                            {puzzle.performanceData?.lowestNonZeroConfidence !== undefined && (
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs ${getConfidenceBadgeColor(puzzle.performanceData.lowestNonZeroConfidence)}`}
+                                title="Lowest non-zero confidence score across all attempts"
+                              >
+                                {formatConfidence(puzzle.performanceData.lowestNonZeroConfidence)} confidence
                               </Badge>
                             )}
                           </div>
