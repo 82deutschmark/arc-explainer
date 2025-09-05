@@ -24,12 +24,40 @@ const app = express();
 
 // Configure CORS
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        'https://61qsfh3g.up.railway.app',       // The external app that needs access
-        'https://arc-explainer.up.railway.app' // This app's own frontend
-      ]
-    : '*', // Allow all origins in development
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // In development, allow requests from common local ports and undefined origins (like Postman)
+    if (process.env.NODE_ENV !== 'production') {
+      const devOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:5173'];
+      if (!origin || devOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+    }
+
+    // In production, only allow requests from the whitelisted domains
+    const allowedOrigins = [
+      'https://sfmc.bhhc.us',                          // Production SFMC domain
+      'https://arc-explainer-production.up.railway.app',  // This API's own domain
+      'https://arc-explainer.up.railway.app'            // Fallback/previous app domain
+    ];
+
+    if (origin && allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // Log the blocked origin for debugging purposes
+      if (origin) {
+        logger.warn(`CORS: Blocked origin: ${origin}`, 'security');
+      } else if (process.env.NODE_ENV === 'production') {
+        logger.warn(`CORS: Blocked request with no origin`, 'security');
+      }
+      // For production, block requests from non-whitelisted origins
+      // In development, this part is not reached due to the check above, but as a fallback:
+      if (process.env.NODE_ENV === 'production') {
+        callback(new Error('Not allowed by CORS'));
+      } else {
+        callback(null, true); // Allow other origins in dev
+      }
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
