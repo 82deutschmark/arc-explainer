@@ -36,6 +36,7 @@ const corsOptions = {
     // In production, only allow requests from the whitelisted domains
     const allowedOrigins = [
       'https://sfmc.bhhc.us',                          // Production SFMC domain
+      'https://sfmc-production.up.railway.app',        // Production SFMC on Railway
       'https://arc-explainer-production.up.railway.app',  // This API's own domain
       'https://arc-explainer.up.railway.app'            // Fallback/previous app domain
     ];
