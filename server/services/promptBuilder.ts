@@ -76,7 +76,7 @@ export function buildAnalysisPrompt(
   } = options;
 
   // Determine prompt characteristics
-  const isCustom = promptId === 'custom' || (customPrompt && customPrompt.trim());
+  const isCustom = promptId === 'custom' || (customPrompt && typeof customPrompt === 'string' && customPrompt.trim());
   const isAlien = isAlienCommunicationMode(promptId);
   const isSolver = isSolverMode(promptId);
   const selectedTemplate = isCustom ? null : (PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation);
