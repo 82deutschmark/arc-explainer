@@ -41,29 +41,9 @@ export function attach(server: Server) {
   wss = new WebSocketServer({ 
     server, 
     path: '/api/saturn/progress',
-    // Handle WebSocket CORS
+    // Allow WebSocket connections from all origins
     verifyClient: (info, cb) => {
-      const origin = info.req.headers.origin;
-      const allowedOrigins = [
-        'https://sfmc.bhhc.us',
-        'https://sfmc-production.up.railway.app',
-        'https://arc-explainer-production.up.railway.app',
-        'https://arc-explainer.up.railway.app'
-      ];
-      
-      // In development, allow local connections
-      if (process.env.NODE_ENV !== 'production') {
-        cb(true);
-        return;
-      }
-
-      // In production, verify origin is allowed
-      if (origin && allowedOrigins.includes(origin)) {
-        cb(true);
-      } else {
-        console.warn(`WebSocket: Blocked connection from origin: ${origin || 'unknown'}`);
-        cb(false, 403, 'Origin not allowed');
-      }
+      cb(true);  // Allow all WebSocket connections
     }
   });
 
