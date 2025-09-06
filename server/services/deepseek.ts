@@ -109,15 +109,11 @@ export class DeepSeekService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     // Build message format for DeepSeek API
     const messageFormat: any = {
       model: modelName,
       messages,
-      max_tokens: maxTokens,
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     };
 
@@ -176,14 +172,10 @@ export class DeepSeekService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     const response = await deepseek.chat.completions.create({
       model: modelName,
       messages,
-      max_tokens: maxTokens,
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 

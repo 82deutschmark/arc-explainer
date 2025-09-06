@@ -85,11 +85,11 @@ export class GeminiService extends BaseAIService {
       name: modelName,
       isReasoning: isThinking, // Gemini 2.5+ models have thinking capabilities
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxOutputTokens || 8192, // Gemini typically has large context windows
+      contextWindow: modelConfig?.maxOutputTokens || 118192, // Gemini typically has large context windows
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Gemini doesn't support structured output format
-      supportsVision: true // Most Gemini models support vision
+      supportsVision: true // Most Gemini models support vision 
     };
   }
 
@@ -109,13 +109,9 @@ export class GeminiService extends BaseAIService {
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
     const temperature = options?.temperature ?? 0.2; // Default for Gemini
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
-      maxOutputTokens: maxTokens,
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { maxOutputTokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
@@ -195,13 +191,9 @@ export class GeminiService extends BaseAIService {
     const userMessage = promptPackage.userPrompt;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
-      maxOutputTokens: maxTokens,
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { maxOutputTokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })

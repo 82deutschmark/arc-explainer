@@ -334,7 +334,7 @@ export default function PuzzleOverview() {
                     <option value="all">All Performance Levels</option>
                     <option value="high">High Performers (≥80%)</option>
                     <option value="medium">Medium Performers (60-80%)</option>
-                    <option value="low">Learning Opportunity (<60%)</option>
+                    <option value="low">Learning Opportunity (&lt;60%)</option>
                   </select>
                 </div>
                 
