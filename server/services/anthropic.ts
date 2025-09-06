@@ -269,14 +269,30 @@ export class AnthropicService extends BaseAIService {
     modelKey: string,
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
-    const { content, usage, stop_reason } = response;
+    // Handle both streaming and non-streaming responses
+    const isStreamingResponse = !response.content && response.choices?.[0]?.delta;
+    
+    let content, usage, stop_reason;
+    
+    if (isStreamingResponse) {
+      // Handle streaming response format
+      const delta = response.choices[0].delta;
+      content = delta.content ? [{ type: 'text', text: delta.content }] : [];
+      usage = { input_tokens: 0, output_tokens: 0 }; // Will be updated by the stream handler
+      stop_reason = response.choices[0].finish_reason;
+    } else {
+      // Handle non-streaming response format
+      content = response.content || [];
+      usage = response.usage || { input_tokens: 0, output_tokens: 0 };
+      stop_reason = response.stop_reason;
+    }
 
     const tokenUsage: TokenUsage = {
-      input: usage.input_tokens,
-      output: usage.output_tokens,
+      input: usage.input_tokens || 0,
+      output: usage.output_tokens || 0,
     };
 
-    const isComplete = stop_reason === 'end_turn';
+    const isComplete = stop_reason === 'end_turn' || stop_reason === 'stop';
     const incompleteReason = isComplete ? undefined : stop_reason;
 
     let result: any = {};
