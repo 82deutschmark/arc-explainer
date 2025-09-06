@@ -448,7 +448,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     id: "alienCommunication",
     name: "🛸 Alien Communication",
     description: "Fun creative approach - AI interprets puzzles as alien messages using emoji symbols. Makes complex patterns more intuitive and engaging.",
-    content: `Our app frames the puzzles from the ARC-AGI prize as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
+    content: `Frames the puzzles from the ARC-AGI prize as alien communication puzzles. Your job is to explain in very simple terms why the correct answer is correct. Look at this puzzle where we already know the correct answer and determine the logic and transformations (as documented in the ARC-AGI prize transformations) used to solve it.`,
     emojiMapIncluded: true
   },
   standardExplanation: {
@@ -530,8 +530,8 @@ export interface ModelConfig {
   isReasoning?: boolean;
   apiModelName: string;
   modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
-  maxOutputTokens?: number;
   contextWindow?: number;
+  maxOutputTokens?: number; // Only used for Anthropic models
   supportsFunctionCalling?: boolean;
   supportsSystemPrompts?: boolean;
   supportsStructuredOutput?: boolean;

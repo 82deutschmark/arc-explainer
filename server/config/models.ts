@@ -26,7 +26,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     apiModelName: 'gpt-4.1-nano-2025-04-14',
     modelType: 'gpt5_chat',
-    maxOutputTokens: 100000,
     contextWindow: 1000000
   },
   { 
@@ -40,7 +39,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4.1-mini-2025-04-14',
     modelType: 'gpt5_chat',
-    maxOutputTokens: 100000,
     contextWindow: 1000000
   },
   { 
@@ -54,7 +52,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4o-mini-2024-07-18',
     modelType: 'gpt5_chat',
-    maxOutputTokens: 65536,
     contextWindow: 128000
   },
   { 
@@ -69,7 +66,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-mini-2025-01-31',
     modelType: 'o3_o4',
-    maxOutputTokens: 128000,
     contextWindow: 200000
   },
   { 
@@ -84,7 +80,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o4-mini-2025-04-16',
     modelType: 'o3_o4',
-    maxOutputTokens: 128000,
     contextWindow: 200000
   },
   { 
@@ -99,7 +94,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-2025-04-16',
     modelType: 'o3_o4',
-    maxOutputTokens: 128000,
     contextWindow: 400000
   },
   { 
@@ -113,7 +107,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     apiModelName: 'gpt-4.1-2025-04-14',
     modelType: 'gpt5_chat',
-    maxOutputTokens: 100000,
     contextWindow: 1000000
   },
   { 
@@ -128,7 +121,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-2025-08-07',
     modelType: 'gpt5',
-    maxOutputTokens: 128000,
     contextWindow: 400000
   },
   { 
@@ -143,7 +135,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'gpt-5-chat-latest',
     modelType: 'gpt5_chat',
-    maxOutputTokens: 100000,
     contextWindow: 256000
   },
   { 
@@ -158,7 +149,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-mini-2025-08-07',
     modelType: 'gpt5',
-    maxOutputTokens: 128000,
     contextWindow: 400000
   },
   { 
@@ -173,7 +163,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-nano-2025-08-07',
     modelType: 'gpt5',
-    maxOutputTokens: 128000,
     contextWindow: 400000
   },
 
@@ -190,7 +179,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 64000
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -262,7 +251,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'grok-4-0709',
     modelType: 'grok',
-    maxOutputTokens: 115536
   },
   {
     key: 'grok-3',
@@ -275,7 +263,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
     apiModelName: 'grok-3',
     modelType: 'grok',
-    maxOutputTokens: 65536
   },
   {
     key: 'grok-3-mini',
@@ -288,7 +275,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     apiModelName: 'grok-3-mini',
     modelType: 'grok',
-    maxOutputTokens: 65536
   },
   {
     key: 'grok-3-mini-fast',
@@ -301,7 +287,6 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'fast', estimate: '30-60 sec' },
     apiModelName: 'grok-3-mini-fast',
     modelType: 'grok',
-    maxOutputTokens: 65536
   },
 
   // Google Gemini Models
@@ -317,7 +302,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
-    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -332,7 +316,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash',
     modelType: 'gemini',
-    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -347,7 +330,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash-lite',
     modelType: 'gemini',
-    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -362,7 +344,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash',
     modelType: 'gemini',
-    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   {
@@ -377,7 +358,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash-lite',
     modelType: 'gemini',
-    maxOutputTokens: 165536,
     contextWindow: 1000000
   },
   
@@ -394,7 +374,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek-chat',
     modelType: 'deepseek',
-    maxOutputTokens: 65536
   },
   {
     key: 'deepseek-reasoner',
@@ -408,7 +387,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
-    maxOutputTokens: 65536
+    
   },
 
   // OpenRouter Models (unique models not available through direct APIs)
@@ -424,7 +403,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'meta-llama/llama-3.3-70b-instruct',
     modelType: 'openrouter',
-    maxOutputTokens: 32768,
     contextWindow: 128000
   },
   {
@@ -439,7 +417,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
     modelType: 'openrouter',
-    maxOutputTokens: 32768,
     contextWindow: 128000
   },
   {
@@ -454,7 +431,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
-    maxOutputTokens: 56384,
     contextWindow: 128000
   },
   {
@@ -469,7 +445,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -484,7 +459,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'nousresearch/hermes-4-70b',
     modelType: 'openrouter',
-    maxOutputTokens: 32768,
     contextWindow: 32768
   },
   
@@ -500,7 +474,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'mistralai/mistral-large',
     modelType: 'openrouter',
-    maxOutputTokens: 116384,
     contextWindow: 128000
   },
   {
@@ -515,7 +488,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-chat-v3.1',
     modelType: 'openrouter',
-    maxOutputTokens: 116384,
     contextWindow: 256000
   },
 
@@ -532,7 +504,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'x-ai/grok-code-fast-1',
     modelType: 'openrouter',
-    maxOutputTokens: 128000,
     contextWindow: 256000
   },
   {
@@ -547,7 +518,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
-    maxOutputTokens: 121500,
     contextWindow: 131000
   },
   {
@@ -562,7 +532,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'mistralai/codestral-2508',
     modelType: 'openrouter',
-    maxOutputTokens: 128000,
     contextWindow: 256000
   },
   {
@@ -577,7 +546,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen3-30b-a3b-instruct-2507',
     modelType: 'openrouter',
-    maxOutputTokens: 131072,
     contextWindow: 262144
   },
   {
@@ -592,7 +560,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'z-ai/glm-4.5',
     modelType: 'openrouter',
-    maxOutputTokens: 96000,
     contextWindow: 131000
   },
   {
@@ -607,7 +574,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
     modelType: 'openrouter',
-    maxOutputTokens: 131072,
     contextWindow: 262144
   },
   {
@@ -622,7 +588,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen3-coder',
     modelType: 'openrouter',
-    maxOutputTokens: 131072,
     contextWindow: 262144
   },
   {
@@ -637,7 +602,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'moonshotai/kimi-k2',
     modelType: 'openrouter',
-    maxOutputTokens: 31500,
     contextWindow: 63000
   },
   {
@@ -652,7 +616,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'moonshotai/kimi-dev-72b:free',
     modelType: 'openrouter',
-    maxOutputTokens: 65536,
     contextWindow: 131072
   },
   {
@@ -667,7 +630,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'x-ai/grok-4',
     modelType: 'openrouter',
-    maxOutputTokens: 128000,
     contextWindow: 256000
   },
   {
@@ -682,7 +644,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
-    maxOutputTokens: 18192,
     contextWindow: 32768
   },
   {
@@ -697,7 +658,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-prover-v2',
     modelType: 'openrouter',
-    maxOutputTokens: 116384,
     contextWindow: 256000
   },
   {
@@ -712,7 +672,6 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
-    maxOutputTokens: 66384,
     contextWindow: 256000
   }
 ];
