@@ -7,91 +7,76 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Github
+  Github,
+  Filter,
+  BarChart3
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { apiRequest } from '@/lib/queryClient';
-import { useModels } from '@/hooks/useModels';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { ModelDebugModal } from '@/components/ModelDebugModal';
-import { StatisticsCards } from '@/components/overview/StatisticsCards';
+import { LeaderboardSection } from '@/components/overview/leaderboards/LeaderboardSection';
+import { ModelComparisonMatrix } from '@/components/overview/ModelComparisonMatrix';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
-import { useConfidenceStats } from '@/hooks/useConfidenceStats';
-import type { FeedbackStats, PuzzleOverviewData, PuzzleOverviewResponse, AccuracyStats, ExplanationRecord, ModelConfig, ConfidenceStats } from '@shared/types';
+import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
+import { useModelComparisons } from '@/hooks/useModelComparisons';
+import type { PuzzleOverviewData, PuzzleOverviewResponse, ExplanationRecord } from '@shared/types';
 
 const ITEMS_PER_PAGE = 20;
 
 export default function PuzzleOverview() {
   const [location, setLocation] = useLocation();
   
-  // Initialize state from URL parameters
+  // Simplified state - only essential filters
   const urlParams = useMemo(() => new URLSearchParams(location.split('?')[1] || ''), [location]);
   
   const [searchQuery, setSearchQuery] = useState(urlParams.get('search') || '');
-  const [hasExplanationFilter, setHasExplanationFilter] = useState<string>(urlParams.get('hasExplanation') || 'all');
-  const [hasFeedbackFilter, setHasFeedbackFilter] = useState<string>(urlParams.get('hasFeedback') || 'all');
   const [modelFilter, setModelFilter] = useState<string>(urlParams.get('modelName') || 'all');
-  const [saturnFilter, setSaturnFilter] = useState<string>(urlParams.get('saturnFilter') || 'all');
-  const [sourceFilter, setSourceFilter] = useState<string>(urlParams.get('source') || 'all');
-  const [multiTestFilter, setMultiTestFilter] = useState<string>(urlParams.get('multiTestFilter') || 'all');
-  const [gridSizeMin, setGridSizeMin] = useState<string>(urlParams.get('gridSizeMin') || '');
-  const [gridSizeMax, setGridSizeMax] = useState<string>(urlParams.get('gridSizeMax') || '');
-  const [gridConsistencyFilter, setGridConsistencyFilter] = useState<string>(urlParams.get('gridConsistency') || 'all');
-  const [processingTimeMin, setProcessingTimeMin] = useState<string>(urlParams.get('processingTimeMin') || '');
-  const [processingTimeMax, setProcessingTimeMax] = useState<string>(urlParams.get('processingTimeMax') || '');
-  const [hasPredictionsFilter, setHasPredictionsFilter] = useState<string>(urlParams.get('hasPredictions') || 'all');
-  const [predictionAccuracyFilter, setPredictionAccuracyFilter] = useState<string>(urlParams.get('predictionAccuracy') || 'all');
-  const [confidenceMin, setConfidenceMin] = useState<string>(urlParams.get('confidenceMin') || '');
-  const [confidenceMax, setConfidenceMax] = useState<string>(urlParams.get('confidenceMax') || '');
-  const [totalTokensMin, setTotalTokensMin] = useState<string>(urlParams.get('totalTokensMin') || '');
-  const [totalTokensMax, setTotalTokensMax] = useState<string>(urlParams.get('totalTokensMax') || '');
-  const [estimatedCostMin, setEstimatedCostMin] = useState<string>(urlParams.get('estimatedCostMin') || '');
-  const [estimatedCostMax, setEstimatedCostMax] = useState<string>(urlParams.get('estimatedCostMax') || '');
-  const [predictionAccuracyMin, setPredictionAccuracyMin] = useState<string>(urlParams.get('predictionAccuracyMin') || '');
-  const [predictionAccuracyMax, setPredictionAccuracyMax] = useState<string>(urlParams.get('predictionAccuracyMax') || '');
+  const [performanceTier, setPerformanceTier] = useState<string>(urlParams.get('performanceTier') || 'all');
   const [sortBy, setSortBy] = useState<string>(urlParams.get('sortBy') || 'explanationCount');
-  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'asc');
+  const [sortOrder, setSortOrder] = useState<string>(urlParams.get('sortOrder') || 'desc');
   const [currentPage, setCurrentPage] = useState(parseInt(urlParams.get('page') || '1'));
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showPuzzleBrowser, setShowPuzzleBrowser] = useState(false);
   
-  // Feedback modal state
+  // Modal states
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedPuzzleId, setSelectedPuzzleId] = useState<string>('');
-  const [showAccuracyLeaderboard, setShowAccuracyLeaderboard] = useState(false);
-  const [showTrustworthinessLeaderboard, setShowTrustworthinessLeaderboard] = useState(false);
-
-  // Model debug modal state
   const [modelDebugModalOpen, setModelDebugModalOpen] = useState(false);
   const [selectedModelName, setSelectedModelName] = useState<string>('');
 
-  const { data: models } = useModels();
+  // Fetch leaderboard data
+  const {
+    accuracyStats,
+    performanceStats, 
+    feedbackStats,
+    isLoadingAccuracy,
+    isLoadingPerformance,
+    isLoadingFeedback,
+    hasAnyError
+  } = useModelLeaderboards();
+
+  // Fetch model comparison data
+  const {
+    modelComparisons,
+    dashboard,
+    isLoading: isLoadingComparisons
+  } = useModelComparisons();
 
   // Set page title
   React.useEffect(() => {
-    document.title = 'Puzzle Database Overview';
+    document.title = 'Model Performance Dashboard - ARC Explainer';
   }, []);
 
-  // Update URL when filters change
+  // Simplified URL update
   useEffect(() => {
     const params = new URLSearchParams();
     
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
-    if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
-    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
-    if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
-    if (sourceFilter !== 'all') params.set('source', sourceFilter);
-    if (multiTestFilter !== 'all') params.set('multiTestFilter', multiTestFilter);
-    if (gridSizeMin) params.set('gridSizeMin', gridSizeMin);
-    if (gridSizeMax) params.set('gridSizeMax', gridSizeMax);
-    if (gridConsistencyFilter !== 'all') params.set('gridConsistency', gridConsistencyFilter);
-    if (processingTimeMin) params.set('processingTimeMin', processingTimeMin);
-    if (processingTimeMax) params.set('processingTimeMax', processingTimeMax);
-    if (hasPredictionsFilter !== 'all') params.set('hasPredictions', hasPredictionsFilter);
-    if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
-    if (confidenceMin) params.set('confidenceMin', confidenceMin);
-    if (confidenceMax) params.set('confidenceMax', confidenceMax);
-    if (sortBy !== 'createdAt') params.set('sortBy', sortBy);
+    if (modelFilter !== 'all') params.set('modelName', modelFilter);
+    if (performanceTier !== 'all') params.set('performanceTier', performanceTier);
+    if (sortBy !== 'explanationCount') params.set('sortBy', sortBy);
     if (sortOrder !== 'desc') params.set('sortOrder', sortOrder);
     if (currentPage !== 1) params.set('page', currentPage.toString());
     
@@ -99,7 +84,7 @@ export default function PuzzleOverview() {
     if (newUrl !== location) {
       setLocation(newUrl);
     }
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage, location, setLocation]);
+  }, [searchQuery, modelFilter, performanceTier, sortBy, sortOrder, currentPage, location, setLocation]);
 
   // Handle feedback click
   const handleFeedbackClick = useCallback((puzzleId: string) => {
@@ -107,26 +92,18 @@ export default function PuzzleOverview() {
     setFeedbackModalOpen(true);
   }, []);
 
-  // Build query parameters for API calls
+  // Handle model click
+  const handleModelClick = useCallback((modelName: string) => {
+    setSelectedModelName(modelName);
+    setModelDebugModalOpen(true);
+  }, []);
+
+  // Simplified query parameters for puzzle browser (when enabled)
   const queryParams = useMemo(() => {
     const params = new URLSearchParams();
     
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (hasExplanationFilter !== 'all') params.set('hasExplanation', hasExplanationFilter);
-    if (hasFeedbackFilter !== 'all') params.set('hasFeedback', hasFeedbackFilter);
-    if (modelFilter && modelFilter !== 'all') params.set('modelName', modelFilter);
-    if (saturnFilter !== 'all') params.set('saturnFilter', saturnFilter);
-    if (sourceFilter !== 'all') params.set('source', sourceFilter);
-    if (multiTestFilter !== 'all') params.set('multiTestFilter', multiTestFilter);
-    if (gridSizeMin) params.set('gridSizeMin', gridSizeMin);
-    if (gridSizeMax) params.set('gridSizeMax', gridSizeMax);
-    if (gridConsistencyFilter !== 'all') params.set('gridConsistency', gridConsistencyFilter);
-    if (processingTimeMin) params.set('processingTimeMin', processingTimeMin);
-    if (processingTimeMax) params.set('processingTimeMax', processingTimeMax);
-    if (hasPredictionsFilter !== 'all') params.set('hasPredictions', hasPredictionsFilter);
-    if (predictionAccuracyFilter !== 'all') params.set('predictionAccuracy', predictionAccuracyFilter);
-    if (confidenceMin) params.set('confidenceMin', confidenceMin);
-    if (confidenceMax) params.set('confidenceMax', confidenceMax);
+    if (modelFilter !== 'all') params.set('modelName', modelFilter);
     if (sortBy) params.set('sortBy', sortBy);
     if (sortOrder) params.set('sortOrder', sortOrder);
     
@@ -134,9 +111,9 @@ export default function PuzzleOverview() {
     params.set('offset', ((currentPage - 1) * ITEMS_PER_PAGE).toString());
     
     return params.toString();
-  }, [searchQuery, hasExplanationFilter, hasFeedbackFilter, modelFilter, saturnFilter, sourceFilter, multiTestFilter, gridSizeMin, gridSizeMax, gridConsistencyFilter, processingTimeMin, processingTimeMax, hasPredictionsFilter, predictionAccuracyFilter, confidenceMin, confidenceMax, sortBy, sortOrder, currentPage]);
+  }, [searchQuery, modelFilter, sortBy, sortOrder, currentPage]);
 
-  // Fetch puzzle overview data
+  // Fetch puzzle overview data (only when puzzle browser is shown)
   const { data, isLoading, error, refetch } = useQuery<PuzzleOverviewResponse>({
     queryKey: ['puzzleOverview', queryParams],
     queryFn: async () => {
@@ -145,35 +122,17 @@ export default function PuzzleOverview() {
       return json.data;
     },
     placeholderData: (previousData) => previousData,
+    enabled: showPuzzleBrowser, // Only fetch when browser is shown
   });
 
-  // Fetch feedback statistics
-  const { data: feedbackStats, isLoading: statsLoading } = useQuery<FeedbackStats>({
-    queryKey: ['feedbackStats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/feedback/stats');
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Fetch general model statistics (includes all explanations, not just solver mode)
-  const { data: accuracyStats, isLoading: accuracyLoading } = useQuery<AccuracyStats>({
-    queryKey: ['generalStats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/puzzle/general-stats');
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Fetch confidence statistics
-  const { confidenceStats, isLoading: confidenceLoading } = useConfidenceStats();
+  // Remove individual stats queries - now handled by hooks
 
   const handleSearch = useCallback(() => {
     setCurrentPage(1);
-    refetch();
-  }, [refetch]);
+    if (showPuzzleBrowser) {
+      refetch();
+    }
+  }, [refetch, showPuzzleBrowser]);
 
   const handleSortChange = useCallback((newSortBy: string) => {
     if (sortBy === newSortBy) {
@@ -207,91 +166,7 @@ export default function PuzzleOverview() {
     });
   };
 
-  // Calculate model performance rankings based on feedback
-  const modelRankings = useMemo(() => {
-    if (!feedbackStats) return [];
-    
-    return Object.entries(feedbackStats.feedbackByModel)
-      .map(([modelName, stats]) => {
-        const total = stats.helpful + stats.notHelpful;
-        const helpfulPercentage = total > 0 ? Math.round((stats.helpful / total) * 100) : 0;
-        
-        // Find model display name from models data
-        const modelInfo = models?.find((m: ModelConfig) => m.key === modelName);
-        const displayName = modelInfo ? `${modelInfo.name} (${modelInfo.provider})` : modelName;
-        
-        return {
-          modelName,
-          displayName,
-          helpful: stats.helpful,
-          notHelpful: stats.notHelpful,
-          total,
-          helpfulPercentage,
-          provider: modelInfo?.provider || 'Unknown'
-        };
-      })
-      .filter(model => model.total >= 1) // Show all models with at least 1 feedback entry
-      .sort((a, b) => {
-        // Sort by helpful percentage first, then by total feedback count
-        if (a.helpfulPercentage !== b.helpfulPercentage) {
-          return b.helpfulPercentage - a.helpfulPercentage;
-        }
-        return b.total - a.total;
-      });
-  }, [feedbackStats, models]);
-
-  // Separate query for recent activity - get puzzles with explanations sorted by recent activity
-  const { data: recentActivityData } = useQuery<PuzzleOverviewResponse>({
-    queryKey: ['recentActivity'],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set('hasExplanation', 'true'); // Only puzzles with explanations
-      params.set('sortBy', 'createdAt'); // Sort by explanation creation date
-      params.set('sortOrder', 'desc'); // Most recent first
-      params.set('limit', '20'); // Get 20 recent items
-      params.set('offset', '0');
-      
-      const response = await apiRequest('GET', `/api/puzzle/overview?${params.toString()}`);
-      const json = await response.json();
-      return json.data;
-    },
-  });
-
-  // Generate recent activity from dedicated query
-  const recentActivity = useMemo(() => {
-    if (!recentActivityData?.puzzles) {
-      console.log('No recentActivityData.puzzles:', recentActivityData);
-      return [];
-    }
-    
-    const activities: Array<{
-      id: string;
-      type: 'explanation' | 'feedback';
-      puzzleId: string;
-      modelName?: string;
-      createdAt: string;
-    }> = [];
-    
-    // Extract explanations from puzzles (include all explanations, not just non-Saturn)
-    recentActivityData.puzzles.forEach((puzzle: PuzzleOverviewData) => {
-      puzzle.explanations.forEach((explanation: ExplanationRecord) => {
-        activities.push({
-          id: explanation.id.toString(),
-          type: 'explanation',
-          puzzleId: puzzle.id,
-          modelName: explanation.modelName,
-          createdAt: explanation.createdAt
-        });
-      });
-    });
-    
-    console.log(`Recent activity found ${activities.length} items`);
-    
-    // Sort by creation date (newest first)
-    return activities
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 15); // Take top 15 for display
-  }, [recentActivityData]);
+  // Remove complex model ranking logic - now handled by leaderboard components
 
   const totalPages = data ? Math.ceil(data.total / ITEMS_PER_PAGE) : 0;
 
@@ -443,6 +318,19 @@ export default function PuzzleOverview() {
         />
       </div>
 
+      {/* Feedback Modal */}
+      <FeedbackModal
+        open={feedbackModalOpen}
+        onOpenChange={setFeedbackModalOpen}
+        initialPuzzleId={selectedPuzzleId}
+      />
+
+      {/* Model Debug Modal */}
+      <ModelDebugModal
+        open={modelDebugModalOpen}
+        onOpenChange={setModelDebugModalOpen}
+        modelName={selectedModelName}
+      />
       {/* Feedback Modal */}
       <FeedbackModal
         open={feedbackModalOpen}

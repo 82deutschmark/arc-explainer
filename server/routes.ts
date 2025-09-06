@@ -79,6 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // DISCUSSION PAGE - worst-performing puzzles for retry analysis
   app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
   
+  // COMPREHENSIVE DASHBOARD - combined accuracy, trustworthiness, and feedback metrics
+  app.get("/api/metrics/comprehensive-dashboard", asyncHandler(puzzleController.getComprehensiveDashboard));
+  
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
   
