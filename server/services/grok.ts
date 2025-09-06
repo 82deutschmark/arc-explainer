@@ -29,9 +29,9 @@ export class GrokService extends BaseAIService {
     "grok-4-0709": "grok-4-0709",
     "grok-3": "grok-3",
     "grok-3-mini": "grok-3-mini",
-    "grok-beta": "grok-beta",
+    "grok-code-fast-1": "grok-code-fast-1",
     "grok-2-1212": "grok-2-1212",
-    "grok-2-vision-1212": "grok-2-vision-1212",
+    "grok-3-mini-fast": "grok-3-mini-fast",
   };
 
   async analyzePuzzleWithModel(
@@ -119,15 +119,11 @@ export class GrokService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     // Build message format for Grok API
     const messageFormat: any = {
       model: modelName,
       messages,
-      max_tokens: maxTokens
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens })
     };
 
     const providerSpecificNotes = [
@@ -278,28 +274,7 @@ export class GrokService extends BaseAIService {
           console.log(`[Grok] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
         }
       }
-      
-      // Also look for explicit reasoning patterns
-      if (!reasoningLog) {
-        const reasoningPatterns = [
-          /Let me analyze.*?(?=```|\{)/s,
-          /I need to.*?(?=```|\{)/s,
-          /Looking at.*?(?=```|\{)/s,
-          /First.*?(?=```|\{)/s,
-          /To solve.*?(?=```|\{)/s,
-          /I'll think.*?(?=```|\{)/s,
-          /Analyzing.*?(?=```|\{)/s
-        ];
-        
-        for (const pattern of reasoningPatterns) {
-          const match = content.match(pattern);
-          if (match && match[0].trim().length > 50) {
-            reasoningLog = match[0].trim();
-            console.log(`[Grok] Extracted reasoning using pattern match: ${reasoningLog.length} chars`);
-            break;
-          }
-        }
-      }
+  
       
       if (!reasoningLog) {
         console.log(`[Grok] No explicit reasoning patterns found - model may not provide reasoning`);
@@ -345,15 +320,11 @@ export class GrokService extends BaseAIService {
       content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
     });
 
-    // Get model configuration for max tokens
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 65536;
-
     // Make the API call to Grok
     const response = await grok.chat.completions.create({
       model: modelName,
       messages,
-      max_tokens: maxTokens,
+      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 

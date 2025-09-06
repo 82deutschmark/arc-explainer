@@ -63,17 +63,15 @@ export class AnthropicService extends BaseAIService {
     const modelName = getApiModelName(modelKey) || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     
-    const max_tokens = modelConfig?.maxOutputTokens || 4096; // Default value
-
     return {
       name: modelName,
       isReasoning: false, // Anthropic models don't have built-in reasoning mode
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: max_tokens,
+      contextWindow: modelConfig?.contextWindow || 200000,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Anthropic doesn't support structured output yet
-      supportsVision: modelName.includes('claude-3') // Most Claude 3+ models support vision
+      supportsVision: modelName.includes('claude-3') // Bad logic and irrelevant!!!
     };
   }
 
@@ -95,7 +93,7 @@ export class AnthropicService extends BaseAIService {
 
     const messageFormat: any = {
       model: apiModelName,
-      max_tokens: getModelConfig(modelKey)?.maxOutputTokens || 20000,
+      ...(getModelConfig(modelKey)?.maxOutputTokens && { max_tokens: getModelConfig(modelKey)?.maxOutputTokens }),
       messages: [{ role: "user", content: userMessage }],
       ...(systemMessage && { system: systemMessage }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
@@ -219,7 +217,7 @@ export class AnthropicService extends BaseAIService {
 
     const requestBody: Anthropic.Messages.MessageCreateParams = {
       model: apiModelName,
-      max_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || 4096,
+      ...(serviceOpts.maxOutputTokens && { max_tokens: serviceOpts.maxOutputTokens }),
       system: systemPrompt,
       messages: [{ 
         role: 'user', 
