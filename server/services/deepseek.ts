@@ -74,7 +74,7 @@ export class DeepSeekService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.contextWindow || 2048,
+      contextWindow: modelConfig?.contextWindow,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // DeepSeek doesn't support structured output format
@@ -112,7 +112,6 @@ export class DeepSeekService extends BaseAIService {
     const messageFormat: any = {
       model: modelName,
       messages,
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     };
 
@@ -174,7 +173,6 @@ export class DeepSeekService extends BaseAIService {
     const response = await deepseek.chat.completions.create({
       model: modelName,
       messages,
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 

@@ -530,8 +530,8 @@ export interface ModelConfig {
   isReasoning?: boolean;
   apiModelName: string;
   modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
-  maxOutputTokens?: number;
   contextWindow?: number;
+  maxOutputTokens?: number; // Only used for Anthropic models
   supportsFunctionCalling?: boolean;
   supportsSystemPrompts?: boolean;
   supportsStructuredOutput?: boolean;

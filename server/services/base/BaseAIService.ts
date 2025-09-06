@@ -76,7 +76,7 @@ export interface ModelInfo {
   name: string;
   isReasoning: boolean;
   supportsTemperature: boolean;
-  contextWindow: number;
+  contextWindow?: number;
   supportsFunctionCalling: boolean;
   supportsSystemPrompts: boolean;
   supportsStructuredOutput: boolean;

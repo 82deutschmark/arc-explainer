@@ -85,7 +85,7 @@ export class GrokService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.contextWindow || 128000, // Most Grok models have 128k context
+      contextWindow: modelConfig?.contextWindow,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Grok doesn't support structured output format
@@ -121,8 +121,7 @@ export class GrokService extends BaseAIService {
     // Build message format for Grok API
     const messageFormat: any = {
       model: modelName,
-      messages,
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens })
+      messages
     };
 
     const providerSpecificNotes = [
@@ -323,7 +322,6 @@ export class GrokService extends BaseAIService {
     const response = await grok.chat.completions.create({
       model: modelName,
       messages,
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { max_tokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
     });
 
