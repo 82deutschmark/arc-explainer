@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw, Github } from 'lucide-react';
+import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw, Github, Database } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -170,10 +170,16 @@ export default function PuzzleExaminer() {
         </div>
         
         <div className="flex items-center gap-3 flex-wrap">
-          <Link href="/model-examiner">
-            <Button variant="ghost" size="sm" className="flex items-center gap-2">
-              <Brain className="h-4 w-4" />
-              Model Examiner
+          <Link href="/discussion">
+            <Button variant="outline" className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Discussion
+            </Button>
+          </Link>
+          <Link href="/overview">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              Database Overview
             </Button>
           </Link>
           <Button
