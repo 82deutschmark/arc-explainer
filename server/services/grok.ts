@@ -38,7 +38,6 @@ export class GrokService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
@@ -56,7 +55,7 @@ export class GrokService extends BaseAIService {
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey, true);
 
       // Build standard response using inherited method
       return this.buildStandardResponse(

@@ -32,7 +32,6 @@ export class DeepSeekService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
@@ -46,7 +45,7 @@ export class DeepSeekService extends BaseAIService {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey, true);
 
       return this.buildStandardResponse(
         modelKey,

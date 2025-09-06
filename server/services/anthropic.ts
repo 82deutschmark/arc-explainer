@@ -28,7 +28,6 @@ export class AnthropicService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
@@ -39,7 +38,7 @@ export class AnthropicService extends BaseAIService {
     try {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey, true);
 
       return this.buildStandardResponse(
         modelKey,
@@ -147,7 +146,7 @@ export class AnthropicService extends BaseAIService {
       name: "provide_puzzle_analysis",
       description: "Analyze the ARC puzzle and provide structured analysis including reasoning steps",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           patternDescription: {
             type: "string",
@@ -215,9 +214,10 @@ export class AnthropicService extends BaseAIService {
       }
     }];
 
-    const requestBody: Anthropic.Messages.MessageCreateParams = {
+    const requestBody: any = {
+      stream: false,
       model: apiModelName,
-      ...(serviceOpts.maxOutputTokens && { max_tokens: serviceOpts.maxOutputTokens }),
+      ...(serviceOpts.maxOutputTokens ? { max_tokens: serviceOpts.maxOutputTokens } : {}),
       system: systemPrompt,
       messages: [{ 
         role: 'user', 
