@@ -58,6 +58,31 @@ export class AnthropicService extends BaseAIService {
     }
   }
 
+  /**
+   * Get intelligent default max_tokens based on model capabilities
+   */
+  private getDefaultMaxTokens(modelKey: string): number {
+    const modelName = getApiModelName(modelKey) || modelKey;
+    
+    // Claude 4 series - 64k generation limit
+    if (modelName.includes('claude-4') || modelName.includes('sonnet-4')) {
+      return 64000;
+    }
+    
+    // Claude 3.5 Sonnet (new) and Haiku - 8192 hard cap
+    if (modelName.includes('3.5') || modelName.includes('35')) {
+      return 8192;
+    }
+    
+    // Claude 3 series (Opus, older Sonnet, Haiku) - 4096 cap
+    if (modelName.includes('claude-3') || modelName.includes('opus') || modelName.includes('sonnet') || modelName.includes('haiku')) {
+      return 4096;
+    }
+    
+    // Default fallback for unknown models
+    return 4096;
+  }
+
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey) || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
@@ -92,7 +117,7 @@ export class AnthropicService extends BaseAIService {
 
     const messageFormat: any = {
       model: apiModelName,
-      ...(getModelConfig(modelKey)?.maxOutputTokens && { max_tokens: getModelConfig(modelKey)?.maxOutputTokens }),
+      max_tokens: getModelConfig(modelKey)?.maxOutputTokens || this.getDefaultMaxTokens(modelKey),
       messages: [{ role: "user", content: userMessage }],
       ...(systemMessage && { system: systemMessage }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
@@ -217,7 +242,7 @@ export class AnthropicService extends BaseAIService {
     const requestBody: any = {
       stream: false,
       model: apiModelName,
-      ...(serviceOpts.maxOutputTokens ? { max_tokens: serviceOpts.maxOutputTokens } : {}),
+      max_tokens: serviceOpts.maxOutputTokens || this.getDefaultMaxTokens(modelKey),
       system: systemPrompt,
       messages: [{ 
         role: 'user', 
