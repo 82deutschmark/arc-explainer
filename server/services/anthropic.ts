@@ -28,7 +28,6 @@ export class AnthropicService extends BaseAIService {
     task: ARCTask,
     modelKey: string,
     temperature: number = 0.2,
-    captureReasoning: boolean = true,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
@@ -39,7 +38,7 @@ export class AnthropicService extends BaseAIService {
     try {
       const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey, true);
 
       return this.buildStandardResponse(
         modelKey,
@@ -59,21 +58,44 @@ export class AnthropicService extends BaseAIService {
     }
   }
 
+  /**
+   * Get intelligent default max_tokens based on model capabilities
+   */
+  private getDefaultMaxTokens(modelKey: string): number {
+    const modelName = getApiModelName(modelKey) || modelKey;
+    
+    // Claude 4 series - 64k generation limit
+    if (modelName.includes('claude-4') || modelName.includes('sonnet-4')) {
+      return 64000;
+    }
+    
+    // Claude 3.5 Sonnet (new) and Haiku - 8192 hard cap
+    if (modelName.includes('3.5') || modelName.includes('35')) {
+      return 8192;
+    }
+    
+    // Claude 3 series (Opus, older Sonnet, Haiku) - 4096 cap
+    if (modelName.includes('claude-3') || modelName.includes('opus') || modelName.includes('sonnet') || modelName.includes('haiku')) {
+      return 4096;
+    }
+    
+    // Default fallback for unknown models
+    return 4096;
+  }
+
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey) || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
     
-    const max_tokens = modelConfig?.maxOutputTokens || 4096; // Default value
-
     return {
       name: modelName,
       isReasoning: false, // Anthropic models don't have built-in reasoning mode
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: max_tokens,
+      contextWindow: modelConfig?.contextWindow || 200000,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Anthropic doesn't support structured output yet
-      supportsVision: modelName.includes('claude-3') // Most Claude 3+ models support vision
+      supportsVision: modelName.includes('claude-3') // Bad logic and irrelevant!!!
     };
   }
 
@@ -95,7 +117,7 @@ export class AnthropicService extends BaseAIService {
 
     const messageFormat: any = {
       model: apiModelName,
-      max_tokens: getModelConfig(modelKey)?.maxOutputTokens || 20000,
+      max_tokens: getModelConfig(modelKey)?.maxOutputTokens || this.getDefaultMaxTokens(modelKey),
       messages: [{ role: "user", content: userMessage }],
       ...(systemMessage && { system: systemMessage }),
       ...(modelSupportsTemperature(modelKey) && { temperature })
@@ -149,7 +171,7 @@ export class AnthropicService extends BaseAIService {
       name: "provide_puzzle_analysis",
       description: "Analyze the ARC puzzle and provide structured analysis including reasoning steps",
       input_schema: {
-        type: "object",
+        type: "object" as const,
         properties: {
           patternDescription: {
             type: "string",
@@ -217,9 +239,11 @@ export class AnthropicService extends BaseAIService {
       }
     }];
 
-    const requestBody: Anthropic.Messages.MessageCreateParams = {
+    // Default request body; we'll enable streaming selectively below
+    const requestBody: any = {
+      stream: false,
       model: apiModelName,
-      max_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || 4096,
+      max_tokens: serviceOpts.maxOutputTokens || this.getDefaultMaxTokens(modelKey),
       system: systemPrompt,
       messages: [{ 
         role: 'user', 
@@ -232,9 +256,32 @@ export class AnthropicService extends BaseAIService {
 
     this.logAnalysisStart(modelKey, temperature, userPrompt.length, serviceOpts);
     console.log(`[${this.provider}] Using Tool Use API to enforce structured output with required reasoningItems`);
-    
+
     const startTime = Date.now();
-    const response = await anthropic.messages.create(requestBody);
+    
+    // Claude Sonnet 4 recommends streaming for long operations. Use streaming but
+    // materialize the final aggregated message so downstream code stays unchanged.
+    const needsStreaming = /sonnet-4/i.test(modelKey) || /claude-sonnet-4/i.test(apiModelName);
+    let response: any;
+    
+    if (needsStreaming) {
+      try {
+        requestBody.stream = true;
+        console.log(`[${this.provider}] Streaming enabled for model ${modelKey}`);
+        const stream: any = await (anthropic as any).messages.stream(requestBody);
+        // Optionally, we could hook into events here for live logs.
+        const finalMessage = await stream.finalMessage();
+        // Some SDK versions also expose token usage at the end; prefer the final message usage.
+        response = finalMessage ?? {};
+      } catch (e) {
+        console.warn(`[${this.provider}] Streaming path failed, falling back to non-streaming: ${String(e)}`);
+        requestBody.stream = false;
+        response = await anthropic.messages.create(requestBody);
+      }
+    } else {
+      response = await anthropic.messages.create(requestBody);
+    }
+
     const processingTime = Date.now() - startTime;
     console.log(`[${this.provider}] Analysis for ${modelKey} completed in ${processingTime}ms`);
 
@@ -246,14 +293,30 @@ export class AnthropicService extends BaseAIService {
     modelKey: string,
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
-    const { content, usage, stop_reason } = response;
+    // Handle both streaming and non-streaming responses
+    const isStreamingResponse = !response.content && response.choices?.[0]?.delta;
+    
+    let content, usage, stop_reason;
+    
+    if (isStreamingResponse) {
+      // Handle streaming response format
+      const delta = response.choices[0].delta;
+      content = delta.content ? [{ type: 'text', text: delta.content }] : [];
+      usage = { input_tokens: 0, output_tokens: 0 }; // Will be updated by the stream handler
+      stop_reason = response.choices[0].finish_reason;
+    } else {
+      // Handle non-streaming response format
+      content = response.content || [];
+      usage = response.usage || { input_tokens: 0, output_tokens: 0 };
+      stop_reason = response.stop_reason;
+    }
 
     const tokenUsage: TokenUsage = {
-      input: usage.input_tokens,
-      output: usage.output_tokens,
+      input: usage.input_tokens || 0,
+      output: usage.output_tokens || 0,
     };
 
-    const isComplete = stop_reason === 'end_turn';
+    const isComplete = stop_reason === 'end_turn' || stop_reason === 'stop';
     const incompleteReason = isComplete ? undefined : stop_reason;
 
     let result: any = {};

@@ -1,0 +1,291 @@
+/**
+ * ModelComparisonMatrix Component
+ * 
+ * Cross-model comparison table showing accuracy, trustworthiness, user satisfaction,
+ * speed, and cost efficiency metrics side by side.
+ * Uses data from MetricsRepository via /api/metrics/comprehensive-dashboard
+ */
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown, ArrowUp, ArrowDown, BarChart3, Target, Shield, Heart, Zap, DollarSign } from 'lucide-react';
+
+interface ModelComparison {
+  modelName: string;
+  accuracy: number;
+  trustworthiness: number;
+  userSatisfaction: number;
+  attempts: number;
+  costEfficiency: number;
+}
+
+interface ModelComparisonMatrixProps {
+  modelComparisons?: ModelComparison[];
+  isLoading?: boolean;
+  onModelClick?: (modelName: string) => void;
+}
+
+type SortField = 'modelName' | 'accuracy' | 'trustworthiness' | 'userSatisfaction' | 'attempts' | 'costEfficiency';
+type SortOrder = 'asc' | 'desc';
+
+export function ModelComparisonMatrix({ 
+  modelComparisons, 
+  isLoading, 
+  onModelClick 
+}: ModelComparisonMatrixProps) {
+  const [sortField, setSortField] = useState<SortField>('accuracy');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />;
+    return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
+  };
+
+  const getScoreColor = (score: number, type: 'percentage' | 'cost') => {
+    if (type === 'cost') {
+      // Lower cost efficiency is better (inverted colors)
+      if (score <= 0.001) return 'bg-green-100 text-green-800 border-green-200';
+      if (score <= 0.01) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-red-100 text-red-800 border-red-200';
+    } else {
+      // Higher percentages are better
+      if (score >= 80) return 'bg-green-100 text-green-800 border-green-200';
+      if (score >= 60) return 'bg-blue-100 text-blue-800 border-blue-200';
+      if (score >= 40) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-red-100 text-red-800 border-red-200';
+    }
+  };
+
+  const formatCostEfficiency = (cost: number) => {
+    if (cost < 0.001) return `$${(cost * 1000000).toFixed(0)}µ`;
+    if (cost < 0.01) return `$${(cost * 1000).toFixed(1)}m`;
+    return `$${cost.toFixed(3)}`;
+  };
+
+  const sortedModels = React.useMemo(() => {
+    if (!modelComparisons) return [];
+    
+    return [...modelComparisons].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+      
+      if (typeof aValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue as string)
+          : (bValue as string).localeCompare(aValue);
+      }
+      
+      return sortOrder === 'asc' 
+        ? (aValue as number) - (bValue as number)
+        : (bValue as number) - (aValue as number);
+    });
+  }, [modelComparisons, sortField, sortOrder]);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-purple-600" />
+            Cross-Model Comparison Matrix
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="animate-pulse">
+              <div className="grid grid-cols-6 gap-4 p-3 bg-gray-100 rounded-lg">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                ))}
+              </div>
+            </div>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="grid grid-cols-6 gap-4 p-3 bg-gray-50 rounded-lg">
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <div key={j} className="h-4 bg-gray-200 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!sortedModels.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-purple-600" />
+            Cross-Model Comparison Matrix
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            No comparison data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-purple-600" />
+          Cross-Model Comparison Matrix
+        </CardTitle>
+        <div className="text-sm text-gray-600">
+          Compare models across all performance dimensions
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          {/* Header Row */}
+          <div className="grid grid-cols-6 gap-4 p-3 bg-gray-100 rounded-lg mb-2 min-w-[800px]">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-start h-8 p-1 font-semibold"
+              onClick={() => handleSort('modelName')}
+            >
+              Model {getSortIcon('modelName')}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-center h-8 p-1 font-semibold"
+              onClick={() => handleSort('accuracy')}
+            >
+              <Target className="h-3 w-3 mr-1" />
+              Accuracy {getSortIcon('accuracy')}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-center h-8 p-1 font-semibold"
+              onClick={() => handleSort('trustworthiness')}
+            >
+              <Shield className="h-3 w-3 mr-1" />
+              Trust {getSortIcon('trustworthiness')}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-center h-8 p-1 font-semibold"
+              onClick={() => handleSort('userSatisfaction')}
+            >
+              <Heart className="h-3 w-3 mr-1" />
+              Satisfaction {getSortIcon('userSatisfaction')}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-center h-8 p-1 font-semibold"
+              onClick={() => handleSort('attempts')}
+            >
+              <Zap className="h-3 w-3 mr-1" />
+              Attempts {getSortIcon('attempts')}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="justify-center h-8 p-1 font-semibold"
+              onClick={() => handleSort('costEfficiency')}
+            >
+              <DollarSign className="h-3 w-3 mr-1" />
+              Cost {getSortIcon('costEfficiency')}
+            </Button>
+          </div>
+
+          {/* Data Rows */}
+          <div className="space-y-1 min-w-[800px]">
+            {sortedModels.map((model) => (
+              <div
+                key={model.modelName}
+                className={`grid grid-cols-6 gap-4 p-3 rounded-lg transition-colors ${
+                  onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
+                }`}
+                onClick={() => onModelClick?.(model.modelName)}
+              >
+                <div className="text-sm font-medium truncate" title={model.modelName}>
+                  {model.modelName}
+                </div>
+                
+                <div className="flex justify-center">
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${getScoreColor(model.accuracy, 'percentage')}`}
+                  >
+                    {model.accuracy.toFixed(1)}%
+                  </Badge>
+                </div>
+                
+                <div className="flex justify-center">
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${getScoreColor(model.trustworthiness * 100, 'percentage')}`}
+                  >
+                    {(model.trustworthiness * 100).toFixed(1)}%
+                  </Badge>
+                </div>
+                
+                <div className="flex justify-center">
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${getScoreColor(model.userSatisfaction, 'percentage')}`}
+                  >
+                    {model.userSatisfaction.toFixed(1)}%
+                  </Badge>
+                </div>
+                
+                <div className="flex justify-center">
+                  <span className="text-sm text-gray-600">
+                    {model.attempts.toLocaleString()}
+                  </span>
+                </div>
+                
+                <div className="flex justify-center">
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs ${getScoreColor(model.costEfficiency, 'cost')}`}
+                  >
+                    {formatCostEfficiency(model.costEfficiency)}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="mt-4 pt-3 border-t text-center">
+          <p className="text-xs text-gray-500">
+            Click any model name to view detailed information • 
+            Click column headers to sort • 
+            Lower cost efficiency values are better
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
