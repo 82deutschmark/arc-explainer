@@ -179,7 +179,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 64000
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -387,7 +387,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
-    maxOutputTokens: 565536
+    
   },
 
   // OpenRouter Models (unique models not available through direct APIs)
