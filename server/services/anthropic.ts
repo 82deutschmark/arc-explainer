@@ -239,6 +239,7 @@ export class AnthropicService extends BaseAIService {
       }
     }];
 
+    // Default request body; we'll enable streaming selectively below
     const requestBody: any = {
       stream: false,
       model: apiModelName,
@@ -255,9 +256,32 @@ export class AnthropicService extends BaseAIService {
 
     this.logAnalysisStart(modelKey, temperature, userPrompt.length, serviceOpts);
     console.log(`[${this.provider}] Using Tool Use API to enforce structured output with required reasoningItems`);
-    
+
     const startTime = Date.now();
-    const response = await anthropic.messages.create(requestBody);
+    
+    // Claude Sonnet 4 recommends streaming for long operations. Use streaming but
+    // materialize the final aggregated message so downstream code stays unchanged.
+    const needsStreaming = /sonnet-4/i.test(modelKey) || /claude-sonnet-4/i.test(apiModelName);
+    let response: any;
+    
+    if (needsStreaming) {
+      try {
+        requestBody.stream = true;
+        console.log(`[${this.provider}] Streaming enabled for model ${modelKey}`);
+        const stream: any = await (anthropic as any).messages.stream(requestBody);
+        // Optionally, we could hook into events here for live logs.
+        const finalMessage = await stream.finalMessage();
+        // Some SDK versions also expose token usage at the end; prefer the final message usage.
+        response = finalMessage ?? {};
+      } catch (e) {
+        console.warn(`[${this.provider}] Streaming path failed, falling back to non-streaming: ${String(e)}`);
+        requestBody.stream = false;
+        response = await anthropic.messages.create(requestBody);
+      }
+    } else {
+      response = await anthropic.messages.create(requestBody);
+    }
+
     const processingTime = Date.now() - startTime;
     console.log(`[${this.provider}] Analysis for ${modelKey} completed in ${processingTime}ms`);
 
