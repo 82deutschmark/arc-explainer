@@ -619,24 +619,252 @@
     ]
   },
   "explanations": {
-    "gpt-4.1-nano-2025-04-14": {
-      "model": "gpt-4.1-nano-2025-04-14",
-      "patternDescription": "The aliens are using a pattern where they start with a big blank space (nothing), then gradually add symbols to show progress or steps. Each line adds new symbols, showing a sequence of building or revealing something step by step. They are transforming a simple starting point into a more detailed message by adding more symbols in a consistent way.",
-      "solvingStrategy": "First, think of the puzzle as numbers, where 0 is nothing and 1, 2, 3, 4 are different symbols. Notice how the pattern starts with only empty spaces, then slowly adds symbols in specific places on each line, building up the pattern layer by layer. To solve, look for how symbols are added or moved from line to line. In emoji form, imagine starting with all empty spaces, then adding a 'yes' (✅), then adding more symbols like 👽, 👤, 🪐, and so on, in a predictable order. The key is to see how each new line adds or changes symbols based on the previous line, creating a clear sequence of steps.",
-      "hints": [
-        "Observe how symbols are added one by one in each row.",
-        "Think of the pattern as a process of building or revealing something step by step.",
-        "Remember that the pattern is about transforming a blank grid into a detailed message by adding symbols in a logical order."
+    "o3-2025-04-16": {
+      "model": "o3-2025-04-16",
+      "reasoningLog": "[{\"type\":\"summary_text\",\"text\":\"**Analyzing column mapping**\\n\\nIt seems like the mapping is column-based, where each column gets a unique color assigned, increasing from 1 to n, likely based on the left-to-right order. For example, if we have columns with the number 5 at positions 1, 3, 5, and 7, the colors assigned could be 2, 3, 1, and 4. Each distinct column encountered when scanning from top to bottom gets its value assigned based on the order encountered. I want to test this with an example to solidify my understanding.\"},{\"type\":\"summary_text\",\"text\":\"**Validating mapping rules**\\n\\nIn row 1, I've got a 5 at col 1 and col 5. When scanning left to right, col 1 is first, so I assign it color 2 since it hasn't been mapped yet, while col 5 already has color 1. Moving on to row 3, col 3 is new, so it gets a 3, and in row 6, col 7 is a new column, receiving a 4. Now, for example 2, I'll implement a scanning rule from rows 0 to 8, assigning numbers to each new column encountered that contains a 5. Each time I find a 5, I'll replace it with the assigned number while keeping non-5 cells unchanged. This transformation will help generate the 9x9 output grid.\"}]",
+      "hasReasoningLog": true,
+      "temperature": 0.2,
+      "reasoningEffort": null,
+      "reasoningVerbosity": null,
+      "reasoningSummaryType": null,
+      "inputTokens": 1767,
+      "outputTokens": 2591,
+      "reasoningTokens": 2112,
+      "totalTokens": 6470,
+      "estimatedCost": 0.024262,
+      "status": "completed",
+      "incomplete": false,
+      "reasoningItems": [
+        "Observed that only the 5s change in all examples.",
+        "Noticed that every column with 5s is recoloured uniformly.",
+        "Order of assigned colours (1,2,3,…) depends on first appearance when scanning grid row-major.",
+        "Confirmed rule in both training examples.",
+        "Applied same mapping process to test grid, yielding four new colours 1-4."
       ],
-      "alienMeaning": "The aliens might be trying to communicate a message of progress or building understanding. They could be showing us how they develop their ideas or technology step by step. Based on the pattern, it doesn't seem hostile—they seem to be sharing a process of growth or discovery, possibly a friendly way of saying 'We are progressing' or 'Here is our story.'",
-      "confidence": 85,
-      "alienMeaningConfidence": 80,
-      "modelKey": "gpt-4.1-nano-2025-04-14",
-      "explanationId": 0
+      "multiplePredictedOutputs": null,
+      "predictedOutput": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ]
+      ],
+      "predictedOutput1": [],
+      "predictedOutput2": [],
+      "predictedOutput3": [],
+      "solvingStrategy": "1. Initialize empty mapping dict column_color and counter next=1.\n2. Iterate rows y from 0..8 and columns x from 0..8.\n3. If cell value==5:\n   a. If x not in column_color: column_color[x]=next; next++.\n   b. Replace cell with column_color[x].\n4. Leave all non-5 cells unchanged.\n5. Return resulting grid.",
+      "patternDescription": "Each column that contains a 5 gets a new unique colour. The first column encountered gets 1, the next 2, and so on.",
+      "hints": [
+        "Try scanning the grid row by row and record when you first see a 5 in a new column.",
+        "Assign consecutive numbers to those columns and recolour every 5 in that column.",
+        "Alternative ideas like row-based colouring or counting objects fail because colours are constant within a column across all rows."
+      ],
+      "confidence": 92,
+      "apiProcessingTimeMs": 31633,
+      "predictedOutputGrid": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          4,
+          0,
+          2,
+          0,
+          3,
+          0
+        ]
+      ],
+      "hasMultiplePredictions": false,
+      "isPredictionCorrect": true,
+      "predictionAccuracyScore": 0.96,
+      "modelKey": "o3-2025-04-16",
+      "actualProcessingTime": 32
     }
   },
-  "exportedAt": "2025-07-12T04:44:43.746Z",
+  "exportedAt": "2025-09-06T20:11:14.849Z",
   "models": [
-    "gpt-4.1-nano-2025-04-14"
+    "o3-2025-04-16"
   ]
 }

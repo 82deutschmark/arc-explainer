@@ -133,7 +133,7 @@ export class OpenAIService extends BaseAIService {
       name: modelName,
       isReasoning,
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.contextWindow || 128000,
+      contextWindow: modelConfig?.contextWindow,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: !modelName.includes('gpt-5-chat-latest'),
@@ -167,15 +167,10 @@ export class OpenAIService extends BaseAIService {
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
     const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
 
-    // Get model configuration for max tokens
-    const modelConfig = getModelConfig(modelKey);
-    const maxTokens = modelConfig?.maxOutputTokens || 128000;
-
-    // Build message format for Responses API
+    // Build message format for Responses API  
     const messageFormat: any = {
       model: modelName,
       input: messages,
-      max_output_tokens: maxTokens,
       ...(isReasoningModel && {
         reasoning: isGPT5Model 
           ? { 
@@ -286,7 +281,6 @@ export class OpenAIService extends BaseAIService {
         temperature: temperature || 0.2,
         ...(isGPT5ChatModel && { top_p: 1.00 })
       }),
-      max_output_tokens: serviceOpts.maxOutputTokens || modelConfig?.maxOutputTokens || (isGPT5ChatModel ? 100000 : undefined),
     };
 
     // ===== DEBUG LOGGING PHASE 3: API REQUEST =====
@@ -294,7 +288,7 @@ export class OpenAIService extends BaseAIService {
     console.log(`🔍 [${this.provider}-DEBUG] Final API request:`, JSON.stringify(request, null, 2));
     console.log(`🔍 [${this.provider}-DEBUG] Request includes reasoning config: ${!!request.reasoning}`);
     console.log(`🔍 [${this.provider}-DEBUG] Request includes text config: ${!!request.text}`);
-    console.log(`🔍 [${this.provider}-DEBUG] Max output tokens: ${request.max_output_tokens}`);
+    console.log(`🔍 [${this.provider}-DEBUG] Max output tokens: removed (no artificial limits)`);
     console.log(`🔍 [${this.provider}-DEBUG] Temperature: ${request.temperature || 'not set'}`);
     console.log(`🔍 [${this.provider}-DEBUG] About to call callResponsesAPI...`);
 
@@ -543,7 +537,6 @@ export class OpenAIService extends BaseAIService {
         parallel_tool_calls: false,
         truncation: "auto",
         previous_response_id: request.previous_response_id,
-        max_output_tokens: Math.max(256, request.max_output_tokens ?? getModelConfig(modelKey)?.maxOutputTokens ?? 128000),
         store: request.store !== false // Default to true unless explicitly set to false
       };
 

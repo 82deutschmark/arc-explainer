@@ -84,7 +84,7 @@ export class GeminiService extends BaseAIService {
       name: modelName,
       isReasoning: isThinking, // Gemini 2.5+ models have thinking capabilities
       supportsTemperature: modelSupportsTemperature(modelKey),
-      contextWindow: modelConfig?.maxOutputTokens || 118192, // Gemini typically has large context windows
+      contextWindow: modelConfig?.contextWindow, // Use actual model context window, no artificial limit
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
       supportsStructuredOutput: false, // Gemini doesn't support structured output format
@@ -110,7 +110,6 @@ export class GeminiService extends BaseAIService {
 
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { maxOutputTokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
@@ -192,7 +191,6 @@ export class GeminiService extends BaseAIService {
 
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
-      ...(MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens && { maxOutputTokens: MODEL_CONFIGS.find(m => m.key === modelKey)?.maxOutputTokens }),
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
