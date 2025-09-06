@@ -88,7 +88,6 @@ export class OpenRouterService extends BaseAIService {
         }
       ],
       temperature: temperature,
-      ...(serviceOpts.maxOutputTokens && { max_tokens: serviceOpts.maxOutputTokens }),
       response_format: { type: "json_object" }
     });
 
@@ -173,12 +172,12 @@ export class OpenRouterService extends BaseAIService {
     
     if (!modelConfig) {
       console.warn(`[OpenRouter] No configuration found for model: ${modelKey}`);
-      // Return sensible defaults for unknown OpenRouter models
+      // Return defaults for unknown OpenRouter models - no artificial context window limit
       return {
         name: modelKey,
         isReasoning: false,
         supportsTemperature: true,
-        contextWindow: 32000, // Reasonable default
+        contextWindow: undefined, // Let the model use its natural context window
         supportsFunctionCalling: false,
         supportsSystemPrompts: true,
         supportsStructuredOutput: true,
@@ -190,7 +189,7 @@ export class OpenRouterService extends BaseAIService {
       name: modelConfig.name,
       isReasoning: modelConfig.isReasoning || false,
       supportsTemperature: modelConfig.supportsTemperature || true,
-      contextWindow: modelConfig.contextWindow || 32000,
+      contextWindow: modelConfig.contextWindow, // Use actual model context window, no artificial fallback
       supportsFunctionCalling: modelConfig.supportsFunctionCalling || false,
       supportsSystemPrompts: modelConfig.supportsSystemPrompts !== false,
       supportsStructuredOutput: modelConfig.supportsStructuredOutput !== false,
