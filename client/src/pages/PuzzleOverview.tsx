@@ -219,118 +219,176 @@ export default function PuzzleOverview() {
           </div>
         </header>
 
-        {/* Statistics Cards */}
-        <StatisticsCards
-          feedbackStats={feedbackStats}
+        {/* Main Leaderboards Section */}
+        <LeaderboardSection
           accuracyStats={accuracyStats}
-          confidenceStats={confidenceStats}
-          modelRankings={modelRankings}
-          onViewAllFeedback={() => {
-            setSelectedPuzzleId('');
-            setFeedbackModalOpen(true);
-          }}
-          onModelClick={(modelName: string) => {
-            setSelectedModelName(modelName);
-            setModelDebugModalOpen(true);
-          }}
-          statsLoading={statsLoading}
-          accuracyLoading={accuracyLoading || confidenceLoading}
-          recentActivity={recentActivity}
+          performanceStats={performanceStats}
+          feedbackStats={feedbackStats}
+          isLoadingAccuracy={isLoadingAccuracy}
+          isLoadingPerformance={isLoadingPerformance}
+          isLoadingFeedback={isLoadingFeedback}
+          onModelClick={handleModelClick}
         />
 
-        {/* Search and Filters */}
-        <SearchFilters
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          hasExplanationFilter={hasExplanationFilter}
-          setHasExplanationFilter={setHasExplanationFilter}
-          hasFeedbackFilter={hasFeedbackFilter}
-          setHasFeedbackFilter={setHasFeedbackFilter}
-          modelFilter={modelFilter}
-          setModelFilter={setModelFilter}
-          saturnFilter={saturnFilter}
-          setSaturnFilter={setSaturnFilter}
-          sourceFilter={sourceFilter}
-          setSourceFilter={setSourceFilter}
-          multiTestFilter={multiTestFilter}
-          setMultiTestFilter={setMultiTestFilter}
-          gridSizeMin={gridSizeMin}
-          setGridSizeMin={setGridSizeMin}
-          gridSizeMax={gridSizeMax}
-          setGridSizeMax={setGridSizeMax}
-          gridConsistencyFilter={gridConsistencyFilter}
-          setGridConsistencyFilter={setGridConsistencyFilter}
-          processingTimeMin={processingTimeMin}
-          setProcessingTimeMin={setProcessingTimeMin}
-          processingTimeMax={processingTimeMax}
-          setProcessingTimeMax={setProcessingTimeMax}
-          hasPredictionsFilter={hasPredictionsFilter}
-          setHasPredictionsFilter={setHasPredictionsFilter}
-          predictionAccuracyFilter={predictionAccuracyFilter}
-          setPredictionAccuracyFilter={setPredictionAccuracyFilter}
-          confidenceMin={confidenceMin}
-          setConfidenceMin={setConfidenceMin}
-          confidenceMax={confidenceMax}
-          setConfidenceMax={setConfidenceMax}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSearch={handleSearch}
-          onSortChange={handleSortChange}
-          getSortIcon={getSortIcon}
-          totalTokensMin={totalTokensMin}
-          setTotalTokensMin={setTotalTokensMin}
-          totalTokensMax={totalTokensMax}
-          setTotalTokensMax={setTotalTokensMax}
-          estimatedCostMin={estimatedCostMin}
-          setEstimatedCostMin={setEstimatedCostMin}
-          estimatedCostMax={estimatedCostMax}
-          setEstimatedCostMax={setEstimatedCostMax}
-          predictionAccuracyMin={predictionAccuracyMin}
-          setPredictionAccuracyMin={setPredictionAccuracyMin}
-          predictionAccuracyMax={predictionAccuracyMax}
-          setPredictionAccuracyMax={setPredictionAccuracyMax}
+        {/* Model Comparison Matrix */}
+        <ModelComparisonMatrix
+          modelComparisons={modelComparisons}
+          isLoading={isLoadingComparisons}
+          onModelClick={handleModelClick}
         />
 
-        {/* Loading indicator for filtering */}
-        {isLoading && (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
-              <div>
-                <p className="text-blue-800 font-medium">Applying filters and loading puzzles...</p>
-                <p className="text-blue-600 text-sm">This may take a few seconds for complex queries</p>
+        {/* Smart Discovery Section */}
+        {dashboard && (
+          <section className="space-y-4">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Smart Discovery
+              </h2>
+              <p className="text-gray-600">
+                Quick insights and recommendations based on current performance data
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                <h3 className="font-semibold text-green-800 mb-2">🏆 Top Performer</h3>
+                <p className="text-sm text-green-700">
+                  {dashboard.accuracyStats.topAccurateModels[0]?.modelName || 'N/A'} leads with {dashboard.accuracyStats.topAccurateModels[0]?.accuracy.toFixed(1) || '0'}% accuracy
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                <h3 className="font-semibold text-blue-800 mb-2">🛡️ Most Trustworthy</h3>
+                <p className="text-sm text-blue-700">
+                  {dashboard.trustworthinessStats.topTrustworthyModels[0]?.modelName || 'N/A'} has the most reliable confidence
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-r from-pink-50 to-pink-100 p-4 rounded-lg border border-pink-200">
+                <h3 className="font-semibold text-pink-800 mb-2">❤️ User Favorite</h3>
+                <p className="text-sm text-pink-700">
+                  {dashboard.feedbackStats.topRatedModels[0]?.modelName || 'N/A'} has {dashboard.feedbackStats.topRatedModels[0]?.helpfulPercentage.toFixed(1) || '0'}% satisfaction
+                </p>
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Puzzle List with Pagination */}
-        <PuzzleList
-          puzzles={data?.puzzles}
-          total={data?.total || 0}
-          isLoading={isLoading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          onFeedbackClick={handleFeedbackClick}
-          formatDate={formatDate}
-          getConfidenceColor={getConfidenceColor}
-        />
+        {/* Simplified Discovery Filters */}
+        {showPuzzleBrowser && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Puzzle Explorer</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className="flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                {showAdvancedFilters ? 'Hide' : 'Show'} Advanced Filters
+              </Button>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border space-y-4">
+              {/* Basic Filters Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Search
+                  </label>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search puzzles..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Model
+                  </label>
+                  <select
+                    value={modelFilter}
+                    onChange={(e) => setModelFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="all">All Models</option>
+                    <option value="gpt-4">GPT-4 Family</option>
+                    <option value="claude">Claude Family</option>
+                    <option value="gemini">Gemini Family</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Performance Tier
+                  </label>
+                  <select
+                    value={performanceTier}
+                    onChange={(e) => setPerformanceTier(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="all">All Performance Levels</option>
+                    <option value="high">High Performers (≥80%)</option>
+                    <option value="medium">Medium Performers (60-80%)</option>
+                    <option value="low">Learning Opportunity (<60%)</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-end">
+                  <Button onClick={handleSearch} className="w-full">
+                    Search
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Advanced Filters (collapsible) */}
+              {showAdvancedFilters && (
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-gray-500 mb-3">
+                    Advanced filtering options would go here if needed. Current focus is on model performance discovery.
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Puzzle List (only shown when browser is enabled) */}
+        {showPuzzleBrowser && (
+          <>
+            {/* Loading indicator for filtering */}
+            {isLoading && (
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+                  <div>
+                    <p className="text-blue-800 font-medium">Loading puzzles...</p>
+                    <p className="text-blue-600 text-sm">This may take a few seconds</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Puzzle List with Pagination */}
+            <PuzzleList
+              puzzles={data?.puzzles}
+              total={data?.total || 0}
+              isLoading={isLoading}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              onFeedbackClick={handleFeedbackClick}
+              formatDate={formatDate}
+              getConfidenceColor={getConfidenceColor}
+            />
+          </>
+        )}
       </div>
 
-      {/* Feedback Modal */}
-      <FeedbackModal
-        open={feedbackModalOpen}
-        onOpenChange={setFeedbackModalOpen}
-        initialPuzzleId={selectedPuzzleId}
-      />
-
-      {/* Model Debug Modal */}
-      <ModelDebugModal
-        open={modelDebugModalOpen}
-        onOpenChange={setModelDebugModalOpen}
-        modelName={selectedModelName}
-      />
       {/* Feedback Modal */}
       <FeedbackModal
         open={feedbackModalOpen}

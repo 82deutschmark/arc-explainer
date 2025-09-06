@@ -14,8 +14,7 @@ interface FeedbackModelStats {
   modelName: string;
   feedbackCount: number;
   helpfulCount: number;
-  notHelpfulCount: number;
-  helpfulPercentage: number;
+  avgConfidence: number;
 }
 
 interface FeedbackStats {
@@ -130,6 +129,10 @@ export function FeedbackLeaderboard({
             const volumeInfo = getVolumeIndicator(model.feedbackCount);
             const VolumeIcon = volumeInfo.icon;
             
+            // Calculate helpfulPercentage and notHelpfulCount from available data
+            const notHelpfulCount = model.feedbackCount - model.helpfulCount;
+            const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
+            
             return (
               <div 
                 key={model.modelName}
@@ -155,7 +158,7 @@ export function FeedbackLeaderboard({
                       </div>
                       <div className="flex items-center gap-1">
                         <ThumbsDown className="h-3 w-3 text-red-600" />
-                        {model.notHelpfulCount}
+                        {notHelpfulCount}
                       </div>
                     </div>
                   </div>
@@ -163,9 +166,9 @@ export function FeedbackLeaderboard({
                 <div className="flex items-center gap-2">
                   <Badge 
                     variant="secondary" 
-                    className={`text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}
+                    className={`text-xs font-medium ${getSatisfactionColor(helpfulPercentage)}`}
                   >
-                    {model.helpfulPercentage.toFixed(1)}%
+                    {helpfulPercentage.toFixed(1)}%
                   </Badge>
                 </div>
               </div>
