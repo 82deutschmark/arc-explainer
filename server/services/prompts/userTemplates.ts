@@ -178,7 +178,8 @@ export const USER_TEMPLATE_BUILDERS = {
   solver: buildSolverUserPrompt,
   standardExplanation: buildExplanationUserPrompt,
   educationalApproach: buildExplanationUserPrompt,
-  alienCommunication: buildAlienUserPrompt
+  alienCommunication: buildAlienUserPrompt,
+  gepa: buildSolverUserPrompt
 } as const;
 
 /**
