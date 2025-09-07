@@ -88,7 +88,11 @@ and explain the correct output for the test case. Some puzzles have multiple tes
 
 TASK: Explain the transformation pattern AND interpret what the aliens might be trying to communicate.`,
 
-  educational: `TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer.`
+  educational: `TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer.`,
+
+  gepa: `TASK: Each puzzle has training which are the examples to learn from. 
+Analyze training examples, identify the transformation patterns, 
+and predict the correct output for the test case. Some puzzles have multiple test cases.`
 } as const;
 
 /**
@@ -120,5 +124,15 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
 - **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
 - **reasoningItems**: A short song that captures the essence of your approach.
 - **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
-- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`
+- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`,
+
+  gepa: `**Successful Strategies to Consider:**
+- **Start Simple:** First, check for simple rules. Is there a global transformation (e.g., rotation, reflection)? Is the output a subgrid of the input? Is a single color being replaced?
+- **Look for Separators:** Check if the grid is partitioned by separator lines (e.g., rows or columns that are all one color, usually black). The transformation might be applied to each section independently.
+- **Identify Objects:** Group contiguous non-background pixels into objects. Analyze how these objects are created, destroyed, or modified. Consider their properties: color, shape, size, position.
+- **Find Marker Points:** Look for special 'marker' pixels (e.g., a uniquely colored pixel) that might define the geometry of an operation, like the corners of a shape to be drawn.
+- **Relate Input to Output:** How do the properties of the input grid (dimensions, colors, object counts) relate to the output grid?
+- **Avoid Over-complication:** Propose the simplest rule that explains ALL training examples. Do not suggest overly complex mathematical or recursive patterns unless absolutely necessary and supported by every example.
+
+Apply the discovered pattern to predict the output for the test case.`
 } as const;
