@@ -130,7 +130,7 @@ export class AccuracyRepository extends BaseRepository {
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= 1
-        ORDER BY accuracy_percentage DESC, total_attempts DESC
+        ORDER BY accuracy_percentage ASC, total_attempts DESC
       `);
 
       const overallRow = overallStats.rows[0];
