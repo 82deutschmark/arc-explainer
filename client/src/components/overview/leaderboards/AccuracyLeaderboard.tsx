@@ -8,7 +8,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Target, Trophy, Award } from 'lucide-react';
+import { AlertTriangle, Trophy, Award } from 'lucide-react';
 
 interface AccuracyStats {
   totalSolverAttempts: number;
@@ -40,8 +40,8 @@ export function AccuracyLeaderboard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-green-600" />
-            Pure Accuracy Champions
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Models Needing Improvement
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,8 +71,8 @@ export function AccuracyLeaderboard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-green-600" />
-            Pure Accuracy Champions
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Models Needing Improvement
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -85,9 +85,9 @@ export function AccuracyLeaderboard({
   }
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return <Trophy className="h-4 w-4 text-yellow-500" />;
-    if (index === 1) return <Award className="h-4 w-4 text-gray-400" />;
-    if (index === 2) return <Award className="h-4 w-4 text-amber-600" />;
+    if (index === 0) return <AlertTriangle className="h-4 w-4 text-red-500" />;
+    if (index === 1) return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+    if (index === 2) return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
     return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
   };
 
@@ -104,11 +104,11 @@ export function AccuracyLeaderboard({
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-green-600" />
-          Pure Accuracy Champions
+          <AlertTriangle className="h-5 w-5 text-orange-600" />
+          Models Needing Improvement
         </CardTitle>
         <div className="text-sm text-gray-600">
-          Based on {accuracyStats.totalSolverAttempts.toLocaleString()} solver attempts
+          Models with lowest accuracy rates - {accuracyStats.totalSolverAttempts.toLocaleString()} solver attempts
         </div>
       </CardHeader>
       <CardContent>

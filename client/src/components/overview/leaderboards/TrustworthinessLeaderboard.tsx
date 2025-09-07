@@ -110,7 +110,8 @@ export function TrustworthinessLeaderboard({
     return `$${cost.toFixed(3)}`;
   };
 
-  const topModels = performanceStats.trustworthinessLeaders.slice(0, 8);
+  // Show all models from highest to lowest trustworthiness
+  const allModels = performanceStats.trustworthinessLeaders;
 
   return (
     <Card className="h-full">
@@ -120,12 +121,12 @@ export function TrustworthinessLeaderboard({
           Trustworthiness Leaders
         </CardTitle>
         <div className="text-sm text-gray-600">
-          Confidence reliability scores
+          All models ranked by confidence reliability scores (highest to lowest)
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {topModels.map((model, index) => (
+          {allModels.map((model, index) => (
             <div 
               key={model.modelName}
               className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
@@ -163,13 +164,7 @@ export function TrustworthinessLeaderboard({
           ))}
         </div>
         
-        {performanceStats.trustworthinessLeaders.length > 8 && (
-          <div className="mt-4 pt-3 border-t text-center">
-            <span className="text-sm text-gray-500">
-              +{performanceStats.trustworthinessLeaders.length - 8} more models
-            </span>
-          </div>
-        )}
+        {/* Showing all models - no need for "more models" indicator */}
         
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
