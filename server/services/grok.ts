@@ -81,6 +81,9 @@ export class GrokService extends BaseAIService {
     // Check if it's a reasoning model (Grok 4+ models have reasoning capabilities)
     const isReasoning = modelName.includes('grok-4') || modelName.includes('grok-3');
     
+    // Grok4 supports structured output with limitations (no allOf, no minLength/maxLength, etc.)
+    const supportsStructuredOutput = modelName.includes('grok-4');
+    
     return {
       name: modelName,
       isReasoning,
@@ -88,7 +91,7 @@ export class GrokService extends BaseAIService {
       contextWindow: modelConfig?.contextWindow,
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
-      supportsStructuredOutput: false, // Grok doesn't support structured output format
+      supportsStructuredOutput,
       supportsVision: modelName.includes('vision') || modelName.includes('beta') // Vision models
     };
   }
@@ -315,7 +318,9 @@ export class GrokService extends BaseAIService {
     }
     messages.push({ 
       role: "user", 
-      content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
+      content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}
+
+${userMessage}`
     });
 
     // Make the API call to Grok

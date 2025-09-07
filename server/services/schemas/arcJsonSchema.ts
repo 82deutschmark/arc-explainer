@@ -88,10 +88,17 @@ export const ARC_JSON_SCHEMA = {
 
       // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       confidence: {
+        type: "integer", // No min/max because Grok doesn't like it...  
+        description: "Confidence level in the solution being correct (1-100) return 0 if none"
+      },
+
+      alienMeaning: {
+        type: "string",
+        description: "Alien meaning if any"
+      },
+      alienMeaningConfidence: {
         type: "integer",
-        minimum: 0,
-        maximum: 100,
-        description: "Confidence level in the solution (0-100)"
+        description: "Confidence level in the alien meaning (1-100) return 0 if none"
       }
     },
     required: [
