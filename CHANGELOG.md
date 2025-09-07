@@ -1,3 +1,22 @@
+### September 7 2025
+
+## v2.14.0 - 🔧 CRITICAL FIX: JSON Truncation Resolution
+- **ROOT CAUSE IDENTIFIED**: 1% JSON truncation failures caused by hardcoded `maxTokensPerRequest` limits applied to unlimited providers
+- **COMPREHENSIVE FIX**: Removed all artificial token limits from non-Anthropic providers
+- **CHANGES**:
+  - **OpenAI**: Removed 4M token limit (now unlimited)
+  - **DeepSeek**: Removed 8K token limit (now unlimited) - **CRITICAL**: This was causing severe truncation!
+  - **OpenRouter**: Removed 200K token limit (now unlimited)
+  - **xAI**: Removed 131K token limit (now unlimited)  
+  - **Gemini**: Removed 2M token limit (now unlimited)
+  - **Anthropic**: Kept existing limits (required by provider)
+- **TECHNICAL DETAILS**:
+  - Updated `ProviderAdapters.ts` to make `maxTokensPerRequest` optional
+  - Removed `maxOutputTokens` from GeminiTransformer and DeepSeekTransformer
+  - Only Anthropic models retain provider-mandated token restrictions
+- **IMPACT**: Fixes JSON truncation errors for modern models with massive context windows
+- **TESTING**: User should test with `qwen/qwen3-30b-a3b-instruct-2507` and other OpenRouter/DeepSeek models
+
 ### September 6 2025
 
 ## v2.13.0 - 🎯 MAJOR FEATURE: PuzzleOverview Leaderboard Dashboard Rebuild

@@ -308,9 +308,23 @@ export abstract class BaseAIService {
    * Migrated from OpenRouter service for consistency across all providers
    */
   private attemptResponseRecovery(responseText: string, modelKey: string, originalError: any): any {
+    const errorMsg = originalError instanceof Error ? originalError.message : String(originalError);
     console.log(`[${this.provider}] Attempting response recovery for model: ${modelKey}`);
     console.log(`[${this.provider}] Response preview: "${responseText.substring(0, 200)}..."`);
-    console.log(`[${this.provider}] Original parse error: ${originalError instanceof Error ? originalError.message : String(originalError)}`);
+    console.log(`[${this.provider}] Original parse error: ${errorMsg}`);
+    
+    // Strategy 0: Handle "Unexpected end of JSON input" - the most common failure
+    if (errorMsg.includes('Unexpected end of JSON input')) {
+      console.log(`[${this.provider}] Detected truncated JSON, attempting completion...`);
+      try {
+        const completed = this.attemptJsonCompletion(responseText);
+        const parsed = JSON.parse(completed);
+        console.log(`[${this.provider}] ✅ Successfully parsed after JSON completion`);
+        return parsed;
+      } catch (completionError) {
+        console.log(`[${this.provider}] ❌ JSON completion failed:`, completionError instanceof Error ? completionError.message : String(completionError));
+      }
+    }
     
     // Strategy 1: Sanitize and remove markdown wrappers (most common case)
     try {
@@ -465,6 +479,67 @@ export abstract class BaseAIService {
     
     console.log(`[${this.provider}] No JSON patterns matched in markdown extraction`);
     return null;
+  }
+
+  /**
+   * Attempt to complete truncated JSON by adding missing closing braces/brackets
+   */
+  private attemptJsonCompletion(text: string): string {
+    let completed = text.trim();
+    
+    // Count opening vs closing braces and brackets
+    let braces = 0;
+    let brackets = 0;
+    let inString = false;
+    let escaped = false;
+    
+    for (let i = 0; i < completed.length; i++) {
+      const char = completed[i];
+      
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      
+      if (char === '\\') {
+        escaped = true;
+        continue;
+      }
+      
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+      
+      if (!inString) {
+        if (char === '{') braces++;
+        else if (char === '}') braces--;
+        else if (char === '[') brackets++;
+        else if (char === ']') brackets--;
+      }
+    }
+    
+    console.log(`[${this.provider}] JSON completion analysis - missing braces: ${braces}, brackets: ${brackets}`);
+    
+    // If we're in the middle of a string, close it
+    if (inString) {
+      completed += '"';
+      console.log(`[${this.provider}] Added closing quote for truncated string`);
+    }
+    
+    // Add missing closing brackets
+    for (let i = 0; i < brackets; i++) {
+      completed += ']';
+      console.log(`[${this.provider}] Added closing bracket ${i + 1}/${brackets}`);
+    }
+    
+    // Add missing closing braces
+    for (let i = 0; i < braces; i++) {
+      completed += '}';
+      console.log(`[${this.provider}] Added closing brace ${i + 1}/${braces}`);
+    }
+    
+    return completed;
   }
 
   /**

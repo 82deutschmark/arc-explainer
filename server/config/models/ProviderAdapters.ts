@@ -29,7 +29,7 @@ export interface ProviderConfig {
   };
   requestLimits: {
     maxRequestsPerMinute: number;
-    maxTokensPerRequest: number;
+    maxTokensPerRequest?: number; // Only used for Anthropic models
     maxConcurrentRequests: number;
   };
   errorHandling: {
@@ -68,7 +68,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 500,
-        maxTokensPerRequest: 4000000,
         maxConcurrentRequests: 5
       },
       errorHandling: {
@@ -92,7 +91,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 1000,
-        maxTokensPerRequest: 4000000,
         maxConcurrentRequests: 5
       },
       errorHandling: {
@@ -116,7 +114,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 60,
-        maxTokensPerRequest: 131072,
         maxConcurrentRequests: 2
       },
       errorHandling: {
@@ -140,7 +137,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 1500,
-        maxTokensPerRequest: 2000000,
         maxConcurrentRequests: 5
       },
       errorHandling: {
@@ -164,7 +160,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 300,
-        maxTokensPerRequest: 8192,
         maxConcurrentRequests: 3
       },
       errorHandling: {
@@ -188,7 +183,6 @@ export class ProviderAdapters {
       },
       requestLimits: {
         maxRequestsPerMinute: 200,
-        maxTokensPerRequest: 200000,
         maxConcurrentRequests: 3
       },
       errorHandling: {
@@ -426,7 +420,6 @@ class GeminiTransformer implements RequestTransformer {
     return {
       model: modelDef?.apiModelName || modelKey,
       generationConfig: {
-        maxOutputTokens: request.max_tokens,
         temperature: request.temperature,
         topP: request.topP
       },
@@ -461,8 +454,7 @@ class DeepSeekTransformer implements RequestTransformer {
     
     return {
       ...request,
-      model: modelDef?.apiModelName || modelKey,
-      max_tokens: request.max_tokens
+      model: modelDef?.apiModelName || modelKey
     };
   }
 

@@ -44,7 +44,7 @@ export function FeedbackLeaderboard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-600" />
-            User Satisfaction Rankings
+            Model Feedback Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -75,7 +75,7 @@ export function FeedbackLeaderboard({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-600" />
-            User Satisfaction Rankings
+            Model Feedback Analysis
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -110,60 +110,75 @@ export function FeedbackLeaderboard({
     return { icon: Users, color: 'text-gray-400', label: 'Low volume' };
   };
 
-  const topModels = feedbackStats.topModels.slice(0, 8);
+  // Sort models by helpfulness percentage for two different views
+  const mostHelpfulModels = [...feedbackStats.topModels]
+    .sort((a, b) => {
+      const aPercentage = a.feedbackCount > 0 ? (a.helpfulCount / a.feedbackCount) * 100 : 0;
+      const bPercentage = b.feedbackCount > 0 ? (b.helpfulCount / b.feedbackCount) * 100 : 0;
+      return bPercentage - aPercentage; // DESC order
+    })
+    .slice(0, 4);
+    
+  const mostCriticizedModels = [...feedbackStats.topModels]
+    .filter(model => model.feedbackCount >= 3) // Only models with meaningful feedback
+    .sort((a, b) => {
+      const aPercentage = a.feedbackCount > 0 ? (a.helpfulCount / a.feedbackCount) * 100 : 0;
+      const bPercentage = b.feedbackCount > 0 ? (b.helpfulCount / b.feedbackCount) * 100 : 0;
+      return aPercentage - bPercentage; // ASC order (lowest helpfulness first)
+    })
+    .slice(0, 4);
 
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Heart className="h-5 w-5 text-pink-600" />
-          User Satisfaction Rankings
+          Model Feedback Analysis
         </CardTitle>
         <div className="text-sm text-gray-600">
           Based on {feedbackStats.totalFeedback.toLocaleString()} user ratings
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          {topModels.map((model, index) => {
-            const volumeInfo = getVolumeIndicator(model.feedbackCount);
-            const VolumeIcon = volumeInfo.icon;
-            
-            // Calculate helpfulPercentage and notHelpfulCount from available data
-            const notHelpfulCount = model.feedbackCount - model.helpfulCount;
-            const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
-            
-            return (
-              <div 
-                key={model.modelName}
-                className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                  onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
-                }`}
-                onClick={() => onModelClick?.(model.modelName)}
-              >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {getRankIcon(index)}
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sm truncate" title={model.modelName}>
-                      {model.modelName}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <VolumeIcon className={`h-3 w-3 ${volumeInfo.color}`} />
-                        {model.feedbackCount} ratings
+        {/* Most Appreciated Models Section */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <ThumbsUp className="h-4 w-4 text-green-600" />
+            <h3 className="text-sm font-semibold text-gray-900">Most Appreciated Models</h3>
+          </div>
+          <div className="space-y-2">
+            {mostHelpfulModels.map((model, index) => {
+              const volumeInfo = getVolumeIndicator(model.feedbackCount);
+              const VolumeIcon = volumeInfo.icon;
+              const notHelpfulCount = model.feedbackCount - model.helpfulCount;
+              const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
+              
+              return (
+                <div 
+                  key={`helpful-${model.modelName}`}
+                  className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                    onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
+                  }`}
+                  onClick={() => onModelClick?.(model.modelName)}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Star className="h-4 w-4 text-green-500 fill-current" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm truncate" title={model.modelName}>
+                        {model.modelName}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <ThumbsUp className="h-3 w-3 text-green-600" />
-                        {model.helpfulCount}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <ThumbsDown className="h-3 w-3 text-red-600" />
-                        {notHelpfulCount}
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <VolumeIcon className={`h-3 w-3 ${volumeInfo.color}`} />
+                          {model.feedbackCount} ratings
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ThumbsUp className="h-3 w-3 text-green-600" />
+                          {model.helpfulCount}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
                   <Badge 
                     variant="secondary" 
                     className={`text-xs font-medium ${getSatisfactionColor(helpfulPercentage)}`}
@@ -171,20 +186,64 @@ export function FeedbackLeaderboard({
                     {helpfulPercentage.toFixed(1)}%
                   </Badge>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Most Criticized Models Section */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <ThumbsDown className="h-4 w-4 text-red-600" />
+            <h3 className="text-sm font-semibold text-gray-900">Most Criticized Models</h3>
+          </div>
+          <div className="space-y-2">
+            {mostCriticizedModels.map((model, index) => {
+              const volumeInfo = getVolumeIndicator(model.feedbackCount);
+              const VolumeIcon = volumeInfo.icon;
+              const notHelpfulCount = model.feedbackCount - model.helpfulCount;
+              const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
+              
+              return (
+                <div 
+                  key={`criticized-${model.modelName}`}
+                  className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                    onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
+                  }`}
+                  onClick={() => onModelClick?.(model.modelName)}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <ThumbsDown className="h-4 w-4 text-red-500" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm truncate" title={model.modelName}>
+                        {model.modelName}
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <VolumeIcon className={`h-3 w-3 ${volumeInfo.color}`} />
+                          {model.feedbackCount} ratings
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ThumbsDown className="h-3 w-3 text-red-600" />
+                          {notHelpfulCount}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <Badge 
+                    variant="secondary" 
+                    className={`text-xs font-medium ${getSatisfactionColor(helpfulPercentage)}`}
+                  >
+                    {helpfulPercentage.toFixed(1)}%
+                  </Badge>
+                </div>
+              );
+            })}
+          </div>
         </div>
         
-        {feedbackStats.topModels.length > 8 && (
-          <div className="mt-4 pt-3 border-t text-center">
-            <span className="text-sm text-gray-500">
-              +{feedbackStats.topModels.length - 8} more models
-            </span>
-          </div>
-        )}
-        
-        <div className="mt-4 pt-3 border-t">
+        {/* Overall Stats */}
+        <div className="pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Overall Satisfaction:</span>
             <Badge className={getSatisfactionColor(feedbackStats.helpfulPercentage)}>

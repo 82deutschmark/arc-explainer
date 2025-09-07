@@ -82,8 +82,8 @@ export function LeaderboardSection({
           Model Performance Leaderboards
         </h2>
         <p className="text-gray-600 max-w-3xl mx-auto">
-          Discover the top-performing AI models across three key dimensions: 
-          pure puzzle-solving accuracy, confidence reliability, and user satisfaction.
+          Comprehensive model analysis across three key dimensions: 
+          models needing improvement (lowest accuracy), confidence reliability rankings (all models), and user feedback analysis (most appreciated vs most criticized).
         </p>
       </div>
       
