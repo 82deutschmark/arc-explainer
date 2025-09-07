@@ -1,5 +1,22 @@
 ### September 7 2025
 
+## v2.15.0 - 🔍 NEW SOLVER: GEPA Systematic Strategy Analysis
+- **NEW SOLVER VARIATION**: Added GEPA (Systematic Strategy Analysis) as solver mode variant
+- **FEATURES**:
+  - **Strategy Framework**: Implements proven ARC-AGI analysis strategies from GEPA methodology
+  - **Systematic Approach**: 6 structured analysis techniques (Simple rules, Separators, Objects, Marker points, Input-Output relations, Anti-complexity)
+  - **Solver Integration**: Full prediction mode with same JSON output structure as standard solver
+  - **Database Compatible**: Uses existing prediction fields and accuracy evaluation systems
+- **TECHNICAL IMPLEMENTATION**:
+  - Added GEPA prompt template to `shared/types.ts`
+  - Integrated GEPA components into composable prompt architecture (`basePrompts.ts`)
+  - Updated system prompt mapping and solver mode detection
+  - Maintains DRY architecture with reusable components
+- **CREDIT**: Based on methodology from https://github.com/gepa-ai/gepa
+- **TESTING**: User should test GEPA solver with various ARC puzzles to compare against standard solver approach
+
+### September 7 2025
+
 ## v2.14.0 - 🔧 CRITICAL FIX: JSON Truncation Resolution
 - **ROOT CAUSE IDENTIFIED**: 1% JSON truncation failures caused by hardcoded `maxTokensPerRequest` limits applied to unlimited providers
 - **COMPREHENSIVE FIX**: Removed all artificial token limits from non-Anthropic providers
