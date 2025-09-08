@@ -164,15 +164,15 @@ async function explanationExists(puzzleId: string, modelName: string, rawFileTim
         const dbDate = new Date(explanation.createdAt);
 
         if (
-            rawFileDate.getMinutes() === dbDate.getMinutes() &&
-            rawFileDate.getSeconds() === dbDate.getSeconds()
+            rawFileDate.getUTCHours() === dbDate.getUTCHours() &&
+            rawFileDate.getUTCMinutes() === dbDate.getUTCMinutes()
         ) {
-            console.log(`  ✅ Found DB entry with matching minute/second: ${dbDate.toISOString()} - already saved`);
+            console.log(`  ✅ Found DB entry with matching UTC hour/minute: ${dbDate.toISOString()} - already saved`);
             return true; // Found a match
         }
     }
 
-    console.log(`  🔍 Found ${modelExplanations.length} entries for ${modelName} but none have a matching minute/second.`);
+    console.log(`  🔍 Found ${modelExplanations.length} entries for ${modelName} but none have a matching UTC hour/minute.`);
     return false; // No match found
     
   } catch (error) {
