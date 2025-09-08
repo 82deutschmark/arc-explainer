@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github, Clock, DollarSign, Zap, BarChart3, Filter } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function PuzzleDiscussion() {
@@ -135,8 +135,8 @@ export default function PuzzleDiscussion() {
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-slate-800">
-              <TrendingDown className="h-5 w-5 text-red-600" />
-              Difficulty Filters
+              <Filter className="h-5 w-5 text-red-600" />
+              Advanced Filters & Sorting
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -396,6 +396,50 @@ export default function PuzzleDiscussion() {
           </CardContent>
         </Card>
 
+        {/* Quick Stats Summary */}
+        {!isLoading && puzzles.length > 0 && (selectedSource !== 'all' || multiTestFilter !== 'all' || showRichMetrics) && (
+          <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-slate-800">
+                <BarChart3 className="h-5 w-5 text-indigo-600" />
+                Filter Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                {selectedSource !== 'all' && (
+                  <div className="bg-white/70 rounded p-3 text-center">
+                    <div className="font-semibold text-green-700">{selectedSource}</div>
+                    <div className="text-xs text-gray-600">Dataset Focus</div>
+                  </div>
+                )}
+                {multiTestFilter !== 'all' && (
+                  <div className="bg-white/70 rounded p-3 text-center">
+                    <div className="font-semibold text-purple-700">{multiTestFilter === 'multi' ? 'Multi-Test' : 'Single-Test'}</div>
+                    <div className="text-xs text-gray-600">Test Type</div>
+                  </div>
+                )}
+                {showRichMetrics && puzzles.length > 0 && (
+                  <>
+                    <div className="bg-white/70 rounded p-3 text-center">
+                      <div className="font-semibold text-blue-700">
+                        {Math.round(puzzles.reduce((sum, p) => sum + (p.performanceData?.avgTotalTokens || 0), 0) / puzzles.length).toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-600">Avg Tokens</div>
+                    </div>
+                    <div className="bg-white/70 rounded p-3 text-center">
+                      <div className="font-semibold text-orange-700">
+                        ${(puzzles.reduce((sum, p) => sum + (p.performanceData?.avgCost || 0), 0) / puzzles.length).toFixed(4)}
+                      </div>
+                      <div className="text-xs text-gray-600">Avg Cost</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Results */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
@@ -546,28 +590,40 @@ export default function PuzzleDiscussion() {
                           {showRichMetrics && (
                             <>
                               {puzzle.performanceData?.avgCost > 0 && (
-                                <div className="flex justify-between">
-                                  <span>Avg Cost:</span>
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center gap-1">
+                                    <DollarSign className="h-3 w-3 text-green-600" />
+                                    Avg Cost:
+                                  </span>
                                   <span className="font-medium text-xs">${(puzzle.performanceData.avgCost).toFixed(4)}</span>
                                 </div>
                               )}
                               {puzzle.performanceData?.avgProcessingTime > 0 && (
-                                <div className="flex justify-between">
-                                  <span>Avg Processing:</span>
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3 text-blue-600" />
+                                    Processing:
+                                  </span>
                                   <span className="font-medium text-xs">{(puzzle.performanceData.avgProcessingTime / 1000).toFixed(1)}s</span>
                                 </div>
                               )}
                               {puzzle.performanceData?.avgTotalTokens > 0 && (
-                                <div className="flex justify-between">
-                                  <span>Avg Tokens:</span>
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center gap-1">
+                                    <Zap className="h-3 w-3 text-orange-600" />
+                                    Tokens:
+                                  </span>
                                   <span className="font-medium text-xs">{Math.round(puzzle.performanceData.avgTotalTokens).toLocaleString()}</span>
                                 </div>
                               )}
                               {puzzle.performanceData?.modelsAttempted?.length > 0 && (
-                                <div className="flex justify-between">
-                                  <span>Models:</span>
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center gap-1">
+                                    <Target className="h-3 w-3 text-purple-600" />
+                                    Models:
+                                  </span>
                                   <span className="font-medium text-xs" title={puzzle.performanceData.modelsAttempted.join(', ')}>
-                                    {puzzle.performanceData.modelsAttempted.length} models
+                                    {puzzle.performanceData.modelsAttempted.length} tried
                                   </span>
                                 </div>
                               )}
