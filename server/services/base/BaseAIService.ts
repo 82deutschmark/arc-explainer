@@ -229,21 +229,16 @@ export abstract class BaseAIService {
   }
 
   /**
-   * Parse JSON response - PRESERVE FULL RESPONSE, never truncate expensive API responses
-   * Uses proper JSON parsing, not fragile regex extraction
+   * Extract JSON from response - temporary fix for provider compatibility
+   * PRESERVE FULL RESPONSE - never lose expensive API data
    */
-  protected parseJsonResponse(text: string, modelKey: string): any {
-    console.log(`[${this.provider}] Processing response: ${text.length} chars for ${modelKey}`);
-    
+  protected extractJsonFromResponse(text: string, modelKey: string): any {
     try {
       const parsed = JSON.parse(text);
-      console.log(`[${this.provider}] ✅ JSON parse successful for ${modelKey} (${text.length} chars)`);
-      // Preserve full response for debugging/analysis
-      parsed._rawResponse = text;
+      parsed._rawResponse = text; // Always preserve full response
       return parsed;
     } catch (error) {
-      console.log(`[${this.provider}] JSON parse failed for ${modelKey}: ${error}`);
-      // Return raw response with error info - let validation handle it
+      console.log(`[${this.provider}] JSON parse failed for ${modelKey}, preserving raw response`);
       return {
         _rawResponse: text,
         _parseError: error instanceof Error ? error.message : String(error),
