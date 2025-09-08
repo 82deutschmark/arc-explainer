@@ -42,7 +42,7 @@ export const JSON_REASONING_INSTRUCTION = `- reasoningItems: Array of strings de
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
 - patternDescription: The transformation rules you identified, simply stated.
-- hints: Describe three pseudo-code algorithms you considered, starting with the best one. Explain why you rejected the other algorithms. 
+- hints: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
 - confidence: Your certainty level (0-100)`;
 
 /**
@@ -123,7 +123,7 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
 - **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
 - **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
 - **reasoningItems**: A short song that captures the essence of your approach.
-- **hints**: Numbered list of complete pseudo-code for each of the three algorithms you considered, starting with the best algorithm. Explain why you rejected the other algorithms.
+- **hints**: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm.
 - **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`,
 
   gepa: `**Successful Strategies to Consider:**
