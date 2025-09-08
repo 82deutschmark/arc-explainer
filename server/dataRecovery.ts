@@ -93,6 +93,25 @@ async function findRawJsonFiles(): Promise<RawFileInfo[]> {
  * Find the canonical model key from the filename string.
  * This is more reliable than parsing because model keys can contain dashes.
  */
+/**
+ * Converts a non-standard timestamp string from a filename into a valid ISO 8601 format.
+ * @param timestamp The timestamp string, e.g., '2025-09-02T03-31-30-571Z'
+ * @returns A valid ISO 8601 string, e.g., '2025-09-02T03:31:30.571Z'
+ */
+function formatTimestamp(timestamp: string): string {
+    const parts = timestamp.split('T');
+    if (parts.length !== 2) return timestamp; // Return original if format is unexpected
+
+    const timePart = parts[1];
+    // Replace the first two hyphens with colons, and the last hyphen with a period.
+    const formattedTime = timePart
+        .replace('-', ':')
+        .replace('-', ':')
+        .replace(/-(?=[0-9]{3}Z$)/, '.');
+
+    return `${parts[0]}T${formattedTime}`;
+}
+
 function parseRawFilename(filename: string): { puzzleId: string; modelName: string; timestamp: string } | null {
   // Sort models by key length descending to ensure we match the longest possible key first
   // This prevents 'o3' from matching a filename that contains 'o3-2025-04-16'
@@ -134,7 +153,8 @@ async function explanationExists(puzzleId: string, modelName: string, rawFileTim
       return false; // No entries at all - definitely need to recover
     }
     
-    const rawFileDate = new Date(rawFileTimestamp);
+    const formattedTimestamp = formatTimestamp(rawFileTimestamp);
+    const rawFileDate = new Date(formattedTimestamp);
     if (isNaN(rawFileDate.getTime())) {
         console.warn(`  [WARNING] Invalid timestamp in raw file: ${rawFileTimestamp}. Cannot perform duplicate check.`);
         return false; // Cannot compare, assume not a duplicate
