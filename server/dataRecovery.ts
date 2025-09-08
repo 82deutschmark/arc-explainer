@@ -123,12 +123,40 @@ function parseRawFilename(filename: string): { puzzleId: string; modelName: stri
 }
 
 /**
- * Check if explanation already exists in database
+ * Check if explanation with matching timestamp already exists in database
+ * This identifies actual failed database saves vs legitimate duplicates
  */
-async function explanationExists(puzzleId: string, modelName: string): Promise<boolean> {
+async function explanationExistsWithTimestamp(puzzleId: string, modelName: string, rawFileTimestamp: string): Promise<boolean> {
   try {
     const existingExplanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-    return existingExplanations.some(exp => exp.modelName === modelName);
+    
+    // Filter to this specific model
+    const modelExplanations = existingExplanations.filter(exp => exp.modelName === modelName);
+    
+    if (modelExplanations.length === 0) {
+      console.log(`  🔍 No existing entries for ${puzzleId} + ${modelName}`);
+      return false; // No entries at all - definitely need to recover
+    }
+    
+    // Parse the raw file timestamp
+    const rawFileDate = new Date(rawFileTimestamp);
+    
+    // Check if any existing explanation was created within 5 minutes of the raw file timestamp
+    const timeWindow = 5 * 60 * 1000; // 5 minutes in milliseconds
+    
+    for (const explanation of modelExplanations) {
+      const dbDate = new Date(explanation.createdAt);
+      const timeDiff = Math.abs(dbDate.getTime() - rawFileDate.getTime());
+      
+      if (timeDiff <= timeWindow) {
+        console.log(`  ✅ Found matching DB entry within ${Math.round(timeDiff/1000)}s - already saved`);
+        return true; // Found a match - this API call was already saved
+      }
+    }
+    
+    console.log(`  🔍 Found ${modelExplanations.length} entries for ${modelName} but none match timestamp ${rawFileTimestamp}`);
+    return false; // No timestamp match - this raw file represents a failed save
+    
   } catch (error) {
     console.error(`[ERROR] Failed to check existing explanations for ${puzzleId}:`, error);
     return false; // Assume doesn't exist on error - better to try insert and fail than skip
@@ -392,10 +420,10 @@ async function recoverMissingData(): Promise<RecoveryStats> {
       console.log(`  Puzzle: ${rawFile.puzzleId}, Model: ${rawFile.modelName}`);
 
       try {
-        // Check if already exists
-        const exists = await explanationExists(rawFile.puzzleId, rawFile.modelName);
+        // Check if already exists using timestamp-based detection
+        const exists = await explanationExistsWithTimestamp(rawFile.puzzleId, rawFile.modelName, rawFile.timestamp);
         if (exists) {
-          console.log(`[${i + 1}/${rawFiles.length}] ⏭️  SKIPPED - Already exists in database: ${rawFile.filename}`);
+          console.log(`[${i + 1}/${rawFiles.length}] ⏭️  SKIPPED - Found matching timestamp in database: ${rawFile.filename}`);
           stats.skippedDuplicates++;
           // Still move to processed since it's been handled
           await moveProcessedFile(rawFile.filepath, processedDir);
