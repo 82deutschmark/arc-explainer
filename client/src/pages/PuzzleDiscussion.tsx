@@ -423,13 +423,21 @@ export default function PuzzleDiscussion() {
                   <>
                     <div className="bg-white/70 rounded p-3 text-center">
                       <div className="font-semibold text-blue-700">
-                        {Math.round(puzzles.reduce((sum, p) => sum + (p.performanceData?.avgTotalTokens || 0), 0) / puzzles.length).toLocaleString()}
+                        {Math.round(puzzles.reduce((total: number, p: any) => {
+                          const tokens = p.performanceData?.avgTotalTokens || 0;
+                          const count = p.performanceData?.totalExplanations || 1;
+                          return total + (tokens * count);
+                        }, 0) / puzzles.reduce((sum: number, p: any) => sum + (p.performanceData?.totalExplanations || 1), 0)).toLocaleString()}
                       </div>
                       <div className="text-xs text-gray-600">Avg Tokens</div>
                     </div>
                     <div className="bg-white/70 rounded p-3 text-center">
                       <div className="font-semibold text-orange-700">
-                        ${(puzzles.reduce((sum, p) => sum + (p.performanceData?.avgCost || 0), 0) / puzzles.length).toFixed(4)}
+                        ${(puzzles.reduce((total: number, p: any) => {
+                          const cost = p.performanceData?.avgCost || 0;
+                          const count = p.performanceData?.totalExplanations || 1;
+                          return total + (cost * count);
+                        }, 0) / puzzles.reduce((sum: number, p: any) => sum + (p.performanceData?.totalExplanations || 1), 0)).toFixed(4)}
                       </div>
                       <div className="text-xs text-gray-600">Avg Cost</div>
                     </div>

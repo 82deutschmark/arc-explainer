@@ -703,7 +703,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         COUNT(CASE WHEN e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL THEN 1 END) as single_test_count,
         MIN(CASE WHEN e.confidence > 0 THEN e.confidence END) as lowest_non_zero_confidence,
         STRING_AGG(DISTINCT e.model_name, ', ' ORDER BY e.model_name) as models_attempted,
-        STRING_AGG(DISTINCT e.reasoning_effort, ', ' ORDER BY e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts,` : '';
+        STRING_AGG(DISTINCT e.reasoning_effort, ', ' ORDER BY e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts,` : `
+        NULL as avg_cost,
+        NULL as avg_processing_time,`;
 
       const result = await this.query(`
         SELECT *
