@@ -14,7 +14,7 @@ import { logger } from './logger.ts';
  * Safe JSON parsing with fallback support
  * Handles various input types and provides comprehensive error handling
  */
-export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | null = null): T | null {
+export async function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | null = null): Promise<T | null> {
   // Handle null/undefined
   if (value === null || value === undefined) {
     return fallback;
