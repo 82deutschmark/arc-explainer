@@ -472,6 +472,13 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     content: `Given these training examples, what do you predict the correct answer to the test case should be? Explain your reasoning step by step, identifying the transformation pattern and applying it to solve the test case.`,
     emojiMapIncluded: false
   },
+  gepa: {
+    id: "gepa",
+    name: "🔍 GEPA Solver",
+    description: "Systematic strategy analysis solver - uses structured approach with proven strategies to analyze and solve ARC-AGI puzzles. Credit: https://github.com/gepa-ai/gepa",
+    content: `Analyze the provided input/output matrix pairs from the Abstraction and Reasoning Corpus (ARC). Deduce the single, underlying transformation rule that converts each input matrix to its corresponding output matrix. Describe this rule in clear, step-by-step, unambiguous English. Focus on the logic, not Python code.`,
+    emojiMapIncluded: false
+  },
   custom: {
     id: "custom",
     name: "⚙️ Custom Prompt",

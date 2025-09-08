@@ -452,25 +452,40 @@ export class MetricsRepository extends BaseRepository {
           COALESCE(mf.user_satisfaction * 100, 0) as user_satisfaction_percentage,
           ma.total_attempts,
           CASE 
-            WHEN ma.avg_trustworthiness > 0.001 
-            THEN ma.avg_cost / ma.avg_trustworthiness
-            ELSE 999999 
+            WHEN ma.avg_cost IS NULL OR ma.avg_cost = 0 THEN 0
+            WHEN ma.avg_trustworthiness IS NULL OR ma.avg_trustworthiness <= 0.001 THEN 999
+            WHEN ma.avg_cost / ma.avg_trustworthiness > 999 THEN 999
+            ELSE ma.avg_cost / ma.avg_trustworthiness
           END as cost_efficiency
         FROM model_accuracy ma
         LEFT JOIN model_feedback mf ON ma.model_name = mf.model_name
-        WHERE ma.total_attempts >= 3  -- Require minimum attempts for meaningful comparison
+        WHERE ma.total_attempts >= 1  -- Include all models with at least 1 attempt for broader coverage
         ORDER BY accuracy_percentage DESC, trustworthiness DESC
-        LIMIT 20
+        LIMIT 50  -- Show more models to ensure comprehensive coverage
       `);
 
-      return result.rows.map(row => ({
-        modelName: row.model_name,
-        accuracy: Math.round((parseFloat(row.accuracy_percentage) || 0) * 10) / 10,
-        trustworthiness: Math.round((parseFloat(row.trustworthiness) || 0) * 10000) / 10000,
-        userSatisfaction: Math.round((parseFloat(row.user_satisfaction_percentage) || 0) * 10) / 10,
-        attempts: parseInt(row.total_attempts) || 0,
-        costEfficiency: Math.round((parseFloat(row.cost_efficiency) || 0) * 1000000) / 1000000
-      }));
+      return result.rows.map(row => {
+        // Parse and validate raw values
+        const rawAccuracy = parseFloat(row.accuracy_percentage) || 0;
+        const rawTrustworthiness = parseFloat(row.trustworthiness) || 0;
+        const rawUserSatisfaction = parseFloat(row.user_satisfaction_percentage) || 0;
+        const rawAttempts = parseInt(row.total_attempts) || 0;
+        const rawCostEfficiency = parseFloat(row.cost_efficiency) || 0;
+        
+        // Log extreme cost efficiency values for monitoring
+        if (rawCostEfficiency > 100) {
+          logger.warn(`High cost efficiency detected for ${row.model_name}: ${rawCostEfficiency}`, 'metrics');
+        }
+        
+        return {
+          modelName: row.model_name,
+          accuracy: Math.min(100, Math.max(0, Math.round(rawAccuracy * 10) / 10)), // Clamp to 0-100%
+          trustworthiness: Math.min(1, Math.max(0, Math.round(rawTrustworthiness * 10000) / 10000)), // Clamp to 0-1
+          userSatisfaction: Math.min(100, Math.max(0, Math.round(rawUserSatisfaction * 10) / 10)), // Clamp to 0-100%
+          attempts: Math.max(0, rawAttempts), // Ensure non-negative
+          costEfficiency: Math.min(999, Math.max(0, Math.round(rawCostEfficiency * 1000000) / 1000000)) // Cap at $999
+        };
+      });
     } catch (error) {
       logger.error(`Error generating model comparisons: ${error instanceof Error ? error.message : String(error)}`, 'database');
       return [];

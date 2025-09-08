@@ -126,7 +126,10 @@ export function useWorstPerformingPuzzles(
   sortBy: string = 'composite',
   minAccuracy?: number,
   maxAccuracy?: number,
-  zeroAccuracyOnly?: boolean
+  zeroAccuracyOnly?: boolean,
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy',
+  multiTestFilter?: 'single' | 'multi',
+  includeRichMetrics?: boolean
 ) {
   const queryParams = new URLSearchParams();
   queryParams.set('limit', limit.toString());
@@ -135,6 +138,9 @@ export function useWorstPerformingPuzzles(
   if (minAccuracy !== undefined) queryParams.set('minAccuracy', (minAccuracy / 100).toString());
   if (maxAccuracy !== undefined) queryParams.set('maxAccuracy', (maxAccuracy / 100).toString());
   if (zeroAccuracyOnly) queryParams.set('zeroAccuracyOnly', 'true');
+  if (source) queryParams.set('source', source);
+  if (multiTestFilter) queryParams.set('multiTestFilter', multiTestFilter);
+  if (includeRichMetrics) queryParams.set('includeRichMetrics', 'true');
   
   const queryString = queryParams.toString();
   const url = `/api/puzzle/worst-performing?${queryString}`;

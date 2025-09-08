@@ -9,6 +9,7 @@
  */
 
 import { logger } from './logger.ts';
+import { jsonParser } from './JsonParser.js';
 
 /**
  * Safe JSON parsing with fallback support
@@ -32,11 +33,17 @@ export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | n
       return fallback;
     }
     
-    try {
-      return JSON.parse(value) as T;
-    } catch (error) {
+    // Use static import - jsonParser is already imported at the top
+    const result = jsonParser.parse<T>(value, {
+      logErrors: false, // We'll handle logging here
+      fieldName
+    });
+
+    if (result.success) {
+      return result.data as T;
+    } else {
       if (fieldName) {
-        logger.warn(`Failed to parse JSON for ${fieldName}: ${value}`, 'utilities');
+        logger.warn(`Failed to parse JSON for ${fieldName}: ${result.error}`, 'utilities');
       }
       return fallback;
     }
@@ -131,17 +138,18 @@ export function processHints(hints: any): string[] {
       return [];
     }
     
-    try {
-      const parsed = JSON.parse(hints);
-      if (Array.isArray(parsed)) {
-        return processHints(parsed); // Recursive call to validate array
-      }
-      // If not array, treat as single hint
-      return [hints.trim()];
-    } catch {
-      // If parse fails, treat as single hint
-      return [hints.trim()];
+    // Use static import - jsonParser is already imported at the top
+    const result = jsonParser.parse<any[]>(hints, {
+      logErrors: false,
+      fieldName: 'hints'
+    });
+
+    if (result.success && Array.isArray(result.data)) {
+      return processHints(result.data); // Recursive call to validate array
     }
+    
+    // If parse fails or not array, treat as single hint
+    return [hints.trim()];
   }
   
   // For other types, convert to string if meaningful

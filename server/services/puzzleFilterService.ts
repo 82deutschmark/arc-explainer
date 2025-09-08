@@ -267,7 +267,7 @@ export class PuzzleFilterService {
    * Validate worst puzzle sort parameters
    */
   validateWorstPuzzleSortParameters(sortBy?: string): string {
-    const validSortOptions = ['composite', 'feedback', 'accuracy'];
+    const validSortOptions = ['composite', 'feedback', 'accuracy', 'confidence', 'cost', 'processing_time'];
     return validSortOptions.includes(sortBy || '') ? sortBy! : 'composite';
   }
 

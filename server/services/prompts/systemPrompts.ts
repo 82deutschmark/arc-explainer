@@ -47,6 +47,7 @@ export const SYSTEM_PROMPT_MAP = {
   standardExplanation: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.explanation, additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation, usePromptReasoning }),
   alienCommunication: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication, usePromptReasoning }),
   educationalApproach: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational, usePromptReasoning }),
+  gepa: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa, usePromptReasoning }),
   custom: (usePromptReasoning?: boolean) => buildCustomPrompt(usePromptReasoning)
 } as const;
 
@@ -69,7 +70,7 @@ export function isAlienCommunicationMode(promptId: string): boolean {
  * Check if a prompt ID is solver mode (predicting answers)
  */
 export function isSolverMode(promptId: string): boolean {
-  return promptId === 'solver' || promptId === 'educationalApproach';
+  return promptId === 'solver' || promptId === 'educationalApproach' || promptId === 'gepa';
 }
 
 // All legacy commented code removed - now using clean DRY architecture
