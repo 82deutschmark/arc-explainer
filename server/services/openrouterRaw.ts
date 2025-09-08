@@ -102,6 +102,11 @@ export class OpenRouterRawService extends BaseAIService {
           const duration = Date.now() - startTime;
           console.log(`[OpenRouter-Raw] Response received: ${responseBody.length} chars in ${duration}ms`);
           
+          // SAVE RAW RESPONSE BEFORE PARSING - capture truncated responses too
+          this.saveRawResponse(modelName, responseBody, res.statusCode || 0).catch((err: Error) => 
+            console.warn(`[OpenRouter-Raw] Failed to save raw response: ${err.message}`)
+          );
+          
           try {
             const response = JSON.parse(responseBody);
             resolve(response);
@@ -183,6 +188,28 @@ export class OpenRouterRawService extends BaseAIService {
     }
 
     return { result, tokenUsage, reasoningLog, reasoningItems };
+  }
+
+  /**
+   * Save raw HTTP response body before JSON parsing to capture truncated responses
+   */
+  private async saveRawResponse(modelName: string, responseBody: string, statusCode: number): Promise<void> {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const sanitizedModelName = modelName.replace(/[\/\\:*?"<>|]/g, '-');
+      const filename = `raw-response-${sanitizedModelName}-${timestamp}-status${statusCode}.txt`;
+      const filepath = path.join('data', 'explained', filename);
+      
+      const content = `HTTP Status: ${statusCode}\nTimestamp: ${new Date().toISOString()}\nModel: ${modelName}\nResponse Length: ${responseBody.length} chars\n\n${responseBody}`;
+      
+      await fs.writeFile(filepath, content);
+      console.log(`[OpenRouter-Raw] Raw response saved to ${filename}`);
+    } catch (error) {
+      console.error(`[OpenRouter-Raw] Failed to save raw response:`, error);
+    }
   }
 
   getModelInfo(modelKey: string): ModelInfo {
