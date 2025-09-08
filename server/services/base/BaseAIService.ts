@@ -7,6 +7,7 @@
  */
 
 import { ARCTask } from "../../../shared/types.js";
+import { jsonParser } from '../../utils/JsonParser.js';
 import { getSystemPrompt } from '../prompts/systemPrompts.js';
 import { buildCustomPrompt } from '../prompts/components/promptBuilder.js';
 import { buildAnalysisPrompt, getDefaultPromptId, PromptOptions, PromptPackage } from '../promptBuilder.js';
@@ -233,16 +234,25 @@ export abstract class BaseAIService {
    * PRESERVE FULL RESPONSE - never lose expensive API data
    */
   protected extractJsonFromResponse(text: string, modelKey: string): any {
-    try {
-      const parsed = JSON.parse(text);
-      parsed._rawResponse = text; // Always preserve full response
-      return parsed;
-    } catch (error) {
+    
+    const result = jsonParser.parse(text, {
+      preserveRawInput: true,
+      allowPartialExtraction: true,
+      logErrors: true,
+      fieldName: `${this.provider}-${modelKey}`
+    });
+
+    if (result.success) {
+      // Preserve the raw response for debugging
+      result.data._rawResponse = text;
+      return result.data;
+    } else {
       console.log(`[${this.provider}] JSON parse failed for ${modelKey}, preserving raw response`);
       return {
         _rawResponse: text,
-        _parseError: error instanceof Error ? error.message : String(error),
-        _parsingFailed: true
+        _parseError: result.error,
+        _parsingFailed: true,
+        _parseMethod: result.method || 'none'
       };
     }
   }

@@ -13,6 +13,7 @@ import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
 import { responsePersistence } from './ResponsePersistence.js';
+import { responseProcessor } from './ResponseProcessor.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
 const openrouter = new OpenAI({
@@ -101,22 +102,13 @@ export class OpenRouterService extends BaseAIService {
     modelKey: string,
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
-    const choice = response.choices?.[0];
-    if (!choice) {
-      throw new Error(`No response choices returned from OpenRouter ${modelKey}`);
-    }
-
-    const responseText = choice.message?.content;
-    if (!responseText) {
-      throw new Error(`Empty response content from OpenRouter ${modelKey}`);
-    }
-
-    const finishReason = choice.finish_reason || choice.native_finish_reason;
-    console.log(`[OpenRouter] Raw response length: ${responseText.length} chars`);
-    console.log(`[OpenRouter] Finish reason: ${finishReason}`);
-    console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 100)}..."`);
-
+    console.log(`[OpenRouter] Processing response for ${modelKey}`);
+    console.log(`[OpenRouter] Response preview: "${JSON.stringify(response).substring(0, 200)}..."`);
+    
     // Detect potential truncation patterns
+    const responseText = response.choices?.[0]?.message?.content || '';
+    const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
+    
     const isTruncated = this.detectResponseTruncation(responseText, finishReason);
     if (isTruncated) {
       console.warn(`[OpenRouter] TRUNCATION DETECTED for ${modelKey}`);
@@ -132,15 +124,29 @@ export class OpenRouterService extends BaseAIService {
       );
     }
 
-    // ENHANCED ERROR HANDLING: Capture full response on JSON parse failure
-    let result;
     try {
-      result = this.extractJsonFromResponse(responseText, modelKey);
+      // Use unified ResponseProcessor
+      const processedResponse = responseProcessor.processChatCompletion(response, {
+        captureReasoning,
+        modelKey,
+        provider: 'OpenRouter'
+      });
+
+      console.log(`[OpenRouter] Processing complete - Token usage: Input=${processedResponse.tokenUsage.input}, Output=${processedResponse.tokenUsage.output}`);
+      console.log(`[OpenRouter] Result keys: ${Object.keys(processedResponse.result).join(', ')}`);
+      
+      if (processedResponse.reasoningItems && processedResponse.reasoningItems.length > 0) {
+        console.log(`[OpenRouter] Extracted ${processedResponse.reasoningItems.length} reasoning items`);
+      }
+
+      return {
+        result: processedResponse.result,
+        tokenUsage: processedResponse.tokenUsage,
+        reasoningLog: processedResponse.reasoningLog,
+        reasoningItems: processedResponse.reasoningItems
+      };
     } catch (error) {
-      console.error(`[OpenRouter] JSON PARSE FAILURE for ${modelKey}:`);
-      console.error(`[OpenRouter] Finish reason: ${finishReason}`);
-      console.error(`[OpenRouter] Response length: ${responseText.length} chars`);
-      console.error(`[OpenRouter] Last 200 chars: "${responseText.slice(-200)}"`);
+      console.error(`[OpenRouter] Processing failed for ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
       
       // Save failed response for analysis
       responsePersistence.saveRawResponse(
@@ -153,60 +159,8 @@ export class OpenRouterService extends BaseAIService {
         }
       );
       
-      throw new Error(`JSON parsing failed for ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
     }
-
-    const tokenUsage: TokenUsage = {
-      input: response.usage?.prompt_tokens || 0,
-      output: response.usage?.completion_tokens || 0,
-      reasoning: 0 // OpenRouter doesn't separate reasoning tokens
-    };
-
-    console.log(`[OpenRouter] Token usage - Input: ${tokenUsage.input}, Output: ${tokenUsage.output}`);
-
-    // Standardized reasoning extraction with captureReasoning parameter
-    let reasoningLog = null;
-    if (captureReasoning) {
-      console.log(`[OpenRouter] Reasoning extraction enabled for model: ${modelKey}`);
-      
-      if (result.reasoning) {
-        reasoningLog = typeof result.reasoning === 'string' ? result.reasoning : JSON.stringify(result.reasoning);
-        console.log(`[OpenRouter] Extracted reasoning from JSON 'reasoning' field: ${reasoningLog.length} chars`);
-      } else {
-        // Fallback to pre-JSON text extraction
-        const jsonStartPattern = /```json|```\s*{|\s*{/;
-        const jsonStartMatch = responseText.search(jsonStartPattern);
-        if (jsonStartMatch > 20) { // If there's meaningful text before JSON
-          const preJsonText = responseText.substring(0, jsonStartMatch).trim();
-          if (preJsonText.length > 20) {
-            reasoningLog = preJsonText;
-            console.log(`[OpenRouter] Extracted pre-JSON reasoning: ${preJsonText.length} chars`);
-          }
-        }
-      }
-
-      if (!reasoningLog) {
-        console.log(`[OpenRouter] No reasoning log found despite captureReasoning=true`);
-      }
-    } else {
-      console.log(`[OpenRouter] Reasoning extraction disabled (captureReasoning=false)`);
-    }
-
-    console.log(`[OpenRouter] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
-
-    // Extract reasoningItems from the JSON response
-    let reasoningItems: any[] = [];
-    if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
-      reasoningItems = result.reasoningItems;
-      console.log(`[OpenRouter] Extracted ${reasoningItems.length} reasoning items from JSON response`);
-    }
-
-    return { 
-      result, 
-      tokenUsage, 
-      reasoningLog,
-      reasoningItems
-    };
   }
 
   getModelInfo(modelKey: string): ModelInfo {
