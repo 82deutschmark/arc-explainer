@@ -14,6 +14,7 @@ import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, M
 import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
 import { responsePersistence } from './ResponsePersistence.js';
 import { responseProcessor } from './ResponseProcessor.js';
+import { logger } from '../utils/logger.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
 const openrouter = new OpenAI({
@@ -75,7 +76,7 @@ export class OpenRouterService extends BaseAIService {
   ): Promise<any> {
     const modelName = getApiModelName(modelKey);
     
-    console.log(`[OpenRouter] Making API call to model: ${modelName}`);
+    logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
     const chatCompletion = await openrouter.chat.completions.create({
       model: modelName,
@@ -102,8 +103,8 @@ export class OpenRouterService extends BaseAIService {
     modelKey: string,
     captureReasoning: boolean
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
-    console.log(`[OpenRouter] Processing response for ${modelKey}`);
-    console.log(`[OpenRouter] Response preview: "${JSON.stringify(response).substring(0, 200)}..."`);
+    logger.service('OpenRouter', `Processing response for ${modelKey}`);
+    logger.apiResponse('OpenRouter', 'API Response', JSON.stringify(response), 200);
     
     // Detect potential truncation patterns
     const responseText = response.choices?.[0]?.message?.content || '';
@@ -111,7 +112,7 @@ export class OpenRouterService extends BaseAIService {
     
     const isTruncated = this.detectResponseTruncation(responseText, finishReason);
     if (isTruncated) {
-      console.warn(`[OpenRouter] TRUNCATION DETECTED for ${modelKey}`);
+      logger.service('OpenRouter', `TRUNCATION DETECTED for ${modelKey}`, 'warn');
       // Save truncated response for analysis
       responsePersistence.saveRawResponse(
         modelKey,
@@ -132,11 +133,11 @@ export class OpenRouterService extends BaseAIService {
         provider: 'OpenRouter'
       });
 
-      console.log(`[OpenRouter] Processing complete - Token usage: Input=${processedResponse.tokenUsage.input}, Output=${processedResponse.tokenUsage.output}`);
-      console.log(`[OpenRouter] Result keys: ${Object.keys(processedResponse.result).join(', ')}`);
+      logger.tokenUsage('OpenRouter', modelKey, processedResponse.tokenUsage.input, processedResponse.tokenUsage.output, processedResponse.tokenUsage.reasoning);
+      logger.service('OpenRouter', `Result keys: ${Object.keys(processedResponse.result).join(', ')}`);
       
       if (processedResponse.reasoningItems && processedResponse.reasoningItems.length > 0) {
-        console.log(`[OpenRouter] Extracted ${processedResponse.reasoningItems.length} reasoning items`);
+        logger.service('OpenRouter', `Extracted ${processedResponse.reasoningItems.length} reasoning items`);
       }
 
       return {
@@ -146,7 +147,10 @@ export class OpenRouterService extends BaseAIService {
         reasoningItems: processedResponse.reasoningItems
       };
     } catch (error) {
-      console.error(`[OpenRouter] Processing failed for ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
+      logger.logError(`Processing failed for ${modelKey}`, {
+        error,
+        context: 'OpenRouter'
+      });
       
       // Save failed response for analysis
       responsePersistence.saveRawResponse(
@@ -167,7 +171,7 @@ export class OpenRouterService extends BaseAIService {
     const modelConfig = getModelConfig(modelKey);
     
     if (!modelConfig) {
-      console.warn(`[OpenRouter] No configuration found for model: ${modelKey}`);
+      logger.service('OpenRouter', `No configuration found for model: ${modelKey}`, 'warn');
       // Return defaults for unknown OpenRouter models - no artificial context window limit
       return {
         name: modelKey,

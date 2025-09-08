@@ -9,6 +9,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { logger } from '../utils/logger.js';
 
 export class ResponsePersistence {
   private static instance: ResponsePersistence;
@@ -55,11 +56,11 @@ export class ResponsePersistence {
       );
       
       await fs.writeFile(filepath, content);
-      console.log(`[ResponsePersistence] Saved to: ${filename}`);
+      logger.fileOperation('Saved raw response to', filename, 'ResponsePersistence');
       
       return filepath;
     } catch (error) {
-      console.error(`[ResponsePersistence] Failed to save response:`, error);
+      logger.logError('Failed to save response', { error, context: 'ResponsePersistence' });
       return null;
     }
   }
@@ -92,11 +93,11 @@ export class ResponsePersistence {
       );
       
       await fs.writeFile(filepath, content);
-      console.log(`[ResponsePersistence] Explanation saved: ${filename}`);
+      logger.fileOperation('Explanation saved to', filename, 'ResponsePersistence');
       
       return filepath;
     } catch (error) {
-      console.error(`[ResponsePersistence] Failed to save explanation:`, error);
+      logger.logError('Failed to save explanation', { error, context: 'ResponsePersistence' });
       return null;
     }
   }
@@ -110,7 +111,7 @@ export class ResponsePersistence {
     } catch (error) {
       // Directory doesn't exist, create it recursively
       await fs.mkdir(dirPath, { recursive: true });
-      console.log(`[ResponsePersistence] Created directory: ${dirPath}`);
+      logger.fileOperation('Created directory', dirPath, 'ResponsePersistence');
     }
   }
 
