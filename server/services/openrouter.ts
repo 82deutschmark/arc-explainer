@@ -170,27 +170,17 @@ export class OpenRouterService extends BaseAIService {
     let payload: any;
     
     if (previousGenerationId) {
-      // This is a continuation call - use the original prompt structure but with continue parameter
+      // This is a continuation call - use ONLY continue parameter, no messages
       payload = {
         model: modelName,
-        messages: [
-          {
-            role: "system",
-            content: prompt.systemPrompt
-          },
-          {
-            role: "user", 
-            content: prompt.userPrompt
-          }
-        ],
         continue: {
           generation_id: previousGenerationId,
           step: step
         },
-        response_format: { type: "json_object" },
+        response_format: { type: "json_object" } as const,
         temperature: temperature
-      };
-      logger.service('OpenRouter', `Continuing generation ${previousGenerationId} at step ${step}`);
+      } as any; // OpenRouter-specific continue parameter not in OpenAI SDK types
+      logger.service('OpenRouter', `Continuing generation ${previousGenerationId} at step ${step} (continue-only format)`);
     } else {
       // This is the initial call
       payload = {
@@ -206,7 +196,7 @@ export class OpenRouterService extends BaseAIService {
           }
         ],
         temperature: temperature,
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" } as const
       };
       logger.service('OpenRouter', `Initial API call to model: ${modelName}`);
     }
@@ -253,7 +243,7 @@ export class OpenRouterService extends BaseAIService {
           prompt_tokens: (response.usage?.prompt_tokens || 0) + (continuedResponse.usage?.prompt_tokens || 0),
           completion_tokens: (response.usage?.completion_tokens || 0) + (continuedResponse.usage?.completion_tokens || 0),
           total_tokens: (response.usage?.total_tokens || 0) + (continuedResponse.usage?.total_tokens || 0),
-          reasoning_tokens: (response.usage?.reasoning_tokens || 0) + (continuedResponse.usage?.reasoning_tokens || 0)
+          reasoning_tokens: ((response.usage as any)?.reasoning_tokens || 0) + ((continuedResponse.usage as any)?.reasoning_tokens || 0)
         }
       };
       
@@ -297,7 +287,6 @@ export class OpenRouterService extends BaseAIService {
         {
           provider: 'OpenRouter',
           requestId: generationId || 'unknown',
-          finishReason: finishReason,
           truncated: true
         }
       );
@@ -348,7 +337,6 @@ export class OpenRouterService extends BaseAIService {
         {
           provider: 'OpenRouter',
           requestId: generationId || 'unknown',
-          finishReason: finishReason,
           truncated: isTruncated,
           processingError: errorMessage,
           postContinuation: true
