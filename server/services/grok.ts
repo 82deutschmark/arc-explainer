@@ -71,6 +71,7 @@ export class GrokService extends BaseAIService {
 
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
+      throw error; // This line will never be reached but satisfies TypeScript
     }
   }
 
