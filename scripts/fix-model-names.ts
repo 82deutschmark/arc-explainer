@@ -29,21 +29,25 @@ async function main() {
   let updatedCount = 0;
   const modelKeySet = new Set(MODELS.map((m: ModelConfig) => m.key));
 
-    const getCanonicalKey = (name: string | null): string | null => {
+      const getCanonicalKey = (name: string | null): string | null => {
     if (!name) return null;
+
+    // Handle specific aliases like 'grok-4' first
+    if (name.includes('grok-4')) {
+      return 'grok-4-0709'; // Canonical key for all Grok 4 variations
+    }
 
     const sortedModels = [...MODELS].sort((a, b) => b.key.length - a.key.length);
 
-    // Exact match first
+    // Exact match on key or name
     const exactMatch = sortedModels.find(m => m.key === name || m.name === name);
     if (exactMatch) return exactMatch.key;
 
     // Partial match for mapping short names to full keys
     for (const model of sortedModels) {
-        // This logic is for names like 'o3' to be mapped to 'o3-2025-04-16'
-        if (model.key.startsWith(name)) {
-            return model.key;
-        }
+      if (model.key.startsWith(name)) {
+        return model.key;
+      }
     }
 
     return null;
