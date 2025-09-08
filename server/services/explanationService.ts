@@ -210,7 +210,12 @@ export const explanationService = {
         const explanationData = {
           patternDescription: analysisData.patternDescription ?? null,
           solvingStrategy: analysisData.solvingStrategy ?? null,
-          hints: analysisData.hints ?? null,
+          hints: Array.isArray(analysisData.hints) 
+            ? analysisData.hints.map(hint => 
+                typeof hint === 'object' ? hint.algorithm || hint.description || String(hint)
+                : String(hint)
+              )
+            : null,
           confidence: analysisData.confidence ?? 50,
           modelName: sourceData.modelName ?? modelKey,
           reasoningItems: finalReasoningItems,
