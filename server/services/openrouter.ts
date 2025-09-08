@@ -88,7 +88,8 @@ export class OpenRouterService extends BaseAIService {
         }
       ],
       temperature: temperature,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      stream: false //  TESTING FIX FOR JSON TRUNCATION!!  
     });
 
     return chatCompletion;
@@ -109,10 +110,23 @@ export class OpenRouterService extends BaseAIService {
       throw new Error(`Empty response content from OpenRouter ${modelKey}`);
     }
 
+    const finishReason = choice.finish_reason || choice.native_finish_reason;
     console.log(`[OpenRouter] Raw response length: ${responseText.length} chars`);
+    console.log(`[OpenRouter] Finish reason: ${finishReason}`);
     console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 100)}..."`);
 
-    const result = this.extractJsonFromResponse(responseText, modelKey);
+    // ENHANCED ERROR HANDLING: Capture full response on JSON parse failure
+    let result;
+    try {
+      result = this.extractJsonFromResponse(responseText, modelKey);
+    } catch (error) {
+      console.error(`[OpenRouter] JSON PARSE FAILURE for ${modelKey}:`);
+      console.error(`[OpenRouter] Finish reason: ${finishReason}`);
+      console.error(`[OpenRouter] Full response text: ${responseText}`);
+      console.error(`[OpenRouter] Response length: ${responseText.length} chars`);
+      console.error(`[OpenRouter] Last 200 chars: "${responseText.slice(-200)}"`);
+      throw new Error(`JSON parsing failed for ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
+    }
 
     const tokenUsage: TokenUsage = {
       input: response.usage?.prompt_tokens || 0,
