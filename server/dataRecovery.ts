@@ -5,13 +5,19 @@
  * This script recovers expensive API responses that were saved as files but failed database insertion
  * due to previous database save bugs that have since been fixed.
  * 
- * @author Claude Code
+ * @author Claude Code FIXED BY GEMINI 2.5 PRO!!!
  */
 
+import 'dotenv/config';
+console.log('✅ [INIT] Starting dataRecovery.ts');
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as readline from 'readline';
-import { repositoryService } from './repositories/RepositoryService';
+console.log('✅ [INIT] Importing RepositoryService...');
+import { repositoryService } from './repositories/RepositoryService.js';
+import { MODELS } from './config/models.js';
+import type { ModelConfig } from '../shared/types.js';
+console.log('✅ [INIT] RepositoryService imported successfully.');
 
 interface RawFileInfo {
   filepath: string;
@@ -31,25 +37,21 @@ interface RecoveryStats {
 }
 
 /**
- * Recursively find all *-raw.json files in explained directory and subdirectories
+ * Find all *-raw.json files in explained directory
  */
 async function findRawJsonFiles(): Promise<RawFileInfo[]> {
+  const explainedDir = path.join('data', 'explained');
   const rawFiles: RawFileInfo[] = [];
-  
-  async function searchDirectory(dirPath: string): Promise<void> {
-    const items = await fs.readdir(dirPath, { withFileTypes: true });
-    
+
+  try {
+    const items = await fs.readdir(explainedDir, { withFileTypes: true });
+
     for (const item of items) {
-      const fullPath = path.join(dirPath, item.name);
-      
-      if (item.isDirectory()) {
-        // Recursively search subdirectories
-        await searchDirectory(fullPath);
-      } else if (item.isFile() && item.name.endsWith('-raw.json')) {
+      if (item.isFile() && item.name.endsWith('-raw.json')) {
         const parsed = parseRawFilename(item.name);
         if (parsed) {
           rawFiles.push({
-            filepath: fullPath,
+            filepath: path.join(explainedDir, item.name),
             filename: item.name,
             ...parsed
           });
@@ -58,11 +60,11 @@ async function findRawJsonFiles(): Promise<RawFileInfo[]> {
         }
       }
     }
+  } catch (error) {
+    console.error(`[ERROR] Failed to read directory: ${explainedDir}`, error);
+    throw error;
   }
-  
-  const explainedDir = path.join('data', 'explained');
-  await searchDirectory(explainedDir);
-  
+
   return rawFiles.sort((a, b) => a.filename.localeCompare(b.filename));
 }
 
@@ -70,45 +72,37 @@ async function findRawJsonFiles(): Promise<RawFileInfo[]> {
  * Parse raw filename to extract puzzle ID, model name, and timestamp
  * Format: puzzleid-model-timestamp-raw.json
  */
+/**
+ * Find the canonical model key from the parsed model name string.
+ * This prevents creating new/incorrect model entries in the database.
+ */
+/**
+ * Find the canonical model key from the filename string.
+ * This is more reliable than parsing because model keys can contain dashes.
+ */
 function parseRawFilename(filename: string): { puzzleId: string; modelName: string; timestamp: string } | null {
-  // Remove -raw.json suffix
-  const withoutSuffix = filename.replace('-raw.json', '');
-  
-  // Split by dashes, but be careful because model names can contain dashes
-  const parts = withoutSuffix.split('-');
-  
-  if (parts.length < 3) {
-    return null;
-  }
-  
-  // First part is always puzzle ID (8 character hex)
-  const puzzleId = parts[0];
-  
-  // Last part(s) form the ISO timestamp (contains multiple dashes)
-  // Find where timestamp starts (looks for pattern like "2025-08-30T...")
-  let timestampStartIndex = -1;
-  for (let i = 1; i < parts.length; i++) {
-    if (parts[i].match(/^\d{4}$/)) { // Year pattern
-      timestampStartIndex = i;
-      break;
+  // Sort models by key length descending to ensure we match the longest possible key first
+  // This prevents 'o3' from matching a filename that contains 'o3-2025-04-16'
+  const sortedModels = [...MODELS].sort((a, b) => b.key.length - a.key.length);
+
+  for (const model of sortedModels) {
+    // Regex to capture puzzleId and timestamp around the specific model key
+        const escapedModelKey = model.key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`^([a-f0-9]{8})-(${escapedModelKey})-(.*)-raw\\.json$`);
+    const match = filename.match(regex);
+
+    if (match) {
+      const [, puzzleId, modelName, timestamp] = match;
+      return {
+        puzzleId,
+        modelName, // This is the canonical key from the config
+        timestamp
+      };
     }
   }
-  
-  if (timestampStartIndex === -1) {
-    return null;
-  }
-  
-  // Model name is everything between puzzle ID and timestamp
-  const modelName = parts.slice(1, timestampStartIndex).join('-');
-  
-  // Timestamp is everything from timestamp start
-  const timestamp = parts.slice(timestampStartIndex).join('-');
-  
-  return {
-    puzzleId,
-    modelName,
-    timestamp
-  };
+
+  console.warn(`[PARSE_ERROR] Could not parse filename: ${filename}`);
+  return null;
 }
 
 /**
@@ -286,12 +280,8 @@ function extractExplanationData(sourceData: any, modelName: string): any {
 /**
  * Process a single raw JSON file and insert to database if it doesn't exist
  */
-async function processRawFile(rawFile: RawFileInfo): Promise<{ success: boolean; error?: string }> {
+async function processRawFile(rawFile: RawFileInfo, rawData: any): Promise<{ success: boolean; error?: string }> {
   try {
-    // Read the raw JSON file
-    const rawData = JSON.parse(await fs.readFile(rawFile.filepath, 'utf8'));
-    
-    // Extract explanation data using the same logic as explanationService
     const explanationData = extractExplanationData(rawData, rawFile.modelName);
     
     // Add puzzle ID to the explanation data
@@ -375,6 +365,13 @@ async function askForApproval(rawFile: RawFileInfo, rawData: any): Promise<boole
  * Main recovery function
  */
 async function recoverMissingData(): Promise<RecoveryStats> {
+  // Initialize repository service to connect to the database
+  const repoInitialized = await repositoryService.initialize();
+  if (!repoInitialized) {
+    console.error('💥 [FATAL] Database initialization failed. Aborting recovery.');
+    throw new Error('Database initialization failed');
+  }
+  console.log('✅ [INIT] Database connection successful.');
   console.log('🔍 Starting interactive data recovery process...');
   
   const stats: RecoveryStats = {
@@ -434,7 +431,7 @@ async function recoverMissingData(): Promise<RecoveryStats> {
         console.log(`  ✅ APPROVED - processing...`);
 
         // Process the raw file data and insert to database
-        const result = await processRawFile(rawFile);
+        const result = await processRawFile(rawFile, rawData);
         
         if (result.success) {
           console.log(`  📁 Moving to processed directory...`);
