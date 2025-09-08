@@ -5,6 +5,7 @@
 
 import { logger } from '../utils/logger.ts';
 import { extractPredictions } from './schemas/solver.ts';
+import { jsonParser } from '../utils/JsonParser.js';
 
 export interface ValidationResult {
   predictedGrid: number[][] | null;
@@ -121,21 +122,18 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
                 .replace(/\s+\]/g, ']');
               
               logger.info(`Attempting to parse numeric grid: ${cleanedText}`, 'validator');
-              const grid = JSON.parse(cleanedText);
               
-              // Validate it's a proper numeric grid
-              if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
-                // Ensure all elements are integers
-                const isValidNumericGrid = grid.every(row => 
-                  Array.isArray(row) && row.every(cell => typeof cell === 'number' && Number.isInteger(cell))
-                );
-                
-                if (isValidNumericGrid) {
-                  logger.info(`Successfully extracted numeric grid via keyword search: ${JSON.stringify(grid)}`, 'validator');
-                  return { grid, method: `keyword_${keyword.replace(':', '').replace(' ', '_')}` };
-                } else {
-                  logger.info(`Invalid grid: contains non-integer values`, 'validator');
-                }
+              const result = jsonParser.parse(cleanedText, {
+                preserveRawInput: false,
+                logErrors: false,
+                fieldName: `keyword_${keyword}`
+              });
+              
+              if (result.success) {
+                logger.info(`Successfully extracted numeric grid via keyword search: ${JSON.stringify(result.data)}`, 'validator');
+                return { grid: result.data, method: `keyword_${keyword.replace(':', '').replace(' ', '_')}` };
+              } else {
+                logger.info(`Invalid grid: ${result.error}`, 'validator');
               }
             } catch (error) {
               logger.info(`Failed to parse grid after keyword ${keyword}: ${gridText} - ${error}`, 'validator');
@@ -164,17 +162,16 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
           .replace(/\s+\]/g, ']');
         
         logger.info(`Found grid in markdown code block: ${cleanedText}`, 'validator');
-        const grid = JSON.parse(cleanedText);
         
-        if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
-          const isValidNumericGrid = grid.every(row => 
-            Array.isArray(row) && row.every(cell => typeof cell === 'number' && Number.isInteger(cell))
-          );
-          
-          if (isValidNumericGrid) {
-            logger.info(`Successfully extracted numeric grid from markdown code block: ${JSON.stringify(grid)}`, 'validator');
-            return { grid, method: 'markdown_code_block' };
-          }
+        const result = jsonParser.parse(cleanedText, {
+          preserveRawInput: false,
+          logErrors: false,
+          fieldName: 'markdown_code_block'
+        });
+        
+        if (result.success) {
+          logger.info(`Successfully extracted numeric grid from markdown code block: ${JSON.stringify(result.data)}`, 'validator');
+          return { grid: result.data, method: 'markdown_code_block' };
         }
       } catch (error) {
         logger.info(`Failed to parse grid from markdown code block: ${gridText}`, 'validator');
@@ -199,7 +196,11 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
           .replace(/,\s*]/g, ']')  // remove trailing commas
           .replace(/,\s*,/g, ','); // remove double commas
         
-        const grid = JSON.parse(cleanedText);
+        const result = jsonParser.parse(cleanedText);
+        if (!result.success) {
+          continue; // try next pattern
+        }
+        const grid = result.data;
         if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
           return { grid, method: `pattern_${i + 1}` };
         }
@@ -242,7 +243,9 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
               .replace(/\s+\]/g, ']');
             
             logger.info(`Found potential numeric grid: ${cleanedText}`, 'validator');
-            const grid = JSON.parse(cleanedText);
+            const result = jsonParser.parse(cleanedText);
+            if (!result.success) continue;
+            const grid = result.data;
             
             // Validate it's a proper numeric grid
             if (Array.isArray(grid) && grid.length > 0 && Array.isArray(grid[0])) {
@@ -290,7 +293,11 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
           .replace(/,\s*,/g, ',')
           .replace(/\[\s+/g, '[')
           .replace(/\s+\]/g, ']');
-        const grid = JSON.parse(cleaned);
+        const result = jsonParser.parse(cleaned);
+        if (!result.success) {
+          return { grid: null, method: 'parse_failed' };
+        }
+        const grid = result.data;
         if (Array.isArray(grid) && Array.isArray(grid[0])) {
           const valid = grid.every((row: any) => Array.isArray(row) && row.every((c: any) => Number.isInteger(c)));
           if (valid) {
@@ -311,7 +318,11 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
         .replace(/\s+/g, ' ')
         .replace(/,\s*]/g, ']')
         .replace(/,\s*,/g, ',');
-      const grid = JSON.parse(cleaned);
+      const result = jsonParser.parse(cleaned);
+      if (!result.success) {
+        return { grid: null, method: 'parse_failed' };
+      }
+      const grid = result.data;
       if (Array.isArray(grid) && Array.isArray(grid[0])) {
         const valid = grid.every((row: any) => Array.isArray(row) && row.every((c: any) => Number.isInteger(c)));
         if (valid) {

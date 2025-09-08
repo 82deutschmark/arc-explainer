@@ -1,8 +1,0 @@
-{
-  "predictedOutputGrid": [],
-  "hasMultiplePredictions": false,
-  "isPredictionCorrect": false,
-  "predictionAccuracyScore": 0.85,
-  "modelKey": "gpt-5-nano-2025-08-07",
-  "actualProcessingTime": 80
-}

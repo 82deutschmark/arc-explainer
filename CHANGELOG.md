@@ -1,3 +1,57 @@
+### September 8 2025
+
+## v2.16.0 - 🎯 MAJOR ENHANCEMENT: PuzzleDiscussion Rich Filtering & ARC 2 Eval Focus
+- **COMPREHENSIVE BACKEND API EXTENSION**: Enhanced worst-performing puzzles API with advanced filtering and rich metrics
+- **FEATURES**:
+  - **ARC Dataset Filtering**: Filter by ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy with ARC2-Eval quick access
+  - **Multi-Test Puzzle Support**: Filter by single vs multi-test cases with dedicated indicators
+  - **Rich Metrics Display**: Cost analysis, processing time, token usage, model attempt tracking
+  - **Advanced Sorting**: Cost-based, processing time, composite difficulty scoring options
+  - **Cross-App API Compatibility**: New filtering parameters work across applications using the API
+
+- **BACKEND IMPLEMENTATION**:
+  - Extended `ExplanationRepository.getWorstPerformingPuzzles()` with source, multi-test, rich metrics support
+  - Updated `PuzzleOverviewService` with source pre-filtering and metric enrichment
+  - Added validation for new sort parameters: cost, processing_time, confidence
+  - Rich metrics include: avgCost, avgProcessingTime, token usage, model attempts, reasoning efforts
+
+- **FRONTEND ENHANCEMENTS**:
+  - **Source Filtering Controls**: Dropdown + quick buttons for dataset selection with ARC2-Eval focus badge
+  - **Multi-Test Toggle**: Filter single vs multi-test puzzles with visual indicators
+  - **Rich Metrics Toggle**: Show/hide detailed cost, timing, and token analysis data
+  - **Visual Improvements**: Filter status badges, summary statistics, improved icons and hierarchy
+  - **Enhanced Puzzle Cards**: Multi-test indicators, cost/time/token display with contextual icons
+
+- **DATABASE UTILIZATION**: Leverages existing rich schema fields:
+  - `multi_test_all_correct`, `multi_test_average_accuracy`, `has_multiple_predictions`
+  - `estimated_cost`, `api_processing_time_ms`, token fields (`reasoning_tokens`, `input_tokens`, etc.)
+  - `model_name`, `reasoning_effort`, `reasoning_verbosity` aggregation
+
+- **USER EXPERIENCE**: 
+  - Quick ARC 2 Evaluation dataset focus for research
+  - Rich performance insights for cost/efficiency analysis
+  - Visual filter status and summary statistics
+  - Cross-app API compatibility maintained
+
+- **TESTING**: User should test ARC2-Eval filtering, rich metrics display, and various sorting options
+
+### September 7 2025
+
+## v2.15.0 - 🔍 NEW SOLVER: GEPA Systematic Strategy Analysis
+- **NEW SOLVER VARIATION**: Added GEPA (Systematic Strategy Analysis) as solver mode variant
+- **FEATURES**:
+  - **Strategy Framework**: Implements proven ARC-AGI analysis strategies from GEPA methodology
+  - **Systematic Approach**: 6 structured analysis techniques (Simple rules, Separators, Objects, Marker points, Input-Output relations, Anti-complexity)
+  - **Solver Integration**: Full prediction mode with same JSON output structure as standard solver
+  - **Database Compatible**: Uses existing prediction fields and accuracy evaluation systems
+- **TECHNICAL IMPLEMENTATION**:
+  - Added GEPA prompt template to `shared/types.ts`
+  - Integrated GEPA components into composable prompt architecture (`basePrompts.ts`)
+  - Updated system prompt mapping and solver mode detection
+  - Maintains DRY architecture with reusable components
+- **CREDIT**: Based on methodology from https://github.com/gepa-ai/gepa
+- **TESTING**: User should test GEPA solver with various ARC puzzles to compare against standard solver approach
+
 ### September 7 2025
 
 ## v2.14.0 - 🔧 CRITICAL FIX: JSON Truncation Resolution

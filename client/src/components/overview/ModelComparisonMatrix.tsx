@@ -68,9 +68,20 @@ export function ModelComparisonMatrix({
   };
 
   const formatCostEfficiency = (cost: number) => {
-    if (cost < 0.001) return `$${(cost * 1000000).toFixed(0)}µ`;
-    if (cost < 0.01) return `$${(cost * 1000).toFixed(1)}m`;
-    return `$${cost.toFixed(3)}`;
+    // Handle extreme values that suggest calculation errors
+    if (cost >= 1000) return '$999+';
+    if (cost === 0) return 'Free'; // Handle free models from OpenRouter
+    if (cost < 0) return '$0';
+    
+    const cents = cost * 100;
+    
+    if (cents < 100) {
+      // Show as cents with 2 decimal places (e.g., "6.23¢")
+      return `${cents.toFixed(2)}¢`;
+    } else {
+      // Convert to dollars with 2 decimal places (e.g., "$1.50") 
+      return `$${cost.toFixed(2)}`;
+    }
   };
 
   const sortedModels = React.useMemo(() => {
