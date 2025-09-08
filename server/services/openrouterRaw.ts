@@ -109,8 +109,19 @@ export class OpenRouterRawService extends BaseAIService {
             console.error(`[OpenRouter-Raw] JSON PARSE ERROR for ${modelName}:`);
             console.error(`[OpenRouter-Raw] HTTP Status: ${res.statusCode}`);
             console.error(`[OpenRouter-Raw] Response length: ${responseBody.length} chars`);
-            console.error(`[OpenRouter-Raw] First 500 chars: ${responseBody.substring(0, 500)}`);
-            console.error(`[OpenRouter-Raw] Last 500 chars: ${responseBody.slice(-500)}`);
+            console.error(`[OpenRouter-Raw] Headers:`, JSON.stringify(res.headers, null, 2));
+            console.error(`[OpenRouter-Raw] FULL RESPONSE BODY:\n${responseBody}`);
+            console.error(`[OpenRouter-Raw] First 1000 chars: ${responseBody.substring(0, 1000)}`);
+            console.error(`[OpenRouter-Raw] Last 1000 chars: ${responseBody.slice(-1000)}`);
+            
+            // Try to identify where JSON breaks
+            const lastBrace = responseBody.lastIndexOf('}');
+            const lastBracket = responseBody.lastIndexOf(']');
+            const lastValidJson = Math.max(lastBrace, lastBracket);
+            
+            console.error(`[OpenRouter-Raw] Last valid JSON char position: ${lastValidJson}`);
+            console.error(`[OpenRouter-Raw] Chars after last valid JSON: "${responseBody.slice(lastValidJson + 1)}"`);
+            
             reject(new Error(`Raw HTTPS JSON parsing failed: ${parseError instanceof Error ? parseError.message : String(parseError)}`));
           }
         });
