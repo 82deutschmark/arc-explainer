@@ -36,11 +36,11 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
 }
 
 export default function PuzzleBrowser() {
-  const [maxGridSize, setMaxGridSize] = useState<string>('10');
+  const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [explanationFilter, setExplanationFilter] = useState<string>('all'); // 'all', 'unexplained', 'explained' - Changed to show all puzzles
-  const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
-  const [multiTestFilter, setMultiTestFilter] = useState<string>('any'); // 'any', 'single', 'multi'
+  const [arcVersion, setArcVersion] = useState<string>('ARC2-Eval'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
+  const [multiTestFilter, setMultiTestFilter] = useState<string>('single'); // 'any', 'single', 'multi'
   const [sortBy, setSortBy] = useState<string>('least_analysis_data'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -55,7 +55,7 @@ export default function PuzzleBrowser() {
   // Create filters object for the hook
   const filters = React.useMemo(() => {
     const result: any = {};
-    if (maxGridSize) result.maxGridSize = parseInt(maxGridSize);
+    if (maxGridSize && maxGridSize !== 'any') result.maxGridSize = parseInt(maxGridSize);
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     // Don't use prioritize flags anymore, as we'll filter the results ourselves
@@ -288,6 +288,7 @@ export default function PuzzleBrowser() {
                     <SelectValue placeholder="Select max size" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="any">Any Size</SelectItem>
                     <SelectItem value="5">5×5 (Very Small)</SelectItem>
                     <SelectItem value="10">10×10 (Small)</SelectItem>
                     <SelectItem value="15">15×15 (Medium)</SelectItem>

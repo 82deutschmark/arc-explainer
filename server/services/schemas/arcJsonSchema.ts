@@ -91,15 +91,6 @@ export const ARC_JSON_SCHEMA = {
         type: "integer", // No min/max because Grok doesn't like it...  
         description: "Confidence level in the solution being correct (1-100) return 0 if none"
       },
-
-      alienMeaning: {
-        type: "string",
-        description: "Alien meaning if any"
-      },
-      alienMeaningConfidence: {
-        type: "integer",
-        description: "Confidence level in the alien meaning (1-100) return 0 if none"
-      }
     },
     required: [
       "multiplePredictedOutputs",
