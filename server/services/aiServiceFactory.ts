@@ -27,14 +27,14 @@ class AIServiceFactory {
     const { grokService } = await import('./grok');
     const { geminiService } = await import('./gemini');
     const { deepseekService } = await import('./deepseek');
-    const { openrouterRawService } = await import('./openrouterRaw');
+    const { openrouterService } = await import('./openrouter');
     
     this.anthropicService = anthropicService;
     this.openaiService = openaiService;
     this.grokService = grokService;
     this.geminiService = geminiService;
     this.deepseekService = deepseekService;
-    this.openrouterService = openrouterRawService;
+    this.openrouterService = openrouterService;
   }
 
   /**

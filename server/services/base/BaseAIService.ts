@@ -289,6 +289,42 @@ export abstract class BaseAIService {
   }
 
   /**
+   * Detect response truncation patterns
+   * Identifies server-side truncation vs natural completion
+   */
+  protected detectResponseTruncation(responseText: string, finishReason?: string): boolean {
+    // Check for explicit truncation signals
+    if (finishReason === 'length') {
+      return true;
+    }
+
+    // Check for incomplete JSON structure
+    if (responseText.includes('{') || responseText.includes('[')) {
+      try {
+        JSON.parse(responseText);
+        return false; // Valid JSON, not truncated
+      } catch (error) {
+        // Check if it's a truncation (ends abruptly) vs malformed JSON
+        const trimmed = responseText.trim();
+        
+        // Truncation indicators:
+        // 1. Doesn't end with proper JSON closure
+        const endsWithValidJson = trimmed.endsWith('}') || trimmed.endsWith(']') || trimmed.endsWith('"');
+        
+        // 2. Contains substantial content but incomplete structure
+        const hasSubstantialContent = trimmed.length > 100;
+        
+        // 3. Ends mid-word or mid-structure
+        const endsAbruptly = !trimmed.match(/[}\]",.]$/);
+        
+        return hasSubstantialContent && (!endsWithValidJson || endsAbruptly);
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Handle analysis errors with consistent logging and error throwing
    */
   protected handleAnalysisError(error: any, modelKey: string, task: ARCTask): never {
