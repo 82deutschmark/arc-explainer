@@ -170,15 +170,25 @@ export class OpenRouterService extends BaseAIService {
     let payload: any;
     
     if (previousGenerationId) {
-      // This is a continuation call
+      // This is a continuation call - use the original prompt structure but with continue parameter
       payload = {
         model: modelName,
-        messages: [], // Empty for continue calls
+        messages: [
+          {
+            role: "system",
+            content: prompt.systemPrompt
+          },
+          {
+            role: "user", 
+            content: prompt.userPrompt
+          }
+        ],
         continue: {
           generation_id: previousGenerationId,
           step: step
         },
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
+        temperature: temperature
       };
       logger.service('OpenRouter', `Continuing generation ${previousGenerationId} at step ${step}`);
     } else {
