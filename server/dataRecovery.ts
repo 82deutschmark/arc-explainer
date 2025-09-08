@@ -335,7 +335,7 @@ async function moveProcessedFile(originalPath: string, processedDir: string): Pr
 /**
  * Ask user for approval on each file
  */
-async function askForApproval(rawFile: RawFileInfo, rawData: any): Promise<boolean> {
+async function askForApproval(rawFile: RawFileInfo, rawData: any): Promise<'yes' | 'no' | 'all' | 'quit'> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -354,9 +354,18 @@ async function askForApproval(rawFile: RawFileInfo, rawData: any): Promise<boole
     console.log(`📝 Hints: ${Array.isArray(analysisData.hints) ? analysisData.hints.length : 0} items`);
     console.log(`💰 Cost: ${rawData.estimatedCost || 'unknown'}`);
     
-    rl.question('\nApprove this file for recovery? (y/N): ', (answer) => {
+        rl.question('\nApprove this file? (y/n/a/q) (yes/no/all/quit): ', (answer) => {
       rl.close();
-      resolve(answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+            const lowerAnswer = answer.toLowerCase();
+      if (lowerAnswer === 'y' || lowerAnswer === 'yes') {
+        resolve('yes');
+      } else if (lowerAnswer === 'a' || lowerAnswer === 'all') {
+        resolve('all');
+      } else if (lowerAnswer === 'q' || lowerAnswer === 'quit') {
+        resolve('quit');
+      } else {
+        resolve('no');
+      }
     });
   });
 }
@@ -400,6 +409,7 @@ async function recoverMissingData(): Promise<RecoveryStats> {
     console.log(`📂 Created processed directory: ${processedDir}\n`);
 
     // Process each file
+    let approveAll = false;
     for (let i = 0; i < rawFiles.length; i++) {
       const rawFile = rawFiles[i];
       console.log(`[${i + 1}/${rawFiles.length}] Processing: ${rawFile.filename}`);
@@ -420,8 +430,23 @@ async function recoverMissingData(): Promise<RecoveryStats> {
         // Read raw data for approval
         const rawData = JSON.parse(await fs.readFile(rawFile.filepath, 'utf8'));
         
-        // Ask for user approval
-        const approved = await askForApproval(rawFile, rawData);
+        // Ask for user approval if not already approved all
+        let approved = false;
+        if (approveAll) {
+          approved = true;
+        } else {
+          const approvalStatus = await askForApproval(rawFile, rawData);
+          if (approvalStatus === 'yes') {
+            approved = true;
+          } else if (approvalStatus === 'all') {
+            approved = true;
+            approveAll = true;
+            console.log('✅ [INFO] Approving all subsequent files...');
+          } else if (approvalStatus === 'quit') {
+            console.log('🛑 [INFO] Quitting recovery process as requested.');
+            break; // Exit the loop
+          }
+        }
         
         if (!approved) {
           console.log(`  ❌ DENIED by user - keeping file`);
