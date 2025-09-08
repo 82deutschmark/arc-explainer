@@ -14,6 +14,9 @@ export default function PuzzleDiscussion() {
   const [compactView, setCompactView] = useState<boolean>(false);
   const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
   const [zeroAccuracyOnly, setZeroAccuracyOnly] = useState<boolean>(false);
+  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'all'>('all');
+  const [multiTestFilter, setMultiTestFilter] = useState<'single' | 'multi' | 'all'>('all');
+  const [showRichMetrics, setShowRichMetrics] = useState<boolean>(false);
   
   // Set page title
   React.useEffect(() => {
@@ -25,7 +28,10 @@ export default function PuzzleDiscussion() {
     sortBy, 
     accuracyRange[0], 
     accuracyRange[1], 
-    zeroAccuracyOnly
+    zeroAccuracyOnly,
+    selectedSource === 'all' ? undefined : selectedSource,
+    multiTestFilter === 'all' ? undefined : multiTestFilter,
+    showRichMetrics
   );
 
   if (error) {
@@ -167,6 +173,9 @@ export default function PuzzleDiscussion() {
                   <option value="accuracy">Lowest Accuracy</option>
                   <option value="confidence">Lowest Confidence (1-25%)</option>
                   <option value="feedback">Most Negative Feedback</option>
+                  <option value="cost">Highest Cost</option>
+                  <option value="processing_time">Slowest Processing</option>
+                  <option value="composite">Composite Difficulty</option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
@@ -184,7 +193,73 @@ export default function PuzzleDiscussion() {
               </div>
             </div>
 
-            {/* Second row - accuracy filtering */}
+            {/* Second row - source and test type filtering */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-6 flex-wrap">
+                {/* Source filtering */}
+                <div className="flex items-center gap-2">
+                  <label htmlFor="source-select" className="text-sm font-medium">
+                    ARC Dataset:
+                  </label>
+                  <select
+                    id="source-select"
+                    value={selectedSource}
+                    onChange={(e) => setSelectedSource(e.target.value as any)}
+                    className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                  >
+                    <option value="all">All Datasets</option>
+                    <option value="ARC2-Eval">ARC 2 Evaluation</option>
+                    <option value="ARC2">ARC 2 Training</option>
+                    <option value="ARC1-Eval">ARC 1 Evaluation</option>
+                    <option value="ARC1">ARC 1 Training</option>
+                    <option value="ARC-Heavy">ARC Heavy</option>
+                  </select>
+                  {selectedSource === 'ARC2-Eval' && (
+                    <Badge className="text-xs bg-green-100 text-green-800 border-green-200">
+                      Focus Dataset
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Multi-test filtering */}
+                <div className="flex items-center gap-2">
+                  <label htmlFor="multitest-select" className="text-sm font-medium">
+                    Test Cases:
+                  </label>
+                  <select
+                    id="multitest-select"
+                    value={multiTestFilter}
+                    onChange={(e) => setMultiTestFilter(e.target.value as any)}
+                    className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="single">Single Test Only</option>
+                    <option value="multi">Multi-Test Only</option>
+                  </select>
+                </div>
+
+                {/* Rich metrics toggle */}
+                <div className="flex items-center gap-2">
+                  <input
+                    id="rich-metrics-toggle"
+                    type="checkbox"
+                    checked={showRichMetrics}
+                    onChange={(e) => setShowRichMetrics(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <label htmlFor="rich-metrics-toggle" className="text-sm font-medium text-blue-700">
+                    Show Rich Metrics
+                  </label>
+                  {showRichMetrics && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      Active
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Third row - accuracy filtering */}
             <div className="border-t pt-4">
               <div className="flex items-center gap-6 flex-wrap">
                 {/* Zero accuracy quick filter */}
@@ -230,10 +305,12 @@ export default function PuzzleDiscussion() {
                 )}
               </div>
 
-              {/* Preset accuracy buttons */}
-              {!zeroAccuracyOnly && (
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xs text-gray-500">Quick select:</span>
+              {/* Preset accuracy buttons and dataset shortcuts */}
+              <div className="flex items-center gap-4 mt-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">Quick accuracy:</span>
+                  {!zeroAccuracyOnly && (
+                    <>
                   <Button
                     variant="outline"
                     size="sm"
@@ -282,8 +359,39 @@ export default function PuzzleDiscussion() {
                   >
                     All
                   </Button>
+                    </>
+                  )}
                 </div>
-              )}
+
+                {/* Dataset quick filters */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500">Quick datasets:</span>
+                  <Button
+                    variant={selectedSource === 'ARC2-Eval' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedSource('ARC2-Eval')}
+                    className="text-xs h-7"
+                  >
+                    ARC 2 Eval
+                  </Button>
+                  <Button
+                    variant={selectedSource === 'ARC2' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedSource('ARC2')}
+                    className="text-xs h-7"
+                  >
+                    ARC 2
+                  </Button>
+                  <Button
+                    variant={selectedSource === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedSource('all')}
+                    className="text-xs h-7"
+                  >
+                    All
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -291,16 +399,39 @@ export default function PuzzleDiscussion() {
         {/* Results */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-slate-800">
+            <CardTitle className="text-slate-800 flex flex-wrap items-center gap-2">
               Most Difficult Puzzles
               {!isLoading && (
-                <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
+                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
                   {total} found
+                </Badge>
+              )}
+              {selectedSource !== 'all' && (
+                <Badge className="bg-green-100 text-green-800 border-green-200">
+                  {selectedSource.replace('-', ' ')}
+                </Badge>
+              )}
+              {multiTestFilter !== 'all' && (
+                <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                  {multiTestFilter === 'multi' ? 'Multi-test only' : 'Single-test only'}
+                </Badge>
+              )}
+              {showRichMetrics && (
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                  Rich metrics
+                </Badge>
+              )}
+              {zeroAccuracyOnly && (
+                <Badge className="bg-red-100 text-red-800 border-red-200">
+                  0% accuracy only
                 </Badge>
               )}
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Puzzles with lowest LLM accuracy rates - sorted by difficulty
+              Puzzles with lowest LLM accuracy rates - sorted by {sortBy === 'composite' ? 'composite difficulty' : sortBy}
+              {selectedSource === 'ARC2-Eval' && (
+                <span className="text-green-700 font-medium"> • Focus: ARC 2 Evaluation Dataset</span>
+              )}
             </p>
           </CardHeader>
           <CardContent>
@@ -379,6 +510,17 @@ export default function PuzzleDiscussion() {
                                 {formatConfidence(puzzle.performanceData.lowestNonZeroConfidence)} confidence
                               </Badge>
                             )}
+                            {/* Multi-test indicator */}
+                            {showRichMetrics && puzzle.performanceData?.multiTestCount > 0 && (
+                              <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
+                                {puzzle.performanceData.multiTestCount} multi-test
+                              </Badge>
+                            )}
+                            {showRichMetrics && puzzle.performanceData?.singleTestCount > 0 && (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
+                                {puzzle.performanceData.singleTestCount} single-test
+                              </Badge>
+                            )}
                           </div>
                         </div>
                         
@@ -398,6 +540,38 @@ export default function PuzzleDiscussion() {
                                 {new Date(puzzle.performanceData.latestAnalysis).toLocaleDateString()}
                               </span>
                             </div>
+                          )}
+                          
+                          {/* Rich metrics display */}
+                          {showRichMetrics && (
+                            <>
+                              {puzzle.performanceData?.avgCost > 0 && (
+                                <div className="flex justify-between">
+                                  <span>Avg Cost:</span>
+                                  <span className="font-medium text-xs">${(puzzle.performanceData.avgCost).toFixed(4)}</span>
+                                </div>
+                              )}
+                              {puzzle.performanceData?.avgProcessingTime > 0 && (
+                                <div className="flex justify-between">
+                                  <span>Avg Processing:</span>
+                                  <span className="font-medium text-xs">{(puzzle.performanceData.avgProcessingTime / 1000).toFixed(1)}s</span>
+                                </div>
+                              )}
+                              {puzzle.performanceData?.avgTotalTokens > 0 && (
+                                <div className="flex justify-between">
+                                  <span>Avg Tokens:</span>
+                                  <span className="font-medium text-xs">{Math.round(puzzle.performanceData.avgTotalTokens).toLocaleString()}</span>
+                                </div>
+                              )}
+                              {puzzle.performanceData?.modelsAttempted?.length > 0 && (
+                                <div className="flex justify-between">
+                                  <span>Models:</span>
+                                  <span className="font-medium text-xs" title={puzzle.performanceData.modelsAttempted.join(', ')}>
+                                    {puzzle.performanceData.modelsAttempted.length} models
+                                  </span>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
 
