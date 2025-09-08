@@ -122,7 +122,7 @@ function parseRawFilename(filename: string): { puzzleId: string; modelName: stri
  * Check if explanation with matching timestamp already exists in database
  * This identifies actual failed database saves vs legitimate duplicates
  */
-async function explanationExists(puzzleId: string, modelName: string, rawFilepath: string): Promise<boolean> {
+async function explanationExists(puzzleId: string, modelName: string, rawFileTimestamp: string): Promise<boolean> {
   try {
     const existingExplanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
     
@@ -134,33 +134,26 @@ async function explanationExists(puzzleId: string, modelName: string, rawFilepat
       return false; // No entries at all - definitely need to recover
     }
     
-    // Read the raw file content for comparison
-    const rawFileContent = await fs.readFile(rawFilepath, 'utf8');
-    const rawDataObject = JSON.parse(rawFileContent);
+    const rawFileDate = new Date(rawFileTimestamp);
+    if (isNaN(rawFileDate.getTime())) {
+        console.warn(`  [WARNING] Invalid timestamp in raw file: ${rawFileTimestamp}. Cannot perform duplicate check.`);
+        return false; // Cannot compare, assume not a duplicate
+    }
 
-    // To ensure consistent comparison, we stringify the objects with sorted keys
-    const stringifyForCompare = (obj: any) => JSON.stringify(obj, Object.keys(obj).sort());
-    const rawFileString = stringifyForCompare(rawDataObject);
-
-    // Compare the full raw content with the providerRawResponse of existing entries
     for (const explanation of modelExplanations) {
-        if (explanation.providerRawResponse) {
-            try {
-                const dbDataObject = JSON.parse(explanation.providerRawResponse as string);
-                const dbDataString = stringifyForCompare(dbDataObject);
+        const dbDate = new Date(explanation.createdAt);
 
-                if (rawFileString === dbDataString) {
-                    console.log(`  ✅ Found DB entry with matching raw content - already saved`);
-                    return true; // Found a content match
-                }
-            } catch (e) {
-                console.warn(`  [WARNING] Could not parse providerRawResponse for explanation ID ${explanation.id}`);
-            }
+        if (
+            rawFileDate.getMinutes() === dbDate.getMinutes() &&
+            rawFileDate.getSeconds() === dbDate.getSeconds()
+        ) {
+            console.log(`  ✅ Found DB entry with matching minute/second: ${dbDate.toISOString()} - already saved`);
+            return true; // Found a match
         }
     }
 
-    console.log(`  🔍 Found ${modelExplanations.length} entries for ${modelName} but none have matching raw content.`);
-    return false; // No content match found
+    console.log(`  🔍 Found ${modelExplanations.length} entries for ${modelName} but none have a matching minute/second.`);
+    return false; // No match found
     
   } catch (error) {
     console.error(`[ERROR] Failed to check existing explanations for ${puzzleId}:`, error);
@@ -438,8 +431,8 @@ async function recoverMissingData(): Promise<RecoveryStats> {
       console.log(`  Puzzle: ${rawFile.puzzleId}, Model: ${rawFile.modelName}`);
 
       try {
-        // Check if already exists using content-based detection
-        const exists = await explanationExists(rawFile.puzzleId, rawFile.modelName, rawFile.filepath);
+        // Check if already exists using minute/second timestamp comparison
+        const exists = await explanationExists(rawFile.puzzleId, rawFile.modelName, rawFile.timestamp);
         if (exists) {
           console.log(`[${i + 1}/${rawFiles.length}] ⏭️  SKIPPED - Found matching timestamp in database: ${rawFile.filename}`);
           stats.skippedDuplicates++;
