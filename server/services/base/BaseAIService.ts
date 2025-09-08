@@ -13,6 +13,7 @@ import { buildCustomPrompt } from '../prompts/components/promptBuilder.js';
 import { buildAnalysisPrompt, getDefaultPromptId, PromptOptions, PromptPackage } from '../promptBuilder.js';
 import { calculateCost } from "../../utils/costCalculator.js";
 import { getModelConfig } from "../../config/models/index.js";
+import { logger } from '../../utils/logger.js';
 
 // Common types for all AI services
 export interface ServiceOptions {
@@ -173,7 +174,7 @@ export abstract class BaseAIService {
     try {
       const modelConfig = getModelConfig(modelKey);
       if (!modelConfig?.cost) {
-        console.warn(`[${this.provider}] No cost configuration found for model: ${modelKey}`);
+        logger.service(this.provider, `No cost configuration found for model: ${modelKey}`, 'warn');
         return null;
       }
       
@@ -185,7 +186,7 @@ export abstract class BaseAIService {
         reasoning: costBreakdown.reasoning
       };
     } catch (error) {
-      console.warn(`[${this.provider}] Cost calculation failed:`, error);
+      logger.logError('Cost calculation failed', { error, context: this.provider });
       return null;
     }
   }
@@ -247,7 +248,7 @@ export abstract class BaseAIService {
       result.data._rawResponse = text;
       return result.data;
     } else {
-      console.log(`[${this.provider}] JSON parse failed for ${modelKey}, preserving raw response`);
+      logger.service(this.provider, `JSON parse failed for ${modelKey}, preserving raw response`, 'warn');
       return {
         _rawResponse: text,
         _parseError: result.error,
@@ -284,17 +285,17 @@ export abstract class BaseAIService {
     promptLength: number,
     serviceOpts: ServiceOptions = {}
   ): void {
-    console.log(`[${this.provider}] Starting analysis with ${modelKey} at temperature ${temperature}`);
-    console.log(`[${this.provider}] Prompt length: ${promptLength} characters`);
+    logger.service(this.provider, `Starting analysis with ${modelKey} at temperature ${temperature}`);
+    logger.service(this.provider, `Prompt length: ${promptLength} characters`);
     
     if (serviceOpts.reasoningEffort) {
-      console.log(`[${this.provider}] Reasoning effort: ${serviceOpts.reasoningEffort}`);
+      logger.service(this.provider, `Reasoning effort: ${serviceOpts.reasoningEffort}`);
     }
     if (serviceOpts.reasoningVerbosity) {
-      console.log(`[${this.provider}] Reasoning verbosity: ${serviceOpts.reasoningVerbosity}`);
+      logger.service(this.provider, `Reasoning verbosity: ${serviceOpts.reasoningVerbosity}`);
     }
     if (serviceOpts.reasoningSummaryType) {
-      console.log(`[${this.provider}] Reasoning summary type: ${serviceOpts.reasoningSummaryType}`);
+      logger.service(this.provider, `Reasoning summary type: ${serviceOpts.reasoningSummaryType}`);
     }
   }
 
@@ -339,11 +340,11 @@ export abstract class BaseAIService {
    */
   protected handleAnalysisError(error: any, modelKey: string, task: ARCTask): never {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[${this.provider}] Analysis failed for model ${modelKey}: ${errorMessage}`);
+    logger.logError(`Analysis failed for model ${modelKey}`, { error, context: this.provider });
     
     // Log task ID for debugging if available
     if (task && (task as any).id) {
-      console.error(`[${this.provider}] Failed task ID: ${(task as any).id}`);
+      logger.service(this.provider, `Failed task ID: ${(task as any).id}`, 'error');
     }
     
     throw error;
