@@ -70,20 +70,17 @@ export function ModelComparisonMatrix({
   const formatCostEfficiency = (cost: number) => {
     // Handle extreme values that suggest calculation errors
     if (cost >= 1000) return '$999+';
-    if (cost <= 0) return '$0';
+    if (cost === 0) return 'Free'; // Handle free models from OpenRouter
+    if (cost < 0) return '$0';
     
-    // Round up to nearest whole cent as requested
-    const centsRoundedUp = Math.ceil(cost * 100);
+    const cents = cost * 100;
     
-    if (centsRoundedUp < 1) {
-      // For sub-cent amounts, show as fraction of a cent
-      return `${(cost * 100).toFixed(2)}¢`;
-    } else if (centsRoundedUp < 100) {
-      // Show as whole cents
-      return `${centsRoundedUp}¢`;
+    if (cents < 100) {
+      // Show as cents with 2 decimal places (e.g., "6.23¢")
+      return `${cents.toFixed(2)}¢`;
     } else {
-      // Convert back to dollars, rounded up to nearest cent
-      return `$${(centsRoundedUp / 100).toFixed(2)}`;
+      // Convert to dollars with 2 decimal places (e.g., "$1.50") 
+      return `$${cost.toFixed(2)}`;
     }
   };
 
