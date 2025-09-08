@@ -496,6 +496,34 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     return null;
   }
 
+  async getAllExplanationsForCleanup(): Promise<{ id: number; modelName: string }[]> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot get all explanations', 'repository');
+      return [];
+    }
+    try {
+      const result = await this.query('SELECT id, model_name FROM explanations');
+      return result.rows.map(row => ({ id: row.id, modelName: row.model_name }));
+    } catch (error) {
+      logger.error(`Error getting all explanations for cleanup: ${error instanceof Error ? error.message : String(error)}`, 'repository');
+      return [];
+    }
+  }
+
+  async updateExplanationModelName(id: number, newModelName: string): Promise<void> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot update model name', 'repository');
+      return;
+    }
+    try {
+      await this.query('UPDATE explanations SET model_name = $1 WHERE id = $2', [newModelName, id]);
+      logger.info(`Updated model name for explanation ${id} to ${newModelName}`, 'repository');
+    } catch (error) {
+      logger.error(`Error updating model name for explanation ${id}: ${error instanceof Error ? error.message : String(error)}`, 'repository');
+      throw error;
+    }
+  }
+
   private mapRowToExplanation(row: any): ExplanationResponse {
     return {
       // Basic fields (already camelCase from SQL aliases)

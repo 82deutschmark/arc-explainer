@@ -42,7 +42,7 @@ export const JSON_REASONING_INSTRUCTION = `- reasoningItems: Array of strings de
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
 - patternDescription: The transformation rules you identified, simply stated.
-- hints: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
+- hints: Array of strings. Three short algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
 - confidence: Your certainty level (0-100)`;
 
 /**

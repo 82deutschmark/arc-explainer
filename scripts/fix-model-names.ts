@@ -8,14 +8,22 @@
  */
 
 import 'dotenv/config';
-import { repositoryService } from '../server/repositories/RepositoryService.js';
+import { RepositoryService } from '../server/repositories/RepositoryService.js';
 import { MODELS } from '../server/config/models.js';
 import type { ModelConfig } from '../shared/types.js';
 
 console.log('Starting model name cleanup script...');
 
 async function main() {
-  // Initialize DB connection
+  const isDryRun = !process.argv.includes('--execute');
+
+  if (isDryRun) {
+    console.log('\n[INFO] Running in --dry-run mode. No changes will be made to the database.\n');
+  } else {
+    console.log('\n[WARNING] Running in --execute mode. Changes WILL be made to the database.\n');
+  }
+
+  const repositoryService = new RepositoryService();
   const repoInitialized = await repositoryService.initialize();
   if (!repoInitialized) {
     console.error('💥 [FATAL] Database initialization failed. Aborting script.');
@@ -23,27 +31,24 @@ async function main() {
   }
   console.log('✅ Database connection successful.');
 
-    const explanations = await repositoryService.explanations.getAllExplanationsForCleanup();
+  const explanations = await repositoryService.explanations.getAllExplanationsForCleanup();
   console.log(`Found ${explanations.length} explanations to check.`);
 
   let updatedCount = 0;
   const modelKeySet = new Set(MODELS.map((m: ModelConfig) => m.key));
 
-      const getCanonicalKey = (name: string | null): string | null => {
+  const getCanonicalKey = (name: string | null): string | null => {
     if (!name) return null;
 
-    // Handle specific aliases like 'grok-4' first
     if (name.includes('grok-4')) {
-      return 'grok-4-0709'; // Canonical key for all Grok 4 variations
+      return 'grok-4-0709';
     }
 
     const sortedModels = [...MODELS].sort((a, b) => b.key.length - a.key.length);
 
-    // Exact match on key or name
     const exactMatch = sortedModels.find(m => m.key === name || m.name === name);
     if (exactMatch) return exactMatch.key;
 
-    // Partial match for mapping short names to full keys
     for (const model of sortedModels) {
       if (model.key.startsWith(name)) {
         return model.key;
@@ -57,19 +62,22 @@ async function main() {
     if (!exp.modelName || !modelKeySet.has(exp.modelName)) {
       const canonicalKey = getCanonicalKey(exp.modelName);
       if (canonicalKey && canonicalKey !== exp.modelName) {
-        console.log(`Fixing model name: ID ${exp.id}, From '${exp.modelName}' -> To '${canonicalKey}'`);
-        await repositoryService.explanations.updateExplanationModelName(exp.id, canonicalKey);
+        console.log(`[FIX] ID ${exp.id}: '${exp.modelName}' -> '${canonicalKey}'`);
+        if (!isDryRun) {
+          await repositoryService.explanations.updateExplanationModelName(exp.id, canonicalKey);
+        }
         updatedCount++;
       }
     }
   }
 
-  console.log(`
-Cleanup summary:
-- Checked: ${explanations.length} explanations
-- Updated: ${updatedCount} explanations`);
+  console.log(`\nCleanup summary:\n- Checked: ${explanations.length} explanations\n- Found ${updatedCount} potential updates.`);
+  if (!isDryRun) {
+      console.log(`- Applied: ${updatedCount} updates.`);
+  }
 
   console.log('✅ Model name cleanup script finished.');
+  process.exit(0);
 }
 
 main().catch(error => {
