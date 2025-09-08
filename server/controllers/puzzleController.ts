@@ -291,17 +291,27 @@ export const puzzleController = {
         sortBy = 'composite',
         minAccuracy,
         maxAccuracy,
-        zeroAccuracyOnly
+        zeroAccuracyOnly,
+        source,
+        multiTestFilter,
+        includeRichMetrics
       } = req.query;
       
       const limitNum = puzzleFilterService.validateLimit(limit, 20, 50);
       const sortOption = puzzleFilterService.validateWorstPuzzleSortParameters(sortBy as string);
 
-      // Parse accuracy range parameters
+      // Parse accuracy range parameters and new filters
       const filters = {
         minAccuracy: minAccuracy ? parseFloat(minAccuracy as string) : undefined,
         maxAccuracy: maxAccuracy ? parseFloat(maxAccuracy as string) : undefined,
-        zeroAccuracyOnly: zeroAccuracyOnly === 'true'
+        zeroAccuracyOnly: zeroAccuracyOnly === 'true',
+        source: source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source as string) 
+          ? source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' 
+          : undefined,
+        multiTestFilter: multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)
+          ? multiTestFilter as 'single' | 'multi'
+          : undefined,
+        includeRichMetrics: includeRichMetrics === 'true'
       };
 
       logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}, filters:`, filters, 'puzzle-controller');

@@ -160,6 +160,9 @@ export class PuzzleOverviewService {
       minAccuracy?: number;
       maxAccuracy?: number;
       zeroAccuracyOnly?: boolean;
+      source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+      multiTestFilter?: 'single' | 'multi';
+      includeRichMetrics?: boolean;
     }
   ): Promise<any[]> {
     if (!repositoryService.isConnected()) {
@@ -167,26 +170,69 @@ export class PuzzleOverviewService {
       return [];
     }
 
-    const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limit, sortBy, filters);
+    // If source filtering is requested, we need to get the puzzle list first to get the source-filtered puzzles
+    let sourceFilteredPuzzleIds: string[] | undefined = undefined;
+    if (filters?.source) {
+      try {
+        const allPuzzles = await puzzleService.getPuzzleList({ source: filters.source });
+        sourceFilteredPuzzleIds = allPuzzles.map(p => p.id);
+        logger.debug(`Found ${sourceFilteredPuzzleIds.length} puzzles from source ${filters.source}`, 'puzzle-overview-service');
+      } catch (error) {
+        logger.warn(`Failed to get puzzles for source ${filters.source}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-overview-service');
+      }
+    }
+
+    const worstPuzzles = await repositoryService.explanations.getWorstPerformingPuzzles(limit * 3, sortBy, filters);
     
-    // Enrich each puzzle with metadata
+    // Filter by source if needed and enrich with metadata
+    let puzzlesToProcess = worstPuzzles;
+    if (sourceFilteredPuzzleIds) {
+      puzzlesToProcess = worstPuzzles.filter(p => sourceFilteredPuzzleIds!.includes(p.puzzleId));
+      logger.debug(`Filtered to ${puzzlesToProcess.length} puzzles matching source ${filters?.source}`, 'puzzle-overview-service');
+    }
+
+    // Take only the requested limit after source filtering
+    puzzlesToProcess = puzzlesToProcess.slice(0, limit);
+
     const enrichedPuzzles = await Promise.all(
-      worstPuzzles.map(async (puzzleData) => {
+      puzzlesToProcess.map(async (puzzleData) => {
         try {
           const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
+          
+          // Build performance data with base metrics
+          const basePerformanceData = {
+            wrongCount: puzzleData.wrongCount,
+            avgAccuracy: puzzleData.avgAccuracy,
+            avgConfidence: puzzleData.avgConfidence,
+            totalExplanations: puzzleData.totalExplanations,
+            negativeFeedback: puzzleData.negativeFeedback,
+            totalFeedback: puzzleData.totalFeedback,
+            latestAnalysis: puzzleData.latestAnalysis,
+            worstExplanationId: puzzleData.worstExplanationId,
+            compositeScore: puzzleData.compositeScore
+          };
+
+          // Add rich metrics if available
+          const richMetrics = filters?.includeRichMetrics ? {
+            avgCost: puzzleData.avgCost,
+            avgProcessingTime: puzzleData.avgProcessingTime,
+            avgReasoningTokens: puzzleData.avgReasoningTokens,
+            avgInputTokens: puzzleData.avgInputTokens,
+            avgOutputTokens: puzzleData.avgOutputTokens,
+            avgTotalTokens: puzzleData.avgTotalTokens,
+            multiTestCount: puzzleData.multiTestCount,
+            singleTestCount: puzzleData.singleTestCount,
+            lowestNonZeroConfidence: puzzleData.lowestNonZeroConfidence,
+            modelsAttempted: puzzleData.modelsAttempted,
+            reasoningEfforts: puzzleData.reasoningEfforts
+          } : {};
+
           return {
             ...puzzleMetadata,
             id: puzzleData.puzzleId, // Ensure id field is always present and correct
             performanceData: {
-              wrongCount: puzzleData.wrongCount,
-              avgAccuracy: puzzleData.avgAccuracy,
-              avgConfidence: puzzleData.avgConfidence,
-              totalExplanations: puzzleData.totalExplanations,
-              negativeFeedback: puzzleData.negativeFeedback,
-              totalFeedback: puzzleData.totalFeedback,
-              latestAnalysis: puzzleData.latestAnalysis,
-              worstExplanationId: puzzleData.worstExplanationId,
-              compositeScore: puzzleData.compositeScore
+              ...basePerformanceData,
+              ...richMetrics
             }
           };
         } catch (error) {

@@ -621,6 +621,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       minAccuracy?: number;
       maxAccuracy?: number;
       zeroAccuracyOnly?: boolean;
+      source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+      multiTestFilter?: 'single' | 'multi';
+      includeRichMetrics?: boolean;
     }
   ): Promise<any[]> {
     if (!this.isConnected()) {
@@ -666,6 +669,42 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         }
       }
 
+      // Add source filtering and rich metrics to the query
+      let whereConditions = ['e.puzzle_id IS NOT NULL'];
+      
+      if (filters?.source) {
+        // We need to join with puzzle metadata to filter by source
+        // For now, we'll use a subquery to get puzzles from the puzzle service
+        // This is a temporary approach until we have puzzle metadata in the database
+        whereConditions.push(`e.puzzle_id IN (
+          SELECT DISTINCT puzzle_id 
+          FROM explanations 
+          WHERE puzzle_id IS NOT NULL
+        )`);
+      }
+
+      if (filters?.multiTestFilter) {
+        if (filters.multiTestFilter === 'single') {
+          whereConditions.push('e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL');
+        } else if (filters.multiTestFilter === 'multi') {
+          whereConditions.push('e.has_multiple_predictions = true');
+        }
+      }
+
+      // Build rich metrics selection based on flag
+      const richMetricsColumns = filters?.includeRichMetrics ? `
+        AVG(e.estimated_cost) as avg_cost,
+        AVG(e.api_processing_time_ms) as avg_processing_time,
+        AVG(e.reasoning_tokens) as avg_reasoning_tokens,
+        AVG(e.input_tokens) as avg_input_tokens,
+        AVG(e.output_tokens) as avg_output_tokens,
+        AVG(e.total_tokens) as avg_total_tokens,
+        COUNT(CASE WHEN e.has_multiple_predictions = true THEN 1 END) as multi_test_count,
+        COUNT(CASE WHEN e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL THEN 1 END) as single_test_count,
+        MIN(CASE WHEN e.confidence > 0 THEN e.confidence END) as lowest_non_zero_confidence,
+        STRING_AGG(DISTINCT e.model_name, ', ' ORDER BY e.model_name) as models_attempted,
+        STRING_AGG(DISTINCT e.reasoning_effort, ', ' ORDER BY e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts,` : '';
+
       const result = await this.query(`
         SELECT *
         FROM (
@@ -678,7 +717,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') as negative_feedback,
             COUNT(f.id) as total_feedback,
             MAX(e.created_at) as latest_analysis,
-            MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,
+            MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,${richMetricsColumns}
             (
               COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
               CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
@@ -687,7 +726,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             ) as composite_score
           FROM explanations e
           LEFT JOIN feedback f ON e.id = f.explanation_id
-          WHERE e.puzzle_id IS NOT NULL
+          WHERE ${whereConditions.join(' AND ')}
           GROUP BY e.puzzle_id
           HAVING ${havingConditions.join(' AND ')}
         ) as performance_data
@@ -695,22 +734,46 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           CASE WHEN $2 = 'composite' THEN performance_data.composite_score END DESC,
           CASE WHEN $2 = 'accuracy' THEN performance_data.avg_accuracy END ASC NULLS LAST,
           CASE WHEN $2 = 'confidence' THEN performance_data.avg_confidence END ASC NULLS LAST,
-          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST
+          CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST,
+          CASE WHEN $2 = 'cost' THEN performance_data.avg_cost END DESC NULLS LAST,
+          CASE WHEN $2 = 'processing_time' THEN performance_data.avg_processing_time END DESC NULLS LAST
         LIMIT $1
       `, queryParams);
 
-      return result.rows.map(row => ({
-        puzzleId: row.puzzle_id,
-        wrongCount: parseInt(row.wrong_count) || 0,
-        avgAccuracy: parseFloat(row.avg_accuracy) || 0,
-        avgConfidence: parseFloat(row.avg_confidence) || 0,
-        totalExplanations: parseInt(row.total_explanations) || 0,
-        negativeFeedback: parseInt(row.negative_feedback) || 0,
-        totalFeedback: parseInt(row.total_feedback) || 0,
-        latestAnalysis: row.latest_analysis,
-        worstExplanationId: row.worst_explanation_id,
-        compositeScore: parseFloat(row.composite_score) || 0
-      }));
+      return result.rows.map(row => {
+        const baseData = {
+          puzzleId: row.puzzle_id,
+          wrongCount: parseInt(row.wrong_count) || 0,
+          avgAccuracy: parseFloat(row.avg_accuracy) || 0,
+          avgConfidence: parseFloat(row.avg_confidence) || 0,
+          totalExplanations: parseInt(row.total_explanations) || 0,
+          negativeFeedback: parseInt(row.negative_feedback) || 0,
+          totalFeedback: parseInt(row.total_feedback) || 0,
+          latestAnalysis: row.latest_analysis,
+          worstExplanationId: row.worst_explanation_id,
+          compositeScore: parseFloat(row.composite_score) || 0
+        };
+
+        // Add rich metrics if requested
+        if (filters?.includeRichMetrics) {
+          return {
+            ...baseData,
+            avgCost: parseFloat(row.avg_cost) || 0,
+            avgProcessingTime: parseInt(row.avg_processing_time) || 0,
+            avgReasoningTokens: parseInt(row.avg_reasoning_tokens) || 0,
+            avgInputTokens: parseInt(row.avg_input_tokens) || 0,
+            avgOutputTokens: parseInt(row.avg_output_tokens) || 0,
+            avgTotalTokens: parseInt(row.avg_total_tokens) || 0,
+            multiTestCount: parseInt(row.multi_test_count) || 0,
+            singleTestCount: parseInt(row.single_test_count) || 0,
+            lowestNonZeroConfidence: parseFloat(row.lowest_non_zero_confidence) || null,
+            modelsAttempted: row.models_attempted ? row.models_attempted.split(', ') : [],
+            reasoningEfforts: row.reasoning_efforts ? row.reasoning_efforts.split(', ') : []
+          };
+        }
+
+        return baseData;
+      });
     } catch (error) {
       logger.error(`Error getting worst-performing puzzles: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
       return [];
