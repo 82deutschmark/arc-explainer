@@ -243,12 +243,20 @@ export const explanationService = {
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
         console.log(`[DEBUG] About to create explanationWithPuzzleId. puzzleId = "${puzzleId}" (${typeof puzzleId})`);
+        console.log(`[DEBUG] Explanation data keys: [${Object.keys(explanationData).join(', ')}]`);
+        console.log(`[DEBUG] Required fields check:`, {
+          patternDescription: !!explanationData.patternDescription,
+          solvingStrategy: !!explanationData.solvingStrategy,
+          hints: Array.isArray(explanationData.hints) && explanationData.hints.length > 0,
+          confidence: typeof explanationData.confidence === 'number'
+        });
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
             puzzleId: puzzleId
           };
           console.log(`[DEBUG] Created explanationWithPuzzleId.puzzleId = "${explanationWithPuzzleId.puzzleId}" (${typeof explanationWithPuzzleId.puzzleId})`);
+          console.log(`[DEBUG] About to call repositoryService.explanations.saveExplanation...`);
           const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
             console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
@@ -259,8 +267,13 @@ export const explanationService = {
             throw new Error(errorMsg);
           }
         } catch (error) {
-          const errorMsg = `CRITICAL: Failed to save explanation for model ${modelKey} (puzzle: ${puzzleId}): ${error instanceof Error ? error.message : String(error)}`;
-          console.error(`[SAVE-CRITICAL-ERROR] ${errorMsg}`);
+          console.error(`[SAVE-CRITICAL-ERROR] Database save failed for model ${modelKey} (puzzle: ${puzzleId})`);
+          console.error(`[SAVE-CRITICAL-ERROR] Error type: ${error?.constructor?.name || 'Unknown'}`);
+          console.error(`[SAVE-CRITICAL-ERROR] Error message: ${error instanceof Error ? error.message : String(error)}`);
+          console.error(`[SAVE-CRITICAL-ERROR] Full error:`, error);
+          if (error instanceof Error && error.stack) {
+            console.error(`[SAVE-CRITICAL-ERROR] Stack trace:`, error.stack);
+          }
           // Log the full explanation data for debugging
           console.error(`[SAVE-DEBUG-DATA] Explanation data that failed:`, JSON.stringify(explanationData, null, 2));
           throw error; // Don't continue silently - this masks real issues
