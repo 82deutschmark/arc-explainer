@@ -301,21 +301,30 @@ export abstract class BaseAIService {
 
   /**
    * Detect response truncation patterns
-   * Identifies server-side truncation vs natural completion
+   * Enhanced for continuation scenarios - identifies server-side truncation vs natural completion
    */
   protected detectResponseTruncation(responseText: string, finishReason?: string): boolean {
-    // Check for explicit truncation signals
+    // Primary truncation signal: explicit finish_reason indicates length limit hit
     if (finishReason === 'length') {
+      logger.service(this.provider, `Truncation detected via finish_reason: ${finishReason}`);
       return true;
     }
 
-    // Check for incomplete JSON structure
+    // Special case: empty content with reasoning data suggests truncation in main response
+    if (!responseText || responseText.trim().length === 0) {
+      if (finishReason !== 'stop') {
+        logger.service(this.provider, `Truncation detected: empty content with finish_reason: ${finishReason}`);
+        return true;
+      }
+    }
+
+    // Check for incomplete JSON structure (secondary detection)
     if (responseText.includes('{') || responseText.includes('[')) {
       try {
         JSON.parse(responseText);
         return false; // Valid JSON, not truncated
       } catch (error) {
-        // Check if it's a truncation (ends abruptly) vs malformed JSON
+        // Enhanced truncation pattern analysis for continuation scenarios
         const trimmed = responseText.trim();
         
         // Truncation indicators:
@@ -323,12 +332,44 @@ export abstract class BaseAIService {
         const endsWithValidJson = trimmed.endsWith('}') || trimmed.endsWith(']') || trimmed.endsWith('"');
         
         // 2. Contains substantial content but incomplete structure
-        const hasSubstantialContent = trimmed.length > 100;
+        const hasSubstantialContent = trimmed.length > 50; // Lowered threshold for edge cases
         
-        // 3. Ends mid-word or mid-structure
-        const endsAbruptly = !trimmed.match(/[}\]",.]$/);
+        // 3. Ends mid-word or mid-structure (enhanced pattern)
+        const endsAbruptly = !trimmed.match(/[}\]",.;]$/) && !trimmed.endsWith('...');
         
-        return hasSubstantialContent && (!endsWithValidJson || endsAbruptly);
+        // 4. Contains opening braces/brackets without matching closures
+        const openBraces = (trimmed.match(/\{/g) || []).length;
+        const closeBraces = (trimmed.match(/\}/g) || []).length;
+        const openBrackets = (trimmed.match(/\[/g) || []).length;
+        const closeBrackets = (trimmed.match(/\]/g) || []).length;
+        
+        const hasUnmatchedStructures = openBraces !== closeBraces || openBrackets !== closeBrackets;
+        
+        const isTruncated = hasSubstantialContent && (
+          !endsWithValidJson || 
+          endsAbruptly || 
+          hasUnmatchedStructures
+        );
+        
+        if (isTruncated) {
+          logger.service(this.provider, 
+            `Truncation detected via JSON analysis: valid ending=${endsWithValidJson}, ` +
+            `abrupt ending=${endsAbruptly}, unmatched structures=${hasUnmatchedStructures}`
+          );
+        }
+        
+        return isTruncated;
+      }
+    }
+
+    // For non-JSON content, check for abrupt endings
+    if (responseText.length > 100 && finishReason !== 'stop') {
+      const trimmed = responseText.trim();
+      // Check if response ends mid-sentence or mid-word
+      const endsAbruptly = !trimmed.match(/[.!?]$/) && !trimmed.endsWith('...');
+      if (endsAbruptly) {
+        logger.service(this.provider, `Potential truncation detected: content ends abruptly without proper termination`);
+        return true;
       }
     }
 
