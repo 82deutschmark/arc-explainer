@@ -76,7 +76,9 @@ export const explanationService = {
         // ===== RAW RESPONSE LOGGING & FILE SAVE =====
         try {
           const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          const logFileName = `${puzzleId}-${modelKey}-${timestamp}-raw.json`;
+          // Sanitize modelKey for safe filename usage - replace slashes with dashes
+          const safeModelKey = modelKey.replace(/[\/\\:]/g, '-');
+          const logFileName = `${puzzleId}-${safeModelKey}-${timestamp}-raw.json`;
           const logFilePath = path.join('data', 'explained', logFileName);
           await fs.writeFile(logFilePath, JSON.stringify(sourceData, null, 2));
           console.log(`[RAW-LOG-SAVE] Raw response for ${modelKey} saved to ${logFilePath}`);
