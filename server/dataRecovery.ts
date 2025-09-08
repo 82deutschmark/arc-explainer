@@ -31,49 +31,38 @@ interface RecoveryStats {
 }
 
 /**
- * Check if timestamp is from August 2025 or later
- */
-function isRecentFile(timestamp: string): boolean {
-  try {
-    const date = new Date(timestamp.replace('T', 'T').replace('Z', 'Z'));
-    // August 1, 2025 
-    const cutoffDate = new Date('2025-08-01T00:00:00Z');
-    return date >= cutoffDate;
-  } catch (error) {
-    console.warn(`[WARNING] Could not parse timestamp: ${timestamp}`);
-    return false;
-  }
-}
-
-/**
- * Find recent *-raw.json files (August 2025 onwards) in the explained directory
+ * Recursively find all *-raw.json files in explained directory and subdirectories
  */
 async function findRawJsonFiles(): Promise<RawFileInfo[]> {
-  const explainedDir = path.join('data', 'explained');
-  const files = await fs.readdir(explainedDir);
   const rawFiles: RawFileInfo[] = [];
-
-  for (const filename of files) {
-    if (filename.endsWith('-raw.json')) {
-      const filepath = path.join(explainedDir, filename);
-      const parsed = parseRawFilename(filename);
-      if (parsed) {
-        // Only include files from August 2025 onwards
-        if (isRecentFile(parsed.timestamp)) {
+  
+  async function searchDirectory(dirPath: string): Promise<void> {
+    const items = await fs.readdir(dirPath, { withFileTypes: true });
+    
+    for (const item of items) {
+      const fullPath = path.join(dirPath, item.name);
+      
+      if (item.isDirectory()) {
+        // Recursively search subdirectories
+        await searchDirectory(fullPath);
+      } else if (item.isFile() && item.name.endsWith('-raw.json')) {
+        const parsed = parseRawFilename(item.name);
+        if (parsed) {
           rawFiles.push({
-            filepath,
-            filename,
+            filepath: fullPath,
+            filename: item.name,
             ...parsed
           });
         } else {
-          console.log(`[SKIPPING OLD] ${filename} (${parsed.timestamp})`);
+          console.warn(`[WARNING] Could not parse filename: ${item.name}`);
         }
-      } else {
-        console.warn(`[WARNING] Could not parse filename: ${filename}`);
       }
     }
   }
-
+  
+  const explainedDir = path.join('data', 'explained');
+  await searchDirectory(explainedDir);
+  
   return rawFiles.sort((a, b) => a.filename.localeCompare(b.filename));
 }
 
