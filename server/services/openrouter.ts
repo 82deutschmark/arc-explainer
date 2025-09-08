@@ -12,6 +12,7 @@ import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
+import { responsePersistence } from './ResponsePersistence.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
 const openrouter = new OpenAI({
@@ -89,7 +90,7 @@ export class OpenRouterService extends BaseAIService {
       ],
       temperature: temperature,
       response_format: { type: "json_object" },
-      stream: false //  TESTING FIX FOR JSON TRUNCATION!!  
+      
     });
 
     return chatCompletion;
@@ -115,6 +116,22 @@ export class OpenRouterService extends BaseAIService {
     console.log(`[OpenRouter] Finish reason: ${finishReason}`);
     console.log(`[OpenRouter] Response preview: "${responseText.substring(0, 100)}..."`);
 
+    // Detect potential truncation patterns
+    const isTruncated = this.detectResponseTruncation(responseText, finishReason);
+    if (isTruncated) {
+      console.warn(`[OpenRouter] TRUNCATION DETECTED for ${modelKey}`);
+      // Save truncated response for analysis
+      responsePersistence.saveRawResponse(
+        modelKey,
+        responseText,
+        200,
+        {
+          provider: 'OpenRouter',
+          requestId: response.id || 'unknown'
+        }
+      );
+    }
+
     // ENHANCED ERROR HANDLING: Capture full response on JSON parse failure
     let result;
     try {
@@ -122,9 +139,20 @@ export class OpenRouterService extends BaseAIService {
     } catch (error) {
       console.error(`[OpenRouter] JSON PARSE FAILURE for ${modelKey}:`);
       console.error(`[OpenRouter] Finish reason: ${finishReason}`);
-      console.error(`[OpenRouter] Full response text: ${responseText}`);
       console.error(`[OpenRouter] Response length: ${responseText.length} chars`);
       console.error(`[OpenRouter] Last 200 chars: "${responseText.slice(-200)}"`);
+      
+      // Save failed response for analysis
+      responsePersistence.saveRawResponse(
+        modelKey,
+        responseText,
+        200,
+        {
+          provider: 'OpenRouter',
+          requestId: response.id || 'unknown'
+        }
+      );
+      
       throw new Error(`JSON parsing failed for ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
     }
 
