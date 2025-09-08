@@ -9,12 +9,13 @@
  */
 
 import { logger } from './logger.ts';
+import { jsonParser } from './JsonParser.js';
 
 /**
  * Safe JSON parsing with fallback support
  * Handles various input types and provides comprehensive error handling
  */
-export async function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | null = null): Promise<T | null> {
+export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | null = null): T | null {
   // Handle null/undefined
   if (value === null || value === undefined) {
     return fallback;
@@ -32,7 +33,7 @@ export async function safeJsonParse<T>(value: any, fieldName?: string, fallback:
       return fallback;
     }
     
-    const { jsonParser } = await import('./JsonParser.js');
+    // Use static import - jsonParser is already imported at the top
     const result = jsonParser.parse<T>(value, {
       logErrors: false, // We'll handle logging here
       fieldName
@@ -137,7 +138,7 @@ export function processHints(hints: any): string[] {
       return [];
     }
     
-    const { jsonParser } = await import('./JsonParser.js');
+    // Use static import - jsonParser is already imported at the top
     const result = jsonParser.parse<any[]>(hints, {
       logErrors: false,
       fieldName: 'hints'
