@@ -1,5 +1,9 @@
 Here's what I found in the OpenRouter docs and what we can do to recover costly truncated API calls:
 Also remember that we have lots of local debug files in the `explained` folder that we can potentially use for debug.  We can match the puzzle ID to the DB entire for that ID and determine if any of our local files are missing from the DB and contain the missing data.  We can then use that data to continue the explanation where it left off or maybe recover the data.
+
+
+###  UPDATE!!  
+  I JUST DISCOVERED THE SOURCE OF THE PERSISTENT TRUNCATION ISSUES!!!  It has something to do with streaming!  we only ever expect ONE reply from a model, but some of them give us their answer in MULTIPLE replies to the same single API call!  OUR CODE NEVER EXPECTS THIS AND DOES NOT HANDLE IT AT ALL!  
 ---
 
 ### What the Documentation Actually Covers
