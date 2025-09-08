@@ -65,7 +65,20 @@ async function findRawJsonFiles(): Promise<RawFileInfo[]> {
     throw error;
   }
 
-  return rawFiles.sort((a, b) => a.filename.localeCompare(b.filename));
+  return rawFiles.sort((a, b) => {
+    const aIsGrok = a.modelName.includes('grok');
+    const bIsGrok = b.modelName.includes('grok');
+
+    if (aIsGrok && !bIsGrok) {
+      return -1; // a (grok) comes first
+    }
+    if (!aIsGrok && bIsGrok) {
+      return 1; // b (grok) comes first
+    }
+
+    // If both are grok or neither are, sort by filename as before
+    return a.filename.localeCompare(b.filename);
+  });
 }
 
 /**
