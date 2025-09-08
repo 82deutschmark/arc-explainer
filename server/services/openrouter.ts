@@ -17,11 +17,28 @@ import { responseProcessor } from './ResponseProcessor.js';
 import { logger } from '../utils/logger.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
+// Dynamic referer based on environment or default to production
+const getRefererUrl = () => {
+  // Check for environment-specific referer
+  if (process.env.OPENROUTER_REFERER) {
+    return process.env.OPENROUTER_REFERER;
+  }
+  
+  // Auto-detect based on NODE_ENV
+  if (process.env.NODE_ENV === 'development') {
+    return "http://localhost:5000";
+  }
+  
+  // Default to production URL
+  return "https://arc.markbarney.net";
+};
+
 const openrouter = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
+  timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
   defaultHeaders: {
-    "HTTP-Referer": "https://arc.markbarney.net", // Your site URL
+    "HTTP-Referer": getRefererUrl(), // Dynamic referer based on environment
     "X-Title": "ARC Explainer", // Your app name
   }
 });

@@ -13,8 +13,10 @@
     "db:push": "drizzle-kit push",
     "windows-dev": "set NODE_ENV=development&&tsx server/index.ts",
     "windows-start": "set NODE_ENV=production&&node dist/index.js",
-    "recover": "tsx server/dataRecovery.ts",
-    "db:fix-names": "tsx scripts/fix-model-names.ts"
+    "recover": "node --import tsx server/dataRecovery.ts",
+    "db:fix-names": "node --import tsx scripts/fix-model-names.ts",
+    "test:repo-init": "node --import tsx scripts/test-repo-init.ts",
+    "test:db-conn": "node --import tsx scripts/test-db-connection.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",

@@ -21,6 +21,7 @@ function modelSupportsTemperature(modelKey: string): boolean {
 const deepseek = new OpenAI({
   apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: "https://api.deepseek.com",
+  timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
 });
 
 export class DeepSeekService extends BaseAIService {
