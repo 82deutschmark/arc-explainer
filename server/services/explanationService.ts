@@ -211,7 +211,7 @@ export const explanationService = {
           patternDescription: analysisData.patternDescription ?? null,
           solvingStrategy: analysisData.solvingStrategy ?? null,
           hints: Array.isArray(analysisData.hints) 
-            ? analysisData.hints.map(hint => 
+            ? analysisData.hints.map((hint: any) => 
                 typeof hint === 'object' ? hint.algorithm || hint.description || String(hint)
                 : String(hint)
               )
