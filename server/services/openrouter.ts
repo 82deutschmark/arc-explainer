@@ -113,9 +113,13 @@ export class OpenRouterService extends BaseAIService {
         const payload: any = {
           model: modelName,
           temperature: temperature,
-          response_format: { type: "json_object" } as const,
           stream: false // Explicitly disable streaming
         };
+
+        // Conditionally apply JSON mode. Grok-4 seems to have issues with it.
+        if (!modelName.includes('grok-4')) {
+          payload.response_format = { type: "json_object" } as const;
+        }
 
         if (continuationStep === 0) {
           // Initial request with full messages
