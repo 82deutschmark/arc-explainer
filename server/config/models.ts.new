@@ -1,0 +1,25 @@
+/**
+ * models.ts
+ * 
+ * Centralized model configuration - single source of truth for all AI models.
+ * This file imports model configurations from a JSON file.
+ * It is imported by the modular configuration system in `/models/*`.
+ * 
+ * @author Cascade
+ */
+
+import type { ModelConfig } from '@shared/types';
+import modelConfigs from './modelConfigs.json';
+
+// Type for the imported JSON module
+interface ModelConfigs {
+  models: ModelConfig[];
+}
+
+// Type assertion for the imported JSON
+const typedModelConfigs = modelConfigs as unknown as ModelConfigs;
+
+/**
+ * Complete model registry - single source of truth
+ */
+export const MODELS: ModelConfig[] = typedModelConfigs.models;
