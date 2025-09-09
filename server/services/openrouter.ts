@@ -121,9 +121,15 @@ export class OpenRouterService extends BaseAIService {
     }
     // For other models, let them use their natural limits
     
-    logger.service('OpenRouter', `API request - model: ${modelName}, max_tokens: ${payload.max_tokens}, streaming: disabled`);
-
+    // Enhanced request logging
+    logger.service('OpenRouter', `API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}, streaming: disabled`);
+    logger.service('OpenRouter', `Request payload keys: ${Object.keys(payload).join(', ')}`);
+    
+    const startTime = Date.now();
     const rawResponse = await openrouter.chat.completions.create(payload);
+    const requestDuration = Date.now() - startTime;
+    
+    logger.service('OpenRouter', `API response received in ${requestDuration}ms`);
     
     // Basic format handling: Normalize the response format
     const response = this.normalizeResponseFormat(rawResponse);
@@ -132,17 +138,39 @@ export class OpenRouterService extends BaseAIService {
     const completionText = response.choices?.[0]?.message?.content || '';
     const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
     
-    logger.service('OpenRouter', `Response received - finish_reason: ${finishReason}, length: ${completionText.length} chars`);
+    // Enhanced response logging
+    logger.service('OpenRouter', `Response received - finish_reason: ${finishReason}, length: ${completionText.length} chars, duration: ${requestDuration}ms`);
+    logger.service('OpenRouter', `Response keys: ${Object.keys(response).join(', ')}`);
     
-    // Handle empty responses
-    if (!completionText || completionText.length === 0) {
-      logger.service('OpenRouter', `EMPTY RESPONSE received from ${modelKey}`, 'error');
-      throw new Error(`Empty response from ${modelKey}. This may indicate a model configuration or API issue.`);
+    if (response.usage) {
+      logger.service('OpenRouter', `Token usage - prompt: ${response.usage.prompt_tokens || 0}, completion: ${response.usage.completion_tokens || 0}, total: ${response.usage.total_tokens || 0}`);
     }
     
-    // Log truncation but don't attempt continuation 
+    // Handle empty responses with detailed logging
+    if (!completionText || completionText.length === 0) {
+      logger.service('OpenRouter', `EMPTY RESPONSE DEBUG - modelKey: ${modelKey}, modelName: ${modelName}`, 'error');
+      logger.service('OpenRouter', `Raw response preview: ${JSON.stringify(rawResponse).substring(0, 200)}...`, 'error');
+      logger.service('OpenRouter', `Normalized response preview: ${JSON.stringify(response).substring(0, 200)}...`, 'error');
+      throw new Error(`Empty response from ${modelKey}. Check model availability and API configuration.`);
+    }
+    
+    // Enhanced truncation logging
     if (finishReason === 'length') {
-      logger.service('OpenRouter', `Response truncated (finish_reason: length) but proceeding with ${completionText.length} chars`, 'warn');
+      logger.service('OpenRouter', `Response truncated (finish_reason: length) but proceeding with ${completionText.length} chars. Consider model-specific token limits.`, 'warn');
+    }
+    
+    // Preview response content for debugging (first 200 chars)
+    const contentPreview = completionText.length > 200 
+      ? `${completionText.substring(0, 200)}...` 
+      : completionText;
+    logger.service('OpenRouter', `Response content preview: ${contentPreview.replace(/\n/g, '\\n')}`);
+    
+    // Validate JSON structure early
+    try {
+      JSON.parse(completionText);
+      logger.service('OpenRouter', `Response contains valid JSON structure`);
+    } catch (error) {
+      logger.service('OpenRouter', `Response contains malformed JSON - will attempt repair: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
     }
     
     return response;
@@ -237,7 +265,7 @@ export class OpenRouterService extends BaseAIService {
   }
 
   /**
-   * Robust JSON extraction from potentially malformed content
+   * Enhanced JSON extraction with better partial content handling
    */
   private extractJSONFromContent(content: string): any {
     if (!content || content.trim().length === 0) {
@@ -248,52 +276,138 @@ export class OpenRouterService extends BaseAIService {
     try {
       return JSON.parse(content);
     } catch (error) {
-      logger.service('OpenRouter', `Initial JSON parse failed, attempting recovery...`, 'warn');
+      logger.service('OpenRouter', `Initial JSON parse failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
     }
     
-    // Try to find and extract JSON from mixed content
+    // Try to find and extract JSON from mixed content (handles markdown code blocks, etc.)
     const jsonMatch = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
     if (jsonMatch) {
       try {
         return JSON.parse(jsonMatch[0]);
       } catch (error) {
-        logger.service('OpenRouter', `JSON extraction failed, trying repair...`, 'warn');
+        logger.service('OpenRouter', `JSON extraction failed, trying advanced repair...`, 'warn');
       }
     }
     
-    // Try to repair truncated JSON
+    // Advanced JSON repair for partial responses
     let repairedContent = content.trim();
     
-    // Add missing closing braces/brackets
-    const openBraces = (repairedContent.match(/\{/g) || []).length;
-    const closeBraces = (repairedContent.match(/\}/g) || []).length;
-    const openBrackets = (repairedContent.match(/\[/g) || []).length;
-    const closeBrackets = (repairedContent.match(/\]/g) || []).length;
+    // Remove any surrounding markdown code blocks
+    repairedContent = repairedContent.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
     
-    // Add missing closing characters
-    for (let i = 0; i < openBrackets - closeBrackets; i++) {
-      repairedContent += ']';
-    }
-    for (let i = 0; i < openBraces - closeBraces; i++) {
-      repairedContent += '}';
+    // Handle incomplete JSON structures
+    if (repairedContent.includes('{') || repairedContent.includes('[')) {
+      // Count unmatched braces and brackets
+      const openBraces = (repairedContent.match(/\{/g) || []).length;
+      const closeBraces = (repairedContent.match(/\}/g) || []).length;
+      const openBrackets = (repairedContent.match(/\[/g) || []).length;
+      const closeBrackets = (repairedContent.match(/\]/g) || []).length;
+      
+      // Remove trailing incomplete structures (common in truncated responses)
+      repairedContent = repairedContent.replace(/,\s*$/, ''); // trailing comma
+      repairedContent = repairedContent.replace(/:\s*$/, ': null'); // incomplete key-value
+      repairedContent = repairedContent.replace(/"\s*$/, '"'); // incomplete string
+      
+      // Add missing closing characters in correct order
+      for (let i = 0; i < openBrackets - closeBrackets; i++) {
+        repairedContent += ']';
+      }
+      for (let i = 0; i < openBraces - closeBraces; i++) {
+        repairedContent += '}';
+      }
+      
+      // Clean up common JSON formatting issues
+      repairedContent = repairedContent.replace(/,(\s*[}\]])/g, '$1'); // trailing commas
+      repairedContent = repairedContent.replace(/([{,]\s*)"([^"]+)"\s*:\s*"([^"]*)"(?=\s*[,}])/g, '$1"$2": "$3"'); // fix spacing
+      
+      try {
+        const parsed = JSON.parse(repairedContent);
+        logger.service('OpenRouter', `Advanced JSON repair successful! Recovered ${JSON.stringify(parsed).length} chars`, 'info');
+        return parsed;
+      } catch (error) {
+        logger.service('OpenRouter', `Advanced JSON repair failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
+      }
     }
     
-    // Remove trailing commas that might cause issues
-    repairedContent = repairedContent.replace(/,(\s*[}\]])/g, '$1');
+    // Try to extract partial data for common response fields
+    const partialData = this.extractPartialResponseData(content);
+    if (partialData && Object.keys(partialData).length > 0) {
+      logger.service('OpenRouter', `Extracted partial data from malformed response: ${Object.keys(partialData).join(', ')}`, 'warn');
+      return partialData;
+    }
+    
+    // Final fallback - return structured error with content preview
+    logger.service('OpenRouter', `All JSON repair attempts failed, returning error structure`, 'error');
+    return {
+      multiplePredictedOutputs: false,
+      predictedOutput: [],
+      predictedOutput1: [],
+      predictedOutput2: [],
+      predictedOutput3: [],
+      patternDescription: "JSON parsing failed - response may be truncated or malformed",
+      solvingStrategy: `Unable to parse response. Content preview: ${content.substring(0, 200)}${content.length > 200 ? '...' : ''}`,
+      hints: [
+        "Response parsing failed due to malformed JSON",
+        "This may indicate model output truncation or formatting issues",
+        "Consider retrying with the same model or trying a different model"
+      ],
+      confidence: 5,
+      reasoningItems: [
+        `Raw response length: ${content.length} characters`,
+        `Content preview: ${content.substring(0, 500)}${content.length > 500 ? '...' : ''}`,
+        "Response structure could not be parsed - may need manual review"
+      ]
+    };
+  }
+
+  /**
+   * Extract partial data from malformed responses using regex patterns
+   */
+  private extractPartialResponseData(content: string): any | null {
+    const partialData: any = {
+      multiplePredictedOutputs: false,
+      predictedOutput: [],
+      predictedOutput1: [],
+      predictedOutput2: [],
+      predictedOutput3: []
+    };
     
     try {
-      const parsed = JSON.parse(repairedContent);
-      logger.service('OpenRouter', `JSON repair successful!`, 'info');
-      return parsed;
-    } catch (error) {
-      logger.service('OpenRouter', `JSON repair failed, returning partial data`, 'error');
-      // Return a basic structure with the raw content
-      return {
-        patternDescription: "Response parsing failed - truncated or malformed JSON",
-        solvingStrategy: repairedContent.substring(0, 500) + "...",
-        confidence: 10,
-        reasoningItems: [`Raw response (first 500 chars): ${repairedContent.substring(0, 500)}`]
+      // Try to extract key fields using regex patterns
+      const patterns = {
+        patternDescription: /"patternDescription"\s*:\s*"([^"]+)"/,
+        solvingStrategy: /"solvingStrategy"\s*:\s*"([^"]+)"/,
+        confidence: /"confidence"\s*:\s*(\d+)/,
+        multiplePredictedOutputs: /"multiplePredictedOutputs"\s*:\s*(true|false)/
       };
+      
+      for (const [key, pattern] of Object.entries(patterns)) {
+        const match = content.match(pattern);
+        if (match) {
+          if (key === 'confidence') {
+            partialData[key] = parseInt(match[1], 10);
+          } else if (key === 'multiplePredictedOutputs') {
+            partialData[key] = match[1] === 'true';
+          } else {
+            partialData[key] = match[1];
+          }
+        }
+      }
+      
+      // Try to extract hints array
+      const hintsMatch = content.match(/"hints"\s*:\s*\[([^\]]*)\]/);
+      if (hintsMatch) {
+        try {
+          partialData.hints = JSON.parse(`[${hintsMatch[1]}]`);
+        } catch {
+          partialData.hints = ["Unable to parse hints from partial response"];
+        }
+      }
+      
+      return Object.keys(partialData).length > 4 ? partialData : null; // Only return if we found some data
+    } catch (error) {
+      logger.service('OpenRouter', `Partial data extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
+      return null;
     }
   }
 
