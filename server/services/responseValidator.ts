@@ -295,7 +295,7 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
           .replace(/\s+\]/g, ']');
         const result = jsonParser.parse(cleaned);
         if (!result.success) {
-          return { grid: null, method: 'parse_failed' };
+          return { grids: [], method: 'parse_failed' };
         }
         const grid = result.data;
         if (Array.isArray(grid) && Array.isArray(grid[0])) {
@@ -320,7 +320,7 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
         .replace(/,\s*,/g, ',');
       const result = jsonParser.parse(cleaned);
       if (!result.success) {
-        return { grid: null, method: 'parse_failed' };
+        return { grids: [], method: 'parse_failed' };
       }
       const grid = result.data;
       if (Array.isArray(grid) && Array.isArray(grid[0])) {
