@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Clock, Zap, Timer } from 'lucide-react';
-import { ModelConfig } from '@/types/puzzle';
+import type { ModelConfig } from '@shared/types';
 
 interface ModelProgressIndicatorProps {
   model: ModelConfig;
