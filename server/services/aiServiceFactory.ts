@@ -72,7 +72,7 @@ class AIServiceFactory {
     }
     
     // OpenRouter models (detect by provider-style naming: provider/model-name)
-    if (model.includes('/') || model.startsWith('meta-') || model.startsWith('anthropic/') || model.startsWith('google/') || model.startsWith('openai/') || model.startsWith('qwen/')) {
+    if (model.includes('/') || model.startsWith('meta-') || model.startsWith('anthropic/') || model.startsWith('google/') || model.startsWith('openai/') || model.startsWith('qwen/') || model.startsWith('x-ai/')) {
       console.log('   -> OpenRouter service');
       return this.openrouterService;
     }
