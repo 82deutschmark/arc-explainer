@@ -99,7 +99,7 @@ export const ALIEN_PROPERTIES = {
 export const BASE_SCHEMA_STRUCTURE = {
   type: "object",
   additionalProperties: false,
-  required: ["solvingStrategy", "confidence", "patternDescription", "hints"]
+  required: ["confidence"] // Only confidence is strictly required now.
 } as const;
 
 /**
