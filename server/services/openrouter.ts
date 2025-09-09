@@ -213,14 +213,18 @@ export class OpenRouterService extends BaseAIService {
           }
         ],
         temperature: temperature,
-        response_format: { type: "json_object" } as const
+        response_format: { type: "json_object" } as const,
+        stream: false // CRITICAL: Explicitly disable streaming to prevent truncation issues
       };
-      logger.service('OpenRouter', `Initial API call to model: ${modelName}`);
+      logger.service('OpenRouter', `Initial API call to model: ${modelName} (streaming disabled)`);
     }
 
-    const response = await openrouter.chat.completions.create(payload);
+    const rawResponse = await openrouter.chat.completions.create(payload);
     
-    // Extract response metadata
+    // ROBUST FORMAT HANDLING: Normalize the response format immediately
+    const response = this.normalizeResponseFormat(rawResponse);
+    
+    // Extract response metadata from normalized response
     const completionText = response.choices?.[0]?.message?.content || '';
     const generationId = response.id;
     const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
@@ -233,7 +237,7 @@ export class OpenRouterService extends BaseAIService {
       
       try {
         // Recursively call to continue the generation
-        const continuedResponse = await this.callProviderAPIRecursive(
+        const rawContinuedResponse = await this.callProviderAPIRecursive(
           prompt, 
           modelKey, 
           temperature, 
@@ -241,6 +245,9 @@ export class OpenRouterService extends BaseAIService {
           step + 1, 
           generationId
         );
+        
+        // ROBUST FORMAT HANDLING: Normalize continuation response format
+        const continuedResponse = this.normalizeResponseFormat(rawContinuedResponse);
         
         // Combine the responses - merge the content fields
         const continuedText = continuedResponse.choices?.[0]?.message?.content || '';
@@ -289,6 +296,155 @@ export class OpenRouterService extends BaseAIService {
     }
   }
 
+  /**
+   * Detect if response is in streaming format (even if delivered as single object)
+   */
+  private isStreamingResponse(response: any): boolean {
+    // Check for streaming format indicators
+    return response.choices?.[0]?.delta || 
+           response.object === 'chat.completion.chunk' ||
+           response.stream === true ||
+           (response.choices?.[0]?.message === undefined && response.choices?.[0]?.delta !== undefined);
+  }
+
+  /**
+   * Detect if response is truncated (incomplete JSON)
+   */
+  private isTruncatedResponse(response: any): boolean {
+    const content = response.choices?.[0]?.message?.content || '';
+    
+    // Check for common truncation indicators
+    if (!content || content.length === 0) return false;
+    
+    // Check if JSON content is incomplete
+    if (content.includes('{') || content.includes('[')) {
+      try {
+        JSON.parse(content);
+        return false; // Valid JSON
+      } catch (error) {
+        // Check if it's a truncation error vs other JSON error
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        return errorMsg.includes('Unexpected end') || 
+               errorMsg.includes('Unterminated') ||
+               content.trim().endsWith(',') ||
+               content.trim().endsWith('{') ||
+               content.trim().endsWith('[');
+      }
+    }
+    
+    return false;
+  }
+
+  /**
+   * Normalize different response formats to consistent structure
+   */
+  private normalizeResponseFormat(response: any): any {
+    // Handle streaming format
+    if (this.isStreamingResponse(response)) {
+      logger.service('OpenRouter', 'Detected streaming response format, normalizing...', 'warn');
+      
+      const content = response.choices?.[0]?.delta?.content || 
+                     response.choices?.[0]?.message?.content || '';
+      
+      return {
+        ...response,
+        choices: [{
+          ...response.choices?.[0],
+          message: {
+            content: content,
+            role: 'assistant'
+          },
+          delta: undefined // Clear delta to avoid confusion
+        }]
+      };
+    }
+    
+    // Handle truncated responses
+    if (this.isTruncatedResponse(response)) {
+      logger.service('OpenRouter', 'Detected truncated response, attempting recovery...', 'warn');
+      
+      const content = response.choices?.[0]?.message?.content || '';
+      const finishReason = response.choices?.[0]?.finish_reason;
+      
+      // Mark as truncated for potential continuation
+      return {
+        ...response,
+        choices: [{
+          ...response.choices[0],
+          finish_reason: finishReason || 'length', // Force continuation trigger
+          message: {
+            ...response.choices[0].message,
+            content: content
+          }
+        }]
+      };
+    }
+    
+    // Standard format - return as-is
+    return response;
+  }
+
+  /**
+   * Robust JSON extraction from potentially malformed content
+   */
+  private extractJSONFromContent(content: string): any {
+    if (!content || content.trim().length === 0) {
+      throw new Error('Empty response content');
+    }
+    
+    // Try direct JSON parse first
+    try {
+      return JSON.parse(content);
+    } catch (error) {
+      logger.service('OpenRouter', `Initial JSON parse failed, attempting recovery...`, 'warn');
+    }
+    
+    // Try to find and extract JSON from mixed content
+    const jsonMatch = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (error) {
+        logger.service('OpenRouter', `JSON extraction failed, trying repair...`, 'warn');
+      }
+    }
+    
+    // Try to repair truncated JSON
+    let repairedContent = content.trim();
+    
+    // Add missing closing braces/brackets
+    const openBraces = (repairedContent.match(/\{/g) || []).length;
+    const closeBraces = (repairedContent.match(/\}/g) || []).length;
+    const openBrackets = (repairedContent.match(/\[/g) || []).length;
+    const closeBrackets = (repairedContent.match(/\]/g) || []).length;
+    
+    // Add missing closing characters
+    for (let i = 0; i < openBrackets - closeBrackets; i++) {
+      repairedContent += ']';
+    }
+    for (let i = 0; i < openBraces - closeBraces; i++) {
+      repairedContent += '}';
+    }
+    
+    // Remove trailing commas that might cause issues
+    repairedContent = repairedContent.replace(/,(\s*[}\]])/g, '$1');
+    
+    try {
+      const parsed = JSON.parse(repairedContent);
+      logger.service('OpenRouter', `JSON repair successful!`, 'info');
+      return parsed;
+    } catch (error) {
+      logger.service('OpenRouter', `JSON repair failed, returning partial data`, 'error');
+      // Return a basic structure with the raw content
+      return {
+        patternDescription: "Response parsing failed - truncated or malformed JSON",
+        solvingStrategy: repairedContent.substring(0, 500) + "...",
+        confidence: 10,
+        reasoningItems: [`Raw response (first 500 chars): ${repairedContent.substring(0, 500)}`]
+      };
+    }
+  }
+
   protected parseProviderResponse(
     response: any,
     modelKey: string,
@@ -297,10 +453,13 @@ export class OpenRouterService extends BaseAIService {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
     logger.apiResponse('OpenRouter', 'API Response', JSON.stringify(response), 200);
     
-    // Extract critical fields for continuation
-    const responseText = response.choices?.[0]?.message?.content || '';
-    const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
-    const generationId = response.id;
+    // ROBUST FORMAT HANDLING: Normalize response format first
+    const normalizedResponse = this.normalizeResponseFormat(response);
+    
+    // Extract critical fields from normalized response
+    const responseText = normalizedResponse.choices?.[0]?.message?.content || '';
+    const finishReason = normalizedResponse.choices?.[0]?.finish_reason || normalizedResponse.choices?.[0]?.native_finish_reason;
+    const generationId = normalizedResponse.id;
     
     // Enhanced logging for continuation support
     logger.service('OpenRouter', `Response finish_reason: ${finishReason}`);
@@ -326,11 +485,32 @@ export class OpenRouterService extends BaseAIService {
     }
 
     try {
-      // Enhanced JSON validation after continuation completion
+      // ROBUST JSON PARSING: Use our enhanced JSON extraction before response processor
       logger.service('OpenRouter', `Validating JSON after potential continuation - length: ${responseText.length} chars`);
       
-      // Use unified ResponseProcessor with enhanced error context
-      const processedResponse = responseProcessor.processChatCompletion(response, {
+      // Apply robust JSON extraction to handle truncated/malformed responses
+      let parsedJSON;
+      try {
+        parsedJSON = this.extractJSONFromContent(responseText);
+      } catch (jsonError) {
+        logger.service('OpenRouter', `JSON extraction failed: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}`, 'error');
+        throw jsonError;
+      }
+      
+      // Create a normalized response for the response processor
+      const robustResponse = {
+        ...normalizedResponse,
+        choices: [{
+          ...normalizedResponse.choices[0],
+          message: {
+            ...normalizedResponse.choices[0].message,
+            content: JSON.stringify(parsedJSON) // Ensure clean JSON string
+          }
+        }]
+      };
+      
+      // Use unified ResponseProcessor with the cleaned response
+      const processedResponse = responseProcessor.processChatCompletion(robustResponse, {
         captureReasoning,
         modelKey,
         provider: 'OpenRouter'
