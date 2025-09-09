@@ -233,7 +233,6 @@ export function FeedbackLeaderboard({
             })}
           </div>
         </div>
-        </div>
         </ScrollArea>
         
         {/* Overall Stats */}
