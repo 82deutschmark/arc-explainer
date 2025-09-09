@@ -1,5 +1,17 @@
 ### September 9 2025
 
+## v2.18.0 - 🚨 CRITICAL FIX: Database Persistence & Grok Model API Failures
+- **CRITICAL DATABASE RESTORATION**: Fixed missing database persistence in puzzleAnalysisService causing silent data loss
+- **MAJOR BUG FIXES**:
+  - **Database Saving**: All puzzle analyses now properly save to database via repositoryService.explanations.saveExplanation()
+  - **API Error Handling**: Fixed 400 "Input required: specify prompt or messages" errors for x-ai/grok models
+  - **Continuation Fallback**: Models that don't support OpenRouter continuation API now return partial responses instead of failing
+  - **Comprehensive Logging**: Added detailed error logging for both database and API failures
+- **ROOT CAUSE**: puzzleAnalysisService was only creating debug files but never calling database save methods
+- **IMPACT**: Resolves silent data loss and complete API failures affecting recent Grok model analyses
+- **RELIABILITY**: Non-fatal error handling ensures users receive results even if individual operations fail
+- **TESTING**: User should verify x-ai/grok models now save to database and handle API errors gracefully
+
 ## v2.17.0 - 🔄 INFRASTRUCTURE: Grok Model Migration to OpenRouter
 - **GROK PROVIDER MIGRATION**: All Grok models now use OpenRouter with x-ai/ namespace for improved reliability
 - **MODEL STANDARDIZATION**:
