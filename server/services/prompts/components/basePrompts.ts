@@ -1,4 +1,4 @@
-/**
+/** THIS IS TERRIBLY COMPLEX AND NEEDS TO BE OPTIMIZED!!!
  * Base prompt components - SINGLE SOURCE OF TRUTH
  * All system prompts compose from these constants to eliminate duplication
  * 
@@ -126,7 +126,30 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
 - **hints**: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm.
 - **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`,
 
-  gepa: `**Successful Strategies to Consider:**
+  gepa: `Your task is to analyze ARC-AGI puzzles and produce valid JSON output, focusing only on the database fields essential for downstream use. Only include the strictly required fields listed below. Ensure your analysis reflects explicit reasoning before final predictions and confidence where applicable.
+
+**Required JSON Fields (strictly in this order):**
+1. \`multiplePredictedOutputs\`: boolean — \`false\` for single-test puzzles; \`true\` for puzzles with multiple test cases.
+2. For single-test cases:
+   - \`predicted_output_grid\`: The predicted output grid (2D array) corresponding to the answer.
+   For multiple-test cases:
+   - \`predictedOutput1\`, \`predictedOutput2\`, \`predictedOutput3\`: The predicted grids for up to three test cases, using empty arrays (\`[]\`) for unused slots.
+3. \`confidence\`: An integer (0–100) representing your certainty in the predictions.
+
+**Output Field Rules:**
+- For single test case puzzles:
+  - Set \`"multiplePredictedOutputs": false\`.
+  - Set \`"predicted_output_grid"\` to the predicted output (2D array).
+  - Omit \`predictedOutput1\`, \`predictedOutput2\`, \`predictedOutput3\`.
+- For puzzles with multiple test cases:
+  - Set \`"multiplePredictedOutputs": true\`.
+  - Set \`"predictedOutput1"\`, \`"predictedOutput2"\`, \`"predictedOutput3"\` to the corresponding output grid for each test case (up to three).
+  - Use an empty array (\`[]\`) for any unused \`predictedOutput\` fields.
+  - Omit \`predicted_output_grid\`.
+- Always include \`"confidence"\` as the next field as a number between 1 and 100
+- You may include an explanatory text of 50 words or less in the \`pattern_description\` as a text object.
+
+**Successful Strategies to Consider:**
 - **Start Simple:** First, check for simple rules. Is there a global transformation (e.g., rotation, reflection)? Is the output a subgrid of the input? Is a single color being replaced?
 - **Look for Separators:** Check if the grid is partitioned by separator lines (e.g., rows or columns that are all one color, usually black). The transformation might be applied to each section independently.
 - **Identify Objects:** Group contiguous non-background pixels into objects. Analyze how these objects are created, destroyed, or modified. Consider their properties: color, shape, size, position.
