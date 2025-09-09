@@ -221,7 +221,7 @@ export class BatchResultProcessor {
         };
       }
     } catch (validationError) {
-      logger.error(`Validation failed for ${puzzleId}, preserving original response:`, 'batch-processor', validationError);
+      logger.error(`Validation failed for ${puzzleId}, preserving original response: ${validationError}`, 'batch-processor');
       return {};
     }
   }

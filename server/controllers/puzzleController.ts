@@ -314,7 +314,7 @@ export const puzzleController = {
         includeRichMetrics: includeRichMetrics === 'true'
       };
 
-      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}, filters:`, filters, 'puzzle-controller');
+      logger.debug(`Fetching worst-performing puzzles with limit: ${limitNum}, filters: ${JSON.stringify(filters)}`, 'puzzle-controller');
 
       const enrichedPuzzles = await puzzleOverviewService.getWorstPerformingPuzzles(limitNum, sortOption, filters);
 
