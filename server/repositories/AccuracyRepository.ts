@@ -50,6 +50,16 @@ export interface ModelAccuracyRanking {
   multiTestAccuracy: number;
 }
 
+export interface DangerousModelRanking {
+  modelName: string;
+  totalHighConfidenceAttempts: number;
+  wrongHighConfidencePredictions: number;
+  dangerLevel: number; // Percentage of high-confidence attempts that were wrong
+  avgConfidence: number;
+  totalAttempts: number;
+  overallAccuracy: number;
+}
+
 export class AccuracyRepository extends BaseRepository {
   
   /**
@@ -274,6 +284,95 @@ export class AccuracyRepository extends BaseRepository {
       }));
     } catch (error) {
       logger.error(`Error getting top accurate models: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get DANGEROUS MODELS - models with high confidence but wrong predictions
+   * 
+   * This method identifies overconfident models that are consistently wrong.
+   * These are the most dangerous models for users to rely on because they
+   * appear confident but produce incorrect results.
+   * 
+   * CRITERIA:
+   * - High confidence (≥90%)
+   * - Wrong predictions (is_prediction_correct = false OR multi_test_all_correct = false)
+   * - Sorted by number of wrong high-confidence predictions (descending)
+   * 
+   * @param limit Maximum number of dangerous models to return
+   */
+  async getDangerousModels(limit: number = 10): Promise<DangerousModelRanking[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT 
+          e.model_name,
+          
+          -- High confidence attempts (≥90%)
+          COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) as total_high_confidence_attempts,
+          
+          -- Wrong high confidence predictions
+          COUNT(CASE 
+            WHEN e.confidence >= 90 
+            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+            THEN 1 
+          END) as wrong_high_confidence_predictions,
+          
+          -- Danger level: percentage of high-confidence attempts that were wrong
+          CASE 
+            WHEN COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) > 0
+            THEN (COUNT(CASE 
+              WHEN e.confidence >= 90 
+              AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+              THEN 1 
+            END) * 100.0 / COUNT(CASE WHEN e.confidence >= 90 THEN 1 END))
+            ELSE 0
+          END as danger_level,
+          
+          -- Average confidence for this model
+          AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) as avg_confidence,
+          
+          -- Overall stats for context
+          COUNT(e.id) as total_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct,
+          
+          -- Overall accuracy percentage
+          CASE 
+            WHEN COUNT(e.id) > 0 
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0 
+          END as overall_accuracy_percentage
+          
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+        GROUP BY e.model_name
+        HAVING COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) >= 3  -- At least 3 high-confidence attempts
+          AND COUNT(CASE 
+            WHEN e.confidence >= 90 
+            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+            THEN 1 
+          END) > 0  -- At least 1 wrong high-confidence prediction
+        ORDER BY wrong_high_confidence_predictions DESC, danger_level DESC, total_high_confidence_attempts DESC
+        LIMIT $1
+      `, [limit]);
+
+      return result.rows.map(row => ({
+        modelName: row.model_name,
+        totalHighConfidenceAttempts: parseInt(row.total_high_confidence_attempts) || 0,
+        wrongHighConfidencePredictions: parseInt(row.wrong_high_confidence_predictions) || 0,
+        dangerLevel: Math.round((parseFloat(row.danger_level) || 0) * 10) / 10,
+        avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+        totalAttempts: parseInt(row.total_attempts) || 0,
+        overallAccuracy: Math.round((parseFloat(row.overall_accuracy_percentage) || 0) * 10) / 10,
+      }));
+    } catch (error) {
+      logger.error(`Error getting dangerous models: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }
