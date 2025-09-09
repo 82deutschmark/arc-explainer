@@ -614,20 +614,6 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000
   },
   {
-    key: 'x-ai/grok-3-mini-fast',
-    name: 'Grok 3 Mini Fast',
-    color: 'bg-gray-600',
-    premium: false,
-    cost: { input: '$0.60', output: '$4.00' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '30-60 sec' },
-    isReasoning: true,
-    apiModelName: 'x-ai/grok-3-mini-fast',
-    modelType: 'openrouter',
-    contextWindow: 256000
-  },
-  {
     key: 'cohere/command-a',
     name: 'Cohere Command A',
     color: 'bg-green-700',

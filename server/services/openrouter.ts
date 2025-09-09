@@ -47,79 +47,6 @@ export class OpenRouterService extends BaseAIService {
   protected provider = "OpenRouter";
   protected models = {}; // We use centralized getApiModelName instead
 
-  /**
-   * Validate generation recovery using OpenRouter's generation endpoint
-   * Used for diagnostics and confirming truncation recovery works
-   */
-  async validateGeneration(generationId: string): Promise<{ success: boolean; data?: any; error?: string }> {
-    try {
-      logger.service('OpenRouter', `Validating generation: ${generationId}`);
-      
-      const response = await fetch(`https://openrouter.ai/api/v1/generation/${generationId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'HTTP-Referer': 'https://arc.markbarney.net',
-          'X-Title': 'ARC Explainer'
-        }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        logger.service('OpenRouter', `Generation validation failed: ${response.status} - ${errorText}`, 'error');
-        return { 
-          success: false, 
-          error: `HTTP ${response.status}: ${errorText}` 
-        };
-      }
-
-      const data = await response.json();
-      logger.service('OpenRouter', `Generation validation successful for ${generationId}`);
-      
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.service('OpenRouter', `Generation validation error: ${errorMessage}`, 'error');
-      return { success: false, error: errorMessage };
-    }
-  }
-
-  /**
-   * Continue a truncated generation using OpenRouter's continue parameter
-   * This is the core method for handling length-based truncation
-   */
-  async continueGeneration(
-    modelKey: string, 
-    generationId: string, 
-    step: number
-  ): Promise<any> {
-    try {
-      const modelName = getApiModelName(modelKey);
-      logger.service('OpenRouter', `Continuing generation ${generationId} (step ${step}) for model: ${modelName}`);
-
-      const continuePayload = {
-        model: modelName,
-        messages: [], // Usually empty for continue calls
-        continue: {
-          generation_id: generationId,
-          step: step
-        },
-        response_format: { type: "json_object" }
-      };
-
-      logger.service('OpenRouter', `Continue payload: ${JSON.stringify(continuePayload)}`);
-
-      const chatCompletion = await openrouter.chat.completions.create(continuePayload);
-      
-      logger.service('OpenRouter', `Continue response received for step ${step}`);
-      return chatCompletion;
-
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.service('OpenRouter', `Continue generation failed for ${generationId} step ${step}: ${errorMessage}`, 'error');
-      throw error;
-    }
-  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -165,135 +92,60 @@ export class OpenRouterService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions
   ): Promise<any> {
-    return this.callProviderAPIRecursive(prompt, modelKey, temperature, serviceOpts, 0, null);
-  }
-
-  /**
-   * Recursive API call that handles automatic continuation for truncated responses
-   * Implements the core logic from the truncation fix plan
-   */
-  private async callProviderAPIRecursive(
-    prompt: PromptPackage,
-    modelKey: string, 
-    temperature: number,
-    serviceOpts: ServiceOptions,
-    step: number = 0,
-    previousGenerationId: string | null = null
-  ): Promise<any> {
     const modelName = getApiModelName(modelKey);
     
-    logger.service('OpenRouter', `Making API call to model: ${modelName} (step ${step})`);
+    logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
-    let payload: any;
-    
-    if (previousGenerationId) {
-      // This is a continuation call - use ONLY continue parameter, no messages
-      payload = {
-        model: modelName,
-        continue: {
-          generation_id: previousGenerationId,
-          step: step
+    // SIMPLIFIED APPROACH: Single API call with model-specific token limits
+    const payload: any = {
+      model: modelName,
+      messages: [
+        {
+          role: "system",
+          content: prompt.systemPrompt
         },
-        response_format: { type: "json_object" } as const,
-        temperature: temperature
-      } as any; // OpenRouter-specific continue parameter not in OpenAI SDK types
-      logger.service('OpenRouter', `Continuing generation ${previousGenerationId} at step ${step} (continue-only format)`);
-    } else {
-      // This is the initial call
-      payload = {
-        model: modelName,
-        messages: [
-          {
-            role: "system",
-            content: prompt.systemPrompt
-          },
-          {
-            role: "user", 
-            content: prompt.userPrompt
-          }
-        ],
-        temperature: temperature,
-        response_format: { type: "json_object" } as const,
-        stream: false // CRITICAL: Explicitly disable streaming to prevent truncation issues
-      };
-      logger.service('OpenRouter', `Initial API call to model: ${modelName} (streaming disabled)`);
+        {
+          role: "user", 
+          content: prompt.userPrompt
+        }
+      ],
+      temperature: temperature,
+      response_format: { type: "json_object" } as const,
+      stream: false // Explicitly disable streaming
+    };
+
+    // Only set max_tokens for specific problematic models
+    if (modelKey === 'x-ai/grok-4') {
+      payload.max_tokens = 120000; // High limit for Grok-4 specifically
+      logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
     }
+    // For other models, let them use their natural limits
+    
+    logger.service('OpenRouter', `API request - model: ${modelName}, max_tokens: ${payload.max_tokens}, streaming: disabled`);
 
     const rawResponse = await openrouter.chat.completions.create(payload);
     
-    // ROBUST FORMAT HANDLING: Normalize the response format immediately
+    // Basic format handling: Normalize the response format
     const response = this.normalizeResponseFormat(rawResponse);
     
-    // Extract response metadata from normalized response
+    // Extract response metadata
     const completionText = response.choices?.[0]?.message?.content || '';
-    const generationId = response.id;
     const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
     
     logger.service('OpenRouter', `Response received - finish_reason: ${finishReason}, length: ${completionText.length} chars`);
     
-    // Check if the response was truncated due to length limit
-    if (finishReason === 'length') {
-      logger.service('OpenRouter', `Truncation detected (finish_reason: length) - continuing generation ${generationId}`, 'warn');
-      
-      try {
-        // Recursively call to continue the generation
-        const rawContinuedResponse = await this.callProviderAPIRecursive(
-          prompt, 
-          modelKey, 
-          temperature, 
-          serviceOpts, 
-          step + 1, 
-          generationId
-        );
-        
-        // ROBUST FORMAT HANDLING: Normalize continuation response format
-        const continuedResponse = this.normalizeResponseFormat(rawContinuedResponse);
-        
-        // Combine the responses - merge the content fields
-        const continuedText = continuedResponse.choices?.[0]?.message?.content || '';
-        
-        // Create combined response preserving the structure but merging content
-        const combinedResponse = {
-          ...response,
-          choices: [{
-            ...response.choices[0],
-            message: {
-              ...response.choices[0].message,
-              content: completionText + continuedText
-            },
-            finish_reason: continuedResponse.choices?.[0]?.finish_reason || 'stop'
-          }],
-          // Merge usage stats if available
-          usage: {
-            prompt_tokens: (response.usage?.prompt_tokens || 0) + (continuedResponse.usage?.prompt_tokens || 0),
-            completion_tokens: (response.usage?.completion_tokens || 0) + (continuedResponse.usage?.completion_tokens || 0),
-            total_tokens: (response.usage?.total_tokens || 0) + (continuedResponse.usage?.total_tokens || 0),
-            reasoning_tokens: ((response.usage as any)?.reasoning_tokens || 0) + ((continuedResponse.usage as any)?.reasoning_tokens || 0)
-          }
-        };
-        
-        logger.service('OpenRouter', `Combined response: ${combinedResponse.choices[0].message.content.length} chars total`);
-        return combinedResponse;
-        
-      } catch (continuationError) {
-        // Handle continuation failures (like 400 "Input required: specify prompt or messages")
-        logger.service('OpenRouter', `Continuation failed for ${modelKey}: ${continuationError instanceof Error ? continuationError.message : String(continuationError)}`, 'warn');
-        
-        // Check if it's the specific 400 error we're trying to fix
-        const errorMessage = String(continuationError);
-        if (errorMessage.includes('400') && errorMessage.includes('Input required')) {
-          logger.service('OpenRouter', `Model ${modelKey} doesn't support continuation API - returning truncated response`, 'warn');
-        }
-        
-        // Return the original truncated response instead of failing completely
-        logger.service('OpenRouter', `Returning truncated response (${completionText.length} chars) due to continuation failure`);
-        return response;
-      }
-    } else {
-      // Response completed normally, return as-is
-      logger.service('OpenRouter', `Response completed normally with finish_reason: ${finishReason}`);
-      return response;
+    // Handle empty responses
+    if (!completionText || completionText.length === 0) {
+      logger.service('OpenRouter', `EMPTY RESPONSE received from ${modelKey}`, 'error');
+      throw new Error(`Empty response from ${modelKey}. This may indicate a model configuration or API issue.`);
     }
+    
+    // Log truncation but don't attempt continuation 
+    if (finishReason === 'length') {
+      logger.service('OpenRouter', `Response truncated (finish_reason: length) but proceeding with ${completionText.length} chars`, 'warn');
+    }
+    
+    return response;
   }
 
   /**
