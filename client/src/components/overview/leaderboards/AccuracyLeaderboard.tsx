@@ -8,7 +8,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Trophy, Award, Zap } from 'lucide-react';
+import { AlertTriangle, Trophy, Award } from 'lucide-react';
 
 interface AccuracyStats {
   totalSolverAttempts: number;
@@ -40,8 +40,8 @@ export function AccuracyLeaderboard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-red-600" />
-            Most Dangerous Models
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Models Needing Improvement
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,13 +71,13 @@ export function AccuracyLeaderboard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-red-600" />
-            Most Dangerous Models
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Models Needing Improvement
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-gray-500">
-            No dangerous models found
+            No accuracy data available
           </div>
         </CardContent>
       </Card>
@@ -85,18 +85,17 @@ export function AccuracyLeaderboard({
   }
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return <Zap className="h-4 w-4 text-red-600" />;
-    if (index === 1) return <Zap className="h-4 w-4 text-red-500" />;
-    if (index === 2) return <Zap className="h-4 w-4 text-orange-500" />;
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-600">#{index + 1}</span>;
+    if (index === 0) return <AlertTriangle className="h-4 w-4 text-red-500" />;
+    if (index === 1) return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+    if (index === 2) return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
   };
 
-  const getDangerColor = (safetyLevel: number) => {
-    const dangerLevel = 100 - safetyLevel;
-    if (dangerLevel >= 60) return 'bg-red-100 text-red-800 border-red-200';
-    if (dangerLevel >= 40) return 'bg-orange-100 text-orange-800 border-orange-200';
-    if (dangerLevel >= 20) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-green-100 text-green-800 border-green-200';
+  const getAccuracyColor = (accuracy: number) => {
+    if (accuracy >= 80) return 'bg-green-100 text-green-800 border-green-200';
+    if (accuracy >= 60) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (accuracy >= 40) return 'bg-orange-100 text-orange-800 border-orange-200';
+    return 'bg-red-100 text-red-800 border-red-200';
   };
 
   const topModels = accuracyStats.modelAccuracyRankings.slice(0, 8);
@@ -105,11 +104,11 @@ export function AccuracyLeaderboard({
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-red-600" />
-          Most Dangerous Models
+          <AlertTriangle className="h-5 w-5 text-orange-600" />
+          Models Needing Improvement
         </CardTitle>
         <div className="text-sm text-gray-600">
-          Models with high confidence but wrong predictions - {accuracyStats.totalSolverAttempts.toLocaleString()} total attempts
+          Models with lowest accuracy rates - {accuracyStats.totalSolverAttempts.toLocaleString()} solver attempts
         </div>
       </CardHeader>
       <CardContent>
@@ -129,16 +128,16 @@ export function AccuracyLeaderboard({
                     {model.modelName}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {model.totalAttempts} high-conf attempts • {model.totalAttempts - model.correctPredictions} wrong • {model.multiTestAccuracy}% avg conf
+                    {model.totalAttempts} attempts • {model.correctPredictions} correct
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Badge 
                   variant="secondary" 
-                  className={`text-xs font-medium ${getDangerColor(model.accuracyPercentage)}`}
+                  className={`text-xs font-medium ${getAccuracyColor(model.accuracyPercentage)}`}
                 >
-                  {(100 - model.accuracyPercentage).toFixed(1)}% danger
+                  {model.accuracyPercentage.toFixed(1)}%
                 </Badge>
               </div>
             </div>
@@ -155,9 +154,9 @@ export function AccuracyLeaderboard({
         
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Average Danger Level:</span>
-            <Badge className={getDangerColor(accuracyStats.overallAccuracyPercentage)}>
-              {(100 - accuracyStats.overallAccuracyPercentage).toFixed(1)}%
+            <span className="text-gray-600">Overall Accuracy:</span>
+            <Badge className={getAccuracyColor(accuracyStats.overallAccuracyPercentage)}>
+              {accuracyStats.overallAccuracyPercentage.toFixed(1)}%
             </Badge>
           </div>
         </div>

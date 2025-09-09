@@ -140,13 +140,14 @@ export function FeedbackLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        {/* Most Appreciated Models Section */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <ThumbsUp className="h-4 w-4 text-green-600" />
-            <h3 className="text-sm font-semibold text-gray-900">Most Appreciated Models</h3>
-          </div>
-          <div className="space-y-2">
+        <div className="max-h-96 overflow-y-auto">
+          {/* Most Appreciated Models Section */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <ThumbsUp className="h-4 w-4 text-green-600" />
+              <h3 className="text-sm font-semibold text-gray-900">Most Appreciated Models</h3>
+            </div>
+            <div className="space-y-2">
             {mostHelpfulModels.map((model, index) => {
               const volumeInfo = getVolumeIndicator(model.feedbackCount);
               const VolumeIcon = volumeInfo.icon;
@@ -240,6 +241,7 @@ export function FeedbackLeaderboard({
               );
             })}
           </div>
+        </div>
         </div>
         
         {/* Overall Stats */}

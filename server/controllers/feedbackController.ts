@@ -150,36 +150,19 @@ export const feedbackController = {
   },
 
   /**
-   * Get dangerous models statistics - models with high confidence but wrong predictions
+   * Get accuracy statistics showing models needing improvement (low accuracy + low trustworthiness)
    * 
    * @param req - Express request object
    * @param res - Express response object
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      // Get dangerous models data instead of accuracy stats
-      const dangerousModels = await repositoryService.accuracy.getDangerousModels(8);
-      
-      // Map dangerous models data to the existing AccuracyStats interface for compatibility
-      const mappedStats = {
-        totalSolverAttempts: dangerousModels.reduce((sum, model) => sum + model.totalAttempts, 0),
-        totalCorrectPredictions: dangerousModels.reduce((sum, model) => sum + (model.totalAttempts - model.wrongHighConfidencePredictions), 0),
-        overallAccuracyPercentage: dangerousModels.length > 0 ? 
-          Math.round((dangerousModels.reduce((sum, model) => sum + model.overallAccuracy, 0) / dangerousModels.length) * 10) / 10 : 0,
-        modelAccuracyRankings: dangerousModels.map(model => ({
-          modelName: model.modelName,
-          totalAttempts: model.totalHighConfidenceAttempts, // Show high-confidence attempts
-          correctPredictions: model.totalHighConfidenceAttempts - model.wrongHighConfidencePredictions, // Correct high-confidence predictions
-          accuracyPercentage: 100 - model.dangerLevel, // Invert danger level to show "accuracy" for high confidence attempts
-          singleTestAccuracy: model.overallAccuracy, // Use overall accuracy for context
-          multiTestAccuracy: model.avgConfidence, // Show average confidence in this field for dangerous models context
-        }))
-      };
-      
-      res.json(formatResponse.success(mappedStats));
+      // Get pure accuracy stats (lowest accuracy first - already sorted correctly)
+      const stats = await repositoryService.accuracy.getPureAccuracyStats();
+      res.json(formatResponse.success(stats));
     } catch (error) {
-      console.error('Error getting dangerous models stats:', error);
-      res.status(500).json({ error: 'Failed to get dangerous models stats', details: error });
+      console.error('Error getting accuracy stats:', error);
+      res.status(500).json({ error: 'Failed to get accuracy stats', details: error });
     }
   },
 

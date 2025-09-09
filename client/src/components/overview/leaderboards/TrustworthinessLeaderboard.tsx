@@ -120,12 +120,12 @@ export function TrustworthinessLeaderboard({
           <Shield className="h-5 w-5 text-blue-600" />
           Trustworthiness Leaders
         </CardTitle>
-        <div className="text-sm text-gray-600">
-          All models ranked by confidence reliability scores (highest to lowest)
+        <div className="text-base text-muted-foreground">
+          "Trustworthiness evaluates how confident the LLM was in its answer and if that answer was correct. It rewards models that are honest about when they are unsure of their answer."
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-96 overflow-y-auto">
           {allModels.map((model, index) => (
             <div 
               key={model.modelName}
