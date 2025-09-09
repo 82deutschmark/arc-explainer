@@ -488,11 +488,26 @@ export class OpenRouterService extends BaseAIService {
       
       // Apply robust JSON extraction to handle truncated/malformed responses
       let parsedJSON;
+      let jsonExtractionFailed = false;
       try {
         parsedJSON = this.extractJSONFromContent(responseText);
       } catch (jsonError) {
         logger.service('OpenRouter', `JSON extraction failed: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}`, 'error');
-        throw jsonError;
+        jsonExtractionFailed = true;
+        
+        // CRITICAL: Don't throw - create fallback response to preserve raw data
+        parsedJSON = {
+          _parseError: jsonError instanceof Error ? jsonError.message : String(jsonError),
+          _rawResponse: responseText,
+          _parsingFailed: true,
+          _fallbackResponse: true,
+          solvingStrategy: "JSON parsing failed - raw response preserved",
+          patternDescription: "Unable to parse model response",
+          hints: [],
+          confidence: 0
+        };
+        
+        logger.service('OpenRouter', `Created fallback response to preserve ${responseText.length} chars of raw data`, 'warn');
       }
       
       // Create a normalized response for the response processor
