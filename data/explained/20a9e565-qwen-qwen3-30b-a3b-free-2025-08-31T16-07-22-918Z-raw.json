@@ -1,8 +1,0 @@
-{
-  "success": false,
-  "error": "400 qwen/qwen3-30b-a3b-free is not a valid model ID",
-  "result": null,
-  "processingTimeMs": 144,
-  "modelName": "qwen/qwen3-30b-a3b-free",
-  "apiProcessingTimeMs": 144
-}
