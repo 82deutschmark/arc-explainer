@@ -96,84 +96,126 @@ export class OpenRouterService extends BaseAIService {
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
-    // SIMPLIFIED APPROACH: Single API call with model-specific token limits
-    const payload: any = {
-      model: modelName,
-      messages: [
-        {
-          role: "system",
-          content: prompt.systemPrompt
-        },
-        {
-          role: "user", 
-          content: prompt.userPrompt
-        }
-      ],
-      temperature: temperature,
-      response_format: { type: "json_object" } as const,
-      stream: false // Explicitly disable streaming
-    };
+    // CONTINUATION SUPPORT: Accumulate response across multiple API calls if truncated
+    let fullResponseText = '';
+    let generationId: string | null = null;
+    let continuationStep = 0;
+    let isComplete = false;
+    let finalUsage: any = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+    const maxContinuations = 5; // Prevent infinite loops
+    
+    while (!isComplete && continuationStep < maxContinuations) {
+      // Build request payload
+      const payload: any = {
+        model: modelName,
+        temperature: temperature,
+        response_format: { type: "json_object" } as const,
+        stream: false // Explicitly disable streaming
+      };
 
-    // Only set max_tokens for specific problematic models
-    if (modelKey === 'x-ai/grok-4') {
-      payload.max_tokens = 120000; // High limit for Grok-4 specifically
-      logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
+      if (continuationStep === 0) {
+        // Initial request with full messages
+        payload.messages = [
+          {
+            role: "system",
+            content: prompt.systemPrompt
+          },
+          {
+            role: "user", 
+            content: prompt.userPrompt
+          }
+        ];
+        
+        // Only set max_tokens for specific problematic models
+        if (modelKey === 'x-ai/grok-4') {
+          payload.max_tokens = 120000; // High limit for Grok-4 specifically
+          logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
+        }
+        
+        logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
+      } else {
+        // Continuation request
+        payload.messages = []; // Empty messages for continuation
+        payload.continue = {
+          generation_id: generationId,
+          step: continuationStep
+        };
+        
+        logger.service('OpenRouter', `Continuation request - step: ${continuationStep}, generation_id: ${generationId}`);
+      }
+      
+      // Make API call
+      const startTime = Date.now();
+      const rawResponse = await openrouter.chat.completions.create(payload);
+      const requestDuration = Date.now() - startTime;
+      
+      // Extract response data
+      const completionText = rawResponse.choices?.[0]?.message?.content || '';
+      const finishReason = rawResponse.choices?.[0]?.finish_reason || (rawResponse.choices?.[0] as any)?.native_finish_reason;
+      generationId = rawResponse.id || generationId; // Store generation ID for continuation
+      
+      // Accumulate response text
+      fullResponseText += completionText;
+      
+      // Accumulate token usage
+      if (rawResponse.usage) {
+        finalUsage.prompt_tokens += rawResponse.usage.prompt_tokens || 0;
+        finalUsage.completion_tokens += rawResponse.usage.completion_tokens || 0;
+        finalUsage.total_tokens += rawResponse.usage.total_tokens || 0;
+      }
+      
+      logger.service('OpenRouter', `Step ${continuationStep} response - finish_reason: ${finishReason}, chunk_length: ${completionText.length} chars, duration: ${requestDuration}ms`);
+      
+      // Check if we need to continue
+      if (finishReason === 'length') {
+        logger.service('OpenRouter', `Response truncated at step ${continuationStep}, accumulated ${fullResponseText.length} chars so far, continuing...`, 'warn');
+        continuationStep++;
+        
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } else {
+        isComplete = true;
+        logger.service('OpenRouter', `Response complete after ${continuationStep + 1} step(s), total length: ${fullResponseText.length} chars`);
+      }
     }
-    // For other models, let them use their natural limits
     
-    // Enhanced request logging
-    logger.service('OpenRouter', `API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}, streaming: disabled`);
-    logger.service('OpenRouter', `Request payload keys: ${Object.keys(payload).join(', ')}`);
-    
-    const startTime = Date.now();
-    const rawResponse = await openrouter.chat.completions.create(payload);
-    const requestDuration = Date.now() - startTime;
-    
-    logger.service('OpenRouter', `API response received in ${requestDuration}ms`);
-    
-    // Basic format handling: Normalize the response format
-    const response = this.normalizeResponseFormat(rawResponse);
-    
-    // Extract response metadata
-    const completionText = response.choices?.[0]?.message?.content || '';
-    const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
-    
-    // Enhanced response logging
-    logger.service('OpenRouter', `Response received - finish_reason: ${finishReason}, length: ${completionText.length} chars, duration: ${requestDuration}ms`);
-    logger.service('OpenRouter', `Response keys: ${Object.keys(response).join(', ')}`);
-    
-    if (response.usage) {
-      logger.service('OpenRouter', `Token usage - prompt: ${response.usage.prompt_tokens || 0}, completion: ${response.usage.completion_tokens || 0}, total: ${response.usage.total_tokens || 0}`);
+    // Check if we hit the continuation limit
+    if (!isComplete && continuationStep >= maxContinuations) {
+      logger.service('OpenRouter', `Hit maximum continuation limit (${maxContinuations}), proceeding with partial response of ${fullResponseText.length} chars`, 'error');
     }
     
-    // Handle empty responses with detailed logging
-    if (!completionText || completionText.length === 0) {
-      logger.service('OpenRouter', `EMPTY RESPONSE DEBUG - modelKey: ${modelKey}, modelName: ${modelName}`, 'error');
-      logger.service('OpenRouter', `Raw response preview: ${JSON.stringify(rawResponse).substring(0, 200)}...`, 'error');
-      logger.service('OpenRouter', `Normalized response preview: ${JSON.stringify(response).substring(0, 200)}...`, 'error');
-      throw new Error(`Empty response from ${modelKey}. Check model availability and API configuration.`);
+    // Handle empty responses
+    if (!fullResponseText || fullResponseText.length === 0) {
+      logger.service('OpenRouter', `EMPTY RESPONSE ERROR - modelKey: ${modelKey}, modelName: ${modelName}, steps attempted: ${continuationStep + 1}`, 'error');
+      throw new Error(`Empty response from ${modelKey} after ${continuationStep + 1} attempts. Check model availability and API configuration.`);
     }
     
-    // Enhanced truncation logging
-    if (finishReason === 'length') {
-      logger.service('OpenRouter', `Response truncated (finish_reason: length) but proceeding with ${completionText.length} chars. Consider model-specific token limits.`, 'warn');
-    }
+    // Preview final assembled response for debugging
+    const contentPreview = fullResponseText.length > 200 
+      ? `${fullResponseText.substring(0, 200)}...` 
+      : fullResponseText;
+    logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
     
-    // Preview response content for debugging (first 200 chars)
-    const contentPreview = completionText.length > 200 
-      ? `${completionText.substring(0, 200)}...` 
-      : completionText;
-    logger.service('OpenRouter', `Response content preview: ${contentPreview.replace(/\n/g, '\\n')}`);
-    
-    // Validate JSON structure early
+    // Validate JSON structure of complete response
     try {
-      JSON.parse(completionText);
-      logger.service('OpenRouter', `Response contains valid JSON structure`);
+      JSON.parse(fullResponseText);
+      logger.service('OpenRouter', `Final response contains valid JSON structure`);
     } catch (error) {
-      logger.service('OpenRouter', `Response contains malformed JSON - will attempt repair: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
+      logger.service('OpenRouter', `Final response contains malformed JSON - will attempt repair: ${error instanceof Error ? error.message : 'Unknown error'}`, 'warn');
     }
     
-    return response;
+    // Return normalized response with full assembled text
+    return {
+      choices: [{
+        message: {
+          content: fullResponseText,
+          role: 'assistant'
+        },
+        finish_reason: isComplete ? 'stop' : 'length'
+      }],
+      usage: finalUsage,
+      id: generationId
+    };
   }
 
   /**
@@ -436,18 +478,8 @@ export class OpenRouterService extends BaseAIService {
     if (isTruncated) {
       logger.service('OpenRouter', `TRUNCATION DETECTED for ${modelKey} - finish_reason: ${finishReason}`, 'warn');
       logger.service('OpenRouter', `Generation ID for potential continuation: ${generationId}`, 'warn');
-      
-      // Save truncated response for analysis
-      responsePersistence.saveRawResponse(
-        modelKey,
-        responseText,
-        200,
-        {
-          provider: 'OpenRouter',
-          requestId: generationId || 'unknown',
-          truncated: true
-        }
-      );
+      // Note: Continuation logic is now handled in callProviderAPI, this should not happen
+      logger.service('OpenRouter', `WARNING: Truncation detected after continuation logic - this indicates a problem`, 'error');
     }
 
     try {
@@ -510,21 +542,10 @@ export class OpenRouterService extends BaseAIService {
         }
       });
       
-      // Save failed response with enhanced metadata for analysis
-      responsePersistence.saveRawResponse(
-        modelKey,
-        responseText,
-        200,
-        {
-          provider: 'OpenRouter',
-          requestId: generationId || 'unknown',
-          truncated: isTruncated,
-          processingError: errorMessage,
-          postContinuation: true
-        }
-      );
-      
-      logger.service('OpenRouter', `Raw response preserved for debugging: ${responseText.substring(0, 200)}...`, 'error');
+      // Note: Raw response is already saved by puzzleAnalysisService.saveRawLog()
+      // Only log the error, don't duplicate file saves
+      logger.service('OpenRouter', `JSON processing failed, raw response length: ${responseText.length} chars`, 'error');
+      logger.service('OpenRouter', `Response preview for debugging: ${responseText.substring(0, 200)}...`, 'error');
       throw new Error(`OpenRouter JSON processing failed for ${modelKey}: ${errorMessage}. Raw response preserved for analysis.`);
     }
   }
