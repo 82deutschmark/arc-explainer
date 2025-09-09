@@ -8,13 +8,15 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { ThumbsUp, ThumbsDown, Users, Heart, Star } from 'lucide-react';
 
 interface FeedbackModelStats {
   modelName: string;
   feedbackCount: number;
   helpfulCount: number;
-  avgConfidence: number;
+  notHelpfulCount: number;
+  helpfulPercentage: number;
 }
 
 interface FeedbackStats {
@@ -110,22 +112,14 @@ export function FeedbackLeaderboard({
     return { icon: Users, color: 'text-gray-400', label: 'Low volume' };
   };
 
-  // Sort models by helpfulness percentage for two different views
+  // Sort models by helpfulness percentage and notHelpfulCount for different views
   const mostHelpfulModels = [...feedbackStats.topModels]
-    .sort((a, b) => {
-      const aPercentage = a.feedbackCount > 0 ? (a.helpfulCount / a.feedbackCount) * 100 : 0;
-      const bPercentage = b.feedbackCount > 0 ? (b.helpfulCount / b.feedbackCount) * 100 : 0;
-      return bPercentage - aPercentage; // DESC order
-    })
+    .sort((a, b) => b.helpfulPercentage - a.helpfulPercentage) // DESC order by helpfulPercentage
     .slice(0, 4);
     
   const mostCriticizedModels = [...feedbackStats.topModels]
     .filter(model => model.feedbackCount >= 3) // Only models with meaningful feedback
-    .sort((a, b) => {
-      const aPercentage = a.feedbackCount > 0 ? (a.helpfulCount / a.feedbackCount) * 100 : 0;
-      const bPercentage = b.feedbackCount > 0 ? (b.helpfulCount / b.feedbackCount) * 100 : 0;
-      return aPercentage - bPercentage; // ASC order (lowest helpfulness first)
-    })
+    .sort((a, b) => b.notHelpfulCount - a.notHelpfulCount) // DESC order by notHelpfulCount (most criticized first)
     .slice(0, 4);
 
   return (
@@ -140,7 +134,7 @@ export function FeedbackLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="max-h-96 overflow-y-auto">
+        <ScrollArea className="h-96">
           {/* Most Appreciated Models Section */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
@@ -151,8 +145,6 @@ export function FeedbackLeaderboard({
             {mostHelpfulModels.map((model, index) => {
               const volumeInfo = getVolumeIndicator(model.feedbackCount);
               const VolumeIcon = volumeInfo.icon;
-              const notHelpfulCount = model.feedbackCount - model.helpfulCount;
-              const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
               
               return (
                 <div 
@@ -182,9 +174,9 @@ export function FeedbackLeaderboard({
                   </div>
                   <Badge 
                     variant="secondary" 
-                    className={`text-xs font-medium ${getSatisfactionColor(helpfulPercentage)}`}
+                    className={`text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}
                   >
-                    {helpfulPercentage.toFixed(1)}%
+                    {model.helpfulPercentage.toFixed(1)}%
                   </Badge>
                 </div>
               );
@@ -197,13 +189,12 @@ export function FeedbackLeaderboard({
           <div className="flex items-center gap-2 mb-3">
             <ThumbsDown className="h-4 w-4 text-red-600" />
             <h3 className="text-sm font-semibold text-gray-900">Most Criticized Models</h3>
+            <span className="text-xs text-gray-500">(ranked by total not-helpful ratings)</span>
           </div>
           <div className="space-y-2">
             {mostCriticizedModels.map((model, index) => {
               const volumeInfo = getVolumeIndicator(model.feedbackCount);
               const VolumeIcon = volumeInfo.icon;
-              const notHelpfulCount = model.feedbackCount - model.helpfulCount;
-              const helpfulPercentage = model.feedbackCount > 0 ? (model.helpfulCount / model.feedbackCount) * 100 : 0;
               
               return (
                 <div 
@@ -224,18 +215,18 @@ export function FeedbackLeaderboard({
                           <VolumeIcon className={`h-3 w-3 ${volumeInfo.color}`} />
                           {model.feedbackCount} ratings
                         </div>
-                        <div className="flex items-center gap-1">
-                          <ThumbsDown className="h-3 w-3 text-red-600" />
-                          {notHelpfulCount}
+                        <div className="flex items-center gap-1 text-red-600 font-medium">
+                          <ThumbsDown className="h-3 w-3" />
+                          {model.notHelpfulCount} not helpful
                         </div>
                       </div>
                     </div>
                   </div>
                   <Badge 
                     variant="secondary" 
-                    className={`text-xs font-medium ${getSatisfactionColor(helpfulPercentage)}`}
+                    className={`text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}
                   >
-                    {helpfulPercentage.toFixed(1)}%
+                    {model.helpfulPercentage.toFixed(1)}%
                   </Badge>
                 </div>
               );
@@ -243,6 +234,7 @@ export function FeedbackLeaderboard({
           </div>
         </div>
         </div>
+        </ScrollArea>
         
         {/* Overall Stats */}
         <div className="pt-3 border-t">

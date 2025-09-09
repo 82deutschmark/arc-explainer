@@ -8,6 +8,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
 
 interface TrustworthinessLeader {
@@ -125,7 +126,8 @@ export function TrustworthinessLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <ScrollArea className="h-96">
+          <div className="space-y-2">
           {allModels.map((model, index) => (
             <div 
               key={model.modelName}
@@ -162,7 +164,8 @@ export function TrustworthinessLeaderboard({
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </ScrollArea>
         
         {/* Showing all models - no need for "more models" indicator */}
         
