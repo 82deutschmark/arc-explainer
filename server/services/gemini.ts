@@ -45,6 +45,7 @@ export class GeminiService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -63,7 +64,7 @@ export class GeminiService extends BaseAIService {
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, true);
+        this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Build standard response using inherited method
       return this.buildStandardResponse(
@@ -236,13 +237,9 @@ export class GeminiService extends BaseAIService {
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
-  ): {
-    result: any;
-    tokenUsage: TokenUsage;
-    reasoningLog?: any;
-    reasoningItems?: any[];
-  } {
+    captureReasoning: boolean,
+    puzzleId?: string
+  ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     
     // Parse candidates[].content.parts[] structure instead of regex textContent
     let textContent = '';

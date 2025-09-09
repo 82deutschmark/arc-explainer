@@ -99,6 +99,7 @@ export abstract class BaseAIService {
   abstract analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature?: number,
     promptId?: string,
     customPrompt?: string,
@@ -139,7 +140,8 @@ export abstract class BaseAIService {
   protected abstract parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string };
 
   /**

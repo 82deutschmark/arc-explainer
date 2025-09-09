@@ -94,11 +94,12 @@ export class PuzzleAnalysisService {
     const result = await aiService.analyzePuzzleWithModel(
       puzzle,        // task: ARCTask
       model,         // modelKey: string
+      taskId,        // taskId: string
       temperature,   // temperature?: number
       promptId,      // promptId?: string
       customPrompt,  // customPrompt?: string
       promptOptions, // options?: PromptOptions
-      serviceOpts    // serviceOpts?: ServiceOptions - THIS WAS WRONG BEFORE!
+      serviceOpts    // serviceOpts?: ServiceOptions
     );
     
     // Calculate API processing time
