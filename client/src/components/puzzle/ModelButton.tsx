@@ -56,6 +56,9 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
             </span>
           </div>
         )}
+        {model.releaseDate && (
+          <div className="text-blue-600 font-medium">📅 Released: {model.releaseDate}</div>
+        )}
         {!model.supportsTemperature && (
           <div className="text-amber-600 font-medium">⚙️ No temperature control</div>
         )}
