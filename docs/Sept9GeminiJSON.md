@@ -26,7 +26,7 @@ First, I will validate the parsed JSON from the AI against a new, highly lenient
 There will be two minimal schemas:
 
 1.  `minimalSingleTestSchema`: Requires `predicted_output_grid` (a 2D array of numbers/strings) and `confidence` (an integer).
-2.  `minimalMultiTestSchema`: Requires `multiple_predicted_outputs` (an array of objects, each with a `predicted_grid`) and `confidence` (an integer).
+2.  `minimalMultiTestSchema`: Requires `multiple_predicted_outputs` (an array of objects, each with a `predicted_grid`) and finally a top-level `confidence` (1-100).
 
 The system will first check if the puzzle has multiple test cases and apply the appropriate minimal schema.
 
