@@ -52,6 +52,7 @@ export class OpenRouterService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -70,7 +71,7 @@ export class OpenRouterService extends BaseAIService {
       // For OpenRouter, reasoning is always included in the prompt.
       const captureReasoning = true;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(response, modelKey, captureReasoning, taskId);
 
       return this.buildStandardResponse(
         modelKey,
@@ -220,7 +221,8 @@ export class OpenRouterService extends BaseAIService {
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
     logger.apiResponse('OpenRouter', 'API Response', JSON.stringify(response), 200);
@@ -238,6 +240,10 @@ export class OpenRouterService extends BaseAIService {
     });
 
     if (!parseResult.success) {
+        // Save the failed response for recovery
+        if (puzzleId) {
+          responsePersistence.saveExplanationResponse(puzzleId, modelKey, responseText, 'PARSE_FAILED');
+        }
         logger.service('OpenRouter', `JSON parsing failed for ${modelKey}: ${parseResult.error}`, 'error');
         // Create a fallback response to preserve raw data
         const fallbackResult = {

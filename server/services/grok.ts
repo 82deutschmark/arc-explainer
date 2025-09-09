@@ -45,6 +45,7 @@ export class GrokService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -63,7 +64,7 @@ export class GrokService extends BaseAIService {
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, true);
+        this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Build standard response using inherited method
       return this.buildStandardResponse(
@@ -173,7 +174,8 @@ export class GrokService extends BaseAIService {
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
     const content = response.choices[0]?.message?.content || '';
     const parseResult = jsonParser.parse(content, { fieldName: 'grokResponse' });

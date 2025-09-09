@@ -49,6 +49,7 @@ export class OpenAIService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = DEFAULT_PROMPT_ID,
     customPrompt?: string,
@@ -74,7 +75,7 @@ export class OpenAIService extends BaseAIService {
       // Parse response using provider-specific method
       // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
-        this.parseProviderResponse(response, modelKey, true);
+        this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Validate response completeness
       const completeness = this.validateResponseCompleteness(response, modelKey);
@@ -260,7 +261,8 @@ export class OpenAIService extends BaseAIService {
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean = false
+    captureReasoning: boolean,
+    puzzleId?: string
   ): {
     result: any;
     tokenUsage: TokenUsage;
