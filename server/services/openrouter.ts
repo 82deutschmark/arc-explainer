@@ -187,9 +187,6 @@ export class OpenRouterService extends BaseAIService {
 
         if (!fetchResponse.ok) {
             logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
-            if (taskId) {
-                responsePersistence.saveExplanationResponse(taskId, modelKey, `API Error: ${fetchResponse.status}\n\n${responseText}`, 'PARSE_FAILED');
-            }
             throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
         }
 
@@ -218,9 +215,6 @@ export class OpenRouterService extends BaseAIService {
       }
     } catch (error) {
       logger.error(`[OpenRouter] Critical error during API call to ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
-      if (fullResponseText && taskId) {
-        responsePersistence.saveExplanationResponse(taskId, modelKey, fullResponseText, 'PARSE_FAILED');
-      }
       throw error; // Rethrow the error after attempting to save
     }
 
@@ -261,10 +255,7 @@ export class OpenRouterService extends BaseAIService {
     });
 
     if (!parseResult.success) {
-        // Save the failed response for recovery
-        if (puzzleId) {
-          responsePersistence.saveExplanationResponse(puzzleId, modelKey, responseText, 'PARSE_FAILED');
-        }
+        // The raw response is preserved in the fallbackResult object
         logger.service('OpenRouter', `JSON parsing failed for ${modelKey}: ${parseResult.error}`, 'error');
         // Create a fallback response to preserve raw data
         const fallbackResult = {
