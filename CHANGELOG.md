@@ -1,5 +1,17 @@
 ### September 9 2025
 
+## v2.20.0 - 🔧 CRITICAL FIX: Robust Handling of Non-Compliant API Responses
+- **SYSTEMIC ISSUE RESOLVED**: Fixed recurring "Unexpected end of JSON input" errors for models like `grok-4` and `qwen/qwen3-235b-a22b-thinking-2507`.
+- **ROOT CAUSE**: The system prematurely attempted to parse API responses as pure JSON, failing when models returned mixed content (e.g., conversational text before the JSON block).
+- **ROBUST SOLUTION**:
+  - Refactored the `OpenRouter` service to separate API fetching from parsing.
+  - `callProviderAPI` now only fetches the complete raw text response, handling continuations without parsing.
+  - The raw text is now passed to the robust `JsonParser`, which reliably extracts the JSON object from any mixed-content string.
+- **IMPACT**: The application is now resilient to non-compliant models that do not strictly adhere to the `response_format: { type: "json_object" }` request. This ensures that data can be successfully retrieved even from misbehaving or verbose models.
+- **AUTHOR**: Gemini 2.5 Pro
+
+### September 9 2025
+
 ## v2.19.0 - 🔧 MAJOR FIX: Comprehensive Streaming & Large Response Handling
 - **STREAMING RESPONSE ROBUSTNESS**: Complete overhaul of OpenRouter response handling for large puzzle analyses
 - **ROOT CAUSE RESOLUTION**: Fixed "Unexpected end of JSON input" errors caused by truncated/streaming responses from Grok models
