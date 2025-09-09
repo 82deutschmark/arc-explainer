@@ -28,6 +28,11 @@ export const initializeDatabase = async (): Promise<boolean> => {
 
   try {
     pool = new Pool({ connectionString: databaseUrl });
+
+    // Add a global error handler to the pool to prevent crashes
+    pool.on('error', (err, client) => {
+      logger.logError(`Unexpected error on idle client`, { error: err, context: 'database', stackTrace: true });
+    });
     
     // Test connection
     const client = await pool.connect();

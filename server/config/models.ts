@@ -716,7 +716,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'qwen/qwen3-max',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 32000,
+    maxOutputTokens: 31000,
     releaseDate: "2025-09" 
   },
 
@@ -733,7 +733,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'openrouter/sonoma-sky-alpha',
     modelType: 'openrouter',
     contextWindow: 2000000,
-    maxOutputTokens: 32000,
+    maxOutputTokens: 31000,
     releaseDate: "2025-09"
   },
 
@@ -750,7 +750,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'bytedance/seed-oss-36b-instruct',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 131000,
+    maxOutputTokens: 31000,
     releaseDate: "2025-09"
 
   }
