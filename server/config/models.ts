@@ -344,7 +344,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'DeepSeek',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
-    isReasoning: true,
+    isReasoning: false,
     apiModelName: 'deepseek-chat',
     modelType: 'deepseek',
   },
@@ -376,7 +376,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'meta-llama/llama-3.3-70b-instruct',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2024-06"
   },
   {
     key: 'qwen/qwen-2.5-coder-32b-instruct',
@@ -390,7 +392,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2024-06"
   },
   {
     key: 'cohere/command-r-plus',
@@ -604,7 +608,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'x-ai/grok-4',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 100000
   },
   {
     key: 'x-ai/grok-3',
@@ -675,6 +680,73 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
     contextWindow: 256000
+  },
+  {
+    key: 'nvidia/nemotron-nano-9b-v2',
+    name: 'Nemotron Nano 9B V2',
+    color: 'bg-yellow-600',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'nvidia/nemotron-nano-9b-v2',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-09"
+  },
+  {
+    key: 'qwen/qwen3-max',
+    name: 'Qwen3 Max',
+    color: 'bg-red-700',
+    premium: false,
+    cost: { input: '$1.20', output: '$6.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    isReasoning: false,
+    apiModelName: 'qwen/qwen3-max',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-09" 
+  },
+
+  {
+    key: 'openrouter/sonoma-sky-alpha',
+    name: 'Sonoma Sky Alpha',
+    color: 'bg-blue-700',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+    isReasoning: false,
+    apiModelName: 'openrouter/sonoma-sky-alpha',
+    modelType: 'openrouter',
+    contextWindow: 2000000,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-09"
+  },
+
+  {
+    key: 'bytedance/seed-oss-36b-instruct',
+    name: 'Seed OSS 36B Instruct',
+    color: 'bg-green-500',
+    premium: false,
+    cost: { input: '$0.104', output: '$0.415' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'bytedance/seed-oss-36b-instruct',
+    modelType: 'openrouter',
+    contextWindow: 131000,
+    maxOutputTokens: 131000,
+    releaseDate: "2025-09"
+
   }
 ];
 

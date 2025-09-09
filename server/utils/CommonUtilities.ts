@@ -1,11 +1,16 @@
 /**
- * Common Utilities - Centralized Utility Functions
- * 
- * Consolidates duplicate utility functions from across the codebase.
- * Single source of truth for data transformation, validation, and parsing.
- * 
- * @author Claude
- * @date 2025-08-27
+ * @file server/utils/CommonUtilities.ts
+ * @description A collection of common utility functions for data validation, normalization, and transformation.
+ *
+ * This module consolidates various helper functions that were previously duplicated across the codebase.
+ * It provides a single source of truth for common tasks such as:
+ *  - Safely parsing and stringifying JSON (`safeJsonParse`, `safeJsonStringify`).
+ *  - Normalizing and validating data types like confidence scores, hints, tokens, and costs.
+ *  - Cleaning string inputs and checking for valid objects and arrays.
+ *  - Formatting values for display (e.g., `formatBytes`).
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 import { logger } from './logger.ts';

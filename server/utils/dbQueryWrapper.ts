@@ -1,12 +1,17 @@
 /**
- * Database Query Wrapper - Centralized Parameter Validation
- * 
- * Prevents PostgreSQL JSON parameter mismatches by:
- * 1. Blocking undefined values from reaching the database
- * 2. Providing parameter mapping diagnostics  
- * 3. Standardizing JSON handling across all queries
- * 
- * @author Cascade
+ * @file server/utils/dbQueryWrapper.ts
+ * @description A strict database query wrapper for robust parameter validation.
+ *
+ * This module provides a wrapper function `q` for executing PostgreSQL queries.
+ * Its primary purpose is to act as a centralized chokepoint for all database interactions,
+ * enforcing strict checks to prevent common runtime errors. It is responsible for:
+ *  - Asserting that no `undefined` values are passed as query parameters.
+ *  - Logging detailed parameter maps for debugging purposes, showing the mapping from
+ *    parameter index (`$1`, `$2`) to column name and data type.
+ *  - Standardizing the interface for database calls across the application.
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 import { Pool, PoolClient } from 'pg';

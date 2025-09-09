@@ -1,9 +1,17 @@
 /**
- * Enhanced Logger Utility - Centralized Logging for DRY Compliance
- * @author Cascade
- * 
- * Consolidates all scattered console.log/warn/error patterns across the codebase.
- * Eliminates duplicate logging implementations and provides consistent formatting.
+ * @file server/utils/logger.ts
+ * @description An enhanced, centralized logging utility for the application.
+ *
+ * This module provides a singleton `logger` object that wraps standard `console` methods.
+ * It is designed to consolidate all logging throughout the application, ensuring consistent formatting
+ * and providing contextual information. Its features include:
+ *  - Standard logging levels (info, warn, error, debug).
+ *  - Structured error logging with support for error objects and metadata.
+ *  - Contextual logging for different parts of the application (e.g., services, file operations).
+ *  - Specialized formatters for API responses and token usage.
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 /**
