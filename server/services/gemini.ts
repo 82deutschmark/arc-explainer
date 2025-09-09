@@ -1,8 +1,17 @@
 /**
- * Google Gemini Service Integration for ARC-AGI Puzzle Analysis
- * Refactored to extend BaseAIService for code consolidation
- * 
- * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
+ * @file server/services/gemini.ts
+ * @description Google Gemini Service for ARC Puzzle Analysis
+ *
+ * This service integrates with the Google Generative AI SDK to analyze ARC puzzles using Gemini models.
+ * It is responsible for:
+ *  - Building prompts compatible with the Gemini API, including system instructions.
+ *  - Handling model-specific features like the `thinking_config` for Gemini 2.5 models.
+ *  - Parsing the Gemini response structure, which separates `thought` parts from the main answer.
+ *  - Using the centralized `jsonParser` for robust JSON extraction from the response text.
+ *  - Extending the BaseAIService for a consistent analysis workflow.
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -11,6 +20,7 @@ import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models/index.js";
+import { jsonParser } from '../utils/JsonParser.js';
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -201,13 +211,11 @@ export class GeminiService extends BaseAIService {
       generationConfig.thinking_config = {
         thinking_budget: options.thinkingBudget
       };
-      console.log(`[Gemini] Setting thinking_budget to ${options.thinkingBudget} for model ${modelKey}`);
     } else if (modelKey.includes('2.5') && options?.thinkingBudget === undefined) {
       // Default to dynamic thinking (-1) for 2.5+ models when not specified
       generationConfig.thinking_config = {
         thinking_budget: -1
       };
-      console.log(`[Gemini] Defaulting to dynamic thinking (budget: -1) for model ${modelKey}`);
     }
 
     const model = genai.getGenerativeModel({ 
@@ -235,7 +243,6 @@ export class GeminiService extends BaseAIService {
     reasoningLog?: any;
     reasoningItems?: any[];
   } {
-    console.log(`[Gemini] Parsing response structure for model: ${modelKey}`);
     
     // Parse candidates[].content.parts[] structure instead of regex textContent
     let textContent = '';
@@ -251,7 +258,6 @@ export class GeminiService extends BaseAIService {
         // Extract thoughtSignature if available (Gemini 2.5+ thinking models)
         if (candidate.thoughtSignature && modelKey.includes('2.5')) {
           thoughtSignature = candidate.thoughtSignature;
-          console.log(`[Gemini] Found thoughtSignature: ${thoughtSignature}`);
         }
         
         // Extract reasoning and answer parts using proper Gemini structure
@@ -262,7 +268,6 @@ export class GeminiService extends BaseAIService {
           const reasoningParts = parts.filter((p: any) => p.thought === true);
           const answerParts = parts.filter((p: any) => p.thought !== true);
           
-          console.log(`[Gemini] Found ${reasoningParts.length} reasoning parts and ${answerParts.length} answer parts`);
           
           // Extract text content from answer parts only
           textContent = answerParts
@@ -273,26 +278,27 @@ export class GeminiService extends BaseAIService {
           // Store reasoning parts for later extraction
           (response as any)._reasoningParts = reasoningParts;
           
-          console.log(`[Gemini] Reasoning parts preview:`, reasoningParts.slice(0, 2));
         }
       }
       
       if (!textContent) {
         // Fallback to legacy text() method if structured parsing fails
         textContent = response.text() || '';
-        console.log(`[Gemini] Fallback to legacy text() method`);
       }
       
-      console.log(`[Gemini] Extracted text content: ${textContent.length} chars`);
-      console.log(`[Gemini] Preview: "${textContent.substring(0, 100)}..."`);
       
     } catch (error) {
       console.error(`[Gemini] Error parsing structured response:`, error);
       throw new Error(`Failed to parse Gemini response structure: ${error}`);
     }
     
-    // Extract JSON using inherited method
-    const result = this.extractJsonFromResponse(textContent, modelKey);
+    // Extract JSON using the centralized parser
+    const parseResult = jsonParser.parse(textContent, { fieldName: 'geminiResponse' });
+
+    if (!parseResult.success || !parseResult.data) {
+      throw new Error(`Failed to extract valid JSON from Gemini response: ${parseResult.error}`);
+    }
+    const result = parseResult.data;
 
     // Extract token usage (Gemini provides usage info)
     const tokenUsage: TokenUsage = {
@@ -315,18 +321,15 @@ export class GeminiService extends BaseAIService {
           
         if (reasoningTexts.length > 0) {
           reasoningLog = reasoningTexts.join('\n\n');
-          console.log(`[Gemini] Extracted reasoning from ${reasoningTexts.length} thought parts: ${reasoningLog.length} chars`);
         }
       }
       
       // Store thoughtSignatures for potential continuation (but don't use as reasoning log)
       if (thoughtSignature && modelKey.includes('2.5')) {
         (response as any)._thoughtSignatures = [thoughtSignature];
-        console.log(`[Gemini] Stored thoughtSignature for continuation: ${thoughtSignature.substring(0, 50)}...`);
       }
     }
 
-    console.log(`[Gemini] Parse complete - result keys: ${Object.keys(result).join(', ')}`);
     
     // Extract reasoningItems from both JSON response and reasoning parts
     let reasoningItems: any[] = [];
@@ -334,7 +337,6 @@ export class GeminiService extends BaseAIService {
     // Priority 1: Extract from JSON response if available
     if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
       reasoningItems = result.reasoningItems;
-      console.log(`[Gemini] Extracted ${reasoningItems.length} reasoning items from JSON response`);
     }
     // Priority 2: If no JSON reasoning items, create from reasoning parts
     else if (captureReasoning) {
@@ -345,7 +347,6 @@ export class GeminiService extends BaseAIService {
           .map((part: any, index: number) => `Reasoning step ${index + 1}: ${part.text.trim()}`)
           .slice(0, 10); // Limit to prevent overflow
           
-        console.log(`[Gemini] Created ${reasoningItems.length} reasoning items from thought parts`);
       }
     }
     

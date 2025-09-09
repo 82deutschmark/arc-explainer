@@ -3,7 +3,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Brain, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
-import { formatConfidence } from '@/constants/models';
+
+export const formatConfidence = (confidence: string | number) => {
+  if (typeof confidence === 'string') {
+    return confidence.endsWith('%') ? confidence : `${confidence}%`;
+  }
+  return `${confidence}%`;
+};
 
 interface AnalysisResultContentProps {
   result: ExplanationData;

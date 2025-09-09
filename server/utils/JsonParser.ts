@@ -1,11 +1,17 @@
 /**
- * JsonParser.ts
- * 
- * Single Responsibility: Unified JSON parsing with comprehensive error handling
- * Eliminates 10+ duplicate JSON.parse implementations across the codebase
- * Provides intelligent extraction, validation, and recovery strategies
- * 
- * @author Claude Code (DRY refactor)
+ * @file server/utils/JsonParser.ts
+ * @description Unified JSON parsing utility with comprehensive error handling.
+ *
+ * This singleton class provides a robust, centralized solution for parsing JSON from various string formats.
+ * It eliminates the need for scattered, duplicate `JSON.parse` calls and error handling logic across the codebase.
+ * Its key responsibilities are:
+ *  - Attempting direct parsing of clean JSON strings.
+ *  - Extracting and parsing JSON embedded in code blocks (e.g., ```json...```).
+ *  - Finding and extracting the first complete JSON object from a mixed-content string.
+ *  - Providing specialized methods for parsing specific data structures, like grids.
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 export interface JsonParseResult<T = any> {
