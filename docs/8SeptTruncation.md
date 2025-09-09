@@ -101,7 +101,7 @@ Goal: Ensure the final combined output is valid JSON before parsing it.
      const jsonData = safeJsonParse(fullText);
      ```
    · Acceptance Criteria: The application no longer crashes on JSON.parse(), and failed parses are logged for debugging.
-2. Task 3.2: Test with a Small `max_tokens` Value  NO NO SETTING MAX TOKENS!!!
+2. Task 3.2: Test with a Small `max_tokens` Value 
    · To rigorously test the continue logic, force the issue by setting an artificially low max_tokens value (e.g., 50) in your initial request. This will guarantee a length finish reason and allow you to verify the continuation workflow works correctly.
 
 Resources for the Junior Developer:
