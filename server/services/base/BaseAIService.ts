@@ -131,7 +131,8 @@ export abstract class BaseAIService {
     prompt: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    taskId?: string
   ): Promise<any>;
 
   /**

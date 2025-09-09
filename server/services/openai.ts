@@ -70,7 +70,7 @@ export class OpenAIService extends BaseAIService {
 
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
       
       // Parse response using provider-specific method
       // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
@@ -200,7 +200,8 @@ export class OpenAIService extends BaseAIService {
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    taskId?: string
   ): Promise<any> {
     const modelName = getApiModelName(modelKey);
     const systemMessage = promptPackage.systemPrompt;
