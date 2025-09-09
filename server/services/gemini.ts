@@ -60,7 +60,10 @@ export class GeminiService extends BaseAIService {
 
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, options);
+      if (options?.candidateCount) {
+        (serviceOpts as any).candidateCount = options.candidateCount;
+      }
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId, options);
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
@@ -193,7 +196,8 @@ export class GeminiService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
-    options: PromptOptions = {}
+    taskId?: string,
+    options?: PromptOptions
   ): Promise<any> {
     const apiModelName = getApiModelName(modelKey);
     const systemMessage = promptPackage.systemPrompt;
@@ -208,9 +212,9 @@ export class GeminiService extends BaseAIService {
     };
 
     // Add thinking config for Gemini 2.5+ models if thinkingBudget is specified
-    if (modelKey.includes('2.5') && options?.thinkingBudget !== undefined) {
+    if (modelKey.includes('2.5') && (options as any)?.thinkingBudget !== undefined) {
       generationConfig.thinking_config = {
-        thinking_budget: options.thinkingBudget
+        thinking_budget: (options as any).thinkingBudget
       };
     } else if (modelKey.includes('2.5') && options?.thinkingBudget === undefined) {
       // Default to dynamic thinking (-1) for 2.5+ models when not specified
@@ -219,13 +223,7 @@ export class GeminiService extends BaseAIService {
       };
     }
 
-    const model = genai.getGenerativeModel({ 
-      model: apiModelName,
-      generationConfig,
-      ...(systemMessage && systemPromptMode === 'ARC' && {
-        systemInstruction: { role: "system", parts: [{ text: systemMessage }] }
-      })
-    });
+    const model = genai.getGenerativeModel({ model: apiModelName, generationConfig });
 
     // Combine system and user messages if not using ARC mode
     const finalPrompt = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;

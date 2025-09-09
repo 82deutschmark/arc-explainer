@@ -613,7 +613,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-4',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 100000
+    maxOutputTokens: 31000
   },
   {
     key: 'x-ai/grok-3',
@@ -628,7 +628,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-3',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 100000
+    maxOutputTokens: 31000
   },
   {
     key: 'x-ai/grok-3-mini',
@@ -643,7 +643,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-3-mini',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 100000
+    maxOutputTokens: 31000
   },
   {
     key: 'cohere/command-a',
@@ -700,7 +700,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'nvidia/nemotron-nano-9b-v2',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 128000,
+    maxOutputTokens: 64000,
     releaseDate: "2025-09"
   },
   {
@@ -733,7 +733,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'openrouter/sonoma-sky-alpha',
     modelType: 'openrouter',
     contextWindow: 2000000,
-    maxOutputTokens: 31000,
+    maxOutputTokens: 30000,
     releaseDate: "2025-09"
   },
 
@@ -750,7 +750,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'bytedance/seed-oss-36b-instruct',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 31000,
+    maxOutputTokens: 30000,
     releaseDate: "2025-09"
 
   }

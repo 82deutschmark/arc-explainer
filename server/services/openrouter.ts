@@ -66,7 +66,7 @@ export class OpenRouterService extends BaseAIService {
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
       
       // For OpenRouter, reasoning is always included in the prompt.
       const captureReasoning = true;
@@ -92,7 +92,8 @@ export class OpenRouterService extends BaseAIService {
     prompt: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    taskId?: string
   ): Promise<any> {
     const modelName = getApiModelName(modelKey);
     
@@ -105,8 +106,9 @@ export class OpenRouterService extends BaseAIService {
     let isComplete = false;
     let finalUsage: any = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
     const maxContinuations = 5; // Prevent infinite loops
-    
-    while (!isComplete && continuationStep < maxContinuations) {
+
+    try {
+      while (!isComplete && continuationStep < maxContinuations) {
       // Build request payload
       const payload: any = {
         model: modelName,
@@ -184,6 +186,16 @@ export class OpenRouterService extends BaseAIService {
         isComplete = true;
         logger.service('OpenRouter', `Response complete after ${continuationStep + 1} step(s), total length: ${fullResponseText.length} chars`);
       }
+    }
+    } catch (error) {
+      logger.error(`[OpenRouter] Critical error during API call to ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
+      // Attempt to save whatever partial response we have for recovery
+      if (fullResponseText) {
+        if (taskId) {
+          responsePersistence.saveExplanationResponse(taskId, modelKey, fullResponseText, 'PARSE_FAILED');
+        }
+      }
+      throw error; // Rethrow the error after attempting to save
     }
     
     // Check if we hit the continuation limit
