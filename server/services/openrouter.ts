@@ -127,9 +127,14 @@ export class OpenRouterService extends BaseAIService {
           }
         ];
         
-        // Only set max_tokens for specific problematic models
-        if (modelKey === 'x-ai/grok-4') {
-          payload.max_tokens = 120000; // High limit for Grok-4 specifically
+        // Set max_tokens if defined in the model configuration
+        const modelConfig = getModelConfig(modelKey);
+        if (modelConfig && modelConfig.maxOutputTokens) {
+          payload.max_tokens = modelConfig.maxOutputTokens;
+          logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
+        } else if (modelKey === 'x-ai/grok-4') {
+          // Fallback for a specific problematic model if not in config
+          payload.max_tokens = 120000;
           logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
         }
         
