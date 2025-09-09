@@ -109,151 +109,134 @@ export class OpenRouterService extends BaseAIService {
 
     try {
       while (!isComplete && continuationStep < maxContinuations) {
-      // Build request payload
-      const payload: any = {
-        model: modelName,
-        temperature: temperature,
-        response_format: { type: "json_object" } as const,
-        stream: false // Explicitly disable streaming
-      };
-
-      if (continuationStep === 0) {
-        // Initial request with full messages
-        const modelConfig = getModelConfig(modelKey);
-        // Some models (like older Grok versions via OpenRouter) don't support `messages` array
-        // and require a single `prompt` string instead. We use `supportsSystemPrompts` as a proxy for this.
-        if (modelConfig && modelConfig.supportsSystemPrompts === false) {
-          payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
-        } else {
-          payload.messages = [
-            {
-              role: "system",
-              content: prompt.systemPrompt
-            },
-            {
-              role: "user", 
-              content: prompt.userPrompt
-            }
-          ];
-        }
-        
-        // Set max_tokens if defined in the model configuration
-        if (modelConfig && modelConfig.maxOutputTokens) {
-          payload.max_tokens = modelConfig.maxOutputTokens;
-          logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
-        } else if (modelKey === 'x-ai/grok-4') {
-          // Fallback for a specific problematic model if not in config
-          payload.max_tokens = 120000;
-          logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
-        }
-        
-        logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
-      } else {
-        // Continuation request
-        payload.messages = []; // Empty messages for continuation
-        payload.continue = {
-          generation_id: generationId,
-          step: continuationStep
+        // Build request payload
+        const payload: any = {
+          model: modelName,
+          temperature: temperature,
+          response_format: { type: "json_object" } as const,
+          stream: false // Explicitly disable streaming
         };
-        
-        logger.service('OpenRouter', `Continuation request - step: ${continuationStep}, generation_id: ${generationId}`);
-      }
-      
-      // Make API call
-      const startTime = Date.now();
-      
-      const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            "HTTP-Referer": getRefererUrl(),
-            "X-Title": "ARC Explainer",
-        },
-        body: JSON.stringify(payload)
-      });
 
-      const responseText = await fetchResponse.text();
-
-      if (!fetchResponse.ok) {
-          logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
-          if (taskId) {
-              responsePersistence.saveExplanationResponse(taskId, modelKey, `API Error: ${fetchResponse.status}\n\n${responseText}`, 'PARSE_FAILED');
+        if (continuationStep === 0) {
+          // Initial request with full messages
+          const modelConfig = getModelConfig(modelKey);
+          if (modelConfig && modelConfig.supportsSystemPrompts === false) {
+            payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
+          } else {
+            payload.messages = [
+              {
+                role: "system",
+                content: prompt.systemPrompt
+              },
+              {
+                role: "user", 
+                content: prompt.userPrompt
+              }
+            ];
           }
-          throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
-      }
-
-      let rawResponse;
-      try {
-          rawResponse = JSON.parse(responseText);
-      } catch (error) {
-          logger.error(`[OpenRouter] Failed to parse JSON response from ${modelKey}. Raw text saved for recovery.`);
-          if (taskId) {
-              responsePersistence.saveExplanationResponse(taskId, modelKey, responseText, 'PARSE_FAILED');
+          
+          if (modelConfig && modelConfig.maxOutputTokens) {
+            payload.max_tokens = modelConfig.maxOutputTokens;
+            logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
+          } else if (modelKey === 'x-ai/grok-4') {
+            payload.max_tokens = 120000;
+            logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
           }
-          throw new Error(`Unexpected end of JSON input from ${modelKey}`);
-      }
-
-      const requestDuration = Date.now() - startTime;
-      
-      // Extract response data
-      const completionText = rawResponse.choices?.[0]?.message?.content || '';
-      const finishReason = rawResponse.choices?.[0]?.finish_reason || (rawResponse.choices?.[0] as any)?.native_finish_reason;
-      generationId = rawResponse.id || generationId; // Store generation ID for continuation
-      
-      // Accumulate response text
-      fullResponseText += completionText;
-      
-      // Accumulate token usage
-      if (rawResponse.usage) {
-        finalUsage.prompt_tokens += rawResponse.usage.prompt_tokens || 0;
-        finalUsage.completion_tokens += rawResponse.usage.completion_tokens || 0;
-        finalUsage.total_tokens += rawResponse.usage.total_tokens || 0;
-      }
-      
-      logger.service('OpenRouter', `Step ${continuationStep} response - finish_reason: ${finishReason}, chunk_length: ${completionText.length} chars, duration: ${requestDuration}ms`);
-      
-      // Check if we need to continue
-      if (finishReason === 'length') {
-        logger.service('OpenRouter', `Response truncated at step ${continuationStep}, accumulated ${fullResponseText.length} chars so far, continuing...`, 'warn');
-        continuationStep++;
+          
+          logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
+        } else {
+          // Continuation request
+          payload.messages = []; // Empty messages for continuation
+          payload.continue = {
+            generation_id: generationId,
+            step: continuationStep
+          };
+          
+          logger.service('OpenRouter', `Continuation request - step: ${continuationStep}, generation_id: ${generationId}`);
+        }
         
-        // Small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } else {
-        isComplete = true;
-        logger.service('OpenRouter', `Response complete after ${continuationStep + 1} step(s), total length: ${fullResponseText.length} chars`);
+        // Make API call
+        const startTime = Date.now();
+        
+        const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              "HTTP-Referer": getRefererUrl(),
+              "X-Title": "ARC Explainer",
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const responseText = await fetchResponse.text();
+
+        if (!fetchResponse.ok) {
+            logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
+            if (taskId) {
+                responsePersistence.saveExplanationResponse(taskId, modelKey, `API Error: ${fetchResponse.status}\n\n${responseText}`, 'PARSE_FAILED');
+            }
+            throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
+        }
+
+        let rawResponse;
+        try {
+            rawResponse = JSON.parse(responseText);
+        } catch (error) {
+            logger.error(`[OpenRouter] Failed to parse JSON response from ${modelKey}. Raw text saved for recovery.`);
+            if (taskId) {
+                responsePersistence.saveExplanationResponse(taskId, modelKey, responseText, 'PARSE_FAILED');
+            }
+            throw new Error(`Unexpected end of JSON input from ${modelKey}`);
+        }
+
+        const requestDuration = Date.now() - startTime;
+        
+        const completionText = rawResponse.choices?.[0]?.message?.content || '';
+        const finishReason = rawResponse.choices?.[0]?.finish_reason || (rawResponse.choices?.[0] as any)?.native_finish_reason;
+        generationId = rawResponse.id || generationId;
+        
+        fullResponseText += completionText;
+        
+        if (rawResponse.usage) {
+          finalUsage.prompt_tokens += rawResponse.usage.prompt_tokens || 0;
+          finalUsage.completion_tokens += rawResponse.usage.completion_tokens || 0;
+          finalUsage.total_tokens += rawResponse.usage.total_tokens || 0;
+        }
+        
+        logger.service('OpenRouter', `Step ${continuationStep} response - finish_reason: ${finishReason}, chunk_length: ${completionText.length} chars, duration: ${requestDuration}ms`);
+        
+        if (finishReason === 'length') {
+          logger.service('OpenRouter', `Response truncated at step ${continuationStep}, accumulated ${fullResponseText.length} chars so far, continuing...`, 'warn');
+          continuationStep++;
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } else {
+          isComplete = true;
+          logger.service('OpenRouter', `Response complete after ${continuationStep + 1} step(s), total length: ${fullResponseText.length} chars`);
+        }
       }
-    }
     } catch (error) {
       logger.error(`[OpenRouter] Critical error during API call to ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
-      // Attempt to save whatever partial response we have for recovery
-      if (fullResponseText) {
-        if (taskId) {
-          responsePersistence.saveExplanationResponse(taskId, modelKey, fullResponseText, 'PARSE_FAILED');
-        }
+      if (fullResponseText && taskId) {
+        responsePersistence.saveExplanationResponse(taskId, modelKey, fullResponseText, 'PARSE_FAILED');
       }
       throw error; // Rethrow the error after attempting to save
     }
-    
-    // Check if we hit the continuation limit
+
     if (!isComplete && continuationStep >= maxContinuations) {
       logger.service('OpenRouter', `Hit maximum continuation limit (${maxContinuations}), proceeding with partial response of ${fullResponseText.length} chars`, 'error');
     }
     
-    // Handle empty responses
     if (!fullResponseText || fullResponseText.length === 0) {
       logger.service('OpenRouter', `EMPTY RESPONSE ERROR - modelKey: ${modelKey}, modelName: ${modelName}, steps attempted: ${continuationStep + 1}`, 'error');
       throw new Error(`Empty response from ${modelKey} after ${continuationStep + 1} attempts. Check model availability and API configuration.`);
     }
     
-    // Preview final assembled response for debugging
     const contentPreview = fullResponseText.length > 200 
       ? `${fullResponseText.substring(0, 200)}...` 
       : fullResponseText;
     logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
     
-    // Return normalized response with full assembled text
     return {
       choices: [{
         message: {
@@ -266,7 +249,6 @@ export class OpenRouterService extends BaseAIService {
       id: generationId
     };
   }
-
 
   protected parseProviderResponse(
     response: any,
