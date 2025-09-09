@@ -110,19 +110,9 @@ export class PuzzleAnalysisService {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
     
-    // Save to database
-    try {
-      const enrichedResult = {
-        ...result,
-        puzzleId: taskId,
-        modelName: model
-      };
-      await repositoryService.explanations.saveExplanation(enrichedResult);
-      logger.debug(`Analysis successfully saved to database for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
-    } catch (dbError) {
-      logger.error(`Failed to save analysis to database for puzzle ${taskId} with model ${model}: ${dbError instanceof Error ? dbError.message : String(dbError)}`, 'puzzle-analysis-service');
-      // Don't throw - continue to save debug log and return result to user
-    }
+    // Note: Database saving is handled by the calling service (explanationService)
+    // This service only handles AI analysis and validation - not persistence
+    logger.debug(`Analysis completed for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
     
     // Save raw analysis log
     await this.saveRawLog(taskId, model, result);
@@ -152,7 +142,7 @@ export class PuzzleAnalysisService {
         if (allFeedback && allFeedback.length > 0) {
           // Filter to get only negative feedback with comments
           badFeedback = allFeedback.filter(fb => 
-            fb.voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
+            (fb as any).voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
           );
         }
       }
