@@ -27,6 +27,7 @@ export class AnthropicService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -259,27 +260,66 @@ export class AnthropicService extends BaseAIService {
 
     const startTime = Date.now();
     
-    // Claude Sonnet 4 recommends streaming for long operations. Use streaming but
-    // materialize the final aggregated message so downstream code stays unchanged.
+    // Claude Sonnet 4 requires streaming for long operations (>10 minutes)
     const needsStreaming = /sonnet-4/i.test(modelKey) || /claude-sonnet-4/i.test(apiModelName);
     let response: any;
     
     if (needsStreaming) {
       try {
-        requestBody.stream = true;
-        console.log(`[${this.provider}] Streaming enabled for model ${modelKey}`);
-        const stream: any = await (anthropic as any).messages.stream(requestBody);
-        // Optionally, we could hook into events here for live logs.
-        const finalMessage = await stream.finalMessage();
-        // Some SDK versions also expose token usage at the end; prefer the final message usage.
-        response = finalMessage ?? {};
-      } catch (e) {
-        console.warn(`[${this.provider}] Streaming path failed, falling back to non-streaming: ${String(e)}`);
-        requestBody.stream = false;
-        response = await anthropic.messages.create(requestBody);
+        console.log(`[${this.provider}] Using streaming for model ${modelKey}`);
+        
+        // For streaming, we need to collect chunks and build the response
+        let fullContent = [];
+        let inputTokens = 0;
+        let outputTokens = 0;
+        
+        // Create a streaming request
+        const stream = anthropic.messages.stream({
+          ...requestBody,
+          stream: true
+        });
+        
+        // Process the stream
+        for await (const chunk of stream) {
+          if (chunk.type === 'message_start') {
+            inputTokens = chunk.message.usage?.input_tokens || 0;
+          } else if (chunk.type === 'content_block_delta' && 'delta' in chunk && 'text' in chunk.delta) {
+            // Collect text content
+            fullContent.push(chunk.delta.text);
+          } else if (chunk.type === 'message_delta' && 'usage' in chunk) {
+            // Update token counts from the final chunk
+            outputTokens = chunk.usage?.output_tokens || 0;
+          }
+        }
+        
+        // Get the final message with all content
+        const message = await stream.finalMessage();
+        
+        // Construct a response that matches the non-streaming format
+        response = {
+          ...message,
+          content: [{ type: 'text', text: fullContent.join('') }],
+          usage: {
+            input_tokens: inputTokens,
+            output_tokens: outputTokens
+          },
+          stop_reason: message.stop_reason || 'end_turn'
+        };
+        
+        console.log(`[${this.provider}] Streaming completed with ${outputTokens} output tokens`);
+        
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error during streaming';
+        console.error(`[${this.provider}] Streaming error:`, errorMessage);
+        throw new Error(`Streaming request failed: ${errorMessage}`);
       }
     } else {
-      response = await anthropic.messages.create(requestBody);
+      // Standard non-streaming request
+      console.log(`[${this.provider}] Using standard request for model ${modelKey}`);
+      response = await anthropic.messages.create({
+        ...requestBody,
+        stream: false
+      });
     }
 
     const processingTime = Date.now() - startTime;
