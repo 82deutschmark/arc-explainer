@@ -110,6 +110,20 @@ export class PuzzleAnalysisService {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
     
+    // Save to database
+    try {
+      const enrichedResult = {
+        ...result,
+        puzzleId: taskId,
+        modelName: model
+      };
+      await repositoryService.explanations.saveExplanation(enrichedResult);
+      logger.debug(`Analysis successfully saved to database for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
+    } catch (dbError) {
+      logger.error(`Failed to save analysis to database for puzzle ${taskId} with model ${model}: ${dbError instanceof Error ? dbError.message : String(dbError)}`, 'puzzle-analysis-service');
+      // Don't throw - continue to save debug log and return result to user
+    }
+    
     // Save raw analysis log
     await this.saveRawLog(taskId, model, result);
     

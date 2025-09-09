@@ -231,41 +231,57 @@ export class OpenRouterService extends BaseAIService {
     if (finishReason === 'length') {
       logger.service('OpenRouter', `Truncation detected (finish_reason: length) - continuing generation ${generationId}`, 'warn');
       
-      // Recursively call to continue the generation
-      const continuedResponse = await this.callProviderAPIRecursive(
-        prompt, 
-        modelKey, 
-        temperature, 
-        serviceOpts, 
-        step + 1, 
-        generationId
-      );
-      
-      // Combine the responses - merge the content fields
-      const continuedText = continuedResponse.choices?.[0]?.message?.content || '';
-      
-      // Create combined response preserving the structure but merging content
-      const combinedResponse = {
-        ...response,
-        choices: [{
-          ...response.choices[0],
-          message: {
-            ...response.choices[0].message,
-            content: completionText + continuedText
-          },
-          finish_reason: continuedResponse.choices?.[0]?.finish_reason || 'stop'
-        }],
-        // Merge usage stats if available
-        usage: {
-          prompt_tokens: (response.usage?.prompt_tokens || 0) + (continuedResponse.usage?.prompt_tokens || 0),
-          completion_tokens: (response.usage?.completion_tokens || 0) + (continuedResponse.usage?.completion_tokens || 0),
-          total_tokens: (response.usage?.total_tokens || 0) + (continuedResponse.usage?.total_tokens || 0),
-          reasoning_tokens: ((response.usage as any)?.reasoning_tokens || 0) + ((continuedResponse.usage as any)?.reasoning_tokens || 0)
+      try {
+        // Recursively call to continue the generation
+        const continuedResponse = await this.callProviderAPIRecursive(
+          prompt, 
+          modelKey, 
+          temperature, 
+          serviceOpts, 
+          step + 1, 
+          generationId
+        );
+        
+        // Combine the responses - merge the content fields
+        const continuedText = continuedResponse.choices?.[0]?.message?.content || '';
+        
+        // Create combined response preserving the structure but merging content
+        const combinedResponse = {
+          ...response,
+          choices: [{
+            ...response.choices[0],
+            message: {
+              ...response.choices[0].message,
+              content: completionText + continuedText
+            },
+            finish_reason: continuedResponse.choices?.[0]?.finish_reason || 'stop'
+          }],
+          // Merge usage stats if available
+          usage: {
+            prompt_tokens: (response.usage?.prompt_tokens || 0) + (continuedResponse.usage?.prompt_tokens || 0),
+            completion_tokens: (response.usage?.completion_tokens || 0) + (continuedResponse.usage?.completion_tokens || 0),
+            total_tokens: (response.usage?.total_tokens || 0) + (continuedResponse.usage?.total_tokens || 0),
+            reasoning_tokens: ((response.usage as any)?.reasoning_tokens || 0) + ((continuedResponse.usage as any)?.reasoning_tokens || 0)
+          }
+        };
+        
+        logger.service('OpenRouter', `Combined response: ${combinedResponse.choices[0].message.content.length} chars total`);
+        return combinedResponse;
+        
+      } catch (continuationError) {
+        // Handle continuation failures (like 400 "Input required: specify prompt or messages")
+        logger.service('OpenRouter', `Continuation failed for ${modelKey}: ${continuationError instanceof Error ? continuationError.message : String(continuationError)}`, 'warn');
+        
+        // Check if it's the specific 400 error we're trying to fix
+        const errorMessage = String(continuationError);
+        if (errorMessage.includes('400') && errorMessage.includes('Input required')) {
+          logger.service('OpenRouter', `Model ${modelKey} doesn't support continuation API - returning truncated response`, 'warn');
         }
-      };
-      
-      logger.service('OpenRouter', `Combined response: ${combinedResponse.choices[0].message.content.length} chars total`);
-      return combinedResponse;
+        
+        // Return the original truncated response instead of failing completely
+        logger.service('OpenRouter', `Returning truncated response (${completionText.length} chars) due to continuation failure`);
+        return response;
+      }
     } else {
       // Response completed normally, return as-is
       logger.service('OpenRouter', `Response completed normally with finish_reason: ${finishReason}`);
