@@ -238,56 +238,8 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 4000
   },
 
-  // xAI Grok Models
-  {
-    key: 'grok-4-0709',
-    name: 'Grok 4 (July 2025)',
-    color: 'bg-gray-900',
-    premium: true,
-    cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: false,
-    provider: 'xAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    isReasoning: true,
-    apiModelName: 'grok-4-0709',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3',
-    name: 'Grok 3',
-    color: 'bg-gray-600',
-    premium: true,
-    cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    apiModelName: 'grok-3',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3-mini',
-    name: 'Grok 3 Mini',
-    color: 'bg-gray-500',
-    premium: false,
-    cost: { input: '$0.30', output: '$0.50' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    apiModelName: 'grok-3-mini',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3-mini-fast',
-    name: 'Grok 3 Mini Fast',
-    color: 'bg-gray-600',
-    premium: false,
-    cost: { input: '$0.60', output: '$4.00' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'fast', estimate: '30-60 sec' },
-    apiModelName: 'grok-3-mini-fast',
-    modelType: 'grok',
-  },
+  // xAI Grok Models (DEPRECATED - All Grok models now use OpenRouter)
+  // Legacy entries removed - see OpenRouter section for x-ai/grok-* models
 
   // Google Gemini Models
   {
@@ -618,17 +570,60 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 131072
   },
+  // xAI Grok Models (all via OpenRouter)
   {
     key: 'x-ai/grok-4',
-    name: 'xAI Grok 4 (via OpenRouter)',
-    color: 'bg-gray-800',
+    name: 'Grok 4 (July 2025)',
+    color: 'bg-gray-900',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-4',
+    modelType: 'openrouter',
+    contextWindow: 256000
+  },
+  {
+    key: 'x-ai/grok-3',
+    name: 'Grok 3',
+    color: 'bg-gray-600',
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
     isReasoning: true,
-    apiModelName: 'x-ai/grok-4',
+    apiModelName: 'x-ai/grok-3',
+    modelType: 'openrouter',
+    contextWindow: 256000
+  },
+  {
+    key: 'x-ai/grok-3-mini',
+    name: 'Grok 3 Mini',
+    color: 'bg-gray-500',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-3-mini',
+    modelType: 'openrouter',
+    contextWindow: 256000
+  },
+  {
+    key: 'x-ai/grok-3-mini-fast',
+    name: 'Grok 3 Mini Fast',
+    color: 'bg-gray-600',
+    premium: false,
+    cost: { input: '$0.60', output: '$4.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-3-mini-fast',
     modelType: 'openrouter',
     contextWindow: 256000
   },

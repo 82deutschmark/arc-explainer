@@ -40,8 +40,21 @@ async function main() {
   const getCanonicalKey = (name: string | null): string | null => {
     if (!name) return null;
 
-    if (name.includes('grok-4')) {
-      return 'grok-4-0709';
+    // Grok model migrations: All direct xAI models -> OpenRouter x-ai/ namespace
+    if (name === 'grok-4-0709' || name.includes('grok-4')) {
+      return 'x-ai/grok-4';
+    }
+    if (name === 'grok-3' && !name.includes('mini')) {
+      return 'x-ai/grok-3';
+    }
+    if (name === 'grok-3-mini' && !name.includes('fast')) {
+      return 'x-ai/grok-3-mini';
+    }
+    if (name === 'grok-3-mini-fast') {
+      return 'x-ai/grok-3-mini-fast';
+    }
+    if (name === 'grok-code-fast-1') {
+      return 'x-ai/grok-code-fast-1';
     }
 
     const sortedModels = [...MODELS].sort((a, b) => b.key.length - a.key.length);

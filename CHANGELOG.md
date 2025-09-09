@@ -1,3 +1,19 @@
+### September 9 2025
+
+## v2.17.0 - 🔄 INFRASTRUCTURE: Grok Model Migration to OpenRouter
+- **GROK PROVIDER MIGRATION**: All Grok models now use OpenRouter with x-ai/ namespace for improved reliability
+- **MODEL STANDARDIZATION**:
+  - **Migrated Models**: `grok-4-0709` → `x-ai/grok-4`, `grok-3` → `x-ai/grok-3`, `grok-3-mini` → `x-ai/grok-3-mini`, `grok-3-mini-fast` → `x-ai/grok-3-mini-fast`
+  - **Database Migration**: Updated 693 existing explanation records to new model names
+  - **Config Consolidation**: All Grok models now in OpenRouter section with consistent configuration
+  - **Legacy Support**: Direct xAI service preserved as fallback with deprecation notices
+- **INFRASTRUCTURE IMPROVEMENTS**:
+  - **Enhanced Normalization**: Updated model name cleanup script with comprehensive Grok migration logic
+  - **Single Provider Path**: Eliminates dual provider complexity for Grok models
+  - **Consistent Naming**: All Grok models use x-ai/ OpenRouter namespace convention
+- **BACKWARDS COMPATIBILITY**: Existing API endpoints and model selection continue working seamlessly
+- **TESTING**: User should verify Grok model selection and analysis functionality works correctly via OpenRouter
+
 ### September 8 2025
 
 ## v2.16.0 - 🎯 MAJOR ENHANCEMENT: PuzzleDiscussion Rich Filtering & ARC 2 Eval Focus

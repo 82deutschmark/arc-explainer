@@ -2,6 +2,10 @@
  * xAI Grok Service Integration for ARC-AGI Puzzle Analysis
  * Refactored to extend BaseAIService for code consolidation
  * 
+ * ⚠️ DEPRECATED: This service is kept for fallback purposes only.
+ * All Grok models now use OpenRouter via openrouter.ts with x-ai/ namespace.
+ * See server/config/models.ts for current x-ai/grok-* model definitions.
+ * 
  * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
  */
 
@@ -30,7 +34,6 @@ export class GrokService extends BaseAIService {
     "grok-3": "grok-3",
     "grok-3-mini": "grok-3-mini",
     "grok-code-fast-1": "grok-code-fast-1",
-    "grok-2-1212": "grok-2-1212",
     "grok-3-mini-fast": "grok-3-mini-fast",
   };
 
