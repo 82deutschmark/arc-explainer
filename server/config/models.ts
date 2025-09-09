@@ -26,7 +26,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     apiModelName: 'gpt-4.1-nano-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4.1-mini-2025-04-14', 
@@ -39,7 +40,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4.1-mini-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4o-mini-2024-07-18', 
@@ -52,7 +54,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4o-mini-2024-07-18',
     modelType: 'gpt5_chat',
-    contextWindow: 128000
+    contextWindow: 128000,
+    releaseDate: "2024-07"
   },
   { 
     key: 'o3-mini-2025-01-31', 
@@ -66,7 +69,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-mini-2025-01-31',
     modelType: 'o3_o4',
-    contextWindow: 200000
+    contextWindow: 200000,
+    releaseDate: "2025-01"
   },
   { 
     key: 'o4-mini-2025-04-16', 
@@ -80,7 +84,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o4-mini-2025-04-16',
     modelType: 'o3_o4',
-    contextWindow: 200000
+    contextWindow: 200000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'o3-2025-04-16', 
@@ -94,7 +99,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-2025-04-16',
     modelType: 'o3_o4',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4.1-2025-04-14', 
@@ -107,7 +113,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     apiModelName: 'gpt-4.1-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-5-2025-08-07', 
@@ -121,7 +128,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-chat-latest', 
@@ -135,7 +143,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'gpt-5-chat-latest',
     modelType: 'gpt5_chat',
-    contextWindow: 256000
+    contextWindow: 256000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-mini-2025-08-07', 
@@ -149,7 +158,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-mini-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-nano-2025-08-07', 
@@ -163,7 +173,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-nano-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
 
   // Anthropic Models
@@ -179,7 +190,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
-    maxOutputTokens: 64000
+    maxOutputTokens: 64000,
+    releaseDate: "2025-05"
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -193,7 +205,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-7-sonnet-20250219',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 20000,
+    releaseDate: "2025-02"
   },
   { 
     key: 'claude-3-5-sonnet-20241022', 
@@ -207,7 +220,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-sonnet-20241022',
     modelType: 'claude',
-    maxOutputTokens: 8192
+    maxOutputTokens: 8192,
+    releaseDate: "2024-10"
   },
   { 
     key: 'claude-3-5-haiku-20241022', 
@@ -221,7 +235,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-haiku-20241022',
     modelType: 'claude',
-    maxOutputTokens: 4000
+    maxOutputTokens: 4000,
+    releaseDate: "2024-10"
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -235,7 +250,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-haiku-20240307',
     modelType: 'claude',
-    maxOutputTokens: 4000
+    maxOutputTokens: 4000,
+    releaseDate: "2024-03"
   },
 
   // xAI Grok Models (DEPRECATED - All Grok models now use OpenRouter)
@@ -254,7 +270,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.5-flash',
@@ -268,7 +285,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.5-flash-lite',
@@ -282,7 +300,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash-lite',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.0-flash',
@@ -296,7 +315,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.0-flash-lite',
@@ -310,7 +330,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash-lite',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   
   // DeepSeek Models
