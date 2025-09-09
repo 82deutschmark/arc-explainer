@@ -59,20 +59,21 @@ export class OpenRouterService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    // For OpenRouter, reasoning is always included in the prompt.
     const usePromptReasoning = true;
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
     
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+      // 1. Get the raw text response from the provider
+      const responseText = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
       
-      // For OpenRouter, reasoning is always included in the prompt.
+      // 2. Let the robust parser handle the raw text
       const captureReasoning = true;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning, taskId);
+        this.parseProviderResponse(responseText, modelKey, captureReasoning, taskId);
 
+      // 3. Build the standard response
       return this.buildStandardResponse(
         modelKey,
         temperature,
@@ -94,7 +95,7 @@ export class OpenRouterService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions,
     taskId?: string
-  ): Promise<any> {
+  ): Promise<string> { // Returns a string now
     const modelName = getApiModelName(modelKey);
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);
@@ -182,6 +183,7 @@ export class OpenRouterService extends BaseAIService {
         });
 
         const responseText = await fetchResponse.text();
+        const requestDuration = Date.now() - startTime;
 
         if (!fetchResponse.ok) {
             logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
@@ -191,40 +193,27 @@ export class OpenRouterService extends BaseAIService {
             throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
         }
 
-        let rawResponse;
+        // Continuation logic requires parsing each chunk. Handle non-JSON chunks gracefully.
+        let chunkData;
         try {
-            rawResponse = JSON.parse(responseText);
-        } catch (error) {
-            logger.error(`[OpenRouter] Failed to parse JSON response from ${modelKey}. Raw text saved for recovery.`);
-            if (taskId) {
-                responsePersistence.saveExplanationResponse(taskId, modelKey, responseText, 'PARSE_FAILED');
-            }
-            throw new Error(`Unexpected end of JSON input from ${modelKey}`);
+            chunkData = JSON.parse(responseText);
+        } catch (e) {
+            logger.warn(`[OpenRouter] Non-JSON chunk received from ${modelKey}. Assuming it's a complete but non-standard response.`);
+            fullResponseText += responseText;
+            isComplete = true;
+            continue; // Proceed to end of loop
         }
 
-        const requestDuration = Date.now() - startTime;
-        
-        const completionText = rawResponse.choices?.[0]?.message?.content || '';
-        const finishReason = rawResponse.choices?.[0]?.finish_reason || (rawResponse.choices?.[0] as any)?.native_finish_reason;
-        generationId = rawResponse.id || generationId;
+        const completionText = chunkData.choices?.[0]?.message?.content || '';
+        const finishReason = chunkData.choices?.[0]?.finish_reason;
         
         fullResponseText += completionText;
         
-        if (rawResponse.usage) {
-          finalUsage.prompt_tokens += rawResponse.usage.prompt_tokens || 0;
-          finalUsage.completion_tokens += rawResponse.usage.completion_tokens || 0;
-          finalUsage.total_tokens += rawResponse.usage.total_tokens || 0;
-        }
-        
-        logger.service('OpenRouter', `Step ${continuationStep} response - finish_reason: ${finishReason}, chunk_length: ${completionText.length} chars, duration: ${requestDuration}ms`);
-        
         if (finishReason === 'length') {
-          logger.service('OpenRouter', `Response truncated at step ${continuationStep}, accumulated ${fullResponseText.length} chars so far, continuing...`, 'warn');
+          logger.service('OpenRouter', `Response truncated, continuing...`);
           continuationStep++;
-          await new Promise(resolve => setTimeout(resolve, 100));
         } else {
           isComplete = true;
-          logger.service('OpenRouter', `Response complete after ${continuationStep + 1} step(s), total length: ${fullResponseText.length} chars`);
         }
       }
     } catch (error) {
@@ -249,32 +238,20 @@ export class OpenRouterService extends BaseAIService {
       : fullResponseText;
     logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
     
-    return {
-      choices: [{
-        message: {
-          content: fullResponseText,
-          role: 'assistant'
-        },
-        finish_reason: isComplete ? 'stop' : 'length'
-      }],
-      usage: finalUsage,
-      id: generationId
-    };
+    // Return the raw text, as it's already been processed by the robust parser
+    return fullResponseText;
   }
 
   protected parseProviderResponse(
-    response: any,
+    responseText: string,
     modelKey: string,
     captureReasoning: boolean,
     puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
-    logger.apiResponse('OpenRouter', 'API Response', JSON.stringify(response), 200);
-
-    const responseText = response.choices?.[0]?.message?.content || '';
-
-    // [CRITICAL-DEBUG] Log the raw response text before attempting to parse
-    logger.service('OpenRouter', `[CRITICAL-DEBUG] Raw response text for ${modelKey} (length: ${responseText.length}):\n---\n${responseText}\n---`);
+    // Log the raw text, not a stringified object
+    logger.apiResponse('OpenRouter', 'API Response', responseText, 200);
+    logger.service('OpenRouter', `Processing response for ${modelKey}`);
 
     const parseResult = jsonParser.parse(responseText, {
         preserveRawInput: true,
@@ -305,18 +282,16 @@ export class OpenRouterService extends BaseAIService {
         };
     }
 
-    const robustResponse = {
-        ...response,
-        choices: [{
-            ...response.choices[0],
-            message: {
-                ...response.choices[0].message,
-                content: JSON.stringify(parseResult.data) // Ensure clean JSON string
-            }
-        }]
+    // Simulate a provider response object for the responseProcessor
+    const simulatedResponse = {
+      choices: [{
+        message: {
+          content: JSON.stringify(parseResult.data) // Use the clean, parsed JSON
+        }
+      }]
     };
 
-    const processedResponse = responseProcessor.processChatCompletion(robustResponse, {
+    const processedResponse = responseProcessor.processChatCompletion(simulatedResponse, {
         captureReasoning,
         modelKey,
         provider: 'OpenRouter'
