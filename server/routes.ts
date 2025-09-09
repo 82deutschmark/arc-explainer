@@ -100,6 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/:puzzleId/feedback", asyncHandler(feedbackController.getByPuzzle));
   app.get("/api/feedback", asyncHandler(feedbackController.getAll));
   app.get("/api/feedback/stats", asyncHandler(feedbackController.getStats));
+  app.get("/api/feedback/accuracy-stats", asyncHandler(feedbackController.getAccuracyStats));
   
   // Solution submission and voting routes (from Gemini plan)
   app.get("/api/puzzles/:puzzleId/solutions", asyncHandler(feedbackController.getSolutions));
