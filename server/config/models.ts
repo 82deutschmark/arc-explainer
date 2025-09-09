@@ -526,18 +526,19 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144
   },
   {
-    key: 'z-ai/glm-4.5',
-    name: 'Z-AI GLM 4.5',
+    key: 'z-ai/glm-4.5-air:free',
+    name: 'Z-AI GLM 4.5 (Air)',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.60', output: '$2.20' },
+    cost: { input: '$0.00', output: '$0.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     isReasoning: true,
-    apiModelName: 'z-ai/glm-4.5',
+    apiModelName: 'z-ai/glm-4.5-air:free',
     modelType: 'openrouter',
-    contextWindow: 131000
+    contextWindow: 131000,
+    maxOutputTokens: 96000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
@@ -551,7 +552,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
     modelType: 'openrouter',
-    contextWindow: 262144
+    contextWindow: 262144,
+    maxOutputTokens: 31000
+
   },
   {
     key: 'qwen/qwen3-coder',
@@ -565,7 +568,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen3-coder',
     modelType: 'openrouter',
-    contextWindow: 262144
+    contextWindow: 262144,
+    maxOutputTokens: 31000
   },
   {
     key: 'moonshotai/kimi-k2',
@@ -623,7 +627,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'x-ai/grok-3',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 100000
   },
   {
     key: 'x-ai/grok-3-mini',
@@ -637,7 +642,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'x-ai/grok-3-mini',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 100000
   },
   {
     key: 'cohere/command-a',
