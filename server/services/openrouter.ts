@@ -119,19 +119,25 @@ export class OpenRouterService extends BaseAIService {
 
       if (continuationStep === 0) {
         // Initial request with full messages
-        payload.messages = [
-          {
-            role: "system",
-            content: prompt.systemPrompt
-          },
-          {
-            role: "user", 
-            content: prompt.userPrompt
-          }
-        ];
+        const modelConfig = getModelConfig(modelKey);
+        // Some models (like older Grok versions via OpenRouter) don't support `messages` array
+        // and require a single `prompt` string instead. We use `supportsSystemPrompts` as a proxy for this.
+        if (modelConfig && modelConfig.supportsSystemPrompts === false) {
+          payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
+        } else {
+          payload.messages = [
+            {
+              role: "system",
+              content: prompt.systemPrompt
+            },
+            {
+              role: "user", 
+              content: prompt.userPrompt
+            }
+          ];
+        }
         
         // Set max_tokens if defined in the model configuration
-        const modelConfig = getModelConfig(modelKey);
         if (modelConfig && modelConfig.maxOutputTokens) {
           payload.max_tokens = modelConfig.maxOutputTokens;
           logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
@@ -155,7 +161,39 @@ export class OpenRouterService extends BaseAIService {
       
       // Make API call
       const startTime = Date.now();
-      const rawResponse = await openrouter.chat.completions.create(payload);
+      
+      const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            "HTTP-Referer": getRefererUrl(),
+            "X-Title": "ARC Explainer",
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const responseText = await fetchResponse.text();
+
+      if (!fetchResponse.ok) {
+          logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
+          if (taskId) {
+              responsePersistence.saveExplanationResponse(taskId, modelKey, `API Error: ${fetchResponse.status}\n\n${responseText}`, 'PARSE_FAILED');
+          }
+          throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
+      }
+
+      let rawResponse;
+      try {
+          rawResponse = JSON.parse(responseText);
+      } catch (error) {
+          logger.error(`[OpenRouter] Failed to parse JSON response from ${modelKey}. Raw text saved for recovery.`);
+          if (taskId) {
+              responsePersistence.saveExplanationResponse(taskId, modelKey, responseText, 'PARSE_FAILED');
+          }
+          throw new Error(`Unexpected end of JSON input from ${modelKey}`);
+      }
+
       const requestDuration = Date.now() - startTime;
       
       // Extract response data

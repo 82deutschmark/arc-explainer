@@ -583,8 +583,29 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'moonshotai/kimi-k2',
     modelType: 'openrouter',
-    contextWindow: 63000
+    contextWindow: 63000,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-08",
   },
+// New September 2025 Model
+  {
+    key: 'moonshotai/kimi-k2-0905',
+    name: 'Moonshot Kimi K2 (Sep 2025)',
+    color: 'bg-slate-600',
+    premium: true,
+    cost: { input: '$1.00', output: '$3.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'moonshotai/kimi-k2-0905',
+    modelType: 'openrouter',
+    contextWindow: 63000,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-09",
+  },
+    
+
   {
     key: 'moonshotai/kimi-dev-72b:free',
     name: 'Kimi Dev 72B (Free)',
@@ -753,6 +774,22 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 30000,
     releaseDate: "2025-09"
 
-  }
+  },
+  {
+    key: 'stepfun-ai/step3',
+    name: 'Step3',
+    color: 'bg-green-600',
+    premium: true,
+    cost: { input: '$0.57', output: '$1.42' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+    isReasoning: true,
+    apiModelName: 'stepfun-ai/step3',
+    modelType: 'openrouter',
+    contextWindow: 65000,
+    maxOutputTokens: 25000,
+    releaseDate: "2025-08"
+  },
 ];
 
