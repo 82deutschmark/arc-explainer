@@ -502,10 +502,12 @@ export class OpenRouterService extends BaseAIService {
       logger.logError(`JSON processing failed for ${modelKey} after continuation`, {
         error: errorMessage,
         context: 'OpenRouter',
-        responseLength: responseText.length,
-        finishReason: finishReason,
-        generationId: generationId,
-        wasTruncated: isTruncated
+        metadata: {
+          responseLength: responseText.length,
+          finishReason: finishReason,
+          generationId: generationId,
+          wasTruncated: isTruncated
+        }
       });
       
       // Save failed response with enhanced metadata for analysis
