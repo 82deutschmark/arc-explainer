@@ -227,6 +227,9 @@ export class OpenRouterService extends BaseAIService {
 
     const responseText = response.choices?.[0]?.message?.content || '';
 
+    // [CRITICAL-DEBUG] Log the raw response text before attempting to parse
+    logger.service('OpenRouter', `[CRITICAL-DEBUG] Raw response text for ${modelKey} (length: ${responseText.length}):\n---\n${responseText}\n---`);
+
     const parseResult = jsonParser.parse(responseText, {
         preserveRawInput: true,
         allowPartialExtraction: true,
