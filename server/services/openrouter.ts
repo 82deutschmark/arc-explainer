@@ -124,8 +124,16 @@ export class OpenRouterService extends BaseAIService {
         if (continuationStep === 0) {
           // Initial request with full messages
           const modelConfig = getModelConfig(modelKey);
-          if (modelConfig && modelConfig.supportsSystemPrompts === false) {
-            payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
+
+          // Grok-4 models seem to require a combined prompt. Other models might not support system prompts.
+          if (modelName.includes('grok-4') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
+            payload.messages = [
+              {
+                role: "user",
+                content: `${prompt.systemPrompt}\n\n${prompt.userPrompt}`
+              }
+            ];
+            logger.service('OpenRouter', `Using combined-prompt strategy for ${modelName}`);
           } else {
             payload.messages = [
               {
@@ -133,7 +141,7 @@ export class OpenRouterService extends BaseAIService {
                 content: prompt.systemPrompt
               },
               {
-                role: "user", 
+                role: "user",
                 content: prompt.userPrompt
               }
             ];
