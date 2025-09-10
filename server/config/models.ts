@@ -423,7 +423,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    requiresPromptFormat: true
   },
   {
     key: 'nousresearch/hermes-4-70b',
