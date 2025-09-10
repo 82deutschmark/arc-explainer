@@ -90,7 +90,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         typeof data.providerRawResponse === 'string' 
           ? data.providerRawResponse 
           : this.safeJsonStringify(data.providerRawResponse),
-        this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids))
+        this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || [])
       ], client);
 
       if (result.rows.length === 0) {
