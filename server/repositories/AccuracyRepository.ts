@@ -68,6 +68,9 @@ export class AccuracyRepository extends BaseRepository {
    * This method returns TRUE puzzle-solving accuracy without any trustworthiness filtering.
    * Uses only is_prediction_correct and multi_test_all_correct boolean fields.
    * 
+   * **External Integration**: This endpoint is used by AccuracyLeaderboard component
+   * via `/api/feedback/accuracy-stats` to show "Models Needing Improvement".
+   * 
    * INCLUSION CRITERIA:
    * - Models that made solver attempts (have prediction grids)
    * - No filtering by prediction_accuracy_score or confidence requirements
@@ -77,6 +80,9 @@ export class AccuracyRepository extends BaseRepository {
    * - is_prediction_correct = true (single test correct)
    * - multi_test_all_correct = true (multi-test correct)
    * - Simple percentage: correct / total attempts
+   * 
+   * @returns {Promise<PureAccuracyStats>} Accuracy statistics with models sorted by accuracy (ascending - worst first)
+   * @external Used by external leaderboard components and analytics dashboards
    */
   async getPureAccuracyStats(): Promise<PureAccuracyStats> {
     if (!this.isConnected()) {
@@ -146,6 +152,13 @@ export class AccuracyRepository extends BaseRepository {
       const overallRow = overallStats.rows[0];
       const totalAttempts = parseInt(overallRow.total_solver_attempts) || 0;
       const totalCorrect = parseInt(overallRow.total_correct_predictions) || 0;
+
+      // Debug logging to identify the issue
+      logger.info(`AccuracyRepository.getPureAccuracyStats: Found ${totalAttempts} solver attempts, ${totalCorrect} correct, ${modelAccuracy.rows.length} models with accuracy data`, 'accuracy-debug');
+      
+      if (modelAccuracy.rows.length === 0) {
+        logger.warn('AccuracyRepository.getPureAccuracyStats: No models found with solver attempts. This suggests no prediction data exists in the database.', 'accuracy-debug');
+      }
 
       return {
         totalSolverAttempts: totalAttempts,
