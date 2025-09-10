@@ -191,6 +191,7 @@ export class PuzzleAnalysisService {
       result.multiTestResults = multi.itemResults;
       result.multiTestAllCorrect = multi.allCorrect;
       result.multiTestAverageAccuracy = multi.averageAccuracyScore;
+      result.predictionAccuracyScore = multi.averageAccuracyScore;
 
     } else {
       // Single-test case: AI provided one grid
