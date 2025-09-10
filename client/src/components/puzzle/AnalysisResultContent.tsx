@@ -33,8 +33,8 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   showAlienMeaning, 
   setShowAlienMeaning 
 }) => {
-  const isOptimistic = (result as any).isOptimistic;
-  const status = (result as any).status;
+  const isOptimistic = result.isOptimistic;
+  const status = result.status;
   
   // Show skeleton loaders for pending states
   if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
@@ -79,7 +79,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
     return (
       <div className="bg-red-50 p-3 rounded border border-red-200">
         <p className="text-sm text-red-700">
-          Analysis failed: {(result as any).error || 'Unknown error occurred'}
+          Analysis failed: {result.error || 'Unknown error occurred'}
         </p>
       </div>
     );
