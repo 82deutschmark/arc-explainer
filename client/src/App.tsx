@@ -23,7 +23,7 @@ function Router() {
       <Route path="/batch" component={BatchResults} />
       <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
       <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
-      <Route path="/puzzle/:taskId/view" component={PuzzleDBViewer} />
+      <Route path="/models" component={PuzzleDBViewer} />
       <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
       <Route path="/examine/:taskId" component={PuzzleExaminer} />
       <Route component={NotFound} />
