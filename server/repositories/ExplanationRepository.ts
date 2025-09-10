@@ -38,10 +38,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           alien_meaning, alien_meaning_confidence,
           is_prediction_correct, prediction_accuracy_score,
           multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions,
-          system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text
+          system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
+          provider_response_id, provider_raw_response, multi_test_prediction_grids
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25,
-          $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37
+          $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -84,7 +85,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.systemPromptUsed || null,
         data.userPromptUsed || null,
         data.promptTemplateId || null,
-        data.customPromptText || null
+        data.customPromptText || null,
+        // CRITICAL: Raw API response fields for debugging expensive failures
+        data.providerResponseId || null,
+        this.safeJsonStringify(data.providerRawResponse),
+        this.safeJsonStringify(data.multiTestPredictionGrids)
       ], client);
 
       if (result.rows.length === 0) {
