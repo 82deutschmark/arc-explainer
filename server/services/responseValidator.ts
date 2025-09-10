@@ -415,7 +415,7 @@ export function validateSolverResponse(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? analysisData.confidence : confidence;
+  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
   // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
   const predictedGrid = analysisData.predictedOutput;
@@ -468,7 +468,7 @@ export function validateSolverResponseMulti(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? analysisData.confidence : confidence;
+  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
   // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
   const predictedGrids: (number[][] | null)[] = [
