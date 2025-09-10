@@ -131,8 +131,13 @@ export class OpenRouterService extends BaseAIService {
           // Initial request with full messages
           const modelConfig = getModelConfig(modelKey);
 
+          // Check if model requires prompt format instead of messages
+          if (modelConfig && modelConfig.requiresPromptFormat) {
+            payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
+            logger.service('OpenRouter', `Using prompt format for ${modelName}`);
+          }
           // Grok-4 models seem to require a combined prompt. Other models might not support system prompts.
-          if (modelName.includes('grok-4') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
+          else if (modelName.includes('grok-4') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
             payload.messages = [
               {
                 role: "user",
@@ -164,7 +169,14 @@ export class OpenRouterService extends BaseAIService {
           logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
         } else {
           // Continuation request
-          payload.messages = []; // Empty messages for continuation
+          const modelConfig = getModelConfig(modelKey);
+          
+          if (modelConfig && modelConfig.requiresPromptFormat) {
+            payload.prompt = ""; // Empty prompt for continuation
+          } else {
+            payload.messages = []; // Empty messages for continuation
+          }
+          
           payload.continue = {
             generation_id: generationId,
             step: continuationStep

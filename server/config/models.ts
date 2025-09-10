@@ -408,7 +408,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    requiresPromptFormat: true
   },
   {
     key: 'baidu/ernie-4.5-vl-28b-a3b',
@@ -481,7 +482,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'x-ai/grok-code-fast-1',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    requiresPromptFormat: true
   },
   {
     key: 'openai/gpt-oss-120b',
@@ -678,7 +680,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
-    contextWindow: 32768
+    contextWindow: 32768,
+    requiresPromptFormat: true
   },
   {
     key: 'deepseek/deepseek-prover-v2',
