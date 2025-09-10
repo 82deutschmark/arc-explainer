@@ -300,6 +300,139 @@ export function formatBytes(bytes: number): string {
 }
 
 /**
+ * Sanitize grid data to ensure all values are numeric integers (0-9)
+ * ARC puzzle grids should only contain integer values from 0-9
+ * This prevents AI models from introducing invalid characters like Chinese text
+ */
+export function sanitizeGridData(gridData: any): number[][] | null {
+  if (!gridData) {
+    return null;
+  }
+  
+  try {
+    // If it's a string, try to parse it first
+    let parsedGrid = gridData;
+    if (typeof gridData === 'string') {
+      const parseResult = jsonParser.parse(gridData, {
+        logErrors: false,
+        fieldName: 'gridData'
+      });
+      if (!parseResult.success) {
+        logger.warn(`Failed to parse grid JSON: ${parseResult.error}`, 'utilities');
+        return null;
+      }
+      parsedGrid = parseResult.data;
+    }
+    
+    // Ensure it's a 2D array
+    if (!Array.isArray(parsedGrid)) {
+      logger.warn('Grid data is not an array', 'utilities');
+      return null;
+    }
+    
+    const sanitizedGrid: number[][] = [];
+    
+    for (let rowIndex = 0; rowIndex < parsedGrid.length; rowIndex++) {
+      const row = parsedGrid[rowIndex];
+      
+      if (!Array.isArray(row)) {
+        logger.warn(`Grid row ${rowIndex} is not an array`, 'utilities');
+        return null;
+      }
+      
+      const sanitizedRow: number[] = [];
+      
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const cell = row[colIndex];
+        
+        // Convert to number and validate
+        let numericValue: number;
+        
+        if (typeof cell === 'number' && Number.isInteger(cell)) {
+          numericValue = cell;
+        } else if (typeof cell === 'string') {
+          const parsed = parseInt(cell, 10);
+          if (isNaN(parsed)) {
+            logger.warn(`Invalid grid cell at [${rowIndex}][${colIndex}]: "${cell}" - setting to 0`, 'utilities');
+            numericValue = 0;
+          } else {
+            numericValue = parsed;
+          }
+        } else {
+          logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
+          numericValue = 0;
+        }
+        
+        // Ensure value is in valid ARC range (0-9)
+        if (numericValue < 0 || numericValue > 9) {
+          logger.warn(`Grid cell value ${numericValue} at [${rowIndex}][${colIndex}] outside valid range (0-9) - clamping`, 'utilities');
+          numericValue = Math.max(0, Math.min(9, Math.round(numericValue)));
+        }
+        
+        sanitizedRow.push(numericValue);
+      }
+      
+      sanitizedGrid.push(sanitizedRow);
+    }
+    
+    return sanitizedGrid;
+  } catch (error) {
+    logger.error(`Error sanitizing grid data: ${error instanceof Error ? error.message : 'Unknown error'}`, 'utilities');
+    return null;
+  }
+}
+
+/**
+ * Sanitize multiple grid predictions data
+ * Used for multi-test predictions that contain arrays of grids
+ */
+export function sanitizeMultipleGrids(multiGridData: any): number[][][] | null {
+  if (!multiGridData) {
+    return null;
+  }
+  
+  try {
+    // If it's a string, try to parse it first
+    let parsedData = multiGridData;
+    if (typeof multiGridData === 'string') {
+      const parseResult = jsonParser.parse(multiGridData, {
+        logErrors: false,
+        fieldName: 'multiGridData'
+      });
+      if (!parseResult.success) {
+        logger.warn(`Failed to parse multi-grid JSON: ${parseResult.error}`, 'utilities');
+        return null;
+      }
+      parsedData = parseResult.data;
+    }
+    
+    // Ensure it's an array of grids
+    if (!Array.isArray(parsedData)) {
+      logger.warn('Multi-grid data is not an array', 'utilities');
+      return null;
+    }
+    
+    const sanitizedGrids: number[][][] = [];
+    
+    for (let gridIndex = 0; gridIndex < parsedData.length; gridIndex++) {
+      const grid = parsedData[gridIndex];
+      const sanitizedGrid = sanitizeGridData(grid);
+      
+      if (sanitizedGrid !== null) {
+        sanitizedGrids.push(sanitizedGrid);
+      } else {
+        logger.warn(`Failed to sanitize grid at index ${gridIndex} in multi-grid data`, 'utilities');
+      }
+    }
+    
+    return sanitizedGrids.length > 0 ? sanitizedGrids : null;
+  } catch (error) {
+    logger.error(`Error sanitizing multi-grid data: ${error instanceof Error ? error.message : 'Unknown error'}`, 'utilities');
+    return null;
+  }
+}
+
+/**
  * Debounce function for rate limiting
  */
 export function debounce<T extends (...args: any[]) => any>(

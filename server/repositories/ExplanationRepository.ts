@@ -64,7 +64,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.outputTokens || null,
         data.reasoningTokens || null,
         data.totalTokens || null,
-        this.safeJsonStringify(data.predictedOutputGrid),
+        this.safeJsonStringify(this.sanitizeGridData(data.predictedOutputGrid)),
         this.safeJsonStringify(data.multiplePredictedOutputs),
         this.safeJsonStringify(data.multiTestResults),
         data.saturnSuccess || null,
@@ -89,7 +89,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         // CRITICAL: Raw API response fields for debugging expensive failures
         data.providerResponseId || null,
         this.safeJsonStringify(data.providerRawResponse),
-        this.safeJsonStringify(data.multiTestPredictionGrids)
+        this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids))
       ], client);
 
       if (result.rows.length === 0) {

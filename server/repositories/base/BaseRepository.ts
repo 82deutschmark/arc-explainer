@@ -10,7 +10,7 @@
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from '../../utils/logger.ts';
-import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } from '../../utils/CommonUtilities.ts';
+import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints, sanitizeGridData, sanitizeMultipleGrids } from '../../utils/CommonUtilities.ts';
 
 // Database connection pool - shared across all repositories
 let pool: Pool | null = null;
@@ -188,5 +188,19 @@ export abstract class BaseRepository {
    */
   protected processHints(hints: any): string[] {
     return processHints(hints);
+  }
+
+  /**
+   * Sanitize grid data - delegates to CommonUtilities
+   */
+  protected sanitizeGridData(gridData: any): number[][] | null {
+    return sanitizeGridData(gridData);
+  }
+
+  /**
+   * Sanitize multiple grids data - delegates to CommonUtilities
+   */
+  protected sanitizeMultipleGrids(multiGridData: any): number[][][] | null {
+    return sanitizeMultipleGrids(multiGridData);
   }
 }
