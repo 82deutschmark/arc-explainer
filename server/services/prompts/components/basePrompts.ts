@@ -33,9 +33,7 @@ Key transformation types include:
  * JSON output enforcement instructions with answer-first requirement
  * SINGLE DEFINITION - used by all system prompts
  */
-export const JSON_HEADER = `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.
-
-JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`;
+export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`;
 
 
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
