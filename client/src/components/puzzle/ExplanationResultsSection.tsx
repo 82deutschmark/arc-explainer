@@ -12,14 +12,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Brain, CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
-import { useExplanation } from '@/hooks/useExplanation';
+import { useExplanations } from '@/hooks/useExplanation';
 
 interface ExplanationResultsSectionProps {
   taskId: string;
 }
 
 export function ExplanationResultsSection({ taskId }: ExplanationResultsSectionProps) {
-  const { explanations, isLoading, error } = useExplanation(taskId);
+  const { data: explanations, isLoading, error } = useExplanations(taskId);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
