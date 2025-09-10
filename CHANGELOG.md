@@ -1,5 +1,34 @@
 ### September 9 2025
 
+## v2.20.6 - 🚨 CRITICAL FIX: Grid Data Sanitization to Prevent JSON Parsing Errors
+
+**PROBLEM**: Database INSERT failures with "invalid input syntax for type json" when AI models introduce non-numeric characters in grid data.
+
+**ROOT CAUSE**:
+- AI models occasionally generate text (like Chinese character "极") instead of pure numeric values in predicted output grids
+- ARC puzzle grids must only contain integers 0-9, but AI responses sometimes contain invalid characters
+- No validation/sanitization of grid data before database insertion caused PostgreSQL JSON parsing to fail
+
+**SOLUTION**:
+1. **New Grid Sanitization Functions** in CommonUtilities.ts:
+   - `sanitizeGridData()`: Validates and cleans single 2D grid arrays
+   - `sanitizeMultipleGrids()`: Handles arrays of grids for multi-test predictions
+   - Converts invalid characters to 0, clamps values to valid 0-9 range
+2. **Enhanced BaseRepository**: Added sanitization methods following DRY principle
+3. **Updated ExplanationRepository**: All grid fields now sanitized before database save:
+   - `predictedOutputGrid` → sanitized via `sanitizeGridData()`
+   - `multiTestPredictionGrids` → sanitized via `sanitizeMultipleGrids()`
+
+**TECHNICAL DETAILS**:
+- Maintains data integrity while ensuring all grid cells are valid integers
+- Comprehensive error logging for debugging AI model response issues
+- Follows SRP by separating validation logic into dedicated utilities
+
+**USER TESTING**:
+- Test puzzle b6f77b65 analysis (previously failing with Chinese character error)
+- Verify mixed data type grids are automatically cleaned
+- Check console for sanitization warnings to debug AI model issues
+
 ## v2.20.5 - 🚨 CRITICAL FIX: OpenRouter API Format Issue for Cohere and Grok Models
 
 **PROBLEM**: Some OpenRouter models were failing with "Input required: specify 'prompt' or 'messages'" error.
