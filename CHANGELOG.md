@@ -1,3 +1,177 @@
+### September 9 2025
+
+## v2.20.4 - 🚨 VALIDATION BOTTLENECK FIX: Add Missing Raw Response Fields to Repository INSERT
+
+**CRITICAL DATA LOSS RESOLVED**: Repository INSERT was dropping expensive API data at the final database save step.
+
+**ROOT CAUSE**: 
+- Database schema **HAS**: `provider_raw_response`, `provider_response_id`, `multi_test_prediction_grids`
+- Repository INSERT was **MISSING** these 3 fields from column list
+- Data flowed through services but got **DROPPED at SQL INSERT**
+- **Result**: Expensive API calls lost forever, no debugging data
+
+**TECHNICAL FIXES**:
+1. **Added Missing Columns**: `provider_response_id`, `provider_raw_response`, `multi_test_prediction_grids` 
+2. **Updated Parameters**: Changed VALUES from `($1...$37)` to `($1...$40)`
+3. **Added Data Mapping**: Proper JSON serialization for complex response data
+
+**COMBINED SOLUTION** (with v2.20.2):
+- ✅ **Parsing Layer**: Raw responses preserved safely before JSON parsing attempts
+- ✅ **Repository Layer**: Raw responses now actually saved to database
+- ✅ **Result**: Complete end-to-end data preservation for expensive API calls
+
+**IMPACT**:
+- ❌ **BEFORE**: Raw API responses dropped at repository validation layer
+- ✅ **AFTER**: All raw API responses saved to database regardless of parsing success/failure
+- 💰 **VALUE**: Full debugging capability for expensive API call failures
+
+**USER TESTING**: 
+- Test GPT-5-chat-latest analysis - raw responses should appear in database
+- Check `provider_raw_response` field is populated in ALL cases
+- Verify expensive API calls are never lost, even on parsing failures
+
+**AUTHOR**: Claude (Final piece of systematic data loss fix)
+
+## v2.20.3 - 🎯 ACCURACY FIX: Convert Confidence 0 to 50 for Correct predictionAccuracyScore
+
+**ISSUE RESOLVED**: When AI models returned confidence = 0 (which should never happen), the `predictionAccuracyScore` calculation was dangerously incorrect.
+
+**PROBLEM**: 
+- Models only return confidence 1-100, so confidence = 0 is always a parsing/API error
+- But `calculateAccuracyScore()` was treating 0 as valid, causing:
+  - **WRONG predictions with 0 confidence** got maximum trustworthiness scores (1.0)!
+  - **CORRECT predictions with 0 confidence** got minimum scores (0.5)
+- This corrupted accuracy leaderboards and trustworthiness metrics
+
+**ROOT CAUSE**: Three locations failed to convert confidence 0 → 50:
+1. `puzzleAnalysisService.ts:164`: `result.confidence || 50` (doesn't catch 0)
+2. `responseValidator.ts:418`: Single-test validation preserved 0 values  
+3. `responseValidator.ts:471`: Multi-test validation preserved 0 values
+
+**FIXES APPLIED**:
+- **puzzleAnalysisService.ts**: `result.confidence === 0 ? 50 : (result.confidence || 50)`
+- **responseValidator.ts**: Both validation functions now convert 0 → 50 before calculation
+- **New script**: `scripts/find-zero-confidence-entries.js` to identify existing corrupted entries
+
+**ACCURACY SCORE IMPACT**:
+- ❌ **BEFORE**: Confidence 0 + wrong = 1.0 score, Confidence 0 + correct = 0.5 score
+- ✅ **AFTER**: Confidence 0 treated as 50 → wrong = 0.5 score, correct = 0.75 score
+
+**USER TESTING**:
+1. Run `node scripts/find-zero-confidence-entries.js` to identify existing problems
+2. Test new AI analyses to ensure confidence 0 no longer occurs
+3. Verify accuracy leaderboards show more realistic scores
+
+**AUTHOR**: Claude (Critical trustworthiness calculation fix)
+
+## v2.20.2 - 🚨 CRITICAL DATA LOSS FIX: Save Raw API Responses Before Parsing
+
+**REGRESSION RESOLVED**: GPT-5-chat-latest and other models were losing expensive API calls when JSON parsing failed.
+
+**ROOT CAUSE**: 
+- `parseProviderResponse()` used direct `JSON.parse()` which failed on markdown-wrapped JSON
+- Parsing failures threw exceptions **BEFORE** raw response could be saved to database  
+- Provider's expensive API responses were permanently lost with no recovery possible
+- Pattern: ````json\n{...}\n```  + `JSON.parse()` = "Unexpected token '`'" exception
+
+**CRITICAL FIXES**:
+1. **Raw Response Preservation**: Always preserve `rawResponse` at start of parsing (line 281)
+2. **Safe JSON Parsing**: Replaced direct `JSON.parse()` with `jsonParser.parse()` to handle markdown-wrapped JSON
+3. **Parsing Failure Handling**: On parse failure, return structured error with `_parsingFailed` flag instead of throwing
+4. **Complete Raw Data**: Always attach `_providerRawResponse` to result for debugging expensive failures
+5. **Database Persistence**: Raw response now guaranteed to reach `buildStandardResponse()` → database
+
+**IMPACT**: 
+- ❌ **BEFORE**: Failed parses = lost $$ API calls, no debugging data
+- ✅ **AFTER**: Failed parses = saved raw response + structured debugging data
+- **All expensive API calls now recoverable** from `provider_raw_response` field
+
+**USER TESTING**: 
+- Try GPT-5-chat-latest analysis - should work without parsing errors
+- Check database for `provider_raw_response` field populated in ALL cases
+- Verify console shows parsing success/failure but analysis continues
+
+**AUTHOR**: Claude (Emergency fix for systematic data loss)
+
+## v2.20.1 - 🚨 CRITICAL DATABASE FIX: Eliminate Duplicate Initialization & Connection Timeouts
+
+**PROBLEM SOLVED**: Fixed critical database connection failures causing 500 errors on feedback endpoints with `ETIMEDOUT` to Railway PostgreSQL.
+
+**ROOT CAUSE IDENTIFIED**: 
+- **Duplicate database initialization** in both `index.ts` and `routes.ts`
+- First attempt (index.ts): Railway connection timeout → failed connection pool
+- Second attempt (routes.ts): Railway connection success → new pool  
+- **Mixed connection states**: Some endpoints referencing failed first connection
+
+**ARCHITECTURAL FIX**:
+- ✅ **Removed duplicate initialization** from routes.ts (database init belongs in index.ts only)
+- ✅ **Added retry logic** with progressive backoff (2s, 4s, 6s) to handle Railway connectivity timing
+- ✅ **Enhanced connection pool settings**: 10s timeout, proper cleanup on failures
+- ✅ **Single source of truth**: Only index.ts handles database initialization
+
+**IMPACT**:
+- ❌ **BEFORE**: `/api/explanation/{id}/feedback` endpoints returning 500 errors with Railway timeouts
+- ✅ **AFTER**: All database endpoints working reliably with single connection pool
+
+**USER TESTING**: 
+- Verify feedback voting on puzzle explanations works without 500 errors
+- Check server logs show single successful database initialization (no "fallback mode" messages)
+- Confirm all leaderboards and statistics load properly
+
+**AUTHOR**: Claude & User collaborative debugging
+
+## v2.20.0 - 🔧 CRITICAL FIX: Robust Handling of Non-Compliant API Responses
+- **SYSTEMIC ISSUE RESOLVED**: Fixed recurring "Unexpected end of JSON input" errors for models like `grok-4` and `qwen/qwen3-235b-a22b-thinking-2507`.
+- **ROOT CAUSE**: The system prematurely attempted to parse API responses as pure JSON, failing when models returned mixed content (e.g., conversational text before the JSON block).
+- **ROBUST SOLUTION**:
+  - Refactored the `OpenRouter` service to separate API fetching from parsing.
+  - `callProviderAPI` now only fetches the complete raw text response, handling continuations without parsing.
+  - The raw text is now passed to the robust `JsonParser`, which reliably extracts the JSON object from any mixed-content string.
+- **IMPACT**: The application is now resilient to non-compliant models that do not strictly adhere to the `response_format: { type: "json_object" }` request. This ensures that data can be successfully retrieved even from misbehaving or verbose models.
+- **AUTHOR**: Gemini 2.5 Pro
+
+### September 9 2025
+
+## v2.19.0 - 🔧 MAJOR FIX: Comprehensive Streaming & Large Response Handling
+- **STREAMING RESPONSE ROBUSTNESS**: Complete overhaul of OpenRouter response handling for large puzzle analyses
+- **ROOT CAUSE RESOLUTION**: Fixed "Unexpected end of JSON input" errors caused by truncated/streaming responses from Grok models
+- **TECHNICAL IMPROVEMENTS**:
+  - **Format Detection**: Added automatic detection of streaming, truncated, and malformed response formats
+  - **JSON Repair**: Intelligent JSON repair system that fixes incomplete responses by adding missing braces/brackets
+  - **Response Normalization**: Unified handling of different OpenRouter response formats (streaming vs standard)
+  - **Stream Prevention**: Explicit `stream: false` to prevent automatic streaming for large payloads
+  - **Continuation Enhancement**: Applied format normalization to both initial and continuation responses
+- **GRACEFUL DEGRADATION**: System now handles partial/malformed responses gracefully instead of complete failure
+- **INTEGRATION**: Seamless compatibility with existing ResponseProcessor and database saving pipeline
+- **IMPACT**: Enables successful analysis and database saving for large puzzle responses that previously failed
+- **TESTING**: User should verify large puzzle analyses with x-ai/grok models now work correctly
+
+## v2.18.0 - 🚨 CRITICAL FIX: Database Persistence & Grok Model API Failures
+- **CRITICAL DATABASE RESTORATION**: Fixed missing database persistence in puzzleAnalysisService causing silent data loss
+- **MAJOR BUG FIXES**:
+  - **Database Saving**: All puzzle analyses now properly save to database via repositoryService.explanations.saveExplanation()
+  - **API Error Handling**: Fixed 400 "Input required: specify prompt or messages" errors for x-ai/grok models
+  - **Continuation Fallback**: Models that don't support OpenRouter continuation API now return partial responses instead of failing
+  - **Comprehensive Logging**: Added detailed error logging for both database and API failures
+- **ROOT CAUSE**: puzzleAnalysisService was only creating debug files but never calling database save methods
+- **IMPACT**: Resolves silent data loss and complete API failures affecting recent Grok model analyses
+- **RELIABILITY**: Non-fatal error handling ensures users receive results even if individual operations fail
+- **TESTING**: User should verify x-ai/grok models now save to database and handle API errors gracefully
+
+## v2.17.0 - 🔄 INFRASTRUCTURE: Grok Model Migration to OpenRouter
+- **GROK PROVIDER MIGRATION**: All Grok models now use OpenRouter with x-ai/ namespace for improved reliability
+- **MODEL STANDARDIZATION**:
+  - **Migrated Models**: `grok-4-0709` → `x-ai/grok-4`, `grok-3` → `x-ai/grok-3`, `grok-3-mini` → `x-ai/grok-3-mini`, `grok-3-mini-fast` → `x-ai/grok-3-mini-fast`
+  - **Database Migration**: Updated 693 existing explanation records to new model names
+  - **Config Consolidation**: All Grok models now in OpenRouter section with consistent configuration
+  - **Legacy Support**: Direct xAI service preserved as fallback with deprecation notices
+- **INFRASTRUCTURE IMPROVEMENTS**:
+  - **Enhanced Normalization**: Updated model name cleanup script with comprehensive Grok migration logic
+  - **Single Provider Path**: Eliminates dual provider complexity for Grok models
+  - **Consistent Naming**: All Grok models use x-ai/ OpenRouter namespace convention
+- **BACKWARDS COMPATIBILITY**: Existing API endpoints and model selection continue working seamlessly
+- **TESTING**: User should verify Grok model selection and analysis functionality works correctly via OpenRouter
+
 ### September 8 2025
 
 ## v2.16.0 - 🎯 MAJOR ENHANCEMENT: PuzzleDiscussion Rich Filtering & ARC 2 Eval Focus

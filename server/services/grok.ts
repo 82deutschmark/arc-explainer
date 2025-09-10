@@ -1,8 +1,16 @@
 /**
- * xAI Grok Service Integration for ARC-AGI Puzzle Analysis
- * Refactored to extend BaseAIService for code consolidation
- * 
- * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
+ * @file server/services/grok.ts
+ * @description xAI Grok Service for ARC Puzzle Analysis (DEPRECATED)
+ *
+ * ⚠️ DEPRECATION NOTICE: This service provides a direct integration with the xAI Grok API.
+ * It is now considered deprecated and is retained for fallback and testing purposes only.
+ * The primary method for accessing Grok models is through the `openrouter.ts` service,
+ * which provides access to a wider range of models, including `x-ai/grok-*`.
+ *
+ * This service was refactored to use the centralized `jsonParser` for response handling.
+ *
+ * @assessed_by Gemini 2.5 Pro
+ * @assessed_on 2025-09-09
  */
 
 import OpenAI from "openai";
@@ -11,6 +19,7 @@ import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { MODELS as MODEL_CONFIGS } from "../config/models/index.js";
+import { jsonParser } from '../utils/JsonParser.js';
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -30,13 +39,13 @@ export class GrokService extends BaseAIService {
     "grok-3": "grok-3",
     "grok-3-mini": "grok-3-mini",
     "grok-code-fast-1": "grok-code-fast-1",
-    "grok-2-1212": "grok-2-1212",
     "grok-3-mini-fast": "grok-3-mini-fast",
   };
 
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -55,7 +64,7 @@ export class GrokService extends BaseAIService {
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, true);
+        this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Build standard response using inherited method
       return this.buildStandardResponse(
@@ -66,7 +75,13 @@ export class GrokService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         !!reasoningLog,
-        reasoningItems
+        reasoningItems,
+        undefined, // status
+        undefined, // incomplete
+        undefined, // incompleteReason
+        promptPackage,
+        promptId,
+        customPrompt
       );
 
     } catch (error) {
@@ -162,91 +177,20 @@ export class GrokService extends BaseAIService {
     };
   }
 
-  /**
-   * Extracts a complete JSON object from a markdown string.
-   * @param markdown The markdown string to parse.
-   * @returns The parsed JSON object or null if not found.
-   */
-  private extractCompleteJSONObject(text: string, startPos: number): string | null {
-    let braceCount = 0;
-    let inString = false;
-    let escaped = false;
-    let endPos = startPos;
-    
-    for (let i = startPos; i < text.length; i++) {
-      const char = text[i];
-      
-      if (escaped) {
-        escaped = false;
-        continue;
-      }
-      
-      if (char === '\\') {
-        escaped = true;
-        continue;
-      }
-      
-      if (char === '"') {
-        inString = !inString;
-        continue;
-      }
-      
-      if (!inString) {
-        if (char === '{') {
-          braceCount++;
-        } else if (char === '}') {
-          braceCount--;
-          if (braceCount === 0) {
-            endPos = i;
-            break;
-          }
-        }
-      }
-    }
-    
-    if (braceCount === 0 && endPos > startPos) {
-      const extracted = text.substring(startPos, endPos + 1);
-      console.log(`[Grok] Extracted complete JSON object: ${extracted.length} characters`);
-      return extracted;
-    }
-    
-    return null;
-  }
-
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
     const content = response.choices[0]?.message?.content || '';
-    let result: any;
+    const parseResult = jsonParser.parse(content, { fieldName: 'grokResponse' });
 
-    try {
-      // First, try to parse the whole content as JSON
-      result = JSON.parse(content);
-    } catch {
-      // If that fails, find the start of a JSON object and extract it
-      const braceStart = content.indexOf('{');
-      if (braceStart !== -1) {
-        const extractedString = this.extractCompleteJSONObject(content, braceStart);
-        if (extractedString) {
-          try {
-            result = JSON.parse(extractedString);
-          } catch (e) {
-            console.error("[Grok] Failed to parse extracted JSON string.", e);
-            result = null;
-          }
-        } else {
-          result = null;
-        }
-      } else {
-        result = null;
-      }
+    if (!parseResult.success || !parseResult.data) {
+      throw new Error(`Failed to extract valid JSON from Grok response: ${parseResult.error}`);
     }
 
-    if (!result) {
-      throw new Error("Failed to extract valid JSON from Grok response");
-    }
+    const result = parseResult.data;
 
     const tokenUsage: TokenUsage = {
       input: response.usage?.prompt_tokens || 0,

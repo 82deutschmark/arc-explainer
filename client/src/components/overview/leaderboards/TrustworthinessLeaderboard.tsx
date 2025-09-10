@@ -8,6 +8,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
 
 interface TrustworthinessLeader {
@@ -120,12 +121,13 @@ export function TrustworthinessLeaderboard({
           <Shield className="h-5 w-5 text-blue-600" />
           Trustworthiness Leaders
         </CardTitle>
-        <div className="text-sm text-gray-600">
-          All models ranked by confidence reliability scores (highest to lowest)
+        <div className="text-base text-muted-foreground">
+          "Trustworthiness evaluates how confident the LLM was in its answer and if that answer was correct. It rewards models that are honest about when they are unsure of their answer."
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <ScrollArea className="h-96">
+          <div className="space-y-2">
           {allModels.map((model, index) => (
             <div 
               key={model.modelName}
@@ -162,7 +164,8 @@ export function TrustworthinessLeaderboard({
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </ScrollArea>
         
         {/* Showing all models - no need for "more models" indicator */}
         

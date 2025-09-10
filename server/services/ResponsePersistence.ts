@@ -35,6 +35,10 @@ export class ResponsePersistence {
       requestId?: string;
       duration?: number;
       provider?: string;
+      truncated?: boolean;
+      responseLength?: number;
+      processingError?: string;
+      postContinuation?: boolean;
     }
   ): Promise<string | null> {
     try {
@@ -133,6 +137,10 @@ export class ResponsePersistence {
       requestId?: string;
       duration?: number;
       provider?: string;
+      truncated?: boolean;
+      responseLength?: number;
+      processingError?: string;
+      postContinuation?: boolean;
     }
   ): string {
     const sections = [
@@ -152,6 +160,22 @@ export class ResponsePersistence {
 
     if (metadata?.duration) {
       sections.push(`Duration: ${metadata.duration}ms`);
+    }
+
+    if (metadata?.truncated !== undefined) {
+      sections.push(`Truncated: ${metadata.truncated}`);
+    }
+
+    if (metadata?.responseLength !== undefined) {
+      sections.push(`Original Response Length: ${metadata.responseLength} chars`);
+    }
+
+    if (metadata?.processingError) {
+      sections.push(`Processing Error: ${metadata.processingError}`);
+    }
+
+    if (metadata?.postContinuation !== undefined) {
+      sections.push(`Post Continuation: ${metadata.postContinuation}`);
     }
 
     sections.push('', responseBody);

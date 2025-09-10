@@ -5,24 +5,7 @@
  */
 
 import type { EmojiSet } from '@/lib/spaceEmojis';
-
-/**
- * Configuration for AI models that can analyze puzzles
- */
-export interface ModelConfig {
-  key: string;
-  name: string;
-  color: string;
-  premium: boolean;
-  cost: { input: string; output: string };
-  supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter';
-  responseTime?: {
-    speed: 'fast' | 'moderate' | 'slow';
-    estimate?: string;
-  };
-  isReasoning?: boolean; // Whether model supports reasoning log capture
-}
+import type { ModelConfig } from '@shared/types';
 
 /**
  * Analysis result from an AI model examining a puzzle

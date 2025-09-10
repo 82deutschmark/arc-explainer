@@ -14,6 +14,7 @@ import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, M
 import { getModelConfig, getApiModelName, MODELS } from '../config/models/index.js';
 import { responsePersistence } from './ResponsePersistence.js';
 import { responseProcessor } from './ResponseProcessor.js';
+import { jsonParser } from '../utils/JsonParser.js';
 import { logger } from '../utils/logger.js';
 
 // Initialize OpenRouter client with OpenAI-compatible interface
@@ -47,103 +48,31 @@ export class OpenRouterService extends BaseAIService {
   protected provider = "OpenRouter";
   protected models = {}; // We use centralized getApiModelName instead
 
-  /**
-   * Validate generation recovery using OpenRouter's generation endpoint
-   * Used for diagnostics and confirming truncation recovery works
-   */
-  async validateGeneration(generationId: string): Promise<{ success: boolean; data?: any; error?: string }> {
-    try {
-      logger.service('OpenRouter', `Validating generation: ${generationId}`);
-      
-      const response = await fetch(`https://openrouter.ai/api/v1/generation/${generationId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'HTTP-Referer': 'https://arc.markbarney.net',
-          'X-Title': 'ARC Explainer'
-        }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        logger.service('OpenRouter', `Generation validation failed: ${response.status} - ${errorText}`, 'error');
-        return { 
-          success: false, 
-          error: `HTTP ${response.status}: ${errorText}` 
-        };
-      }
-
-      const data = await response.json();
-      logger.service('OpenRouter', `Generation validation successful for ${generationId}`);
-      
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.service('OpenRouter', `Generation validation error: ${errorMessage}`, 'error');
-      return { success: false, error: errorMessage };
-    }
-  }
-
-  /**
-   * Continue a truncated generation using OpenRouter's continue parameter
-   * This is the core method for handling length-based truncation
-   */
-  async continueGeneration(
-    modelKey: string, 
-    generationId: string, 
-    step: number
-  ): Promise<any> {
-    try {
-      const modelName = getApiModelName(modelKey);
-      logger.service('OpenRouter', `Continuing generation ${generationId} (step ${step}) for model: ${modelName}`);
-
-      const continuePayload = {
-        model: modelName,
-        messages: [], // Usually empty for continue calls
-        continue: {
-          generation_id: generationId,
-          step: step
-        },
-        response_format: { type: "json_object" }
-      };
-
-      logger.service('OpenRouter', `Continue payload: ${JSON.stringify(continuePayload)}`);
-
-      const chatCompletion = await openrouter.chat.completions.create(continuePayload);
-      
-      logger.service('OpenRouter', `Continue response received for step ${step}`);
-      return chatCompletion;
-
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.service('OpenRouter', `Continue generation failed for ${generationId} step ${step}: ${errorMessage}`, 'error');
-      throw error;
-    }
-  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    // For OpenRouter, reasoning is always included in the prompt.
-    const usePromptReasoning = true;
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      // 1. Get the raw text response from the provider
+      const responseText = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
       
-      // For OpenRouter, reasoning is always included in the prompt.
+      // 2. Let the robust parser handle the raw text
       const captureReasoning = true;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(response, modelKey, captureReasoning);
+        this.parseProviderResponse(responseText, modelKey, captureReasoning, taskId);
 
+      // 3. Build the standard response
       return this.buildStandardResponse(
         modelKey,
         temperature,
@@ -152,7 +81,13 @@ export class OpenRouterService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         Boolean(reasoningLog),
-        reasoningItems
+        reasoningItems,
+        undefined, // status
+        undefined, // incomplete
+        undefined, // incompleteReason
+        promptPackage,
+        promptId,
+        customPrompt
       );
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
@@ -163,206 +98,210 @@ export class OpenRouterService extends BaseAIService {
     prompt: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
-  ): Promise<any> {
-    return this.callProviderAPIRecursive(prompt, modelKey, temperature, serviceOpts, 0, null);
-  }
-
-  /**
-   * Recursive API call that handles automatic continuation for truncated responses
-   * Implements the core logic from the truncation fix plan
-   */
-  private async callProviderAPIRecursive(
-    prompt: PromptPackage,
-    modelKey: string, 
-    temperature: number,
     serviceOpts: ServiceOptions,
-    step: number = 0,
-    previousGenerationId: string | null = null
-  ): Promise<any> {
+    taskId?: string
+  ): Promise<string> { // Returns a string now
     const modelName = getApiModelName(modelKey);
     
-    logger.service('OpenRouter', `Making API call to model: ${modelName} (step ${step})`);
+    logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
-    let payload: any;
-    
-    if (previousGenerationId) {
-      // This is a continuation call - use ONLY continue parameter, no messages
-      payload = {
-        model: modelName,
-        continue: {
-          generation_id: previousGenerationId,
-          step: step
-        },
-        response_format: { type: "json_object" } as const,
-        temperature: temperature
-      } as any; // OpenRouter-specific continue parameter not in OpenAI SDK types
-      logger.service('OpenRouter', `Continuing generation ${previousGenerationId} at step ${step} (continue-only format)`);
-    } else {
-      // This is the initial call
-      payload = {
-        model: modelName,
-        messages: [
-          {
-            role: "system",
-            content: prompt.systemPrompt
-          },
-          {
-            role: "user", 
-            content: prompt.userPrompt
-          }
-        ],
-        temperature: temperature,
-        response_format: { type: "json_object" } as const
-      };
-      logger.service('OpenRouter', `Initial API call to model: ${modelName}`);
-    }
+    // CONTINUATION SUPPORT: Accumulate response across multiple API calls if truncated
+    let fullResponseText = '';
+    let generationId: string | null = null;
+    let continuationStep = 0;
+    let isComplete = false;
+    let finalUsage: any = { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
+    const maxContinuations = 5; // Prevent infinite loops
 
-    const response = await openrouter.chat.completions.create(payload);
-    
-    // Extract response metadata
-    const completionText = response.choices?.[0]?.message?.content || '';
-    const generationId = response.id;
-    const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
-    
-    logger.service('OpenRouter', `Response received - finish_reason: ${finishReason}, length: ${completionText.length} chars`);
-    
-    // Check if the response was truncated due to length limit
-    if (finishReason === 'length') {
-      logger.service('OpenRouter', `Truncation detected (finish_reason: length) - continuing generation ${generationId}`, 'warn');
-      
-      // Recursively call to continue the generation
-      const continuedResponse = await this.callProviderAPIRecursive(
-        prompt, 
-        modelKey, 
-        temperature, 
-        serviceOpts, 
-        step + 1, 
-        generationId
-      );
-      
-      // Combine the responses - merge the content fields
-      const continuedText = continuedResponse.choices?.[0]?.message?.content || '';
-      
-      // Create combined response preserving the structure but merging content
-      const combinedResponse = {
-        ...response,
-        choices: [{
-          ...response.choices[0],
-          message: {
-            ...response.choices[0].message,
-            content: completionText + continuedText
-          },
-          finish_reason: continuedResponse.choices?.[0]?.finish_reason || 'stop'
-        }],
-        // Merge usage stats if available
-        usage: {
-          prompt_tokens: (response.usage?.prompt_tokens || 0) + (continuedResponse.usage?.prompt_tokens || 0),
-          completion_tokens: (response.usage?.completion_tokens || 0) + (continuedResponse.usage?.completion_tokens || 0),
-          total_tokens: (response.usage?.total_tokens || 0) + (continuedResponse.usage?.total_tokens || 0),
-          reasoning_tokens: ((response.usage as any)?.reasoning_tokens || 0) + ((continuedResponse.usage as any)?.reasoning_tokens || 0)
+    try {
+      while (!isComplete && continuationStep < maxContinuations) {
+        // Build request payload
+        const payload: any = {
+          model: modelName,
+          temperature: temperature,
+          stream: false // Explicitly disable streaming
+        };
+
+        // Conditionally apply JSON mode. Grok-4 seems to have issues with it.
+        if (!modelName.includes('grok-4')) {
+          payload.response_format = { type: "json_object" } as const;
         }
-      };
-      
-      logger.service('OpenRouter', `Combined response: ${combinedResponse.choices[0].message.content.length} chars total`);
-      return combinedResponse;
-    } else {
-      // Response completed normally, return as-is
-      logger.service('OpenRouter', `Response completed normally with finish_reason: ${finishReason}`);
-      return response;
+
+        if (continuationStep === 0) {
+          // Initial request with full messages
+          const modelConfig = getModelConfig(modelKey);
+
+          // Grok-4 models seem to require a combined prompt. Other models might not support system prompts.
+          if (modelName.includes('grok-4') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
+            payload.messages = [
+              {
+                role: "user",
+                content: `${prompt.systemPrompt}\n\n${prompt.userPrompt}`
+              }
+            ];
+            logger.service('OpenRouter', `Using combined-prompt strategy for ${modelName}`);
+          } else {
+            payload.messages = [
+              {
+                role: "system",
+                content: prompt.systemPrompt
+              },
+              {
+                role: "user",
+                content: prompt.userPrompt
+              }
+            ];
+          }
+          
+          if (modelConfig && modelConfig.maxOutputTokens) {
+            payload.max_tokens = modelConfig.maxOutputTokens;
+            logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
+          } else if (modelKey === 'x-ai/grok-4') {
+            payload.max_tokens = 120000;
+            logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
+          }
+          
+          logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
+        } else {
+          // Continuation request
+          payload.messages = []; // Empty messages for continuation
+          payload.continue = {
+            generation_id: generationId,
+            step: continuationStep
+          };
+          
+          logger.service('OpenRouter', `Continuation request - step: ${continuationStep}, generation_id: ${generationId}`);
+        }
+        
+        // Make API call
+        const startTime = Date.now();
+        
+        const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              "HTTP-Referer": getRefererUrl(),
+              "X-Title": "ARC Explainer",
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const responseText = await fetchResponse.text();
+        const requestDuration = Date.now() - startTime;
+
+        if (!fetchResponse.ok) {
+            logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
+            throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
+        }
+
+        // Continuation logic requires parsing each chunk. Handle non-JSON chunks gracefully.
+        let chunkData;
+        try {
+            chunkData = JSON.parse(responseText);
+        } catch (e) {
+            logger.warn(`[OpenRouter] Non-JSON chunk received from ${modelKey}. Assuming it's a complete but non-standard response.`);
+            fullResponseText += responseText;
+            isComplete = true;
+            continue; // Proceed to end of loop
+        }
+
+        const completionText = chunkData.choices?.[0]?.message?.content || '';
+        const finishReason = chunkData.choices?.[0]?.finish_reason;
+        
+        fullResponseText += completionText;
+        
+        if (finishReason === 'length') {
+          logger.service('OpenRouter', `Response truncated, continuing...`);
+          continuationStep++;
+        } else {
+          isComplete = true;
+        }
+      }
+    } catch (error) {
+      logger.error(`[OpenRouter] Critical error during API call to ${modelKey}: ${error instanceof Error ? error.message : String(error)}`);
+      throw error; // Rethrow the error after attempting to save
     }
+
+    if (!isComplete && continuationStep >= maxContinuations) {
+      logger.service('OpenRouter', `Hit maximum continuation limit (${maxContinuations}), proceeding with partial response of ${fullResponseText.length} chars`, 'error');
+    }
+    
+    if (!fullResponseText || fullResponseText.length === 0) {
+      logger.service('OpenRouter', `EMPTY RESPONSE ERROR - modelKey: ${modelKey}, modelName: ${modelName}, steps attempted: ${continuationStep + 1}`, 'error');
+      throw new Error(`Empty response from ${modelKey} after ${continuationStep + 1} attempts. Check model availability and API configuration.`);
+    }
+    
+    const contentPreview = fullResponseText.length > 200 
+      ? `${fullResponseText.substring(0, 200)}...` 
+      : fullResponseText;
+    logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
+    
+    // Return the raw text, as it's already been processed by the robust parser
+    return fullResponseText;
   }
 
   protected parseProviderResponse(
-    response: any,
+    responseText: string,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
-    logger.apiResponse('OpenRouter', 'API Response', JSON.stringify(response), 200);
-    
-    // Extract critical fields for continuation
-    const responseText = response.choices?.[0]?.message?.content || '';
-    const finishReason = response.choices?.[0]?.finish_reason || response.choices?.[0]?.native_finish_reason;
-    const generationId = response.id;
-    
-    // Enhanced logging for continuation support
-    logger.service('OpenRouter', `Response finish_reason: ${finishReason}`);
-    logger.service('OpenRouter', `Response generation_id: ${generationId}`);
-    logger.service('OpenRouter', `Response content length: ${responseText.length} chars`);
-    
-    const isTruncated = this.detectResponseTruncation(responseText, finishReason);
-    if (isTruncated) {
-      logger.service('OpenRouter', `TRUNCATION DETECTED for ${modelKey} - finish_reason: ${finishReason}`, 'warn');
-      logger.service('OpenRouter', `Generation ID for potential continuation: ${generationId}`, 'warn');
-      
-      // Save truncated response for analysis
-      responsePersistence.saveRawResponse(
-        modelKey,
-        responseText,
-        200,
-        {
-          provider: 'OpenRouter',
-          requestId: generationId || 'unknown',
-          truncated: true
-        }
-      );
+    // Log the raw text, not a stringified object
+    logger.apiResponse('OpenRouter', 'API Response', responseText, 200);
+    logger.service('OpenRouter', `Processing response for ${modelKey}`);
+
+    const parseResult = jsonParser.parse(responseText, {
+        preserveRawInput: true,
+        allowPartialExtraction: true,
+        logErrors: true,
+        fieldName: `openrouter-${modelKey}`
+    });
+
+    if (!parseResult.success) {
+        // The raw response is preserved in the fallbackResult object
+        logger.service('OpenRouter', `JSON parsing failed for ${modelKey}: ${parseResult.error}`, 'error');
+        // Create a fallback response to preserve raw data
+        const fallbackResult = {
+            _parseError: parseResult.error,
+            _rawResponse: responseText,
+            _parsingFailed: true,
+            solvingStrategy: "JSON parsing failed - raw response preserved",
+            patternDescription: "Unable to parse model response",
+            hints: [],
+            confidence: 0
+        };
+        return {
+            result: fallbackResult,
+            tokenUsage: { input: 0, output: 0 }
+        };
     }
 
-    try {
-      // Enhanced JSON validation after continuation completion
-      logger.service('OpenRouter', `Validating JSON after potential continuation - length: ${responseText.length} chars`);
-      
-      // Use unified ResponseProcessor with enhanced error context
-      const processedResponse = responseProcessor.processChatCompletion(response, {
+    // Simulate a provider response object for the responseProcessor
+    const simulatedResponse = {
+      choices: [{
+        message: {
+          content: JSON.stringify(parseResult.data) // Use the clean, parsed JSON
+        }
+      }]
+    };
+
+    const processedResponse = responseProcessor.processChatCompletion(simulatedResponse, {
         captureReasoning,
         modelKey,
         provider: 'OpenRouter'
-      });
+    });
 
-      logger.service('OpenRouter', `JSON parsing successful for ${modelKey} after continuation process`);
-      logger.tokenUsage('OpenRouter', modelKey, processedResponse.tokenUsage.input, processedResponse.tokenUsage.output, processedResponse.tokenUsage.reasoning);
-      logger.service('OpenRouter', `Result keys: ${Object.keys(processedResponse.result).join(', ')}`);
-      
-      if (processedResponse.reasoningItems && processedResponse.reasoningItems.length > 0) {
-        logger.service('OpenRouter', `Extracted ${processedResponse.reasoningItems.length} reasoning items`);
-      }
+    logger.service('OpenRouter', `JSON parsing successful for ${modelKey}`);
+    logger.tokenUsage('OpenRouter', modelKey, processedResponse.tokenUsage.input, processedResponse.tokenUsage.output, processedResponse.tokenUsage.reasoning);
 
-      return {
+    return {
         result: processedResponse.result,
         tokenUsage: processedResponse.tokenUsage,
         reasoningLog: processedResponse.reasoningLog,
         reasoningItems: processedResponse.reasoningItems
-      };
-    } catch (error) {
-      // Enhanced error logging for continuation failures
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger.logError(`JSON processing failed for ${modelKey} after continuation`, {
-        error: errorMessage,
-        context: 'OpenRouter',
-        responseLength: responseText.length,
-        finishReason: finishReason,
-        generationId: generationId,
-        wasTruncated: isTruncated
-      });
-      
-      // Save failed response with enhanced metadata for analysis
-      responsePersistence.saveRawResponse(
-        modelKey,
-        responseText,
-        200,
-        {
-          provider: 'OpenRouter',
-          requestId: generationId || 'unknown',
-          truncated: isTruncated,
-          processingError: errorMessage,
-          postContinuation: true
-        }
-      );
-      
-      logger.service('OpenRouter', `Raw response preserved for debugging: ${responseText.substring(0, 200)}...`, 'error');
-      throw new Error(`OpenRouter JSON processing failed for ${modelKey}: ${errorMessage}. Raw response preserved for analysis.`);
-    }
+    };
   }
 
   getModelInfo(modelKey: string): ModelInfo {
@@ -374,7 +313,7 @@ export class OpenRouterService extends BaseAIService {
       return {
         name: modelKey,
         isReasoning: false,
-        supportsTemperature: true,
+        supportsTemperature: false,
         contextWindow: undefined, // Let the model use its natural context window
         supportsFunctionCalling: false,
         supportsSystemPrompts: true,
@@ -386,7 +325,7 @@ export class OpenRouterService extends BaseAIService {
     return {
       name: modelConfig.name,
       isReasoning: modelConfig.isReasoning || false,
-      supportsTemperature: modelConfig.supportsTemperature || true,
+      supportsTemperature: modelConfig.supportsTemperature || false,
       contextWindow: modelConfig.contextWindow, // Use actual model context window, no artificial fallback
       supportsFunctionCalling: modelConfig.supportsFunctionCalling || false,
       supportsSystemPrompts: modelConfig.supportsSystemPrompts !== false,

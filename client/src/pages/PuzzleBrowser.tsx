@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
+import { useModels } from '@/hooks/useModels';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,7 +45,8 @@ export default function PuzzleBrowser() {
   const [sortBy, setSortBy] = useState<string>('least_analysis_data'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { data: models = [] } = useModels();
   const { toast } = useToast();
 
   // Set page title
@@ -199,12 +201,6 @@ export default function PuzzleBrowser() {
                 <Button variant="outline" className="flex items-center gap-2">
                   <RefreshCw className="h-4 w-4" />
                   Discussion
-                </Button>
-              </Link>
-              <Link href="/model-examiner">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Grid3X3 className="h-4 w-4" />
-                  Model Examiner
                 </Button>
               </Link>
               <Link href="/overview">
@@ -445,8 +441,16 @@ export default function PuzzleBrowser() {
                                 ✓ Explained
                               </Badge>
                               {puzzle.modelName && (
-                                <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
-                                  {puzzle.modelName}
+                                <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs flex items-center gap-1">
+                                  <span>{puzzle.modelName}</span>
+                                  {(() => {
+                                    const model = models.find((m: { name: string }) => m.name === puzzle.modelName);
+                                    return model?.releaseDate ? (
+                                      <span className="text-blue-500 text-[10px] opacity-75">
+                                        ({model.releaseDate})
+                                      </span>
+                                    ) : null;
+                                  })()}
                                 </Badge>
                               )}
                               {formatProcessingTime(puzzle.apiProcessingTimeMs) && (

@@ -324,7 +324,7 @@ export function ConfigurationProvider({ children }: { children: ReactNode }) {
 
       // Import UI state
       if (config.ui) {
-        setUiState(prev => ({ ...prev, ...config.ui }));
+        setUiState((prev: any) => ({ ...prev, ...config.ui }));
         saveToStorage(STORAGE_KEYS.ui, { ...uiState, ...config.ui });
       }
 

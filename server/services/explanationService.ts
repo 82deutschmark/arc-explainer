@@ -50,7 +50,6 @@ export const explanationService = {
    * @throws AppError if puzzle not found or explanation cannot be saved
    */
   async saveExplanation(puzzleId: string, explanations: Record<string, any>) {
-    console.log(`[CRITICAL-DEBUG] SERVICE: puzzleId="${puzzleId}" type=${typeof puzzleId}`);
     // First, get the puzzle to validate it exists
     const { puzzleLoader } = await import('./puzzleLoader');
     const task = await puzzleLoader.loadPuzzle(puzzleId);
@@ -73,29 +72,6 @@ export const explanationService = {
       if (Object.prototype.hasOwnProperty.call(explanations, modelKey)) {
         const sourceData = explanations[modelKey];
 
-        // ===== RAW RESPONSE LOGGING & FILE SAVE =====
-        try {
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          // Sanitize modelKey for safe filename usage - replace slashes with dashes
-          const safeModelKey = modelKey.replace(/[\/\\:]/g, '-');
-          const logFileName = `${puzzleId}-${safeModelKey}-${timestamp}-raw.json`;
-          const logFilePath = path.join('data', 'explained', logFileName);
-          await fs.writeFile(logFilePath, JSON.stringify(sourceData, null, 2));
-          console.log(`[RAW-LOG-SAVE] Raw response for ${modelKey} saved to ${logFilePath}`);
-        } catch (logError) {
-          console.error(`[RAW-LOG-SAVE-ERROR] Failed to save raw log for ${modelKey}:`, logError);
-          // Non-critical, so we don't rethrow.
-        }
-
-        console.log(`\n🔍 [RAW-RESPONSE-DEBUG] Model: ${modelKey}`);
-        console.log(`📄 [RAW-RESPONSE-DEBUG] Full sourceData structure:`, JSON.stringify(sourceData, null, 2));
-        console.log(`🔧 [RAW-RESPONSE-DEBUG] sourceData keys: [${Object.keys(sourceData).join(', ')}]`);
-        console.log(`📝 [RAW-RESPONSE-DEBUG] sourceData.result exists: ${!!sourceData.result}`);
-        if (sourceData.result) {
-          console.log(`📝 [RAW-RESPONSE-DEBUG] sourceData.result keys: [${Object.keys(sourceData.result).join(', ')}]`);
-          console.log(`📄 [RAW-RESPONSE-DEBUG] sourceData.result content:`, JSON.stringify(sourceData.result, null, 2));
-        }
-        // ===== END RAW RESPONSE LOGGING =====
 
         // Handle nested result structure from OpenRouter services
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
@@ -149,13 +125,6 @@ export const explanationService = {
         const tokenUsage = sourceData.tokenUsage;
         const costData = sourceData.cost;
 
-        // === STEP 1 & 2: FIX REASONING ITEMS PRESERVATION WITH COMPREHENSIVE LOGGING ===
-        
-        // Debug log the reasoning items extraction process
-        console.log(`\n🧠 [REASONING-ITEMS-DEBUG] Model: ${modelKey}`);
-        console.log(`🔍 [REASONING-ITEMS-DEBUG] sourceData.reasoningItems:`, sourceData.reasoningItems);
-        console.log(`🔍 [REASONING-ITEMS-DEBUG] analysisData.reasoningItems:`, analysisData.reasoningItems);
-        console.log(`🔍 [REASONING-ITEMS-DEBUG] analysisData.reasoningLog:`, analysisData.reasoningLog);
         
         // Extract reasoningItems with proper fallback logic
         let finalReasoningItems = null;
@@ -163,29 +132,22 @@ export const explanationService = {
         // Priority 1: Direct reasoningItems from sourceData (top-level)
         if (sourceData.reasoningItems && Array.isArray(sourceData.reasoningItems) && sourceData.reasoningItems.length > 0) {
           finalReasoningItems = sourceData.reasoningItems;
-          console.log(`✅ [REASONING-ITEMS-DEBUG] Using sourceData.reasoningItems (${finalReasoningItems.length} items)`);
         }
         // Priority 2: reasoningItems from nested analysisData
         else if (analysisData.reasoningItems && Array.isArray(analysisData.reasoningItems) && analysisData.reasoningItems.length > 0) {
           finalReasoningItems = analysisData.reasoningItems;
-          console.log(`✅ [REASONING-ITEMS-DEBUG] Using analysisData.reasoningItems (${finalReasoningItems.length} items)`);
         }
         // Priority 3: Check if reasoningItems got nested deeper in result structure
         else if (sourceData.result && sourceData.result.reasoningItems && Array.isArray(sourceData.result.reasoningItems) && sourceData.result.reasoningItems.length > 0) {
           finalReasoningItems = sourceData.result.reasoningItems;
-          console.log(`✅ [REASONING-ITEMS-DEBUG] Using sourceData.result.reasoningItems (${finalReasoningItems.length} items)`);
         }
         // Priority 4: Fallback to reasoningLog if it's an array (some providers return it as array)
         else if (analysisData.reasoningLog && Array.isArray(analysisData.reasoningLog) && analysisData.reasoningLog.length > 0) {
           finalReasoningItems = analysisData.reasoningLog;
-          console.log(`✅ [REASONING-ITEMS-DEBUG] Using analysisData.reasoningLog as array (${finalReasoningItems.length} items)`);
         }
         else {
-          console.log(`❌ [REASONING-ITEMS-DEBUG] No valid reasoningItems found for ${modelKey}`);
         }
         
-        console.log(`🎯 [REASONING-ITEMS-DEBUG] Final reasoningItems:`, finalReasoningItems);
-        console.log(`📊 [REASONING-ITEMS-DEBUG] Final reasoningItems type: ${typeof finalReasoningItems}, isArray: ${Array.isArray(finalReasoningItems)}, length: ${finalReasoningItems?.length || 'N/A'}`);
 
         // Extract reasoningLog from AI service response
         let finalReasoningLog = null;
@@ -193,18 +155,14 @@ export const explanationService = {
         // Priority 1: Direct reasoningLog from sourceData (top-level)
         if (sourceData.reasoningLog && typeof sourceData.reasoningLog === 'string') {
           finalReasoningLog = sourceData.reasoningLog;
-          console.log(`✅ [REASONING-LOG-DEBUG] Using sourceData.reasoningLog (${finalReasoningLog.length} chars)`);
         }
         // Priority 2: reasoningLog from nested analysisData
         else if (analysisData.reasoningLog && typeof analysisData.reasoningLog === 'string') {
           finalReasoningLog = analysisData.reasoningLog;
-          console.log(`✅ [REASONING-LOG-DEBUG] Using analysisData.reasoningLog (${finalReasoningLog.length} chars)`);
         }
         else {
-          console.log(`❌ [REASONING-LOG-DEBUG] No valid reasoningLog found for ${modelKey}`);
         }
         
-        console.log(`🎯 [REASONING-LOG-DEBUG] Final reasoningLog: ${finalReasoningLog ? `${finalReasoningLog.substring(0, 100)}...` : 'NULL'}`);
 
         // Handle both flat and nested response structures
         const explanationData = {
@@ -228,7 +186,8 @@ export const explanationService = {
           multiTestResults: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
           multiTestAllCorrect: sourceData.multiTestAllCorrect ?? null,
           multiTestAverageAccuracy: sourceData.multiTestAverageAccuracy ?? null,
-          providerRawResponse: sourceData.providerRawResponse ?? null,
+          // If parsing failed, save the raw response from the `_rawResponse` field.
+          providerRawResponse: analysisData._parsingFailed ? analysisData._rawResponse : (sourceData.providerRawResponse ?? null),
           apiProcessingTimeMs: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
           inputTokens: tokenUsage?.input ?? sourceData.inputTokens ?? null,
           outputTokens: tokenUsage?.output ?? sourceData.outputTokens ?? null,
@@ -239,27 +198,22 @@ export const explanationService = {
           reasoningEffort: sourceData.reasoningEffort ?? null,
           reasoningVerbosity: sourceData.reasoningVerbosity ?? null,
           reasoningSummaryType: sourceData.reasoningSummaryType ?? null,
+          // Prompt tracking fields for full traceability
+          systemPromptUsed: sourceData.systemPromptUsed ?? analysisData.systemPromptUsed ?? null,
+          userPromptUsed: sourceData.userPromptUsed ?? analysisData.userPromptUsed ?? null,
+          promptTemplateId: sourceData.promptTemplateId ?? analysisData.promptTemplateId ?? null,
+          customPromptText: sourceData.customPromptText ?? analysisData.customPromptText ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
-        console.log(`[DEBUG] About to create explanationWithPuzzleId. puzzleId = "${puzzleId}" (${typeof puzzleId})`);
-        console.log(`[DEBUG] Explanation data keys: [${Object.keys(explanationData).join(', ')}]`);
-        console.log(`[DEBUG] Required fields check:`, {
-          patternDescription: !!explanationData.patternDescription,
-          solvingStrategy: !!explanationData.solvingStrategy,
-          hints: Array.isArray(explanationData.hints) && explanationData.hints.length > 0,
-          confidence: typeof explanationData.confidence === 'number'
-        });
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
             puzzleId: puzzleId
           };
-          console.log(`[DEBUG] Created explanationWithPuzzleId.puzzleId = "${explanationWithPuzzleId.puzzleId}" (${typeof explanationWithPuzzleId.puzzleId})`);
-          console.log(`[DEBUG] About to call repositoryService.explanations.saveExplanation...`);
           const savedExplanation = await repositoryService.explanations.saveExplanation(explanationWithPuzzleId);
           if (savedExplanation && savedExplanation.id) {
-            console.log(`[SAVE-SUCCESS] Model ${modelKey} saved successfully (puzzle: ${puzzleId}, ID: ${savedExplanation.id})`);
+            console.log(`[SAVE-SUCCESS] Model ${modelKey} explanation saved (ID: ${savedExplanation.id})`);
             savedExplanationIds.push(savedExplanation.id);
           } else {
             const errorMsg = `Database save returned null for model ${modelKey} (puzzle: ${puzzleId}) - likely validation or JSON serialization failure`;
