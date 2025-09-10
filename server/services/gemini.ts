@@ -107,7 +107,7 @@ export class GeminiService extends BaseAIService {
       contextWindow: modelConfig?.contextWindow, // Use actual model context window, no artificial limit
       supportsFunctionCalling: true,
       supportsSystemPrompts: true,
-      supportsStructuredOutput: false, // Gemini doesn't support structured output format
+      supportsStructuredOutput: true, // Gemini supports native JSON output
       supportsVision: true // Most Gemini models support vision 
     };
   }
@@ -130,6 +130,7 @@ export class GeminiService extends BaseAIService {
 
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
+      response_mime_type: 'application/json',
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
@@ -212,6 +213,7 @@ export class GeminiService extends BaseAIService {
 
     // Build generation config with thinking support for 2.5+ models
     const generationConfig: any = {
+      response_mime_type: 'application/json',
       ...(modelSupportsTemperature(modelKey) && { temperature }),
       ...(options?.topP && { topP: options.topP }),
       ...(options?.candidateCount && { candidateCount: options.candidateCount })
