@@ -1,5 +1,32 @@
 ### September 9 2025
 
+## v2.20.5 - 🚨 CRITICAL FIX: OpenRouter API Format Issue for Cohere and Grok Models
+
+**PROBLEM**: Some OpenRouter models were failing with "Input required: specify 'prompt' or 'messages'" error.
+
+**ROOT CAUSE**: 
+- Certain models (cohere/command-r-plus, cohere/command-a, x-ai/grok-code-fast-1) require "prompt" field instead of standard "messages" array format
+- OpenRouter API supports both formats but models have different requirements
+
+**SOLUTION**:
+1. **Added Model Configuration**: New `requiresPromptFormat?: boolean` flag in ModelConfig interface
+2. **Updated Affected Models**: Marked 3 models with `requiresPromptFormat: true`
+3. **Smart Request Format Detection**: OpenRouter service now detects flag and uses appropriate format:
+   - `requiresPromptFormat=true`: Uses `{prompt: "system\n\nuser"}`  
+   - Standard models: Uses `{messages: [{role: "system"}, {role: "user"}]}`
+4. **Continuation Support**: Both formats properly handle multi-part responses
+
+**TECHNICAL DETAILS**:
+- Maintains backward compatibility with all existing OpenRouter models
+- Follows SRP pattern for clean format detection logic
+- Reuses existing model configuration infrastructure
+
+**USER TESTING**:
+- Test cohere/command-r-plus puzzle analysis (previously failing)
+- Test x-ai/grok-code-fast-1 analysis requests
+- Verify other OpenRouter models still work correctly
+- Check console logs show "Using prompt format" vs "Using combined-prompt strategy"
+
 ## v2.20.4 - 🚨 VALIDATION BOTTLENECK FIX: Add Missing Raw Response Fields to Repository INSERT
 
 **CRITICAL DATA LOSS RESOLVED**: Repository INSERT was dropping expensive API data at the final database save step.
