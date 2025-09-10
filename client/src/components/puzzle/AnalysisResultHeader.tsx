@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle } from 'lucide-react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 
@@ -54,6 +54,31 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
           <span className="text-xs text-gray-600">
             {new Date(result.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
+          </span>
+        </Badge>
+      )}
+      
+      {/* Status badge for optimistic updates */}
+      {(result as any).isOptimistic && (result as any).status && (
+        <Badge 
+          variant="outline" 
+          className={`flex items-center gap-1 animate-pulse ${
+            (result as any).status === 'analyzing' ? 'bg-blue-50 border-blue-200 text-blue-700' :
+            (result as any).status === 'saving' ? 'bg-orange-50 border-orange-200 text-orange-700' :
+            (result as any).status === 'completed' ? 'bg-green-50 border-green-200 text-green-700' :
+            (result as any).status === 'error' ? 'bg-red-50 border-red-200 text-red-700' :
+            'bg-gray-50 border-gray-200 text-gray-700'
+          }`}>
+          {(result as any).status === 'analyzing' && <Clock className="h-3 w-3" />}
+          {(result as any).status === 'saving' && <Database className="h-3 w-3" />}
+          {(result as any).status === 'completed' && <CheckCircle className="h-3 w-3" />}
+          {(result as any).status === 'error' && <AlertCircle className="h-3 w-3" />}
+          <span className="text-xs font-medium">
+            {(result as any).status === 'analyzing' ? 'ANALYZING' :
+             (result as any).status === 'saving' ? 'SAVING' :
+             (result as any).status === 'completed' ? 'COMPLETED' :
+             (result as any).status === 'error' ? 'ERROR' :
+             'PROCESSING'}
           </span>
         </Badge>
       )}
