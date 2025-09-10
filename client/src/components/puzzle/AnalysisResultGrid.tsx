@@ -22,6 +22,11 @@ interface AnalysisResultGridProps {
   setShowPrediction: (show: boolean) => void;
 }
 
+// Skeleton loader component
+const SkeletonGrid = () => (
+  <div className="w-32 h-32 bg-gray-200 rounded animate-pulse" />
+);
+
 export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({ 
   result,
   expectedOutputGrids,
@@ -38,6 +43,32 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   showPrediction,
   setShowPrediction
 }) => {
+  const isOptimistic = result.isOptimistic;
+  const status = result.status;
+  
+  // Show skeleton loader for prediction grid when analyzing or saving
+  if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
+    return (
+      <div className="space-y-3">
+        <div className="border rounded bg-gray-50 border-gray-200">
+          <div className="p-3">
+            <h5 className="font-semibold text-gray-800 mb-3">AI Prediction</h5>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+              <div>
+                <h6 className="font-medium text-center mb-2">Predicted Output</h6>
+                <SkeletonGrid />
+              </div>
+              <div>
+                <h6 className="font-medium text-center mb-2">Expected Output</h6>
+                <SkeletonGrid />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {/* Single prediction display */}
