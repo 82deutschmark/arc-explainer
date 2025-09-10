@@ -66,22 +66,38 @@ export function safeJsonParse<T>(value: any, fieldName?: string, fallback: T | n
  * Handles null/undefined values and provides error recovery
  */
 export function safeJsonStringify(value: any): string | null {
-  // Handle explicit null/undefined
   if (value === null || value === undefined) {
     return null;
   }
-  
-  // If already a string, return as-is (assuming it's valid JSON)
-  if (typeof value === 'string') {
-    return value;
+
+  // For non-string types, simply stringify them.
+  if (typeof value !== 'string') {
+    try {
+      return JSON.stringify(value);
+    } catch (error) {
+      logger.warn(`Failed to stringify non-string value: ${error instanceof Error ? error.message : 'Unknown error'}`, 'utilities');
+      return null;
+    }
   }
-  
-  // Attempt to stringify
+
+  // For strings, we need to determine if it's already a valid JSON string or a plain string.
+  // An empty string is a special case; we should return it as a valid JSON empty string: ""
+  if (value.trim() === '') {
+      return '""';
+  }
+
   try {
-    return JSON.stringify(value);
-  } catch (error) {
-    logger.warn(`Failed to stringify JSON: ${error instanceof Error ? error.message : 'Unknown error'}`, 'utilities');
-    return null;
+    // Attempt to parse the string. If it succeeds, the string is already valid JSON.
+    JSON.parse(value);
+    return value; // It's valid JSON, return as-is.
+  } catch (e) {
+    // If parsing fails, it's a plain string that needs to be encoded into a JSON string.
+    try {
+      return JSON.stringify(value);
+    } catch (error) {
+      logger.warn(`Failed to stringify plain string: ${error instanceof Error ? error.message : 'Unknown error'}`, 'utilities');
+      return null;
+    }
   }
 }
 
