@@ -41,8 +41,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
           provider_response_id, provider_raw_response, multi_test_prediction_grids
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25,
-          $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -69,8 +68,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         this.safeJsonStringify(data.multiTestResults),
         data.saturnSuccess || null,
         this.safeJsonStringify(data.saturnImages),
-        data.saturnLog || null,
-        data.saturnEvents || null,
+        this.safeJsonStringify(data.saturnLog),
+        this.safeJsonStringify(data.saturnEvents),
         // Alien communication fields
         data.alienMeaning || null,
         data.alienMeaningConfidence || null,
