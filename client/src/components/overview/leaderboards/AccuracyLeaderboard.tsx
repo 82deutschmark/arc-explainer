@@ -98,7 +98,7 @@ export function AccuracyLeaderboard({
     return 'bg-red-100 text-red-800 border-red-200';
   };
 
-  const topModels = accuracyStats.modelAccuracyRankings.slice(0, 8);
+  const topModels = accuracyStats.modelAccuracyRankings.slice(0, 15);
 
   return (
     <Card className="h-full">
@@ -144,10 +144,10 @@ export function AccuracyLeaderboard({
           ))}
         </div>
         
-        {accuracyStats.modelAccuracyRankings.length > 8 && (
+        {accuracyStats.modelAccuracyRankings.length > 15 && (
           <div className="mt-4 pt-3 border-t text-center">
             <span className="text-sm text-gray-500">
-              +{accuracyStats.modelAccuracyRankings.length - 8} more models
+              +{accuracyStats.modelAccuracyRankings.length - 15} more models
             </span>
           </div>
         )}
