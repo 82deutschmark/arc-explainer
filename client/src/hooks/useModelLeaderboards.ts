@@ -52,6 +52,14 @@ interface FeedbackStats {
   }>;
 }
 
+interface ReliabilityStats {
+  modelName: string;
+  totalRequests: number;
+  successfulRequests: number;
+  failedRequests: number;
+  reliability: number;
+}
+
 export function useModelLeaderboards() {
   const queries = useQueries({
     queries: [
@@ -81,22 +89,33 @@ export function useModelLeaderboards() {
           return json.data as FeedbackStats;
         },
         staleTime: 5 * 60 * 1000,
+      },
+      {
+        queryKey: ['reliability-leaderboard'],
+        queryFn: async () => {
+          const response = await apiRequest('GET', '/api/metrics/reliability');
+          const json = await response.json();
+          return json.data as ReliabilityStats[];
+        },
+        staleTime: 5 * 60 * 1000,
       }
     ]
   });
 
-  const [accuracyQuery, trustworthinessQuery, feedbackQuery] = queries;
+  const [accuracyQuery, trustworthinessQuery, feedbackQuery, reliabilityQuery] = queries;
 
   return {
     // Individual data
     accuracyStats: accuracyQuery.data,
     performanceStats: trustworthinessQuery.data,
     feedbackStats: feedbackQuery.data,
+    reliabilityStats: reliabilityQuery.data,
 
     // Loading states
     isLoadingAccuracy: accuracyQuery.isLoading,
     isLoadingPerformance: trustworthinessQuery.isLoading,
     isLoadingFeedback: feedbackQuery.isLoading,
+    isLoadingReliability: reliabilityQuery.isLoading,
     isLoadingAny: queries.some(q => q.isLoading),
     isLoadingAll: queries.every(q => q.isLoading),
 
@@ -104,6 +123,7 @@ export function useModelLeaderboards() {
     accuracyError: accuracyQuery.error,
     performanceError: trustworthinessQuery.error,
     feedbackError: feedbackQuery.error,
+    reliabilityError: reliabilityQuery.error,
     hasAnyError: queries.some(q => q.error),
 
     // Utility functions
