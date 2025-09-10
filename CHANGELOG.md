@@ -1,5 +1,50 @@
 ### September 9 2025
 
+## v2.21.0 - 🚀 MAJOR UX: Optimistic UI Updates for Analysis Results
+
+**BREAKTHROUGH IMPROVEMENT**: Analysis results now appear instantly when triggered, providing immediate feedback and real-time progress updates during analysis.
+
+**BEFORE**: Users saw only a loading button with no feedback for 10-30 seconds until analysis completed.  
+**AFTER**: Instant placeholder cards with progressive updates: "ANALYZING" → "SAVING" → "COMPLETED"
+
+**NEW FEATURES**:
+1. **Immediate Result Cards**: Placeholder cards appear instantly when analysis is triggered
+2. **Progressive Status Updates**: Real-time progression through analysis phases
+3. **Skeleton Loading States**: Animated placeholders for content sections during processing
+4. **Smart Status Badges**: Color-coded badges with appropriate icons (Clock, Database, CheckCircle, AlertCircle)
+5. **Error State Handling**: Failed analyses show clear error messages and states
+6. **Intelligent Result Merging**: Seamlessly combines saved explanations with pending analyses
+
+**ARCHITECTURE ENHANCEMENTS**:
+- **Enhanced `useAnalysisResults` Hook**: Added `pendingAnalyses` state management with PendingAnalysis interface
+- **Optimistic Updates**: Creates immediate placeholder results with progressive content population
+- **Smart Merging Logic**: PuzzleExaminer now merges saved and pending results for unified display
+- **Status-Aware Components**: All card components handle pending/processing/error/completed states
+- **Type-Safe State Management**: Robust typing with 'analyzing' | 'saving' | 'completed' | 'error' status tracking
+
+**UI/UX IMPROVEMENTS**:
+- **Status Badges**: Animated badges with contextual colors and icons
+- **Skeleton Loaders**: Professional loading states for pattern descriptions, strategies, hints, and grids
+- **Disabled Interactions**: Feedback buttons appropriately disabled during pending states
+- **Progress Indicators**: Results counter shows both saved and in-progress analyses
+- **Smooth Transitions**: 1-second delay before removing completed optimistic results
+
+**TECHNICAL DETAILS**:
+- Maintains database-first architecture integrity
+- Uses temporary IDs for React reconciliation
+- Progressive error recovery with detailed messaging
+- Non-blocking concurrent analysis support
+- Follows SRP and DRY principles throughout implementation
+
+**USER TESTING REQUIRED**:
+- Trigger analysis on any puzzle to see immediate result card appearance
+- Observe status progression from "ANALYZING" to "SAVING" to "COMPLETED"
+- Verify skeleton loaders display during processing phases
+- Test error scenarios by using invalid model configurations
+- Confirm smooth transition when analysis completes and real data loads
+
+This represents a major leap forward in user experience, eliminating the previous "dead time" during analysis.
+
 ## v2.20.6 - 🚨 CRITICAL FIX: Grid Data Sanitization to Prevent JSON Parsing Errors
 
 **PROBLEM**: Database INSERT failures with "invalid input syntax for type json" when AI models introduce non-numeric characters in grid data.
