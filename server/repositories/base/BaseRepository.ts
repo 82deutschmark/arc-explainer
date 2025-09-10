@@ -16,7 +16,7 @@ import { safeJsonParse, safeJsonStringify, normalizeConfidence, processHints } f
 let pool: Pool | null = null;
 
 /**
- * Initialize database connection pool
+ * Initialize database connection pool with retry logic
  */
 export const initializeDatabase = async (): Promise<boolean> => {
   const databaseUrl = process.env.DATABASE_URL;
@@ -26,26 +26,56 @@ export const initializeDatabase = async (): Promise<boolean> => {
     return false;
   }
 
-  try {
-    pool = new Pool({ connectionString: databaseUrl });
+  const maxRetries = 3;
+  const baseDelay = 2000; // 2 seconds
 
-    // Add a global error handler to the pool to prevent crashes
-    pool.on('error', (err, client) => {
-      logger.logError(`Unexpected error on idle client`, { error: err, context: 'database', stackTrace: true });
-    });
-    
-    // Test connection
-    const client = await pool.connect();
-    await client.query('SELECT NOW()');
-    client.release();
-    
-    logger.info('Database connection pool initialized', 'database');
-    return true;
-  } catch (error) {
-    logger.error(`Database initialization failed: ${error instanceof Error ? error.message : String(error)}`, 'database');
-    pool = null;
-    return false;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      pool = new Pool({ 
+        connectionString: databaseUrl,
+        connectionTimeoutMillis: 10000, // 10 second timeout
+        idleTimeoutMillis: 30000,       // 30 second idle timeout
+        max: 20                         // max 20 connections
+      });
+
+      // Add a global error handler to the pool to prevent crashes
+      pool.on('error', (err, client) => {
+        logger.logError(`Unexpected error on idle client`, { error: err, context: 'database', stackTrace: true });
+      });
+      
+      // Test connection
+      const client = await pool.connect();
+      await client.query('SELECT NOW()');
+      client.release();
+      
+      logger.info('Database connection pool initialized', 'database');
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.warn(`Database initialization attempt ${attempt}/${maxRetries} failed: ${errorMessage}`, 'database');
+      
+      // Clean up failed pool
+      if (pool) {
+        try {
+          await pool.end();
+        } catch (cleanupError) {
+          // Ignore cleanup errors
+        }
+        pool = null;
+      }
+      
+      // If this isn't the last attempt, wait before retrying
+      if (attempt < maxRetries) {
+        const delay = baseDelay * attempt; // Progressive backoff: 2s, 4s, 6s
+        logger.info(`Retrying database connection in ${delay}ms...`, 'database');
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        logger.error(`Database initialization failed after ${maxRetries} attempts: ${errorMessage}`, 'database');
+      }
+    }
   }
+  
+  return false;
 };
 
 /**

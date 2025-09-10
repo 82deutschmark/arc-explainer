@@ -38,8 +38,8 @@ import { formatResponse } from "./utils/responseFormatter.ts";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   await aiServiceFactory.initialize();
-  const dbInitialized = await repositoryService.initialize();
-  console.log(`Database ${dbInitialized ? 'initialized successfully' : 'not available - running in memory mode'}`);;
+  
+  // Database initialization is handled in index.ts - routes should not re-initialize;
 
   // Routes with consistent naming and error handling
   
