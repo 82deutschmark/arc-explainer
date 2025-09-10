@@ -12,7 +12,6 @@
 import { 
   BASE_SYSTEM_PROMPT, 
   JSON_HEADER,
-  JSON_REASONING_INSTRUCTION,
   JSON_FIELDS_INSTRUCTIONS,
   PREDICTION_FIELD_INSTRUCTIONS,
   TASK_DESCRIPTIONS,
@@ -31,8 +30,6 @@ export interface PromptConfig {
   predictionInstructions?: string;
   /** Additional mode-specific instructions */
   additionalInstructions?: string;
-  /** If true, includes reasoning instructions in the prompt text. Defaults to true. */
-  usePromptReasoning?: boolean;
 }
 
 /**
@@ -47,16 +44,11 @@ export function buildSystemPrompt(config: PromptConfig): string {
     basePrompt = BASE_SYSTEM_PROMPT,
     taskDescription,
     predictionInstructions = PREDICTION_FIELD_INSTRUCTIONS,
-    additionalInstructions = '',
-    usePromptReasoning = true
+    additionalInstructions = ''
   } = config;
 
-  // Dynamically construct JSON instructions
-  const jsonSections = [JSON_HEADER, JSON_FIELDS_INSTRUCTIONS];
-  if (usePromptReasoning) {
-    jsonSections.push(JSON_REASONING_INSTRUCTION);
-  }
-  const jsonInstructions = jsonSections.join('\n\n');
+  // Construct JSON instructions without reasoning (handled at service level)
+  const jsonInstructions = [JSON_HEADER, JSON_FIELDS_INSTRUCTIONS].join('\n\n');
 
   // Compose all sections, filtering out empty ones
   return [
@@ -106,19 +98,18 @@ export function buildEducationalPrompt(): string {
 /**
  * Build custom prompt with minimal JSON enforcement
  * Used for custom prompts to ensure structured output while preserving flexibility
+ * Note: Reasoning instructions are handled at the service level based on model capabilities
  */
-export function buildCustomPrompt(usePromptReasoning: boolean = true): string {
+export function buildCustomPrompt(): string {
   const jsonInstructions = [
     `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.`,
-    `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`,
-    ...(usePromptReasoning ? [JSON_REASONING_INSTRUCTION] : [])
+    `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`
   ].join('\n\n');
 
   return buildSystemPrompt({
     basePrompt: `You are an expert at analyzing ARC-AGI puzzles.\nThe user will provide custom analysis instructions.`,
     taskDescription: `TASK: Follow the user's custom analysis instructions while ensuring structured output.`,
-    predictionInstructions: jsonInstructions, // Using this to inject the whole block
-    additionalInstructions: ``,
-    usePromptReasoning: false // Handled manually above
+    predictionInstructions: jsonInstructions,
+    additionalInstructions: ``
   });
 }

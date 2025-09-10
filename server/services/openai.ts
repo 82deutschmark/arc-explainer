@@ -59,11 +59,8 @@ export class OpenAIService extends BaseAIService {
     const modelName = getApiModelName(modelKey);
 
 
-    // For models with native reasoning, disable reasoning instructions in the prompt
-    const usePromptReasoning = !MODELS_WITH_REASONING.has(modelKey);
-
     // Build prompt package using inherited method
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
@@ -132,8 +129,7 @@ export class OpenAIService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey);
-    const usePromptReasoning = !MODELS_WITH_REASONING.has(modelKey);
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, usePromptReasoning);
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;

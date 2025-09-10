@@ -37,7 +37,6 @@ export const JSON_HEADER = `CRITICAL: Return only valid JSON. No markdown format
 
 JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`;
 
-export const JSON_REASONING_INSTRUCTION = `- reasoningItems: Array of strings detailing the step-by-step analysis, insights, and even incorrect approaches explored.`;
 
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
@@ -46,16 +45,15 @@ export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in t
 - confidence: Your certainty level (0-100)`;
 
 /**
- * @deprecated Use the composable parts: JSON_HEADER, JSON_REASONING_INSTRUCTION, JSON_FIELDS_INSTRUCTIONS
+ * @deprecated Use the composable parts: JSON_HEADER, JSON_FIELDS_INSTRUCTIONS
  */
 export const JSON_OUTPUT_INSTRUCTIONS = [
   JSON_HEADER,
-  JSON_FIELDS_INSTRUCTIONS,
-  JSON_REASONING_INSTRUCTION
+  JSON_FIELDS_INSTRUCTIONS
 ].join('\n');
 
 /**
- * Prediction field instructions - used by both solver and explanation modes
+ * Prediction field instructions - used by many modes including solver and explanation modes
  * SINGLE DEFINITION - eliminates massive duplication
  */
 export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: 
@@ -73,7 +71,7 @@ export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT:
   * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)`;
 
 /**
- * Common task patterns for different prompt types
+ * Common task patterns for different prompt types  WHAT IS THIS???  WHERE DO WE USE IT?
  */
 export const TASK_DESCRIPTIONS = {
   solver: `TASK: Each puzzle has training which are the examples to learn from. 
@@ -90,7 +88,7 @@ TASK: Explain the transformation pattern AND interpret what the aliens might be 
 
   educational: `TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer.`,
 
-  gepa: `TASK: Each puzzle has training which are the examples to learn from. 
+  gepa: `TASK: Each puzzle has training sets which are the examples to learn from. 
 Analyze training examples, identify the transformation patterns, 
 and predict the correct output for the test case. Some puzzles have multiple test cases.`
 } as const;
@@ -120,36 +118,15 @@ Be creative but grounded in the actual transformation and abstract reasoning whe
 
   educational: `--- EDUCATIONAL CONTENT Specificalities ---
 
-- **patternDescription**: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
-- **solvingStrategy**: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
-- **reasoningItems**: A short song that captures the essence of your approach.
-- **hints**: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm.
-- **confidence**: Your confidence (0-100) in the chosen algorithm's correctness and your answer(s)`,
+- patternDescription: A clear, natural language description of the transformation rule implemented by your final chosen algorithm.
+- solvingStrategy: A high-level summary of your approach: generating three algorithms, analysis, evaluating them, and selecting the best one.
+- reasoningItems: A short song that captures the essence of your approach.
+- hints: Array of strings. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm.
+- confidence: Your confidence (1-100) in the chosen algorithm's correctness and your answer(s)`,
 
   gepa: `Your task is to analyze ARC-AGI puzzles and produce valid JSON output, focusing only on the database fields essential for downstream use. Only include the strictly required fields listed below. Ensure your analysis reflects explicit reasoning before final predictions and confidence where applicable.
 
-**Required JSON Fields (strictly in this order):**
-1. \`multiplePredictedOutputs\`: boolean — \`false\` for single-test puzzles; \`true\` for puzzles with multiple test cases.
-2. For single-test cases:
-   - \`predicted_output_grid\`: The predicted output grid (2D array) corresponding to the answer.
-   For multiple-test cases:
-   - \`predictedOutput1\`, \`predictedOutput2\`, \`predictedOutput3\`: The predicted grids for up to three test cases, using empty arrays (\`[]\`) for unused slots.
-3. \`confidence\`: An integer (0–100) representing your certainty in the predictions.
-
-**Output Field Rules:**
-- For single test case puzzles:
-  - Set \`"multiplePredictedOutputs": false\`.
-  - Set \`"predicted_output_grid"\` to the predicted output (2D array).
-  - Omit \`predictedOutput1\`, \`predictedOutput2\`, \`predictedOutput3\`.
-- For puzzles with multiple test cases:
-  - Set \`"multiplePredictedOutputs": true\`.
-  - Set \`"predictedOutput1"\`, \`"predictedOutput2"\`, \`"predictedOutput3"\` to the corresponding output grid for each test case (up to three).
-  - Use an empty array (\`[]\`) for any unused \`predictedOutput\` fields.
-  - Omit \`predicted_output_grid\`.
-- Always include \`"confidence"\` as the next field as a number between 1 and 100
-- You may include an explanatory text of 50 words or less in the \`pattern_description\` as a text object.
-
-**Successful Strategies to Consider:**
+Successful Strategies to Consider:
 - **Start Simple:** First, check for simple rules. Is there a global transformation (e.g., rotation, reflection)? Is the output a subgrid of the input? Is a single color being replaced?
 - **Look for Separators:** Check if the grid is partitioned by separator lines (e.g., rows or columns that are all one color, usually black). The transformation might be applied to each section independently.
 - **Identify Objects:** Group contiguous non-background pixels into objects. Analyze how these objects are created, destroyed, or modified. Consider their properties: color, shape, size, position.
