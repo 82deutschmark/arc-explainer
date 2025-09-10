@@ -145,7 +145,8 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 1
+        HAVING COUNT(e.id) >= 1 AND 
+               NOT ((SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) = 0 AND COUNT(e.id) < 10)
         ORDER BY accuracy_percentage ASC, total_attempts DESC
       `);
 

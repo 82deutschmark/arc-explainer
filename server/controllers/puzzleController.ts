@@ -326,21 +326,6 @@ export const puzzleController = {
       logger.error('Error fetching worst-performing puzzles: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch worst-performing puzzles', 'An error occurred while fetching worst-performing puzzle data'));
     }
-  },
-
-  /**
-   * Get comprehensive dashboard combining accuracy, trustworthiness, and feedback data
-   * 
-   * @param req - Express request object
-   * @param res - Express response object
-   */
-  async getComprehensiveDashboard(req: Request, res: Response) {
-    try {
-      const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
-      res.json(formatResponse.success(dashboard));
-    } catch (error) {
-      logger.error('Error fetching comprehensive dashboard: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
-      res.status(500).json(formatResponse.error('Failed to fetch comprehensive dashboard', 'An error occurred while fetching comprehensive dashboard data'));
-    }
   }
 };
+
