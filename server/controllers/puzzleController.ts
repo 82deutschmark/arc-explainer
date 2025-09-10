@@ -328,4 +328,4 @@ export const puzzleController = {
     }
   }
 };
-};
+
