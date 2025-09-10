@@ -1,5 +1,37 @@
 ### September 9 2025
 
+## v2.20.4 - 🚨 VALIDATION BOTTLENECK FIX: Add Missing Raw Response Fields to Repository INSERT
+
+**CRITICAL DATA LOSS RESOLVED**: Repository INSERT was dropping expensive API data at the final database save step.
+
+**ROOT CAUSE**: 
+- Database schema **HAS**: `provider_raw_response`, `provider_response_id`, `multi_test_prediction_grids`
+- Repository INSERT was **MISSING** these 3 fields from column list
+- Data flowed through services but got **DROPPED at SQL INSERT**
+- **Result**: Expensive API calls lost forever, no debugging data
+
+**TECHNICAL FIXES**:
+1. **Added Missing Columns**: `provider_response_id`, `provider_raw_response`, `multi_test_prediction_grids` 
+2. **Updated Parameters**: Changed VALUES from `($1...$37)` to `($1...$40)`
+3. **Added Data Mapping**: Proper JSON serialization for complex response data
+
+**COMBINED SOLUTION** (with v2.20.2):
+- ✅ **Parsing Layer**: Raw responses preserved safely before JSON parsing attempts
+- ✅ **Repository Layer**: Raw responses now actually saved to database
+- ✅ **Result**: Complete end-to-end data preservation for expensive API calls
+
+**IMPACT**:
+- ❌ **BEFORE**: Raw API responses dropped at repository validation layer
+- ✅ **AFTER**: All raw API responses saved to database regardless of parsing success/failure
+- 💰 **VALUE**: Full debugging capability for expensive API call failures
+
+**USER TESTING**: 
+- Test GPT-5-chat-latest analysis - raw responses should appear in database
+- Check `provider_raw_response` field is populated in ALL cases
+- Verify expensive API calls are never lost, even on parsing failures
+
+**AUTHOR**: Claude (Final piece of systematic data loss fix)
+
 ## v2.20.3 - 🎯 ACCURACY FIX: Convert Confidence 0 to 50 for Correct predictionAccuracyScore
 
 **ISSUE RESOLVED**: When AI models returned confidence = 0 (which should never happen), the `predictionAccuracyScore` calculation was dangerously incorrect.
