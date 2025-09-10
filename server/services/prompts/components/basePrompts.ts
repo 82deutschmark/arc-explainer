@@ -5,7 +5,10 @@
  * This replaces 90% of the duplicated code in systemPrompts.ts
  * 
  * @author Claude Code
- * @date September 1, 2025
+ * @version 1.0.1
+ * @editor 82deutschmark
+ * @updated September 9, 2025
+
  */
 
 /**
@@ -40,7 +43,7 @@ export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in t
 - solvingStrategy: Create a domain specific language to solve the puzzle
 - patternDescription: The transformation rules you identified, simply stated.
 - hints: Array of strings. Three short algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
-- confidence: Your certainty level (0-100)`;
+- confidence: Your certainty level (1-100)`;
 
 /**
  * @deprecated Use the composable parts: JSON_HEADER, JSON_FIELDS_INSTRUCTIONS
@@ -109,7 +112,7 @@ export const ADDITIONAL_INSTRUCTIONS = {
 
   alienCommunication: `Additional required fields:
 - alienMeaning: Creative interpretation of the aliens' message
-- alienMeaningConfidence: Your certainty about the communication interpretation (0-100)
+- alienMeaningConfidence: Your certainty about the communication interpretation (1-100)
 
 Remember: Users see emoji symbols, not numbers. Reference the visual patterns they observe.
 Be creative but grounded in the actual transformation and abstract reasoning when interpreting alien meaning.`,
