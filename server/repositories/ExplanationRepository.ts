@@ -87,7 +87,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.customPromptText || null,
         // CRITICAL: Raw API response fields for debugging expensive failures
         data.providerResponseId || null,
-        this.safeJsonStringify(data.providerRawResponse),
+        typeof data.providerRawResponse === 'string' 
+          ? data.providerRawResponse 
+          : this.safeJsonStringify(data.providerRawResponse),
         this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids))
       ], client);
 
