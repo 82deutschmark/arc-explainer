@@ -119,6 +119,14 @@ export interface ComprehensiveDashboard {
   };
 }
 
+export interface ModelReliabilityStat {
+  modelName: string;
+  totalRequests: number;
+  successfulRequests: number;
+  failedRequests: number;
+  reliability: number;
+}
+
 export class MetricsRepository extends BaseRepository {
   
   private accuracyRepo: AccuracyRepository;
@@ -489,6 +497,60 @@ export class MetricsRepository extends BaseRepository {
     } catch (error) {
       logger.error(`Error generating model comparisons: ${error instanceof Error ? error.message : String(error)}`, 'database');
       return [];
+    }
+  }
+
+  /**
+   * Get MODEL RELIABILITY STATS - Technical success rate of API responses
+   *
+   * This method measures the technical reliability of models by checking if their
+   * responses were successfully parsed and stored with essential data.
+   *
+   * RELIABILITY DEFINITION:
+   * A "successful" request is an entry in the `explanations` table where
+   * `pattern_description` is NOT NULL and not an empty string. This indicates
+   * that the core analysis from the model was received and processed correctly.
+   *
+   * USE CASES:
+   * - Identifying models that frequently return errors or unparsable responses.
+   * - Monitoring the technical health of AI provider integrations.
+   * - Distinguishing technical failures from incorrect puzzle solutions.
+   */
+  async getModelReliabilityStats(): Promise<ModelReliabilityStat[]> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model reliability stats.', 'database');
+      return [];
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT
+          model_name,
+          COUNT(*) AS total_requests,
+          COUNT(CASE WHEN pattern_description IS NOT NULL AND pattern_description != '' THEN 1 END) AS successful_requests
+        FROM explanations
+        WHERE model_name IS NOT NULL
+        GROUP BY model_name
+        ORDER BY total_requests DESC
+      `);
+
+      return result.rows.map(row => {
+        const totalRequests = parseInt(row.total_requests, 10) || 0;
+        const successfulRequests = parseInt(row.successful_requests, 10) || 0;
+        const failedRequests = totalRequests - successfulRequests;
+        const reliability = totalRequests > 0 ? (successfulRequests / totalRequests) * 100 : 0;
+
+        return {
+          modelName: row.model_name,
+          totalRequests,
+          successfulRequests,
+          failedRequests,
+          reliability: Math.round(reliability * 100) / 100, // Round to two decimal places
+        };
+      });
+    } catch (error) {
+      logger.error(`Error getting model reliability stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
     }
   }
 }
