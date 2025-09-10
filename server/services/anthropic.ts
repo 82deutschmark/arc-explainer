@@ -52,7 +52,10 @@ export class AnthropicService extends BaseAIService {
         reasoningItems,
         status,
         incomplete,
-        incompleteReason
+        incompleteReason,
+        promptPackage,
+        promptId,
+        customPrompt
       );
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);

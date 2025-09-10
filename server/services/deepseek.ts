@@ -57,7 +57,13 @@ export class DeepSeekService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         !!reasoningLog,
-        reasoningItems
+        reasoningItems,
+        undefined, // status
+        undefined, // incomplete
+        undefined, // incompleteReason
+        promptPackage,
+        promptId,
+        customPrompt
       );
 
     } catch (error) {

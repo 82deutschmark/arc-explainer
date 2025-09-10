@@ -81,7 +81,13 @@ export class OpenRouterService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         Boolean(reasoningLog),
-        reasoningItems
+        reasoningItems,
+        undefined, // status
+        undefined, // incomplete
+        undefined, // incompleteReason
+        promptPackage,
+        promptId,
+        customPrompt
       );
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);

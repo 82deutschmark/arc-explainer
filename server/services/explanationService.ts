@@ -198,6 +198,11 @@ export const explanationService = {
           reasoningEffort: sourceData.reasoningEffort ?? null,
           reasoningVerbosity: sourceData.reasoningVerbosity ?? null,
           reasoningSummaryType: sourceData.reasoningSummaryType ?? null,
+          // Prompt tracking fields for full traceability
+          systemPromptUsed: sourceData.systemPromptUsed ?? analysisData.systemPromptUsed ?? null,
+          userPromptUsed: sourceData.userPromptUsed ?? analysisData.userPromptUsed ?? null,
+          promptTemplateId: sourceData.promptTemplateId ?? analysisData.promptTemplateId ?? null,
+          customPromptText: sourceData.customPromptText ?? analysisData.customPromptText ?? null,
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
