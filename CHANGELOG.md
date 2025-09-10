@@ -1,5 +1,34 @@
 ### September 9 2025
 
+## v2.20.2 - 🚨 CRITICAL DATA LOSS FIX: Save Raw API Responses Before Parsing
+
+**REGRESSION RESOLVED**: GPT-5-chat-latest and other models were losing expensive API calls when JSON parsing failed.
+
+**ROOT CAUSE**: 
+- `parseProviderResponse()` used direct `JSON.parse()` which failed on markdown-wrapped JSON
+- Parsing failures threw exceptions **BEFORE** raw response could be saved to database  
+- Provider's expensive API responses were permanently lost with no recovery possible
+- Pattern: ````json\n{...}\n```  + `JSON.parse()` = "Unexpected token '`'" exception
+
+**CRITICAL FIXES**:
+1. **Raw Response Preservation**: Always preserve `rawResponse` at start of parsing (line 281)
+2. **Safe JSON Parsing**: Replaced direct `JSON.parse()` with `jsonParser.parse()` to handle markdown-wrapped JSON
+3. **Parsing Failure Handling**: On parse failure, return structured error with `_parsingFailed` flag instead of throwing
+4. **Complete Raw Data**: Always attach `_providerRawResponse` to result for debugging expensive failures
+5. **Database Persistence**: Raw response now guaranteed to reach `buildStandardResponse()` → database
+
+**IMPACT**: 
+- ❌ **BEFORE**: Failed parses = lost $$ API calls, no debugging data
+- ✅ **AFTER**: Failed parses = saved raw response + structured debugging data
+- **All expensive API calls now recoverable** from `provider_raw_response` field
+
+**USER TESTING**: 
+- Try GPT-5-chat-latest analysis - should work without parsing errors
+- Check database for `provider_raw_response` field populated in ALL cases
+- Verify console shows parsing success/failure but analysis continues
+
+**AUTHOR**: Claude (Emergency fix for systematic data loss)
+
 ## v2.20.1 - 🚨 CRITICAL DATABASE FIX: Eliminate Duplicate Initialization & Connection Timeouts
 
 **PROBLEM SOLVED**: Fixed critical database connection failures causing 500 errors on feedback endpoints with `ETIMEDOUT` to Railway PostgreSQL.
