@@ -65,6 +65,13 @@ export const feedbackController = {
         ));
       }
 
+      // Check if ID is within PostgreSQL integer range (-2,147,483,648 to 2,147,483,647)
+      // Optimistic UI uses timestamps which exceed this range
+      if (explanationIdNum > 2147483647 || explanationIdNum < -2147483648) {
+        // Return empty feedback array for optimistic/timestamp IDs
+        return res.json(formatResponse.success([]));
+      }
+
       // Get feedback from repository
       const feedback = await repositoryService.feedback.getFeedbackForExplanation(explanationIdNum);
       res.json(formatResponse.success(feedback));
