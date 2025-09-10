@@ -92,7 +92,10 @@ export class OpenAIService extends BaseAIService {
         reasoningItems,
         status || (completeness.isComplete ? 'complete' : 'incomplete'),
         !completeness.isComplete,
-        incompleteReason || completeness.suggestion
+        incompleteReason || completeness.suggestion,
+        promptPackage,
+        promptId,
+        customPrompt
       );
 
 
