@@ -65,13 +65,6 @@ export const ARC_JSON_SCHEMA = {
         description: "Clear explanation of the solving approach, written as pseudo-code"
       },
 
-      // REASONING ITEMS - MAPS TO DATABASE reasoning_items JSONB FIELD BUT MAY NOT BE THE SAME
-      // AS THE REASONING ITEMS RETURNED BY OPENAI  
-      reasoningItems: {
-        type: "array",
-        items: { type: "string" },
-        description: "Structured step-by-step reasoning process and insights"
-      },
 
       // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       patternDescription: {
@@ -99,7 +92,6 @@ export const ARC_JSON_SCHEMA = {
       "predictedOutput2", 
       "predictedOutput3",
       "solvingStrategy",
-      "reasoningItems",
       "patternDescription",
       "hints", 
       "confidence"

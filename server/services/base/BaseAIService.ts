@@ -153,14 +153,13 @@ export abstract class BaseAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts: ServiceOptions = {},
-    usePromptReasoning: boolean = true
+    serviceOpts: ServiceOptions = {}
   ): PromptPackage {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
     const systemPrompt = customPrompt 
-      ? buildCustomPrompt(usePromptReasoning) 
-      : getSystemPrompt(promptId, usePromptReasoning);
+      ? buildCustomPrompt() 
+      : getSystemPrompt(promptId);
 
     const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
 

@@ -43,20 +43,20 @@ import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePro
  * Now using the DRY architecture with dedicated custom prompt support
  */
 export const SYSTEM_PROMPT_MAP = {
-  solver: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.solver, additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver, usePromptReasoning }),
-  standardExplanation: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.explanation, additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation, usePromptReasoning }),
-  alienCommunication: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication, usePromptReasoning }),
-  educationalApproach: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational, usePromptReasoning }),
-  gepa: (usePromptReasoning?: boolean) => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa, usePromptReasoning }),
-  custom: (usePromptReasoning?: boolean) => buildCustomPrompt(usePromptReasoning)
+  solver: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.solver, additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver }),
+  standardExplanation: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.explanation, additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation }),
+  alienCommunication: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication }),
+  educationalApproach: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational }),
+  gepa: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa }),
+  custom: () => buildCustomPrompt()
 } as const;
 
 /**
  * Get system prompt for a given template ID
  */
-export function getSystemPrompt(promptId: string, usePromptReasoning: boolean = true): string {
+export function getSystemPrompt(promptId: string): string {
   const promptBuilder = SYSTEM_PROMPT_MAP[promptId as keyof typeof SYSTEM_PROMPT_MAP] || SYSTEM_PROMPT_MAP.standardExplanation;
-  return promptBuilder(usePromptReasoning);
+  return promptBuilder();
 }
 
 /**
