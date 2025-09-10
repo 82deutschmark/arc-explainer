@@ -6,11 +6,27 @@ This document describes the public APIs that external applications rely on. Thes
 
 ### Puzzle Management
 - `GET /api/puzzle/list` - Get paginated list of all puzzles
+  - **Query params**: `page`, `limit`, `source` (ARC1, ARC1-Eval, ARC2, ARC2-Eval)
+  - **Response**: Paginated puzzle list with metadata
+
 - `GET /api/puzzle/overview` - Get puzzle statistics and overview
-- `GET /api/puzzle/task/:taskId` - Get specific puzzle data by ID
+  - **Response**: Puzzle counts by source, difficulty distribution
+
+- `GET /api/puzzle/task/:taskId` - Get specific puzzle data by ID  
+  - **Params**: `taskId` (string) - Puzzle identifier
+  - **Response**: Complete puzzle data with input/output grids
+
 - `POST /api/puzzle/analyze/:taskId/:model` - Analyze puzzle with specific AI model
+  - **Params**: `taskId` (string), `model` (string) - Model name  
+  - **Body**: Analysis configuration options
+  - **Response**: Analysis result with explanation and predictions
+
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
+  - **Params**: `puzzleId` (string)
+  - **Response**: Boolean indicating explanation existence
+
 - `POST /api/puzzle/reinitialize` - Reinitialize puzzle database
+  - **Admin endpoint**: Reloads all ARC puzzle data
 
 ### AI Model Analysis
 - `GET /api/models` - List all available AI models and providers
@@ -35,12 +51,24 @@ This document describes the public APIs that external applications rely on. Thes
 ## Analytics and Metrics Endpoints
 
 ### Performance Statistics
-- `GET /api/puzzle/accuracy-stats` - **DEPRECATED** - Mixed accuracy/trustworthiness data
-- `GET /api/feedback/accuracy-stats` - Pure puzzle-solving accuracy statistics (for leaderboards)
+
+#### Accuracy Statistics
+- `GET /api/feedback/accuracy-stats` - **Primary accuracy endpoint** - Pure puzzle-solving accuracy statistics
+  - **Response**: `PureAccuracyStats` with `modelAccuracyRankings[]` (used by AccuracyLeaderboard)
+  - **Sort Order**: Ascending by accuracy (worst performers first - "Models Needing Improvement")
+  - **Data Source**: `is_prediction_correct` and `multi_test_all_correct` boolean fields only
+
+#### Trustworthiness Statistics  
 - `GET /api/puzzle/performance-stats` - Trustworthiness and confidence reliability metrics
-- `GET /api/puzzle/general-stats` - General model statistics (mixed data)
+  - **Response**: `PerformanceLeaderboards` with `trustworthinessLeaders[]`
+  - **Data Source**: `prediction_accuracy_score` field (AI confidence reliability)
+
+#### Combined Analytics
+- `GET /api/puzzle/accuracy-stats` - **DEPRECATED** - Mixed accuracy/trustworthiness data
+  - **Warning**: Despite name, contains trustworthiness-filtered results
+- `GET /api/puzzle/general-stats` - General model statistics (mixed data from MetricsRepository)
 - `GET /api/puzzle/raw-stats` - Infrastructure and database performance metrics
-- `GET /api/metrics/comprehensive-dashboard` - Combined analytics dashboard
+- `GET /api/metrics/comprehensive-dashboard` - Combined analytics dashboard from all repositories
 
 ### Model Analysis
 - `GET /api/puzzle/confidence-stats` - Model confidence analysis
@@ -98,16 +126,90 @@ Error responses:
 }
 ```
 
-## Data Models
+## Data Models and Examples
 
-### Key Interfaces Used by External Apps
+### Key Response Interfaces
 
-**PuzzleData**: Core puzzle structure with input/output grids
-**ExplanationResult**: AI-generated explanations with confidence scores  
-**FeedbackData**: User feedback with vote types and comments
-**ModelPerformance**: Accuracy, trustworthiness, and cost metrics
-**AccuracyStats**: Pure puzzle-solving accuracy for leaderboards
-**TrustworthinessStats**: AI confidence reliability metrics
+#### PureAccuracyStats (from `/api/feedback/accuracy-stats`)
+```typescript
+interface PureAccuracyStats {
+  totalSolverAttempts: number;
+  totalCorrectPredictions: number; 
+  overallAccuracyPercentage: number;
+  modelAccuracyRankings: ModelAccuracyRanking[];
+}
+
+interface ModelAccuracyRanking {
+  modelName: string;
+  totalAttempts: number;
+  correctPredictions: number;
+  accuracyPercentage: number;
+  singleTestAttempts: number;
+  singleCorrectPredictions: number;
+  singleTestAccuracy: number;
+  multiTestAttempts: number; 
+  multiCorrectPredictions: number;
+  multiTestAccuracy: number;
+}
+```
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "totalSolverAttempts": 1250,
+    "totalCorrectPredictions": 342,
+    "overallAccuracyPercentage": 27.4,
+    "modelAccuracyRankings": [
+      {
+        "modelName": "gpt-4o-mini",
+        "totalAttempts": 45,
+        "correctPredictions": 8,
+        "accuracyPercentage": 17.8,
+        "singleTestAccuracy": 18.2,
+        "multiTestAccuracy": 16.7
+      }
+    ]
+  }
+}
+```
+
+#### PerformanceLeaderboards (from `/api/puzzle/performance-stats`)
+```typescript
+interface PerformanceLeaderboards {
+  trustworthinessLeaders: Array<{
+    modelName: string;
+    avgTrustworthiness: number;
+    avgConfidence: number;
+    avgProcessingTime: number;
+    avgCost: number;
+    totalCost: number;
+  }>;
+  speedLeaders: any[];
+  efficiencyLeaders: any[];
+  overallTrustworthiness: number;
+}
+```
+
+#### FeedbackStats (from `/api/feedback/stats`)
+```typescript
+interface FeedbackStats {
+  totalFeedback: number;
+  helpfulPercentage: number;
+  topModels: Array<{
+    modelName: string;
+    feedbackCount: number;
+    helpfulCount: number;
+    notHelpfulCount: number;
+    helpfulPercentage: number;
+  }>;
+  feedbackByModel: Record<string, {
+    helpful: number;
+    notHelpful: number;
+  }>;
+}
+```
 
 ## Authentication
 
