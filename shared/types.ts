@@ -544,6 +544,7 @@ export interface ModelConfig {
   supportsSystemPrompts?: boolean;
   supportsStructuredOutput?: boolean;
   supportsVision?: boolean;
+  requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
 }
 
 export interface ReasoningItem {
