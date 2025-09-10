@@ -277,24 +277,74 @@ export class OpenAIService extends BaseAIService {
     let reasoningLog = null;
     let reasoningItems: any[] = [];
 
+    // CRITICAL FIX: Always preserve raw response FIRST, then attempt parsing
+    const rawResponse = response.raw_response || response;
+
     // GPT-5-nano returns clean structured data in different fields
     if (response.output_parsed) {
       result = response.output_parsed;
     } else if (response.output_text) {
-      result = JSON.parse(response.output_text);
+      // CRITICAL FIX: Use jsonParser instead of direct JSON.parse to handle markdown-wrapped JSON
+      // GPT-5-chat-latest returns ```json\n{...}\n``` which breaks JSON.parse()
+      const parseResult = this.extractJsonFromResponse(response.output_text, modelKey);
+      if (parseResult._parsingFailed) {
+        console.error(`[${this.provider}] JSON parsing failed for ${modelKey}, preserving raw response`);
+        result = {
+          _rawResponse: response.output_text,
+          _parseError: parseResult._parseError,
+          _parsingFailed: true,
+          _parseMethod: parseResult._parseMethod || 'jsonParser'
+        };
+      } else {
+        result = parseResult;
+        // Remove internal parsing flags from successful parse
+        delete result._rawResponse;
+        delete result._parseError;
+        delete result._parsingFailed;
+        delete result._parseMethod;
+      }
     } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
       // GPT-5-nano returns structured data in output array
       const outputBlock = response.output[0];
       if (outputBlock.type === 'text' && outputBlock.text) {
-        result = JSON.parse(outputBlock.text);
+        // CRITICAL FIX: Use jsonParser for output array text as well
+        const parseResult = this.extractJsonFromResponse(outputBlock.text, modelKey);
+        if (parseResult._parsingFailed) {
+          console.error(`[${this.provider}] JSON parsing failed for output block text, preserving raw response`);
+          result = {
+            _rawResponse: outputBlock.text,
+            _parseError: parseResult._parseError,
+            _parsingFailed: true,
+            _parseMethod: parseResult._parseMethod || 'jsonParser'
+          };
+        } else {
+          result = parseResult;
+          delete result._rawResponse;
+          delete result._parseError;
+          delete result._parsingFailed;
+          delete result._parseMethod;
+        }
       } else {
         console.error(`[${this.provider}] Unexpected output format:`, outputBlock);
-        result = {};
+        result = {
+          _rawResponse: JSON.stringify(outputBlock),
+          _parseError: 'Unexpected output block format',
+          _parsingFailed: true,
+          _parseMethod: 'fallback'
+        };
       }
     } else {
       console.error(`[${this.provider}] No structured output found in response`);
-      result = {};
+      result = {
+        _rawResponse: JSON.stringify(rawResponse),
+        _parseError: 'No structured output found',
+        _parsingFailed: true,
+        _parseMethod: 'fallback'
+      };
     }
+
+    // ALWAYS preserve raw response for debugging, regardless of parsing success/failure
+    result._providerRawResponse = rawResponse;
 
     // Extract reasoning log from API response
     if (captureReasoning && response.output_reasoning?.summary) {
