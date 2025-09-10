@@ -134,6 +134,11 @@ export interface ExplanationData {
   reasoningTokens?: number | null;
   totalTokens?: number | null;
   estimatedCost?: number | null;
+  // Optimistic UI fields (only present during pending analysis)
+  isOptimistic?: boolean; // Flag to indicate this is an optimistic/pending result
+  status?: 'analyzing' | 'saving' | 'completed' | 'error'; // Current status of the analysis
+  error?: string; // Error message if analysis failed
+  startTime?: number; // Timestamp when analysis started
 }
 
 /**

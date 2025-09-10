@@ -20,6 +20,7 @@ import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { Explanation } from '@shared/types';
+import type { ExplanationData } from '@/types/puzzle';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -33,15 +34,11 @@ interface UseAnalysisResultsProps {
   retryMode?: boolean; // Enhanced prompting for retry analysis
 }
 
-// Pending analysis state for optimistic UI updates
-interface PendingAnalysis extends Partial<Explanation> {
-  id: string; // Temporary ID for React keys
-  modelName: string;
-  status: 'analyzing' | 'saving' | 'completed' | 'error';
-  startTime: number;
-  error?: string;
-  isOptimistic: true; // Flag to distinguish from real explanations
-}
+// Type for pending analysis results (ExplanationData with optimistic fields)
+type PendingAnalysis = ExplanationData & {
+  isOptimistic: true; // Always true for pending results
+  status: 'analyzing' | 'saving' | 'completed' | 'error'; // Required for pending results
+};
 
 export function useAnalysisResults({
   taskId,
@@ -71,7 +68,7 @@ export function useAnalysisResults({
 
   // Helper function to create optimistic analysis result
   const createOptimisticAnalysis = (modelKey: string): PendingAnalysis => ({
-    id: `pending-${modelKey}-${Date.now()}`,
+    id: Date.now(), // Temporary numeric ID
     modelName: modelKey,
     puzzleId: taskId,
     status: 'analyzing',
@@ -81,7 +78,10 @@ export function useAnalysisResults({
     patternDescription: '',
     solvingStrategy: '',
     hints: [],
+    alienMeaning: '',
     confidence: 0,
+    helpfulVotes: 0,
+    notHelpfulVotes: 0,
     apiProcessingTimeMs: 0,
     createdAt: new Date().toISOString(),
   });

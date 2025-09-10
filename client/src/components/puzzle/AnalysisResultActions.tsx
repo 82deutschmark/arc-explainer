@@ -12,8 +12,8 @@ interface AnalysisResultActionsProps {
 export const AnalysisResultActions: React.FC<AnalysisResultActionsProps> = ({ result, showExistingFeedback }) => {
   const { feedback: existingFeedback, isLoading: feedbackLoading, error: feedbackError } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
   
-  const isOptimistic = (result as any).isOptimistic;
-  const status = (result as any).status;
+  const isOptimistic = result.isOptimistic;
+  const status = result.status;
   const isPending = isOptimistic && (status === 'analyzing' || status === 'saving');
 
   if (feedbackError) {

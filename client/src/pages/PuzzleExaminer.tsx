@@ -119,7 +119,7 @@ export default function PuzzleExaminer() {
     pendingAnalyses.forEach(pending => {
       const hasExisting = explanations.some(exp => exp.modelName === pending.modelName);
       if (!hasExisting) {
-        results.push(pending as any); // Type assertion since PendingAnalysis extends Explanation
+        results.push(pending); // PendingAnalysis is now properly typed as ExplanationData
       }
     });
     
@@ -643,7 +643,7 @@ export default function PuzzleExaminer() {
               <div className="space-y-3">
                 {allResults.map((result) => (
                   <AnalysisResultCard
-                    key={result.isOptimistic ? result.id : `${result.id}-${result.modelName}`} // Use temporary ID for optimistic results
+                    key={result.isOptimistic ? `pending-${result.id}` : `${result.id}-${result.modelName}`} // Use unique key for optimistic results
                     modelKey={result.modelName}
                     result={result}
                     model={models?.find(m => m.key === result.modelName)} // Pass model config to enable temperature display

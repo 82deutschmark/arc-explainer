@@ -59,25 +59,25 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
       )}
       
       {/* Status badge for optimistic updates */}
-      {(result as any).isOptimistic && (result as any).status && (
+      {result.isOptimistic && result.status && (
         <Badge 
           variant="outline" 
           className={`flex items-center gap-1 animate-pulse ${
-            (result as any).status === 'analyzing' ? 'bg-blue-50 border-blue-200 text-blue-700' :
-            (result as any).status === 'saving' ? 'bg-orange-50 border-orange-200 text-orange-700' :
-            (result as any).status === 'completed' ? 'bg-green-50 border-green-200 text-green-700' :
-            (result as any).status === 'error' ? 'bg-red-50 border-red-200 text-red-700' :
+            result.status === 'analyzing' ? 'bg-blue-50 border-blue-200 text-blue-700' :
+            result.status === 'saving' ? 'bg-orange-50 border-orange-200 text-orange-700' :
+            result.status === 'completed' ? 'bg-green-50 border-green-200 text-green-700' :
+            result.status === 'error' ? 'bg-red-50 border-red-200 text-red-700' :
             'bg-gray-50 border-gray-200 text-gray-700'
           }`}>
-          {(result as any).status === 'analyzing' && <Clock className="h-3 w-3" />}
-          {(result as any).status === 'saving' && <Database className="h-3 w-3" />}
-          {(result as any).status === 'completed' && <CheckCircle className="h-3 w-3" />}
-          {(result as any).status === 'error' && <AlertCircle className="h-3 w-3" />}
+          {result.status === 'analyzing' && <Clock className="h-3 w-3" />}
+          {result.status === 'saving' && <Database className="h-3 w-3" />}
+          {result.status === 'completed' && <CheckCircle className="h-3 w-3" />}
+          {result.status === 'error' && <AlertCircle className="h-3 w-3" />}
           <span className="text-xs font-medium">
-            {(result as any).status === 'analyzing' ? 'ANALYZING' :
-             (result as any).status === 'saving' ? 'SAVING' :
-             (result as any).status === 'completed' ? 'COMPLETED' :
-             (result as any).status === 'error' ? 'ERROR' :
+            {result.status === 'analyzing' ? 'ANALYZING' :
+             result.status === 'saving' ? 'SAVING' :
+             result.status === 'completed' ? 'COMPLETED' :
+             result.status === 'error' ? 'ERROR' :
              'PROCESSING'}
           </span>
         </Badge>

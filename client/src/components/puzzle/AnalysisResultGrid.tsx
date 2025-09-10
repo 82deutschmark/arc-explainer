@@ -43,8 +43,8 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   showPrediction,
   setShowPrediction
 }) => {
-  const isOptimistic = (result as any).isOptimistic;
-  const status = (result as any).status;
+  const isOptimistic = result.isOptimistic;
+  const status = result.status;
   
   // Show skeleton loader for prediction grid when analyzing or saving
   if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
