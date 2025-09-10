@@ -91,12 +91,6 @@ export default function PuzzleDiscussion() {
                   Browse All
                 </Button>
               </Link>
-              <Link href="/model-examiner">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Target className="h-4 w-4" />
-                  Model Examiner
-                </Button>
-              </Link>
               <Link href="/overview">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Grid3X3 className="h-4 w-4" />

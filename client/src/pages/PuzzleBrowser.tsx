@@ -203,12 +203,6 @@ export default function PuzzleBrowser() {
                   Discussion
                 </Button>
               </Link>
-              <Link href="/model-examiner">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Grid3X3 className="h-4 w-4" />
-                  Model Examiner
-                </Button>
-              </Link>
               <Link href="/overview">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Database className="h-4 w-4" />
