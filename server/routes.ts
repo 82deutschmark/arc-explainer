@@ -23,6 +23,7 @@ import { batchAnalysisController } from "./controllers/batchAnalysisController";
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
+import metricsRouter from './routes/metricsRoutes.ts';
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -79,8 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // DISCUSSION PAGE - worst-performing puzzles for retry analysis
   app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
   
-  // COMPREHENSIVE DASHBOARD - combined accuracy, trustworthiness, and feedback metrics
-  app.get("/api/metrics/comprehensive-dashboard", asyncHandler(puzzleController.getComprehensiveDashboard));
+  // Metrics routes (reliability, comprehensive dashboard, etc.)
+  app.use("/api/metrics", metricsRouter);
   
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
