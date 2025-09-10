@@ -1,5 +1,32 @@
 ### September 9 2025
 
+## v2.20.1 - 🚨 CRITICAL DATABASE FIX: Eliminate Duplicate Initialization & Connection Timeouts
+
+**PROBLEM SOLVED**: Fixed critical database connection failures causing 500 errors on feedback endpoints with `ETIMEDOUT` to Railway PostgreSQL.
+
+**ROOT CAUSE IDENTIFIED**: 
+- **Duplicate database initialization** in both `index.ts` and `routes.ts`
+- First attempt (index.ts): Railway connection timeout → failed connection pool
+- Second attempt (routes.ts): Railway connection success → new pool  
+- **Mixed connection states**: Some endpoints referencing failed first connection
+
+**ARCHITECTURAL FIX**:
+- ✅ **Removed duplicate initialization** from routes.ts (database init belongs in index.ts only)
+- ✅ **Added retry logic** with progressive backoff (2s, 4s, 6s) to handle Railway connectivity timing
+- ✅ **Enhanced connection pool settings**: 10s timeout, proper cleanup on failures
+- ✅ **Single source of truth**: Only index.ts handles database initialization
+
+**IMPACT**:
+- ❌ **BEFORE**: `/api/explanation/{id}/feedback` endpoints returning 500 errors with Railway timeouts
+- ✅ **AFTER**: All database endpoints working reliably with single connection pool
+
+**USER TESTING**: 
+- Verify feedback voting on puzzle explanations works without 500 errors
+- Check server logs show single successful database initialization (no "fallback mode" messages)
+- Confirm all leaderboards and statistics load properly
+
+**AUTHOR**: Claude & User collaborative debugging
+
 ## v2.20.0 - 🔧 CRITICAL FIX: Robust Handling of Non-Compliant API Responses
 - **SYSTEMIC ISSUE RESOLVED**: Fixed recurring "Unexpected end of JSON input" errors for models like `grok-4` and `qwen/qwen3-235b-a22b-thinking-2507`.
 - **ROOT CAUSE**: The system prematurely attempted to parse API responses as pure JSON, failing when models returned mixed content (e.g., conversational text before the JSON block).
