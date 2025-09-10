@@ -112,6 +112,13 @@ export class FeedbackRepository extends BaseRepository {
       return [];
     }
 
+    // Validate PostgreSQL integer range to prevent database errors
+    // Optimistic UI uses JavaScript timestamps which exceed 32-bit integer limits
+    if (explanationId > 2147483647 || explanationId < -2147483648) {
+      // Return empty array for oversized IDs (optimistic entries have no feedback)
+      return [];
+    }
+
     const result = await this.query(`
       SELECT * FROM feedback 
       WHERE explanation_id = $1 
@@ -356,6 +363,13 @@ export class FeedbackRepository extends BaseRepository {
    */
   async getFeedbackCount(explanationId: number): Promise<{ helpful: number; notHelpful: number; total: number }> {
     if (!this.isConnected()) {
+      return { helpful: 0, notHelpful: 0, total: 0 };
+    }
+
+    // Validate PostgreSQL integer range to prevent database errors
+    // Optimistic UI uses JavaScript timestamps which exceed 32-bit integer limits
+    if (explanationId > 2147483647 || explanationId < -2147483648) {
+      // Return zero counts for oversized IDs (optimistic entries have no feedback)
       return { helpful: 0, notHelpful: 0, total: 0 };
     }
 
