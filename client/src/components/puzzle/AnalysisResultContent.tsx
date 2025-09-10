@@ -20,6 +20,11 @@ interface AnalysisResultContentProps {
   setShowAlienMeaning: (show: boolean) => void;
 }
 
+// Skeleton loader component
+const SkeletonLoader = ({ className = "", height = "h-4" }: { className?: string; height?: string }) => (
+  <div className={`bg-gray-200 rounded animate-pulse ${height} ${className}`} />
+);
+
 export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({ 
   result, 
   isSaturnResult, 
@@ -28,14 +33,69 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   showAlienMeaning, 
   setShowAlienMeaning 
 }) => {
-  // Debug logging to see what result actually contains
-  console.log('[REASONING-DEBUG] result object:', result);
-  console.log('[REASONING-DEBUG] hasReasoningLog:', result.hasReasoningLog);
-  console.log('[REASONING-DEBUG] reasoningLog:', result.reasoningLog);
-  console.log('[REASONING-DEBUG] reasoningItems:', result.reasoningItems);
-  console.log('[REASONING-DEBUG] reasoningItems type:', typeof result.reasoningItems);
-  console.log('[REASONING-DEBUG] reasoningItems length:', result.reasoningItems?.length);
-  console.log('[REASONING-DEBUG] condition result:', ((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)));
+  const isOptimistic = (result as any).isOptimistic;
+  const status = (result as any).status;
+  
+  // Show skeleton loaders for pending states
+  if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
+    return (
+      <div className="space-y-3">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h5 className="font-semibold">Pattern Description</h5>
+            <SkeletonLoader className="w-20" height="h-5" />
+          </div>
+          <div className="space-y-2">
+            <SkeletonLoader className="w-full" />
+            <SkeletonLoader className="w-3/4" />
+            <SkeletonLoader className="w-5/6" />
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h5 className="font-semibold">Solving Strategy</h5>
+          </div>
+          <div className="space-y-2">
+            <SkeletonLoader className="w-full" />
+            <SkeletonLoader className="w-4/5" />
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h5 className="font-semibold">Hints</h5>
+          </div>
+          <div className="space-y-2">
+            <SkeletonLoader className="w-3/4" />
+            <SkeletonLoader className="w-2/3" />
+            <SkeletonLoader className="w-1/2" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show error state for failed analyses
+  if (isOptimistic && status === 'error') {
+    return (
+      <div className="bg-red-50 p-3 rounded border border-red-200">
+        <p className="text-sm text-red-700">
+          Analysis failed: {(result as any).error || 'Unknown error occurred'}
+        </p>
+      </div>
+    );
+  }
+  
+  // Debug logging to see what result actually contains (only for non-optimistic results)
+  if (!isOptimistic) {
+    console.log('[REASONING-DEBUG] result object:', result);
+    console.log('[REASONING-DEBUG] hasReasoningLog:', result.hasReasoningLog);
+    console.log('[REASONING-DEBUG] reasoningLog:', result.reasoningLog);
+    console.log('[REASONING-DEBUG] reasoningItems:', result.reasoningItems);
+    console.log('[REASONING-DEBUG] reasoningItems type:', typeof result.reasoningItems);
+    console.log('[REASONING-DEBUG] reasoningItems length:', result.reasoningItems?.length);
+    console.log('[REASONING-DEBUG] condition result:', ((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)));
+  }
+  
   const isEmptyResult = !result || (
     (!result.patternDescription || result.patternDescription.trim() === '') && 
     (!result.solvingStrategy || result.solvingStrategy.trim() === '') && 

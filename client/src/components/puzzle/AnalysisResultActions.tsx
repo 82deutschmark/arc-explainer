@@ -11,9 +11,27 @@ interface AnalysisResultActionsProps {
 
 export const AnalysisResultActions: React.FC<AnalysisResultActionsProps> = ({ result, showExistingFeedback }) => {
   const { feedback: existingFeedback, isLoading: feedbackLoading, error: feedbackError } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
+  
+  const isOptimistic = (result as any).isOptimistic;
+  const status = (result as any).status;
+  const isPending = isOptimistic && (status === 'analyzing' || status === 'saving');
 
   if (feedbackError) {
     console.warn('Feedback preview error:', feedbackError);
+  }
+
+  // Don't show actions for pending results
+  if (isPending) {
+    return (
+      <div className="text-sm text-gray-500 italic">
+        Feedback will be available after analysis completes
+      </div>
+    );
+  }
+
+  // Don't show actions for error results
+  if (isOptimistic && status === 'error') {
+    return null;
   }
 
   return (
