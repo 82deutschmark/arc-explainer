@@ -1,5 +1,37 @@
 ### September 9 2025
 
+## v2.20.3 - 🎯 ACCURACY FIX: Convert Confidence 0 to 50 for Correct predictionAccuracyScore
+
+**ISSUE RESOLVED**: When AI models returned confidence = 0 (which should never happen), the `predictionAccuracyScore` calculation was dangerously incorrect.
+
+**PROBLEM**: 
+- Models only return confidence 1-100, so confidence = 0 is always a parsing/API error
+- But `calculateAccuracyScore()` was treating 0 as valid, causing:
+  - **WRONG predictions with 0 confidence** got maximum trustworthiness scores (1.0)!
+  - **CORRECT predictions with 0 confidence** got minimum scores (0.5)
+- This corrupted accuracy leaderboards and trustworthiness metrics
+
+**ROOT CAUSE**: Three locations failed to convert confidence 0 → 50:
+1. `puzzleAnalysisService.ts:164`: `result.confidence || 50` (doesn't catch 0)
+2. `responseValidator.ts:418`: Single-test validation preserved 0 values  
+3. `responseValidator.ts:471`: Multi-test validation preserved 0 values
+
+**FIXES APPLIED**:
+- **puzzleAnalysisService.ts**: `result.confidence === 0 ? 50 : (result.confidence || 50)`
+- **responseValidator.ts**: Both validation functions now convert 0 → 50 before calculation
+- **New script**: `scripts/find-zero-confidence-entries.js` to identify existing corrupted entries
+
+**ACCURACY SCORE IMPACT**:
+- ❌ **BEFORE**: Confidence 0 + wrong = 1.0 score, Confidence 0 + correct = 0.5 score
+- ✅ **AFTER**: Confidence 0 treated as 50 → wrong = 0.5 score, correct = 0.75 score
+
+**USER TESTING**:
+1. Run `node scripts/find-zero-confidence-entries.js` to identify existing problems
+2. Test new AI analyses to ensure confidence 0 no longer occurs
+3. Verify accuracy leaderboards show more realistic scores
+
+**AUTHOR**: Claude (Critical trustworthiness calculation fix)
+
 ## v2.20.2 - 🚨 CRITICAL DATA LOSS FIX: Save Raw API Responses Before Parsing
 
 **REGRESSION RESOLVED**: GPT-5-chat-latest and other models were losing expensive API calls when JSON parsing failed.

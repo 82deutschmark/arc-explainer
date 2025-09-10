@@ -161,7 +161,7 @@ export class PuzzleAnalysisService {
    * Validate and enrich solver response results
    */
   private validateAndEnrichResult(result: any, puzzle: any, promptId: string): void {
-    const confidence = result.confidence || 50;
+    const confidence = result.confidence === 0 ? 50 : (result.confidence || 50);
     const testCount = puzzle.test?.length || 0;
     
     // Preserve original analysis content before validation
