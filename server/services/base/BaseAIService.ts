@@ -52,6 +52,11 @@ export interface AIResponse {
   incomplete?: boolean;
   incompleteReason?: string;
   reasoningItems?: any[];
+  // Prompt tracking fields for full traceability
+  systemPromptUsed?: string | null;
+  userPromptUsed?: string | null;
+  promptTemplateId?: string | null;
+  customPromptText?: string | null;
   [key: string]: any; // Allow additional provider-specific fields
 }
 
@@ -99,6 +104,7 @@ export abstract class BaseAIService {
   abstract analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature?: number,
     promptId?: string,
     customPrompt?: string,
@@ -130,7 +136,8 @@ export abstract class BaseAIService {
     prompt: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    taskId?: string
   ): Promise<any>;
 
   /**
@@ -139,7 +146,8 @@ export abstract class BaseAIService {
   protected abstract parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean
+    captureReasoning: boolean,
+    puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string };
 
   /**
@@ -150,14 +158,13 @@ export abstract class BaseAIService {
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts: ServiceOptions = {},
-    usePromptReasoning: boolean = true
+    serviceOpts: ServiceOptions = {}
   ): PromptPackage {
     const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
     
     const systemPrompt = customPrompt 
-      ? buildCustomPrompt(usePromptReasoning) 
-      : getSystemPrompt(promptId, usePromptReasoning);
+      ? buildCustomPrompt() 
+      : getSystemPrompt(promptId);
 
     const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
 
@@ -205,7 +212,10 @@ export abstract class BaseAIService {
     reasoningItems?: any[],
     status?: string,
     incomplete?: boolean,
-    incompleteReason?: string
+    incompleteReason?: string,
+    promptPackage?: PromptPackage,
+    promptTemplateId?: string,
+    customPromptText?: string
   ): AIResponse {
     const cost = this.calculateResponseCost(modelKey, tokenUsage);
     
@@ -226,6 +236,11 @@ export abstract class BaseAIService {
       incomplete,
       incompleteReason,
       reasoningItems,
+      // Include prompt tracking for full traceability
+      systemPromptUsed: promptPackage?.systemPrompt || null,
+      userPromptUsed: promptPackage?.userPrompt || null,
+      promptTemplateId: promptTemplateId || promptPackage?.selectedTemplate?.id || null,
+      customPromptText: customPromptText || null,
       ...result
     };
   }

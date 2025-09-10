@@ -102,6 +102,14 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         </Badge>
       )}
       
+      {model?.releaseDate && (
+        <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+          <span className="text-xs text-blue-600">
+            📅 {model.releaseDate}
+          </span>
+        </Badge>
+      )}
+      
       {result.apiProcessingTimeMs && (
         <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
           <span className="text-xs text-blue-600">

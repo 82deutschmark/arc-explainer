@@ -295,7 +295,7 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
           .replace(/\s+\]/g, ']');
         const result = jsonParser.parse(cleaned);
         if (!result.success) {
-          return { grid: null, method: 'parse_failed' };
+          return { grids: [], method: 'parse_failed' };
         }
         const grid = result.data;
         if (Array.isArray(grid) && Array.isArray(grid[0])) {
@@ -320,7 +320,7 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
         .replace(/,\s*,/g, ',');
       const result = jsonParser.parse(cleaned);
       if (!result.success) {
-        return { grid: null, method: 'parse_failed' };
+        return { grids: [], method: 'parse_failed' };
       }
       const grid = result.data;
       if (Array.isArray(grid) && Array.isArray(grid[0])) {
@@ -415,7 +415,7 @@ export function validateSolverResponse(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? analysisData.confidence : confidence;
+  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
   // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
   const predictedGrid = analysisData.predictedOutput;
@@ -468,7 +468,7 @@ export function validateSolverResponseMulti(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? analysisData.confidence : confidence;
+  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
   // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
   const predictedGrids: (number[][] | null)[] = [

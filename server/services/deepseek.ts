@@ -32,6 +32,7 @@ export class DeepSeekService extends BaseAIService {
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
+    taskId: string,
     temperature: number = 0.2,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
@@ -56,7 +57,13 @@ export class DeepSeekService extends BaseAIService {
         serviceOpts,
         reasoningLog,
         !!reasoningLog,
-        reasoningItems
+        reasoningItems,
+        undefined, // status
+        undefined, // incomplete
+        undefined, // incompleteReason
+        promptPackage,
+        promptId,
+        customPrompt
       );
 
     } catch (error) {

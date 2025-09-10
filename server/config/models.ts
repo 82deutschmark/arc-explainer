@@ -26,7 +26,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     apiModelName: 'gpt-4.1-nano-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4.1-mini-2025-04-14', 
@@ -39,7 +40,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4.1-mini-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4o-mini-2024-07-18', 
@@ -52,7 +54,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     apiModelName: 'gpt-4o-mini-2024-07-18',
     modelType: 'gpt5_chat',
-    contextWindow: 128000
+    contextWindow: 128000,
+    releaseDate: "2024-07"
   },
   { 
     key: 'o3-mini-2025-01-31', 
@@ -66,7 +69,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-mini-2025-01-31',
     modelType: 'o3_o4',
-    contextWindow: 200000
+    contextWindow: 200000,
+    releaseDate: "2025-01"
   },
   { 
     key: 'o4-mini-2025-04-16', 
@@ -80,7 +84,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o4-mini-2025-04-16',
     modelType: 'o3_o4',
-    contextWindow: 200000
+    contextWindow: 200000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'o3-2025-04-16', 
@@ -94,7 +99,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'o3-2025-04-16',
     modelType: 'o3_o4',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-4.1-2025-04-14', 
@@ -107,7 +113,8 @@ export const MODELS: ModelConfig[] = [
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     apiModelName: 'gpt-4.1-2025-04-14',
     modelType: 'gpt5_chat',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-04"
   },
   { 
     key: 'gpt-5-2025-08-07', 
@@ -121,7 +128,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-chat-latest', 
@@ -135,7 +143,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'gpt-5-chat-latest',
     modelType: 'gpt5_chat',
-    contextWindow: 256000
+    contextWindow: 256000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-mini-2025-08-07', 
@@ -149,7 +158,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-mini-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
   { 
     key: 'gpt-5-nano-2025-08-07', 
@@ -163,7 +173,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'gpt-5-nano-2025-08-07',
     modelType: 'gpt5',
-    contextWindow: 400000
+    contextWindow: 400000,
+    releaseDate: "2025-08"
   },
 
   // Anthropic Models
@@ -179,7 +190,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-sonnet-4-20250514',
     modelType: 'claude',
-    maxOutputTokens: 64000
+    maxOutputTokens: 64000,
+    releaseDate: "2025-05"
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
@@ -193,7 +205,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-7-sonnet-20250219',
     modelType: 'claude',
-    maxOutputTokens: 20000
+    maxOutputTokens: 20000,
+    releaseDate: "2025-02"
   },
   { 
     key: 'claude-3-5-sonnet-20241022', 
@@ -207,7 +220,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-sonnet-20241022',
     modelType: 'claude',
-    maxOutputTokens: 8192
+    maxOutputTokens: 8192,
+    releaseDate: "2024-10"
   },
   { 
     key: 'claude-3-5-haiku-20241022', 
@@ -221,7 +235,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-5-haiku-20241022',
     modelType: 'claude',
-    maxOutputTokens: 4000
+    maxOutputTokens: 4000,
+    releaseDate: "2024-10"
   },
   { 
     key: 'claude-3-haiku-20240307', 
@@ -235,59 +250,12 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'claude-3-haiku-20240307',
     modelType: 'claude',
-    maxOutputTokens: 4000
+    maxOutputTokens: 4000,
+    releaseDate: "2024-03"
   },
 
-  // xAI Grok Models
-  {
-    key: 'grok-4-0709',
-    name: 'Grok 4 (July 2025)',
-    color: 'bg-gray-900',
-    premium: true,
-    cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: false,
-    provider: 'xAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    isReasoning: true,
-    apiModelName: 'grok-4-0709',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3',
-    name: 'Grok 3',
-    color: 'bg-gray-600',
-    premium: true,
-    cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'slow', estimate: '3-5+ min' },
-    apiModelName: 'grok-3',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3-mini',
-    name: 'Grok 3 Mini',
-    color: 'bg-gray-500',
-    premium: false,
-    cost: { input: '$0.30', output: '$0.50' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    apiModelName: 'grok-3-mini',
-    modelType: 'grok',
-  },
-  {
-    key: 'grok-3-mini-fast',
-    name: 'Grok 3 Mini Fast',
-    color: 'bg-gray-600',
-    premium: false,
-    cost: { input: '$0.60', output: '$4.00' },
-    supportsTemperature: true,
-    provider: 'xAI',
-    responseTime: { speed: 'fast', estimate: '30-60 sec' },
-    apiModelName: 'grok-3-mini-fast',
-    modelType: 'grok',
-  },
+  // xAI Grok Models (DEPRECATED - All Grok models now use OpenRouter)
+  // Legacy entries removed - see OpenRouter section for x-ai/grok-* models
 
   // Google Gemini Models
   {
@@ -302,7 +270,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-pro',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.5-flash',
@@ -316,7 +285,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.5-flash-lite',
@@ -330,7 +300,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.5-flash-lite',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.0-flash',
@@ -344,7 +315,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   {
     key: 'gemini-2.0-flash-lite',
@@ -358,7 +330,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'models/gemini-2.0-flash-lite',
     modelType: 'gemini',
-    contextWindow: 1000000
+    contextWindow: 1000000,
+    releaseDate: "2025-08"
   },
   
   // DeepSeek Models
@@ -371,7 +344,7 @@ export const MODELS: ModelConfig[] = [
     supportsTemperature: true,
     provider: 'DeepSeek',
     responseTime: { speed: 'moderate', estimate: '30-90 sec' },
-    isReasoning: true,
+    isReasoning: false,
     apiModelName: 'deepseek-chat',
     modelType: 'deepseek',
   },
@@ -403,7 +376,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'meta-llama/llama-3.3-70b-instruct',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2024-06"
   },
   {
     key: 'qwen/qwen-2.5-coder-32b-instruct',
@@ -417,7 +392,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
     modelType: 'openrouter',
-    contextWindow: 128000
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2024-06"
   },
   {
     key: 'cohere/command-r-plus',
@@ -549,18 +526,19 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144
   },
   {
-    key: 'z-ai/glm-4.5',
-    name: 'Z-AI GLM 4.5',
+    key: 'z-ai/glm-4.5-air:free',
+    name: 'Z-AI GLM 4.5 (Air)',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.60', output: '$2.20' },
+    cost: { input: '$0.00', output: '$0.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
     isReasoning: true,
-    apiModelName: 'z-ai/glm-4.5',
+    apiModelName: 'z-ai/glm-4.5-air:free',
     modelType: 'openrouter',
-    contextWindow: 131000
+    contextWindow: 131000,
+    maxOutputTokens: 96000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
@@ -574,7 +552,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
     modelType: 'openrouter',
-    contextWindow: 262144
+    contextWindow: 262144,
+    maxOutputTokens: 31000
+
   },
   {
     key: 'qwen/qwen3-coder',
@@ -588,7 +568,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen3-coder',
     modelType: 'openrouter',
-    contextWindow: 262144
+    contextWindow: 262144,
+    maxOutputTokens: 31000
   },
   {
     key: 'moonshotai/kimi-k2',
@@ -602,8 +583,29 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'moonshotai/kimi-k2',
     modelType: 'openrouter',
-    contextWindow: 63000
+    contextWindow: 63000,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-08",
   },
+// New September 2025 Model
+  {
+    key: 'moonshotai/kimi-k2-0905',
+    name: 'Moonshot Kimi K2 (Sep 2025)',
+    color: 'bg-slate-600',
+    premium: true,
+    cost: { input: '$1.00', output: '$3.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'moonshotai/kimi-k2-0905',
+    modelType: 'openrouter',
+    contextWindow: 63000,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-09",
+  },
+    
+
   {
     key: 'moonshotai/kimi-dev-72b:free',
     name: 'Kimi Dev 72B (Free)',
@@ -618,19 +620,51 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 131072
   },
+  // xAI Grok Models (all via OpenRouter)
   {
     key: 'x-ai/grok-4',
-    name: 'xAI Grok 4 (via OpenRouter)',
-    color: 'bg-gray-800',
+    name: 'Grok 4 (July 2025)',
+    color: 'bg-gray-900',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-4',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 31000
+  },
+  {
+    key: 'x-ai/grok-3',
+    name: 'Grok 3',
+    color: 'bg-gray-600',
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
     isReasoning: true,
-    apiModelName: 'x-ai/grok-4',
+    apiModelName: 'x-ai/grok-3',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 31000
+  },
+  {
+    key: 'x-ai/grok-3-mini',
+    name: 'Grok 3 Mini',
+    color: 'bg-gray-500',
+    premium: false,
+    cost: { input: '$0.30', output: '$0.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-3-mini',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 31000
   },
   {
     key: 'cohere/command-a',
@@ -673,6 +707,89 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
     contextWindow: 256000
-  }
+  },
+  {
+    key: 'nvidia/nemotron-nano-9b-v2',
+    name: 'Nemotron Nano 9B V2',
+    color: 'bg-yellow-600',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'nvidia/nemotron-nano-9b-v2',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 64000,
+    releaseDate: "2025-09"
+  },
+  {
+    key: 'qwen/qwen3-max',
+    name: 'Qwen3 Max',
+    color: 'bg-red-700',
+    premium: false,
+    cost: { input: '$1.20', output: '$6.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '3-5+ min' },
+    isReasoning: false,
+    apiModelName: 'qwen/qwen3-max',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 31000,
+    releaseDate: "2025-09" 
+  },
+
+  {
+    key: 'openrouter/sonoma-sky-alpha',
+    name: 'Sonoma Sky Alpha',
+    color: 'bg-blue-700',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+    isReasoning: false,
+    apiModelName: 'openrouter/sonoma-sky-alpha',
+    modelType: 'openrouter',
+    contextWindow: 2000000,
+    maxOutputTokens: 30000,
+    releaseDate: "2025-09"
+  },
+
+  {
+    key: 'bytedance/seed-oss-36b-instruct',
+    name: 'Seed OSS 36B Instruct',
+    color: 'bg-green-500',
+    premium: false,
+    cost: { input: '$0.104', output: '$0.415' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: false,
+    apiModelName: 'bytedance/seed-oss-36b-instruct',
+    modelType: 'openrouter',
+    contextWindow: 131000,
+    maxOutputTokens: 30000,
+    releaseDate: "2025-09"
+
+  },
+  {
+    key: 'stepfun-ai/step3',
+    name: 'Step3',
+    color: 'bg-green-600',
+    premium: true,
+    cost: { input: '$0.57', output: '$1.42' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+    isReasoning: true,
+    apiModelName: 'stepfun-ai/step3',
+    modelType: 'openrouter',
+    contextWindow: 65000,
+    maxOutputTokens: 25000,
+    releaseDate: "2025-08"
+  },
 ];
 

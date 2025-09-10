@@ -4,11 +4,31 @@
  * Provides unified access to all repositories with dependency injection support.
  * Replaces the monolithic DbService with a clean, modular architecture.
  * 
+ * **External Integration Note**: This is the primary entry point for
+ * accessing all database operations. External applications should use
+ * this service to access repositories rather than instantiating them directly.
+ * 
  * Updated to include separated repositories following Single Responsibility Principle:
  * - AccuracyRepository: Pure puzzle-solving correctness metrics
  * - TrustworthinessRepository: AI confidence reliability analysis  
  * - FeedbackRepository: User feedback about explanation quality
  * - MetricsRepository: Aggregated analytics from all repositories
+ * 
+ * @example External Integration
+ * ```typescript
+ * // Get accuracy statistics for external leaderboards
+ * const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
+ * 
+ * // Get explanations for external analysis
+ * const explanations = await repositoryService.explanation.getByPuzzle(puzzleId);
+ * 
+ * // Submit feedback from external apps
+ * await repositoryService.feedback.create({
+ *   explanationId,
+ *   feedbackType: 'helpful',
+ *   comment: 'Great explanation!'
+ * });
+ * ```
  * 
  * @author Claude
  * @date 2025-08-27

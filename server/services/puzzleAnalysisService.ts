@@ -94,11 +94,12 @@ export class PuzzleAnalysisService {
     const result = await aiService.analyzePuzzleWithModel(
       puzzle,        // task: ARCTask
       model,         // modelKey: string
+      taskId,        // taskId: string
       temperature,   // temperature?: number
       promptId,      // promptId?: string
       customPrompt,  // customPrompt?: string
       promptOptions, // options?: PromptOptions
-      serviceOpts    // serviceOpts?: ServiceOptions - THIS WAS WRONG BEFORE!
+      serviceOpts    // serviceOpts?: ServiceOptions
     );
     
     // Calculate API processing time
@@ -109,6 +110,10 @@ export class PuzzleAnalysisService {
     if (promptId === "solver") {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
+    
+    // Note: Database saving is handled by the calling service (explanationService)
+    // This service only handles AI analysis and validation - not persistence
+    logger.debug(`Analysis completed for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
     
     // Save raw analysis log
     await this.saveRawLog(taskId, model, result);
@@ -138,7 +143,7 @@ export class PuzzleAnalysisService {
         if (allFeedback && allFeedback.length > 0) {
           // Filter to get only negative feedback with comments
           badFeedback = allFeedback.filter(fb => 
-            fb.voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
+            (fb as any).voteType === 'not_helpful' && fb.comment && fb.comment.trim().length > 0
           );
         }
       }
@@ -156,7 +161,7 @@ export class PuzzleAnalysisService {
    * Validate and enrich solver response results
    */
   private validateAndEnrichResult(result: any, puzzle: any, promptId: string): void {
-    const confidence = result.confidence || 50;
+    const confidence = result.confidence === 0 ? 50 : (result.confidence || 50);
     const testCount = puzzle.test?.length || 0;
     
     // Preserve original analysis content before validation
@@ -186,6 +191,7 @@ export class PuzzleAnalysisService {
       result.multiTestResults = multi.itemResults;
       result.multiTestAllCorrect = multi.allCorrect;
       result.multiTestAverageAccuracy = multi.averageAccuracyScore;
+      result.predictionAccuracyScore = multi.averageAccuracyScore;
 
     } else {
       // Single-test case: AI provided one grid

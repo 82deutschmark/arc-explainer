@@ -96,6 +96,23 @@ Centralized prompt building system (`server/services/promptBuilder.ts`):
 - Custom prompt support for research workflows
 - Consistent behavior across all providers and OpenRouter (INCOMPLETE)
 
+### External API Documentation
+For external integrations, see:
+- `docs/EXTERNAL_API.md` - Complete API endpoint reference for external applications
+- `docs/HOOKS_REFERENCE.md` - React hooks documentation for frontend integration
+
+**Key External APIs:**
+- `/api/feedback/accuracy-stats` - Pure accuracy leaderboard data (used by AccuracyLeaderboard)
+- `/api/puzzle/performance-stats` - Trustworthiness metrics (used by TrustworthinessLeaderboard)
+- `/api/feedback/stats` - User feedback statistics (used by FeedbackLeaderboard)
+- `/api/metrics/comprehensive-dashboard` - Combined analytics for dashboards
+
+**Repository Pattern:**
+External apps should access data through `repositoryService.*` rather than direct database queries:
+- `repositoryService.accuracy.getPureAccuracyStats()` - For accuracy leaderboards
+- `repositoryService.explanation.getByPuzzle(puzzleId)` - For explanations
+- `repositoryService.feedback.create(...)` - For submitting feedback
+
 
 
 

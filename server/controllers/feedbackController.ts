@@ -150,14 +150,14 @@ export const feedbackController = {
   },
 
   /**
-   * Get accuracy statistics for models based on feedback
+   * Get accuracy statistics showing models needing improvement (low accuracy + low trustworthiness)
    * 
    * @param req - Express request object
    * @param res - Express response object
    */
   async getAccuracyStats(req: Request, res: Response) {
     try {
-      // Get accuracy stats from repository
+      // Get pure accuracy stats (lowest accuracy first - already sorted correctly)
       const stats = await repositoryService.accuracy.getPureAccuracyStats();
       res.json(formatResponse.success(stats));
     } catch (error) {
