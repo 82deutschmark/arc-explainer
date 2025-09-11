@@ -86,11 +86,6 @@ export const ARC_JSON_SCHEMA = {
       },
     },
     required: [
-      "multiplePredictedOutputs",
-      "predictedOutput", 
-      "predictedOutput1",
-      "predictedOutput2", 
-      "predictedOutput3",
       "solvingStrategy",
       "patternDescription",
       "hints", 
