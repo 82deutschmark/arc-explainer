@@ -152,6 +152,15 @@ const ExaminerConfigPanel: React.FC<ExaminerConfigPanelProps> = ({
               <div className="text-xs text-gray-600 space-y-1">
                 <div>Cost: {currentModel.cost.input} in / {currentModel.cost.output} out per M tokens</div>
                 <div>Response Time: {currentModel.responseTime?.estimate || 'Unknown'}</div>
+                {currentModel.contextWindow && (
+                  <div>Context Window: {currentModel.contextWindow.toLocaleString()} tokens</div>
+                )}
+                {currentModel.releaseDate && (
+                  <div>Released: {currentModel.releaseDate}</div>
+                )}
+                {currentModel.isReasoning && (
+                  <div className="text-blue-600">✨ Reasoning Capable</div>
+                )}
                 {!currentModel.supportsTemperature && (
                   <div className="text-amber-600">⚠️ No temperature control available</div>
                 )}
