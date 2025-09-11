@@ -274,39 +274,48 @@ export class GeminiService extends BaseAIService {
     let thoughtSignature: any | null = null;
 
     try {
-      const candidate = response.candidates?.[0];
-      if (!candidate) {
-        textContent = response.text?.() || '';
-        return { textContent, reasoningParts, thoughtSignature };
-      }
+        const candidate = response.candidates?.[0];
+        if (!candidate) {
+            textContent = response.text?.() || '';
+            return { textContent, reasoningParts, thoughtSignature };
+        }
 
-      if (candidate.thoughtSignature) {
-        thoughtSignature = candidate.thoughtSignature;
-      }
+        if (candidate.thoughtSignature) {
+            thoughtSignature = candidate.thoughtSignature;
+        }
 
-      if (candidate.content?.parts) {
-        const allParts = candidate.content.parts;
-        reasoningParts = allParts.filter((p: any) => p.thought === true);
-        const answerParts = allParts.filter((p: any) => p.thought !== true);
-        
-        textContent = answerParts
-          .filter((part: any) => part.text)
-          .map((part: any) => part.text)
-          .join('');
-      }
+        if (candidate.content?.parts) {
+            const allParts = candidate.content.parts;
+            
+            // Handle native JSON response from response_mime_type: 'application/json'
+            if (allParts.length === 1 && allParts[0].text && allParts[0].text.trim().startsWith('{')) {
+                textContent = allParts[0].text;
+                // In native JSON mode, reasoning is expected inside the JSON itself.
+                reasoningParts = []; 
+            } else {
+                // Fallback to multi-part parsing for streaming or non-JSON responses
+                reasoningParts = allParts.filter((p: any) => p.thought === true);
+                const answerParts = allParts.filter((p: any) => p.thought !== true);
+                
+                textContent = answerParts
+                    .filter((part: any) => part.text)
+                    .map((part: any) => part.text)
+                    .join('');
+            }
+        }
 
-      if (!textContent) {
-        textContent = response.text?.() || '';
-      }
+        if (!textContent) {
+            textContent = response.text?.() || '';
+        }
 
     } catch (error) {
-      console.error(`[Gemini] Error parsing structured response:`, error);
-      // Fallback to legacy text() method if structured parsing fails
-      textContent = response.text?.() || '';
+        console.error(`[Gemini] Error parsing structured response:`, error);
+        // Fallback to legacy text() method if structured parsing fails
+        textContent = response.text?.() || '';
     }
 
     return { textContent, reasoningParts, thoughtSignature };
-  }
+}
 
   private _extractTokenUsage(response: any): TokenUsage {
     return {
