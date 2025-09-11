@@ -236,7 +236,7 @@ export default function PuzzleExaminer() {
       <CollapsibleCard
         title="Complete Puzzle Pattern"
         icon={Grid3X3}
-        defaultOpen={false}
+        defaultOpen={true}
         headerDescription={
           <p className="text-sm text-gray-600">Training examples show the pattern, test case shows the question and correct answer</p>
         }

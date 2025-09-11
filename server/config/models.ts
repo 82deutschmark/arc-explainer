@@ -409,6 +409,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
     contextWindow: 128000,
+    maxOutputTokens: 25000,
     requiresPromptFormat: true
   },
   {
@@ -424,7 +425,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 32000,
+    maxOutputTokens: 25000,
     requiresPromptFormat: true
   },
   {
@@ -439,7 +440,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'nousresearch/hermes-4-70b',
     modelType: 'openrouter',
-    contextWindow: 32768
+    contextWindow: 32768,
+    maxOutputTokens: 25000,
   },
   
   {
@@ -485,6 +487,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-code-fast-1',
     modelType: 'openrouter',
     contextWindow: 256000,
+    maxOutputTokens: 25000,
     requiresPromptFormat: true
   },
   {
@@ -499,7 +502,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
-    contextWindow: 131000
+    contextWindow: 131000,
+    maxOutputTokens: 25000
   },
   {
     key: 'mistralai/codestral-2508',
@@ -527,7 +531,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'qwen/qwen3-30b-a3b-instruct-2507',
     modelType: 'openrouter',
-    contextWindow: 262144
+    contextWindow: 262144,
+    maxOutputTokens: 30000
   },
   {
     key: 'z-ai/glm-4.5-air:free',
@@ -622,7 +627,9 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'moonshotai/kimi-dev-72b:free',
     modelType: 'openrouter',
-    contextWindow: 131072
+    contextWindow: 131072,
+    maxOutputTokens: 31000
+
   },
   // xAI Grok Models (all via OpenRouter)
   {
