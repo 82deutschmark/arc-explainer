@@ -6,7 +6,7 @@
  * 
  * SCOPE: This repository handles ONE CONCEPT only:
  * - TRUSTWORTHINESS (reliability of AI confidence claims):
- *   - Database field: prediction_accuracy_score (double precision) - MISLEADING NAME!
+ *   - Database field: trustworthiness_score (double precision) - PROPERLY NAMED!
  *   - NOT accuracy! This is a computed metric combining confidence AND correctness
  *   - Measures how well AI confidence correlates with actual performance
  *   - Used for: AI reliability analysis, confidence calibration studies
@@ -18,7 +18,7 @@
  * - ONLY confidence reliability and calibration analysis
  * 
  * INCLUSION CRITERIA:
- * - Models that have prediction_accuracy_score values (trustworthiness computed)
+ * - Models that have trustworthiness_score values (trustworthiness computed)
  * - Excludes corrupted entries (perfect score with zero confidence)
  * - Focuses on reliability of AI confidence claims, not pure puzzle-solving
  * 
@@ -106,15 +106,15 @@ export class TrustworthinessRepository extends BaseRepository {
    * Get TRUSTWORTHINESS STATS - AI confidence reliability metrics
    * 
    * This method returns data about how well AI confidence correlates with actual performance.
-   * Uses only prediction_accuracy_score field (despite misleading name, this is trustworthiness).
+   * Uses only trustworthiness_score field (despite misleading name, this is trustworthiness).
    * 
    * INCLUSION CRITERIA:
-   * - Models that have prediction_accuracy_score values (trustworthiness computed)
+   * - Models that have trustworthiness_score values (trustworthiness computed)
    * - Excludes corrupted entries (perfect score with zero confidence)
    * - Focuses on reliability of AI confidence claims, not pure puzzle-solving
    * 
    * TRUSTWORTHINESS CALCULATION:
-   * - prediction_accuracy_score combines confidence claims with actual correctness
+   * - trustworthiness_score combines confidence claims with actual correctness
    * - Higher scores mean AI confidence better predicts actual performance
    * - This is the PRIMARY METRIC for this research project
    */
@@ -132,10 +132,10 @@ export class TrustworthinessRepository extends BaseRepository {
       const overallStats = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          AVG(prediction_accuracy_score) as overall_trustworthiness
+          AVG(trustworthiness_score) as overall_trustworthiness
         FROM explanations
-        WHERE prediction_accuracy_score IS NOT NULL
-          AND NOT (prediction_accuracy_score = 1.0 AND confidence = 0)
+        WHERE trustworthiness_score IS NOT NULL
+          AND NOT (trustworthiness_score = 1.0 AND confidence = 0)
       `);
 
       // Get trustworthiness by model
@@ -143,16 +143,16 @@ export class TrustworthinessRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          MIN(e.trustworthiness_score) as min_trustworthiness,
+          MAX(e.trustworthiness_score) as max_trustworthiness,
           AVG(e.confidence) as avg_confidence,
-          COUNT(e.prediction_accuracy_score) as trustworthiness_entries
+          COUNT(e.trustworthiness_score) as trustworthiness_entries
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0)
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
         GROUP BY e.model_name
         HAVING COUNT(*) >= 1
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
@@ -283,13 +283,13 @@ export class TrustworthinessRepository extends BaseRepository {
     }
 
     try {
-      // Get trustworthiness leaders using the existing prediction_accuracy_score field 
+      // Get trustworthiness leaders using the existing trustworthiness_score field 
       // (which already factors in both correctness and confidence)
       const trustworthinessQuery = await this.query(`
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
           AVG(e.confidence) as avg_confidence,
           AVG(e.api_processing_time_ms) as avg_processing_time,
           AVG(e.total_tokens) as avg_tokens,
@@ -297,9 +297,9 @@ export class TrustworthinessRepository extends BaseRepository {
           SUM(e.estimated_cost) as total_cost
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
         HAVING COUNT(*) >= 1
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
@@ -312,11 +312,11 @@ export class TrustworthinessRepository extends BaseRepository {
           e.model_name,
           AVG(e.api_processing_time_ms) as avg_processing_time,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness
+          AVG(e.trustworthiness_score) as avg_trustworthiness
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.api_processing_time_ms IS NOT NULL
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
         GROUP BY e.model_name
         HAVING COUNT(*) >= 1
         ORDER BY avg_processing_time ASC
@@ -329,23 +329,23 @@ export class TrustworthinessRepository extends BaseRepository {
           e.model_name,
           (
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0.01 
-              THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.trustworthiness_score) > 0.01 
+              THEN AVG(e.estimated_cost) / AVG(e.trustworthiness_score)
               ELSE 999999 
             END
           ) as cost_efficiency,
           (
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0.01 
-              THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.trustworthiness_score) > 0.01 
+              THEN AVG(e.total_tokens) / AVG(e.trustworthiness_score)
               ELSE 999999 
             END
           ) as token_efficiency,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
           COUNT(*) as total_attempts
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
         GROUP BY e.model_name
@@ -358,9 +358,9 @@ export class TrustworthinessRepository extends BaseRepository {
       const overallQuery = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          AVG(prediction_accuracy_score) as overall_trustworthiness
+          AVG(trustworthiness_score) as overall_trustworthiness
         FROM explanations
-        WHERE prediction_accuracy_score IS NOT NULL
+        WHERE trustworthiness_score IS NOT NULL
       `);
 
       const overallStats = overallQuery.rows[0];
@@ -410,16 +410,16 @@ export class TrustworthinessRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          MIN(e.trustworthiness_score) as min_trustworthiness,
+          MAX(e.trustworthiness_score) as max_trustworthiness,
           AVG(e.confidence) as avg_confidence,
-          COUNT(e.prediction_accuracy_score) as trustworthiness_entries
+          COUNT(e.trustworthiness_score) as trustworthiness_entries
         FROM explanations e
         WHERE e.model_name = $1 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0)
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
         GROUP BY e.model_name
       `, [modelName]);
 

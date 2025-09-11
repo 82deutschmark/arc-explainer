@@ -158,7 +158,7 @@ export interface DatabaseExplanation {
   saturn_success: boolean | null;
   predicted_output_grid: any | null;
   is_prediction_correct: boolean | null;
-  prediction_accuracy_score: number | null;
+  trustworthiness_score: number | null;
   provider_raw_response: any | null;
   reasoning_items: string[] | null;
   temperature: number | null;
@@ -255,7 +255,7 @@ export interface PuzzleOverviewResponse {
  * Use PureAccuracyStats, TrustworthinessStats, or ConfidenceStats instead for clarity.
  * 
  * WARNING: Despite the name "AccuracyStats", the accuracyByModel array often
- * contains trustworthiness data filtered by prediction_accuracy_score.
+ * contains trustworthiness data filtered by trustworthiness_score.
  */
 export interface AccuracyStats {
   accuracyByModel: Array<{
@@ -308,7 +308,7 @@ export interface PureAccuracyStats {
 /**
  * TRUSTWORTHINESS STATS - AI confidence reliability metrics
  * 
- * Uses prediction_accuracy_score field (despite misleading name, this measures trustworthiness).
+ * Uses trustworthiness_score field (despite misleading name, this measures trustworthiness).
  * Focuses on how well AI confidence claims correlate with actual performance.
  * This is the PRIMARY METRIC for AI reliability research.
  */
