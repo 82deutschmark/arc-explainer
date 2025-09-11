@@ -23,67 +23,52 @@ Furthermore, this architecture makes it difficult to:
 -   **Recover from errors:** There is no mechanism to re-process responses that failed to parse. 
 -   **Iterate on parsing:** Improving our parsing logic requires re-running expensive API calls to get the same data back.
 
-## 3. Proposed Architecture: The Ingest-and-Process Pipeline
+## 3. Proposed Architecture: The Ingest-and-Process Pipeline (Revised)
 
-To solve these issues, we will implement a two-stage pipeline that separates concerns.
+This revised plan leverages our existing database structure, making the transition more efficient and less disruptive. Instead of creating a new table, we will enhance the existing `explanations` table to support a two-stage pipeline.
 
-### Stage 1: The Ingest Service
+### Stage 1: Ingest into the `explanations` Table
 
--   **Responsibility:** To capture the raw, unaltered response from any AI provider as quickly and reliably as possible.
+-   **Responsibility:** To capture the raw, unaltered response from any AI provider and store it immediately in a new `explanations` record.
 -   **Implementation:**
-    -   A new database table, `raw_api_responses`, will be created.
-    -   All AI services (`gemini.ts`, `openrouter.ts`, etc.) will be modified. Their sole responsibility after receiving a response from the provider will be to save the entire raw payload to this new table.
-    -   Immediate, complex parsing will be removed from these services.
+    -   A new `status` column will be added to the `explanations` table (`'raw'`, `'processing'`, `'parsed'`, `'failed'`).
+    -   When an AI response is received, `explanationService.ts` will create a new record in `explanations`.
+    -   It will populate only the essential metadata (`puzzle_id`, `model_name`) and the complete, unaltered response into the existing `provider_raw_response` column.
+    -   The record's `status` will be set to `'raw'`. All other analysis fields (`pattern_description`, `hints`, etc.) will be left null.
 
-### `raw_api_responses` Table Schema:
+### Stage 2: The Asynchronous Processing Service
 
-```sql
-CREATE TABLE raw_api_responses (
-  id SERIAL PRIMARY KEY,
-  provider VARCHAR(50) NOT NULL,
-  model_name VARCHAR(100) NOT NULL,
-  puzzle_id VARCHAR(100) NOT NULL,
-  raw_response JSONB NOT NULL, -- Store the full, raw JSON or text
-  api_processing_time_ms INT,
-  estimated_cost NUMERIC(12, 8),
-  status VARCHAR(20) DEFAULT 'pending' NOT NULL, -- pending, processed, failed
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  processed_at TIMESTAMP WITH TIME ZONE
-);
-```
-
-### Stage 2: The Processing Service
-
--   **Responsibility:** To read `pending` entries from the `raw_api_responses` table, parse them into our structured format, and save the result to the `explanations` table.
+-   **Responsibility:** To find `'raw'` records in the `explanations` table, parse the `provider_raw_response`, and update the record with the structured data.
 -   **Implementation:**
-    -   A new, asynchronous background worker or service will be created.
-    -   This service will periodically query the `raw_api_responses` table for entries with `status = 'pending'`.
-    -   It will apply a new, more sophisticated multi-stage parsing logic to the `raw_response` data.
-    -   On successful parsing, it will save the structured data to the `explanations` table and update the corresponding `raw_api_responses` entry to `status = 'processed'`.
-    -   If parsing fails, it will update the status to `failed` and log the error, preserving the raw data for future analysis or reprocessing.
+    -   A new background service (`ParsingService.ts`) will periodically query the `explanations` table for records where `status = 'raw'`.
+    -   For each record, it will apply our new, smarter parsing logic to the `provider_raw_response` data.
+    -   Upon successful parsing, it will **update** the existing record, filling in all the analysis fields (`pattern_description`, `solving_strategy`, `predicted_output_grid`, etc.) and setting the `status` to `'parsed'`.
+    -   If parsing fails, it will update the `status` to `'failed'` and log the error, preserving the raw data for future analysis or reprocessing.
 
-## 4. Implementation Plan
+## 4. Implementation Plan (Revised)
 
 This project will be executed in distinct, sequential phases.
 
 ### Phase 1: Database and Schema Setup
 
--   [ ] **Task:** Create the `raw_api_responses` table in the database using a new Drizzle migration file.
--   [ ] **Task:** Update the `arcJsonSchema.ts` to reflect the simplest possible output from the AI. The schema should only define the *analysis* portion (strategy, hints, confidence), not the predictions.
+-   [ ] **Task:** Add a `status` column (`VARCHAR(20)`) to the `explanations` table with a default value of `'parsed'`. Create a Drizzle migration file for this change.
+-   [ ] **Task:** Update the `DatabaseExplanation` type in `shared/types.ts` to include the new `status` field.
+-   [ ] **Task:** Simplify the prompts and `arcJsonSchema.ts` to ask the AI for a simple, text-based prediction format followed by a JSON block for analysis, as previously discussed.
 
-### Phase 2: Refactor AI Services for Ingest
+### Phase 2: Refactor `explanationService.ts` for Ingest
 
--   [ ] **Task:** Modify `explanationService.ts`. The `saveExplanation` function will be refactored to no longer perform parsing. It will instead take the raw response from an AI service and save it directly to the new `raw_api_responses` table.
--   [ ] **Task:** Update all AI provider services (`gemini.ts`, `openrouter.ts`, `anthropic.ts`, etc.). The `analyzePuzzleWithModel` method in each service will now return the raw response object, which will then be passed to the new ingest logic in `explanationService.ts`.
+-   [ ] **Task:** Modify the `saveExplanation` function. It will now perform an `INSERT` operation, saving only the raw response and metadata and setting `status` to `'raw'`. The complex multi-source data mapping logic will be removed from this function.
 
 ### Phase 3: Build the Asynchronous Processing Service
 
--   [ ] **Task:** Create a new `ParsingService.ts`. This service will contain the logic to fetch pending raw responses.
+-   [ ] **Task:** Create a new `ParsingService.ts`. This service will contain the logic to fetch `raw` explanation records.
 -   [ ] **Task:** Implement the advanced, multi-stage parsing logic within `ParsingService.ts`. This parser will:
-    1.  Extract prediction grids using text-based markers (e.g., `Here is my prediction:`).
-    2.  Extract the analysis JSON block.
-    3.  Combine the extracted data into the structure required by the `explanations` table.
--   [ ] **Task:** Integrate this service as a background worker. This could be a simple `setInterval` loop for initial implementation, or a more robust job queue system if needed.
+    1.  Read the `provider_raw_response`.
+    2.  Extract prediction grids using text-based markers.
+    3.  Extract the analysis JSON block.
+    4.  Construct the full explanation object.
+-   [ ] **Task:** The service will then `UPDATE` the existing record in the `explanations` table with the parsed data and set the `status` to `'parsed'` or `'failed'`.
+-   [ ] **Task:** Integrate this service as a background worker (e.g., via `setInterval` for the initial version).
 
 ### Phase 4: Frontend and User Experience
 
