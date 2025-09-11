@@ -28,6 +28,8 @@
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
+import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
+import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
 
 export interface TrustworthinessStats {
   totalTrustworthinessAttempts: number;
@@ -98,6 +100,27 @@ export interface EfficiencyLeader {
   tokenEfficiency: number;
   avgTrustworthiness: number;
   totalAttempts: number;
+}
+
+/**
+ * Basic trustworthiness statistics for MetricsRepository delegation
+ * Simplified version of TrustworthinessStats for aggregation purposes
+ */
+export interface BasicTrustworthinessStats {
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+}
+
+/**
+ * Model trustworthiness mapping for cross-repository analytics
+ * Used by MetricsRepository for model comparison generation
+ */
+export interface ModelTrustworthinessMap {
+  [modelName: string]: {
+    trustworthiness: number;
+    attempts: number;
+    avgConfidence: number;
+  };
 }
 
 export class TrustworthinessRepository extends BaseRepository {
@@ -439,6 +462,103 @@ export class TrustworthinessRepository extends BaseRepository {
       };
     } catch (error) {
       logger.error(`Error getting model trustworthiness for ${modelName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get basic trustworthiness statistics for MetricsRepository delegation
+   * 
+   * Returns simplified trustworthiness metrics without detailed model breakdowns.
+   * Used by MetricsRepository.getGeneralModelStats() for pure aggregation pattern.
+   * 
+   * Uses MetricsQueryBuilder for DRY compliance and consistent filtering.
+   * 
+   * @returns {Promise<BasicTrustworthinessStats>} Basic trustworthiness statistics
+   */
+  async getBasicStats(): Promise<BasicTrustworthinessStats> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty basic trustworthiness stats.', 'database');
+      return {
+        totalTrustworthinessAttempts: 0,
+        overallTrustworthiness: 0
+      };
+    }
+
+    try {
+      const query = `
+        SELECT 
+          COUNT(*) as total_trustworthiness_attempts,
+          AVG(trustworthiness_score) as overall_trustworthiness
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.trustworthinessFilter()
+        )}
+      `;
+
+      const result = await this.query(query);
+      const stats = result.rows[0];
+
+      return {
+        totalTrustworthinessAttempts: parseInt(stats.total_trustworthiness_attempts) || 0,
+        overallTrustworthiness: Math.round((parseFloat(stats.overall_trustworthiness) || 0) * 10000) / 10000
+      };
+
+    } catch (error) {
+      logger.error(`Error getting basic trustworthiness stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get model trustworthiness mapping for cross-repository analytics
+   * 
+   * Returns a key-value mapping of model names to their trustworthiness statistics.
+   * Used by MetricsRepository.generateModelComparisons() for efficient aggregation.
+   * 
+   * Uses MetricsQueryBuilder for consistent query patterns and ANALYSIS_CRITERIA for standardized filtering.
+   * 
+   * @returns {Promise<ModelTrustworthinessMap>} Mapping of model names to trustworthiness data
+   */
+  async getModelTrustworthinessMap(): Promise<ModelTrustworthinessMap> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model trustworthiness map.', 'database');
+      return {};
+    }
+
+    try {
+      const query = `
+        SELECT 
+          e.model_name,
+          COUNT(*) as attempts,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          AVG(e.confidence) as avg_confidence
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.trustworthinessFilter()
+        )}
+        ${MetricsQueryBuilder.modelGroupBy()}
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.TRUSTWORTHINESS_ANALYSIS.requireValidTrustworthiness ? 1 : ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}
+      `;
+
+      const result = await this.query(query);
+      
+      const trustworthinessMap: ModelTrustworthinessMap = {};
+      
+      result.rows.forEach(row => {
+        trustworthinessMap[row.model_name] = {
+          trustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          attempts: parseInt(row.attempts) || 0,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 100) / 100
+        };
+      });
+
+      return trustworthinessMap;
+
+    } catch (error) {
+      logger.error(`Error getting model trustworthiness map: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }
