@@ -177,6 +177,7 @@ export interface DatabaseExplanation {
   has_multiple_predictions: boolean | null;
   multi_test_prediction_grids: any | null;
   created_at: string;
+  status: string | null;
 }
 
 /**
@@ -221,6 +222,7 @@ export interface ExplanationRecord {
   hasMultiplePredictions: boolean | null;
   multiTestPredictionGrids: any | null;
   createdAt: string;
+  status: string | null;
 }
 
 /**

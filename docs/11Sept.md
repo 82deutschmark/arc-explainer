@@ -51,13 +51,14 @@ This project will be executed in distinct, sequential phases.
 
 ### Phase 1: Database and Schema Setup
 
--   [ ] **Task:** Add a `status` column (`VARCHAR(20)`) to the `explanations` table with a default value of `'parsed'`. Create a Drizzle migration file for this change.
+-   [ ] **Task:** Add a `status` column (`VARCHAR(20)`) to the `explanations` table with a default value of `'parsed'`. Since the project does not use Drizzle migrations, this will require a manual SQL script or direct database alteration.
 -   [ ] **Task:** Update the `DatabaseExplanation` type in `shared/types.ts` to include the new `status` field.
+-   [ ] **Task (Schema Consolidation):** Standardize on a single field for multi-test predictions. We will use `multi_test_prediction_grids` and formally deprecate the redundant `multiple_predicted_outputs` field to eliminate confusion and technical debt. All parsing and saving logic will be updated to read from and write to only `multi_test_prediction_grids`.
 -   [ ] **Task:** Simplify the prompts and `arcJsonSchema.ts` to ask the AI for a simple, text-based prediction format followed by a JSON block for analysis, as previously discussed.
 
 ### Phase 2: Refactor `explanationService.ts` for Ingest
 
--   [ ] **Task:** Modify the `saveExplanation` function. It will now perform an `INSERT` operation, saving only the raw response and metadata and setting `status` to `'raw'`. The complex multi-source data mapping logic will be removed from this function.
+-   [ ] **Task:** Modify the `saveExplanation` function in `ExplanationRepository.ts`. It will now perform an `INSERT` operation, saving only the raw response and metadata and setting `status` to `'raw'`. The complex multi-source data mapping logic will be removed from this function.
 
 ### Phase 3: Build the Asynchronous Processing Service
 
