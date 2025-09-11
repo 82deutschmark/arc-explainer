@@ -29,6 +29,8 @@
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
+import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
+import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -58,6 +60,28 @@ export interface DangerousModelRanking {
   avgConfidence: number;
   totalAttempts: number;
   overallAccuracy: number;
+}
+
+/**
+ * Basic accuracy statistics for MetricsRepository delegation
+ * Simplified version of PureAccuracyStats for aggregation purposes
+ */
+export interface BasicAccuracyStats {
+  totalSolverAttempts: number;
+  totalCorrectPredictions: number;
+  overallAccuracyPercentage: number;
+}
+
+/**
+ * Model accuracy mapping for cross-repository analytics
+ * Used by MetricsRepository for model comparison generation
+ */
+export interface ModelAccuracyMap {
+  [modelName: string]: {
+    accuracy: number;
+    attempts: number;
+    correctPredictions: number;
+  };
 }
 
 export class AccuracyRepository extends BaseRepository {
@@ -387,6 +411,112 @@ export class AccuracyRepository extends BaseRepository {
       }));
     } catch (error) {
       logger.error(`Error getting dangerous models: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get basic accuracy statistics for MetricsRepository delegation
+   * 
+   * Returns simplified accuracy metrics without detailed model breakdowns.
+   * Used by MetricsRepository.getGeneralModelStats() for pure aggregation pattern.
+   * 
+   * Uses MetricsQueryBuilder for DRY compliance and consistent filtering.
+   * 
+   * @returns {Promise<BasicAccuracyStats>} Basic accuracy statistics
+   */
+  async getBasicStats(): Promise<BasicAccuracyStats> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty basic accuracy stats.', 'database');
+      return {
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        overallAccuracyPercentage: 0
+      };
+    }
+
+    try {
+      const query = `
+        SELECT 
+          ${MetricsQueryBuilder.solverAttemptCount()} as total_solver_attempts,
+          ${MetricsQueryBuilder.correctPredictionsCount()} as total_correct_predictions,
+          ${MetricsQueryBuilder.accuracyPercentage(
+            MetricsQueryBuilder.correctPredictionsCount(),
+            MetricsQueryBuilder.solverAttemptCount()
+          )} as overall_accuracy_percentage
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.solverAttemptFilter()
+        )}
+      `;
+
+      const result = await this.query(query);
+      const stats = result.rows[0];
+
+      return {
+        totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
+        totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
+        overallAccuracyPercentage: Math.round((parseFloat(stats.overall_accuracy_percentage) || 0) * 100) / 100
+      };
+
+    } catch (error) {
+      logger.error(`Error getting basic accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get model accuracy mapping for cross-repository analytics
+   * 
+   * Returns a key-value mapping of model names to their accuracy statistics.
+   * Used by MetricsRepository.generateModelComparisons() for efficient aggregation.
+   * 
+   * Uses MetricsQueryBuilder for consistent query patterns and ANALYSIS_CRITERIA for standardized filtering.
+   * 
+   * @returns {Promise<ModelAccuracyMap>} Mapping of model names to accuracy data
+   */
+  async getModelAccuracyMap(): Promise<ModelAccuracyMap> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model accuracy map.', 'database');
+      return {};
+    }
+
+    try {
+      const query = `
+        SELECT 
+          e.model_name,
+          COUNT(e.id) as attempts,
+          ${MetricsQueryBuilder.correctPredictionsCount()} as correct_predictions,
+          ${MetricsQueryBuilder.accuracyPercentage(
+            MetricsQueryBuilder.correctPredictionsCount(),
+            'COUNT(e.id)'
+          )} as accuracy
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.solverAttemptFilter()
+        )}
+        ${MetricsQueryBuilder.modelGroupBy()}
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}
+      `;
+
+      const result = await this.query(query);
+      
+      const accuracyMap: ModelAccuracyMap = {};
+      
+      result.rows.forEach(row => {
+        accuracyMap[row.model_name] = {
+          accuracy: Math.round((parseFloat(row.accuracy) || 0) * 100) / 100,
+          attempts: parseInt(row.attempts) || 0,
+          correctPredictions: parseInt(row.correct_predictions) || 0
+        };
+      });
+
+      return accuracyMap;
+
+    } catch (error) {
+      logger.error(`Error getting model accuracy map: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }
