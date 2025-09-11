@@ -801,6 +801,7 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 65000,
     maxOutputTokens: 25000,
+    requiresPromptFormat: true,
     releaseDate: "2025-08"
   },
 ];

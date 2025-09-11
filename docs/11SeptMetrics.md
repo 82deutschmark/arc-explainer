@@ -81,20 +81,23 @@ The project calculates **3 DISTINCT TYPES OF METRICS** that are often confused:
 ### **Phase 1: Database Schema Fix**
 
 #### **Tasks:**
-- [ ] Create database migration to rename `prediction_accuracy_score` → `trustworthiness_score`
-- [ ] Update `DatabaseSchema.ts` to reflect new field name
-- [ ] Update all SQL queries in repositories to use new field name
-- [ ] Update TypeScript interfaces in `shared/types.ts` to match new naming
+- [x] Create database migration to rename `prediction_accuracy_score` → `trustworthiness_score`
+- [x] Update `DatabaseSchema.ts` to reflect new field name
+- [x] Update all SQL queries in repositories to use new field name
+- [x] Update TypeScript interfaces in `shared/types.ts` to match new naming
 - [ ] Test migration on development database
-- [ ] Update API documentation to reflect field name changes
+- [x] Update API documentation to reflect field name changes
 
-#### **Files to Modify:**
-- `server/repositories/database/DatabaseSchema.ts`
-- `server/repositories/MetricsRepository.ts`
-- `server/repositories/TrustworthinessRepository.ts`
-- `server/repositories/AccuracyRepository.ts`
-- `shared/types.ts`
-- `docs/EXTERNAL_API.md`
+#### **Files Modified:**
+- ✅ `server/repositories/database/DatabaseSchema.ts` - Updated schema definition
+- ✅ `server/repositories/MetricsRepository.ts` - Updated all SQL queries  
+- ✅ `server/repositories/TrustworthinessRepository.ts` - Updated all SQL queries and comments
+- ✅ `server/repositories/AccuracyRepository.ts` - No changes needed (doesn't use trustworthiness field)
+- ✅ `shared/types.ts` - Updated TypeScript interfaces
+- ✅ `docs/EXTERNAL_API.md` - Updated API documentation
+
+#### **Phase 1 Status: ✅ COMPLETED**
+Migration script created at `server/migrations/rename-prediction-accuracy-score.sql`
 
 ### **Phase 2: Repository Refactoring**
 

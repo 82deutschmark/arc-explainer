@@ -61,7 +61,7 @@ This document describes the public APIs that external applications rely on. Thes
 #### Trustworthiness Statistics  
 - `GET /api/puzzle/performance-stats` - Trustworthiness and confidence reliability metrics
   - **Response**: `PerformanceLeaderboards` with `trustworthinessLeaders[]`
-  - **Data Source**: `prediction_accuracy_score` field (AI confidence reliability)
+  - **Data Source**: `trustworthiness_score` field (AI confidence reliability)
 
 #### Combined Analytics
 - `GET /api/puzzle/accuracy-stats` - **DEPRECATED** - Mixed accuracy/trustworthiness data

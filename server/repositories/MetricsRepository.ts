@@ -151,7 +151,7 @@ export class MetricsRepository extends BaseRepository {
    * - Models that made solver attempts (with predictions)
    * 
    * DATA MIXING WARNING:
-   * - accuracyByModel: Contains trustworthiness data (prediction_accuracy_score)
+   * - accuracyByModel: Contains trustworthiness data (trustworthiness_score)
    * - modelAccuracy: Contains pure accuracy percentages (is_prediction_correct)
    * - Both arrays have different inclusion criteria and different orderings!
    * 
@@ -198,10 +198,10 @@ export class MetricsRepository extends BaseRepository {
           SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as correct_predictions,
           
           -- Trustworthiness scores (when available)
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness_score,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness_score,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness_score,
-          COUNT(CASE WHEN e.prediction_accuracy_score IS NOT NULL THEN 1 END) as trustworthiness_entries,
+          AVG(e.trustworthiness_score) as avg_trustworthiness_score,
+          MIN(e.trustworthiness_score) as min_trustworthiness_score,
+          MAX(e.trustworthiness_score) as max_trustworthiness_score,
+          COUNT(CASE WHEN e.trustworthiness_score IS NOT NULL THEN 1 END) as trustworthiness_entries,
           
           -- Calculate accuracy percentage for solver attempts only
           CASE 
@@ -281,7 +281,7 @@ export class MetricsRepository extends BaseRepository {
    * - Token Usage: Input/output tokens, cost estimation
    * - Data Completeness: Count of entries with complete data fields
    * 
-   * IMPORTANT: avgPredictionAccuracy uses prediction_accuracy_score field
+   * IMPORTANT: avgPredictionAccuracy uses trustworthiness_score field
    * Despite the name, this is TRUSTWORTHINESS data, not pure accuracy!
    * This field measures AI confidence reliability, not puzzle-solving success.
    */
@@ -311,7 +311,7 @@ export class MetricsRepository extends BaseRepository {
           COUNT(*) as total_explanations,
           AVG(api_processing_time_ms) as avg_processing_time,
           MAX(api_processing_time_ms) as max_processing_time,
-          AVG(prediction_accuracy_score) as avg_prediction_accuracy,
+          AVG(trustworthiness_score) as avg_prediction_accuracy,
           SUM(total_tokens) as total_tokens,
           AVG(total_tokens) as avg_tokens,
           MAX(total_tokens) as max_tokens,
@@ -320,7 +320,7 @@ export class MetricsRepository extends BaseRepository {
           MAX(estimated_cost) as max_estimated_cost,
           COUNT(total_tokens) FILTER (WHERE total_tokens IS NOT NULL) as explanations_with_tokens,
           COUNT(estimated_cost) FILTER (WHERE estimated_cost IS NOT NULL) as explanations_with_cost,
-          COUNT(prediction_accuracy_score) FILTER (WHERE prediction_accuracy_score IS NOT NULL) as explanations_with_accuracy,
+          COUNT(trustworthiness_score) FILTER (WHERE trustworthiness_score IS NOT NULL) as explanations_with_accuracy,
           COUNT(api_processing_time_ms) FILTER (WHERE api_processing_time_ms IS NOT NULL) as explanations_with_processing_time
         FROM explanations
       `);
@@ -432,7 +432,7 @@ export class MetricsRepository extends BaseRepository {
             e.model_name,
             COUNT(CASE WHEN e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL THEN 1 END) as solver_attempts,
             SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as correct_predictions,
-            AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+            AVG(e.trustworthiness_score) as avg_trustworthiness,
             AVG(e.estimated_cost) as avg_cost,
             COUNT(*) as total_attempts
           FROM explanations e
