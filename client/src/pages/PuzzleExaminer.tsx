@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, ArrowLeft, Brain, Rocket, RefreshCw, Github, Database, Grid3X3, Settings } from 'lucide-react';
+import { Loader2, Eye, Hash, Brain, Rocket, RefreshCw, Grid3X3, Settings } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -169,42 +169,22 @@ export default function PuzzleExaminer() {
     <div className="container mx-auto p-3 max-w-6xl space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">
-              Puzzle {taskId}
-              {isRetryMode && (
-                <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 border-orange-200">
-                  <RefreshCw className="h-3 w-3 mr-1" />
-                  Retry Mode
-                </Badge>
-              )}
-            </h1>
-            <p className="text-gray-600">
-              {isRetryMode ? "Enhanced Analysis - Previous attempt was incorrect" : "ARC Task Examiner"}
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">
+            Puzzle {taskId}
+            {isRetryMode && (
+              <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 border-orange-200">
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Retry Mode
+              </Badge>
+            )}
+          </h1>
+          <p className="text-gray-600">
+            {isRetryMode ? "Enhanced Analysis - Previous attempt was incorrect" : "ARC Task Examiner"}
+          </p>
         </div>
         
         <div className="flex items-center gap-3 flex-wrap">
-          <Link href="/discussion">
-            <Button variant="outline" className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Discussion
-            </Button>
-          </Link>
-          <Link href="/overview">
-            <Button variant="outline" className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              Database Overview
-            </Button>
-          </Link>
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -248,17 +228,6 @@ export default function PuzzleExaminer() {
               </SelectContent>
             </Select>
           )}
-          <a
-            href="https://github.com/82deutschmark/arc-explainer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-2"
-          >
-            <Button variant="ghost" size="sm" className="flex items-center gap-2 text-gray-600 hover:text-gray-800">
-              <Github className="h-4 w-4" />
-              <span className="text-xs">Open Source</span>
-            </Button>
-          </a>
         </div>
       </div>
 
