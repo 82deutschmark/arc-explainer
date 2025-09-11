@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, RefreshCw, CheckCircle2, MessageCircle, Database, Target, Download, Github } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -189,43 +189,11 @@ export default function PuzzleBrowser() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">ARC-AGI Puzzle Explorer</h1>
-              <p className="text-lg text-slate-600 mt-2">
-                Colorblindness Aid & AI Reasoning Analysis
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/discussion">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <RefreshCw className="h-4 w-4" />
-                  Discussion
-                </Button>
-              </Link>
-              <Link href="/overview">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Database className="h-4 w-4" />
-                  Database Overview
-                </Button>
-              </Link>
-              <Link href="/kaggle-readiness">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Target className="h-4 w-4" />
-                  Kaggle Readiness
-                </Button>
-              </Link>
-              <a
-                href="https://github.com/82deutschmark/arc-explainer"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Github className="h-4 w-4" />
-                  <span className="hidden sm:inline">Open Source</span>
-                </Button>
-              </a>
-            </div>
+          <div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">ARC-AGI Puzzle Explorer</h1>
+            <p className="text-lg text-slate-600 mt-2">
+              Colorblindness Aid & AI Reasoning Analysis
+            </p>
           </div>
           
           {/* Collapsible Mission Statement */}

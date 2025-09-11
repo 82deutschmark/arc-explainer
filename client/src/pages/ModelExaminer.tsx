@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BarChart3, Github } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import { useModels } from '@/hooks/useModels';
 import type { ModelConfig } from '@shared/types';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
@@ -108,17 +108,9 @@ export default function ModelExaminer() {
     <div className="container mx-auto p-3 max-w-6xl space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">Model Examiner</h1>
-            <p className="text-gray-600">Batch test AI models against puzzle datasets</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Model Examiner</h1>
+          <p className="text-gray-600">Batch test AI models against puzzle datasets</p>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/batch">
@@ -127,16 +119,6 @@ export default function ModelExaminer() {
               View Results Dashboard
             </Button>
           </Link>
-          <a
-            href="https://github.com/82deutschmark/arc-explainer"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant="ghost" size="sm" className="flex items-center gap-2">
-              <Github className="h-4 w-4" />
-              <span className="text-xs">Open Source</span>
-            </Button>
-          </a>
         </div>
       </div>
 

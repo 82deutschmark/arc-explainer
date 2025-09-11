@@ -10,7 +10,7 @@ import React from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Database, BarChart3 } from 'lucide-react';
+import { Database, BarChart3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 // Import leaderboard components
@@ -50,22 +50,14 @@ export default function PuzzleDBViewer() {
     <div className="container mx-auto p-3 max-w-7xl space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Database className="h-6 w-6 text-blue-600" />
-              Model Performance Dashboard
-            </h1>
-            <p className="text-gray-600">
-              Technical reliability, accuracy, and user feedback across all AI models
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Database className="h-6 w-6 text-blue-600" />
+            Model Performance Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Technical reliability, accuracy, and user feedback across all AI models
+          </p>
         </div>
         
         <div className="flex items-center gap-2">
