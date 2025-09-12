@@ -397,8 +397,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
    * Handles strings, arrays, and objects appropriately to prevent "[object Object]" corruption
    */
   private processReasoningLog(reasoningLog: any): string | null {
-    console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Input type: ${typeof reasoningLog}, isArray: ${Array.isArray(reasoningLog)}`);
-    console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Input value preview:`, Array.isArray(reasoningLog) ? `Array(${reasoningLog.length})` : reasoningLog);
+    // Debug logging removed to prevent console spam
 
     // Handle null/undefined
     if (!reasoningLog) {
@@ -412,10 +411,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
 
     // CRITICAL FIX: If it's an array of objects (reasoningItems), process each object properly
     if (Array.isArray(reasoningLog)) {
-      console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Processing array with ${reasoningLog.length} items`);
       const processedItems = reasoningLog
         .map((item, index) => {
-          console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Item ${index} type: ${typeof item}`, typeof item === 'object' ? Object.keys(item) : item);
           
           if (typeof item === 'string') return item;
           if (typeof item === 'object' && item !== null) {
@@ -431,10 +428,8 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             // CRITICAL: Proper object stringification to avoid [object Object]
             try {
               const jsonString = JSON.stringify(item, null, 2);
-              console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Item ${index} stringified successfully: ${jsonString.substring(0, 100)}...`);
               return jsonString;
             } catch (error) {
-              console.error(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Failed to stringify item ${index}:`, error);
               return `[Failed to parse reasoning item ${index}]`;
             }
           }
@@ -442,15 +437,12 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         })
         .filter(Boolean);
       
-      console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Processed ${processedItems.length} items successfully`);
       const result = processedItems.join('\n\n') || null;
-      console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Final result length: ${result?.length || 0}`);
       return result;
     }
 
     // If it's an object, try to extract meaningful text content
     if (typeof reasoningLog === 'object' && reasoningLog !== null) {
-      console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Processing single object with keys:`, Object.keys(reasoningLog));
       
       // Common text fields in reasoning objects
       if (reasoningLog.text) return reasoningLog.text;
@@ -466,7 +458,6 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       // As a last resort, stringify the object with proper formatting
       try {
         const stringified = JSON.stringify(reasoningLog, null, 2);
-        console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Object stringified successfully: ${stringified.substring(0, 100)}...`);
         // Avoid returning "[object Object]" or similar useless strings
         if (stringified && stringified !== '{}' && stringified !== 'null') {
           return stringified;
@@ -478,18 +469,14 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
 
     // For any other type, convert to string and if it's [object Object], try to stringify as JSON
     const stringValue = String(reasoningLog);
-    console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] String conversion result: "${stringValue.substring(0, 50)}..."`);
     
     if (stringValue === '[object Object]') {
-      console.error(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] DETECTED [object Object] corruption! Attempting to recover...`);
       try {
         const jsonString = JSON.stringify(reasoningLog, null, 2);
         if (jsonString && jsonString !== '{}' && jsonString !== 'null') {
-          console.log(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Recovery successful: ${jsonString.substring(0, 100)}...`);
           return jsonString;
         }
       } catch (error) {
-        console.error(`🔍 [REASONING-LOG-CORRUPTION-DEBUG] Recovery failed:`, error);
       }
       return null;
     }
