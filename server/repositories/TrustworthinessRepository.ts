@@ -30,6 +30,7 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
 
 export interface TrustworthinessStats {
   totalTrustworthinessAttempts: number;
@@ -161,10 +162,17 @@ export class TrustworthinessRepository extends BaseRepository {
           AND NOT (trustworthiness_score = 1.0 AND confidence = 0)
       `);
 
-      // Get trustworthiness by model
+      // Get trustworthiness by model with normalization
       const modelTrustworthiness = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(*) as total_attempts,
           AVG(e.trustworthiness_score) as avg_trustworthiness,
           MIN(e.trustworthiness_score) as min_trustworthiness,
@@ -176,7 +184,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
-        GROUP BY e.model_name
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
       `);
@@ -310,7 +326,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // (which already factors in both correctness and confidence)
       const trustworthinessQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(*) as total_attempts,
           AVG(e.trustworthiness_score) as avg_trustworthiness,
           AVG(e.confidence) as avg_confidence,
@@ -323,7 +346,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
-        GROUP BY e.model_name
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
         LIMIT 10
@@ -332,7 +363,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get speed leaders (fastest processing times with decent trustworthiness)
       const speedQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           AVG(e.api_processing_time_ms) as avg_processing_time,
           COUNT(*) as total_attempts,
           AVG(e.trustworthiness_score) as avg_trustworthiness
@@ -340,7 +378,15 @@ export class TrustworthinessRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL 
           AND e.api_processing_time_ms IS NOT NULL
           AND e.trustworthiness_score IS NOT NULL
-        GROUP BY e.model_name
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_processing_time ASC
         LIMIT 10
@@ -349,7 +395,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
       const efficiencyQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           (
             CASE 
               WHEN AVG(e.trustworthiness_score) > 0.01 
@@ -371,7 +424,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
-        GROUP BY e.model_name
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY cost_efficiency ASC
         LIMIT 10
