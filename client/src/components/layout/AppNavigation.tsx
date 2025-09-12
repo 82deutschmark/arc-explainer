@@ -98,7 +98,7 @@ export function AppNavigation() {
 
       <div className="flex items-center gap-2">
         <a
-          href="https://github.com/your-repo/arc-explainer" 
+          href="https://github.com/82deutschmark/arc-explainer" 
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:flex"
