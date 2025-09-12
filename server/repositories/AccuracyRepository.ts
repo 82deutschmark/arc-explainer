@@ -30,7 +30,7 @@
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
-import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
+import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -169,7 +169,7 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 1 AND 
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts} AND 
                NOT ((SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) = 0 AND COUNT(e.id) < 10)
         ORDER BY accuracy_percentage ASC, total_attempts DESC
       `);
@@ -303,7 +303,7 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 3  -- Require at least 3 attempts for meaningful ranking
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}  -- Require at least 3 attempts for meaningful ranking
         ORDER BY accuracy_percentage DESC, total_attempts DESC
         LIMIT $1
       `, [limit]);
@@ -355,7 +355,7 @@ export class AccuracyRepository extends BaseRepository {
           
           -- Wrong high confidence predictions
           COUNT(CASE 
-            WHEN e.confidence >= 90 
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
             AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
             THEN 1 
           END) as wrong_high_confidence_predictions,
@@ -364,7 +364,7 @@ export class AccuracyRepository extends BaseRepository {
           CASE 
             WHEN COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) > 0
             THEN (COUNT(CASE 
-              WHEN e.confidence >= 90 
+              WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
               AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
               THEN 1 
             END) * 100.0 / COUNT(CASE WHEN e.confidence >= 90 THEN 1 END))
@@ -390,9 +390,9 @@ export class AccuracyRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) >= 3  -- At least 3 high-confidence attempts
+        HAVING COUNT(CASE WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} THEN 1 END) >= ${ANALYSIS_CRITERIA.HIGH_CONFIDENCE_ANALYSIS.minAttempts}  -- At least 3 high-confidence attempts
           AND COUNT(CASE 
-            WHEN e.confidence >= 90 
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
             AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
             THEN 1 
           END) > 0  -- At least 1 wrong high-confidence prediction

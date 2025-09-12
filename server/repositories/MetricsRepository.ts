@@ -37,6 +37,8 @@ import { COST_EFFICIENCY, ANALYSIS_CRITERIA } from '../constants/metricsConstant
 import type { BasicAccuracyStats, ModelAccuracyMap } from './AccuracyRepository.ts';
 import type { BasicTrustworthinessStats, ModelTrustworthinessMap } from './TrustworthinessRepository.ts';
 import type { ModelFeedbackMap } from './FeedbackRepository.ts';
+import { queryCache, CacheKeys, CacheTTL } from '../utils/queryCache.ts';
+import { timeQuery, Operations } from '../utils/performanceMonitor.ts';
 
 export interface GeneralModelStats {
   totalExplanations: number;
@@ -286,65 +288,75 @@ export class MetricsRepository extends BaseRepository {
    */
   async getComprehensiveDashboard(): Promise<ComprehensiveDashboard> {
     try {
-      // Get data from each specialized repository
-      const [accuracyStats, trustworthinessStats, feedbackStats] = await Promise.all([
-        this.accuracyRepo.getPureAccuracyStats(),
-        this.trustworthinessRepo.getTrustworthinessStats(),
-        this.feedbackRepo.getFeedbackSummaryStats()
-      ]);
+      // Use caching and performance monitoring for this expensive operation
+      return await queryCache.get(
+        CacheKeys.comprehensiveDashboard(),
+        () => timeQuery(Operations.COMPREHENSIVE_DASHBOARD, async () => {
+          // Get data from each specialized repository
+          const [accuracyStats, trustworthinessStats, feedbackStats] = await Promise.all([
+            this.accuracyRepo.getPureAccuracyStats(),
+            this.trustworthinessRepo.getTrustworthinessStats(),
+            this.feedbackRepo.getFeedbackSummaryStats()
+          ]);
 
-      // Get performance metrics
-      const rawStats = await this.getRawDatabaseStats();
+          // Get performance metrics
+          const rawStats = await this.getRawDatabaseStats();
 
-      // Create model comparisons by combining data from all sources
-      const modelComparisons = await this.generateModelComparisons();
+          // Create model comparisons by combining data from all sources
+          const modelComparisons = await this.generateModelComparisons();
 
-      return {
-        accuracyStats: {
-          totalSolverAttempts: accuracyStats.totalSolverAttempts,
-          overallAccuracyPercentage: accuracyStats.overallAccuracyPercentage,
-          topAccurateModels: accuracyStats.modelAccuracyRankings.slice(0, 5).map(model => ({
-            modelName: model.modelName,
-            accuracy: model.accuracyPercentage,
-            attempts: model.totalAttempts
-          }))
-        },
-        
-        trustworthinessStats: {
-          totalTrustworthinessAttempts: trustworthinessStats.totalTrustworthinessAttempts,
-          overallTrustworthiness: trustworthinessStats.overallTrustworthiness,
-          topTrustworthyModels: trustworthinessStats.modelTrustworthinessRankings.slice(0, 5).map(model => ({
-            modelName: model.modelName,
-            trustworthiness: model.avgTrustworthiness,
-            attempts: model.totalAttempts
-          }))
-        },
-        
-        feedbackStats: {
-          totalFeedback: feedbackStats.totalFeedback,
-          helpfulPercentage: feedbackStats.helpfulPercentage,
-          topRatedModels: feedbackStats.topModels.slice(0, 5).map(model => ({
-            modelName: model.modelName,
-            helpfulPercentage: model.feedbackCount > 0 
-              ? Math.round((model.helpfulCount / model.feedbackCount) * 100)
-              : 0,
-            feedbackCount: model.feedbackCount
-          }))
-        },
-        
-        modelComparisons,
-        
-        performanceMetrics: {
-          avgProcessingTime: rawStats.avgProcessingTime,
-          totalCost: rawStats.totalEstimatedCost,
-          avgCostPerAttempt: rawStats.totalExplanations > 0 
-            ? Math.round((rawStats.totalEstimatedCost / rawStats.totalExplanations) * 1000000) / 1000000
-            : 0
-        }
-      };
+          return {
+            accuracyStats: {
+              totalSolverAttempts: accuracyStats.totalSolverAttempts,
+              overallAccuracyPercentage: accuracyStats.overallAccuracyPercentage,
+              topAccurateModels: accuracyStats.modelAccuracyRankings.slice(0, 5).map(model => ({
+                modelName: model.modelName,
+                accuracy: model.accuracyPercentage,
+                attempts: model.totalAttempts
+              }))
+            },
+            trustworthinessStats: {
+              totalTrustworthinessAttempts: trustworthinessStats.totalTrustworthinessAttempts,
+              overallTrustworthiness: trustworthinessStats.overallTrustworthiness,
+              topTrustworthyModels: trustworthinessStats.modelTrustworthinessRankings.slice(0, 5).map(model => ({
+                modelName: model.modelName,
+                trustworthiness: model.avgTrustworthiness,
+                attempts: model.totalAttempts
+              }))
+            },
+            feedbackStats: {
+              totalFeedback: feedbackStats.totalFeedback,
+              helpfulPercentage: feedbackStats.helpfulPercentage,
+              topRatedModels: feedbackStats.topModels.slice(0, 5).map(model => ({
+                modelName: model.modelName,
+                helpfulPercentage: model.feedbackCount > 0 
+                  ? Math.round((model.helpfulCount / model.feedbackCount) * 100)
+                  : 0,
+                feedbackCount: model.feedbackCount
+              }))
+            },
+            modelComparisons,
+            performanceMetrics: {
+              avgProcessingTime: rawStats.avgProcessingTime,
+              totalCost: rawStats.totalEstimatedCost,
+              avgCostPerAttempt: rawStats.totalExplanations > 0 
+                ? Math.round((rawStats.totalEstimatedCost / rawStats.totalExplanations) * 1000000) / 1000000
+                : 0
+            }
+          };
+        }),
+        CacheTTL.DASHBOARD_DATA
+      );
     } catch (error) {
       logger.error(`Error getting comprehensive dashboard: ${error instanceof Error ? error.message : String(error)}`, 'database');
-      throw error;
+      // Return a default/empty structure on error to ensure the app doesn't crash
+      return {
+        accuracyStats: { totalSolverAttempts: 0, overallAccuracyPercentage: 0, topAccurateModels: [] },
+        trustworthinessStats: { totalTrustworthinessAttempts: 0, overallTrustworthiness: 0, topTrustworthyModels: [] },
+        feedbackStats: { totalFeedback: 0, helpfulPercentage: 0, topRatedModels: [] },
+        modelComparisons: [],
+        performanceMetrics: { avgProcessingTime: 0, totalCost: 0, avgCostPerAttempt: 0 }
+      };
     }
   }
 
