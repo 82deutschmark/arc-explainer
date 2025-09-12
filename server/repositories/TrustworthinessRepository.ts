@@ -6,7 +6,7 @@
  * 
  * SCOPE: This repository handles ONE CONCEPT only:
  * - TRUSTWORTHINESS (reliability of AI confidence claims):
- *   - Database field: prediction_accuracy_score (double precision) - MISLEADING NAME!
+ *   - Database field: trustworthiness_score (double precision) - PROPERLY NAMED!
  *   - NOT accuracy! This is a computed metric combining confidence AND correctness
  *   - Measures how well AI confidence correlates with actual performance
  *   - Used for: AI reliability analysis, confidence calibration studies
@@ -18,7 +18,7 @@
  * - ONLY confidence reliability and calibration analysis
  * 
  * INCLUSION CRITERIA:
- * - Models that have prediction_accuracy_score values (trustworthiness computed)
+ * - Models that have trustworthiness_score values (trustworthiness computed)
  * - Excludes corrupted entries (perfect score with zero confidence)
  * - Focuses on reliability of AI confidence claims, not pure puzzle-solving
  * 
@@ -28,6 +28,9 @@
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
+import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
+import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
 
 export interface TrustworthinessStats {
   totalTrustworthinessAttempts: number;
@@ -100,21 +103,42 @@ export interface EfficiencyLeader {
   totalAttempts: number;
 }
 
+/**
+ * Basic trustworthiness statistics for MetricsRepository delegation
+ * Simplified version of TrustworthinessStats for aggregation purposes
+ */
+export interface BasicTrustworthinessStats {
+  totalTrustworthinessAttempts: number;
+  overallTrustworthiness: number;
+}
+
+/**
+ * Model trustworthiness mapping for cross-repository analytics
+ * Used by MetricsRepository for model comparison generation
+ */
+export interface ModelTrustworthinessMap {
+  [modelName: string]: {
+    trustworthiness: number;
+    attempts: number;
+    avgConfidence: number;
+  };
+}
+
 export class TrustworthinessRepository extends BaseRepository {
   
   /**
    * Get TRUSTWORTHINESS STATS - AI confidence reliability metrics
    * 
    * This method returns data about how well AI confidence correlates with actual performance.
-   * Uses only prediction_accuracy_score field (despite misleading name, this is trustworthiness).
+   * Uses only trustworthiness_score field (despite misleading name, this is trustworthiness).
    * 
    * INCLUSION CRITERIA:
-   * - Models that have prediction_accuracy_score values (trustworthiness computed)
+   * - Models that have trustworthiness_score values (trustworthiness computed)
    * - Excludes corrupted entries (perfect score with zero confidence)
    * - Focuses on reliability of AI confidence claims, not pure puzzle-solving
    * 
    * TRUSTWORTHINESS CALCULATION:
-   * - prediction_accuracy_score combines confidence claims with actual correctness
+   * - trustworthiness_score combines confidence claims with actual correctness
    * - Higher scores mean AI confidence better predicts actual performance
    * - This is the PRIMARY METRIC for this research project
    */
@@ -132,29 +156,44 @@ export class TrustworthinessRepository extends BaseRepository {
       const overallStats = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          AVG(prediction_accuracy_score) as overall_trustworthiness
+          AVG(trustworthiness_score) as overall_trustworthiness
         FROM explanations
-        WHERE prediction_accuracy_score IS NOT NULL
-          AND NOT (prediction_accuracy_score = 1.0 AND confidence = 0)
+        WHERE trustworthiness_score IS NOT NULL
+          AND NOT (trustworthiness_score = 1.0 AND confidence = 0)
       `);
 
-      // Get trustworthiness by model
+      // Get trustworthiness by model with normalization
       const modelTrustworthiness = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          MIN(e.trustworthiness_score) as min_trustworthiness,
+          MAX(e.trustworthiness_score) as max_trustworthiness,
           AVG(e.confidence) as avg_confidence,
-          COUNT(e.prediction_accuracy_score) as trustworthiness_entries
+          COUNT(e.trustworthiness_score) as trustworthiness_entries
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0)
-        GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
       `);
 
@@ -232,7 +271,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_confidence DESC, total_entries DESC
       `);
 
@@ -283,13 +322,20 @@ export class TrustworthinessRepository extends BaseRepository {
     }
 
     try {
-      // Get trustworthiness leaders using the existing prediction_accuracy_score field 
+      // Get trustworthiness leaders using the existing trustworthiness_score field 
       // (which already factors in both correctness and confidence)
       const trustworthinessQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
           AVG(e.confidence) as avg_confidence,
           AVG(e.api_processing_time_ms) as avg_processing_time,
           AVG(e.total_tokens) as avg_tokens,
@@ -297,11 +343,19 @@ export class TrustworthinessRepository extends BaseRepository {
           SUM(e.estimated_cost) as total_cost
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
-        GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
         LIMIT 10
       `);
@@ -309,16 +363,31 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get speed leaders (fastest processing times with decent trustworthiness)
       const speedQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           AVG(e.api_processing_time_ms) as avg_processing_time,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness
+          AVG(e.trustworthiness_score) as avg_trustworthiness
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.api_processing_time_ms IS NOT NULL
-          AND e.prediction_accuracy_score IS NOT NULL
-        GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+          AND e.trustworthiness_score IS NOT NULL
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_processing_time ASC
         LIMIT 10
       `);
@@ -326,30 +395,45 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
       const efficiencyQuery = await this.query(`
         SELECT 
-          e.model_name,
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           (
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0.01 
-              THEN AVG(e.estimated_cost) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.trustworthiness_score) > 0.01 
+              THEN AVG(e.estimated_cost) / AVG(e.trustworthiness_score)
               ELSE 999999 
             END
           ) as cost_efficiency,
           (
             CASE 
-              WHEN AVG(e.prediction_accuracy_score) > 0.01 
-              THEN AVG(e.total_tokens) / AVG(e.prediction_accuracy_score)
+              WHEN AVG(e.trustworthiness_score) > 0.01 
+              THEN AVG(e.total_tokens) / AVG(e.trustworthiness_score)
               ELSE 999999 
             END
           ) as token_efficiency,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
           COUNT(*) as total_attempts
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
-        GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY cost_efficiency ASC
         LIMIT 10
       `);
@@ -358,9 +442,9 @@ export class TrustworthinessRepository extends BaseRepository {
       const overallQuery = await this.query(`
         SELECT 
           COUNT(*) as total_trustworthiness_attempts,
-          AVG(prediction_accuracy_score) as overall_trustworthiness
+          AVG(trustworthiness_score) as overall_trustworthiness
         FROM explanations
-        WHERE prediction_accuracy_score IS NOT NULL
+        WHERE trustworthiness_score IS NOT NULL
       `);
 
       const overallStats = overallQuery.rows[0];
@@ -410,16 +494,16 @@ export class TrustworthinessRepository extends BaseRepository {
         SELECT 
           e.model_name,
           COUNT(*) as total_attempts,
-          AVG(e.prediction_accuracy_score) as avg_trustworthiness,
-          MIN(e.prediction_accuracy_score) as min_trustworthiness,
-          MAX(e.prediction_accuracy_score) as max_trustworthiness,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          MIN(e.trustworthiness_score) as min_trustworthiness,
+          MAX(e.trustworthiness_score) as max_trustworthiness,
           AVG(e.confidence) as avg_confidence,
-          COUNT(e.prediction_accuracy_score) as trustworthiness_entries
+          COUNT(e.trustworthiness_score) as trustworthiness_entries
         FROM explanations e
         WHERE e.model_name = $1 
-          AND e.prediction_accuracy_score IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
-          AND NOT (e.prediction_accuracy_score = 1.0 AND e.confidence = 0)
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
         GROUP BY e.model_name
       `, [modelName]);
 
@@ -439,6 +523,103 @@ export class TrustworthinessRepository extends BaseRepository {
       };
     } catch (error) {
       logger.error(`Error getting model trustworthiness for ${modelName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get basic trustworthiness statistics for MetricsRepository delegation
+   * 
+   * Returns simplified trustworthiness metrics without detailed model breakdowns.
+   * Used by MetricsRepository.getGeneralModelStats() for pure aggregation pattern.
+   * 
+   * Uses MetricsQueryBuilder for DRY compliance and consistent filtering.
+   * 
+   * @returns {Promise<BasicTrustworthinessStats>} Basic trustworthiness statistics
+   */
+  async getBasicStats(): Promise<BasicTrustworthinessStats> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty basic trustworthiness stats.', 'database');
+      return {
+        totalTrustworthinessAttempts: 0,
+        overallTrustworthiness: 0
+      };
+    }
+
+    try {
+      const query = `
+        SELECT 
+          COUNT(*) as total_trustworthiness_attempts,
+          AVG(trustworthiness_score) as overall_trustworthiness
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.trustworthinessFilter()
+        )}
+      `;
+
+      const result = await this.query(query);
+      const stats = result.rows[0];
+
+      return {
+        totalTrustworthinessAttempts: parseInt(stats.total_trustworthiness_attempts) || 0,
+        overallTrustworthiness: Math.round((parseFloat(stats.overall_trustworthiness) || 0) * 10000) / 10000
+      };
+
+    } catch (error) {
+      logger.error(`Error getting basic trustworthiness stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get model trustworthiness mapping for cross-repository analytics
+   * 
+   * Returns a key-value mapping of model names to their trustworthiness statistics.
+   * Used by MetricsRepository.generateModelComparisons() for efficient aggregation.
+   * 
+   * Uses MetricsQueryBuilder for consistent query patterns and ANALYSIS_CRITERIA for standardized filtering.
+   * 
+   * @returns {Promise<ModelTrustworthinessMap>} Mapping of model names to trustworthiness data
+   */
+  async getModelTrustworthinessMap(): Promise<ModelTrustworthinessMap> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model trustworthiness map.', 'database');
+      return {};
+    }
+
+    try {
+      const query = `
+        SELECT 
+          e.model_name,
+          COUNT(*) as attempts,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          AVG(e.confidence) as avg_confidence
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.trustworthinessFilter()
+        )}
+        ${MetricsQueryBuilder.modelGroupBy()}
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.TRUSTWORTHINESS_ANALYSIS.requireValidTrustworthiness ? 1 : ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}
+      `;
+
+      const result = await this.query(query);
+      
+      const trustworthinessMap: ModelTrustworthinessMap = {};
+      
+      result.rows.forEach(row => {
+        trustworthinessMap[row.model_name] = {
+          trustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          attempts: parseInt(row.attempts) || 0,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 100) / 100
+        };
+      });
+
+      return trustworthinessMap;
+
+    } catch (error) {
+      logger.error(`Error getting model trustworthiness map: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }

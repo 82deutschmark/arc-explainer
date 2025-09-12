@@ -29,6 +29,9 @@
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
+import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
+import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -58,6 +61,28 @@ export interface DangerousModelRanking {
   avgConfidence: number;
   totalAttempts: number;
   overallAccuracy: number;
+}
+
+/**
+ * Basic accuracy statistics for MetricsRepository delegation
+ * Simplified version of PureAccuracyStats for aggregation purposes
+ */
+export interface BasicAccuracyStats {
+  totalSolverAttempts: number;
+  totalCorrectPredictions: number;
+  overallAccuracyPercentage: number;
+}
+
+/**
+ * Model accuracy mapping for cross-repository analytics
+ * Used by MetricsRepository for model comparison generation
+ */
+export interface ModelAccuracyMap {
+  [modelName: string]: {
+    accuracy: number;
+    attempts: number;
+    correctPredictions: number;
+  };
 }
 
 export class AccuracyRepository extends BaseRepository {
@@ -105,9 +130,18 @@ export class AccuracyRepository extends BaseRepository {
       `);
 
       // Get pure accuracy by model - NO trustworthiness or confidence filtering
+      // Use normalization in the GROUP BY to consolidate model variations
       const modelAccuracy = await this.query(`
         SELECT 
-          e.model_name,
+          -- Use normalized model name for grouping but show original for reference
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(e.id) as total_attempts,
           
           -- Single test accuracy
@@ -144,8 +178,16 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
-        GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 1 AND 
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts} AND 
                NOT ((SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) = 0 AND COUNT(e.id) < 10)
         ORDER BY accuracy_percentage ASC, total_attempts DESC
       `);
@@ -279,7 +321,7 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(e.id) >= 3  -- Require at least 3 attempts for meaningful ranking
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}  -- Require at least 3 attempts for meaningful ranking
         ORDER BY accuracy_percentage DESC, total_attempts DESC
         LIMIT $1
       `, [limit]);
@@ -331,7 +373,7 @@ export class AccuracyRepository extends BaseRepository {
           
           -- Wrong high confidence predictions
           COUNT(CASE 
-            WHEN e.confidence >= 90 
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
             AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
             THEN 1 
           END) as wrong_high_confidence_predictions,
@@ -340,7 +382,7 @@ export class AccuracyRepository extends BaseRepository {
           CASE 
             WHEN COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) > 0
             THEN (COUNT(CASE 
-              WHEN e.confidence >= 90 
+              WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
               AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
               THEN 1 
             END) * 100.0 / COUNT(CASE WHEN e.confidence >= 90 THEN 1 END))
@@ -366,9 +408,9 @@ export class AccuracyRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(CASE WHEN e.confidence >= 90 THEN 1 END) >= 3  -- At least 3 high-confidence attempts
+        HAVING COUNT(CASE WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} THEN 1 END) >= ${ANALYSIS_CRITERIA.HIGH_CONFIDENCE_ANALYSIS.minAttempts}  -- At least 3 high-confidence attempts
           AND COUNT(CASE 
-            WHEN e.confidence >= 90 
+            WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} 
             AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
             THEN 1 
           END) > 0  -- At least 1 wrong high-confidence prediction
@@ -387,6 +429,112 @@ export class AccuracyRepository extends BaseRepository {
       }));
     } catch (error) {
       logger.error(`Error getting dangerous models: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get basic accuracy statistics for MetricsRepository delegation
+   * 
+   * Returns simplified accuracy metrics without detailed model breakdowns.
+   * Used by MetricsRepository.getGeneralModelStats() for pure aggregation pattern.
+   * 
+   * Uses MetricsQueryBuilder for DRY compliance and consistent filtering.
+   * 
+   * @returns {Promise<BasicAccuracyStats>} Basic accuracy statistics
+   */
+  async getBasicStats(): Promise<BasicAccuracyStats> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty basic accuracy stats.', 'database');
+      return {
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        overallAccuracyPercentage: 0
+      };
+    }
+
+    try {
+      const query = `
+        SELECT 
+          ${MetricsQueryBuilder.solverAttemptCount()} as total_solver_attempts,
+          ${MetricsQueryBuilder.correctPredictionsCount()} as total_correct_predictions,
+          ${MetricsQueryBuilder.accuracyPercentage(
+            MetricsQueryBuilder.correctPredictionsCount(),
+            MetricsQueryBuilder.solverAttemptCount()
+          )} as overall_accuracy_percentage
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.solverAttemptFilter()
+        )}
+      `;
+
+      const result = await this.query(query);
+      const stats = result.rows[0];
+
+      return {
+        totalSolverAttempts: parseInt(stats.total_solver_attempts) || 0,
+        totalCorrectPredictions: parseInt(stats.total_correct_predictions) || 0,
+        overallAccuracyPercentage: Math.round((parseFloat(stats.overall_accuracy_percentage) || 0) * 100) / 100
+      };
+
+    } catch (error) {
+      logger.error(`Error getting basic accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get model accuracy mapping for cross-repository analytics
+   * 
+   * Returns a key-value mapping of model names to their accuracy statistics.
+   * Used by MetricsRepository.generateModelComparisons() for efficient aggregation.
+   * 
+   * Uses MetricsQueryBuilder for consistent query patterns and ANALYSIS_CRITERIA for standardized filtering.
+   * 
+   * @returns {Promise<ModelAccuracyMap>} Mapping of model names to accuracy data
+   */
+  async getModelAccuracyMap(): Promise<ModelAccuracyMap> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model accuracy map.', 'database');
+      return {};
+    }
+
+    try {
+      const query = `
+        SELECT 
+          e.model_name,
+          COUNT(e.id) as attempts,
+          ${MetricsQueryBuilder.correctPredictionsCount()} as correct_predictions,
+          ${MetricsQueryBuilder.accuracyPercentage(
+            MetricsQueryBuilder.correctPredictionsCount(),
+            'COUNT(e.id)'
+          )} as accuracy
+        FROM explanations e
+        WHERE ${MetricsQueryBuilder.combineConditions(
+          MetricsQueryBuilder.modelFilter(),
+          MetricsQueryBuilder.solverAttemptFilter()
+        )}
+        ${MetricsQueryBuilder.modelGroupBy()}
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}
+      `;
+
+      const result = await this.query(query);
+      
+      const accuracyMap: ModelAccuracyMap = {};
+      
+      result.rows.forEach(row => {
+        accuracyMap[row.model_name] = {
+          accuracy: Math.round((parseFloat(row.accuracy) || 0) * 100) / 100,
+          attempts: parseInt(row.attempts) || 0,
+          correctPredictions: parseInt(row.correct_predictions) || 0
+        };
+      });
+
+      return accuracyMap;
+
+    } catch (error) {
+      logger.error(`Error getting model accuracy map: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }

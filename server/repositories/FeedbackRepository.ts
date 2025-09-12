@@ -29,6 +29,8 @@
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import type { Feedback, DetailedFeedback, FeedbackFilters, FeedbackStats } from '../../shared/types.ts';
+import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
+import { ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
 
 export interface AddFeedbackData {
   puzzleId: string | null;
@@ -38,6 +40,19 @@ export interface AddFeedbackData {
   userAgent?: string;
   sessionId?: string;
   referenceFeedbackId?: number; // Reference to another feedback entry (for voting on solutions)
+}
+
+/**
+ * Model feedback mapping for cross-repository analytics
+ * Used by MetricsRepository for model comparison generation
+ */
+export interface ModelFeedbackMap {
+  [modelName: string]: {
+    userSatisfaction: number;
+    feedbackCount: number;
+    helpfulCount: number;
+    notHelpfulCount: number;
+  };
 }
 
 export class FeedbackRepository extends BaseRepository {
@@ -507,6 +522,64 @@ export class FeedbackRepository extends BaseRepository {
       }));
     } catch (error) {
       logger.error(`Error getting recent feedback: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get model feedback mapping for cross-repository analytics
+   * 
+   * Returns a key-value mapping of model names to their user satisfaction statistics.
+   * Used by MetricsRepository.generateModelComparisons() for efficient aggregation.
+   * 
+   * Uses MetricsQueryBuilder for consistent query patterns and focuses only on
+   * feedback quality ('helpful' vs 'not_helpful'), ignoring other feedback types.
+   * 
+   * @returns {Promise<ModelFeedbackMap>} Mapping of model names to feedback data
+   */
+  async getModelFeedbackMap(): Promise<ModelFeedbackMap> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model feedback map.', 'database');
+      return {};
+    }
+
+    try {
+      const query = `
+        SELECT 
+          e.model_name,
+          COUNT(f.id) as feedback_count,
+          COUNT(CASE WHEN f.feedback_type = 'helpful' THEN 1 END) as helpful_count,
+          COUNT(CASE WHEN f.feedback_type = 'not_helpful' THEN 1 END) as not_helpful_count,
+          CASE 
+            WHEN COUNT(f.id) > 0 
+            THEN (COUNT(CASE WHEN f.feedback_type = 'helpful' THEN 1 END) * 100.0 / COUNT(f.id))
+            ELSE 0 
+          END as user_satisfaction
+        FROM feedback f
+        JOIN explanations e ON f.explanation_id = e.id
+        WHERE ${MetricsQueryBuilder.modelFilter('e')}
+          AND f.feedback_type IN ('helpful', 'not_helpful')
+        GROUP BY e.model_name
+        HAVING COUNT(f.id) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
+      `;
+
+      const result = await this.query(query);
+      
+      const feedbackMap: ModelFeedbackMap = {};
+      
+      result.rows.forEach(row => {
+        feedbackMap[row.model_name] = {
+          userSatisfaction: Math.round((parseFloat(row.user_satisfaction) || 0) * 100) / 100,
+          feedbackCount: parseInt(row.feedback_count) || 0,
+          helpfulCount: parseInt(row.helpful_count) || 0,
+          notHelpfulCount: parseInt(row.not_helpful_count) || 0
+        };
+      });
+
+      return feedbackMap;
+
+    } catch (error) {
+      logger.error(`Error getting model feedback map: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }

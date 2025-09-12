@@ -203,8 +203,31 @@ export class OpenRouterService extends BaseAIService {
         const requestDuration = Date.now() - startTime;
 
         if (!fetchResponse.ok) {
-            logger.error(`[OpenRouter] API Error from ${modelKey}: ${JSON.stringify({ status: fetchResponse.status, statusText: fetchResponse.statusText, error: responseText }, null, 2)}`);
-            throw new Error(`OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText} - ${responseText}`);
+            // Log detailed error for debugging but create user-friendly error message
+            logger.logError(`OpenRouter API Error from ${modelKey}`, {
+              error: { status: fetchResponse.status, statusText: fetchResponse.statusText, response: responseText.substring(0, 500) },
+              context: 'openrouter-api'
+            });
+            
+            // Create user-friendly error with specific handling for common cases
+            let userMessage = `OpenRouter API error: ${fetchResponse.status} ${fetchResponse.statusText}`;
+            if (fetchResponse.status === 429) {
+              userMessage = `Model ${modelKey} is temporarily rate-limited. Please retry shortly or select a different model.`;
+            } else if (fetchResponse.status >= 500) {
+              userMessage = `OpenRouter service temporarily unavailable for ${modelKey}. Please try again.`;
+            } else if (fetchResponse.status === 404) {
+              userMessage = `Model ${modelKey} not found or no longer available.`;
+            } else if (responseText.includes('rate-limited')) {
+              userMessage = `Model ${modelKey} is temporarily rate-limited. Please retry shortly.`;
+            } else if (responseText.includes('unavailable')) {
+              userMessage = `Model ${modelKey} is currently unavailable. Please try another model.`;
+            }
+            
+            const error = new Error(userMessage);
+            (error as any).statusCode = fetchResponse.status;
+            (error as any).provider = 'OpenRouter';
+            (error as any).modelKey = modelKey;
+            throw error;
         }
 
         // Continuation logic requires parsing each chunk. Handle non-JSON chunks gracefully.

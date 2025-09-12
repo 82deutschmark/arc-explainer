@@ -30,6 +30,42 @@ export interface ErrorLogOptions {
 }
 
 /**
+ * Determine minimum log level based on environment
+ */
+const getMinLogLevel = (): LogLevel => {
+  const envLevel = process.env.LOG_LEVEL?.toLowerCase() as LogLevel;
+  if (envLevel && ['error', 'warn', 'info', 'debug'].includes(envLevel)) {
+    return envLevel;
+  }
+  
+  // Default log levels by environment
+  if (process.env.NODE_ENV === 'production') {
+    return 'warn'; // Only warnings and errors in production
+  } else if (process.env.NODE_ENV === 'test') {
+    return 'error'; // Only errors during testing
+  }
+  return 'info'; // Info and above in development
+};
+
+const MIN_LOG_LEVEL = getMinLogLevel();
+const LOG_LEVEL_PRIORITY = { error: 3, warn: 2, info: 1, debug: 0 };
+
+/**
+ * Check if message should be logged based on current log level
+ */
+const shouldLog = (level: LogLevel): boolean => {
+  return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[MIN_LOG_LEVEL];
+};
+
+/**
+ * Truncate long messages to prevent console spam
+ */
+const truncateMessage = (message: string, maxLength: number = 500): string => {
+  if (message.length <= maxLength) return message;
+  return `${message.substring(0, maxLength)}... [truncated ${message.length - maxLength} chars]`;
+};
+
+/**
  * Enhanced logger that wraps console methods with additional context and error handling
  */
 export const logger = {
@@ -37,29 +73,35 @@ export const logger = {
    * Log informational message
    */
   info: (message: string, context: string = 'app') => {
-    console.log(`[INFO][${context}] ${message}`);
+    if (shouldLog('info')) {
+      console.log(`[INFO][${context}] ${truncateMessage(message)}`);
+    }
   },
   
   /**
    * Log warning message
    */
   warn: (message: string, context: string = 'app') => {
-    console.warn(`[WARN][${context}] ${message}`);
+    if (shouldLog('warn')) {
+      console.warn(`[WARN][${context}] ${truncateMessage(message)}`);
+    }
   },
   
   /**
    * Log error message
    */
   error: (message: string, context: string = 'app') => {
-    console.error(`[ERROR][${context}] ${message}`);
+    if (shouldLog('error')) {
+      console.error(`[ERROR][${context}] ${truncateMessage(message)}`);
+    }
   },
   
   /**
-   * Log debug message (only in development)
+   * Log debug message (only when debug level enabled)
    */
   debug: (message: string, context: string = 'app') => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug(`[DEBUG][${context}] ${message}`);
+    if (shouldLog('debug')) {
+      console.debug(`[DEBUG][${context}] ${truncateMessage(message)}`);
     }
   },
 
@@ -93,21 +135,23 @@ export const logger = {
    * Consolidates patterns like: console.log(`[OpenRouter] Processing...`)
    */
   service: (provider: string, message: string, level: LogLevel = 'info') => {
+    if (!shouldLog(level)) return;
+    
     const prefix = `[${provider}]`;
+    const truncatedMessage = truncateMessage(message);
+    
     switch (level) {
       case 'info':
-        console.log(`${prefix} ${message}`);
+        console.log(`${prefix} ${truncatedMessage}`);
         break;
       case 'warn':
-        console.warn(`${prefix} ${message}`);
+        console.warn(`${prefix} ${truncatedMessage}`);
         break;
       case 'error':
-        console.error(`${prefix} ${message}`);
+        console.error(`${prefix} ${truncatedMessage}`);
         break;
       case 'debug':
-        if (process.env.NODE_ENV !== 'production') {
-          console.debug(`${prefix} ${message}`);
-        }
+        console.debug(`${prefix} ${truncatedMessage}`);
         break;
     }
   },
@@ -117,10 +161,12 @@ export const logger = {
    * Consolidates patterns like: console.log('[SATURN-DEBUG] WebSocket...', data)
    */
   debugWithContext: (context: string, message: string, data?: any) => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[${context}] ${message}`);
+    if (shouldLog('debug')) {
+      console.log(`[${context}] ${truncateMessage(message)}`);
       if (data !== undefined) {
-        console.log(`[${context}] Data:`, data);
+        // Truncate stringified data to prevent massive objects from spamming console
+        const dataStr = typeof data === 'string' ? data : JSON.stringify(data);
+        console.log(`[${context}] Data: ${truncateMessage(dataStr, 200)}`);
       }
     }
   },
@@ -130,10 +176,12 @@ export const logger = {
    * Consolidates patterns like: console.log('Response preview:', response.substring(0, 200))
    */
   apiResponse: (provider: string, operation: string, responseData: string, previewLength: number = 200) => {
-    const preview = responseData.length > previewLength 
-      ? `${responseData.substring(0, previewLength)}...`
-      : responseData;
-    console.log(`[${provider}] ${operation} response preview: "${preview}"`);
+    if (shouldLog('debug')) { // Only log API responses in debug mode
+      const preview = responseData.length > previewLength 
+        ? `${responseData.substring(0, previewLength)}... [${responseData.length} total chars]`
+        : responseData;
+      console.log(`[${provider}] ${operation} response preview: "${preview.replace(/\n/g, '\\n')}"`);
+    }
   },
 
   /**
@@ -141,7 +189,9 @@ export const logger = {
    * Consolidates patterns like: console.log('[ResponsePersistence] Saved to:', filename)
    */
   fileOperation: (operation: string, filepath: string, context: string = 'FileSystem') => {
-    console.log(`[${context}] ${operation}: ${filepath}`);
+    if (shouldLog('debug')) { // Only log file operations in debug mode
+      console.log(`[${context}] ${operation}: ${truncateMessage(filepath, 100)}`);
+    }
   },
 
   /**
@@ -149,13 +199,15 @@ export const logger = {
    * Consolidates patterns in AI services for token/cost tracking
    */
   tokenUsage: (provider: string, modelKey: string, inputTokens: number, outputTokens: number, reasoningTokens?: number, cost?: number) => {
-    let message = `Token usage - Input=${inputTokens}, Output=${outputTokens}`;
-    if (reasoningTokens) {
-      message += `, Reasoning=${reasoningTokens}`;
+    if (shouldLog('info')) { // Log token usage at info level
+      let message = `Token usage - Input=${inputTokens}, Output=${outputTokens}`;
+      if (reasoningTokens) {
+        message += `, Reasoning=${reasoningTokens}`;
+      }
+      if (cost) {
+        message += `, Cost=$${cost.toFixed(6)}`;
+      }
+      console.log(`[${provider}] ${modelKey}: ${message}`);
     }
-    if (cost) {
-      message += `, Cost=$${cost.toFixed(6)}`;
-    }
-    console.log(`[${provider}] ${modelKey}: ${message}`);
   }
-};
+}
