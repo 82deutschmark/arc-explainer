@@ -73,7 +73,7 @@ export class DatabaseSchema {
         saturn_success BOOLEAN DEFAULT NULL,
         predicted_output_grid JSONB DEFAULT NULL,
         is_prediction_correct BOOLEAN DEFAULT NULL,
-        prediction_accuracy_score FLOAT DEFAULT NULL,
+        trustworthiness_score FLOAT DEFAULT NULL,
         temperature FLOAT DEFAULT NULL,
         reasoning_effort TEXT DEFAULT NULL,
         reasoning_verbosity TEXT DEFAULT NULL,

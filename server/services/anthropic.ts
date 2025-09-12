@@ -11,6 +11,7 @@ import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { MODELS as MODEL_CONFIGS, getApiModelName, getModelConfig } from "../config/models/index.js";
+import { logger } from "../utils/logger.js";
 
 // Helper function to check if model supports temperature using centralized config
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -366,12 +367,12 @@ export class AnthropicService extends BaseAIService {
     let reasoningLog = null;
     let reasoningItems: any[] = [];
 
-    console.log(`[Anthropic] Parsing response with ${content?.length || 0} content blocks`);
+    logger.service('Anthropic', `Parsing response with ${content?.length || 0} content blocks`, 'debug');
 
     // Check for tool use response (structured output)
     const toolUseContent = content?.find((block: any) => block.type === 'tool_use');
     if (toolUseContent && toolUseContent.name === 'provide_puzzle_analysis') {
-      console.log(`[Anthropic] Found tool use response with structured data`);
+      logger.service('Anthropic', 'Found tool use response with structured data', 'debug');
       result = toolUseContent.input || {};
       
       // Extract reasoningItems from tool use input (guaranteed by schema)
@@ -420,7 +421,7 @@ export class AnthropicService extends BaseAIService {
       console.log(`[Anthropic] Additional text content: ${textContent.text.substring(0, 200)}...`);
     }
 
-    console.log(`[Anthropic] Parse complete - reasoningItems: ${reasoningItems.length}, result keys: ${Object.keys(result).join(', ')}`);
+    logger.service('Anthropic', `Parse complete - reasoningItems: ${reasoningItems.length}, result keys: ${Object.keys(result).join(', ')}`, 'debug');
 
     return {
       result,
