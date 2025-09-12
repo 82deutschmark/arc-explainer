@@ -11,6 +11,7 @@ import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { MODELS as MODEL_CONFIGS, getApiModelName } from "../config/models/index.js";
+import { logger } from "../utils/logger.js";
 
 // Helper function to check if model supports temperature
 function modelSupportsTemperature(modelKey: string): boolean {
@@ -212,15 +213,15 @@ export class DeepSeekService extends BaseAIService {
     if (isReasoningModel) {
       // For reasoning models, content field IS the JSON response
       const contentField = choice?.message?.content || '';
-      console.log(`[DeepSeek] Raw content field length: ${contentField.length}`);
-      console.log(`[DeepSeek] Content preview: "${contentField.substring(0, 200)}..."`);
+      logger.service('DeepSeek', `Raw content field length: ${contentField.length}`, 'debug');
+      logger.apiResponse('DeepSeek', 'Content preview', contentField, 200);
       
       try {
         // Try parsing content directly as JSON
         result = JSON.parse(contentField);
-        console.log(`[DeepSeek] Successfully parsed content as JSON`);
+        logger.service('DeepSeek', 'Successfully parsed content as JSON', 'debug');
       } catch (error) {
-        console.log(`[DeepSeek] Content not direct JSON, attempting extraction...`);
+        logger.service('DeepSeek', 'Content not direct JSON, attempting extraction...', 'debug');
         // Fallback to inherited JSON extraction if content is wrapped in text
         result = this.extractJsonFromResponse(contentField, modelKey);
       }
@@ -228,7 +229,7 @@ export class DeepSeekService extends BaseAIService {
       // Extract reasoning from reasoning_content field
       if (captureReasoning && choice?.message?.reasoning_content) {
         reasoningLog = choice.message.reasoning_content;
-        console.log(`[DeepSeek] Extracted reasoning log: ${reasoningLog.length} chars`);
+        logger.service('DeepSeek', `Extracted reasoning log: ${reasoningLog.length} chars`, 'debug');
       }
     } else {
       // For non-reasoning models, use standard text extraction
@@ -250,15 +251,15 @@ export class DeepSeekService extends BaseAIService {
     let reasoningItems: any[] = [];
     if (result?.reasoningItems && Array.isArray(result.reasoningItems)) {
       reasoningItems = result.reasoningItems;
-      console.log(`[DeepSeek] ✅ Extracted ${reasoningItems.length} reasoning items from JSON response`);
+      logger.service('DeepSeek', `✅ Extracted ${reasoningItems.length} reasoning items from JSON response`, 'debug');
     } else {
-      console.log(`[DeepSeek] ❌ No reasoningItems found in JSON response - model may not be following structured format`);
+      logger.service('DeepSeek', '❌ No reasoningItems found in JSON response - model may not be following structured format', 'warn');
       if (isReasoningModel) {
-        console.log(`[DeepSeek] ⚠️ DeepSeek reasoning model ${modelKey} should provide reasoningItems in JSON structure`);
+        logger.service('DeepSeek', `⚠️ DeepSeek reasoning model ${modelKey} should provide reasoningItems in JSON structure`, 'warn');
       }
     }
 
-    console.log(`[DeepSeek] Parse complete - result keys: ${Object.keys(result || {}).join(', ')}`);
+    logger.service('DeepSeek', `Parse complete - result keys: ${Object.keys(result || {}).join(', ')}`, 'debug');
 
     return {
       result,

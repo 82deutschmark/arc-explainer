@@ -137,7 +137,21 @@ export function useAnalysisResults({
         const encodedModelKey = encodeURIComponent(modelKey);
         const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${encodedModelKey}`, requestBody);
         if (!analysisResponse.ok) {
-          throw new Error(`Analysis request failed: ${analysisResponse.statusText}`);
+          // Parse error response to get user-friendly message
+          let errorMessage = `Analysis request failed: ${analysisResponse.statusText}`;
+          try {
+            const errorData = await analysisResponse.json();
+            if (errorData.message) {
+              errorMessage = errorData.message;
+            }
+            // Add retry suggestion for rate-limited or service unavailable errors
+            if (errorData.retryable) {
+              errorMessage += ' Please try again in a few moments.';
+            }
+          } catch (e) {
+            // Keep default error message if JSON parsing fails
+          }
+          throw new Error(errorMessage);
         }
         const analysisData = (await analysisResponse.json()).data;
 
@@ -202,6 +216,9 @@ export function useAnalysisResults({
         return savedData;
         
       } catch (error) {
+        // Extract user-friendly error message
+        const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+        
         // Update optimistic result with error
         setPendingAnalyses(prev => {
           const current = prev.get(modelKey);
@@ -209,7 +226,10 @@ export function useAnalysisResults({
             return new Map(prev).set(modelKey, {
               ...current,
               status: 'error',
-              error: error instanceof Error ? error.message : 'Analysis failed',
+              error: errorMessage,
+              isRetryable: errorMessage.includes('rate-limited') || 
+                          errorMessage.includes('unavailable') ||
+                          errorMessage.includes('try again')
             });
           }
           return prev;
@@ -219,6 +239,13 @@ export function useAnalysisResults({
           const newSet = new Set(prev);
           newSet.delete(modelKey);
           return newSet;
+        });
+        
+        // Log error details for debugging while showing user-friendly message to user
+        console.error('Analysis failed:', {
+          modelKey,
+          error: error instanceof Error ? error.message : String(error),
+          taskId
         });
         
         throw error;
