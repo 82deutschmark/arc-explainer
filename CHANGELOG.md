@@ -1,3 +1,43 @@
+### September 12 2025
+
+## v2.22.0 - 🛠️ Debug Spam Elimination & User-Friendly Error Messaging
+
+**CRITICAL IMPROVEMENT**: Eliminated excessive console spam during puzzle analysis and implemented user-friendly error messages for model unavailability.
+
+**BEFORE**: Console flooded with 10,000+ character responses and cryptic API errors only visible in server logs.  
+**AFTER**: Clean console output with appropriate log levels and clear user error messages for rate limits and service issues.
+
+**DEBUGGING IMPROVEMENTS**:
+1. **Enhanced Logger Utility**: Added LOG_LEVEL environment variable support (ERROR, WARN, INFO, DEBUG)
+2. **Message Truncation**: Automatic 500-character limit prevents console spam from massive API responses  
+3. **Smart Log Filtering**: Environment-based filtering (production: warn+, development: info+, test: error only)
+4. **Service Log Standardization**: Converted verbose console.log to appropriate logger.service() calls
+5. **Debug Statement Cleanup**: Removed temporary REASONING-LOG-CORRUPTION-DEBUG spam from ExplanationRepository
+
+**ERROR HANDLING IMPROVEMENTS**:
+1. **User-Friendly API Errors**: Rate limit errors (429) now show "Model temporarily rate-limited, please retry shortly"
+2. **Service Availability Messages**: Clear messages for model unavailable (404) and service errors (5xx)  
+3. **Enhanced Error Middleware**: Captures provider/model context and returns structured error responses
+4. **Frontend Error Display**: useAnalysisResults parses and displays specific error messages to users
+5. **Retry Guidance**: Errors include retryable flag to help users understand when to try again
+
+**TECHNICAL IMPLEMENTATION**:
+- **Logger Architecture**: Environment-aware log level filtering with message truncation
+- **Error Context Preservation**: Maintains debugging info while showing clean messages to users
+- **API Response Logging**: Moved to debug level to eliminate production noise
+- **Provider-Specific Errors**: OpenRouter, Anthropic, DeepSeek services provide contextual error messages
+- **Frontend Error Parsing**: Proper JSON error response handling with fallback messages
+
+**TESTING GUIDANCE**: 
+1. Set LOG_LEVEL=debug to see full logging (for debugging)
+2. Default production mode shows only warnings and errors  
+3. Rate-limited models display user-friendly messages instead of raw API errors
+4. Console no longer spammed with massive reasoning log corruption debug statements
+
+This eliminates debugging noise while ensuring users receive clear feedback when models are rate-limited or unavailable.
+
+---
+
 ### September 9 2025
 
 ## v2.21.0 - 🚀 MAJOR UX: Optimistic UI Updates for Analysis Results
