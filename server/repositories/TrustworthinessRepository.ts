@@ -177,7 +177,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
       `);
 
@@ -255,7 +255,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_confidence DESC, total_entries DESC
       `);
 
@@ -324,7 +324,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
         LIMIT 10
       `);
@@ -341,7 +341,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.api_processing_time_ms IS NOT NULL
           AND e.trustworthiness_score IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_processing_time ASC
         LIMIT 10
       `);
@@ -372,7 +372,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
         GROUP BY e.model_name
-        HAVING COUNT(*) >= 1
+        HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY cost_efficiency ASC
         LIMIT 10
       `);

@@ -71,42 +71,41 @@ export default function PuzzleBrowser() {
   
   // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
-    const allPuzzles = (puzzles || []) as EnhancedPuzzleMetadata[];
-    
-    // Apply explanation filter
-    let filtered = allPuzzles;
-    if (explanationFilter === 'unexplained') {
-      filtered = allPuzzles.filter(puzzle => !puzzle.hasExplanation);
-    } else if (explanationFilter === 'explained') {
-      filtered = allPuzzles.filter(puzzle => puzzle.hasExplanation);
+    let filtered = (puzzles || []) as EnhancedPuzzleMetadata[];
+
+    // Apply search query first
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(puzzle => puzzle.id.includes(searchQuery.trim()));
     }
-    
+
+    // Apply explanation filter
+    if (explanationFilter === 'unexplained') {
+      filtered = filtered.filter(puzzle => !puzzle.hasExplanation);
+    } else if (explanationFilter === 'explained') {
+      filtered = filtered.filter(puzzle => puzzle.hasExplanation);
+    }
+
     // Apply sorting
     if (sortBy !== 'default') {
       filtered = [...filtered].sort((a, b) => {
         switch (sortBy) {
           case 'processing_time':
-            // Longest processing time first (nulls last)
             const aTime = a.apiProcessingTimeMs || 0;
             const bTime = b.apiProcessingTimeMs || 0;
             return bTime - aTime;
           case 'confidence':
-            // Highest confidence first (nulls last)
             const aConf = a.confidence || 0;
             const bConf = b.confidence || 0;
             return bConf - aConf;
           case 'cost':
-            // Highest cost first (nulls last)
             const aCost = a.estimatedCost || 0;
             const bCost = b.estimatedCost || 0;
             return bCost - aCost;
           case 'created_at':
-            // Most recent first (nulls last)
             const aDate = a.createdAt || '1970-01-01';
             const bDate = b.createdAt || '1970-01-01';
             return bDate.localeCompare(aDate);
           case 'least_analysis_data':
-            // Count non-null analysis data fields - puzzles with least data first
             const countAnalysisFields = (puzzle: EnhancedPuzzleMetadata) => {
               let count = 0;
               if (puzzle.isPredictionCorrect !== null && puzzle.isPredictionCorrect !== undefined) count++;
@@ -120,15 +119,15 @@ export default function PuzzleBrowser() {
             };
             const aAnalysisCount = countAnalysisFields(a);
             const bAnalysisCount = countAnalysisFields(b);
-            return aAnalysisCount - bAnalysisCount; // Ascending - least data first
+            return aAnalysisCount - bAnalysisCount;
           default:
             return 0;
         }
       });
     }
-    
+
     return filtered;
-  }, [puzzles, explanationFilter, sortBy]);
+  }, [puzzles, explanationFilter, sortBy, searchQuery]);
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
@@ -147,29 +146,22 @@ export default function PuzzleBrowser() {
 
   // Handle puzzle search by ID
   const handleSearch = useCallback(() => {
-    if (!searchQuery.trim()) {
-      setSearchError('Please enter a puzzle ID');
-      return;
+    // The filtering is now handled by the useMemo hook.
+    // This function is kept for the Enter key press and button click, but it can be simplified.
+    // If a single puzzle is found, navigate to it.
+    if (filteredPuzzles.length === 1 && searchQuery.trim() === filteredPuzzles[0].id) {
+      setLocation(`/puzzle/${filteredPuzzles[0].id}`);
+    }
+    // If the search query is a full puzzle ID that doesn't exist in the current list, try navigating anyway
+    else if (searchQuery.trim().length > 0 && filteredPuzzles.length === 0) {
+        const potentialPuzzleId = searchQuery.trim();
+        // Basic validation for what a puzzle ID might look like
+        if (potentialPuzzleId.length > 5 && !potentialPuzzleId.includes(' ')) {
+             setLocation(`/puzzle/${potentialPuzzleId}`);
+        }
     }
 
-    // Check if the puzzle ID exists in the available puzzles
-    const puzzleId = searchQuery.trim();
-    const puzzleExists = filteredPuzzles.some(p => p.id === puzzleId) ||
-                         puzzles?.some(p => p.id === puzzleId);
-    
-    if (puzzleExists) {
-      // Navigate to the puzzle page
-      setLocation(`/puzzle/${puzzleId}`);
-    } else {
-      // Try to directly navigate to the puzzle
-      // The server will handle if it exists or not
-      setLocation(`/puzzle/${puzzleId}`);
-      
-      // Note: We're removing the API check because we'll let the puzzle page handle
-      // showing an error if the puzzle doesn't exist. This avoids needing to add
-      // a new API endpoint just for this feature.
-    }
-  }, [searchQuery, filteredPuzzles, puzzles, setLocation]);
+  }, [searchQuery, filteredPuzzles, setLocation]);
 
   if (error) {
     return (

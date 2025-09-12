@@ -241,7 +241,24 @@ export abstract class BaseAIService {
       userPromptUsed: promptPackage?.userPrompt || null,
       promptTemplateId: promptTemplateId || promptPackage?.selectedTemplate?.id || null,
       customPromptText: customPromptText || null,
-      ...result
+      // CRITICAL FIX: Don't spread result directly - preserve structured data for explanationService
+      // Instead, extract only the analysis fields needed for the response
+      patternDescription: result?.patternDescription,
+      solvingStrategy: result?.solvingStrategy,
+      hints: result?.hints,
+      confidence: result?.confidence,
+      predictedOutput: result?.predictedOutput,
+      predictedOutputGrid: result?.predictedOutput, // Map for explanationService compatibility  
+      multiplePredictedOutputs: result?.multiplePredictedOutputs,
+      multiTestResults: result?.multiTestResults,
+      isPredictionCorrect: result?.isPredictionCorrect,
+      predictionAccuracyScore: result?.predictionAccuracyScore,
+      // Preserve raw response and parsing metadata
+      _rawResponse: result?._rawResponse,
+      _parseError: result?._parseError,
+      _parsingFailed: result?._parsingFailed,
+      _parseMethod: result?._parseMethod,
+      _providerRawResponse: result?._providerRawResponse
     };
   }
 
