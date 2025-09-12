@@ -172,6 +172,17 @@ export default function PuzzleExaminer() {
         <div>
           <h1 className="text-2xl font-bold">
             Puzzle {taskId}
+            {task?.source && (
+              <Badge variant="outline" className={`ml-2 ${
+                task.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
+                task.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
+                task.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
+                task.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
+                'bg-gray-50 text-gray-700'
+              }`}>
+                {task.source}
+              </Badge>
+            )}
             {isRetryMode && (
               <Badge variant="outline" className="ml-2 bg-orange-50 text-orange-700 border-orange-200">
                 <RefreshCw className="h-3 w-3 mr-1" />
