@@ -31,6 +31,7 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -129,9 +130,18 @@ export class AccuracyRepository extends BaseRepository {
       `);
 
       // Get pure accuracy by model - NO trustworthiness or confidence filtering
+      // Use normalization in the GROUP BY to consolidate model variations
       const modelAccuracy = await this.query(`
         SELECT 
-          e.model_name,
+          -- Use normalized model name for grouping but show original for reference
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
           COUNT(e.id) as total_attempts,
           
           -- Single test accuracy
@@ -168,7 +178,15 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
-        GROUP BY e.model_name
+        GROUP BY 
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
         HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts} AND 
                NOT ((SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) = 0 AND COUNT(e.id) < 10)
         ORDER BY accuracy_percentage ASC, total_attempts DESC
