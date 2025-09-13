@@ -17,9 +17,11 @@ export const GridCell = React.memo(function GridCell({ value, showEmojis, size =
       return { backgroundColor: 'white', color: '#000' };
     }
     
-    // Use black text for lighter colors (4=yellow, 5=grey, 8=light blue) for better contrast
-    const lightColors = [4, 5, 8];
-    const textColor = lightColors.includes(value) ? '#000' : '#FFF';
+    // Use appropriate text colors for good contrast
+    let textColor = '#FFF'; // default white
+    if (value === 4) textColor = '#000'; // yellow background - use black text
+    if (value === 5) textColor = '#FFD700'; // grey background - use yellowish text
+    if (value === 8) textColor = '#000'; // light blue background - use black text
     
     return {
       backgroundColor: ARC_COLORS[value] || '#FFFFFF',
