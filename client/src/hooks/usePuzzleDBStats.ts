@@ -9,8 +9,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 
-export interface PuzzleDBStats {
-  puzzleId: string;
+export interface PuzzlePerformanceData {
   wrongCount: number;
   avgAccuracy: number;
   avgConfidence: number;
@@ -20,6 +19,25 @@ export interface PuzzleDBStats {
   latestAnalysis: string;
   worstExplanationId: number;
   compositeScore: number;
+  // Rich metrics (optional)
+  avgCost?: number;
+  avgProcessingTime?: number;
+  avgReasoningTokens?: number;
+  avgInputTokens?: number;
+  avgOutputTokens?: number;
+  avgTotalTokens?: number;
+  multiTestCount?: number;
+  singleTestCount?: number;
+  lowestNonZeroConfidence?: number;
+  modelsAttempted?: string[];
+  reasoningEfforts?: string[];
+}
+
+export interface PuzzleDBStats {
+  id: string;
+  source: string;
+  performanceData: PuzzlePerformanceData;
+  // Puzzle metadata (train/test arrays, etc.) - we don't need these for the UI
 }
 
 interface PuzzleDBFilters {
@@ -57,7 +75,28 @@ export function usePuzzleDBStats(filters: PuzzleDBFilters = {}) {
       }
 
       const response = await apiRequest(`/api/puzzle/worst-performing?${params.toString()}`);
-      return response.data;
+      
+      // Extract puzzles array from response.data.puzzles
+      if (!response.data || !Array.isArray(response.data.puzzles)) {
+        console.warn('API response missing puzzles array:', response.data);
+        return [];
+      }
+      
+      return response.data.puzzles.map((puzzle: any) => ({
+        id: puzzle.id,
+        source: puzzle.source || 'Unknown',
+        performanceData: puzzle.performanceData || {
+          wrongCount: 0,
+          avgAccuracy: 0,
+          avgConfidence: 0,
+          totalExplanations: 0,
+          negativeFeedback: 0,
+          totalFeedback: 0,
+          latestAnalysis: '',
+          worstExplanationId: 0,
+          compositeScore: 0
+        }
+      }));
     },
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -75,7 +114,28 @@ export function useAllPuzzleStats() {
       params.append('includeRichMetrics', 'true');
       
       const response = await apiRequest(`/api/puzzle/worst-performing?${params.toString()}`);
-      return response.data;
+      
+      // Extract puzzles array from response.data.puzzles
+      if (!response.data || !Array.isArray(response.data.puzzles)) {
+        console.warn('API response missing puzzles array:', response.data);
+        return [];
+      }
+      
+      return response.data.puzzles.map((puzzle: any) => ({
+        id: puzzle.id,
+        source: puzzle.source || 'Unknown',
+        performanceData: puzzle.performanceData || {
+          wrongCount: 0,
+          avgAccuracy: 0,
+          avgConfidence: 0,
+          totalExplanations: 0,
+          negativeFeedback: 0,
+          totalFeedback: 0,
+          latestAnalysis: '',
+          worstExplanationId: 0,
+          compositeScore: 0
+        }
+      }));
     },
     refetchOnWindowFocus: false,
     staleTime: 10 * 60 * 1000, // 10 minutes for this larger dataset
