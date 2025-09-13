@@ -159,7 +159,7 @@ export default function PuzzleDBViewer() {
     
     // Apply source filter
     if (sourceFilter !== 'all') {
-      filtered = filtered.filter(p => p.source === sourceFilter);
+      filtered = filtered.filter(p => p.source && p.source === sourceFilter);
     }
     
     // Sort by selected criteria
@@ -249,7 +249,7 @@ export default function PuzzleDBViewer() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="composite">Difficulty Score</SelectItem>
+                  <SelectItem value="dangerous">Difficulty Score</SelectItem>
                   <SelectItem value="accuracy">Accuracy (Low to High)</SelectItem>
                   <SelectItem value="confidence">Confidence</SelectItem>
                 </SelectContent>
