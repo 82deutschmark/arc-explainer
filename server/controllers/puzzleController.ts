@@ -326,6 +326,34 @@ export const puzzleController = {
       logger.error('Error fetching worst-performing puzzles: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch worst-performing puzzles', 'An error occurred while fetching worst-performing puzzle data'));
     }
+  },
+
+  /**
+   * Get puzzle statistics for the puzzle database viewer.
+   * Returns a comprehensive list of all puzzles with their performance metrics.
+   * 
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getPuzzleStats(req: Request, res: Response) {
+    try {
+      const { includeRichMetrics = 'true' } = req.query;
+      
+      const filters = {
+        includeRichMetrics: includeRichMetrics === 'true'
+      };
+
+      // This reuses the getWorstPerformingPuzzles logic but with a very high limit to get all puzzles
+      const allPuzzleStats = await puzzleOverviewService.getWorstPerformingPuzzles(1000, 'composite', filters);
+
+      res.json(formatResponse.success({
+        puzzles: allPuzzleStats,
+        total: allPuzzleStats.length
+      }));
+    } catch (error) {
+      logger.error('Error fetching puzzle stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch puzzle stats', 'An error occurred while fetching puzzle statistics'));
+    }
   }
 };
 

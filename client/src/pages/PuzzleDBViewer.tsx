@@ -249,7 +249,10 @@ export default function PuzzleDBViewer() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dangerous">Difficulty Score</SelectItem>
+                  <SelectItem value="dangerous">Dangerous</SelectItem>
+                  <SelectItem value="humble">Humble</SelectItem>
+                  <SelectItem value="research">Research</SelectItem>
+                  <SelectItem value="unexplored">Unexplored</SelectItem>
                   <SelectItem value="accuracy">Accuracy (Low to High)</SelectItem>
                   <SelectItem value="confidence">Confidence</SelectItem>
                 </SelectContent>

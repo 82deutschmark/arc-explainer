@@ -40,7 +40,7 @@ const navigationItems: NavItem[] = [
   },
   {
     title: 'Puzzle DB',
-    href: '/models',
+    href: '/puzzles/database',
     icon: Database,
     description: 'Individual puzzles with DB record counts and difficulty analysis'
   },
