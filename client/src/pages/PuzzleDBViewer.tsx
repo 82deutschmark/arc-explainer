@@ -260,7 +260,7 @@ export default function PuzzleDBViewer() {
               <Checkbox 
                 id="zero-only" 
                 checked={showZeroOnly} 
-                onCheckedChange={setShowZeroOnly}
+                onCheckedChange={(checked) => setShowZeroOnly(checked === true)}
               />
               <label htmlFor="zero-only" className="text-sm font-medium cursor-pointer">
                 Show only puzzles with 0 explanations
@@ -271,7 +271,7 @@ export default function PuzzleDBViewer() {
               <Checkbox 
                 id="dangerous-only" 
                 checked={dangerousOnly} 
-                onCheckedChange={setDangerousOnly}
+                onCheckedChange={(checked) => setDangerousOnly(checked === true)}
               />
               <label htmlFor="dangerous-only" className="text-sm font-medium cursor-pointer">
                 Show dangerous overconfident failures only
@@ -316,7 +316,7 @@ export default function PuzzleDBViewer() {
               </p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-blue-700">Humble AI (<80% confidence)</p>
+              <p className="text-sm font-medium text-blue-700">Humble AI (&lt;80% confidence)</p>
               <p className="text-2xl font-bold text-blue-600">
                 {filteredPuzzles.filter(p => p.performanceData.avgConfidence < 80).length}
               </p>
