@@ -79,6 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // DISCUSSION PAGE - worst-performing puzzles for retry analysis
   app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
+  app.get("/api/puzzles/stats", asyncHandler(puzzleController.getPuzzleStats));
   
   // Metrics routes (reliability, comprehensive dashboard, etc.)
   app.use("/api/metrics", metricsRouter);
