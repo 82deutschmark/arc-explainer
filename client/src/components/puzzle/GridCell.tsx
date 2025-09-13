@@ -12,10 +12,22 @@ import { getSpaceEmoji } from '@/lib/spaceEmojis';
 
 export const GridCell = React.memo(function GridCell({ value, showEmojis, size = "normal", emojiSet, mismatch }: GridCellProps) {
   // Memoize style calculations to avoid recalculating on every render
-  const cellStyle = useMemo(() => ({
-    backgroundColor: showEmojis ? 'white' : (ARC_COLORS[value] || '#FFFFFF'),
-    color: showEmojis ? '#000' : '#FFF'
-  }), [showEmojis, value]);
+  const cellStyle = useMemo(() => {
+    if (showEmojis) {
+      return { backgroundColor: 'white', color: '#000' };
+    }
+    
+    // Use appropriate text colors for good contrast
+    let textColor = '#FFF'; // default white
+    if (value === 4) textColor = '#000'; // yellow background - use black text
+    if (value === 5) textColor = '#FFD700'; // grey background - use yellowish text
+    if (value === 8) textColor = '#000'; // light blue background - use black text
+    
+    return {
+      backgroundColor: ARC_COLORS[value] || '#FFFFFF',
+      color: textColor
+    };
+  }, [showEmojis, value]);
 
   // Memoize cell content to avoid recalculating emoji/value
   const cellContent = useMemo(() => {

@@ -117,7 +117,7 @@ export const puzzleService = {
    * Get a specific puzzle by ID
    * 
    * @param puzzleId - The ID of the puzzle to retrieve
-   * @returns The puzzle object
+   * @returns The puzzle object with metadata including source
    * @throws AppError if puzzle not found
    */
   async getPuzzleById(puzzleId: string) {
@@ -129,7 +129,14 @@ export const puzzleService = {
         'PUZZLE_NOT_FOUND'
       );
     }
-    return puzzle;
+    
+    // Get metadata to include source information
+    const metadata = puzzleLoader.getPuzzleMetadata(puzzleId);
+    
+    return {
+      ...puzzle,
+      source: metadata?.source
+    };
   },
 
   /**
