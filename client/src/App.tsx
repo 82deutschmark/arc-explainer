@@ -13,6 +13,7 @@ import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import BatchResults from "@/pages/BatchResults";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
+import ModelBrowser from "@/pages/ModelBrowser";
 
 function Router() {
   return (
@@ -25,7 +26,8 @@ function Router() {
         <Route path="/batch" component={BatchResults} />
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
-        <Route path="/models" component={PuzzleDBViewer} />
+        <Route path="/puzzles/database" component={PuzzleDBViewer} />
+        <Route path="/models" component={ModelBrowser} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

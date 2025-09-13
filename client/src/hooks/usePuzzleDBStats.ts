@@ -74,15 +74,16 @@ export function usePuzzleDBStats(filters: PuzzleDBFilters = {}) {
         params.append('includeRichMetrics', 'true');
       }
 
-      const response = await apiRequest(`/api/puzzle/worst-performing?${params.toString()}`);
+      const response = await apiRequest('GET', `/api/puzzles/stats?${params.toString()}`);
+      const jsonData = await response.json();
       
-      // Extract puzzles array from response.data.puzzles
-      if (!response.data || !Array.isArray(response.data.puzzles)) {
-        console.warn('API response missing puzzles array:', response.data);
+      // Extract puzzles array from jsonData.data.puzzles
+      if (!jsonData.data || !Array.isArray(jsonData.data.puzzles)) {
+        console.warn('API response missing puzzles array:', jsonData.data);
         return [];
       }
       
-      return response.data.puzzles.map((puzzle: any) => ({
+      return jsonData.data.puzzles.map((puzzle: any) => ({
         id: puzzle.id,
         source: puzzle.source || 'Unknown',
         performanceData: puzzle.performanceData || {
@@ -113,15 +114,16 @@ export function useAllPuzzleStats() {
       params.append('sortBy', 'composite');
       params.append('includeRichMetrics', 'true');
       
-      const response = await apiRequest(`/api/puzzle/worst-performing?${params.toString()}`);
+      const response = await apiRequest('GET', `/api/puzzles/stats?${params.toString()}`);
+      const jsonData = await response.json();
       
-      // Extract puzzles array from response.data.puzzles
-      if (!response.data || !Array.isArray(response.data.puzzles)) {
-        console.warn('API response missing puzzles array:', response.data);
+      // Extract puzzles array from jsonData.data.puzzles
+      if (!jsonData.data || !Array.isArray(jsonData.data.puzzles)) {
+        console.warn('API response missing puzzles array:', jsonData.data);
         return [];
       }
       
-      return response.data.puzzles.map((puzzle: any) => ({
+      return jsonData.data.puzzles.map((puzzle: any) => ({
         id: puzzle.id,
         source: puzzle.source || 'Unknown',
         performanceData: puzzle.performanceData || {
