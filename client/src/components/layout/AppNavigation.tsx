@@ -14,9 +14,7 @@ import { cn } from '@/lib/utils';
 import { 
   Grid3X3, 
   Database, 
-  BarChart3, 
   MessageCircle, 
-  Target,
   Github 
 } from 'lucide-react';
 
@@ -41,22 +39,16 @@ const navigationItems: NavItem[] = [
     description: 'Database overview and puzzle statistics'
   },
   {
-    title: 'Models',
+    title: 'Puzzle DB',
     href: '/models',
-    icon: BarChart3,
-    description: 'Model performance dashboard and leaderboards'
+    icon: Database,
+    description: 'Individual puzzles with DB record counts and difficulty analysis'
   },
   {
     title: 'Discussion',
     href: '/discussion',
     icon: MessageCircle,
     description: 'Community discussion and analysis insights'
-  },
-  {
-    title: 'Batch Results',
-    href: '/batch',
-    icon: Target,
-    description: 'View batch analysis results and sessions'
   }
 ];
 
