@@ -1,5 +1,31 @@
 ### September 12 2025
 
+## v2.22.1 - 🏷️ Dataset Badge for PuzzleExaminer + Grid Rendering Fix
+
+**ENHANCEMENT**: Added dataset source badges to PuzzleExaminer page showing which ARC dataset each puzzle comes from.
+
+**BUG FIX**: Fixed poor contrast and readability issues with light-colored grid cells (grey, yellow, light blue).
+
+**FEATURES**:
+1. **Dataset Identification**: Each puzzle now displays a color-coded badge showing its dataset source:
+   - 🔵 **ARC1**: Blue background (`ARC1`)
+   - 🔷 **ARC1-Eval**: Cyan background, semibold (`ARC1-Eval`) 
+   - 🟣 **ARC2**: Purple background (`ARC2`)
+   - 🟢 **ARC2-Eval**: Green background, bold (`ARC2-Eval`)
+2. **Header Integration**: Badge appears in puzzle title header, positioned after puzzle ID
+3. **Consistent Styling**: Uses same color scheme as PuzzleBrowser for visual consistency
+4. **Automatic Detection**: Backend automatically includes dataset source from puzzle metadata
+
+**TECHNICAL IMPLEMENTATION**:
+- **Backend**: Enhanced `puzzleService.getPuzzleById()` to include metadata source
+- **Types**: Extended `ARCTask` interface with optional `source` field
+- **Frontend**: Added conditional badge rendering with dataset-specific styling
+- **Backwards Compatible**: Gracefully handles puzzles without source metadata
+
+**TESTING**: To test, visit any puzzle (e.g., `/puzzle/examiner/000d96b6`) and verify the dataset badge appears in the header.
+
+---
+
 ## v2.22.0 - 🛠️ Debug Spam Elimination & User-Friendly Error Messaging
 
 **CRITICAL IMPROVEMENT**: Eliminated excessive console spam during puzzle analysis and implemented user-friendly error messages for model unavailability.

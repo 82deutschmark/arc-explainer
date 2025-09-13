@@ -215,18 +215,32 @@ export class GeminiService extends BaseAIService {
     options?: PromptOptions
   ): Promise<any> {
     const apiModelName = getApiModelName(modelKey);
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
+    const { systemPrompt: systemMessage, userPrompt: userMessage } = promptPackage;
     const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
 
     const generationConfig = this._buildGenerationConfig(modelKey, temperature, options);
+    const model = genai.getGenerativeModel({ model: apiModelName });
 
-    const model = genai.getGenerativeModel({ model: apiModelName, generationConfig });
+    const contents = [
+      {
+        role: "user",
+        parts: [{ text: userMessage }]
+      }
+    ];
 
-    // Combine system and user messages if not using ARC mode
-    const finalPrompt = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
+    const request: any = {
+      contents,
+      generationConfig,
+    };
 
-    const result = await model.generateContent(finalPrompt);
+    if (systemMessage && systemPromptMode === 'ARC') {
+      request.systemInstruction = { parts: [{ text: systemMessage }] };
+    } else if (systemMessage) {
+      // Prepend system message to user message if not in 'ARC' mode
+      request.contents[0].parts[0].text = `${systemMessage}\n\n${userMessage}`;
+    }
+
+    const result = await model.generateContent(request);
     return result.response;
   }
 
