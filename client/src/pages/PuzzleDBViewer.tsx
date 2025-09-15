@@ -118,9 +118,9 @@ export default function PuzzleDBViewer() {
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // Fetch puzzle data
+  // Fetch puzzle data - get ALL puzzles from all datasets
   const { data: puzzles, isLoading, error } = usePuzzleDBStats({
-    limit: 500, // Get more data for comprehensive filtering
+    limit: 2500, // Get ALL puzzles from all 5 datasets (training, training2, evaluation, evaluation2, arc-heavy)
     sortBy: 'composite', // Use backend sorting, we'll sort client-side for more control
     zeroAccuracyOnly: false, // Handle filtering client-side
     includeRichMetrics: true
@@ -222,8 +222,13 @@ export default function PuzzleDBViewer() {
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="flex items-center gap-1">
             <Grid className="h-3 w-3" />
-            {filteredPuzzles.length} Puzzles
+            {filteredPuzzles.length} / {puzzles?.length || 0} Puzzles
           </Badge>
+          {puzzles && puzzles.length > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              All {puzzles.length} from 5 datasets loaded
+            </Badge>
+          )}
           {isLoading && (
             <Badge variant="outline" className="text-blue-600">
               Loading...
@@ -266,7 +271,7 @@ export default function PuzzleDBViewer() {
                 onCheckedChange={(checked) => setShowZeroOnly(checked === true)}
               />
               <label htmlFor="zero-only" className="text-sm font-medium cursor-pointer">
-                Show only puzzles with 0 explanations
+                Show only UNEXPLORED puzzles (0 explanations)
               </label>
             </div>
             
@@ -279,6 +284,23 @@ export default function PuzzleDBViewer() {
               <label htmlFor="dangerous-only" className="text-sm font-medium cursor-pointer">
                 Show dangerous overconfident failures only
               </label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <label htmlFor="source-filter" className="text-sm font-medium">Dataset:</label>
+              <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Datasets</SelectItem>
+                  <SelectItem value="training">Training (400)</SelectItem>
+                  <SelectItem value="training2">Training2 (1000)</SelectItem>
+                  <SelectItem value="evaluation">Evaluation (400)</SelectItem>
+                  <SelectItem value="evaluation2">Evaluation2 (120)</SelectItem>
+                  <SelectItem value="arc-heavy">ARC-Heavy (300)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>

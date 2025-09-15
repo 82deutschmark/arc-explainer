@@ -185,7 +185,7 @@ export class PuzzleOverviewService {
     const limitedPuzzles = allPuzzles.slice(0, limit);
     logger.debug(`Found ${limitedPuzzles.length} total puzzles from all datasets (limited from ${allPuzzles.length})`, 'puzzle-overview-service');
 
-    // Get performance data for puzzles that have been analyzed
+    // Get performance data for puzzles that have been analyzed (this only gets puzzles WITH explanations)
     const analyzedPuzzleData = await repositoryService.explanations.getWorstPerformingPuzzles(10000, 'composite', filters);
     
     // Create a map of performance data by puzzle ID
@@ -193,6 +193,8 @@ export class PuzzleOverviewService {
     analyzedPuzzleData.forEach((data: any) => {
       performanceMap.set(data.puzzleId, data);
     });
+
+    logger.debug(`Performance map contains ${performanceMap.size} analyzed puzzles out of ${limitedPuzzles.length} total puzzles`, 'puzzle-overview-service');
 
     // Combine all puzzles with their performance data (or default empty data)
     const enrichedPuzzles = limitedPuzzles.map(puzzle => {
