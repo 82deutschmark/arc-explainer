@@ -330,21 +330,22 @@ export const puzzleController = {
 
   /**
    * Get puzzle statistics for the puzzle database viewer.
-   * Returns a comprehensive list of all puzzles with their performance metrics.
+   * Returns a comprehensive list of ALL puzzles with their performance metrics.
+   * Shows both analyzed puzzles (with performance data) and unexplored puzzles.
    * 
    * @param req - Express request object
    * @param res - Express response object
    */
   async getPuzzleStats(req: Request, res: Response) {
     try {
-      const { includeRichMetrics = 'true' } = req.query;
+      const { includeRichMetrics = 'true', limit = '2500' } = req.query;
       
       const filters = {
         includeRichMetrics: includeRichMetrics === 'true'
       };
 
-      // This reuses the getWorstPerformingPuzzles logic but with a very high limit to get all puzzles
-      const allPuzzleStats = await puzzleOverviewService.getWorstPerformingPuzzles(1000, 'composite', filters);
+      // Get ALL puzzles from the dataset, not just analyzed ones
+      const allPuzzleStats = await puzzleOverviewService.getAllPuzzleStats(parseInt(limit as string), filters);
 
       res.json(formatResponse.success({
         puzzles: allPuzzleStats,
