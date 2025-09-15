@@ -184,7 +184,7 @@ export class AnthropicService extends BaseAIService {
           },
           solvingStrategy: {
             type: "string", 
-            description: "Clear explanation of the solving approach, written as pseudo-code"
+            description: "Clear explanation of the solving approach, written as a few logical easy steps to follow.  Use as few words as possible."
           },
           reasoningItems: {
             type: "array",
@@ -194,7 +194,7 @@ export class AnthropicService extends BaseAIService {
           hints: {
             type: "array",
             items: { type: "string" },
-            description: "Three hints: one algorithm, one description, one as emojis"
+            description: "Three approaches to solving the puzzle: one algorithm, one description, one as a domain specific language"
           },
           confidence: {
             type: "integer",
@@ -264,54 +264,30 @@ export class AnthropicService extends BaseAIService {
 
     const startTime = Date.now();
     
-    // Claude Sonnet 4 requires streaming for long operations (>10 minutes)
+    // Claude Sonnet 4 uses streaming for better performance on long operations
+    // Fixed: streaming now properly preserves tool use blocks via finalMessage()
     const needsStreaming = /sonnet-4/i.test(modelKey) || /claude-sonnet-4/i.test(apiModelName);
     let response: any;
     
     if (needsStreaming) {
       try {
         console.log(`[${this.provider}] Using streaming for model ${modelKey}`);
-        
-        // For streaming, we need to collect chunks and build the response
-        let fullContent = [];
-        let inputTokens = 0;
-        let outputTokens = 0;
-        
+
         // Create a streaming request
         const stream = anthropic.messages.stream({
           ...requestBody,
           stream: true
         });
-        
-        // Process the stream
-        for await (const chunk of stream) {
-          if (chunk.type === 'message_start') {
-            inputTokens = chunk.message.usage?.input_tokens || 0;
-          } else if (chunk.type === 'content_block_delta' && 'delta' in chunk && 'text' in chunk.delta) {
-            // Collect text content
-            fullContent.push(chunk.delta.text);
-          } else if (chunk.type === 'message_delta' && 'usage' in chunk) {
-            // Update token counts from the final chunk
-            outputTokens = chunk.usage?.output_tokens || 0;
-          }
-        }
-        
-        // Get the final message with all content
+
+        // Let the stream process and get the final message directly
+        // This preserves tool use blocks and proper content structure
         const message = await stream.finalMessage();
-        
-        // Construct a response that matches the non-streaming format
-        response = {
-          ...message,
-          content: [{ type: 'text', text: fullContent.join('') }],
-          usage: {
-            input_tokens: inputTokens,
-            output_tokens: outputTokens
-          },
-          stop_reason: message.stop_reason || 'end_turn'
-        };
-        
-        console.log(`[${this.provider}] Streaming completed with ${outputTokens} output tokens`);
-        
+
+        // Use the final message directly without reconstruction
+        response = message;
+
+        console.log(`[${this.provider}] Streaming completed with ${message.usage?.output_tokens || 0} output tokens`);
+
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error during streaming';
         console.error(`[${this.provider}] Streaming error:`, errorMessage);
