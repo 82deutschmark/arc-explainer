@@ -11,11 +11,12 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { 
-  Grid3X3, 
-  Database, 
-  MessageCircle, 
-  Github 
+import {
+  Grid3X3,
+  Database,
+  MessageCircle,
+  Github,
+  Target
 } from 'lucide-react';
 
 interface NavItem {
@@ -49,6 +50,12 @@ const navigationItems: NavItem[] = [
     href: '/discussion',
     icon: MessageCircle,
     description: 'Community discussion and analysis insights'
+  },
+  {
+    title: 'Kaggle Readiness',
+    href: '/kaggle-readiness',
+    icon: Target,
+    description: 'Validate technical readiness for machine learning competitions'
   }
 ];
 
