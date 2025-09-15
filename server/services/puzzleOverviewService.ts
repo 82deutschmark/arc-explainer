@@ -151,6 +151,126 @@ export class PuzzleOverviewService {
   }
 
   /**
+   * Get ALL puzzle statistics - includes both analyzed and unexplored puzzles
+   * This shows the true picture of your dataset: all 2,220+ puzzles, not just analyzed ones
+   */
+  async getAllPuzzleStats(
+    limit: number = 2500,
+    filters?: {
+      includeRichMetrics?: boolean;
+    }
+  ): Promise<any[]> {
+    if (!repositoryService.isConnected()) {
+      logger.warn('Database not connected - returning puzzle list without performance data', 'puzzle-overview-service');
+      // Fallback: return all puzzles from puzzle service with empty performance data
+      const allPuzzles = await puzzleService.getPuzzleList({});
+      return allPuzzles.slice(0, limit).map(puzzle => ({
+        ...puzzle,
+        performanceData: {
+          wrongCount: 0,
+          avgAccuracy: 0,
+          avgConfidence: 0,
+          totalExplanations: 0,
+          negativeFeedback: 0,
+          totalFeedback: 0,
+          latestAnalysis: null,
+          worstExplanationId: null,
+          compositeScore: 0
+        }
+      }));
+    }
+
+    // Get ALL puzzles from the puzzle service (includes all datasets)
+    const allPuzzles = await puzzleService.getPuzzleList({});
+    const limitedPuzzles = allPuzzles.slice(0, limit);
+    logger.debug(`Found ${limitedPuzzles.length} total puzzles from all datasets (limited from ${allPuzzles.length})`, 'puzzle-overview-service');
+
+    // Get performance data for puzzles that have been analyzed
+    const analyzedPuzzleData = await repositoryService.explanations.getWorstPerformingPuzzles(10000, 'composite', filters);
+    
+    // Create a map of performance data by puzzle ID
+    const performanceMap = new Map();
+    analyzedPuzzleData.forEach((data: any) => {
+      performanceMap.set(data.puzzleId, data);
+    });
+
+    // Combine all puzzles with their performance data (or default empty data)
+    const enrichedPuzzles = limitedPuzzles.map(puzzle => {
+      const performanceData = performanceMap.get(puzzle.id);
+      
+      if (performanceData) {
+        // Puzzle has been analyzed - use actual performance data
+        const basePerformanceData = {
+          wrongCount: performanceData.wrongCount,
+          avgAccuracy: performanceData.avgAccuracy,
+          avgConfidence: performanceData.avgConfidence,
+          totalExplanations: performanceData.totalExplanations,
+          negativeFeedback: performanceData.negativeFeedback,
+          totalFeedback: performanceData.totalFeedback,
+          latestAnalysis: performanceData.latestAnalysis,
+          worstExplanationId: performanceData.worstExplanationId,
+          compositeScore: performanceData.compositeScore
+        };
+
+        // Add rich metrics if available
+        const richMetrics = filters?.includeRichMetrics ? {
+          avgCost: performanceData.avgCost,
+          avgProcessingTime: performanceData.avgProcessingTime,
+          avgReasoningTokens: performanceData.avgReasoningTokens,
+          avgInputTokens: performanceData.avgInputTokens,
+          avgOutputTokens: performanceData.avgOutputTokens,
+          avgTotalTokens: performanceData.avgTotalTokens,
+          multiTestCount: performanceData.multiTestCount,
+          singleTestCount: performanceData.singleTestCount,
+          lowestNonZeroConfidence: performanceData.lowestNonZeroConfidence,
+          modelsAttempted: performanceData.modelsAttempted,
+          reasoningEfforts: performanceData.reasoningEfforts
+        } : {};
+
+        return {
+          ...puzzle,
+          performanceData: {
+            ...basePerformanceData,
+            ...richMetrics
+          }
+        };
+      } else {
+        // Unexplored puzzle - use empty performance data
+        return {
+          ...puzzle,
+          performanceData: {
+            wrongCount: 0,
+            avgAccuracy: 0,
+            avgConfidence: 0,
+            totalExplanations: 0,
+            negativeFeedback: 0,
+            totalFeedback: 0,
+            latestAnalysis: null,
+            worstExplanationId: null,
+            compositeScore: 0,
+            ...(filters?.includeRichMetrics ? {
+              avgCost: 0,
+              avgProcessingTime: 0,
+              avgReasoningTokens: 0,
+              avgInputTokens: 0,
+              avgOutputTokens: 0,
+              avgTotalTokens: 0,
+              multiTestCount: 0,
+              singleTestCount: 0,
+              lowestNonZeroConfidence: null,
+              modelsAttempted: [],
+              reasoningEfforts: []
+            } : {})
+          }
+        };
+      }
+    });
+
+    logger.debug(`Enriched ${enrichedPuzzles.length} puzzles with performance data (${performanceMap.size} analyzed, ${enrichedPuzzles.length - performanceMap.size} unexplored)`, 'puzzle-overview-service');
+    return enrichedPuzzles;
+  }
+
+  /**
    * Get worst-performing puzzles with enriched metadata
    */
   async getWorstPerformingPuzzles(
