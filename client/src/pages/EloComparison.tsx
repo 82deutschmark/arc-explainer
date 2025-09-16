@@ -31,6 +31,7 @@ import { useEloComparison } from '@/hooks/useEloComparison';
 
 // Types
 import type { ARCExample } from '@shared/types';
+import { ComparisonOutcome } from '../../../shared/types';
 import { useEloVoting } from '@/hooks/useEloVoting';
 
 
@@ -45,7 +46,7 @@ export default function EloComparison() {
   }, [finalPuzzleId]);
 
   // State for voting interface
-  const [votingState, setVotingState] = useState<'ready' | 'voting' | 'voted'>('ready');
+  const [votingState, setVotingState] = useState<'ready' | 'submitting' | 'voted'>('ready');
   const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null);
 
   // Always fetch comparison data - random if no puzzle ID, specific if provided
@@ -65,22 +66,18 @@ export default function EloComparison() {
   } = useEloVoting();
 
   // Handle vote submission
-  const handleVote = async (winner: 'A' | 'B') => {
-    if (!comparisonData || votingState !== 'ready') return;
-
-    setVotingState('voting');
-    setSelectedWinner(winner);
+  const handleVote = async (outcome: 'A_WINS' | 'B_WINS' | 'BOTH_BAD') => {
+    if (!comparisonData) return;
 
     try {
-      const winnerId = winner === 'A'
-        ? comparisonData.explanationA.id
-        : comparisonData.explanationB.id;
+      setVotingState('submitting');
+      setSelectedWinner(outcome === 'A_WINS' ? 'A' : outcome === 'B_WINS' ? 'B' : null);
 
       await submitVote({
         sessionId,
         explanationAId: comparisonData.explanationA.id,
         explanationBId: comparisonData.explanationB.id,
-        winnerId,
+        outcome,
         puzzleId: comparisonData.puzzleId
       });
 
@@ -305,32 +302,55 @@ export default function EloComparison() {
             testCases={comparisonData.puzzle.test}
             comparisonMode={true} // Hide correctness indicators
           />
-          {votingState === 'ready' && (
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={() => handleVote('A')}
-              disabled={isSubmitting}
-            >
-              <span className="text-lg">👍 This explanation is better</span>
-            </Button>
-          )}
         </div>
 
         {/* Voting Interface */}
         <div className="flex items-center justify-center">
           <div className="text-center space-y-4">
             {votingState === 'ready' && (
-              <div className="p-6 border border-gray-200 rounded-lg bg-gray-50">
-                <h4 className="font-semibold mb-2">Which explanation is better?</h4>
-                <p className="text-sm text-gray-600 mb-4">
-                  Consider the clarity, accuracy, and helpfulness of each explanation
-                </p>
-                <div className="text-4xl">⚖️</div>
+              <div className="p-6 border border-gray-200 rounded-lg bg-gray-50 space-y-4">
+                <div className="text-center">
+                  <h4 className="font-semibold mb-2">Which explanation is better?</h4>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Consider the clarity, accuracy, and helpfulness of each explanation
+                  </p>
+                  <div className="text-4xl mb-4">⚖️</div>
+                </div>
+                
+                {/* Three-button voting interface */}
+                <div className="space-y-3">
+                  <Button
+                    onClick={() => handleVote('A_WINS')}
+                    disabled={isSubmitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    size="lg"
+                  >
+                    <span className="text-base">👍 Explanation A is Better</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleVote('BOTH_BAD')}
+                    disabled={isSubmitting}
+                    variant="outline"
+                    className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                    size="lg"
+                  >
+                    <span className="text-base">👎 Both Are Bad</span>
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleVote('B_WINS')}
+                    disabled={isSubmitting}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    size="lg"
+                  >
+                    <span className="text-base">👍 Explanation B is Better</span>
+                  </Button>
+                </div>
               </div>
             )}
 
-            {votingState === 'voting' && (
+            {votingState === 'submitting' && (
               <div className="p-6 border border-blue-200 rounded-lg bg-blue-50">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
                 <p className="text-sm text-blue-700">Recording your vote...</p>
@@ -378,16 +398,6 @@ export default function EloComparison() {
             testCases={comparisonData.puzzle.test}
             comparisonMode={true} // Hide correctness indicators
           />
-          {votingState === 'ready' && (
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={() => handleVote('B')}
-              disabled={isSubmitting}
-            >
-              <span className="text-lg">👍 This explanation is better</span>
-            </Button>
-          )}
         </div>
       </div>
     </div>

@@ -181,14 +181,15 @@ export class DatabaseSchema {
         puzzle_id VARCHAR(255) NOT NULL,
         explanation_a_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
         explanation_b_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
-        winner_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        outcome VARCHAR(20) NOT NULL CHECK (outcome IN ('A_WINS', 'B_WINS', 'BOTH_BAD')),
+        winner_id INTEGER DEFAULT NULL REFERENCES explanations(id) ON DELETE CASCADE,
         rating_a_before INTEGER NOT NULL,
         rating_b_before INTEGER NOT NULL,
         rating_a_after INTEGER NOT NULL,
         rating_b_after INTEGER NOT NULL,
         user_agent TEXT DEFAULT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        CONSTRAINT valid_winner CHECK (winner_id IN (explanation_a_id, explanation_b_id))
+        CONSTRAINT valid_winner_legacy CHECK (winner_id IS NULL OR winner_id IN (explanation_a_id, explanation_b_id))
       )
     `);
   }
@@ -241,6 +242,14 @@ export class DatabaseSchema {
     // Migration: Create indexes for performance
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_prompt_template ON explanations(prompt_template_id) WHERE prompt_template_id IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_custom_prompt_hash ON explanations(MD5(custom_prompt_text)) WHERE custom_prompt_text IS NOT NULL`);
+
+    // Migration: Add outcome column to comparison_votes for BOTH_BAD voting
+    await client.query(`ALTER TABLE comparison_votes ADD COLUMN IF NOT EXISTS outcome VARCHAR(20) DEFAULT NULL`);
+    await client.query(`ALTER TABLE comparison_votes DROP CONSTRAINT IF EXISTS outcome_check`);
+    await client.query(`ALTER TABLE comparison_votes ADD CONSTRAINT outcome_check CHECK (outcome IN ('A_WINS', 'B_WINS', 'BOTH_BAD'))`);
+    await client.query(`ALTER TABLE comparison_votes ALTER COLUMN winner_id DROP NOT NULL`);
+    await client.query(`ALTER TABLE comparison_votes DROP CONSTRAINT IF EXISTS valid_winner`);
+    await client.query(`ALTER TABLE comparison_votes ADD CONSTRAINT valid_winner_legacy CHECK (winner_id IS NULL OR winner_id IN (explanation_a_id, explanation_b_id))`);
 
     // Migration: Create Elo system indexes for performance
     await client.query(`CREATE INDEX IF NOT EXISTS idx_elo_ratings_rating ON elo_ratings(current_rating DESC)`);
