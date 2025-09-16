@@ -48,14 +48,14 @@ export default function EloComparison() {
   const [votingState, setVotingState] = useState<'ready' | 'voting' | 'voted'>('ready');
   const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null);
 
-  // Only fetch comparison data when we have a puzzle ID
+  // Fetch comparison data - auto-load random puzzle if no puzzle ID provided
   const {
     comparisonData,
     isLoading,
     error,
     refetch,
     sessionId
-  } = useEloComparison(finalPuzzleId || undefined); // Don't pass empty string
+  } = useEloComparison(finalPuzzleId); // Pass puzzleId or undefined for random
 
   const {
     submitVote,
@@ -105,50 +105,7 @@ export default function EloComparison() {
     }
   };
 
-  // Show puzzle ID input form when no puzzle ID is provided
-  if (!finalPuzzleId) {
-    return (
-      <div className="container mx-auto p-6 max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Users className="h-6 w-6" />
-              Compare Explanations
-            </h1>
-            <p className="text-gray-600">
-              Enter a puzzle ID to compare AI explanations
-            </p>
-          </div>
-        </div>
-
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Enter Puzzle ID</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handlePuzzleIdSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="puzzleId" className="block text-sm font-medium mb-2">
-                  Puzzle ID
-                </label>
-                <input
-                  id="puzzleId"
-                  type="text"
-                  value={inputPuzzleId}
-                  onChange={(e) => setInputPuzzleId(e.target.value)}
-                  placeholder="e.g., 0d3d703e"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={!inputPuzzleId.trim()}>
-                Compare Explanations
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Auto-load random comparison - no form needed
 
   // Loading state
   if (isLoading) {
@@ -209,6 +166,10 @@ export default function EloComparison() {
               Leaderboard
             </Button>
           </Link>
+          <Button variant="outline" size="sm" onClick={() => window.location.href = '/elo'}>
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Random Puzzle
+          </Button>
           <Button variant="outline" size="sm" onClick={handleNextComparison}>
             <RotateCcw className="h-4 w-4 mr-2" />
             New Comparison
@@ -279,7 +240,7 @@ export default function EloComparison() {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Explanation A</h3>
             <Badge variant="outline" className="bg-blue-50 text-blue-700">
-              Rating: {comparisonData.explanationA.eloRating.currentRating}
+              {comparisonData.explanationA.modelName}
             </Badge>
           </div>
           <AnalysisResultCard
@@ -352,7 +313,7 @@ export default function EloComparison() {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Explanation B</h3>
             <Badge variant="outline" className="bg-purple-50 text-purple-700">
-              Rating: {comparisonData.explanationB.eloRating.currentRating}
+              {comparisonData.explanationB.modelName}
             </Badge>
           </div>
           <AnalysisResultCard

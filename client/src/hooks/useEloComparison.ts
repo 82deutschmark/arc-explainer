@@ -34,8 +34,8 @@ interface EloRating {
 interface ComparisonResponse {
   puzzleId: string;
   puzzle: PuzzleData;
-  explanationA: ExplanationData & { eloRating: EloRating };
-  explanationB: ExplanationData & { eloRating: EloRating };
+  explanationA: ExplanationData;
+  explanationB: ExplanationData;
   sessionId: string;
 }
 
