@@ -302,7 +302,7 @@ export class EloRepository extends BaseRepository {
 
     } catch (error) {
       await client.query('ROLLBACK');
-      logger.error('Error recording vote:', error);
+      logger.error('Error recording vote:', error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
       client.release();
@@ -337,7 +337,7 @@ export class EloRepository extends BaseRepository {
         solvingStrategy: row.solving_strategy
       }));
     } catch (error) {
-      logger.error('Error getting explanation leaderboard:', error);
+      logger.error('Error getting explanation leaderboard:', error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
@@ -371,7 +371,7 @@ export class EloRepository extends BaseRepository {
         explanationCount: parseInt(row.explanation_count)
       }));
     } catch (error) {
-      logger.error('Error getting model Elo stats:', error);
+      logger.error('Error getting model Elo stats:', error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
@@ -392,7 +392,7 @@ export class EloRepository extends BaseRepository {
       const result = await this.query(query, [sessionId, explanationAId, explanationBId]);
       return result.rows.length > 0;
     } catch (error) {
-      logger.error('Error checking recent comparison:', error);
+      logger.error('Error checking recent comparison:', error instanceof Error ? error.message : String(error));
       return false;
     }
   }
