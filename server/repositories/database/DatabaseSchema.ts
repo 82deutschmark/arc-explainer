@@ -157,6 +157,53 @@ export class DatabaseSchema {
     `);
   }
 
+  private static async createEloRatingsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS elo_ratings (
+        id SERIAL PRIMARY KEY,
+        explanation_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        current_rating INTEGER DEFAULT 1500,
+        games_played INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(explanation_id)
+      )
+    `);
+  }
+
+  private static async createComparisonVotesTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS comparison_votes (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        puzzle_id VARCHAR(255) NOT NULL,
+        explanation_a_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        explanation_b_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        winner_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+        rating_a_before INTEGER NOT NULL,
+        rating_b_before INTEGER NOT NULL,
+        rating_a_after INTEGER NOT NULL,
+        rating_b_after INTEGER NOT NULL,
+        user_agent TEXT DEFAULT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT valid_winner CHECK (winner_id IN (explanation_a_id, explanation_b_id))
+      )
+    `);
+  }
+
+  private static async createComparisonSessionsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS comparison_sessions (
+        session_id VARCHAR(255) PRIMARY KEY,
+        total_votes INTEGER DEFAULT 0,
+        last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+  }
+
   /**
    * Applies schema-altering migrations to bring older database schemas up to date.
    */
@@ -194,6 +241,12 @@ export class DatabaseSchema {
     // Migration: Create indexes for performance
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_prompt_template ON explanations(prompt_template_id) WHERE prompt_template_id IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_custom_prompt_hash ON explanations(MD5(custom_prompt_text)) WHERE custom_prompt_text IS NOT NULL`);
+
+    // Migration: Create Elo system indexes for performance
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_elo_ratings_rating ON elo_ratings(current_rating DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_elo_ratings_explanation ON elo_ratings(explanation_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_comparison_votes_session ON comparison_votes(session_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_predicted_grid ON explanations(id) WHERE predicted_output_grid IS NOT NULL`);
   }
 
   /**
