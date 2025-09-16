@@ -27,7 +27,44 @@
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
-import type { ExplanationData } from '../../shared/types.ts';
+// ExplanationData interface defined locally since it's not exported from shared/types
+interface ExplanationData {
+  id: number;
+  puzzleId: string;
+  modelName: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  confidence: number;
+  alienMeaning?: string;
+  alienMeaningConfidence?: number;
+  reasoningLog?: string;
+  hasReasoningLog: boolean;
+  reasoningItems?: any;
+  apiProcessingTimeMs?: number;
+  predictedOutputGrid?: any;
+  isPredictionCorrect?: boolean;
+  predictionAccuracyScore?: number;
+  temperature?: number;
+  reasoningEffort?: string;
+  reasoningVerbosity?: string;
+  reasoningSummaryType?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  reasoningTokens?: number;
+  totalTokens?: number;
+  estimatedCost?: number;
+  hasMultiplePredictions?: boolean;
+  multiplePredictedOutputs?: any;
+  multiTestPredictionGrids?: any;
+  multiTestResults?: any;
+  multiTestAllCorrect?: boolean;
+  multiTestAverageAccuracy?: number;
+  createdAt: string;
+  multiValidation?: any;
+  helpfulVotes?: number;
+  notHelpfulVotes?: number;
+}
 
 export interface EloRating {
   id: number;
@@ -125,7 +162,7 @@ export class EloRepository extends BaseRepository {
 
       return this.mapEloRating(result.rows[0]);
     } catch (error) {
-      logger.error(`Error getting/creating Elo rating for explanation ${explanationId}:`, error);
+      logger.error(`Error getting/creating Elo rating for explanation ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'elo');
       throw error;
     }
   }
@@ -136,7 +173,7 @@ export class EloRepository extends BaseRepository {
    */
   async getComparisonPair(puzzleId?: string, sessionId?: string): Promise<{ explanationA: ExplanationData & { eloRating: EloRating }, explanationB: ExplanationData & { eloRating: EloRating }, puzzleId: string } | null> {
     let query = `
-      SELECT DISTINCT e.*, er.current_rating, er.games_played, er.wins, er.losses, er.last_updated as elo_last_updated, er.created_at as elo_created_at
+      SELECT e.*, er.current_rating, er.games_played, er.wins, er.losses, er.last_updated as elo_last_updated, er.created_at as elo_created_at
       FROM explanations e
       LEFT JOIN elo_ratings er ON e.id = er.explanation_id
       WHERE e.predicted_output_grid IS NOT NULL
@@ -168,7 +205,7 @@ export class EloRepository extends BaseRepository {
       const result = await this.query(query, params);
 
       if (result.rows.length < 2) {
-        logger.warn('Not enough explanations available for comparison', { puzzleId, sessionId, available: result.rows.length });
+        logger.warn(`Not enough explanations available for comparison. PuzzleId: ${puzzleId}, SessionId: ${sessionId}, Available: ${result.rows.length}`, 'elo');
         return null;
       }
 
@@ -227,7 +264,7 @@ export class EloRepository extends BaseRepository {
       };
 
     } catch (error) {
-      logger.error('Error getting comparison pair:', error);
+      logger.error(`Error getting comparison pair: ${error instanceof Error ? error.message : String(error)}`, 'elo');
       throw error;
     }
   }
@@ -236,11 +273,7 @@ export class EloRepository extends BaseRepository {
    * Record a comparison vote and update Elo ratings
    */
   async recordVote(voteData: VoteData): Promise<{ newRatingA: number, newRatingB: number, ratingChangeA: number, ratingChangeB: number }> {
-    const client = await this.getPool().connect();
-
-    try {
-      await client.query('BEGIN');
-
+    return await this.transaction(async (client) => {
       // Get current ratings
       const ratingAResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationAId]);
       const ratingBResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationBId]);
@@ -291,22 +324,13 @@ export class EloRepository extends BaseRepository {
         DO UPDATE SET total_votes = comparison_sessions.total_votes + 1, last_activity = CURRENT_TIMESTAMP
       `, [voteData.sessionId]);
 
-      await client.query('COMMIT');
-
       return {
         newRatingA,
         newRatingB,
         ratingChangeA: newRatingA - ratingA.currentRating,
         ratingChangeB: newRatingB - ratingB.currentRating
       };
-
-    } catch (error) {
-      await client.query('ROLLBACK');
-      logger.error('Error recording vote:', error instanceof Error ? error.message : String(error));
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   /**
