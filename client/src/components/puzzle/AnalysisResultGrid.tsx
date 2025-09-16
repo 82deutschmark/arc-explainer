@@ -88,20 +88,24 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             )}
           </button>
           {showPrediction && (
-            <div className="p-3 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <div className={`p-3 grid grid-cols-1 ${comparisonMode ? '' : 'md:grid-cols-2'} gap-4 items-start`}>
               <div>
                 <h6 className="font-medium text-center mb-1">Predicted Output</h6>
                 <PuzzleGrid grid={predictedGrid} diffMask={showDiff ? diffMask : undefined} title="Predicted Output" showEmojis={false} />
               </div>
-              <div>
-                <h6 className="font-medium text-center mb-1">Expected Output</h6>
-                <PuzzleGrid grid={expectedOutputGrids[0]} title="Expected Output" showEmojis={false} />
-              </div>
-              <div className="md:col-span-2">
-                <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
-                  {showDiff ? 'Hide' : 'Show'} Mismatches
-                </Button>
-              </div>
+              {!comparisonMode && (
+                <div>
+                  <h6 className="font-medium text-center mb-1">Expected Output</h6>
+                  <PuzzleGrid grid={expectedOutputGrids[0]} title="Expected Output" showEmojis={false} />
+                </div>
+              )}
+              {!comparisonMode && (
+                <div className="md:col-span-2">
+                  <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
+                    {showDiff ? 'Hide' : 'Show'} Mismatches
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -142,35 +146,39 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
           </button>
           {showMultiTest && (
             <div className="p-3 space-y-4">
-              <div className="md:col-span-2">
-                <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
-                  {showDiff ? 'Hide' : 'Show'} Mismatches
-                </Button>
-              </div>
+              {!comparisonMode && (
+                <div className="md:col-span-2">
+                  <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
+                    {showDiff ? 'Hide' : 'Show'} Mismatches
+                  </Button>
+                </div>
+              )}
               {expectedOutputGrids.map((expectedGrid, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start border-t pt-4 first:border-t-0 first:pt-0">
+                <div key={index} className={`grid grid-cols-1 ${comparisonMode ? '' : 'md:grid-cols-2'} gap-4 items-start border-t pt-4 first:border-t-0 first:pt-0`}>
                   <div>
                     <h6 className="font-medium text-center mb-1">Predicted Output {index + 1}</h6>
                     {predictedGrids && predictedGrids[index] ? (
-                      <PuzzleGrid 
-                        grid={predictedGrids[index]} 
-                        title={`Predicted Output ${index + 1}`} 
-                        showEmojis={false} 
+                      <PuzzleGrid
+                        grid={predictedGrids[index]}
+                        title={`Predicted Output ${index + 1}`}
+                        showEmojis={false}
                         diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
                       />
                     ) : (
                       <div className="text-center text-gray-500 italic">No prediction</div>
                     )}
                   </div>
-                  <div>
-                    <h6 className="font-medium text-center mb-1">Expected Output {index + 1}</h6>
-                    <PuzzleGrid 
-                      grid={expectedGrid} 
-                      title={`Expected Output ${index + 1}`} 
-                      showEmojis={false} 
-                      diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
-                    />
-                  </div>
+                  {!comparisonMode && (
+                    <div>
+                      <h6 className="font-medium text-center mb-1">Expected Output {index + 1}</h6>
+                      <PuzzleGrid
+                        grid={expectedGrid}
+                        title={`Expected Output ${index + 1}`}
+                        showEmojis={false}
+                        diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

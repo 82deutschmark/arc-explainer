@@ -16,7 +16,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { apiRequest } from '@/lib/queryClient';
-import type { PuzzleData, ExplanationData } from '@/types/puzzle';
+import type { ARCTask as PuzzleData } from '@shared/types';
+import type { ExplanationData } from '@/types/puzzle';
 
 // Types from backend
 interface EloRating {
@@ -73,13 +74,14 @@ export function useEloComparison(puzzleId?: string) {
 
       const url = params.toString() ? `${endpoint}?${params}` : endpoint;
 
-      const response = await apiRequest(url);
+      const response = await apiRequest('GET', url);
+      const jsonData = await response.json();
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to fetch comparison');
+      if (!jsonData.success) {
+        throw new Error(jsonData.error || 'Failed to fetch comparison');
       }
 
-      return response.data;
+      return jsonData.data;
     },
     retry: 2,
     staleTime: 0, // Always fetch fresh comparisons
@@ -111,13 +113,14 @@ export function useEloLeaderboard(limit: number = 50) {
   return useQuery({
     queryKey: ['elo-leaderboard', limit],
     queryFn: async () => {
-      const response = await apiRequest(`/api/elo/leaderboard?limit=${limit}`);
+      const response = await apiRequest('GET', `/api/elo/leaderboard?limit=${limit}`);
+      const jsonData = await response.json();
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to fetch leaderboard');
+      if (!jsonData.success) {
+        throw new Error(jsonData.error || 'Failed to fetch leaderboard');
       }
 
-      return response.data;
+      return jsonData.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false
@@ -131,13 +134,14 @@ export function useEloModelStats() {
   return useQuery({
     queryKey: ['elo-model-stats'],
     queryFn: async () => {
-      const response = await apiRequest('/api/elo/models');
+      const response = await apiRequest('GET', '/api/elo/models');
+      const jsonData = await response.json();
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to fetch model stats');
+      if (!jsonData.success) {
+        throw new Error(jsonData.error || 'Failed to fetch model stats');
       }
 
-      return response.data;
+      return jsonData.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false
@@ -151,13 +155,14 @@ export function useEloSystemStats() {
   return useQuery({
     queryKey: ['elo-system-stats'],
     queryFn: async () => {
-      const response = await apiRequest('/api/elo/stats');
+      const response = await apiRequest('GET', '/api/elo/stats');
+      const jsonData = await response.json();
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to fetch system stats');
+      if (!jsonData.success) {
+        throw new Error(jsonData.error || 'Failed to fetch system stats');
       }
 
-      return response.data;
+      return jsonData.data;
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false
