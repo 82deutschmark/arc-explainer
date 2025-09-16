@@ -14,7 +14,6 @@ import { AppError } from '../middleware/errorHandler.ts';
 import { puzzleService } from './puzzleService.ts';
 import { logger } from '../utils/logger.ts';
 import type { EloRating, ComparisonPair, VoteData, EloLeaderboard, ModelEloStats } from '../repositories/EloRepository.ts';
-import type { ExplanationData, PuzzleData } from '../../shared/types.ts';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ComparisonRequest {
