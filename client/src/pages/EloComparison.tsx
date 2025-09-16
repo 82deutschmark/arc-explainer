@@ -9,7 +9,7 @@
  *
  * ARCHITECTURE:
  * - Reuses PuzzleGrid for puzzle display (answer hidden)
- * - Reuses AnalysisResultCard with comparisonMode prop to hide correctness indicators
+ * - Reuses AnalysisResultCard with eloMode prop to hide model identifying info
  * - Minimal new code - just voting interface and session management
  * - Follows established hook patterns and API integration
  */
@@ -25,14 +25,16 @@ import { Loader2, Users, ArrowRight, RotateCcw, Star, Trophy } from 'lucide-reac
 // Reuse existing components
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { EloVoteResultsModal } from '@/components/elo/EloVoteResultsModal';
 
 // Hooks for comparison functionality
 import { useEloComparison } from '@/hooks/useEloComparison';
+import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 
 // Types
 import type { ARCExample } from '@shared/types';
 import { ComparisonOutcome } from '../../../shared/types';
-import { useEloVoting } from '@/hooks/useEloVoting';
+import { useEloVoting, EnhancedVoteResponse } from '@/hooks/useEloVoting';
 
 
 export default function EloComparison() {
@@ -48,6 +50,8 @@ export default function EloComparison() {
   // State for voting interface
   const [votingState, setVotingState] = useState<'ready' | 'submitting' | 'voted'>('ready');
   const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null);
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [currentOutcome, setCurrentOutcome] = useState<ComparisonOutcome | null>(null);
 
   // Always fetch comparison data - random if no puzzle ID, specific if provided
   const {
@@ -62,8 +66,12 @@ export default function EloComparison() {
     submitVote,
     isSubmitting,
     voteError,
-    voteResult
+    voteResult,
+    enhanceVoteResult
   } = useEloVoting();
+
+  // Fetch model accuracy data for results modal
+  const { data: leaderboardData } = useModelLeaderboards();
 
   // Handle vote submission
   const handleVote = async (outcome: 'A_WINS' | 'B_WINS' | 'BOTH_BAD') => {
@@ -72,8 +80,9 @@ export default function EloComparison() {
     try {
       setVotingState('submitting');
       setSelectedWinner(outcome === 'A_WINS' ? 'A' : outcome === 'B_WINS' ? 'B' : null);
+      setCurrentOutcome(outcome);
 
-      await submitVote({
+      const basicResult = await submitVote({
         sessionId,
         explanationAId: comparisonData.explanationA.id,
         explanationBId: comparisonData.explanationB.id,
@@ -81,10 +90,38 @@ export default function EloComparison() {
         puzzleId: comparisonData.puzzleId
       });
 
+      // Get model accuracy data
+      const getModelAccuracy = (modelName: string) => {
+        if (leaderboardData?.accuracyLeaderboard) {
+          return leaderboardData.accuracyLeaderboard.find(
+            model => model.modelName === modelName
+          );
+        }
+        return undefined;
+      };
+
+      // Enhance vote result with additional data for modal
+      enhanceVoteResult(basicResult, {
+        correctAnswerGrid: comparisonData.puzzle.test[0].output,
+        predictionA: comparisonData.explanationA.predictedOutputGrid || [],
+        predictionB: comparisonData.explanationB.predictedOutputGrid || [],
+        modelA: {
+          name: comparisonData.explanationA.modelName,
+          accuracy: getModelAccuracy(comparisonData.explanationA.modelName)
+        },
+        modelB: {
+          name: comparisonData.explanationB.modelName,
+          accuracy: getModelAccuracy(comparisonData.explanationB.modelName)
+        },
+        outcome
+      });
+
       setVotingState('voted');
+      setShowResultsModal(true);
     } catch (error) {
       setVotingState('ready');
       setSelectedWinner(null);
+      setCurrentOutcome(null);
     }
   };
 
@@ -92,6 +129,8 @@ export default function EloComparison() {
   const handleNextComparison = () => {
     setVotingState('ready');
     setSelectedWinner(null);
+    setShowResultsModal(false);
+    setCurrentOutcome(null);
     refetch();
   };
 
@@ -298,9 +337,9 @@ export default function EloComparison() {
           <AnalysisResultCard
             modelKey={comparisonData.explanationA.modelName}
             result={comparisonData.explanationA}
-            model={undefined} // We don't need model config for comparison  WE HAVE A SPECIAL CONFIG FOR COMPARISON MODE
+            model={undefined} // We don't need model config for ELO mode
             testCases={comparisonData.puzzle.test}
-            comparisonMode={true} // Hide correctness indicators
+            eloMode={true} // Hide model identifying info for double-blind A/B testing
           />
         </div>
 
@@ -357,19 +396,11 @@ export default function EloComparison() {
               </div>
             )}
 
-            {votingState === 'voted' && voteResult && (
-              <div className="p-6 border border-green-200 rounded-lg bg-green-50 space-y-3">
+            {votingState === 'voted' && (
+              <div className="p-6 border border-green-200 rounded-lg bg-green-50">
                 <div className="text-2xl">✅</div>
                 <h4 className="font-semibold text-green-800">Vote Recorded!</h4>
-                <div className="text-sm text-green-700 space-y-1">
-                  <p>Rating changes:</p>
-                  <p>Explanation A: {voteResult.ratingChangeA > 0 ? '+' : ''}{voteResult.ratingChangeA}</p>
-                  <p>Explanation B: {voteResult.ratingChangeB > 0 ? '+' : ''}{voteResult.ratingChangeB}</p>
-                </div>
-                <Button onClick={handleNextComparison} className="mt-3">
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  Next Comparison
-                </Button>
+                <p className="text-sm text-green-700">Results will be displayed in a moment...</p>
               </div>
             )}
 
@@ -396,10 +427,26 @@ export default function EloComparison() {
             result={comparisonData.explanationB}
             model={undefined}
             testCases={comparisonData.puzzle.test}
-            comparisonMode={true} // Hide correctness indicators
+            eloMode={true} // Hide model identifying info for double-blind A/B testing
           />
         </div>
       </div>
+
+      {/* Vote Results Modal */}
+      {voteResult && currentOutcome && (
+        <EloVoteResultsModal
+          isOpen={showResultsModal}
+          onClose={() => setShowResultsModal(false)}
+          onContinue={handleNextComparison}
+          voteResult={voteResult}
+          outcome={currentOutcome}
+          correctAnswerGrid={voteResult.correctAnswerGrid || []}
+          predictionA={voteResult.predictionA || []}
+          predictionB={voteResult.predictionB || []}
+          modelA={voteResult.modelA || { name: 'Model A' }}
+          modelB={voteResult.modelB || { name: 'Model B' }}
+        />
+      )}
     </div>
   );
 }
