@@ -48,7 +48,7 @@ export default function EloComparison() {
   const [votingState, setVotingState] = useState<'ready' | 'voting' | 'voted'>('ready');
   const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null);
 
-  // Fetch comparison data - auto-load random puzzle if no puzzle ID provided
+  // Always fetch comparison data - random if no puzzle ID, specific if provided
   const {
     comparisonData,
     isLoading,
@@ -105,7 +105,8 @@ export default function EloComparison() {
     }
   };
 
-  // Auto-load random comparison - no form needed
+  // Auto-load random puzzle, but still handle loading states
+  // Search functionality will be available in the main interface
 
   // Loading state
   if (isLoading) {
@@ -155,7 +156,13 @@ export default function EloComparison() {
             )}
           </h1>
           <p className="text-gray-600">
-            Vote for the better explanation - help improve AI understanding
+            As of September 2025, state of the art LLMs will still very confidently assert 
+            that they understand the puzzle, even when they don't. They will tell you something that
+            sounds smart, but is actually wrong. 
+            <br />
+            <br />
+            This is where you come in. Can you tell the difference between 
+            correct and incorrect explanations? 
           </p>
         </div>
 
@@ -166,6 +173,21 @@ export default function EloComparison() {
               Leaderboard
             </Button>
           </Link>
+          
+          {/* Search functionality */}
+          <form onSubmit={handlePuzzleIdSubmit} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={inputPuzzleId}
+              onChange={(e) => setInputPuzzleId(e.target.value)}
+              placeholder="Enter puzzle ID..."
+              className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Button type="submit" variant="outline" size="sm" disabled={!inputPuzzleId.trim()}>
+              Search
+            </Button>
+          </form>
+          
           <Button variant="outline" size="sm" onClick={() => window.location.href = '/elo'}>
             <RotateCcw className="h-4 w-4 mr-2" />
             Random Puzzle
@@ -203,13 +225,13 @@ export default function EloComparison() {
                     <div className="flex items-center justify-center gap-6">
                       <PuzzleGrid
                         grid={example.input}
-                        title="Input"
+                        title="This"
                         showEmojis={false}
                       />
                       <div className="text-3xl text-gray-400">→</div>
                       <PuzzleGrid
                         grid={example.output}
-                        title="Output"
+                        title="gets turned into this!"
                         showEmojis={false}
                       />
                     </div>
@@ -218,15 +240,48 @@ export default function EloComparison() {
               </div>
             </div>
 
-            {/* Test Case - Input Only (Answer Hidden) */}
+            {/* Test Case - Input + Predicted Outputs */}
             <div className="border-t pt-4">
-              <h3 className="text-lg font-semibold mb-3 text-center">Test Question</h3>
-              <div className="flex items-center justify-center">
-                <PuzzleGrid
-                  grid={comparisonData.puzzle.test[0].input}
-                  title="What should the output be?"
-                  showEmojis={false}
-                />
+              <h3 className="text-lg font-semibold mb-3 text-center">Test Question & AI Predictions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Test Input */}
+                <div className="flex flex-col items-center">
+                  <PuzzleGrid
+                    grid={comparisonData.puzzle.test[0].input}
+                    title="This gets turned into...?"
+                    showEmojis={false}
+                  />
+                </div>
+                
+                {/* Prediction A */}
+                <div className="flex flex-col items-center">
+                  {comparisonData.explanationA.predictedOutputGrid ? (
+                    <PuzzleGrid
+                      grid={comparisonData.explanationA.predictedOutputGrid}
+                      title="Prediction A"
+                      showEmojis={false}
+                    />
+                  ) : (
+                    <div className="p-4 border border-gray-300 rounded text-center text-gray-500">
+                      No prediction available
+                    </div>
+                  )}
+                </div>
+                
+                {/* Prediction B */}
+                <div className="flex flex-col items-center">
+                  {comparisonData.explanationB.predictedOutputGrid ? (
+                    <PuzzleGrid
+                      grid={comparisonData.explanationB.predictedOutputGrid}
+                      title="Prediction B"
+                      showEmojis={false}
+                    />
+                  ) : (
+                    <div className="p-4 border border-gray-300 rounded text-center text-gray-500">
+                      No prediction available
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -240,13 +295,13 @@ export default function EloComparison() {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Explanation A</h3>
             <Badge variant="outline" className="bg-blue-50 text-blue-700">
-              {comparisonData.explanationA.modelName}
+              AI Model
             </Badge>
           </div>
           <AnalysisResultCard
             modelKey={comparisonData.explanationA.modelName}
             result={comparisonData.explanationA}
-            model={undefined} // We don't need model config for comparison
+            model={undefined} // We don't need model config for comparison  WE HAVE A SPECIAL CONFIG FOR COMPARISON MODE
             testCases={comparisonData.puzzle.test}
             comparisonMode={true} // Hide correctness indicators
           />
@@ -313,7 +368,7 @@ export default function EloComparison() {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Explanation B</h3>
             <Badge variant="outline" className="bg-purple-50 text-purple-700">
-              {comparisonData.explanationB.modelName}
+              AI Model
             </Badge>
           </div>
           <AnalysisResultCard
