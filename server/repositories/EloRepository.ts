@@ -171,35 +171,42 @@ export class EloRepository extends BaseRepository {
    * Get a random pair of explanations for comparison
    * Filters for explanations with predicted_output_grid and avoids recent comparisons
    */
-  async getComparisonPair(puzzleId?: string, sessionId?: string): Promise<{ explanationA: ExplanationData & { eloRating: EloRating }, explanationB: ExplanationData & { eloRating: EloRating }, puzzleId: string } | null> {
-    let query = `
-      SELECT e.*, er.current_rating, er.games_played, er.wins, er.losses, er.last_updated as elo_last_updated, er.created_at as elo_created_at
+  async getComparisonPair(puzzleId?: string, sessionId?: string): Promise<{ explanationA: ExplanationData, explanationB: ExplanationData, puzzleId: string } | null> {
+    let targetPuzzleId = puzzleId;
+
+    // For random comparisons, first find a puzzle that has 2+ explanations
+    if (!puzzleId) {
+      const puzzleQuery = `
+        SELECT e.puzzle_id, COUNT(*) as explanation_count
+        FROM explanations e
+        WHERE e.predicted_output_grid IS NOT NULL
+        GROUP BY e.puzzle_id
+        HAVING COUNT(*) >= 2
+        ORDER BY RANDOM()
+        LIMIT 1
+      `;
+
+      const puzzleResult = await this.query(puzzleQuery);
+      if (puzzleResult.rows.length === 0) {
+        logger.warn('No puzzles found with 2+ explanations for random comparison', 'elo');
+        return null;
+      }
+
+      targetPuzzleId = puzzleResult.rows[0].puzzle_id;
+      logger.info(`Selected random puzzle ${targetPuzzleId} for comparison (${puzzleResult.rows[0].explanation_count} explanations)`, 'elo');
+    }
+
+    // Now get explanations for the target puzzle
+    // Simple query - just get all explanations for this puzzle
+    const query = `
+      SELECT e.*
       FROM explanations e
-      LEFT JOIN elo_ratings er ON e.id = er.explanation_id
       WHERE e.predicted_output_grid IS NOT NULL
+        AND e.puzzle_id = $1
+      ORDER BY RANDOM()
     `;
 
-    const params: any[] = [];
-    let paramCount = 0;
-
-    if (puzzleId) {
-      paramCount++;
-      query += ` AND e.puzzle_id = $${paramCount}`;
-      params.push(puzzleId);
-    }
-
-    // Avoid explanations recently compared in this session
-    if (sessionId) {
-      paramCount++;
-      query += ` AND e.id NOT IN (
-        SELECT DISTINCT explanation_a_id FROM comparison_votes WHERE session_id = $${paramCount}
-        UNION
-        SELECT DISTINCT explanation_b_id FROM comparison_votes WHERE session_id = $${paramCount}
-      )`;
-      params.push(sessionId);
-    }
-
-    query += ` ORDER BY RANDOM() LIMIT 100`; // Get larger pool for better pairing
+    const params = [targetPuzzleId];
 
     try {
       const result = await this.query(query, params);
@@ -209,73 +216,17 @@ export class EloRepository extends BaseRepository {
         return null;
       }
 
-      // Create Elo ratings for explanations that don't have them
-      const explanationsWithRatings = await Promise.all(
-        result.rows.map(async (row) => {
-          let eloRating: EloRating;
+      // Convert to explanations (no ELO ratings needed yet)
+      const explanations = result.rows.map(row => this.mapExplanation(row));
 
-          if (row.current_rating !== null) {
-            // Existing rating
-            eloRating = {
-              id: row.explanation_id,
-              explanationId: row.id,
-              currentRating: row.current_rating,
-              gamesPlayed: row.games_played,
-              wins: row.wins,
-              losses: row.losses,
-              lastUpdated: row.elo_last_updated,
-              createdAt: row.elo_created_at
-            };
-          } else {
-            // Create new rating
-            eloRating = await this.getOrCreateEloRating(row.id);
-          }
-
-          return {
-            ...this.mapExplanation(row),
-            eloRating
-          };
-        })
-      );
-
-      // Select two explanations with similar ratings when possible
-      explanationsWithRatings.sort((a, b) => a.eloRating.currentRating - b.eloRating.currentRating);
-
-      // Try to find explanations from different models if possible
-      let explanationA = explanationsWithRatings[0];
-      let explanationB: typeof explanationA | undefined;
-
-      // CRITICAL: Ensure both explanations are from the same puzzle
-      const targetPuzzleId = puzzleId || explanationA.puzzleId;
-
-      // Look for a better pairing (different models, similar ratings, SAME PUZZLE)
-      for (let i = 1; i < Math.min(explanationsWithRatings.length, 10); i++) {
-        const candidate = explanationsWithRatings[i];
-        // Must be from same puzzle to prevent cross-contamination
-        if (candidate.puzzleId === targetPuzzleId &&
-            candidate.modelName !== explanationA.modelName &&
-            Math.abs(candidate.eloRating.currentRating - explanationA.eloRating.currentRating) <= 400) {
-          explanationB = candidate;
-          break;
-        }
-      }
-
-      // Fallback: find any explanation from same puzzle if no optimal pairing found
-      if (!explanationB) {
-        for (let i = 1; i < explanationsWithRatings.length; i++) {
-          const candidate = explanationsWithRatings[i];
-          if (candidate.puzzleId === targetPuzzleId) {
-            explanationB = candidate;
-            break;
-          }
-        }
-      }
-
-      // If still no valid pair found, return null
-      if (!explanationB) {
-        logger.warn(`No valid explanation pair found for puzzle ${targetPuzzleId}`, 'elo');
+      if (explanations.length < 2) {
+        logger.warn(`Puzzle ${targetPuzzleId} has fewer than 2 explanations for comparison`, 'elo');
         return null;
       }
+
+      // Just pick the first two explanations - keep it simple!
+      let explanationA = explanations[0];
+      let explanationB = explanations[1];
 
       const finalPuzzleId = targetPuzzleId;
 
