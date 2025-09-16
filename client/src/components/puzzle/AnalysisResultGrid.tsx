@@ -20,6 +20,7 @@ interface AnalysisResultGridProps {
   setShowMultiTest: (show: boolean) => void;
   showPrediction: boolean;
   setShowPrediction: (show: boolean) => void;
+  comparisonMode?: boolean;
 }
 
 // Skeleton loader component
@@ -27,7 +28,7 @@ const SkeletonGrid = () => (
   <div className="w-32 h-32 bg-gray-200 rounded animate-pulse" />
 );
 
-export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({ 
+export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   result,
   expectedOutputGrids,
   predictedGrid,
@@ -41,7 +42,8 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   showMultiTest,
   setShowMultiTest,
   showPrediction,
-  setShowPrediction
+  setShowPrediction,
+  comparisonMode = false
 }) => {
   const isOptimistic = result.isOptimistic;
   const status = result.status;
@@ -114,9 +116,9 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
           >
             <div className="flex items-center gap-2 flex-wrap">
               <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
-              {(result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
-                <Badge 
-                  variant="outline" 
+              {!comparisonMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
+                <Badge
+                  variant="outline"
                   className={`flex items-center gap-1 text-xs ${multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect)) ? 'bg-green-50 border-green-200 text-green-700' : multiTestStats.accuracyLevel === 'all_incorrect' ? 'bg-red-50 border-red-200 text-red-700' : multiTestStats.accuracyLevel === 'some_incorrect' ? 'bg-orange-50 border-orange-200 text-orange-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
                   {(() => {
                     const isAllCorrect = multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect));

@@ -14,6 +14,7 @@ import BatchResults from "@/pages/BatchResults";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
+import EloComparison from "@/pages/EloComparison";
 
 function Router() {
   return (
@@ -28,6 +29,8 @@ function Router() {
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
         <Route path="/models" component={ModelBrowser} />
+        <Route path="/compare" component={EloComparison} />
+        <Route path="/compare/:taskId" component={EloComparison} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />

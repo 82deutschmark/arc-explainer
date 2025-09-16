@@ -14,6 +14,7 @@ interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'resul
   showRawDb: boolean;
   setShowRawDb: (show: boolean) => void;
   isSaturnResult: boolean;
+  comparisonMode?: boolean;
 }
 
 const formatCost = (cost: any): string => {
@@ -34,17 +35,18 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({ 
-  result, 
-  model, 
-  modelKey, 
-  feedbackSummary, 
-  hasFeedback, 
-  showExistingFeedback, 
-  setShowExistingFeedback, 
-  showRawDb, 
+export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
+  result,
+  model,
+  modelKey,
+  feedbackSummary,
+  hasFeedback,
+  showExistingFeedback,
+  setShowExistingFeedback,
+  showRawDb,
   setShowRawDb,
-  isSaturnResult
+  isSaturnResult,
+  comparisonMode = false
 }) => {
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -102,9 +104,9 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         </Badge>
       )}
 
-      {(result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
-        <Badge 
-          variant="outline" 
+      {!comparisonMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
+        <Badge
+          variant="outline"
           className={`flex items-center gap-1 ${(() => {
               const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
               if (isCorrect) return 'bg-green-50 border-green-200 text-green-700';

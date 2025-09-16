@@ -27,7 +27,7 @@ import { AnalysisResultMetrics } from './AnalysisResultMetrics';
 import { AnalysisResultActions } from './AnalysisResultActions';
 import { Badge } from '@/components/ui/badge';
 
-export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, comparisonMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
@@ -126,17 +126,18 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   return (
     <div className="border rounded-lg p-4 space-y-3">
-      <AnalysisResultHeader 
-        result={result} 
-        model={model} 
-        modelKey={modelKey} 
-        feedbackSummary={feedbackSummary} 
-        hasFeedback={hasFeedback} 
-        showExistingFeedback={showExistingFeedback} 
-        setShowExistingFeedback={setShowExistingFeedback} 
-        showRawDb={showRawDb} 
-        setShowRawDb={setShowRawDb} 
-        isSaturnResult={isSaturnResult} 
+      <AnalysisResultHeader
+        result={result}
+        model={model}
+        modelKey={modelKey}
+        feedbackSummary={feedbackSummary}
+        hasFeedback={hasFeedback}
+        showExistingFeedback={showExistingFeedback}
+        setShowExistingFeedback={setShowExistingFeedback}
+        showRawDb={showRawDb}
+        setShowRawDb={setShowRawDb}
+        isSaturnResult={isSaturnResult}
+        comparisonMode={comparisonMode}
       />
 
       {showRawDb && (
@@ -180,6 +181,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowMultiTest={setShowMultiTest}
         showPrediction={showPrediction}
         setShowPrediction={setShowPrediction}
+        comparisonMode={comparisonMode}
       />
 
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
