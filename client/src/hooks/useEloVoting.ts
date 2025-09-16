@@ -45,19 +45,14 @@ export function useEloVoting() {
   // Vote submission mutation
   const voteMutation = useMutation({
     mutationFn: async (voteData: VoteRequest): Promise<VoteResponse> => {
-      const response = await apiRequest('/api/elo/vote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(voteData),
-      });
+      const response = await apiRequest('POST', '/api/elo/vote', voteData);
+      const jsonData = await response.json();
 
-      if (!response.success) {
-        throw new Error(response.error || 'Failed to submit vote');
+      if (!jsonData.success) {
+        throw new Error(jsonData.error || 'Failed to submit vote');
       }
 
-      return response.data;
+      return jsonData.data;
     },
     onSuccess: (data: VoteResponse, variables: VoteRequest) => {
       setVoteResult(data);

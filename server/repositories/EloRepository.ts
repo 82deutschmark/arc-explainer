@@ -243,19 +243,41 @@ export class EloRepository extends BaseRepository {
 
       // Try to find explanations from different models if possible
       let explanationA = explanationsWithRatings[0];
-      let explanationB = explanationsWithRatings[1];
+      let explanationB: typeof explanationA | undefined;
 
-      // Look for a better pairing (different models, similar ratings)
+      // CRITICAL: Ensure both explanations are from the same puzzle
+      const targetPuzzleId = puzzleId || explanationA.puzzleId;
+
+      // Look for a better pairing (different models, similar ratings, SAME PUZZLE)
       for (let i = 1; i < Math.min(explanationsWithRatings.length, 10); i++) {
         const candidate = explanationsWithRatings[i];
-        if (candidate.modelName !== explanationA.modelName &&
+        // Must be from same puzzle to prevent cross-contamination
+        if (candidate.puzzleId === targetPuzzleId &&
+            candidate.modelName !== explanationA.modelName &&
             Math.abs(candidate.eloRating.currentRating - explanationA.eloRating.currentRating) <= 400) {
           explanationB = candidate;
           break;
         }
       }
 
-      const finalPuzzleId = puzzleId || explanationA.puzzleId;
+      // Fallback: find any explanation from same puzzle if no optimal pairing found
+      if (!explanationB) {
+        for (let i = 1; i < explanationsWithRatings.length; i++) {
+          const candidate = explanationsWithRatings[i];
+          if (candidate.puzzleId === targetPuzzleId) {
+            explanationB = candidate;
+            break;
+          }
+        }
+      }
+
+      // If still no valid pair found, return null
+      if (!explanationB) {
+        logger.warn(`No valid explanation pair found for puzzle ${targetPuzzleId}`, 'elo');
+        return null;
+      }
+
+      const finalPuzzleId = targetPuzzleId;
 
       return {
         explanationA,
