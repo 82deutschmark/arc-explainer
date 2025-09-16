@@ -204,29 +204,41 @@ export class EloRepository extends BaseRepository {
       WHERE e.predicted_output_grid IS NOT NULL
         AND e.puzzle_id = $1
       ORDER BY RANDOM()
+      LIMIT 50
     `;
 
     const params = [targetPuzzleId];
 
     try {
+      logger.info(`Fetching explanations for puzzle ${targetPuzzleId}`, 'elo');
       const result = await this.query(query, params);
+      
+      logger.info(`Found ${result.rows.length} explanations for puzzle ${targetPuzzleId}`, 'elo');
 
       if (result.rows.length < 2) {
-        logger.warn(`Not enough explanations available for comparison. PuzzleId: ${puzzleId}, SessionId: ${sessionId}, Available: ${result.rows.length}`, 'elo');
+        logger.warn(`Not enough explanations available for comparison. PuzzleId: ${puzzleId}, Available: ${result.rows.length}`, 'elo');
+        // Debug: show what we did find
+        if (result.rows.length > 0) {
+          logger.info(`Available explanation IDs: ${result.rows.map(r => r.id).join(', ')}`, 'elo');
+        }
         return null;
       }
 
       // Convert to explanations (no ELO ratings needed yet)
       const explanations = result.rows.map(row => this.mapExplanation(row));
+      
+      logger.info(`Mapped ${explanations.length} explanations successfully`, 'elo');
 
       if (explanations.length < 2) {
-        logger.warn(`Puzzle ${targetPuzzleId} has fewer than 2 explanations for comparison`, 'elo');
+        logger.warn(`Puzzle ${targetPuzzleId} has fewer than 2 explanations after mapping`, 'elo');
         return null;
       }
 
       // Just pick the first two explanations - keep it simple!
       let explanationA = explanations[0];
       let explanationB = explanations[1];
+      
+      logger.info(`Selected explanations: A=${explanationA.id} (${explanationA.modelName}), B=${explanationB.id} (${explanationB.modelName})`, 'elo');
 
       const finalPuzzleId = targetPuzzleId;
 
@@ -247,16 +259,32 @@ export class EloRepository extends BaseRepository {
    */
   async recordVote(voteData: VoteData): Promise<{ newRatingA: number, newRatingB: number, ratingChangeA: number, ratingChangeB: number }> {
     return await this.transaction(async (client) => {
-      // Get current ratings
-      const ratingAResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationAId]);
-      const ratingBResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationBId]);
+      // Get or create current ratings
+      let ratingA: EloRating, ratingB: EloRating;
 
-      if (ratingAResult.rows.length === 0 || ratingBResult.rows.length === 0) {
-        throw new Error('One or both explanations do not have Elo ratings');
+      // Get rating A or create if missing
+      const ratingAResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationAId]);
+      if (ratingAResult.rows.length === 0) {
+        await client.query(`
+          INSERT INTO elo_ratings (explanation_id, current_rating, games_played, wins, losses)
+          VALUES ($1, 1500, 0, 0, 0)
+        `, [voteData.explanationAId]);
+        ratingA = { id: 0, explanationId: voteData.explanationAId, currentRating: 1500, gamesPlayed: 0, wins: 0, losses: 0, lastUpdated: new Date().toISOString(), createdAt: new Date().toISOString() };
+      } else {
+        ratingA = this.mapEloRating(ratingAResult.rows[0]);
       }
 
-      const ratingA = this.mapEloRating(ratingAResult.rows[0]);
-      const ratingB = this.mapEloRating(ratingBResult.rows[0]);
+      // Get rating B or create if missing  
+      const ratingBResult = await client.query('SELECT * FROM elo_ratings WHERE explanation_id = $1', [voteData.explanationBId]);
+      if (ratingBResult.rows.length === 0) {
+        await client.query(`
+          INSERT INTO elo_ratings (explanation_id, current_rating, games_played, wins, losses)
+          VALUES ($1, 1500, 0, 0, 0)
+        `, [voteData.explanationBId]);
+        ratingB = { id: 0, explanationId: voteData.explanationBId, currentRating: 1500, gamesPlayed: 0, wins: 0, losses: 0, lastUpdated: new Date().toISOString(), createdAt: new Date().toISOString() };
+      } else {
+        ratingB = this.mapEloRating(ratingBResult.rows[0]);
+      }
 
       // Calculate new ratings using Elo algorithm
       const outcome = voteData.winnerId === voteData.explanationAId ? 1 : 0;
