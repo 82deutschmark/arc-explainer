@@ -16,13 +16,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import { ComparisonOutcome } from '../../../shared/types';
 
 // Types for vote submission
 interface VoteRequest {
   sessionId: string;
   explanationAId: number;
   explanationBId: number;
-  winnerId: number;
+  outcome: ComparisonOutcome;
   puzzleId: string;
 }
 
@@ -99,14 +100,15 @@ export function useEloVoting() {
       throw error;
     }
 
-    if (!voteData.winnerId) {
-      const error = new Error('Winner selection is required');
+    if (!voteData.outcome) {
+      const error = new Error('Outcome selection is required');
       setVoteError(error);
       throw error;
     }
 
-    if (voteData.winnerId !== voteData.explanationAId && voteData.winnerId !== voteData.explanationBId) {
-      const error = new Error('Winner must be one of the compared explanations');
+    // Validate outcome is one of the valid enum values
+    if (!['A_WINS', 'B_WINS', 'BOTH_BAD'].includes(voteData.outcome)) {
+      const error = new Error('Invalid outcome value');
       setVoteError(error);
       throw error;
     }

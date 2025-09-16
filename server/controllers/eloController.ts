@@ -66,15 +66,15 @@ export const eloController = {
    */
   async recordVote(req: Request, res: Response) {
     try {
-      const { sessionId, explanationAId, explanationBId, winnerId, puzzleId } = req.body;
+      const { sessionId, explanationAId, explanationBId, outcome, puzzleId } = req.body;
 
-      logger.info(`Recording vote: sessionId=${sessionId}, explanationAId=${explanationAId}, explanationBId=${explanationBId}, winnerId=${winnerId}, puzzleId=${puzzleId}`);
+      logger.info(`Recording vote: sessionId=${sessionId}, explanationAId=${explanationAId}, explanationBId=${explanationBId}, outcome=${outcome}, puzzleId=${puzzleId}`);
 
       const result = await eloService.recordVote({
         sessionId,
         explanationAId: parseInt(explanationAId, 10),
         explanationBId: parseInt(explanationBId, 10),
-        winnerId: parseInt(winnerId, 10),
+        outcome,
         puzzleId
       }, req.get('User-Agent'));
 
