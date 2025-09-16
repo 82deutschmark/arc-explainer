@@ -60,6 +60,17 @@ export interface PuzzleAnalysis {
   predictionAccuracyScore?: number;
 }
 
+// ELO comparison system types
+export type ComparisonOutcome = 'A_WINS' | 'B_WINS' | 'BOTH_BAD';
+
+export interface EloVoteData {
+  sessionId: string;
+  explanationAId: number;
+  explanationBId: number;
+  outcome: ComparisonOutcome;
+  puzzleId: string;
+}
+
 export interface SolutionValidation {
   isCorrect: boolean;
   accuracy: number;

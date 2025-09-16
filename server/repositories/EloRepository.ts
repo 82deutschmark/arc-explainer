@@ -25,7 +25,8 @@
  * @date 2025-09-16
  */
 
-import { BaseRepository } from './base/BaseRepository.ts';
+import { BaseRepository } from './base/BaseRepository.js';
+import type { ComparisonOutcome } from '../../shared/types.ts';
 import { logger } from '../utils/logger.ts';
 // ExplanationData interface defined locally since it's not exported from shared/types
 interface ExplanationData {
@@ -111,7 +112,7 @@ export interface VoteData {
   sessionId: string;
   explanationAId: number;
   explanationBId: number;
-  winnerId: number;
+  outcome: ComparisonOutcome;
   puzzleId: string;
   userAgent?: string;
 }
@@ -290,33 +291,43 @@ export class EloRepository extends BaseRepository {
       }
 
       // Calculate new ratings using Elo algorithm
-      const outcome = voteData.winnerId === voteData.explanationAId ? 1 : 0;
+      const outcome = voteData.outcome === 'A_WINS' ? 1 :
+                     voteData.outcome === 'B_WINS' ? 0 :
+                     0.5; // BOTH_BAD maps to draw
       const [newRatingA, newRatingB] = this.calculateElo(ratingA.currentRating, ratingB.currentRating, outcome, ratingA.gamesPlayed, ratingB.gamesPlayed);
 
+      // For win/loss tracking (integers only)
+      const winsA = voteData.outcome === 'A_WINS' ? 1 : 0;
+      const lossesA = voteData.outcome === 'B_WINS' ? 1 : 0;
+      const winsB = voteData.outcome === 'B_WINS' ? 1 : 0;
+      const lossesB = voteData.outcome === 'A_WINS' ? 1 : 0;
+      
       // Update ratings
       await client.query(`
         UPDATE elo_ratings
         SET current_rating = $1, games_played = games_played + 1,
             wins = wins + $2, losses = losses + $3, last_updated = CURRENT_TIMESTAMP
         WHERE explanation_id = $4
-      `, [newRatingA, outcome, 1 - outcome, voteData.explanationAId]);
+      `, [newRatingA, winsA, lossesA, voteData.explanationAId]);
 
       await client.query(`
         UPDATE elo_ratings
         SET current_rating = $1, games_played = games_played + 1,
             wins = wins + $2, losses = losses + $3, last_updated = CURRENT_TIMESTAMP
         WHERE explanation_id = $4
-      `, [newRatingB, 1 - outcome, outcome, voteData.explanationBId]);
+      `, [newRatingB, winsB, lossesB, voteData.explanationBId]);
 
-      // Record the vote
+      // Record comparison vote with outcome and legacy winner_id for backwards compatibility
+      const winnerId = voteData.outcome === 'A_WINS' ? voteData.explanationAId :
+                      voteData.outcome === 'B_WINS' ? voteData.explanationBId :
+                      null; // BOTH_BAD
+      
       await client.query(`
-        INSERT INTO comparison_votes
-        (session_id, puzzle_id, explanation_a_id, explanation_b_id, winner_id,
-         rating_a_before, rating_b_before, rating_a_after, rating_b_after, user_agent)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO comparison_votes (session_id, puzzle_id, explanation_a_id, explanation_b_id, outcome, winner_id, rating_a_before, rating_b_before, rating_a_after, rating_b_after, user_agent)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       `, [
         voteData.sessionId, voteData.puzzleId, voteData.explanationAId, voteData.explanationBId,
-        voteData.winnerId, ratingA.currentRating, ratingB.currentRating, newRatingA, newRatingB,
+        voteData.outcome, winnerId, ratingA.currentRating, ratingB.currentRating, newRatingA, newRatingB,
         voteData.userAgent
       ]);
 

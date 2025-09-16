@@ -14,6 +14,7 @@ import { AppError } from '../middleware/errorHandler.ts';
 import { puzzleService } from './puzzleService.ts';
 import { logger } from '../utils/logger.ts';
 import type { EloRating, ComparisonPair, VoteData, EloLeaderboard, ModelEloStats } from '../repositories/EloRepository.ts';
+import type { ComparisonOutcome } from '../../shared/types.ts';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ComparisonRequest {
@@ -25,7 +26,7 @@ export interface VoteRequest {
   sessionId: string;
   explanationAId: number;
   explanationBId: number;
-  winnerId: number;
+  outcome: ComparisonOutcome;
   puzzleId: string;
 }
 
@@ -124,9 +125,9 @@ export const eloService = {
         throw new AppError(409, 'These explanations have already been compared in this session');
       }
 
-      // Ensure winner is one of the compared explanations
-      if (request.winnerId !== request.explanationAId && request.winnerId !== request.explanationBId) {
-        throw new AppError(400, 'Winner must be one of the compared explanations');
+      // Validate outcome
+      if (!['A_WINS', 'B_WINS', 'BOTH_BAD'].includes(request.outcome)) {
+        throw new AppError(400, 'Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD');
       }
 
       // Record the vote and update ratings
@@ -134,21 +135,14 @@ export const eloService = {
         sessionId: request.sessionId,
         explanationAId: request.explanationAId,
         explanationBId: request.explanationBId,
-        winnerId: request.winnerId,
+        outcome: request.outcome,
         puzzleId: request.puzzleId,
         userAgent
       };
 
       const result = await repositoryService.elo.recordVote(voteData);
 
-      logger.info('Vote recorded successfully', {
-        sessionId: request.sessionId,
-        winner: request.winnerId,
-        ratingChanges: {
-          explanationA: result.ratingChangeA,
-          explanationB: result.ratingChangeB
-        }
-      });
+      logger.info(`Vote recorded successfully: session=${request.sessionId}, outcome=${request.outcome}, ratingChangeA=${result.ratingChangeA}, ratingChangeB=${result.ratingChangeB}`);
 
       return {
         ...result,
@@ -254,8 +248,12 @@ export const eloService = {
       throw new AppError(400, 'Cannot compare an explanation with itself');
     }
 
-    if (!request.winnerId) {
-      throw new AppError(400, 'Winner ID is required');
+    if (!request.outcome) {
+      throw new AppError(400, 'Outcome is required');
+    }
+
+    if (!['A_WINS', 'B_WINS', 'BOTH_BAD'].includes(request.outcome)) {
+      throw new AppError(400, 'Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD');
     }
 
     if (!request.puzzleId) {
@@ -263,12 +261,12 @@ export const eloService = {
     }
 
     // Validate ID types
-    if (!Number.isInteger(request.explanationAId) || !Number.isInteger(request.explanationBId) || !Number.isInteger(request.winnerId)) {
-      throw new AppError(400, 'Explanation and winner IDs must be integers');
+    if (!Number.isInteger(request.explanationAId) || !Number.isInteger(request.explanationBId)) {
+      throw new AppError(400, 'Explanation IDs must be integers');
     }
 
-    if (request.explanationAId < 1 || request.explanationBId < 1 || request.winnerId < 1) {
-      throw new AppError(400, 'Explanation and winner IDs must be positive integers');
+    if (request.explanationAId < 1 || request.explanationBId < 1) {
+      throw new AppError(400, 'Explanation IDs must be positive integers');
     }
   }
 };

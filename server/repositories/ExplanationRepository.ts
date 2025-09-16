@@ -133,6 +133,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
+        multi_test_prediction_grids AS "multiTestPredictionGrids",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -174,6 +175,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
+        multi_test_prediction_grids AS "multiTestPredictionGrids",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -214,6 +216,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_results AS "multiTestResults",
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
+        multi_test_prediction_grids AS "multiTestPredictionGrids",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
