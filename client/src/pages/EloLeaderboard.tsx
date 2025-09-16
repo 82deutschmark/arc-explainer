@@ -48,7 +48,20 @@ export default function EloLeaderboard() {
     queryKey: ['elo-leaderboard'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/elo/leaderboard');
-      return await response.json();
+      const jsonData = await response.json();
+      
+      // Extract from jsonData.data - response is wrapped by formatResponse.success()
+      if (!jsonData.data) {
+        console.warn('API response missing data field:', jsonData);
+        return {
+          leaderboard: [],
+          totalComparisons: 0,
+          activeModels: 0,
+          lastUpdated: new Date().toISOString()
+        };
+      }
+      
+      return jsonData.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

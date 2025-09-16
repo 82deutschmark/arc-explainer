@@ -37,6 +37,7 @@ import { useEloVoting } from '@/hooks/useEloVoting';
 export default function EloComparison() {
   const { taskId } = useParams<{ taskId?: string }>();
   const finalPuzzleId = taskId;
+  const [inputPuzzleId, setInputPuzzleId] = useState('');
 
   // Set page title
   React.useEffect(() => {
@@ -47,14 +48,14 @@ export default function EloComparison() {
   const [votingState, setVotingState] = useState<'ready' | 'voting' | 'voted'>('ready');
   const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null);
 
-  // Hooks for data and voting
+  // Only fetch comparison data when we have a puzzle ID
   const {
     comparisonData,
     isLoading,
     error,
     refetch,
     sessionId
-  } = useEloComparison(finalPuzzleId);
+  } = useEloComparison(finalPuzzleId || undefined); // Don't pass empty string
 
   const {
     submitVote,
@@ -96,6 +97,58 @@ export default function EloComparison() {
     setSelectedWinner(null);
     refetch();
   };
+
+  const handlePuzzleIdSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputPuzzleId.trim()) {
+      window.location.href = `/elo/${inputPuzzleId.trim()}`;
+    }
+  };
+
+  // Show puzzle ID input form when no puzzle ID is provided
+  if (!finalPuzzleId) {
+    return (
+      <div className="container mx-auto p-6 max-w-7xl">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <Users className="h-6 w-6" />
+              Compare Explanations
+            </h1>
+            <p className="text-gray-600">
+              Enter a puzzle ID to compare AI explanations
+            </p>
+          </div>
+        </div>
+
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle>Enter Puzzle ID</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handlePuzzleIdSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="puzzleId" className="block text-sm font-medium mb-2">
+                  Puzzle ID
+                </label>
+                <input
+                  id="puzzleId"
+                  type="text"
+                  value={inputPuzzleId}
+                  onChange={(e) => setInputPuzzleId(e.target.value)}
+                  placeholder="e.g., 0d3d703e"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={!inputPuzzleId.trim()}>
+                Compare Explanations
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Loading state
   if (isLoading) {

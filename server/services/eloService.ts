@@ -69,7 +69,7 @@ export const eloService = {
       }
 
       // Fetch puzzle data
-      const puzzle = await puzzleService.getTaskById(pair.puzzleId);
+      const puzzle = await puzzleService.getPuzzleById(pair.puzzleId);
       if (!puzzle) {
         throw new AppError(404, `Puzzle ${pair.puzzleId} not found`);
       }
