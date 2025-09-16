@@ -118,9 +118,9 @@ export default function PuzzleDBViewer() {
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // Fetch puzzle data - get ALL puzzles from all datasets
+  // Fetch puzzle data - get ALL puzzles from all 5 datasets, sort client-side
   const { data: puzzles, isLoading, error } = usePuzzleDBStats({
-    limit: 2500, // Get ALL puzzles from all 5 datasets (training, training2, evaluation, evaluation2, arc-heavy)
+    limit: 3000, // Ensure we get ALL puzzles from all datasets without any artificial cutoffs
     sortBy: 'composite', // Use backend sorting, we'll sort client-side for more control
     zeroAccuracyOnly: false, // Handle filtering client-side
     includeRichMetrics: true

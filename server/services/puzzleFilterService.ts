@@ -274,7 +274,7 @@ export class PuzzleFilterService {
   /**
    * Validate and sanitize limit parameter
    */
-  validateLimit(limit: any, defaultLimit: number = 50, maxLimit: number = 50): number {
+  validateLimit(limit: any, defaultLimit: number = 50, maxLimit: number = 500): number {
     const parsedLimit = parseInt(limit) || defaultLimit;
     return Math.min(Math.max(parsedLimit, 1), maxLimit);
   }

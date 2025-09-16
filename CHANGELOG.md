@@ -1,3 +1,56 @@
+### January 15 2025
+
+## v2.23.0 - 🚀 API Limits Removal for External Applications
+
+**MAJOR ENHANCEMENT**: Removed arbitrary API result limits to support external applications accessing comprehensive datasets.
+
+**PROBLEM SOLVED**: External applications were artificially limited to 10 results from analytics endpoints and 1000 results from feedback endpoints, preventing access to complete data.
+
+**CHANGES IMPLEMENTED**:
+
+**Database Query Limits Removed**:
+1. **TrustworthinessRepository**: Removed hardcoded `LIMIT 10` from all analytics queries
+   - `trustworthinessLeaders`: Now returns ALL models with trustworthiness data
+   - `speedLeaders`: Now returns ALL models with processing time data  
+   - `efficiencyLeaders`: Now returns ALL models with cost efficiency data
+
+**Endpoint Limits Increased**:
+2. **Feedback Controller**: Increased maximum limit from 1000 to 10000 results
+   - `/api/feedback` endpoint can now return up to 10000 feedback entries per request
+   - Maintains backward compatibility with existing applications
+
+3. **Puzzle Filter Service**: Increased worst-performing puzzle limit from 50 to 500
+   - `/api/puzzle/worst-performing` can now return up to 500 problematic puzzles
+   - Supports comprehensive puzzle analysis for external tools
+
+**Analytics Endpoints Affected**:
+- `/api/puzzle/performance-stats` - Now returns complete model performance data
+- `/api/feedback/accuracy-stats` - Now returns ALL model accuracy rankings  
+- `/api/puzzle/worst-performing` - Supports up to 500 results
+- `/api/feedback` - Supports up to 10000 feedback entries
+
+**Documentation Updated**:
+4. **Created EXTERNAL_API.md**: Comprehensive API reference for external applications
+5. **Updated external_api_puzzle_data.md**: Added notice about recent API changes
+
+**TECHNICAL IMPLEMENTATION**:
+- **Modified Files**: 
+  - `server/repositories/TrustworthinessRepository.ts`: Removed all `LIMIT 10` clauses
+  - `server/controllers/feedbackController.ts`: Increased limit validation from 1000 to 10000
+  - `server/services/puzzleFilterService.ts`: Increased max limit from 50 to 500
+- **Backward Compatibility**: All existing query parameters continue to work
+- **Performance**: Queries optimized to handle larger result sets efficiently
+
+**EXTERNAL APP BENEFITS**:
+- **Complete Analytics**: Access to all model performance data, not just top 10
+- **Comprehensive Feedback**: Retrieve large feedback datasets for analysis
+- **Puzzle Analysis**: Enhanced support for identifying problematic puzzles at scale
+- **No Breaking Changes**: Existing applications continue to work without modification
+
+**Testing**: External applications can now retrieve complete datasets from analytics endpoints and request larger result sets from feedback endpoints.
+
+---
+
 ### September 12 2025
 
 ## v2.22.1 - 🏷️ Dataset Badge for PuzzleExaminer + Grid Rendering Fix

@@ -357,7 +357,6 @@ export class TrustworthinessRepository extends BaseRepository {
           END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_trustworthiness DESC, total_attempts DESC
-        LIMIT 10
       `);
 
       // Get speed leaders (fastest processing times with decent trustworthiness)
@@ -389,7 +388,6 @@ export class TrustworthinessRepository extends BaseRepository {
           END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY avg_processing_time ASC
-        LIMIT 10
       `);
 
       // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
@@ -435,7 +433,6 @@ export class TrustworthinessRepository extends BaseRepository {
           END
         HAVING COUNT(*) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
         ORDER BY cost_efficiency ASC
-        LIMIT 10
       `);
 
       // Get overall trustworthiness stats
