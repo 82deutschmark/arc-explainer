@@ -29,7 +29,7 @@ export const eloController = {
       const puzzleId = req.params.puzzleId;
       const sessionId = req.query.sessionId as string;
 
-      logger.info('Getting comparison pair', { puzzleId, sessionId });
+      logger.info(`Getting comparison pair for puzzleId=${puzzleId}, sessionId=${sessionId}`);
 
       const result = await eloService.getComparisonPair({
         puzzleId,
@@ -39,9 +39,9 @@ export const eloController = {
       res.json(formatResponse.success(result, 'Comparison pair retrieved successfully'));
 
     } catch (error) {
-      logger.error('Error getting comparison pair:', error);
+      logger.error(`Error getting comparison pair: ${error instanceof Error ? error.message : String(error)}`);
 
-      if (error instanceof Error && error.message.includes('404')) {
+      if (error instanceof Error && typeof error.message === 'string' && error.message.includes('404')) {
         res.status(404).json(formatResponse.error(
           'No suitable explanations found for comparison',
           error.message
@@ -49,7 +49,7 @@ export const eloController = {
       } else {
         res.status(500).json(formatResponse.error(
           'Failed to get comparison pair',
-          error instanceof Error ? error.message : 'Unknown error'
+          'Internal server error'
         ));
       }
     }
@@ -68,13 +68,7 @@ export const eloController = {
     try {
       const { sessionId, explanationAId, explanationBId, winnerId, puzzleId } = req.body;
 
-      logger.info('Recording vote', {
-        sessionId,
-        explanationAId,
-        explanationBId,
-        winnerId,
-        puzzleId
-      });
+      logger.info(`Recording vote: sessionId=${sessionId}, explanationAId=${explanationAId}, explanationBId=${explanationBId}, winnerId=${winnerId}, puzzleId=${puzzleId}`);
 
       const result = await eloService.recordVote({
         sessionId,
@@ -87,16 +81,16 @@ export const eloController = {
       res.json(formatResponse.success(result, 'Vote recorded successfully'));
 
     } catch (error) {
-      logger.error('Error recording vote:', error);
+      logger.error(`Error recording vote: ${error instanceof Error ? error.message : String(error)}`);
 
       // Handle specific error types
       if (error instanceof Error) {
-        if (error.message.includes('409')) {
+        if (typeof error.message === 'string' && error.message.includes('409')) {
           res.status(409).json(formatResponse.error(
             'Duplicate comparison detected',
             'These explanations have already been compared in this session'
           ));
-        } else if (error.message.includes('400')) {
+        } else if (typeof error.message === 'string' && error.message.includes('400')) {
           res.status(400).json(formatResponse.error(
             'Invalid vote data',
             error.message
@@ -129,7 +123,7 @@ export const eloController = {
     try {
       const limit = parseInt(req.query.limit as string, 10) || 50;
 
-      logger.info('Getting explanation leaderboard', { limit });
+      logger.info(`Getting explanation leaderboard with limit=${limit}`);
 
       const result = await eloService.getExplanationLeaderboard(limit);
 
@@ -140,9 +134,9 @@ export const eloController = {
       }, 'Leaderboard retrieved successfully'));
 
     } catch (error) {
-      logger.error('Error getting leaderboard:', error);
+      logger.error(`Error getting leaderboard: ${error instanceof Error ? error.message : String(error)}`);
 
-      if (error instanceof Error && error.message.includes('400')) {
+      if (error instanceof Error && typeof error.message === 'string' && error.message.includes('400')) {
         res.status(400).json(formatResponse.error(
           'Invalid limit parameter',
           error.message
@@ -176,7 +170,7 @@ export const eloController = {
       }, 'Model statistics retrieved successfully'));
 
     } catch (error) {
-      logger.error('Error getting model stats:', error);
+      logger.error(`Error getting model stats: ${error instanceof Error ? error.message : String(error)}`);
 
       res.status(500).json(formatResponse.error(
         'Failed to get model statistics',
@@ -202,7 +196,7 @@ export const eloController = {
       res.json(formatResponse.success(result, 'System statistics retrieved successfully'));
 
     } catch (error) {
-      logger.error('Error getting system stats:', error);
+      logger.error(`Error getting system stats: ${error instanceof Error ? error.message : String(error)}`);
 
       res.status(500).json(formatResponse.error(
         'Failed to get system statistics',
@@ -224,7 +218,7 @@ export const eloController = {
     try {
       const sessionId = req.query.sessionId as string;
 
-      logger.info('Getting random comparison pair', { sessionId });
+      logger.info(`Getting random comparison pair for sessionId=${sessionId}`);
 
       const result = await eloService.getComparisonPair({
         sessionId
@@ -233,9 +227,9 @@ export const eloController = {
       res.json(formatResponse.success(result, 'Random comparison pair retrieved successfully'));
 
     } catch (error) {
-      logger.error('Error getting random comparison:', error);
+      logger.error(`Error getting random comparison: ${error instanceof Error ? error.message : String(error)}`);
 
-      if (error instanceof Error && error.message.includes('404')) {
+      if (error instanceof Error && typeof error.message === 'string' && error.message.includes('404')) {
         res.status(404).json(formatResponse.error(
           'No suitable explanations found for comparison',
           error.message

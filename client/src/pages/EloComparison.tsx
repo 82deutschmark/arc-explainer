@@ -28,15 +28,15 @@ import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 
 // Hooks for comparison functionality
 import { useEloComparison } from '@/hooks/useEloComparison';
+
+// Types
+import type { ARCExample } from '@shared/types';
 import { useEloVoting } from '@/hooks/useEloVoting';
 
-interface EloComparisonProps {
-  puzzleId?: string; // Optional - if not provided, gets random comparison
-}
 
-export default function EloComparison({ puzzleId }: EloComparisonProps) {
+export default function EloComparison() {
   const { taskId } = useParams<{ taskId?: string }>();
-  const finalPuzzleId = puzzleId || taskId;
+  const finalPuzzleId = taskId;
 
   // Set page title
   React.useEffect(() => {
@@ -183,7 +183,7 @@ export default function EloComparison({ puzzleId }: EloComparisonProps) {
                 <Badge variant="outline">{comparisonData.puzzle.train.length} examples</Badge>
               </h3>
               <div className="space-y-4">
-                {comparisonData.puzzle.train.map((example, index) => (
+                {comparisonData.puzzle.train.map((example: ARCExample, index: number) => (
                   <div key={index} className="border border-gray-200 rounded-lg p-3">
                     <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
                     <div className="flex items-center justify-center gap-6">
