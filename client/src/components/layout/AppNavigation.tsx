@@ -16,7 +16,8 @@ import {
   Database,
   MessageCircle,
   Github,
-  Target
+  Target,
+  Trophy
 } from 'lucide-react';
 
 interface NavItem {
@@ -56,6 +57,12 @@ const navigationItems: NavItem[] = [
     href: '/kaggle-readiness',
     icon: Target,
     description: 'Validate technical readiness for machine learning competitions'
+  },
+  {
+    title: 'ELO Arena',
+    href: '/elo',
+    icon: Trophy,
+    description: 'Compare AI explanations head-to-head with ELO ratings'
   }
 ];
 
@@ -77,8 +84,9 @@ export function AppNavigation() {
             const Icon = item.icon;
             return (
               <NavigationMenuItem key={item.href}>
-                <Link href={item.href}>
-                  <NavigationMenuLink 
+                <NavigationMenuLink asChild>
+                  <Link 
+                    href={item.href}
                     className={cn(
                       navigationMenuTriggerStyle(),
                       "flex items-center gap-2 font-medium",
@@ -87,8 +95,8 @@ export function AppNavigation() {
                   >
                     <Icon className="h-4 w-4" />
                     <span className="hidden sm:inline">{item.title}</span>
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             );
           })}

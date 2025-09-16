@@ -14,6 +14,7 @@ interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'resul
   showRawDb: boolean;
   setShowRawDb: (show: boolean) => void;
   isSaturnResult: boolean;
+  comparisonMode?: boolean;
 }
 
 const formatCost = (cost: any): string => {
@@ -34,22 +35,26 @@ const formatTokens = (tokens: number): string => {
   }
 };
 
-export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({ 
-  result, 
-  model, 
-  modelKey, 
-  feedbackSummary, 
-  hasFeedback, 
-  showExistingFeedback, 
-  setShowExistingFeedback, 
-  showRawDb, 
+export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
+  result,
+  model,
+  modelKey,
+  feedbackSummary,
+  hasFeedback,
+  showExistingFeedback,
+  setShowExistingFeedback,
+  showRawDb,
   setShowRawDb,
-  isSaturnResult
+  isSaturnResult,
+  comparisonMode = false
 }) => {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />
-      <h5 className="font-medium">{model?.name || modelKey}</h5>
+      {/* Hide model identifying information in comparison mode for LMArena-style anonymity */}
+      {!comparisonMode && <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />}
+      <h5 className="font-medium">
+        {comparisonMode ? 'AI Model' : (model?.name || modelKey)}
+      </h5>
       {result.createdAt && (
         <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
           <span className="text-xs text-gray-600">
@@ -102,9 +107,9 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         </Badge>
       )}
 
-      {(result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
-        <Badge 
-          variant="outline" 
+      {!comparisonMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
+        <Badge
+          variant="outline"
           className={`flex items-center gap-1 ${(() => {
               const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
               if (isCorrect) return 'bg-green-50 border-green-200 text-green-700';

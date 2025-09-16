@@ -1,7 +1,13 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
+Every file you create or edit should start with:
+ * 
+ * Author: Your NAME  (Example: Claude Code using Sonnet 4)
+ * Date: `timestamp`
+ * PURPOSE: VERBOSE DETAILS ABOUT HOW THIS WORKS AND WHAT ELSE IT TOUCHES
+ * SRP and DRY check: Pass/Fail Is this file violating either? Do these things already exist in the project?  Did you look??
+ 
 ## Common Commands
 You need to Git add and commit any changes you make to the codebase.  Be detailed in your commit messages.
 Use `npm run test` to start the dev server and wait 10 seconds for it to properly start. Remember not to use the cd command as it is largely unnecessary and this will cause issues with the dev server.  Use Kill Bash(Kill shell: bash_1) to stop the dev server.

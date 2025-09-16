@@ -27,7 +27,7 @@ import { AnalysisResultMetrics } from './AnalysisResultMetrics';
 import { AnalysisResultActions } from './AnalysisResultActions';
 import { Badge } from '@/components/ui/badge';
 
-export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, comparisonMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
@@ -35,8 +35,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
-  const [showPrediction, setShowPrediction] = useState(false);
-  const [showMultiTest, setShowMultiTest] = useState(false);
+  const [showPrediction, setShowPrediction] = useState(comparisonMode); // Expanded by default in comparison mode
+  const [showMultiTest, setShowMultiTest] = useState(comparisonMode); // Expanded by default in comparison mode
 
   const { summary: feedbackSummary } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
 
@@ -53,6 +53,18 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result.predictedOutputGrid]);
 
   const predictedGrids = useMemo(() => {
+    // First check multiTestPredictionGrids for multi-test cases
+    if (result.multiTestPredictionGrids) {
+      try {
+        const parsed = Array.isArray(result.multiTestPredictionGrids) ? result.multiTestPredictionGrids : JSON.parse(result.multiTestPredictionGrids as any);
+        // Should be a 3D array: number[][][]
+        return parsed as number[][][];
+      } catch (e) {
+        console.error("Failed to parse multiTestPredictionGrids", e);
+      }
+    }
+
+    // Fallback to predictedOutputGrid for backward compatibility or single-test stored as multi
     if (result.predictedOutputGrid) {
       try {
         const parsed = Array.isArray(result.predictedOutputGrid) ? result.predictedOutputGrid : JSON.parse(result.predictedOutputGrid as any);
@@ -69,7 +81,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       }
     }
     return [];
-  }, [result.predictedOutputGrid]);
+  }, [result.multiTestPredictionGrids, result.predictedOutputGrid]);
 
   const multiValidation = useMemo(() => {
     if (result.multiValidation) {
@@ -126,17 +138,18 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   return (
     <div className="border rounded-lg p-4 space-y-3">
-      <AnalysisResultHeader 
-        result={result} 
-        model={model} 
-        modelKey={modelKey} 
-        feedbackSummary={feedbackSummary} 
-        hasFeedback={hasFeedback} 
-        showExistingFeedback={showExistingFeedback} 
-        setShowExistingFeedback={setShowExistingFeedback} 
-        showRawDb={showRawDb} 
-        setShowRawDb={setShowRawDb} 
-        isSaturnResult={isSaturnResult} 
+      <AnalysisResultHeader
+        result={result}
+        model={model}
+        modelKey={modelKey}
+        feedbackSummary={feedbackSummary}
+        hasFeedback={hasFeedback}
+        showExistingFeedback={showExistingFeedback}
+        setShowExistingFeedback={setShowExistingFeedback}
+        showRawDb={showRawDb}
+        setShowRawDb={setShowRawDb}
+        isSaturnResult={isSaturnResult}
+        comparisonMode={comparisonMode}
       />
 
       {showRawDb && (
@@ -156,13 +169,14 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         </div>
       )}
 
-      <AnalysisResultContent 
-        result={result} 
-        isSaturnResult={isSaturnResult} 
-        showReasoning={showReasoning} 
-        setShowReasoning={setShowReasoning} 
-        showAlienMeaning={showAlienMeaning} 
-        setShowAlienMeaning={setShowAlienMeaning} 
+      <AnalysisResultContent
+        result={result}
+        isSaturnResult={isSaturnResult}
+        showReasoning={showReasoning}
+        setShowReasoning={setShowReasoning}
+        showAlienMeaning={showAlienMeaning}
+        setShowAlienMeaning={setShowAlienMeaning}
+        comparisonMode={comparisonMode}
       />
 
       <AnalysisResultGrid
@@ -180,13 +194,17 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowMultiTest={setShowMultiTest}
         showPrediction={showPrediction}
         setShowPrediction={setShowPrediction}
+        comparisonMode={comparisonMode}
       />
 
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
-      
-      <div className="border-t pt-3">
-        <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
-      </div>
+
+      {/* Hide feedback actions in comparison mode to avoid confusion with ELO voting */}
+      {!comparisonMode && (
+        <div className="border-t pt-3">
+          <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
+        </div>
+      )}
     </div>
   );
 });

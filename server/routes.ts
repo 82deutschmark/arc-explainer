@@ -20,6 +20,7 @@ import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 import { batchAnalysisController } from "./controllers/batchAnalysisController";
+import { eloController } from "./controllers/eloController";
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -109,6 +110,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzles/:puzzleId/solutions", validation.solutionSubmission, asyncHandler(feedbackController.submitSolution));
   app.post("/api/solutions/:solutionId/vote", validation.solutionVote, asyncHandler(feedbackController.voteSolution));
   app.get("/api/solutions/:solutionId/votes", asyncHandler(feedbackController.getSolutionVotes));
+
+  // Elo rating system routes - LMArena-style explanation comparisons
+  app.get("/api/elo/comparison", asyncHandler(eloController.getRandomComparison));
+  app.get("/api/elo/comparison/:puzzleId", asyncHandler(eloController.getComparison));
+  app.post("/api/elo/vote", asyncHandler(eloController.recordVote));
+  app.get("/api/elo/leaderboard", asyncHandler(eloController.getLeaderboard));
+  app.get("/api/elo/models", asyncHandler(eloController.getModelStats));
+  app.get("/api/elo/stats", asyncHandler(eloController.getSystemStats));
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));

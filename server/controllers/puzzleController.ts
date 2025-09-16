@@ -338,7 +338,7 @@ export const puzzleController = {
    */
   async getPuzzleStats(req: Request, res: Response) {
     try {
-      const { includeRichMetrics = 'true', limit = '2500' } = req.query;
+      const { includeRichMetrics = 'true', limit = '3000' } = req.query;
       
       const filters = {
         includeRichMetrics: includeRichMetrics === 'true'
