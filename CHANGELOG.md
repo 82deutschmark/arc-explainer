@@ -1,4 +1,36 @@
-### January 15 2025
+### September 16 2025
+
+## v2.24.0 - ELO Rating System for AI Explanation Quality Assessment
+
+**FEATURE**: Complete ELO rating system implementation for pairwise comparison of AI explanation quality.
+
+**DATABASE SCHEMA**:
+- `elo_ratings` table: explanation_id, current_rating, games_played, wins, losses, created_at, updated_at
+- `elo_comparisons` table: explanation_a_id, explanation_b_id, winner_id, session_id, created_at
+- Unique constraint on explanation pairs to prevent duplicate comparisons
+
+**BACKEND IMPLEMENTATION**:
+- `EloRepository`: Handles rating calculations, comparison pair selection, vote recording
+- `EloController`: REST endpoints for fetching comparison pairs and submitting votes
+- K-factor of 32 for rating updates, starting rating of 1500
+- Smart pair selection: filters for explanations with predictions, avoids recent comparisons
+- Session-based tracking to prevent duplicate votes
+
+**FRONTEND IMPLEMENTATION**:
+- `/elo` route with anonymized comparison interface
+- Model names hidden as "AI Model" to prevent bias
+- Side-by-side prediction grid display for visual assessment
+- Search functionality with auto-loading random puzzles when no search performed
+- Voting interface with A/B/Tie options and session management
+- Integration with existing AnalysisResultCard in comparison mode
+
+**TECHNICAL DETAILS**:
+- TypeScript interfaces for EloRating, EloComparison, ComparisonData
+- Proper null handling for prediction grids with graceful fallbacks
+- Maintains existing puzzle examination functionality alongside comparison system
+- WebSocket-ready architecture for potential real-time features
+
+### September 15 2025
 
 ## v2.23.0 - 🚀 API Limits Removal for External Applications
 
