@@ -27,6 +27,9 @@ export class DatabaseSchema {
       await this.createFeedbackTable(client);
       await this.createBatchSessionsTable(client);
       await this.createBatchResultsTable(client);
+      await this.createEloRatingsTable(client);
+      await this.createComparisonVotesTable(client);
+      await this.createComparisonSessionsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
