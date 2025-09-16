@@ -54,9 +54,10 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   const predictedGrids = useMemo(() => {
     // First check multiTestPredictionGrids for multi-test cases
-    if (result.multiTestPredictionGrids) {
+    if ((result as any).multiTestPredictionGrids) {
       try {
-        const parsed = Array.isArray(result.multiTestPredictionGrids) ? result.multiTestPredictionGrids : JSON.parse(result.multiTestPredictionGrids as any);
+        const gridData = (result as any).multiTestPredictionGrids;
+        const parsed = Array.isArray(gridData) ? gridData : JSON.parse(gridData);
         // Should be a 3D array: number[][][]
         return parsed as number[][][];
       } catch (e) {
@@ -81,7 +82,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       }
     }
     return [];
-  }, [result.multiTestPredictionGrids, result.predictedOutputGrid]);
+  }, [(result as any).multiTestPredictionGrids, result.predictedOutputGrid]);
 
   const multiValidation = useMemo(() => {
     if (result.multiValidation) {
@@ -199,12 +200,10 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}
 
-      {/* Hide feedback actions in comparison mode to avoid confusion with ELO voting */}
-      {!comparisonMode && (
-        <div className="border-t pt-3">
-          <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
-        </div>
-      )}
+      {/* Always show feedback actions - useful for comparison evaluation */}
+      <div className="border-t pt-3">
+        <AnalysisResultActions result={result} showExistingFeedback={showExistingFeedback} />
+      </div>
     </div>
   );
 });
