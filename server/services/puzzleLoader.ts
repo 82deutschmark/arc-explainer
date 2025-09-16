@@ -109,9 +109,19 @@ export class PuzzleLoader {
       for (const dataSource of this.dataSources.sort((a, b) => a.priority - b.priority)) {
         const loadedCount = this.loadFromDirectory(dataSource);
         totalPuzzles += loadedCount;
+        console.log(`Running total after ${dataSource.name}: ${this.puzzleMetadata.size} unique puzzles`);
       }
 
-      console.log(`Total puzzles loaded: ${totalPuzzles}`);
+      console.log(`Final puzzle loading summary:`);
+      console.log(`- Total unique puzzles loaded: ${this.puzzleMetadata.size}`);
+      console.log(`- Total load operations: ${totalPuzzles}`);
+      
+      // Log breakdown by source
+      const sourceBreakdown: Record<string, number> = {};
+      for (const puzzle of this.puzzleMetadata.values()) {
+        sourceBreakdown[puzzle.source] = (sourceBreakdown[puzzle.source] || 0) + 1;
+      }
+      console.log('- Breakdown by source:', sourceBreakdown);
     } catch (error) {
       console.error('Error loading puzzle metadata:', error);
     }
@@ -161,7 +171,8 @@ export class PuzzleLoader {
       }
     }
     
-    return files.length;
+    console.log(`Loaded ${loadedCount} new puzzles from ${dataSource.name} (${files.length} files found)`);
+    return loadedCount;
   }
 
   private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy', dataSource: DataSource): PuzzleInfo {

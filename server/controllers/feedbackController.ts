@@ -380,7 +380,7 @@ export const feedbackController = {
     // Numeric filters with validation
     if (query.limit) {
       const limit = parseInt(query.limit as string);
-      if (!isNaN(limit) && limit > 0 && limit <= 1000) {
+      if (!isNaN(limit) && limit > 0 && limit <= 10000) {
         filters.limit = limit;
       }
     }
