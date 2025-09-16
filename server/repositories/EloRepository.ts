@@ -240,12 +240,15 @@ export class EloRepository extends BaseRepository {
       
       logger.info(`Selected explanations: A=${explanationA.id} (${explanationA.modelName}), B=${explanationB.id} (${explanationB.modelName})`, 'elo');
 
-      const finalPuzzleId = targetPuzzleId;
+      // targetPuzzleId is guaranteed to be defined here since we return null if no puzzle found
+      if (!targetPuzzleId) {
+        throw new Error('Puzzle ID is undefined after selection process');
+      }
 
       return {
         explanationA,
         explanationB,
-        puzzleId: finalPuzzleId
+        puzzleId: targetPuzzleId
       };
 
     } catch (error) {
