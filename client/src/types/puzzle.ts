@@ -157,5 +157,5 @@ export interface AnalysisResultCardProps {
   result: ExplanationData; // Use the database type directly
   model?: ModelConfig;
   testCases: TestCase[]; // Pass the full test array, ensuring the card has all necessary data
-  comparisonMode?: boolean; // Hide correctness indicators for Elo comparisons
+  eloMode?: boolean; // Hide model identifying info for double-blind A/B testing
 }

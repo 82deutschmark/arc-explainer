@@ -27,7 +27,7 @@ import { AnalysisResultMetrics } from './AnalysisResultMetrics';
 import { AnalysisResultActions } from './AnalysisResultActions';
 import { Badge } from '@/components/ui/badge';
 
-export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, comparisonMode = false }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
@@ -35,8 +35,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
-  const [showPrediction, setShowPrediction] = useState(comparisonMode); // Expanded by default in comparison mode
-  const [showMultiTest, setShowMultiTest] = useState(comparisonMode); // Expanded by default in comparison mode
+  const [showPrediction, setShowPrediction] = useState(eloMode); // Expanded by default in ELO mode
+  const [showMultiTest, setShowMultiTest] = useState(eloMode); // Expanded by default in ELO mode
 
   const { summary: feedbackSummary } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
 
@@ -150,7 +150,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         showRawDb={showRawDb}
         setShowRawDb={setShowRawDb}
         isSaturnResult={isSaturnResult}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       {showRawDb && (
@@ -177,7 +177,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowReasoning={setShowReasoning}
         showAlienMeaning={showAlienMeaning}
         setShowAlienMeaning={setShowAlienMeaning}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       <AnalysisResultGrid
@@ -195,7 +195,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowMultiTest={setShowMultiTest}
         showPrediction={showPrediction}
         setShowPrediction={setShowPrediction}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}

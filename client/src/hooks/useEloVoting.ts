@@ -35,12 +35,38 @@ interface VoteResponse {
   voteRecorded: boolean;
 }
 
+// Extended response with additional data for modal display
+export interface EnhancedVoteResponse extends VoteResponse {
+  correctAnswerGrid?: number[][];
+  predictionA?: number[][];
+  predictionB?: number[][];
+  modelA?: {
+    name: string;
+    accuracy?: {
+      modelName: string;
+      accuracyPercentage: number;
+      totalAttempts: number;
+      correctPredictions: number;
+    };
+  };
+  modelB?: {
+    name: string;
+    accuracy?: {
+      modelName: string;
+      accuracyPercentage: number;
+      totalAttempts: number;
+      correctPredictions: number;
+    };
+  };
+  outcome?: ComparisonOutcome;
+}
+
 /**
  * Hook for submitting Elo comparison votes
  */
 export function useEloVoting() {
   const queryClient = useQueryClient();
-  const [voteResult, setVoteResult] = useState<VoteResponse | null>(null);
+  const [voteResult, setVoteResult] = useState<EnhancedVoteResponse | null>(null);
   const [voteError, setVoteError] = useState<Error | null>(null);
 
   // Vote submission mutation
@@ -129,12 +155,33 @@ export function useEloVoting() {
     setVoteError(null);
   };
 
+  // Enhance vote result with additional data for modal display
+  const enhanceVoteResult = (
+    basicResult: VoteResponse,
+    additionalData: {
+      correctAnswerGrid: number[][];
+      predictionA: number[][];
+      predictionB: number[][];
+      modelA: { name: string; accuracy?: any };
+      modelB: { name: string; accuracy?: any };
+      outcome: ComparisonOutcome;
+    }
+  ) => {
+    const enhanced: EnhancedVoteResponse = {
+      ...basicResult,
+      ...additionalData
+    };
+    setVoteResult(enhanced);
+    return enhanced;
+  };
+
   return {
     submitVote,
     isSubmitting: voteMutation.isPending,
     voteResult,
     voteError,
     clearVoteResult,
+    enhanceVoteResult,
     // Expose raw mutation for advanced usage
     mutation: voteMutation
   };
