@@ -2,6 +2,8 @@
 
 This document outlines the process for an external application to query the Arc-Explainer API and retrieve all available information for a specific puzzle, using its unique ID.
 
+**🔄 Recent API Changes:** As of September 15 2025, API result limits have been significantly increased for external applications. See changelog for details.
+
 **Example Puzzle ID:** `e7dd8335`
 
 To get a complete picture of a puzzle, you will need to make multiple API calls to different endpoints. Each endpoint provides a specific slice of the data associated with the puzzle.

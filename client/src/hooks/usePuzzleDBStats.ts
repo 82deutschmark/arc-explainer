@@ -56,8 +56,8 @@ export function usePuzzleDBStats(filters: PuzzleDBFilters = {}) {
     queryFn: async (): Promise<PuzzleDBStats[]> => {
       const params = new URLSearchParams();
       
-      // Set defaults
-      params.append('limit', (filters.limit || 100).toString());
+      // Set defaults - ensure ALL puzzles load without any artificial limits
+      params.append('limit', (filters.limit || 3000).toString());
       params.append('sortBy', filters.sortBy || 'composite');
       
       // Apply filters
