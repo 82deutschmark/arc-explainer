@@ -19,7 +19,6 @@
 import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import type { Explanation } from '@shared/types';
 import type { ExplanationData } from '@/types/puzzle';
 
 interface UseAnalysisResultsProps {
@@ -38,6 +37,7 @@ interface UseAnalysisResultsProps {
 type PendingAnalysis = ExplanationData & {
   isOptimistic: true; // Always true for pending results
   status: 'analyzing' | 'saving' | 'completed' | 'error'; // Required for pending results
+  isRetryable?: boolean;
 };
 
 export function useAnalysisResults({
@@ -55,6 +55,7 @@ export function useAnalysisResults({
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
+  const [analyzerErrors, setAnalyzerErrors] = useState<Map<string, Error>>(new Map());
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
   
@@ -247,6 +248,9 @@ export function useAnalysisResults({
           error: error instanceof Error ? error.message : String(error),
           taskId
         });
+
+        const errorToSet = error instanceof Error ? error : new Error(String(error));
+        setAnalyzerErrors(prev => new Map(prev).set(modelKey, errorToSet));
         
         throw error;
       }
@@ -279,6 +283,13 @@ export function useAnalysisResults({
 
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
+    // Clear any previous errors for this model on a new attempt
+    setAnalyzerErrors(prev => {
+      const newMap = new Map(prev);
+      newMap.delete(modelKey);
+      return newMap;
+    });
+
     // Removed provider restriction - now allows concurrent requests to same provider
     
     // Set current model key to show reasoning controls for GPT-5 models
@@ -323,7 +334,7 @@ export function useAnalysisResults({
     currentModelKey,
     processingModels,
     isAnalyzing: analyzeAndSaveMutation.isPending,
-    analyzerError: analyzeAndSaveMutation.error,
+    analyzerErrors,
     analysisStartTime,
     analysisTimes,
     // Optimistic UI state
