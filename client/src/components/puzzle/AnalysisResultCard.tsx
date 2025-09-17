@@ -53,85 +53,38 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result.predictedOutputGrid]);
 
   const predictedGrids = useMemo(() => {
-    // Debug logging
-    console.log('🔍 Multi-test debug:', {
-      hasMultiTestPredictionGrids: !!(result as any).multiTestPredictionGrids,
-      multiTestPredictionGridsType: typeof (result as any).multiTestPredictionGrids,
-      multiTestPredictionGridsValue: (result as any).multiTestPredictionGrids,
-      hasPredictedOutputGrid: !!result.predictedOutputGrid,
-      predictedOutputGridType: typeof result.predictedOutputGrid,
-      multiplePredictedOutputs: (result as any).multiplePredictedOutputs,
-      hasMultiplePredictions: (result as any).hasMultiplePredictions
-    });
+    // Check for individual predictedOutputN fields (the actual format we store)
+    if ((result as any).multiplePredictedOutputs === true) {
+      const grids: number[][][] = [];
+      let index = 1;
+      
+      // Collect predictedOutput1, predictedOutput2, etc.
+      while ((result as any)[`predictedOutput${index}`] !== undefined) {
+        const grid = (result as any)[`predictedOutput${index}`];
+        grids.push(grid && Array.isArray(grid) && grid.length > 0 ? grid : []);
+        index++;
+      }
+      
+      return grids;
+    }
 
-    // First check multiTestPredictionGrids for multi-test cases
+    // Fallback: Check multiTestPredictionGrids
     if ((result as any).multiTestPredictionGrids) {
       try {
         const gridData = (result as any).multiTestPredictionGrids;
-        const parsed = Array.isArray(gridData) ? gridData : JSON.parse(gridData);
-        console.log('🎯 Parsed multiTestPredictionGrids:', parsed);
-        // Should be a 3D array: number[][][]
-        return parsed as number[][][];
+        return Array.isArray(gridData) ? gridData : JSON.parse(gridData);
       } catch (e) {
         console.error("Failed to parse multiTestPredictionGrids", e);
       }
     }
 
-    // Check if multiplePredictedOutputs has the data (if it's an array, not boolean)
-    if ((result as any).multiplePredictedOutputs && Array.isArray((result as any).multiplePredictedOutputs)) {
-      try {
-        const gridData = (result as any).multiplePredictedOutputs;
-        console.log('🎯 Parsed multiplePredictedOutputs as array:', gridData);
-        return gridData as number[][][];
-      } catch (e) {
-        console.error("Failed to parse multiplePredictedOutputs", e);
-      }
+    // Fallback: Check if multiplePredictedOutputs is an array
+    if (Array.isArray((result as any).multiplePredictedOutputs)) {
+      return (result as any).multiplePredictedOutputs;
     }
 
-    // NEW: Check for individual predictedOutputN fields (this is the actual format we're seeing)
-    if ((result as any).multiplePredictedOutputs === true || (result as any).hasMultiplePredictions) {
-      try {
-        const grids: number[][][] = [];
-        let index = 1;
-        
-        // Look for predictedOutput1, predictedOutput2, etc.
-        while ((result as any)[`predictedOutput${index}`] !== undefined) {
-          const grid = (result as any)[`predictedOutput${index}`];
-          if (grid && Array.isArray(grid) && grid.length > 0) {
-            grids.push(grid);
-          } else {
-            // Push empty array for missing/empty predictions to preserve indexing
-            grids.push([]);
-          }
-          index++;
-        }
-        
-        console.log('🎯 Collected individual predictedOutputN grids:', grids);
-        return grids;
-      } catch (e) {
-        console.error("Failed to parse individual predictedOutputN fields", e);
-      }
-    }
-
-    // Fallback to predictedOutputGrid for backward compatibility or single-test stored as multi
-    if (result.predictedOutputGrid) {
-      try {
-        const parsed = Array.isArray(result.predictedOutputGrid) ? result.predictedOutputGrid : JSON.parse(result.predictedOutputGrid as any);
-        console.log('🎯 Parsed predictedOutputGrid:', parsed);
-        // Check if this is a multi-test case (3D array) or single test (2D array)
-        if (parsed.length > 0 && Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
-          // This is a 3D array (multi-test case): number[][][]
-          return parsed as number[][][];
-        }
-        // This might be a single 2D grid stored in the multi-test format, return empty for this component
-        return [];
-      } catch (e) {
-        console.error("Failed to parse predictedOutputGrid for multi-test", e);
-        return [];
-      }
-    }
     return [];
-  }, [(result as any).multiTestPredictionGrids, (result as any).multiplePredictedOutputs, (result as any).hasMultiplePredictions, result.predictedOutputGrid, result]);
+  }, [result]);
 
   const multiValidation = useMemo(() => {
     if (result.multiValidation) {
@@ -168,12 +121,12 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     if (!predictedGrids || predictedGrids.length === 0) {
       return [];
     }
-    return predictedGrids.map((pGrid, index) => {
+    return predictedGrids.map((pGrid: number[][], index: number) => {
       const eGrid = expectedOutputGrids[index];
       if (!pGrid || !eGrid || pGrid.length !== eGrid.length || pGrid[0]?.length !== eGrid[0]?.length) {
         return undefined;
       }
-      return pGrid.map((row, r) => row.map((cell, c) => cell !== eGrid[r][c]));
+      return pGrid.map((row: number[], r: number) => row.map((cell: number, c: number) => cell !== eGrid[r][c]));
     });
   }, [predictedGrids, expectedOutputGrids]);
 
