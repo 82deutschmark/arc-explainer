@@ -39,10 +39,10 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
 export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
-  const [explanationFilter, setExplanationFilter] = useState<string>('all'); // 'all', 'unexplained', 'explained' - Changed to show all puzzles
+  const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained puzzles for analysis
   const [arcVersion, setArcVersion] = useState<string>('ARC2-Eval'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
   const [multiTestFilter, setMultiTestFilter] = useState<string>('single'); // 'any', 'single', 'multi'
-  const [sortBy, setSortBy] = useState<string>('least_analysis_data'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data'
+  const [sortBy, setSortBy] = useState<string>('unexplained_first'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data', 'unexplained_first'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [location, setLocation] = useLocation();
@@ -89,6 +89,14 @@ export default function PuzzleBrowser() {
     if (sortBy !== 'default') {
       filtered = [...filtered].sort((a, b) => {
         switch (sortBy) {
+          case 'unexplained_first':
+            // Sort unexplained puzzles first, then by puzzle ID
+            const aHasExplanation = a.hasExplanation ? 1 : 0;
+            const bHasExplanation = b.hasExplanation ? 1 : 0;
+            if (aHasExplanation !== bHasExplanation) {
+              return aHasExplanation - bHasExplanation; // Unexplained (0) comes before explained (1)
+            }
+            return a.id.localeCompare(b.id); // Secondary sort by puzzle ID
           case 'processing_time':
             const aTime = a.apiProcessingTimeMs || 0;
             const bTime = b.apiProcessingTimeMs || 0;
@@ -317,9 +325,10 @@ export default function PuzzleBrowser() {
                 <Label htmlFor="sortBy">Sort By</Label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Default sorting" />
+                    <SelectValue placeholder="Unexplained first (recommended)" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="unexplained_first">Unexplained First (recommended)</SelectItem>
                     <SelectItem value="default">Default (puzzle order)</SelectItem>
                     <SelectItem value="least_analysis_data">Analysis Data (fewest first)</SelectItem>
                     <SelectItem value="processing_time">Processing Time (longest first)</SelectItem>
