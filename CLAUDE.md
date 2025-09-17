@@ -145,7 +145,9 @@ ARC-AGI datasets loaded in priority order:
 2. ARC2 (training2)  
 3. ARC1-Eval (evaluation)
 4. ARC1 (training)
+Abstraction and Reasoning Corpus for Artificial General Intelligence v2 (ARC-AGI-2)
 
+"ARC can be seen as a general artificial intelligence benchmark, as a program synthesis benchmark, or as a psychometric intelligence test. It is targeted at both humans and artificially intelligent systems that aim at emulating a human-like form of general fluid intelligence."
 ### Environment Variables All present and working:
 Required for AI analysis (at least one):
 - `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
@@ -271,3 +273,33 @@ You are an elite software architect and senior engineer with deep expertise in c
 - Ensure all code is immediately deployable without placeholders
 
 You never compromise on code quality, never take shortcuts with mock implementations, and always deliver production-ready solutions that exemplify clean architecture principles.
+
+ARC-AGI-2 contains 1,000 public training tasks and 120 public evaluation tasks.
+
+The training tasks are intended to demonstrate the task format and the Core Knowledge priors used by ARC-AGI. They can be used for training AI models. The public evaluation tasks are intended for testing AI models that have never seen these tasks before. Average human performance on these tasks in our test sample was 66%.
+
+ARC-AGI-2 also features two private test sets not included in the repo:
+
+A semi-private set intended for testing remotely-hosted commercial models with low leakage probability. It is calibrated to be the same human-facing difficulty as the public evaluation set.
+A fully-private set intended for testing self-contained models during the ARC Prize competition, with near-zeo leakage probability. It is also calibrated to be the same difficulty.
+This multi-tiered structure allows for both open research and a secure, high-stakes competition.
+
+Task success criterion
+A test-taker is said to solve a task when, upon seeing the task for the first time, they are able to produce the correct output grid for all test inputs in the task (this includes picking the dimensions of the output grid). For each test input, the test-taker is allowed 2 trials (this holds for all test-takers, either humans or AI).
+
+Task file format
+The data directory contains two subdirectories:
+
+data/training: contains the task files for training (1000 tasks). Use these to prototype your algorithm or to train your algorithm to acquire ARC-relevant cognitive priors. This set combines tasks from ARC-AGI-1 as well as new tasks.
+data/evaluation: contains the task files for evaluation (120 tasks). Use these to evaluate your final algorithm. To ensure fair evaluation results, do not leak information from the evaluation set into your algorithm (e.g. by looking at the evaluation tasks yourself during development, or by repeatedly modifying an algorithm while using its evaluation score as feedback). Each task in evaluation has been solved by a minimum of 2 people (many tasks were solved by more) in 2 attempts or less in a controlled test.
+The tasks are stored in JSON format. Each task JSON file contains a dictionary with two fields:
+
+"train": demonstration input/output pairs. It is a list of "pairs" (typically 3 pairs).
+"test": test input/output pairs. It is a list of "pairs" (typically 1-2 pair).
+A "pair" is a dictionary with two fields:
+
+"input": the input "grid" for the pair.
+"output": the output "grid" for the pair.
+A "grid" is a rectangular matrix (list of lists) of integers between 0 and 9 (inclusive). The smallest possible grid size is 1x1 and the largest is 30x30.
+
+When looking at a task, a test-taker has access to inputs & outputs of the demonstration pairs, plus the input(s) of the test pair(s). The goal is to construct the output grid(s) corresponding to the test input grid(s), using 3 trials for each test input. "Constructing the output grid" involves picking the height and width of the output grid, then filling each cell in the grid with a symbol (integer between 0 and 9, which are visualized as colors). Only exact solutions (all cells match the expected answer) can be said to be correct.
