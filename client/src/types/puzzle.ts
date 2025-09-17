@@ -70,6 +70,7 @@ export interface ModelButtonProps {
   explanationCount: number;
   onAnalyze: (modelKey: string) => void;
   disabled: boolean;
+  error?: Error | null;
 }
 
 /**
