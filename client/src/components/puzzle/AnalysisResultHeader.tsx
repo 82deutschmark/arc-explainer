@@ -14,7 +14,7 @@ interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'resul
   showRawDb: boolean;
   setShowRawDb: (show: boolean) => void;
   isSaturnResult: boolean;
-  comparisonMode?: boolean;
+  eloMode?: boolean;
 }
 
 const formatCost = (cost: any): string => {
@@ -46,14 +46,14 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
   showRawDb,
   setShowRawDb,
   isSaturnResult,
-  comparisonMode = false
+  eloMode = false
 }) => {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Hide model identifying information in comparison mode for LMArena-style anonymity */}
-      {!comparisonMode && <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />}
+      {/* Hide model identifying information in ELO mode for double-blind A/B testing */}
+      {!eloMode && <div className={`w-3 h-3 rounded-full ${model?.color || 'bg-gray-500'}`} />}
       <h5 className="font-medium">
-        {comparisonMode ? 'AI Model' : (model?.name || modelKey)}
+        {eloMode ? 'AI Model' : (model?.name || modelKey)}
       </h5>
       {result.createdAt && (
         <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
@@ -107,7 +107,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         </Badge>
       )}
 
-      {!comparisonMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
+      {!eloMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
         <Badge
           variant="outline"
           className={`flex items-center gap-1 ${(() => {

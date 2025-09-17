@@ -18,7 +18,7 @@ interface AnalysisResultContentProps {
   setShowReasoning: (show: boolean) => void;
   showAlienMeaning: boolean;
   setShowAlienMeaning: (show: boolean) => void;
-  comparisonMode?: boolean;
+  eloMode?: boolean;
 }
 
 // Skeleton loader component
@@ -33,7 +33,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   setShowReasoning,
   showAlienMeaning,
   setShowAlienMeaning,
-  comparisonMode = false
+  eloMode = false
 }) => {
   const isOptimistic = result.isOptimistic;
   const status = result.status;
@@ -130,7 +130,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 Confidence: {formatConfidence(result.confidence)}
               </Badge>
             )}
-            {!comparisonMode && !isSaturnResult && (result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null) && (
+            {!eloMode && !isSaturnResult && (result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null) && (
               <Badge
                 variant="outline"
                 className={`text-xs ${result.predictionAccuracyScore >= 0.8 ? 'bg-green-50 border-green-200 text-green-700' : result.predictionAccuracyScore >= 0.5 ? 'bg-yellow-50 border-yellow-200 text-yellow-700' : 'bg-red-50 border-red-200 text-red-700'}`}>

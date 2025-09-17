@@ -184,44 +184,35 @@ export class BatchResultProcessor {
    * Process validation for solver responses
    */
   private async processValidation(puzzleId: string, aiResult: any, config: BatchSessionConfig): Promise<any> {
+    // CRITICAL SIMPLIFICATION: Accept pre-validated data from puzzleAnalysisService
+    // Author: Claude Code using Sonnet 4
+    // Date: 2025-09-16
+    // PURPOSE: Eliminate redundant validation that was overriding clean validated data
+
     if (config.promptId !== "solver") {
       return {};
     }
 
     try {
-      const { validateSolverResponse, validateSolverResponseMulti } = await import('../responseValidator.js');
-      
-      const puzzle = await puzzleService.getPuzzleById(puzzleId);
-      const confidence = aiResult.confidence || aiResult.result?.confidence || 50;
-      const testCount = puzzle.test?.length || 0;
-      
-      // Create validation results without modifying original response
-      if (aiResult.multiplePredictedOutputs === true || aiResult.result?.multiplePredictedOutputs === true) {
-        // Multi-test case
-        const correctAnswers = testCount > 1 ? puzzle.test.map((t: any) => t.output) : [puzzle.test[0].output];
-        const multi = validateSolverResponseMulti(aiResult.result || aiResult, correctAnswers, config.promptId, confidence);
+      // FIXED: Use pre-validated data with database-compatible field names
+      // No redundant validation - puzzleAnalysisService already validated everything
+      const validationFields = {
+        predictedOutputGrid: aiResult.predictedOutputGrid || null,
+        hasMultiplePredictions: aiResult.hasMultiplePredictions || false,
+        isPredictionCorrect: aiResult.isPredictionCorrect || false,
+        predictionAccuracyScore: aiResult.predictionAccuracyScore || 0,
 
-        return {
-          predictedOutputGrid: null,
-          hasMultiplePredictions: true,
-          multiTestResults: multi.itemResults,
-          multiTestAllCorrect: multi.allCorrect,
-          multiTestAverageAccuracy: multi.averageAccuracyScore
-        };
-      } else {
-        // Single-test case
-        const correctAnswer = puzzle.test[0].output;
-        const validation = validateSolverResponse(aiResult.result || aiResult, correctAnswer, config.promptId, confidence);
+        // Multi-test fields with database-compatible names
+        multiplePredictedOutputs: aiResult.multiplePredictedOutputs || null,
+        multiTestResults: aiResult.multiTestResults || null,
+        multiTestAllCorrect: aiResult.multiTestAllCorrect || null,
+        multiTestAverageAccuracy: aiResult.multiTestAverageAccuracy || null,
+        multiTestPredictionGrids: aiResult.multiTestPredictionGrids || null
+      };
 
-        return {
-          predictedOutputGrid: validation.predictedGrid,
-          hasMultiplePredictions: false,
-          isPredictionCorrect: validation.isPredictionCorrect,
-          predictionAccuracyScore: validation.predictionAccuracyScore
-        };
-      }
-    } catch (validationError) {
-      logger.error(`Validation failed for ${puzzleId}, preserving original response: ${validationError}`, 'batch-processor');
+      return validationFields;
+    } catch (error) {
+      logger.error(`Error extracting validation data for ${puzzleId}: ${error}`, 'batch-processor');
       return {};
     }
   }

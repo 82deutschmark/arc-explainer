@@ -27,7 +27,7 @@ import { AnalysisResultMetrics } from './AnalysisResultMetrics';
 import { AnalysisResultActions } from './AnalysisResultActions';
 import { Badge } from '@/components/ui/badge';
 
-export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, comparisonMode = false }: AnalysisResultCardProps) {
+export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
   const [showReasoning, setShowReasoning] = useState(false);
@@ -35,8 +35,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
-  const [showPrediction, setShowPrediction] = useState(comparisonMode); // Expanded by default in comparison mode
-  const [showMultiTest, setShowMultiTest] = useState(comparisonMode); // Expanded by default in comparison mode
+  const [showPrediction, setShowPrediction] = useState(eloMode); // Expanded by default in ELO mode
+  const [showMultiTest, setShowMultiTest] = useState(eloMode); // Expanded by default in ELO mode
 
   const { summary: feedbackSummary } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
 
@@ -53,36 +53,38 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [result.predictedOutputGrid]);
 
   const predictedGrids = useMemo(() => {
-    // First check multiTestPredictionGrids for multi-test cases
+    // Check for individual predictedOutputN fields (the actual format we store)
+    if ((result as any).multiplePredictedOutputs === true) {
+      const grids: number[][][] = [];
+      let index = 1;
+      
+      // Collect predictedOutput1, predictedOutput2, etc.
+      while ((result as any)[`predictedOutput${index}`] !== undefined) {
+        const grid = (result as any)[`predictedOutput${index}`];
+        grids.push(grid && Array.isArray(grid) && grid.length > 0 ? grid : []);
+        index++;
+      }
+      
+      return grids;
+    }
+
+    // Fallback: Check multiTestPredictionGrids
     if ((result as any).multiTestPredictionGrids) {
       try {
         const gridData = (result as any).multiTestPredictionGrids;
-        const parsed = Array.isArray(gridData) ? gridData : JSON.parse(gridData);
-        // Should be a 3D array: number[][][]
-        return parsed as number[][][];
+        return Array.isArray(gridData) ? gridData : JSON.parse(gridData);
       } catch (e) {
         console.error("Failed to parse multiTestPredictionGrids", e);
       }
     }
 
-    // Fallback to predictedOutputGrid for backward compatibility or single-test stored as multi
-    if (result.predictedOutputGrid) {
-      try {
-        const parsed = Array.isArray(result.predictedOutputGrid) ? result.predictedOutputGrid : JSON.parse(result.predictedOutputGrid as any);
-        // Check if this is a multi-test case (3D array) or single test (2D array)
-        if (parsed.length > 0 && Array.isArray(parsed[0]) && Array.isArray(parsed[0][0])) {
-          // This is a 3D array (multi-test case): number[][][]
-          return parsed as number[][][];
-        }
-        // This might be a single 2D grid stored in the multi-test format, return empty for this component
-        return [];
-      } catch (e) {
-        console.error("Failed to parse predictedOutputGrid for multi-test", e);
-        return [];
-      }
+    // Fallback: Check if multiplePredictedOutputs is an array
+    if (Array.isArray((result as any).multiplePredictedOutputs)) {
+      return (result as any).multiplePredictedOutputs;
     }
+
     return [];
-  }, [(result as any).multiTestPredictionGrids, result.predictedOutputGrid]);
+  }, [result]);
 
   const multiValidation = useMemo(() => {
     if (result.multiValidation) {
@@ -119,12 +121,12 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     if (!predictedGrids || predictedGrids.length === 0) {
       return [];
     }
-    return predictedGrids.map((pGrid, index) => {
+    return predictedGrids.map((pGrid: number[][], index: number) => {
       const eGrid = expectedOutputGrids[index];
       if (!pGrid || !eGrid || pGrid.length !== eGrid.length || pGrid[0]?.length !== eGrid[0]?.length) {
         return undefined;
       }
-      return pGrid.map((row, r) => row.map((cell, c) => cell !== eGrid[r][c]));
+      return pGrid.map((row: number[], r: number) => row.map((cell: number, c: number) => cell !== eGrid[r][c]));
     });
   }, [predictedGrids, expectedOutputGrids]);
 
@@ -150,7 +152,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         showRawDb={showRawDb}
         setShowRawDb={setShowRawDb}
         isSaturnResult={isSaturnResult}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       {showRawDb && (
@@ -177,7 +179,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowReasoning={setShowReasoning}
         showAlienMeaning={showAlienMeaning}
         setShowAlienMeaning={setShowAlienMeaning}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       <AnalysisResultGrid
@@ -195,7 +197,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         setShowMultiTest={setShowMultiTest}
         showPrediction={showPrediction}
         setShowPrediction={setShowPrediction}
-        comparisonMode={comparisonMode}
+        eloMode={eloMode}
       />
 
       {isSaturnResult && <AnalysisResultMetrics result={result} isSaturnResult={isSaturnResult} />}

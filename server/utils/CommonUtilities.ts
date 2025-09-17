@@ -374,6 +374,36 @@ export function sanitizeGridData(gridData: any): number[][] | null {
           } else {
             numericValue = parsed;
           }
+        } else if (typeof cell === 'object' && cell !== null) {
+          // CRITICAL FIX: Extract numeric value from nested objects
+          // Author: Gemini 2.5 Pro
+          // Date: 2025-09-17
+          // PURPOSE: Handle cases where grid cells are wrapped in objects instead of being raw numbers
+          
+          let extractedValue = null;
+          
+          // Try common object patterns that might contain the actual number
+          if (typeof cell.value === 'number') {
+            extractedValue = cell.value;
+          } else if (typeof cell.number === 'number') {
+            extractedValue = cell.number;  
+          } else if (typeof cell.data === 'number') {
+            extractedValue = cell.data;
+          } else if (typeof cell.cell === 'number') {
+            extractedValue = cell.cell;
+          } else if (Array.isArray(cell) && cell.length === 1 && typeof cell[0] === 'number') {
+            extractedValue = cell[0]; // Handle single-element arrays
+          }
+          
+          if (extractedValue !== null && Number.isInteger(extractedValue)) {
+            numericValue = extractedValue;
+            logger.warn(`Extracted number ${extractedValue} from object at [${rowIndex}][${colIndex}]`, 'utilities');
+          } else {
+            // CRITICAL DEBUG: Log what the object actually contains
+            logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
+            logger.warn(`Cell object content: ${JSON.stringify(cell)}`, 'utilities');
+            numericValue = 0;
+          }
         } else {
           logger.warn(`Invalid grid cell type at [${rowIndex}][${colIndex}]: ${typeof cell} - setting to 0`, 'utilities');
           numericValue = 0;

@@ -249,7 +249,14 @@ export class DatabaseSchema {
     await client.query(`ALTER TABLE comparison_votes ADD CONSTRAINT outcome_check CHECK (outcome IN ('A_WINS', 'B_WINS', 'BOTH_BAD'))`);
     await client.query(`ALTER TABLE comparison_votes ALTER COLUMN winner_id DROP NOT NULL`);
     await client.query(`ALTER TABLE comparison_votes DROP CONSTRAINT IF EXISTS valid_winner`);
-    await client.query(`ALTER TABLE comparison_votes ADD CONSTRAINT valid_winner_legacy CHECK (winner_id IS NULL OR winner_id IN (explanation_a_id, explanation_b_id))`);
+    // Add constraint only if it doesn't exist (table may have been created with it already)
+    const constraintExists = await client.query(`
+      SELECT constraint_name FROM information_schema.table_constraints
+      WHERE table_name = 'comparison_votes' AND constraint_name = 'valid_winner_legacy'
+    `);
+    if (constraintExists.rows.length === 0) {
+      await client.query(`ALTER TABLE comparison_votes ADD CONSTRAINT valid_winner_legacy CHECK (winner_id IS NULL OR winner_id IN (explanation_a_id, explanation_b_id))`);
+    }
 
     // Migration: Create Elo system indexes for performance
     await client.query(`CREATE INDEX IF NOT EXISTS idx_elo_ratings_rating ON elo_ratings(current_rating DESC)`);

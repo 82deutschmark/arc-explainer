@@ -19,12 +19,23 @@ export interface MultiValidationItemResult extends ValidationResult {
   expectedDimensions?: { rows: number; cols: number };
 }
 
+/**
+ * Multi-test validation result that maps directly to database schema
+ * Field names must match ExplanationRepository database columns
+ *
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-16
+ * PURPOSE: Fix critical field mapping issue that was causing multi-test data loss
+ */
 export interface MultiValidationResult {
-  predictedGrids: (number[][] | null)[];
-  itemResults: MultiValidationItemResult[];
-  allCorrect: boolean;
-  averageAccuracyScore: number;
-  extractionMethodSummary?: string;
+  // Database-compatible field names for direct storage
+  hasMultiplePredictions: boolean;           // maps to has_multiple_predictions
+  multiplePredictedOutputs: (number[][] | null)[]; // maps to multiple_predicted_outputs
+  multiTestResults: MultiValidationItemResult[];    // maps to multi_test_results
+  multiTestAllCorrect: boolean;              // maps to multi_test_all_correct
+  multiTestAverageAccuracy: number;          // maps to multi_test_average_accuracy
+  multiTestPredictionGrids: (number[][] | null)[]; // maps to multi_test_prediction_grids
+  extractionMethodSummary?: string;         // for debugging/logging
 }
 
 /**
@@ -452,13 +463,21 @@ export function validateSolverResponseMulti(
   promptId: string,
   confidence: number = 50
 ): MultiValidationResult {
+  // EMERGENCY DEBUG: Log the exact structure being passed to validator
+  console.log('[VALIDATOR-INPUT-DEBUG] response keys:', Object.keys(response));
+  console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse:', response._rawResponse ? Object.keys(response._rawResponse) : 'no _rawResponse');
+  console.log('[VALIDATOR-INPUT-DEBUG] response.predictedOutput1:', response.predictedOutput1);
+  console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse?.predictedOutput1:', response._rawResponse?.predictedOutput1);
   const isSolverMode = promptId === 'solver';
   if (!isSolverMode) {
+    // Non-solver mode: return empty multi-test structure
     return {
-      predictedGrids: [],
-      itemResults: [],
-      allCorrect: true,
-      averageAccuracyScore: 1.0,
+      hasMultiplePredictions: false,
+      multiplePredictedOutputs: [],
+      multiTestResults: [],
+      multiTestAllCorrect: true,
+      multiTestAverageAccuracy: 1.0,
+      multiTestPredictionGrids: [],
       extractionMethodSummary: 'not_solver_mode'
     };
   }
@@ -470,11 +489,12 @@ export function validateSolverResponseMulti(
   // Use clean confidence from arcJsonSchema response or nested structure
   const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
-  // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
+  // CRITICAL FIX: Extract grids from _rawResponse where they actually exist
+  const rawResponse = response._rawResponse || response._providerRawResponse || {};
   const predictedGrids: (number[][] | null)[] = [
-    analysisData.predictedOutput1 || null,
-    analysisData.predictedOutput2 || null, 
-    analysisData.predictedOutput3 || null
+    rawResponse.predictedOutput1 || analysisData.predictedOutput1 || response.predictedOutput1 || null,
+    rawResponse.predictedOutput2 || analysisData.predictedOutput2 || response.predictedOutput2 || null,
+    rawResponse.predictedOutput3 || analysisData.predictedOutput3 || response.predictedOutput3 || null
   ].slice(0, correctAnswers.length);
 
   // Pad or trim to match expected count
@@ -523,11 +543,15 @@ export function validateSolverResponseMulti(
 
   const averageAccuracyScore = itemResults.length ? totalScore / itemResults.length : 0;
 
+  // Return database-compatible field names for direct storage
+  // CRITICAL FIX: Field names now match ExplanationRepository database schema
   return {
-    predictedGrids,
-    itemResults,
-    allCorrect,
-    averageAccuracyScore,
-    extractionMethodSummary: 'arcJsonSchema_clean'
+    hasMultiplePredictions: true,                    // This is a multi-test case
+    multiplePredictedOutputs: predictedGrids,        // All prediction grids
+    multiTestResults: itemResults,                   // Detailed validation results per test
+    multiTestAllCorrect: allCorrect,                 // Overall correctness flag
+    multiTestAverageAccuracy: averageAccuracyScore,  // Average accuracy score
+    multiTestPredictionGrids: predictedGrids,        // Grid storage (same as multiplePredictedOutputs for consistency)
+    extractionMethodSummary: 'arcJsonSchema_clean'  // Debug/logging info
   };
 }
