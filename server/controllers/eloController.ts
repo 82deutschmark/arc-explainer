@@ -125,12 +125,29 @@ export const eloController = {
 
       logger.info(`Getting explanation leaderboard with limit=${limit}`);
 
-      const result = await eloService.getExplanationLeaderboard(limit);
+      // Get both leaderboard data and system stats to match frontend expectations
+      const [leaderboardResult, systemStats] = await Promise.all([
+        eloService.getExplanationLeaderboard(limit),
+        eloService.getEloSystemStats()
+      ]);
+
+      // Map model-level stats to leaderboard format expected by frontend
+      const modelStats = await eloService.getModelEloStats();
+      const leaderboard = modelStats.map((model, index) => ({
+        modelName: model.modelName,
+        currentRating: model.averageRating,
+        gamesPlayed: model.totalGames,
+        winRate: model.winRate / 100, // Convert from percentage to decimal (0-1) for frontend
+        averageOpponentRating: systemStats.averageRating, // Use system average as approximation
+        ratingChange24h: 0, // TODO: Would need additional tracking for 24h changes
+        rank: index + 1
+      }));
 
       res.json(formatResponse.success({
-        leaderboard: result,
-        count: result.length,
-        limit
+        leaderboard: leaderboard,
+        totalComparisons: systemStats.totalComparisons,
+        activeModels: systemStats.topModels.length,
+        lastUpdated: new Date().toISOString()
       }, 'Leaderboard retrieved successfully'));
 
     } catch (error) {
