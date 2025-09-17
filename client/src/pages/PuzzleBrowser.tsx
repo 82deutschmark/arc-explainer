@@ -505,7 +505,7 @@ export default function PuzzleBrowser() {
           <CardContent className="space-y-3 text-sm">
             <p>
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
-              rather than trying to solve them yourself (which is very difficult for some humans).
+              rather than trying to solve them yourself, but if you want to do that, visit <Link href="https://human-arc.gptpluspro.com/assessment">Puzzle Browser</Link>.
             </p>
             
             <p>
