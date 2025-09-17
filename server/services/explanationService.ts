@@ -82,10 +82,18 @@ export const explanationService = {
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
         const analysisData = sourceData.result || sourceData;
 
-        // FIXED: Use pre-validated data with database-compatible field names
+        // CRITICAL FIX: Use pre-validated data with database-compatible field names
+        // Author: Claude Code using Sonnet 4
+        // Date: 2025-09-16
+        // PURPOSE: Fix multi-test data loss by using validated grids instead of raw boolean flag
         // No more complex grid collection - puzzleAnalysisService already validated and formatted the data
         const hasMultiplePredictions = sourceData.hasMultiplePredictions || false;
-        const multiplePredictedOutputsForStorage = sourceData.multiplePredictedOutputs || null;
+
+        // FIXED: For multi-test cases, use the validated grids, not the raw boolean flag
+        // puzzleAnalysisService.validateAndEnrichResult() already set the correct grid arrays
+        const multiplePredictedOutputsForStorage = hasMultiplePredictions
+          ? (sourceData.multiplePredictedOutputs || null)  // Use validated grids
+          : null;  // Single-test case
 
         const tokenUsage = sourceData.tokenUsage;
         const costData = sourceData.cost;
@@ -175,6 +183,15 @@ export const explanationService = {
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+
+        // CRITICAL DEBUG: Log multi-test data before saving to track data loss
+        if (hasMultiplePredictions) {
+          console.log(`[MULTI-TEST-DEBUG] hasMultiplePredictions: ${hasMultiplePredictions}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs type: ${typeof multiplePredictedOutputsForStorage}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs length: ${Array.isArray(multiplePredictedOutputsForStorage) ? multiplePredictedOutputsForStorage.length : 'not-array'}`);
+          console.log(`[MULTI-TEST-DEBUG] multiTestResults: ${sourceData.multiTestResults ? 'present' : 'missing'}`);
+        }
+
         try {
           const explanationWithPuzzleId = {
             ...explanationData,
