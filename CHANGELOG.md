@@ -1,5 +1,74 @@
 ### September 16 2025
 
+## v2.24.2 - CRITICAL FIX: Multi-Test Puzzle Validation and Storage System
+
+**CRITICAL FIX**: Restored completely broken multi-test puzzle validation and storage system that was fragmented during architectural refactoring.
+
+**ROOT CAUSE ANALYSIS**:
+- Multi-test system was scattered across 4+ services during DRY/SRP refactoring (August-September 2025)
+- Field name mismatch between validator output and database schema caused silent data loss
+- Over-validation across multiple services corrupted the data flow
+- Complex grid collection logic was overriding clean validated data
+
+**MAJOR ISSUES FIXED**:
+1. **Field Mapping Crisis**: `MultiValidationResult` interface returned field names that didn't match database schema
+   - `predictedGrids` → `multiplePredictedOutputs` (database column: `multiple_predicted_outputs`)
+   - `itemResults` → `multiTestResults` (database column: `multi_test_results`)
+   - `allCorrect` → `multiTestAllCorrect` (database column: `multi_test_all_correct`)
+   - `averageAccuracyScore` → `multiTestAverageAccuracy` (database column: `multi_test_average_accuracy`)
+
+2. **Over-Validation Problem**: Validation happening in 4 different places
+   - `puzzleAnalysisService.ts` (lines 178-194) - FIXED: Now uses validator once
+   - `explanationService.ts` (lines 80-123) - FIXED: Removed redundant grid collection
+   - `BatchResultProcessor.ts` (lines 192-210) - FIXED: Uses pre-validated data
+   - `responseValidator.ts` - FIXED: Single source of truth
+
+3. **Data Flow Corruption**: Each service was transforming data differently
+   - Before: AI Service → 4+ validation layers → corrupted database save
+   - After: AI Service → responseValidator → direct database storage
+
+**FILES MODIFIED**:
+- `server/services/responseValidator.ts`: Fixed interface to return database-compatible field names
+- `server/services/puzzleAnalysisService.ts`: Direct assignment without field transformation
+- `server/services/explanationService.ts`: Removed complex grid collection logic
+- `server/services/batch/BatchResultProcessor.ts`: Eliminated redundant validation
+- `server/repositories/ExplanationRepository.ts`: Added documentation for direct storage
+- `docs/17SeptMultiTestFixes.md`: Comprehensive analysis and fix documentation
+
+**TECHNICAL IMPACT**:
+- Multi-test puzzles now correctly store all prediction grids in database
+- Database fields properly populated: `has_multiple_predictions`, `multiple_predicted_outputs`, `multi_test_results`
+- Eliminated field mapping conflicts that caused data loss
+- Single responsibility: only `responseValidator.ts` handles validation logic
+- Clean data flow without transformation layers
+
+**USER IMPACT**:
+- Multi-test puzzles now display all prediction grids correctly in frontend
+- AI models like GPT-5, Gemini-2.0, DeepSeek show complete prediction results
+- Batch analysis correctly processes and stores multi-test validation results
+- Historical data integrity maintained - no changes to existing database entries
+
+## v2.24.1 - PuzzleBrowser Default Filter Optimization
+
+**FEATURE**: Improved PuzzleBrowser user experience by defaulting to unexplained puzzles for analysis workflow.
+
+**CHANGES IMPLEMENTED**:
+- **Default Filter Update**: Changed default explanationFilter from 'all' to 'unexplained' to prioritize puzzles needing analysis
+- **New Sorting Option**: Added 'unexplained_first' sorting as default to surface puzzles requiring analysis work
+- **UI Enhancement**: Updated sort dropdown to show 'Unexplained First (recommended)' prominently in options
+- **Workflow Optimization**: Eliminates need for users to manually filter to find puzzles requiring analysis
+
+**TECHNICAL DETAILS**:
+- Maintains existing filtering and sorting functionality while improving default user workflow
+- Follows SRP by keeping filtering logic modular and reusing existing components
+- Addresses UX gap where users had to discover filtering options to find meaningful work
+- Preserves all existing filter states and user preferences once manually changed
+
+**USER IMPACT**:
+- New users immediately see puzzles that need analysis rather than browsing all puzzles
+- Reduces cognitive load for finding actionable items in the puzzle database
+- Maintains backward compatibility with all existing filter and sort options
+
 ## v2.24.0 - ELO Rating System for AI Explanation Quality Assessment
 
 **FEATURE**: Complete ELO rating system implementation for pairwise comparison of AI explanation quality.
