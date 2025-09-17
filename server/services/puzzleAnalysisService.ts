@@ -175,35 +175,49 @@ export class PuzzleAnalysisService {
       hasReasoningLog: result.hasReasoningLog
     };
     
+    // CRITICAL FIX: Use validator with database-compatible field names
+    // Author: Claude Code using Sonnet 4
+    // Date: 2025-09-16
+    // PURPOSE: Eliminate field mapping issues that caused multi-test data loss
+
     // Check if AI provided multiple predictions
     const multiplePredictedOutputs = result.multiplePredictedOutputs || result.result?.multiplePredictedOutputs;
     if (multiplePredictedOutputs === true) {
       // Multi-test case: AI provided multiple grids
       const correctAnswers = testCount > 1 ? puzzle.test.map((t: ARCExample) => t.output) : [puzzle.test[0].output];
-      const multi = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
+      const multiValidation = validateSolverResponseMulti(result, correctAnswers, promptId, confidence);
 
-      // Add validation results
-      result.predictedOutputGrid = multi.predictedGrids;
-      result.multiplePredictedOutputs = multi.predictedGrids;
-      result.hasMultiplePredictions = true;
-      result.predictedOutputGrids = multi.predictedGrids;
-      result.multiValidation = multi.itemResults;
-      result.multiTestResults = multi.itemResults;
-      result.multiTestAllCorrect = multi.allCorrect;
-      result.multiTestAverageAccuracy = multi.averageAccuracyScore;
-      result.predictionAccuracyScore = multi.averageAccuracyScore;
+      // FIXED: Use database-compatible field names directly from validator
+      // No field transformation - direct assignment to match database schema
+      result.hasMultiplePredictions = multiValidation.hasMultiplePredictions;
+      result.multiplePredictedOutputs = multiValidation.multiplePredictedOutputs;
+      result.multiTestResults = multiValidation.multiTestResults;
+      result.multiTestAllCorrect = multiValidation.multiTestAllCorrect;
+      result.multiTestAverageAccuracy = multiValidation.multiTestAverageAccuracy;
+      result.multiTestPredictionGrids = multiValidation.multiTestPredictionGrids;
+
+      // Legacy fields for backward compatibility
+      result.predictedOutputGrid = multiValidation.multiplePredictedOutputs;
+      result.predictionAccuracyScore = multiValidation.multiTestAverageAccuracy;
+      result.multiValidation = multiValidation.multiTestResults; // Legacy alias
 
     } else {
       // Single-test case: AI provided one grid
       const correctAnswer = puzzle.test[0].output;
       const validation = validateSolverResponse(result, correctAnswer, promptId, confidence);
 
-      // Add validation results
+      // Single-test validation results
       result.predictedOutputGrid = validation.predictedGrid;
-      result.multiplePredictedOutputs = null;
-      result.hasMultiplePredictions = false;
       result.isPredictionCorrect = validation.isPredictionCorrect;
       result.predictionAccuracyScore = validation.predictionAccuracyScore;
+
+      // Ensure multi-test fields are properly set for single-test cases
+      result.hasMultiplePredictions = false;
+      result.multiplePredictedOutputs = null;
+      result.multiTestResults = null;
+      result.multiTestAllCorrect = null;
+      result.multiTestAverageAccuracy = null;
+      result.multiTestPredictionGrids = null;
     }
     
     // Restore original analysis content after validation
