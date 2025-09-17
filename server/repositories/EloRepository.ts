@@ -331,6 +331,21 @@ export class EloRepository extends BaseRepository {
         voteData.userAgent
       ]);
 
+      // Auto-feedback for BOTH_BAD votes: record negative feedback for both explanations
+      if (voteData.outcome === 'BOTH_BAD') {
+        // Insert feedback for explanation A
+        await client.query(`
+          INSERT INTO feedback (puzzle_id, explanation_id, feedback_type, comment, user_agent, session_id)
+          VALUES ($1, $2, 'not_helpful', 'Auto-generated from BOTH_BAD ELO vote', $3, $4)
+        `, [voteData.puzzleId, voteData.explanationAId, voteData.userAgent, voteData.sessionId]);
+
+        // Insert feedback for explanation B
+        await client.query(`
+          INSERT INTO feedback (puzzle_id, explanation_id, feedback_type, comment, user_agent, session_id)
+          VALUES ($1, $2, 'not_helpful', 'Auto-generated from BOTH_BAD ELO vote', $3, $4)
+        `, [voteData.puzzleId, voteData.explanationBId, voteData.userAgent, voteData.sessionId]);
+      }
+
       // Update or create session
       await client.query(`
         INSERT INTO comparison_sessions (session_id, total_votes, last_activity)

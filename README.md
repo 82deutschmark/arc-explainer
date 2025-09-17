@@ -1,46 +1,55 @@
 # ARC-AGI Analysis Platform
 
-**Last updated: September 2025**
+**Last updated: September 16, 2025**
 
 A professional research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models. Built for researchers, developers, and AI practitioners working on abstract reasoning and pattern recognition.
 
 ## Overview
 
-This platform provides comprehensive analysis tools for ARC-AGI puzzles, featuring multi-model AI analysis, reasoning extraction, performance evaluation, and collaborative feedback systems. The architecture supports enterprise deployment with PostgreSQL database integration and Docker containerization.
+This platform provides a robust suite of tools for ARC-AGI puzzle analysis, featuring multi-model AI evaluation, deep reasoning extraction, advanced performance analytics, and collaborative feedback systems. The architecture is engineered for stability and enterprise deployment, with PostgreSQL database integration and Docker containerization.
 
 ## Key Features
+
+### ⭐ ELO Rating System
+- **Pairwise Comparison**: Anonymously compare and vote on the quality of two different AI explanations for the same puzzle.
+- **Quality Leaderboard**: Dynamically ranks AI models based on head-to-head user judgments, providing a more nuanced view of performance than simple accuracy.
+- **Bias Reduction**: Hides model names during comparison to ensure impartial evaluation.
+
+### ✨ Instant & Optimistic UI
+- **Immediate Feedback**: Analysis result cards appear instantly, with skeleton loaders and progressive status updates (`ANALYZING` → `SAVING` → `COMPLETED`).
+- **No More Waiting**: Eliminates the 10-30 second "dead time" during analysis, providing a seamless and responsive user experience.
+
+### 🔬 Advanced Research & Analysis Tools
+- **Rich Filtering**: Filter puzzles by ARC dataset (`ARC1`, `ARC2-Eval`, etc.), multi-test status, and more.
+- **Advanced Sorting**: Sort puzzles by cost, processing time, or composite difficulty scores to identify key trends.
+- **GEPA Solver**: A new solver mode implementing the systematic strategy analysis from the proven GEPA methodology.
+- **Unrestricted API**: API limits have been removed, allowing external applications to access complete datasets for deep analysis.
 
 ### 🤖 Multi-Provider AI Integration
 - **OpenAI**: GPT-4, GPT-5, O3/O4 models with Responses API and reasoning extraction
 - **Anthropic**: Claude models with structured reasoning via Tool Use API  
 - **Google**: Gemini 2.5+ models with thought process extraction
-- **xAI**: Grok models with advanced reasoning capabilities
+- **xAI**: Grok models (via OpenRouter) with advanced reasoning capabilities
 - **DeepSeek**: Reasoning models with comprehensive thinking capture
 - **OpenRouter**: Access to 20+ additional models via unified API
 
-### 🧠 Advanced Reasoning Capture
+### 🧠 Deep Reasoning Capture
 - **OpenAI Responses API** integration with reasoning tokens and structured output
 - **GPT-5 Parameters**: Configurable reasoning effort, verbosity, and summary types
 - **Reasoning Logs**: Captured thinking processes from all reasoning-capable models
-- **Structured Output**: JSON schema enforcement for consistent analysis format
+- **Raw Response Storage**: Complete, unaltered API responses are always saved for debugging and recovery.
 
-### 📊 Comprehensive Analytics
-- **Performance Metrics**: Model accuracy, confidence calibration, processing times
-- **Cost Tracking**: Token usage and API cost calculation across all providers
-- **Trustworthiness Scoring**: Confidence vs accuracy analysis for overconfidence detection
-- **Batch Analysis**: Large-scale evaluation with session management and progress tracking
+### 📊 Comprehensive Analytics & Cost Tracking
+- **Performance Metrics**: Model accuracy, confidence calibration, processing times.
+- **Cost Tracking**: Token usage and API cost calculation across all providers.
+- **Trustworthiness Scoring**: Confidence vs. accuracy analysis to detect overconfidence.
+- **Batch Analysis**: Large-scale evaluation with session management and progress tracking.
 
-### 🔬 Research Tools
-- **Custom Prompts**: Override built-in templates with research-specific prompts
-- **Prompt Preview**: Inspect exact prompts sent to each provider
-- **Multi-Template System**: Solver, explanation, educational, and custom modes
-- **Raw Response Logging**: Complete API responses stored for analysis
-
-### 🏗 Professional Architecture
-- **Modular Design**: BaseAIService pattern eliminates 90% code duplication
-- **Repository Pattern**: Clean separation of data access with specialized repositories
-- **Type Safety**: Full TypeScript coverage with comprehensive interfaces
-- **Error Handling**: Robust retry logic, validation, and fallback systems
+### 🏗 Professional Architecture: Stability & Data Integrity
+- **Robust API Handling**: System is resilient to non-compliant API responses (e.g., conversational text, markdown-wrapped JSON), ensuring data is captured even from verbose or misbehaving models.
+- **Data Sanitization**: All grid data is automatically sanitized to prevent database errors from invalid AI-generated characters.
+- **Critical Data Preservation**: Raw API responses are saved *before* parsing, guaranteeing that expensive API calls are never lost, even if parsing fails.
+- **Database Stability**: Eliminated duplicate initializations and added intelligent retry logic to ensure reliable connections to the PostgreSQL database.
 
 ## Quick Start
 
@@ -110,35 +119,43 @@ Core storage for AI analysis results with comprehensive metadata:
 CREATE TABLE explanations (
     id SERIAL PRIMARY KEY,
     puzzle_id TEXT NOT NULL,
+    -- Core Analysis
     pattern_description TEXT,
     solving_strategy TEXT,
     hints TEXT[],
     confidence INTEGER,
-    model_name TEXT,
-    reasoning_log TEXT,
-    has_reasoning_log BOOLEAN,
-    reasoning_items JSONB,
-    api_processing_time_ms INTEGER,
-    input_tokens INTEGER,
-    output_tokens INTEGER, 
-    reasoning_tokens INTEGER,
-    total_tokens INTEGER,
-    estimated_cost NUMERIC,
-    temperature NUMERIC,
-    reasoning_effort TEXT,
-    reasoning_verbosity TEXT,
-    reasoning_summary_type TEXT,
+    -- Prediction & Accuracy
     predicted_output_grid JSONB,
     is_prediction_correct BOOLEAN,
     prediction_accuracy_score NUMERIC,
+    -- Multi-Test Prediction Fields
     has_multiple_predictions BOOLEAN,
     multiple_predicted_outputs JSONB,
     multi_test_results JSONB,
     multi_test_all_correct BOOLEAN,
     multi_test_average_accuracy NUMERIC,
+    -- AI & Prompt Metadata
+    model_name TEXT,
+    provider_raw_response JSONB, -- Stores the complete, unaltered API response
     system_prompt_used TEXT,
     user_prompt_used TEXT,
     prompt_template_id TEXT,
+    -- Reasoning & Timings
+    reasoning_log TEXT,
+    has_reasoning_log BOOLEAN,
+    reasoning_items JSONB,
+    api_processing_time_ms INTEGER,
+    -- Token & Cost Tracking
+    input_tokens INTEGER,
+    output_tokens INTEGER, 
+    reasoning_tokens INTEGER,
+    total_tokens INTEGER,
+    estimated_cost NUMERIC,
+    -- GPT-5 Specific
+    temperature NUMERIC,
+    reasoning_effort TEXT,
+    reasoning_verbosity TEXT,
+    reasoning_summary_type TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
@@ -149,18 +166,42 @@ User feedback and evaluation system:
 ```sql
 CREATE TABLE feedback (
     id SERIAL PRIMARY KEY,
-    explanation_id INTEGER REFERENCES explanations(id),
+    explanation_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
     vote_type VARCHAR CHECK (vote_type IN ('helpful', 'not_helpful')),
     comment TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
 
+#### ELO Rating System Tables
+Stores data for the pairwise explanation quality comparison system:
+
+```sql
+CREATE TABLE elo_ratings (
+    id SERIAL PRIMARY KEY,
+    explanation_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    current_rating INTEGER NOT NULL DEFAULT 1500,
+    games_played INTEGER NOT NULL DEFAULT 0,
+    wins INTEGER NOT NULL DEFAULT 0,
+    losses INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE elo_comparisons (
+    id SERIAL PRIMARY KEY,
+    explanation_a_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    explanation_b_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    winner_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
+    session_id TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(explanation_a_id, explanation_b_id, session_id)
+);
+```
+
 ## API Reference
 
 ### Core Endpoints
-
-#### Analysis
 ```http
 POST /api/puzzle/analyze/:puzzleId/:modelKey
 Content-Type: application/json
@@ -200,11 +241,14 @@ Content-Type: application/json
 ```
 
 ### Data Retrieval
+**NOTE**: API limits on analytics and feedback endpoints have been removed or significantly increased to support external applications. See `docs/EXTERNAL_API.md` for full details.
+
 ```http
 GET /api/puzzles                           # List all available puzzles
 GET /api/puzzle/:puzzleId                  # Get specific puzzle data
 GET /api/puzzle/:puzzleId/explanations     # Get all analyses for puzzle
 GET /api/overview?limit=50&offset=0        # Paginated overview with filters
+GET /api/elo/comparison_pair               # Get a pair of explanations for ELO voting
 ```
 
 ## Deployment
@@ -263,7 +307,32 @@ This platform follows professional development standards:
 ## License
 
 Built for research and educational applications in abstract reasoning and AI analysis.
+ARC-AGI-2 contains 1,000 public training tasks and 120 public evaluation tasks.
 
----
+The training tasks are intended to demonstrate the task format and the Core Knowledge priors used by ARC-AGI. They can be used for training AI models. The public evaluation tasks are intended for testing AI models that have never seen these tasks before. Average human performance on these tasks in our test sample was 66%.
 
-**Professional Support**: For enterprise deployments, custom integrations, or research collaborations, please contact the development team.
+ARC-AGI-2 also features two private test sets not included in the repo:
+
+A semi-private set intended for testing remotely-hosted commercial models with low leakage probability. It is calibrated to be the same human-facing difficulty as the public evaluation set.
+A fully-private set intended for testing self-contained models during the ARC Prize competition, with near-zeo leakage probability. It is also calibrated to be the same difficulty.
+This multi-tiered structure allows for both open research and a secure, high-stakes competition.
+
+Task success criterion
+A test-taker is said to solve a task when, upon seeing the task for the first time, they are able to produce the correct output grid for all test inputs in the task (this includes picking the dimensions of the output grid). For each test input, the test-taker is allowed 2 trials (this holds for all test-takers, either humans or AI).
+
+Task file format
+The data directory contains two subdirectories:
+
+data/training: contains the task files for training (1000 tasks). Use these to prototype your algorithm or to train your algorithm to acquire ARC-relevant cognitive priors. This set combines tasks from ARC-AGI-1 as well as new tasks.
+data/evaluation: contains the task files for evaluation (120 tasks). Use these to evaluate your final algorithm. To ensure fair evaluation results, do not leak information from the evaluation set into your algorithm (e.g. by looking at the evaluation tasks yourself during development, or by repeatedly modifying an algorithm while using its evaluation score as feedback). Each task in evaluation has been solved by a minimum of 2 people (many tasks were solved by more) in 2 attempts or less in a controlled test.
+The tasks are stored in JSON format. Each task JSON file contains a dictionary with two fields:
+
+"train": demonstration input/output pairs. It is a list of "pairs" (typically 3 pairs).
+"test": test input/output pairs. It is a list of "pairs" (typically 1-2 pair).
+A "pair" is a dictionary with two fields:
+
+"input": the input "grid" for the pair.
+"output": the output "grid" for the pair.
+A "grid" is a rectangular matrix (list of lists) of integers between 0 and 9 (inclusive). The smallest possible grid size is 1x1 and the largest is 30x30.
+
+When looking at a task, a test-taker has access to inputs & outputs of the demonstration pairs, plus the input(s) of the test pair(s). The goal is to construct the output grid(s) corresponding to the test input grid(s), using 3 trials for each test input. "Constructing the output grid" involves picking the height and width of the output grid, then filling each cell in the grid with a symbol (integer between 0 and 9, which are visualized as colors). Only exact solutions (all cells match the expected answer) can be said to be correct.

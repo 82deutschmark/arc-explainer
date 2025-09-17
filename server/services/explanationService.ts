@@ -73,54 +73,27 @@ export const explanationService = {
         const sourceData = explanations[modelKey];
 
 
+        // CRITICAL SIMPLIFICATION: Accept pre-validated data from puzzleAnalysisService
+        // Author: Claude Code using Sonnet 4
+        // Date: 2025-09-16
+        // PURPOSE: Eliminate redundant grid collection logic that was overriding validated data
+
         // Handle nested result structure from OpenRouter services
         // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
         const analysisData = sourceData.result || sourceData;
-        
-        // Collect multiple prediction grids from various sources
-        let collectedGrids: any[] = [];
-        
-        // 1. For single test cases: check predictedOutput field first
-        const singlePrediction = sourceData.predictedOutput || analysisData.predictedOutput;
-        const multiplePredictionsFlag = sourceData.multiplePredictedOutputs ?? analysisData.multiplePredictedOutputs;
-        
-        if (!multiplePredictionsFlag && singlePrediction && Array.isArray(singlePrediction) && singlePrediction.length > 0) {
-          // Single test case - use predictedOutput
-          collectedGrids.push(singlePrediction);
-        } else {
-          // Multiple test cases - check predictedOutput1, predictedOutput2, predictedOutput3 fields
-          let i = 1;
-          while (sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`]) {
-            const grid = sourceData[`predictedOutput${i}`] || analysisData[`predictedOutput${i}`];
-            if (grid && Array.isArray(grid) && grid.length > 0) {
-              collectedGrids.push(grid);
-            }
-            i++;
-          }
-        }
-        
-        // 2. From multi-test results (different test cases, not multiple predictions per test)
-        if (Array.isArray(analysisData.multiTestResults)) {
-          const testGrids = analysisData.multiTestResults.map((result: any) => result.predictedOutput).filter(Boolean);
-          if (testGrids.length > 0 && collectedGrids.length === 0) {
-            // Only use test results if we didn't find prediction grids above
-            collectedGrids = testGrids;
-          }
-        }
-        
-        // 3. From multiplePredictedOutputs array (if it exists as array)
-        if (Array.isArray(sourceData.multiplePredictedOutputs)) {
-          if (collectedGrids.length === 0) {
-            collectedGrids.push(...sourceData.multiplePredictedOutputs);
-          }
-        } else if (Array.isArray(analysisData.multiplePredictedOutputs)) {
-          if (collectedGrids.length === 0) {
-            collectedGrids.push(...analysisData.multiplePredictedOutputs);
-          }
-        }
 
-        const hasMultiplePredictions = multiplePredictionsFlag === true;
-        const multiplePredictedOutputsForStorage = hasMultiplePredictions ? collectedGrids : null;
+        // CRITICAL FIX: Use pre-validated data with database-compatible field names
+        // Author: Claude Code using Sonnet 4
+        // Date: 2025-09-16
+        // PURPOSE: Fix multi-test data loss by using validated grids instead of raw boolean flag
+        // No more complex grid collection - puzzleAnalysisService already validated and formatted the data
+        const hasMultiplePredictions = sourceData.hasMultiplePredictions || false;
+
+        // FIXED: For multi-test cases, use the validated grids, not the raw boolean flag
+        // puzzleAnalysisService.validateAndEnrichResult() already set the correct grid arrays
+        const multiplePredictedOutputsForStorage = hasMultiplePredictions
+          ? (sourceData.multiplePredictedOutputs || null)  // Use validated grids
+          : null;  // Single-test case
 
         const tokenUsage = sourceData.tokenUsage;
         const costData = sourceData.cost;
@@ -178,14 +151,18 @@ export const explanationService = {
           modelName: sourceData.modelName ?? modelKey,
           reasoningItems: finalReasoningItems,
           reasoningLog: finalReasoningLog,
-          predictedOutputGrid: collectedGrids.length > 1 ? collectedGrids : collectedGrids[0],
+          // FIXED: Use pre-validated fields with database-compatible names
+          predictedOutputGrid: sourceData.predictedOutputGrid ?? analysisData.predictedOutputGrid ?? null,
           isPredictionCorrect: sourceData.isPredictionCorrect ?? analysisData.isPredictionCorrect ?? false,
           predictionAccuracyScore: sourceData.predictionAccuracyScore ?? analysisData.predictionAccuracyScore ?? 0,
+
+          // Multi-test fields with database-compatible names (pre-validated by puzzleAnalysisService)
           hasMultiplePredictions: hasMultiplePredictions,
-          multiplePredictedOutputs: collectedGrids,
+          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
           multiTestResults: sourceData.multiTestResults ?? analysisData.multiTestResults ?? null,
-          multiTestAllCorrect: sourceData.multiTestAllCorrect ?? null,
-          multiTestAverageAccuracy: sourceData.multiTestAverageAccuracy ?? null,
+          multiTestAllCorrect: sourceData.multiTestAllCorrect ?? analysisData.multiTestAllCorrect ?? null,
+          multiTestAverageAccuracy: sourceData.multiTestAverageAccuracy ?? analysisData.multiTestAverageAccuracy ?? null,
+          multiTestPredictionGrids: sourceData.multiTestPredictionGrids ?? analysisData.multiTestPredictionGrids ?? null,
           // If parsing failed, save the raw response from the `_rawResponse` field.
           providerRawResponse: analysisData._parsingFailed ? analysisData._rawResponse : (sourceData.providerRawResponse ?? null),
           apiProcessingTimeMs: sourceData.actualProcessingTime ?? sourceData.apiProcessingTimeMs ?? null,
@@ -206,6 +183,15 @@ export const explanationService = {
         };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
+
+        // CRITICAL DEBUG: Log multi-test data before saving to track data loss
+        if (hasMultiplePredictions) {
+          console.log(`[MULTI-TEST-DEBUG] hasMultiplePredictions: ${hasMultiplePredictions}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs type: ${typeof multiplePredictedOutputsForStorage}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs length: ${Array.isArray(multiplePredictedOutputsForStorage) ? multiplePredictedOutputsForStorage.length : 'not-array'}`);
+          console.log(`[MULTI-TEST-DEBUG] multiTestResults: ${sourceData.multiTestResults ? 'present' : 'missing'}`);
+        }
+
         try {
           const explanationWithPuzzleId = {
             ...explanationData,

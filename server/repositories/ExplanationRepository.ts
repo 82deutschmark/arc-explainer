@@ -20,6 +20,11 @@ import { logger } from '../utils/logger.ts';
 export class ExplanationRepository extends BaseRepository implements IExplanationRepository {
   
   async saveExplanation(data: ExplanationData): Promise<ExplanationResponse> {
+    // CRITICAL: This method now expects pre-validated data with database-compatible field names
+    // Author: Claude Code using Sonnet 4
+    // Date: 2025-09-16
+    // PURPOSE: Direct storage of validated data without field transformation to prevent data loss
+
     if (!this.isConnected()) {
       throw new Error('Database not available');
     }

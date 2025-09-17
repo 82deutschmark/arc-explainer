@@ -219,6 +219,21 @@ export abstract class BaseAIService {
   ): AIResponse {
     const cost = this.calculateResponseCost(modelKey, tokenUsage);
     
+    // CRITICAL FIX: Preserve ALL prediction fields from raw AI response
+    // Author: Gemini 2.5 Pro
+    // Date: 2025-09-17
+    // PURPOSE: Fix multi-test prediction data loss by preserving individual prediction fields
+    // The previous implementation only mapped specific fields, discarding predictedOutput1, predictedOutput2, etc.
+    const preservedPredictionFields: any = {};
+    if (result) {
+      // Preserve all predictedOutput* fields for multi-test cases
+      Object.keys(result).forEach(key => {
+        if (key.startsWith('predictedOutput') && key !== 'predictedOutput') {
+          preservedPredictionFields[key] = result[key];
+        }
+      });
+    }
+    
     return {
       model: modelKey,
       reasoningLog: reasoningLog,
@@ -253,6 +268,8 @@ export abstract class BaseAIService {
       multiTestResults: result?.multiTestResults,
       isPredictionCorrect: result?.isPredictionCorrect,
       predictionAccuracyScore: result?.predictionAccuracyScore,
+      // CRITICAL FIX: Preserve all individual prediction fields (predictedOutput1, predictedOutput2, etc.)
+      ...preservedPredictionFields,
       // Preserve raw response and parsing metadata
       _rawResponse: result?._rawResponse,
       _parseError: result?._parseError,
