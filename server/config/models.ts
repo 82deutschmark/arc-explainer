@@ -424,8 +424,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    contextWindow: 128000,
-    maxOutputTokens: 25000,
+    contextWindow: 30000,
+    maxOutputTokens: 8000,
     requiresPromptFormat: true
   },
   {
@@ -535,11 +535,11 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 30000
   },
   {
-    key: 'z-ai/glm-4.5-air:free',
-    name: 'Z-AI GLM 4.5 (Air)',
+    key: 'z-ai/glm-4.5',
+    name: 'Z-AI GLM 4.5',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    cost: { input: '$0.5', output: '$2.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
@@ -547,7 +547,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'z-ai/glm-4.5-air:free',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 96000
+    maxOutputTokens: 16000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
