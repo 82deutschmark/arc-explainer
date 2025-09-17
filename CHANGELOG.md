@@ -42,11 +42,19 @@
 - Single responsibility: only `responseValidator.ts` handles validation logic
 - Clean data flow without transformation layers
 
+**CRITICAL HOTFIX** (September 16, 2025 Evening):
+- **EMERGENCY FIX**: Fixed explanationService overwriting validated multi-test data with raw boolean flags
+- **ROOT CAUSE**: Line 88 in explanationService.ts was using `sourceData.multiplePredictedOutputs || null` which converted validated grid arrays back to boolean/null
+- **IMPACT**: Multi-test puzzles were saving as `[null, null]` instead of actual prediction grids
+- **SOLUTION**: Added conditional logic to preserve validated grids for multi-test cases
+- **DEBUG**: Added detailed logging to track multi-test data flow and prevent future regressions
+
 **USER IMPACT**:
 - Multi-test puzzles now display all prediction grids correctly in frontend
 - AI models like GPT-5, Gemini-2.0, DeepSeek show complete prediction results
 - Batch analysis correctly processes and stores multi-test validation results
 - Historical data integrity maintained - no changes to existing database entries
+- **IMMEDIATE**: New multi-test analysis will now save correctly to database
 
 ## v2.24.1 - PuzzleBrowser Default Filter Optimization
 
