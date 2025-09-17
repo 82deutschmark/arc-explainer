@@ -463,6 +463,10 @@ export function validateSolverResponseMulti(
   promptId: string,
   confidence: number = 50
 ): MultiValidationResult {
+  // EMERGENCY DEBUG: Log the exact structure being passed to validator
+  console.log('[VALIDATOR-INPUT-DEBUG] response keys:', Object.keys(response));
+  console.log('[VALIDATOR-INPUT-DEBUG] response.predictedOutput1:', response.predictedOutput1);
+  console.log('[VALIDATOR-INPUT-DEBUG] response.result?.predictedOutput1:', response.result?.predictedOutput1);
   const isSolverMode = promptId === 'solver';
   if (!isSolverMode) {
     // Non-solver mode: return empty multi-test structure
