@@ -484,11 +484,11 @@ export function validateSolverResponseMulti(
   // Use clean confidence from arcJsonSchema response or nested structure
   const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
-  // arcJsonSchema provides clean predictedOutput1, predictedOutput2, predictedOutput3 fields
+  // Extract grids directly from AI response - they come exactly as we need them
   const predictedGrids: (number[][] | null)[] = [
-    analysisData.predictedOutput1 || null,
-    analysisData.predictedOutput2 || null, 
-    analysisData.predictedOutput3 || null
+    analysisData.predictedOutput1 || response.predictedOutput1 || null,
+    analysisData.predictedOutput2 || response.predictedOutput2 || null,
+    analysisData.predictedOutput3 || response.predictedOutput3 || null
   ].slice(0, correctAnswers.length);
 
   // Pad or trim to match expected count
