@@ -71,7 +71,7 @@ export default function EloComparison() {
   } = useEloVoting();
 
   // Fetch model accuracy data for results modal
-  const { data: leaderboardData } = useModelLeaderboards();
+  const { accuracyStats: leaderboardData } = useModelLeaderboards();
 
   // Handle vote submission
   const handleVote = async (outcome: 'A_WINS' | 'B_WINS' | 'BOTH_BAD') => {
@@ -92,9 +92,9 @@ export default function EloComparison() {
 
       // Get model accuracy data
       const getModelAccuracy = (modelName: string) => {
-        if (leaderboardData?.accuracyLeaderboard) {
-          return leaderboardData.accuracyLeaderboard.find(
-            model => model.modelName === modelName
+        if (leaderboardData?.modelAccuracyRankings) {
+          return leaderboardData.modelAccuracyRankings.find(
+            (model: any) => model.modelName === modelName
           );
         }
         return undefined;
