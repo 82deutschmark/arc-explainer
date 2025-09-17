@@ -465,8 +465,9 @@ export function validateSolverResponseMulti(
 ): MultiValidationResult {
   // EMERGENCY DEBUG: Log the exact structure being passed to validator
   console.log('[VALIDATOR-INPUT-DEBUG] response keys:', Object.keys(response));
+  console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse:', response._rawResponse ? Object.keys(response._rawResponse) : 'no _rawResponse');
   console.log('[VALIDATOR-INPUT-DEBUG] response.predictedOutput1:', response.predictedOutput1);
-  console.log('[VALIDATOR-INPUT-DEBUG] response.result?.predictedOutput1:', response.result?.predictedOutput1);
+  console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse?.predictedOutput1:', response._rawResponse?.predictedOutput1);
   const isSolverMode = promptId === 'solver';
   if (!isSolverMode) {
     // Non-solver mode: return empty multi-test structure
@@ -488,11 +489,12 @@ export function validateSolverResponseMulti(
   // Use clean confidence from arcJsonSchema response or nested structure
   const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
 
-  // Extract grids directly from AI response - they come exactly as we need them
+  // CRITICAL FIX: Extract grids from _rawResponse where they actually exist
+  const rawResponse = response._rawResponse || response._providerRawResponse || {};
   const predictedGrids: (number[][] | null)[] = [
-    analysisData.predictedOutput1 || response.predictedOutput1 || null,
-    analysisData.predictedOutput2 || response.predictedOutput2 || null,
-    analysisData.predictedOutput3 || response.predictedOutput3 || null
+    rawResponse.predictedOutput1 || analysisData.predictedOutput1 || response.predictedOutput1 || null,
+    rawResponse.predictedOutput2 || analysisData.predictedOutput2 || response.predictedOutput2 || null,
+    rawResponse.predictedOutput3 || analysisData.predictedOutput3 || response.predictedOutput3 || null
   ].slice(0, correctAnswers.length);
 
   // Pad or trim to match expected count
