@@ -361,6 +361,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
   },
+  
   {
     key: 'qwen/qwen-plus-2025-07-28:thinking',
     name: 'Qwen: Qwen Plus 0728 (thinking)',
