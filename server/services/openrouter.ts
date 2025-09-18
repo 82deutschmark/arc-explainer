@@ -122,9 +122,14 @@ export class OpenRouterService extends BaseAIService {
           stream: false // Explicitly disable streaming
         };
 
-        // Conditionally apply JSON mode. Grok-4 seems to have issues with it.
-        if (!modelName.includes('grok-4')) {
+        // Conditionally apply JSON mode based on model configuration
+        const modelConfig = getModelConfig(modelKey);
+        const supportsStructuredOutput = modelConfig?.supportsStructuredOutput !== false;
+        
+        if (supportsStructuredOutput) {
           payload.response_format = { type: "json_object" } as const;
+        } else {
+          logger.service('OpenRouter', `Disabling JSON mode for model that doesn't support structured output: ${modelName}`);
         }
 
         if (continuationStep === 0) {
@@ -136,8 +141,8 @@ export class OpenRouterService extends BaseAIService {
             payload.prompt = `${prompt.systemPrompt}\n\n${prompt.userPrompt}`;
             logger.service('OpenRouter', `Using prompt format for ${modelName}`);
           }
-          // Grok-4 models seem to require a combined prompt. Other models might not support system prompts.
-          else if (modelName.includes('grok-4') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
+          // Grok models and some others require a combined prompt strategy, or might not support system prompts.
+          else if (modelName.includes('grok') || (modelConfig && modelConfig.supportsSystemPrompts === false)) {
             payload.messages = [
               {
                 role: "user",
@@ -161,9 +166,10 @@ export class OpenRouterService extends BaseAIService {
           if (modelConfig && modelConfig.maxOutputTokens) {
             payload.max_tokens = modelConfig.maxOutputTokens;
             logger.service('OpenRouter', `Setting max_tokens for ${modelKey}: ${payload.max_tokens}`);
-          } else if (modelKey === 'x-ai/grok-4') {
-            payload.max_tokens = 120000;
-            logger.service('OpenRouter', `Setting high token limit for ${modelKey}: ${payload.max_tokens}`);
+          } else if (modelName.includes('grok')) {
+            // Use a reasonable default for Grok models
+            payload.max_tokens = modelConfig?.contextWindow ? Math.min(25000, Math.floor(modelConfig.contextWindow * 0.8)) : 25000;
+            logger.service('OpenRouter', `Setting token limit for Grok model ${modelKey}: ${payload.max_tokens}`);
           }
           
           logger.service('OpenRouter', `Initial API request - model: ${modelName}, max_tokens: ${payload.max_tokens || 'default'}`);
