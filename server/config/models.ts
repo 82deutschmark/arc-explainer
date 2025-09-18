@@ -376,7 +376,8 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 1000000,
     maxOutputTokens: 32800,
-    releaseDate: "2025-07"
+    releaseDate: "2025-07",
+    supportsStructuredOutput: false // Thinking models often have issues with JSON mode
   },
 
   // OpenRouter Models (unique models not available through direct APIs)
@@ -504,7 +505,8 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 256000,
     maxOutputTokens: 25000,
-    requiresPromptFormat: true
+    requiresPromptFormat: true,
+    supportsStructuredOutput: false // Grok models have issues with JSON mode
   },
   {
     key: 'openai/gpt-oss-120b',
