@@ -409,7 +409,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 25000,
+    maxOutputTokens: 4000,
     requiresPromptFormat: true
   },
   {
@@ -503,7 +503,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 25000
+    maxOutputTokens: 20000
   },
   {
     key: 'mistralai/codestral-2508',
@@ -517,7 +517,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'mistralai/codestral-2508',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 8000
   },
   {
     key: 'qwen/qwen3-30b-a3b-instruct-2507',
@@ -690,6 +691,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
     contextWindow: 32768,
+    maxOutputTokens: 4000,
     requiresPromptFormat: true
   },
   {
@@ -704,7 +706,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-prover-v2',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 24000
   },
   {
     key: 'deepseek/deepseek-r1-0528:free',
@@ -718,7 +721,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 24000,
   },
   {
     key: 'nvidia/nemotron-nano-9b-v2',
@@ -733,7 +737,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'nvidia/nemotron-nano-9b-v2',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 64000,
+    maxOutputTokens: 24000,
     releaseDate: "2025-09"
   },
   {

@@ -36,7 +36,9 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
             <AlertTriangle className="h-5 w-5" />
             <span className="text-sm font-bold">{model.name} Failed</span>
           </div>
-          <p className="text-xs text-center mt-2 break-words">{error.message}</p>
+          <p className="text-xs text-center mt-2 break-words" title={error.message}>
+            {error.message.length > 100 ? `${error.message.substring(0, 100)}...` : error.message}
+          </p>
           <p className="text-xs text-center mt-1 font-semibold">(Click to retry)</p>
         </div>
       ) : (

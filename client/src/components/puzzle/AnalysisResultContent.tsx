@@ -87,16 +87,6 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
     );
   }
   
-  // Debug logging to see what result actually contains (only for non-optimistic results)
-  if (!isOptimistic) {
-    console.log('[REASONING-DEBUG] result object:', result);
-    console.log('[REASONING-DEBUG] hasReasoningLog:', result.hasReasoningLog);
-    console.log('[REASONING-DEBUG] reasoningLog:', result.reasoningLog);
-    console.log('[REASONING-DEBUG] reasoningItems:', result.reasoningItems);
-    console.log('[REASONING-DEBUG] reasoningItems type:', typeof result.reasoningItems);
-    console.log('[REASONING-DEBUG] reasoningItems length:', result.reasoningItems?.length);
-    console.log('[REASONING-DEBUG] condition result:', ((result.hasReasoningLog && result.reasoningLog) || (result.reasoningItems && Array.isArray(result.reasoningItems) && result.reasoningItems.length > 0)));
-  }
   
   const isEmptyResult = !result || (
     (!result.patternDescription || result.patternDescription.trim() === '') && 
