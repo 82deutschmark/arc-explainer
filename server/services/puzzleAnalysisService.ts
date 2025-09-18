@@ -106,8 +106,8 @@ export class PuzzleAnalysisService {
     const apiProcessingTimeMs = Date.now() - apiStartTime;
     result.apiProcessingTimeMs = apiProcessingTimeMs;
     
-    // Validate solver responses if needed
-    if (promptId === "solver") {
+    // Validate solver responses and custom prompts that may be attempting to solve
+    if (promptId === "solver" || promptId === "custom") {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
     

@@ -16,7 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useLocation } from 'wouter';
 
 // Import puzzle DB hook
 import { usePuzzleDBStats, PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
@@ -117,6 +119,9 @@ export default function PuzzleDBViewer() {
   const [attemptRange, setAttemptRange] = useState<[number, number]>([0, 100]);
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [location, setLocation] = useLocation();
 
   // Fetch puzzle data - get ALL puzzles from all 5 datasets, sort client-side
   const { data: puzzles, isLoading, error } = usePuzzleDBStats({
@@ -130,6 +135,11 @@ export default function PuzzleDBViewer() {
   const filteredPuzzles = React.useMemo(() => {
     if (!puzzles) return [];
     let filtered = puzzles;
+    
+    // Apply search query first (matching Browser page)
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(puzzle => puzzle.id.includes(searchQuery.trim()));
+    }
     
     // Apply basic filters
     if (showZeroOnly) {
@@ -202,8 +212,22 @@ export default function PuzzleDBViewer() {
           return aLevel.priority - bLevel.priority;
       }
     });
-  }, [puzzles, showZeroOnly, dangerousOnly, humbleOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy]);
+  }, [puzzles, showZeroOnly, dangerousOnly, humbleOnly, confidenceRange, accuracyRange, attemptRange, sourceFilter, sortBy, searchQuery]);
 
+  // Handle puzzle search by ID (matching Browser page functionality)
+  const handleSearch = React.useCallback(() => {
+    if (filteredPuzzles.length === 1 && searchQuery.trim() === filteredPuzzles[0].id) {
+      setLocation(`/puzzle/${filteredPuzzles[0].id}`);
+    }
+    // If the search query is a full puzzle ID that doesn't exist in the current list, try navigating anyway
+    else if (searchQuery.trim().length > 0 && filteredPuzzles.length === 0) {
+      const potentialPuzzleId = searchQuery.trim();
+      // Basic validation for what a puzzle ID might look like
+      if (potentialPuzzleId.length > 5 && !potentialPuzzleId.includes(' ')) {
+        setLocation(`/puzzle/${potentialPuzzleId}`);
+      }
+    }
+  }, [searchQuery, filteredPuzzles, setLocation]);
 
   return (
     <div className="container mx-auto p-3 max-w-7xl space-y-4">
@@ -246,6 +270,41 @@ export default function PuzzleDBViewer() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+              <div className="w-full md:flex-1 space-y-2">
+                <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
+                <div className="relative">
+                  <Input
+                    id="puzzleSearch"
+                    placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setSearchError(null);
+                    }}
+                    className="pr-24"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                </div>
+                {searchError && (
+                  <p className="text-sm text-red-500">{searchError}</p>
+                )}
+              </div>
+              <Button 
+                onClick={handleSearch}
+                className="min-w-[120px]"
+              >
+                Search
+              </Button>
+            </div>
+          </div>
+          
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center space-x-2">
               <label htmlFor="sort-by" className="text-sm font-medium">Sort by:</label>

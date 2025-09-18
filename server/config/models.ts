@@ -360,7 +360,24 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
-    
+  },
+  
+  {
+    key: 'qwen/qwen-plus-2025-07-28:thinking',
+    name: 'Qwen: Qwen Plus 0728 (thinking)',
+    color: 'bg-orange-700',
+    premium: true,
+    cost: { input: '$0.40 - $1.20', output: '$4.00 - $12.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-4 min' },
+    isReasoning: true,
+    apiModelName: 'qwen/qwen-plus-2025-07-28:thinking',
+    modelType: 'openrouter',
+    contextWindow: 1000000,
+    maxOutputTokens: 32800,
+    releaseDate: "2025-07",
+    supportsStructuredOutput: false // Thinking models often have issues with JSON mode
   },
 
   // OpenRouter Models (unique models not available through direct APIs)
@@ -409,7 +426,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'cohere/command-r-plus',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 25000,
+    maxOutputTokens: 4000,
     requiresPromptFormat: true
   },
   {
@@ -424,8 +441,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
     modelType: 'openrouter',
-    contextWindow: 128000,
-    maxOutputTokens: 25000,
+    contextWindow: 30000,
+    maxOutputTokens: 8000,
     requiresPromptFormat: true
   },
   {
@@ -488,7 +505,8 @@ export const MODELS: ModelConfig[] = [
     modelType: 'openrouter',
     contextWindow: 256000,
     maxOutputTokens: 25000,
-    requiresPromptFormat: true
+    requiresPromptFormat: true,
+    supportsStructuredOutput: false // Grok models have issues with JSON mode
   },
   {
     key: 'openai/gpt-oss-120b',
@@ -503,7 +521,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 25000
+    maxOutputTokens: 20000
   },
   {
     key: 'mistralai/codestral-2508',
@@ -517,7 +535,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: false,
     apiModelName: 'mistralai/codestral-2508',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 8000
   },
   {
     key: 'qwen/qwen3-30b-a3b-instruct-2507',
@@ -535,11 +554,11 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 30000
   },
   {
-    key: 'z-ai/glm-4.5-air:free',
-    name: 'Z-AI GLM 4.5 (Air)',
+    key: 'z-ai/glm-4.5',
+    name: 'Z-AI GLM 4.5',
     color: 'bg-red-300',
     premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    cost: { input: '$0.5', output: '$2.00' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '30-60 sec' },
@@ -547,7 +566,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'z-ai/glm-4.5-air:free',
     modelType: 'openrouter',
     contextWindow: 131000,
-    maxOutputTokens: 96000
+    maxOutputTokens: 16000
   },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
@@ -690,6 +709,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'cohere/command-a',
     modelType: 'openrouter',
     contextWindow: 32768,
+    maxOutputTokens: 4000,
     requiresPromptFormat: true
   },
   {
@@ -704,7 +724,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-prover-v2',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 24000
   },
   {
     key: 'deepseek/deepseek-r1-0528:free',
@@ -718,7 +739,8 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek/deepseek-r1-0528:free',
     modelType: 'openrouter',
-    contextWindow: 256000
+    contextWindow: 256000,
+    maxOutputTokens: 24000,
   },
   {
     key: 'nvidia/nemotron-nano-9b-v2',
@@ -733,7 +755,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'nvidia/nemotron-nano-9b-v2',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 64000,
+    maxOutputTokens: 24000,
     releaseDate: "2025-09"
   },
   {
