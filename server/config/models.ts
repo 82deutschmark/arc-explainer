@@ -360,7 +360,22 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
-    
+  },
+  {
+    key: 'qwen/qwen-plus-2025-07-28:thinking',
+    name: 'Qwen: Qwen Plus 0728 (thinking)',
+    color: 'bg-orange-700',
+    premium: true,
+    cost: { input: '$0.40 - $1.20', output: '$4.00 - $12.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-4 min' },
+    isReasoning: true,
+    apiModelName: 'qwen/qwen-plus-2025-07-28:thinking',
+    modelType: 'openrouter',
+    contextWindow: 1000000,
+    maxOutputTokens: 32800,
+    releaseDate: "2025-07"
   },
 
   // OpenRouter Models (unique models not available through direct APIs)
