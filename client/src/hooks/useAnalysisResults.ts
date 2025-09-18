@@ -19,7 +19,6 @@
 import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import type { Explanation } from '@shared/types';
 import type { ExplanationData } from '@/types/puzzle';
 
 interface UseAnalysisResultsProps {
@@ -38,6 +37,7 @@ interface UseAnalysisResultsProps {
 type PendingAnalysis = ExplanationData & {
   isOptimistic: true; // Always true for pending results
   status: 'analyzing' | 'saving' | 'completed' | 'error'; // Required for pending results
+  isRetryable?: boolean;
 };
 
 export function useAnalysisResults({
@@ -51,10 +51,11 @@ export function useAnalysisResults({
   const [topP, setTopP] = useState(0.95);
   const [candidateCount, setCandidateCount] = useState(1);
   const [thinkingBudget, setThinkingBudget] = useState(-1); // Default to dynamic thinking
-  const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
+  const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
+  const [analyzerErrors, setAnalyzerErrors] = useState<Map<string, Error>>(new Map());
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
   
@@ -241,12 +242,27 @@ export function useAnalysisResults({
           return newSet;
         });
         
-        // Log error details for debugging while showing user-friendly message to user
-        console.error('Analysis failed:', {
-          modelKey,
-          error: error instanceof Error ? error.message : String(error),
-          taskId
-        });
+
+        // Attempt to parse a more user-friendly message from the raw error
+        let finalErrorMessage = 'An unknown error occurred.';
+        if (error instanceof Error) {
+          try {
+            // Errors might contain a JSON string, let's try to parse it.
+            const match = error.message.match(/{\s*.*\s*}/);
+            if (match) {
+              const errorJson = JSON.parse(match[0]);
+              finalErrorMessage = errorJson.message || errorJson.error || 'Server error, please check logs.';
+            } else {
+              finalErrorMessage = error.message;
+            }
+          } catch (e) {
+            // If parsing fails, use the original error message but clean it up
+            finalErrorMessage = error.message.split('{')[0].trim().replace(/\d+:/, '').trim();
+          }
+        }
+
+        const errorToSet = new Error(finalErrorMessage);
+        setAnalyzerErrors(prev => new Map(prev).set(modelKey, errorToSet));
         
         throw error;
       }
@@ -279,6 +295,13 @@ export function useAnalysisResults({
 
   // Expose a single function to the UI to trigger the process
   const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
+    // Clear any previous errors for this model on a new attempt
+    setAnalyzerErrors(prev => {
+      const newMap = new Map(prev);
+      newMap.delete(modelKey);
+      return newMap;
+    });
+
     // Removed provider restriction - now allows concurrent requests to same provider
     
     // Set current model key to show reasoning controls for GPT-5 models
@@ -323,7 +346,7 @@ export function useAnalysisResults({
     currentModelKey,
     processingModels,
     isAnalyzing: analyzeAndSaveMutation.isPending,
-    analyzerError: analyzeAndSaveMutation.error,
+    analyzerErrors,
     analysisStartTime,
     analysisTimes,
     // Optimistic UI state

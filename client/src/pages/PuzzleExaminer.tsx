@@ -30,6 +30,7 @@ import { Badge } from '@/components/ui/badge';
 // Import our refactored components and hooks
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ModelButton } from '@/components/puzzle/ModelButton';
+import { ModelProgressIndicator } from '@/components/puzzle/ModelProgressIndicator';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPicker } from '@/components/PromptPicker';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
@@ -82,7 +83,7 @@ export default function PuzzleExaminer() {
     currentModelKey,
     processingModels,
     isAnalyzing,
-    analyzerError,
+    analyzerErrors,
     // Optimistic UI state
     pendingAnalyses,
     // GPT-5 reasoning parameters
@@ -338,14 +339,6 @@ export default function PuzzleExaminer() {
             )}
           </div>
           
-          {/* Error Message */}
-          {analyzerError && (
-            <Alert className="mt-2 mb-4 border-red-200 bg-red-50">
-              <AlertDescription className="text-red-700">
-                <strong>API Error:</strong> {analyzerError.message}
-              </AlertDescription>
-            </Alert>
-          )}
         </CardHeader>
         <CardContent>
           {/* Prompt Picker */}
@@ -389,6 +382,7 @@ export default function PuzzleExaminer() {
                   explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
                   onAnalyze={handleAnalyzeWithModel}
                   disabled={isThisModelProcessing}
+                  error={analyzerErrors.get(model.key)}
                 />
               );
             })}

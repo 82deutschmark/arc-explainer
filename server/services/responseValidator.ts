@@ -398,7 +398,6 @@ function calculateAccuracyScore(isCorrect: boolean, confidence: number): number 
     return 1.0 - normalizedConfidence;
   }
 }
-
 /**
  * Main validation function for solver mode responses
  * Works directly with arcJsonSchema.ts structure - no parsing needed
@@ -409,8 +408,9 @@ export function validateSolverResponse(
   promptId: string,
   confidence: number = 50
 ): ValidationResult {
-  // Only validate solver mode responses
-  const isSolverMode = promptId === "solver";
+  // Validate solver mode responses AND custom prompts that may be attempting to solve
+  // Custom prompts often ask AI to predict answers, so they should be validated too
+  const isSolverMode = promptId === "solver" || promptId === "custom";
   
   if (!isSolverMode) {
     return {
@@ -468,7 +468,9 @@ export function validateSolverResponseMulti(
   console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse:', response._rawResponse ? Object.keys(response._rawResponse) : 'no _rawResponse');
   console.log('[VALIDATOR-INPUT-DEBUG] response.predictedOutput1:', response.predictedOutput1);
   console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse?.predictedOutput1:', response._rawResponse?.predictedOutput1);
-  const isSolverMode = promptId === 'solver';
+  // Validate solver mode responses AND custom prompts that may be attempting to solve
+  // Custom prompts often ask AI to predict answers, so they should be validated too
+  const isSolverMode = promptId === 'solver' || promptId === 'custom';
   if (!isSolverMode) {
     // Non-solver mode: return empty multi-test structure
     return {

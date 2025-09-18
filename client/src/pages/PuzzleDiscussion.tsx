@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github, Clock, DollarSign, Zap, BarChart3, Filter } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -17,6 +19,9 @@ export default function PuzzleDiscussion() {
   const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'all'>('all');
   const [multiTestFilter, setMultiTestFilter] = useState<'single' | 'multi' | 'all'>('all');
   const [showRichMetrics, setShowRichMetrics] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [location, setLocation] = useLocation();
   
   // Set page title
   React.useEffect(() => {
@@ -33,6 +38,28 @@ export default function PuzzleDiscussion() {
     multiTestFilter === 'all' ? undefined : multiTestFilter,
     showRichMetrics
   );
+
+  // Filter puzzles based on search query (matching Browser page functionality)
+  const filteredPuzzles = React.useMemo(() => {
+    if (!puzzles) return [];
+    if (!searchQuery.trim()) return puzzles;
+    return puzzles.filter((puzzle: any) => puzzle.id.includes(searchQuery.trim()));
+  }, [puzzles, searchQuery]);
+
+  // Handle puzzle search by ID (matching Browser page functionality)
+  const handleSearch = React.useCallback(() => {
+    if (filteredPuzzles.length === 1 && searchQuery.trim() === filteredPuzzles[0].id) {
+      setLocation(`/puzzle/${filteredPuzzles[0].id}`);
+    }
+    // If the search query is a full puzzle ID that doesn't exist in the current list, try navigating anyway
+    else if (searchQuery.trim().length > 0 && filteredPuzzles.length === 0) {
+      const potentialPuzzleId = searchQuery.trim();
+      // Basic validation for what a puzzle ID might look like
+      if (potentialPuzzleId.length > 5 && !potentialPuzzleId.includes(' ')) {
+        setLocation(`/puzzle/${potentialPuzzleId}`);
+      }
+    }
+  }, [searchQuery, filteredPuzzles, setLocation]);
 
   if (error) {
     return (
@@ -134,6 +161,41 @@ export default function PuzzleDiscussion() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+                <div className="w-full md:flex-1 space-y-2">
+                  <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
+                  <div className="relative">
+                    <Input
+                      id="puzzleSearch"
+                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setSearchError(null);
+                      }}
+                      className="pr-24"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                    />
+                  </div>
+                  {searchError && (
+                    <p className="text-sm text-red-500">{searchError}</p>
+                  )}
+                </div>
+                <Button 
+                  onClick={handleSearch}
+                  className="min-w-[120px]"
+                >
+                  Search
+                </Button>
+              </div>
+            </div>
+
             {/* First row - existing controls */}
             <div className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2">
@@ -449,7 +511,7 @@ export default function PuzzleDiscussion() {
               Most Difficult Puzzles
               {!isLoading && (
                 <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                  {total} found
+                  {searchQuery.trim() ? `${filteredPuzzles.length} of ${total}` : `${total} found`}
                 </Badge>
               )}
               {selectedSource !== 'all' && (
@@ -486,7 +548,7 @@ export default function PuzzleDiscussion() {
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
                 <p>Loading most difficult puzzles...</p>
               </div>
-            ) : puzzles.length === 0 ? (
+            ) : filteredPuzzles.length === 0 ? (
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600">No analyzed puzzles found.</p>
@@ -500,7 +562,7 @@ export default function PuzzleDiscussion() {
                   ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
                   : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
               }`}>
-                {puzzles.map((puzzle: any) => (
+                {filteredPuzzles.map((puzzle: any) => (
                   <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-red-400">
                     <CardContent className={compactView ? "p-3" : "p-4"}>
                       <div className={compactView ? "space-y-2" : "space-y-3"}>
