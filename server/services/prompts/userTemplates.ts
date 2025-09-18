@@ -98,11 +98,11 @@ function buildCustomUserPrompt(
   customText: string,
   options: UserPromptOptions = {}
 ): string {
-  const { isSolverMode = false } = options;
+  const { isSolverMode = false, omitAnswer = false } = options;
   
   // Always use raw numeric data for custom prompts
   const trainingExamples = formatTrainingExamples(task, false);
-  const testSection = formatTestSection(task, false, undefined, !isSolverMode, isSolverMode);
+  const testSection = formatTestSection(task, false, undefined, !omitAnswer, isSolverMode);
   
   const isMulti = task.test.length > 1;
   const testLabel = isSolverMode ? "TEST CASE:" : "TEST CASE:";
@@ -204,7 +204,7 @@ export function buildUserPromptForTemplate(
   const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
   
   if (promptId === 'custom' && customText) {
-    return buildCustomUserPromptSimple(task, customText);
+    return buildCustomUserPrompt(task, customText, options);
   }
   
   return builderFn(task, options);
