@@ -40,7 +40,7 @@ export default function PuzzleBrowser() {
   const [maxGridSize, setMaxGridSize] = useState<string>('any');
   const [gridSizeConsistent, setGridSizeConsistent] = useState<string>('any');
   const [explanationFilter, setExplanationFilter] = useState<string>('unexplained'); // 'all', 'unexplained', 'explained' - Default to unexplained puzzles for analysis
-  const [arcVersion, setArcVersion] = useState<string>('ARC2-Eval'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval'
+  const [arcVersion, setArcVersion] = useState<string>('any'); // 'any', 'ARC1', 'ARC2', or 'ARC2-Eval' - Show all datasets by default
   const [multiTestFilter, setMultiTestFilter] = useState<string>('single'); // 'any', 'single', 'multi'
   const [sortBy, setSortBy] = useState<string>('unexplained_first'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data', 'unexplained_first'
   const [searchQuery, setSearchQuery] = useState<string>('');
