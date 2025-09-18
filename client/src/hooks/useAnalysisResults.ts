@@ -242,14 +242,26 @@ export function useAnalysisResults({
           return newSet;
         });
         
-        // Log error details for debugging while showing user-friendly message to user
-        console.error('Analysis failed:', {
-          modelKey,
-          error: error instanceof Error ? error.message : String(error),
-          taskId
-        });
 
-        const errorToSet = error instanceof Error ? error : new Error(String(error));
+        // Attempt to parse a more user-friendly message from the raw error
+        let finalErrorMessage = 'An unknown error occurred.';
+        if (error instanceof Error) {
+          try {
+            // Errors might contain a JSON string, let's try to parse it.
+            const match = error.message.match(/{\s*.*\s*}/);
+            if (match) {
+              const errorJson = JSON.parse(match[0]);
+              finalErrorMessage = errorJson.message || errorJson.error || 'Server error, please check logs.';
+            } else {
+              finalErrorMessage = error.message;
+            }
+          } catch (e) {
+            // If parsing fails, use the original error message but clean it up
+            finalErrorMessage = error.message.split('{')[0].trim().replace(/\d+:/, '').trim();
+          }
+        }
+
+        const errorToSet = new Error(finalErrorMessage);
         setAnalyzerErrors(prev => new Map(prev).set(modelKey, errorToSet));
         
         throw error;
