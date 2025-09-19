@@ -45,7 +45,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       try {
         return Array.isArray(result.predictedOutputGrid) ? result.predictedOutputGrid : JSON.parse(result.predictedOutputGrid as any);
       } catch (e) {
-        console.error("Failed to parse predictedOutputGrid", e);
+        // Failed to parse predicted grid - return undefined for graceful handling
         return undefined;
       }
     }
@@ -74,7 +74,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         const gridData = (result as any).multiTestPredictionGrids;
         return Array.isArray(gridData) ? gridData : JSON.parse(gridData);
       } catch (e) {
-        console.error("Failed to parse multiTestPredictionGrids", e);
+        // Failed to parse multi-test prediction grids - continue with empty array
       }
     }
 
@@ -91,7 +91,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       try {
         return Array.isArray(result.multiValidation) ? result.multiValidation : JSON.parse(result.multiValidation as any);
       } catch (e) {
-        console.error("Failed to parse multiValidation", e);
+        // Failed to parse multi-validation data - return empty array for graceful handling
         return [];
       }
     }
