@@ -14,7 +14,8 @@ import path from 'path';
 import { config } from 'dotenv';
 
 // Load environment variables
-config();
+config({ path: path.resolve(process.cwd(), '.env') });
+
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const BASE_URL = 'https://openrouter.ai/api/v1';
@@ -93,10 +94,10 @@ async function testMinimalRequest(modelName) {
     messages: [
       {
         role: "user",
-        content: "Hi! Do you have token limits? Please respond with just 'Yes' or 'No' and the limit number if known."
+        content: "TRAINING EXAMPLES Example 1:Input: [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,2,2,2,0,0,0,0,0],[0,0,0,0,0,2,0,0,0,0,0,0],[0,0,0,2,2,2,0,0,0,0,0,0],[0,0,0,2,0,2,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]Output: [[0,2,2,2],[0,0,2,0],[2,2,2,0],[2,0,2,0]]Example 2:Input: [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,0,0,0,0],[0,0,1,1,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0],[0,0,1,1,1,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]Output: [[1,0,0],[1,1,0],[0,1,0],[1,1,1],[0,0,1]]Example 3:Input: [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,8,0,8,0,0,0,0,0],[0,0,0,8,8,8,8,0,0,0,0,0],[0,0,0,0,0,0,8,8,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]Output: [[0,8,0,8,0],[8,8,8,8,0],[0,0,0,8,8]]TEST CASE (input only; correct answer withheld):Input: [[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,6,6,6,6,0,0,0,0],[0,0,0,0,6,0,0,0,0,0,0,0],[0,0,6,0,6,0,0,0,0,0,0,0],[0,0,6,6,6,6,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0]]"
       }
     ],
-    max_tokens: 50,
+    max_tokens: 4000,
     temperature: 0.1
   });
   
@@ -149,12 +150,12 @@ async function testLargeResponse(modelName) {
     messages: [
       {
         role: "user",
-        content: `Please write a very long story about a dragon. Make it at least 2000 words. Include lots of detail, dialogue, and description. This is a test to see how much text you can generate.`
+        content: `Please write a very long story using only emojis and punctuation, NO WORDS or text. Make it at least 2000 emojis. Include lots of detail, dialogue, and description. This is a test to see how many unique emojis you can generate.`
       }
     ],
     // Intentionally request more tokens than suspected 200k limit
-    max_tokens: 4000,
-    temperature: 0.7
+    max_tokens: 128000,
+    temperature: 0.9
   });
   
   const options = {
