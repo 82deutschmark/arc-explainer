@@ -33,12 +33,7 @@ interface UseAnalysisResultsProps {
   retryMode?: boolean; // Enhanced prompting for retry analysis
 }
 
-// Type for pending analysis results (ExplanationData with optimistic fields)
-type PendingAnalysis = ExplanationData & {
-  isOptimistic: true; // Always true for pending results
-  status: 'analyzing' | 'saving' | 'completed' | 'error'; // Required for pending results
-  isRetryable?: boolean;
-};
+// Removed PendingAnalysis type - no longer using optimistic UI
 
 export function useAnalysisResults({
   taskId,
@@ -59,33 +54,12 @@ export function useAnalysisResults({
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
   
-  // Optimistic UI state
-  const [pendingAnalyses, setPendingAnalyses] = useState<Map<string, PendingAnalysis>>(new Map());
-  
   // GPT-5 reasoning parameters
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
-  // Helper function to create optimistic analysis result
-  const createOptimisticAnalysis = (modelKey: string): PendingAnalysis => ({
-    id: Date.now(), // Temporary numeric ID
-    modelName: modelKey,
-    puzzleId: taskId,
-    status: 'analyzing',
-    startTime: Date.now(),
-    isOptimistic: true,
-    // Initialize empty values that will be populated during analysis
-    patternDescription: '',
-    solvingStrategy: '',
-    hints: [],
-    alienMeaning: '',
-    confidence: 0,
-    helpfulVotes: 0,
-    notHelpfulVotes: 0,
-    apiProcessingTimeMs: 0,
-    createdAt: new Date().toISOString(),
-  });
+  // Removed createOptimisticAnalysis function - no longer using optimistic UI
 
   // Mutation to analyze the puzzle and save the explanation in one step
   const analyzeAndSaveMutation = useMutation({
@@ -101,11 +75,7 @@ export function useAnalysisResults({
     }) => {
       const { modelKey, temperature: temp, topP: p, candidateCount: c, thinkingBudget: tb, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
       
-      // Create optimistic analysis result immediately
-      const optimisticAnalysis = createOptimisticAnalysis(modelKey);
-      setPendingAnalyses(prev => new Map(prev).set(modelKey, optimisticAnalysis));
-      
-      // Record start time for tracking
+      // Record start time for tracking and set processing state
       const startTime = Date.now();
       setAnalysisStartTime(prev => ({ ...prev, [modelKey]: startTime }));
       setProcessingModels(prev => new Set(prev).add(modelKey));
@@ -138,37 +108,46 @@ export function useAnalysisResults({
         const encodedModelKey = encodeURIComponent(modelKey);
         const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${encodedModelKey}`, requestBody);
         if (!analysisResponse.ok) {
-          // Parse error response to get user-friendly message
-          let errorMessage = `Analysis request failed: ${analysisResponse.statusText}`;
+          // Parse error response to provide clear user feedback
+          let errorMessage = 'Analysis request failed';
+
           try {
             const errorData = await analysisResponse.json();
             if (errorData.message) {
               errorMessage = errorData.message;
+            } else if (errorData.error) {
+              errorMessage = errorData.error;
             }
-            // Add retry suggestion for rate-limited or service unavailable errors
-            if (errorData.retryable) {
+
+            // Add helpful context for specific error types
+            if (analysisResponse.status === 429) {
+              errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+            } else if (analysisResponse.status === 401 || analysisResponse.status === 403) {
+              errorMessage = 'Authentication error. Please check your API key configuration.';
+            } else if (analysisResponse.status === 404) {
+              errorMessage = 'Model or endpoint not available. Please try a different model.';
+            } else if (analysisResponse.status >= 500) {
+              errorMessage = 'Server error occurred. Please try again in a few moments.';
+            }
+
+            // Add retry suggestion for recoverable errors
+            if (errorData.retryable || [429, 503, 504].includes(analysisResponse.status)) {
               errorMessage += ' Please try again in a few moments.';
             }
-          } catch (e) {
-            // Keep default error message if JSON parsing fails
+          } catch (parseError) {
+            // Use status-based fallback messages if JSON parsing fails
+            if (analysisResponse.status === 429) {
+              errorMessage = 'Rate limit exceeded. Please wait and try again.';
+            } else if (analysisResponse.status >= 500) {
+              errorMessage = 'Server error. Please try again later.';
+            } else {
+              errorMessage = `Request failed (${analysisResponse.status}). Please try again.`;
+            }
           }
+
           throw new Error(errorMessage);
         }
         const analysisData = (await analysisResponse.json()).data;
-
-        // Update optimistic result with analysis data
-        setPendingAnalyses(prev => {
-          const current = prev.get(modelKey);
-          if (current) {
-            return new Map(prev).set(modelKey, {
-              ...current,
-              ...analysisData,
-              status: 'saving',
-              apiProcessingTimeMs: Date.now() - startTime,
-            });
-          }
-          return prev;
-        });
 
         // Calculate actual processing time
         const endTime = Date.now();
@@ -195,47 +174,21 @@ export function useAnalysisResults({
         }
         
         const savedData = (await saveResponse.json()).data;
-        
-        // Mark optimistic result as completed
-        setPendingAnalyses(prev => {
-          const current = prev.get(modelKey);
-          if (current) {
-            return new Map(prev).set(modelKey, {
-              ...current,
-              status: 'completed',
-            });
-          }
-          return prev;
-        });
-        
+
+        // Remove from processing set
         setProcessingModels(prev => {
           const newSet = new Set(prev);
           newSet.delete(modelKey);
           return newSet;
         });
-        
+
         return savedData;
         
       } catch (error) {
         // Extract user-friendly error message
         const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
-        
-        // Update optimistic result with error
-        setPendingAnalyses(prev => {
-          const current = prev.get(modelKey);
-          if (current) {
-            return new Map(prev).set(modelKey, {
-              ...current,
-              status: 'error',
-              error: errorMessage,
-              isRetryable: errorMessage.includes('rate-limited') || 
-                          errorMessage.includes('unavailable') ||
-                          errorMessage.includes('try again')
-            });
-          }
-          return prev;
-        });
-        
+
+        // Remove from processing set on error
         setProcessingModels(prev => {
           const newSet = new Set(prev);
           newSet.delete(modelKey);
@@ -243,48 +196,55 @@ export function useAnalysisResults({
         });
         
 
-        // Attempt to parse a more user-friendly message from the raw error
-        let finalErrorMessage = 'An unknown error occurred.';
+        // Parse and clean up error message for better user experience
+        let cleanErrorMessage = 'Analysis failed. Please try again.';
+
         if (error instanceof Error) {
-          try {
-            // Errors might contain a JSON string, let's try to parse it.
-            const match = error.message.match(/{\s*.*\s*}/);
-            if (match) {
-              const errorJson = JSON.parse(match[0]);
-              finalErrorMessage = errorJson.message || errorJson.error || 'Server error, please check logs.';
-            } else {
-              finalErrorMessage = error.message;
+          // Check for common error patterns and provide user-friendly messages
+          const message = error.message.toLowerCase();
+
+          if (message.includes('rate limit') || message.includes('rate-limit')) {
+            cleanErrorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+          } else if (message.includes('quota') || message.includes('billing')) {
+            cleanErrorMessage = 'API quota exceeded. Please check your billing settings.';
+          } else if (message.includes('timeout') || message.includes('network')) {
+            cleanErrorMessage = 'Request timed out. Please check your connection and try again.';
+          } else if (message.includes('unauthorized') || message.includes('forbidden')) {
+            cleanErrorMessage = 'Authentication error. Please check your API key configuration.';
+          } else if (message.includes('not found') || message.includes('404')) {
+            cleanErrorMessage = 'Model or endpoint not found. Please contact support.';
+          } else if (message.includes('server error') || message.includes('500')) {
+            cleanErrorMessage = 'Server error occurred. Please try again later.';
+          } else {
+            // Try to extract a clean message from JSON errors or use original
+            try {
+              const jsonMatch = error.message.match(/{\s*.*\s*}/);
+              if (jsonMatch) {
+                const errorJson = JSON.parse(jsonMatch[0]);
+                cleanErrorMessage = errorJson.message || errorJson.error || error.message;
+              } else {
+                // Clean up technical prefixes and use original message
+                cleanErrorMessage = error.message.split(':').pop()?.trim() || error.message;
+              }
+            } catch (parseError) {
+              cleanErrorMessage = error.message;
             }
-          } catch (e) {
-            // If parsing fails, use the original error message but clean it up
-            finalErrorMessage = error.message.split('{')[0].trim().replace(/\d+:/, '').trim();
           }
         }
 
-        const errorToSet = new Error(finalErrorMessage);
+        const errorToSet = new Error(cleanErrorMessage);
         setAnalyzerErrors(prev => new Map(prev).set(modelKey, errorToSet));
         
         throw error;
       }
     },
     onSuccess: (data, variables) => {
-      // 3. On success, refetch all explanations from the database
-      console.log('Analysis and save successful. Refetching explanations...');
+      // On success, refetch all explanations from the database
       refetchExplanations();
-      
-      // Remove the optimistic result after a delay to allow for smooth transition
-      setTimeout(() => {
-        setPendingAnalyses(prev => {
-          const newMap = new Map(prev);
-          newMap.delete(variables.modelKey);
-          return newMap;
-        });
-      }, 1000); // 1 second delay for smooth UX
     },
     onError: (error, variables) => {
-      console.error('Failed to analyze and save explanation:', error);
-      // Error handling is already done in the mutation function
-      // The optimistic result will show error state
+      // Error handling and user feedback are already handled in the mutation function
+      // Errors are stored in analyzerErrors state for display in the UI
     }
   });
 
@@ -349,8 +309,6 @@ export function useAnalysisResults({
     analyzerErrors,
     analysisStartTime,
     analysisTimes,
-    // Optimistic UI state
-    pendingAnalyses: Array.from(pendingAnalyses.values()),
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
