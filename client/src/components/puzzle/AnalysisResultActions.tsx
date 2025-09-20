@@ -17,7 +17,7 @@ export const AnalysisResultActions: React.FC<AnalysisResultActionsProps> = ({ re
   const isPending = isOptimistic && (status === 'analyzing' || status === 'saving');
 
   if (feedbackError) {
-    console.warn('Feedback preview error:', feedbackError);
+    // Feedback preview error - handled gracefully in UI
   }
 
   // Don't show actions for pending results

@@ -70,7 +70,7 @@ export function isAlienCommunicationMode(promptId: string): boolean {
  * Check if a prompt ID is solver mode (predicting answers)
  */
 export function isSolverMode(promptId: string): boolean {
-  return promptId === 'solver' || promptId === 'educationalApproach' || promptId === 'gepa';
+  return promptId === 'solver' || promptId === 'educationalApproach' || promptId === 'gepa' || promptId === 'custom';
 }
 
 // All legacy commented code removed - now using clean DRY architecture

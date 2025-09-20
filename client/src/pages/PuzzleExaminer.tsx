@@ -84,8 +84,6 @@ export default function PuzzleExaminer() {
     processingModels,
     isAnalyzing,
     analyzerErrors,
-    // Optimistic UI state
-    pendingAnalyses,
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
@@ -113,25 +111,14 @@ export default function PuzzleExaminer() {
   // Find the current model's details if we're analyzing
   const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) : null;
 
-  // Merge saved explanations with pending analyses for display
+  // Use only saved explanations from database (no optimistic UI)
   const allResults = React.useMemo(() => {
-    const results = [...explanations];
-    
-    // Add pending analyses that don't have a corresponding saved explanation
-    pendingAnalyses.forEach(pending => {
-      const hasExisting = explanations.some(exp => exp.modelName === pending.modelName);
-      if (!hasExisting) {
-        results.push(pending); // PendingAnalysis is now properly typed as ExplanationData
-      }
-    });
-    
-    // Sort by creation time (newest first)
-    return results.sort((a, b) => {
+    return explanations.sort((a, b) => {
       const aTime = new Date(a.createdAt).getTime();
       const bTime = new Date(b.createdAt).getTime();
       return bTime - aTime;
     });
-  }, [explanations, pendingAnalyses]);
+  }, [explanations]);
 
   // Loading state
   if (isLoadingTask || isLoadingModels) {
@@ -621,23 +608,50 @@ export default function PuzzleExaminer() {
 
 
           {/* Analysis Results */}
-          {allResults.length > 0 && (
+          {(allResults.length > 0 || isAnalyzing) && (
             <div className="mt-4">
               <h4 className="text-lg font-semibold mb-2">
-                Analysis Results ({explanations.length}
-                {pendingAnalyses.length > 0 && ` + ${pendingAnalyses.length} in progress`})
+                Analysis Results ({explanations.length})
               </h4>
-              <div className="space-y-3">
-                {allResults.map((result) => (
-                  <AnalysisResultCard
-                    key={result.isOptimistic ? `pending-${result.id}` : `${result.id}-${result.modelName}`} // Use unique key for optimistic results
-                    modelKey={result.modelName}
-                    result={result}
-                    model={models?.find(m => m.key === result.modelName)} // Pass model config to enable temperature display
-                    testCases={task.test} // Pass the full test array
-                  />
-                ))}
-              </div>
+
+              {/* Show loading state when analysis is in progress */}
+              {isAnalyzing && (
+                <div className="mb-3 p-4 border rounded-lg bg-blue-50 border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">
+                        Analysis in progress...
+                      </p>
+                      {currentModel && (
+                        <p className="text-xs text-blue-600">
+                          Running {currentModel.name}
+                          {currentModel.responseTime && (
+                            <span className="ml-2">
+                              (Expected: {currentModel.responseTime.estimate})
+                            </span>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Show existing results */}
+              {allResults.length > 0 && (
+                <div className="space-y-3">
+                  {allResults.map((result) => (
+                    <AnalysisResultCard
+                      key={`${result.id}-${result.modelName}`}
+                      modelKey={result.modelName}
+                      result={result}
+                      model={models?.find(m => m.key === result.modelName)} // Pass model config to enable temperature display
+                      testCases={task.test} // Pass the full test array
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </CardContent>
