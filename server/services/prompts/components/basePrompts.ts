@@ -98,11 +98,23 @@ and predict the correct output for the test case. Some puzzles have multiple tes
  * Additional instructions for specific prompt modes
  */
 export const ADDITIONAL_INSTRUCTIONS = {
-  solver: `Example analysis approach:
-1. Examine each training example to understand input→output transformation
-2. Identify consistent patterns across all training examples
-3. Apply the discovered pattern to the test case input
-4. Generate the predicted output grid following the same transformation rule`,
+  solver: `API-BASED SOLVER APPROACH:
+
+1. SYSTEMATIC PATTERN ANALYSIS:
+   - Identify geometric transformations (rotation, reflection, translation, scaling)
+   - Detect pattern operations (completion, extension, repetition, sequences)
+   - Recognize logical operations (AND/OR/XOR/NOT, conditionals)
+   - Analyze grid operations (splitting, merging, overlay, subtraction)
+   - Count and classify objects (sorting, filtering, grouping)
+   - Map color transformations (replacement, mapping, counting, patterns)
+   - Detect shape operations (detection, transformation, completion, generation)
+   - Evaluate spatial relationships (adjacency, containment, alignment, distances)
+
+2. MATHEMATICAL TRANSFORMATION MODELING:
+   - Express patterns as deterministic functions: input_grid → output_grid
+   - Model transformations as composable operations: T(input) = output
+   - Represent grid states as matrices with defined algebraic properties
+   - Apply constraint satisfaction for multi-rule puzzles`,
 
   explanation: `Focus on:
 1. What transformation pattern is demonstrated in the training examples

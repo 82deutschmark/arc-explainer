@@ -398,6 +398,24 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2024-06"
   },
   {
+    key: 'x-ai/grok-4-fast:free',
+    name: 'Grok 4 Fast',
+    color: 'bg-orange-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-4-fast:free',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-07"
+  },
+    
+/*
+  {
     key: 'qwen/qwen-2.5-coder-32b-instruct',
     name: 'Qwen 2.5 Coder 32B',
     color: 'bg-red-600',
@@ -444,7 +462,8 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 30000,
     maxOutputTokens: 8000,
     requiresPromptFormat: true
-  },
+  }
+*/
   {
     key: 'nousresearch/hermes-4-70b',
     name: 'NousResearch Hermes 4 70B',
@@ -553,21 +572,21 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144,
     maxOutputTokens: 30000
   },
-  {
-    key: 'z-ai/glm-4.5',
-    name: 'Z-AI GLM 4.5',
-    color: 'bg-red-300',
-    premium: false,
-    cost: { input: '$0.5', output: '$2.00' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    isReasoning: true,
-    apiModelName: 'z-ai/glm-4.5-air:free',
-    modelType: 'openrouter',
-    contextWindow: 131000,
-    maxOutputTokens: 16000
-  },
+//  {
+//    key: 'z-ai/glm-4.5',
+//    name: 'Z-AI GLM 4.5',
+//    color: 'bg-red-300',
+//    premium: false,
+//    cost: { input: '$0.5', output: '$2.00' },
+//    supportsTemperature: true,
+//    provider: 'OpenRouter',
+//    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+  //  isReasoning: true,
+//    apiModelName: 'z-ai/glm-4.5-air:free',
+//    modelType: 'openrouter',
+//    contextWindow: 131000,
+//    maxOutputTokens: 16000
+//  },
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
     name: 'Qwen3 235B A22B Thinking',
@@ -696,22 +715,22 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     maxOutputTokens: 31000
   },
-  {
-    key: 'cohere/command-a',
-    name: 'Cohere Command A',
-    color: 'bg-green-700',
-    premium: true,
-    cost: { input: '$2.00', output: '$8.00' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'cohere/command-a',
-    modelType: 'openrouter',
-    contextWindow: 32768,
-    maxOutputTokens: 4000,
-    requiresPromptFormat: true
-  },
+//  {
+//    key: 'cohere/command-a',
+//    name: 'Cohere Command A',
+//    color: 'bg-green-700',
+//    premium: true,
+//    cost: { input: '$2.00', output: '$8.00' },
+//    supportsTemperature: true,
+//    provider: 'OpenRouter',
+//    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+//    isReasoning: true,
+//    apiModelName: 'cohere/command-a',
+//    modelType: 'openrouter',
+ //   contextWindow: 32768,
+ //   maxOutputTokens: 4000,
+ //   requiresPromptFormat: true
+ // },
   {
     key: 'deepseek/deepseek-prover-v2',
     name: 'DeepSeek Prover v2',
@@ -776,23 +795,6 @@ export const MODELS: ModelConfig[] = [
   },
 
   {
-    key: 'openrouter/sonoma-sky-alpha',
-    name: 'Sonoma Sky Alpha',
-    color: 'bg-blue-700',
-    premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '10-30 sec' },
-    isReasoning: false,
-    apiModelName: 'openrouter/sonoma-sky-alpha',
-    modelType: 'openrouter',
-    contextWindow: 2000000,
-    maxOutputTokens: 30000,
-    releaseDate: "2025-09"
-  },
-
-  {
     key: 'bytedance/seed-oss-36b-instruct',
     name: 'Seed OSS 36B Instruct',
     color: 'bg-green-500',
@@ -809,22 +811,24 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-09"
 
   },
-  {
-    key: 'stepfun-ai/step3',
-    name: 'Step3',
-    color: 'bg-green-600',
-    premium: true,
-    cost: { input: '$0.57', output: '$1.42' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '10-30 sec' },
-    isReasoning: true,
-    apiModelName: 'stepfun-ai/step3',
-    modelType: 'openrouter',
-    contextWindow: 65000,
-    maxOutputTokens: 25000,
-    requiresPromptFormat: true,
-    releaseDate: "2025-08"
-  },
+
+
+//{
+//  key: 'stepfun-ai/step3',
+//    name: 'Step3',
+//    color: 'bg-green-600',
+//    premium: true,
+//    cost: { input: '$0.57', output: '$1.42' },
+//    supportsTemperature: false,
+//    provider: 'OpenRouter',
+//    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+//    isReasoning: true,
+//    apiModelName: 'stepfun-ai/step3',
+//    modelType: 'openrouter',
+//    contextWindow: 65000,
+//    maxOutputTokens: 25000,
+//    requiresPromptFormat: true,
+//    releaseDate: "2025-08"
+//  },
 ];
 
