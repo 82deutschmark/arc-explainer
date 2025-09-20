@@ -1,12 +1,22 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Dockerfile for ARC Explainer app runtime and build
 # - Builds the client and server
 # - Adds Python 3 to run `server/python/saturn_wrapper.py` for Saturn Visual Solver
 # Author: Cascade (model: GPT-5 medium reasoning)
 
-# Add Python3 for Saturn integration
-RUN apk add --no-cache python3 py3-pip
+# Add Python3 for Saturn integration and canvas dependencies
+RUN apk add --no-cache \
+    python3 py3-pip \
+    pkgconf \
+    cairo-dev \
+    pango-dev \
+    jpeg-dev \
+    giflib-dev \
+    librsvg-dev \
+    build-base \
+    g++ \
+    make
 
 WORKDIR /app
 
