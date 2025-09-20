@@ -91,8 +91,11 @@ export function buildAnalysisPrompt(
     systemPrompt = "You are an expert at analyzing ARC-AGI puzzles.";
   } else {
     // New ARC mode: structured system prompt
-    if (isCustom) {
-      // Custom prompt mode - use dedicated custom system prompt with JSON enforcement
+    if (isCustom && customPrompt && customPrompt.trim()) {
+      // Custom prompt mode - use user's custom text directly as system prompt (NO additional text)
+      systemPrompt = customPrompt.trim();
+    } else if (isCustom) {
+      // Custom prompt mode without text - use dedicated custom system prompt with JSON enforcement
       systemPrompt = getSystemPrompt('custom');
     } else {
       systemPrompt = getSystemPrompt(promptId);
@@ -182,7 +185,9 @@ export function buildAnalysisPrompt(
     userPrompt = legacyResult.prompt;
   } else {
     // New ARC mode: clean user prompt with just data
-    userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPrompt);
+    // If custom prompt is being used as system prompt, don't include it in user prompt
+    const customPromptForUser = (isCustom && customPrompt && customPrompt.trim()) ? undefined : customPrompt;
+    userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPromptForUser);
   }
 
   console.log(`[PromptBuilder] Generated system prompt: ${systemPrompt.length} chars`);

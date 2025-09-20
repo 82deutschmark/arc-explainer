@@ -92,7 +92,7 @@ export function useAnalysisResults({
           ...(emojiSetKey ? { emojiSetKey } : {}),
           ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
           ...(retryMode ? { retryMode } : {}),
-          systemPromptMode: promptId === 'custom' ? 'None' : 'ARC', // Use 'None' for custom prompts to respect NO system prompt requirement
+          systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
           // GPT-5 reasoning parameters
           ...(effort ? { reasoningEffort: effort } : {}),
           ...(verbosity ? { reasoningVerbosity: verbosity } : {}),
