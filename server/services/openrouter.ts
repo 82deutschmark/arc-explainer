@@ -6,6 +6,9 @@
  * @author Claude (original), Claude Code (refactor)
  */
 
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
+
 import OpenAI from "openai";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
