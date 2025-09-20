@@ -87,7 +87,7 @@ export function useAnalysisResult({ taskId, onAnalysisComplete, refetchExplanati
       // Build request body
       const requestBody: any = { 
         promptId: config.promptId,
-        systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
+        systemPromptMode: config.promptId === 'custom' ? 'None' : 'ARC', // Use 'None' for custom prompts to respect NO system prompt requirement
         ...(config.emojiSetKey ? { emojiSetKey: config.emojiSetKey } : {}),
         ...(typeof config.omitAnswer === 'boolean' ? { omitAnswer: config.omitAnswer } : {}),
         ...(config.retryMode ? { retryMode: config.retryMode } : {}),
