@@ -93,10 +93,12 @@ export function buildAnalysisPrompt(
     // New ARC mode: structured system prompt
     if (isCustom && customPrompt && customPrompt.trim()) {
       // Custom prompt mode - use user's custom text directly as system prompt (NO additional text)
+      console.log(`[PromptBuilder] Using custom text as system prompt: ${customPrompt.trim().substring(0, 100)}...`);
       systemPrompt = customPrompt.trim();
     } else if (isCustom) {
-      // Custom prompt mode without text - use dedicated custom system prompt with JSON enforcement
-      systemPrompt = getSystemPrompt('custom');
+      // Custom prompt mode without text - use NO system prompt (minimal)
+      console.log(`[PromptBuilder] No custom text provided, using minimal system prompt`);
+      systemPrompt = "You are an expert at analyzing ARC-AGI puzzles.";
     } else {
       systemPrompt = getSystemPrompt(promptId);
       
