@@ -67,13 +67,13 @@ export class OpenRouterService extends BaseAIService {
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // 1. Get the raw text response from the provider
-      const responseText = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
-      
-      // 2. Let the robust parser handle the raw text
-      const captureReasoning = true;
+      // 1. Get the raw response and structured reasoning from the provider
+      const { fullResponseText, fullReasoning } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+
+      // 2. Let the robust parser handle the raw text and reasoning
+      const captureReasoning = serviceOpts.captureReasoning || false;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(responseText, modelKey, captureReasoning, taskId);
+        this.parseProviderResponse(fullResponseText, modelKey, captureReasoning, taskId, fullReasoning);
 
       // 3. Build the standard response
       return this.buildStandardResponse(
@@ -103,13 +103,14 @@ export class OpenRouterService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions,
     taskId?: string
-  ): Promise<string> { // Returns a string now
+  ): Promise<{ fullResponseText: string; fullReasoning: any; }> {
     const modelName = getApiModelName(modelKey);
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
     // CONTINUATION SUPPORT: Accumulate response across multiple API calls if truncated
     let fullResponseText = '';
+    let fullReasoning: any = null;
     let generationId: string | null = null;
     let continuationStep = 0;
     let isComplete = false;
@@ -122,7 +123,8 @@ export class OpenRouterService extends BaseAIService {
         const payload: any = {
           model: modelName,
           temperature: temperature,
-          stream: false, // Explicitly disable streaming
+          stream: false, // Explicitly disable streaming,
+          reasoning: serviceOpts.captureReasoning, // NEW: Explicitly request reasoning logs
           // Additional streaming prevention
           stream_options: undefined // Ensure no stream options
         };
@@ -268,6 +270,15 @@ export class OpenRouterService extends BaseAIService {
 
         const completionText = chunkData.choices?.[0]?.message?.content || '';
         const finishReason = chunkData.choices?.[0]?.finish_reason;
+        const reasoning = chunkData.choices?.[0]?.message?.reasoning; // Extract reasoning
+
+        if (reasoning) {
+          if (!fullReasoning) {
+            fullReasoning = reasoning;
+          } else if (Array.isArray(fullReasoning) && Array.isArray(reasoning)) {
+            fullReasoning.push(...reasoning); // Append reasoning steps if both are arrays
+          }
+        }
         
         fullResponseText += completionText;
         
@@ -298,7 +309,7 @@ export class OpenRouterService extends BaseAIService {
     logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
     
     // Return the raw text, as it's already been processed by the robust parser
-    return fullResponseText;
+    return { fullResponseText, fullReasoning };
   }
 
   /**
@@ -402,7 +413,8 @@ export class OpenRouterService extends BaseAIService {
     responseText: string,
     modelKey: string,
     captureReasoning: boolean,
-    puzzleId?: string
+    puzzleId?: string,
+    fullReasoning?: any // NEW: Receive structured reasoning
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
     // Log the raw text, not a stringified object
@@ -421,11 +433,16 @@ export class OpenRouterService extends BaseAIService {
       }
     }
 
-    // Use reasoning from sanitization if available and reasoning capture is enabled
+    // Prioritize structured reasoning if available
     let extractedReasoningLog: string | undefined;
-    if (captureReasoning && reasoningText && reasoningText.length > 10) {
+    if (captureReasoning && fullReasoning) {
+      // Convert reasoning object/array to a string for logging
+      extractedReasoningLog = typeof fullReasoning === 'string' ? fullReasoning : JSON.stringify(fullReasoning, null, 2);
+      logger.service('OpenRouter', `📝 Captured structured reasoning: ${extractedReasoningLog.length} chars`);
+    } else if (captureReasoning && reasoningText && reasoningText.length > 10) {
+      // Fallback to sanitized reasoning text
       extractedReasoningLog = reasoningText;
-      logger.service('OpenRouter', `📝 Preserved reasoning text: ${reasoningText.length} chars`);
+      logger.service('OpenRouter', `📝 Preserved reasoning text from sanitization: ${reasoningText.length} chars`);
     }
 
     const parseResult = jsonParser.parse(cleanedText, {
