@@ -88,7 +88,7 @@ export function buildAnalysisPrompt(
 
   if (systemPromptMode === 'None') {
     // Legacy mode: minimal system prompt
-    systemPrompt = "Provide your prediction for the Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules you discovered in the examples that led to your prediction. ";
+    systemPrompt = "Provide your prediction for the correct Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules you discovered in the examples that led to your prediction. ";
   } else {
     // New ARC mode: structured system prompt
     if (isCustom && customPrompt && customPrompt.trim()) {
@@ -98,7 +98,7 @@ export function buildAnalysisPrompt(
     } else if (isCustom) {
       // Custom prompt mode without text - use NO system prompt (minimal)
       console.log(`[PromptBuilder] No custom text provided, using minimal system prompt`);
-      systemPrompt = "Explain the simple transformation rules at place in the examples. Provide your prediction for the Test Output grid or grids in the same format seen in the examples.";
+      systemPrompt = "Provide your prediction for the correct Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules at place in the examples that led to your prediction. ";
     } else {
       systemPrompt = getSystemPrompt(promptId);
       

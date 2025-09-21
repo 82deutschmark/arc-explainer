@@ -1,4 +1,4 @@
-/**
+/*
  * models.ts
  * 
  * Centralized model configuration - single source of truth for all AI models.
@@ -10,9 +10,7 @@
 
 import type { ModelConfig } from '@shared/types';
 
-/**
- * Complete model registry - single source of truth
- */
+
 export const MODELS: ModelConfig[] = [
   // OpenAI Models
   { 
@@ -254,10 +252,7 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2024-03"
   },
 
-  // xAI Grok Models (DEPRECATED - All Grok models now use OpenRouter)
-  // Legacy entries removed - see OpenRouter section for x-ai/grok-* models
-
-  // Google Gemini Models
+  
   {
     key: 'gemini-2.5-pro',
     name: 'Gemini 2.5 Pro',
@@ -361,7 +356,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
   },
-  
+/*
   {
     key: 'qwen/qwen-plus-2025-07-28:thinking',
     name: 'Qwen: Qwen Plus 0728 (thinking)',
@@ -403,7 +398,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-orange-500',
     premium: false,
     cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
@@ -463,7 +458,8 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 8000,
     requiresPromptFormat: true
   }
-*/
+
+
   {
     key: 'nousresearch/hermes-4-70b',
     name: 'NousResearch Hermes 4 70B',
@@ -539,6 +535,7 @@ export const MODELS: ModelConfig[] = [
     isReasoning: true,
     apiModelName: 'openai/gpt-oss-120b',
     modelType: 'openrouter',
+  
     contextWindow: 131000,
     maxOutputTokens: 20000
   },
@@ -572,6 +569,7 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 262144,
     maxOutputTokens: 30000
   },
+
 //  {
 //    key: 'z-ai/glm-4.5',
 //    name: 'Z-AI GLM 4.5',
@@ -752,7 +750,7 @@ export const MODELS: ModelConfig[] = [
     color: 'bg-cyan-300',
     premium: false,
     cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: true,
+    supportsTemperature: false,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
@@ -831,4 +829,5 @@ export const MODELS: ModelConfig[] = [
 //    releaseDate: "2025-08"
 //  },
 ];
-
+/
+*/]
