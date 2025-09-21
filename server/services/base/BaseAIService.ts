@@ -27,6 +27,7 @@ export interface ServiceOptions {
   reasoningSummaryType?: 'auto' | 'detailed';
   systemPromptMode?: 'ARC' | 'None';
   store?: boolean;
+  captureReasoning?: boolean; // Add captureReasoning property
 }
 
 export interface TokenUsage {
