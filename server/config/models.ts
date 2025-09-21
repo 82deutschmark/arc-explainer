@@ -828,6 +828,5 @@ export const MODELS: ModelConfig[] = [
 //    requiresPromptFormat: true,
 //    releaseDate: "2025-08"
 //  },
+*/
 ];
-/
-*/]
