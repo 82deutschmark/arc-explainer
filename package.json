@@ -14,7 +14,8 @@
     "windows-dev": "set NODE_ENV=development&&tsx server/index.ts",
     "windows-start": "set NODE_ENV=production&&node dist/index.js",
     "recover": "node --import tsx server/dataRecovery.ts",
-    "db:fix-names": "node --import tsx scripts/fix-model-names.ts"
+    "db:fix-names": "node --import tsx scripts/fix-model-names.ts",
+    "analyze-puzzles": "node --import tsx puzzle-analysis.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
