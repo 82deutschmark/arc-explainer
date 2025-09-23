@@ -160,20 +160,20 @@ function displayResults(puzzleResults: PuzzleResult[], puzzleStatus: PuzzleStatu
   console.log('\n📈 PUZZLE STATUS SUMMARY:');
   console.log('='.repeat(80));
 
-  console.log(`\n✅ SOLVED (${status.solved.length} puzzles):`);
-  status.solved.forEach(puzzle => console.log(`   • ${puzzle}`));
+  console.log(`\n✅ SOLVED (${puzzleStatus.solved.length} puzzles):`);
+  puzzleStatus.solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
-  console.log(`\n🔄 TESTED BUT NOT SOLVED (${status.tested_but_not_solved.length} puzzles):`);
-  status.tested_but_not_solved.forEach(puzzle => console.log(`   • ${puzzle}`));
+  console.log(`\n🔄 TESTED BUT NOT SOLVED (${puzzleStatus.tested_but_not_solved.length} puzzles):`);
+  puzzleStatus.tested_but_not_solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
-  console.log(`\n❓ NOT TESTED (${status.not_tested.length} puzzles):`);
-  status.not_tested.forEach(puzzle => console.log(`   • ${puzzle}`));
+  console.log(`\n❓ NOT TESTED (${puzzleStatus.not_tested.length} puzzles):`);
+  puzzleStatus.not_tested.forEach(puzzle => console.log(`   • ${puzzle}`));
 
   console.log('\n📊 SUMMARY STATISTICS:');
   console.log(`   Total puzzles analyzed: ${PUZZLE_IDS.length}`);
-  console.log(`   Solved: ${status.solved.length} (${((status.solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
-  console.log(`   Tested but unsolved: ${status.tested_but_not_solved.length} (${((status.tested_but_not_solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
-  console.log(`   Not tested: ${status.not_tested.length} (${((status.not_tested.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
+  console.log(`   Solved: ${puzzleStatus.solved.length} (${((puzzleStatus.solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
+  console.log(`   Tested but unsolved: ${puzzleStatus.tested_but_not_solved.length} (${((puzzleStatus.tested_but_not_solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
+  console.log(`   Not tested: ${puzzleStatus.not_tested.length} (${((puzzleStatus.not_tested.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
 }
 
 /**
