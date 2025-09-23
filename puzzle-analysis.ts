@@ -160,20 +160,70 @@ function displayResults(puzzleResults: PuzzleResult[], puzzleStatus: PuzzleStatu
   console.log('\n📈 PUZZLE STATUS SUMMARY:');
   console.log('='.repeat(80));
 
-  console.log(`\n✅ SOLVED (${puzzleStatus.solved.length} puzzles):`);
   puzzleStatus.solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
   console.log(`\n🔄 TESTED BUT NOT SOLVED (${puzzleStatus.tested_but_not_solved.length} puzzles):`);
   puzzleStatus.tested_but_not_solved.forEach(puzzle => console.log(`   • ${puzzle}`));
 
-  console.log(`\n❓ NOT TESTED (${puzzleStatus.not_tested.length} puzzles):`);
-  puzzleStatus.not_tested.forEach(puzzle => console.log(`   • ${puzzle}`));
-
-  console.log('\n📊 SUMMARY STATISTICS:');
-  console.log(`   Total puzzles analyzed: ${PUZZLE_IDS.length}`);
-  console.log(`   Solved: ${puzzleStatus.solved.length} (${((puzzleStatus.solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
-  console.log(`   Tested but unsolved: ${puzzleStatus.tested_but_not_solved.length} (${((puzzleStatus.tested_but_not_solved.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
   console.log(`   Not tested: ${puzzleStatus.not_tested.length} (${((puzzleStatus.not_tested.length / PUZZLE_IDS.length) * 100).toFixed(1)}%)`);
+}
+
+/**
+ * Display a summary of which models solved which puzzles
+ */
+function displayModelSummary(puzzleResults: PuzzleResult[]): void {
+  console.log('\n🎯 MODEL SOLVING SUMMARY:');
+  console.log('='.repeat(80));
+
+  // Create a map of models to the puzzles they solved
+  const modelToPuzzles = new Map<string, string[]>();
+
+  for (const result of puzzleResults) {
+    if (result.correct_models.length > 0) {
+      for (const model of result.correct_models) {
+        if (!modelToPuzzles.has(model)) {
+          modelToPuzzles.set(model, []);
+        }
+        modelToPuzzles.get(model)!.push(result.puzzle_id);
+      }
+    }
+  }
+
+  // Sort models by number of puzzles solved (descending)
+  const sortedModels = Array.from(modelToPuzzles.entries()).sort(
+    (a, b) => b[1].length - a[1].length
+  );
+
+  if (sortedModels.length === 0) {
+    console.log('No puzzles were solved by any models.');
+    return;
+  }
+
+  console.log(`\n📊 ${sortedModels.length} models found with correct solutions:\n`);
+
+  for (const [model, puzzles] of sortedModels) {
+    console.log(`🤖 ${model}:`);
+    console.log(`   Solved ${puzzles.length} puzzles:`);
+
+    // Sort puzzle IDs for consistent display
+    puzzles.sort();
+    puzzles.forEach((puzzleId, index) => {
+      console.log(`      ${index + 1}. ${puzzleId}`);
+    });
+    console.log('');
+  }
+
+  // Show total statistics
+  const totalSolvedPuzzles = new Set(
+    puzzleResults
+      .filter(result => result.correct_models.length > 0)
+      .map(result => result.puzzle_id)
+  ).size;
+
+  console.log(`📈 OVERALL STATISTICS:`);
+  console.log(`   Models with solutions: ${sortedModels.length}`);
+  console.log(`   Total puzzles solved: ${totalSolvedPuzzles} (at least once)`);
+  console.log(`   Average puzzles per model: ${(totalSolvedPuzzles / sortedModels.length).toFixed(1)}`);
 }
 
 /**
@@ -191,6 +241,9 @@ async function main(): Promise<void> {
 
     // Display results
     displayResults(puzzleResults, puzzleStatus);
+
+    // Display model summary
+    displayModelSummary(puzzleResults);
 
   } catch (error) {
     console.error('❌ Error during analysis:', error);
