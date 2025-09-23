@@ -20,6 +20,9 @@ const GPT5_MODEL = 'gpt-5-2025-08-07';
 // Reasoning effort setting (medium as requested)
 const REASONING_EFFORT = 'medium';
 
+// Timeout per puzzle in milliseconds (30 minutes for complex puzzles)
+const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
 /**
  * List of puzzles that need analysis
  */
@@ -117,7 +120,7 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
       `${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`,
       requestBody,
       {
-        timeout: 300000, // 5 minute timeout for complex puzzles
+        timeout: PUZZLE_TIMEOUT_MS, // 30 minutes for complex puzzles
         headers: {
           'Content-Type': 'application/json',
         }
@@ -211,7 +214,11 @@ async function main(): Promise<void> {
     console.log(`Model: ${GPT5_MODEL}`);
     console.log(`Reasoning Effort: ${REASONING_EFFORT}`);
     console.log(`API Base URL: ${API_BASE_URL}`);
+    console.log(`Timeout per puzzle: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
     console.log(`Total Puzzles: ${PUZZLES_TO_ANALYZE.testedButNotSolved.length + PUZZLES_TO_ANALYZE.notTested.length}`);
+    console.log('='.repeat(80));
+    console.log('💾 Results are immediately saved to database via API');
+    console.log('🔄 Same process as client UI - analyze + save in one call');
     console.log('='.repeat(80));
 
     const allResults: AnalysisResult[] = [];
