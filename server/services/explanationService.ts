@@ -12,7 +12,76 @@ import { AppError } from '../middleware/errorHandler';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+function transformRawExplanation(sourceData: any, modelKey: string) {
+  const analysisData = sourceData.result || sourceData;
+  const hasMultiplePredictions = analysisData.hasMultiplePredictions || false;
+
+  const multiplePredictedOutputsForStorage = hasMultiplePredictions
+    ? (analysisData.multiplePredictedOutputs || null)
+    : null;
+
+  const tokenUsage = analysisData.tokenUsage || sourceData.tokenUsage;
+  const costData = analysisData.cost || sourceData.cost;
+
+  let finalReasoningItems = null;
+  if (analysisData.reasoningItems && Array.isArray(analysisData.reasoningItems) && analysisData.reasoningItems.length > 0) {
+    finalReasoningItems = analysisData.reasoningItems;
+  } else if (sourceData.reasoningItems && Array.isArray(sourceData.reasoningItems) && sourceData.reasoningItems.length > 0) {
+    finalReasoningItems = sourceData.reasoningItems;
+  } else if (analysisData.reasoningLog && Array.isArray(analysisData.reasoningLog) && analysisData.reasoningLog.length > 0) {
+    finalReasoningItems = analysisData.reasoningLog;
+  }
+
+  let finalReasoningLog = null;
+  if (analysisData.reasoningLog && typeof analysisData.reasoningLog === 'string') {
+    finalReasoningLog = analysisData.reasoningLog;
+  } else if (sourceData.reasoningLog && typeof sourceData.reasoningLog === 'string') {
+    finalReasoningLog = sourceData.reasoningLog;
+  }
+
+  return {
+    patternDescription: analysisData.patternDescription ?? null,
+    solvingStrategy: analysisData.solvingStrategy ?? null,
+    hints: Array.isArray(analysisData.hints)
+      ? analysisData.hints.map((hint: any) =>
+          typeof hint === 'object' ? hint.algorithm || hint.description || String(hint)
+          : String(hint)
+        )
+      : null,
+    confidence: analysisData.confidence ?? 50,
+    modelName: sourceData.modelName ?? modelKey,
+    reasoningItems: finalReasoningItems,
+    reasoningLog: finalReasoningLog,
+    predictedOutputGrid: analysisData.predictedOutputGrid ?? null,
+    isPredictionCorrect: analysisData.isPredictionCorrect ?? false,
+    predictionAccuracyScore: analysisData.predictionAccuracyScore ?? 0,
+    hasMultiplePredictions: hasMultiplePredictions,
+    multiplePredictedOutputs: multiplePredictedOutputsForStorage,
+    multiTestResults: analysisData.multiTestResults ?? null,
+    multiTestAllCorrect: analysisData.multiTestAllCorrect ?? null,
+    multiTestAverageAccuracy: analysisData.multiTestAverageAccuracy ?? null,
+    multiTestPredictionGrids: analysisData.multiTestPredictionGrids ?? null,
+    providerRawResponse: analysisData._parsingFailed ? analysisData._rawResponse : (analysisData.providerRawResponse ?? sourceData.providerRawResponse ?? null),
+    apiProcessingTimeMs: analysisData.actualProcessingTime ?? analysisData.apiProcessingTimeMs ?? sourceData.apiProcessingTimeMs ?? null,
+    inputTokens: tokenUsage?.input ?? analysisData.inputTokens ?? null,
+    outputTokens: tokenUsage?.output ?? analysisData.outputTokens ?? null,
+    reasoningTokens: tokenUsage?.reasoning ?? analysisData.reasoningTokens ?? null,
+    totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : (analysisData.totalTokens ?? null),
+    estimatedCost: costData?.total ?? analysisData.estimatedCost ?? null,
+    temperature: analysisData.temperature ?? sourceData.temperature ?? null,
+    reasoningEffort: analysisData.reasoningEffort ?? sourceData.reasoningEffort ?? null,
+    reasoningVerbosity: analysisData.reasoningVerbosity ?? sourceData.reasoningVerbosity ?? null,
+    reasoningSummaryType: analysisData.reasoningSummaryType ?? sourceData.reasoningSummaryType ?? null,
+    systemPromptUsed: analysisData.systemPromptUsed ?? sourceData.systemPromptUsed ?? null,
+    userPromptUsed: analysisData.userPromptUsed ?? sourceData.userPromptUsed ?? null,
+    promptTemplateId: analysisData.promptTemplateId ?? sourceData.promptTemplateId ?? null,
+    customPromptText: analysisData.customPromptText ?? sourceData.customPromptText ?? null,
+  };
+}
+
 export const explanationService = {
+  transformRawExplanation, // Export for use in other services
+
   /**
    * Get all explanations for a specific puzzle
    * 
@@ -73,109 +142,18 @@ export const explanationService = {
         const sourceData = explanations[modelKey];
 
 
-        // CRITICAL SIMPLIFICATION: Accept pre-validated data from puzzleAnalysisService
-        // Author: Claude Code using Sonnet 4
-        // Date: 2025-09-16
-        // PURPOSE: Eliminate redundant grid collection logic that was overriding validated data
+        const explanationData = transformRawExplanation(sourceData, modelKey);
 
-        // Handle nested result structure from OpenRouter services
-        // OpenRouter models return: { result: { solvingStrategy, patternDescription, ... }, tokenUsage, cost, ... }
-        const analysisData = sourceData.result || sourceData;
-
-        // CRITICAL FIX: Use pre-validated data with database-compatible field names
-        // Author: Claude Code using Sonnet 4
-        // Date: 2025-09-16
-        // PURPOSE: Fix multi-test data loss by using validated grids instead of raw boolean flag
-        // No more complex grid collection - puzzleAnalysisService already validated and formatted the data
-        const hasMultiplePredictions = analysisData.hasMultiplePredictions || false;
-
-        // FIXED: For multi-test cases, use the validated grids from the correct data source
-        const multiplePredictedOutputsForStorage = hasMultiplePredictions
-          ? (analysisData.multiplePredictedOutputs || null)  // Use validated grids from analysisData
-          : null;  // Single-test case
-
-        const tokenUsage = analysisData.tokenUsage || sourceData.tokenUsage;
-        const costData = analysisData.cost || sourceData.cost;
-
-        
-        // Extract reasoningItems with proper fallback logic
-        let finalReasoningItems = null;
-        
-        // Consistently check for reasoningItems in the correct order of precedence
-        if (analysisData.reasoningItems && Array.isArray(analysisData.reasoningItems) && analysisData.reasoningItems.length > 0) {
-          finalReasoningItems = analysisData.reasoningItems;
-        } else if (sourceData.reasoningItems && Array.isArray(sourceData.reasoningItems) && sourceData.reasoningItems.length > 0) {
-          finalReasoningItems = sourceData.reasoningItems;
-        } else if (analysisData.reasoningLog && Array.isArray(analysisData.reasoningLog) && analysisData.reasoningLog.length > 0) {
-          finalReasoningItems = analysisData.reasoningLog;
+        // CRITICAL DEBUG: Log multi-test data before saving to track data loss
+        if (explanationData.hasMultiplePredictions) {
+          console.log(`[MULTI-TEST-DEBUG] hasMultiplePredictions: ${explanationData.hasMultiplePredictions}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs type: ${typeof explanationData.multiplePredictedOutputs}`);
+          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs length: ${Array.isArray(explanationData.multiplePredictedOutputs) ? explanationData.multiplePredictedOutputs.length : 'not-array'}`);
+          console.log(`[MULTI-TEST-DEBUG] multiTestResults: ${explanationData.multiTestResults ? 'present' : 'missing'}`);
         }
-        
-
-        // Extract reasoningLog from AI service response
-        let finalReasoningLog = null;
-
-        // Consistently check for reasoningLog
-        if (analysisData.reasoningLog && typeof analysisData.reasoningLog === 'string') {
-          finalReasoningLog = analysisData.reasoningLog;
-        } else if (sourceData.reasoningLog && typeof sourceData.reasoningLog === 'string') {
-          finalReasoningLog = sourceData.reasoningLog;
-        }
-        
-
-        // Handle both flat and nested response structures
-        const explanationData = {
-          patternDescription: analysisData.patternDescription ?? null,
-          solvingStrategy: analysisData.solvingStrategy ?? null,
-          hints: Array.isArray(analysisData.hints) 
-            ? analysisData.hints.map((hint: any) => 
-                typeof hint === 'object' ? hint.algorithm || hint.description || String(hint)
-                : String(hint)
-              )
-            : null,
-          confidence: analysisData.confidence ?? 50,
-          modelName: sourceData.modelName ?? modelKey,
-          reasoningItems: finalReasoningItems,
-          reasoningLog: finalReasoningLog,
-          // FIXED: Use pre-validated fields with database-compatible names
-          predictedOutputGrid: analysisData.predictedOutputGrid ?? null,
-          isPredictionCorrect: analysisData.isPredictionCorrect ?? false,
-          predictionAccuracyScore: analysisData.predictionAccuracyScore ?? 0,
-
-          // Multi-test fields with database-compatible names (pre-validated by puzzleAnalysisService)
-          hasMultiplePredictions: hasMultiplePredictions,
-          multiplePredictedOutputs: multiplePredictedOutputsForStorage,
-          multiTestResults: analysisData.multiTestResults ?? null,
-          multiTestAllCorrect: analysisData.multiTestAllCorrect ?? null,
-          multiTestAverageAccuracy: analysisData.multiTestAverageAccuracy ?? null,
-          multiTestPredictionGrids: analysisData.multiTestPredictionGrids ?? null,
-          // If parsing failed, save the raw response from the `_rawResponse` field.
-          providerRawResponse: analysisData._parsingFailed ? analysisData._rawResponse : (analysisData.providerRawResponse ?? sourceData.providerRawResponse ?? null),
-          apiProcessingTimeMs: analysisData.actualProcessingTime ?? analysisData.apiProcessingTimeMs ?? sourceData.apiProcessingTimeMs ?? null,
-          inputTokens: tokenUsage?.input ?? analysisData.inputTokens ?? null,
-          outputTokens: tokenUsage?.output ?? analysisData.outputTokens ?? null,
-          reasoningTokens: tokenUsage?.reasoning ?? analysisData.reasoningTokens ?? null,
-          totalTokens: (tokenUsage?.input && tokenUsage?.output) ? (tokenUsage.input + tokenUsage.output + (tokenUsage.reasoning || 0)) : (analysisData.totalTokens ?? null),
-          estimatedCost: costData?.total ?? analysisData.estimatedCost ?? null,
-          temperature: analysisData.temperature ?? sourceData.temperature ?? null,
-          reasoningEffort: analysisData.reasoningEffort ?? sourceData.reasoningEffort ?? null,
-          reasoningVerbosity: analysisData.reasoningVerbosity ?? sourceData.reasoningVerbosity ?? null,
-          reasoningSummaryType: analysisData.reasoningSummaryType ?? sourceData.reasoningSummaryType ?? null,
-          // Prompt tracking fields for full traceability
-          systemPromptUsed: analysisData.systemPromptUsed ?? sourceData.systemPromptUsed ?? null,
-          userPromptUsed: analysisData.userPromptUsed ?? sourceData.userPromptUsed ?? null,
-          promptTemplateId: analysisData.promptTemplateId ?? sourceData.promptTemplateId ?? null,
-          customPromptText: analysisData.customPromptText ?? sourceData.customPromptText ?? null,
-        };
 
         console.log(`[SAVE-ATTEMPT] Saving explanation for model: ${modelKey} (puzzle: ${puzzleId})`);
 
-        // CRITICAL DEBUG: Log multi-test data before saving to track data loss
-        if (hasMultiplePredictions) {
-          console.log(`[MULTI-TEST-DEBUG] hasMultiplePredictions: ${hasMultiplePredictions}`);
-          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs type: ${typeof multiplePredictedOutputsForStorage}`);
-          console.log(`[MULTI-TEST-DEBUG] multiplePredictedOutputs length: ${Array.isArray(multiplePredictedOutputsForStorage) ? multiplePredictedOutputsForStorage.length : 'not-array'}`);
-          console.log(`[MULTI-TEST-DEBUG] multiTestResults: ${sourceData.multiTestResults ? 'present' : 'missing'}`);
-        }
 
         try {
           const explanationWithPuzzleId = {
