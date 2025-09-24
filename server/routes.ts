@@ -19,7 +19,7 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
-import { batchAnalysisController } from "./controllers/batchAnalysisController";
+
 import { eloController } from "./controllers/eloController";
 
 // Import route modules
@@ -125,11 +125,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
   
   // Batch analysis routes
-  app.post("/api/model/batch-analyze", validation.batchAnalysis, asyncHandler(batchAnalysisController.startBatch));
-  app.get("/api/model/batch-status/:sessionId", asyncHandler(batchAnalysisController.getBatchStatus));
-  app.post("/api/model/batch-control/:sessionId", validation.batchControl, asyncHandler(batchAnalysisController.controlBatch));
-  app.get("/api/model/batch-results/:sessionId", asyncHandler(batchAnalysisController.getBatchResults));
-  app.get("/api/model/batch-sessions", asyncHandler(batchAnalysisController.getAllSessions));
   
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {
