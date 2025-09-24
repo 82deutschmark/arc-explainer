@@ -819,22 +819,23 @@ export const MODELS: ModelConfig[] = [
   },
 
 
-//{
-//  key: 'stepfun-ai/step3',
-//    name: 'Step3',
-//    color: 'bg-green-600',
-//    premium: true,
-//    cost: { input: '$0.57', output: '$1.42' },
-//    supportsTemperature: false,
-//    provider: 'OpenRouter',
-//    responseTime: { speed: 'fast', estimate: '10-30 sec' },
-//    isReasoning: true,
-//    apiModelName: 'stepfun-ai/step3',
-//    modelType: 'openrouter',
-//    contextWindow: 65000,
-//    maxOutputTokens: 25000,
-//    requiresPromptFormat: true,
-//    releaseDate: "2025-08"
-//  },
+/*
+{
+  key: 'stepfun-ai/step3',
+    name: 'Step3',
+    color: 'bg-green-600',
+    premium: true,
+    cost: { input: '$0.57', output: '$1.42' },
+    supportsTemperature: false,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '10-30 sec' },
+    isReasoning: true,
+    apiModelName: 'stepfun-ai/step3',
+    modelType: 'openrouter',
+    contextWindow: 65000,
+    maxOutputTokens: 25000,
+    requiresPromptFormat: true,
+    releaseDate: "2025-08"
+  },
 */
 ];
