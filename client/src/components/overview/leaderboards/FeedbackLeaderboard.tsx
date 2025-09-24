@@ -1,7 +1,8 @@
 /**
  * FeedbackLeaderboard Component
  * 
- * Displays models ranked by user satisfaction (feedback ratings).
+ * Displays models ranked by user satisfaction (feedback ratings).  THIS IS INACCURATE AND SHOULD BE DEPRECATED
+ * Feedback in this case is users assessing if the model's reply was helpful or not helpful, not their satisfaction with the model.
  * Uses data from FeedbackRepository via /api/feedback/stats
  */
 

@@ -96,6 +96,40 @@ THESE ARE LARGELY DEPRECATED!  They never worked correctly.
 - `GET /api/puzzle/raw-stats` - Infrastructure and database performance metrics
 - `GET /api/metrics/comprehensive-dashboard` - Combined analytics dashboard from all repositories
 
+#### Cost Statistics **NEW - September 2025**
+**🚨 CRITICAL**: Cost calculations completely refactored for proper domain separation. All cost endpoints now use dedicated CostRepository following SRP principles.
+
+- `GET /api/metrics/costs/models` - Get cost summaries for all models
+  - **Response**: Array of `ModelCostSummary` objects with normalized model names
+  - **Data**: Total cost, average cost, attempts, min/max costs per model
+  - **Business Rules**: Uses consistent model name normalization (removes :free, :beta, :alpha suffixes)
+  - **Limits**: No limits - returns all models with cost data
+
+- `GET /api/metrics/costs/models/:modelName` - Get detailed cost summary for specific model
+  - **Params**: `modelName` (normalized automatically - "claude-3.5-sonnet" matches "claude-3.5-sonnet:beta")
+  - **Response**: Single `ModelCostSummary` object
+  - **Limits**: Single model result
+
+- `GET /api/metrics/costs/models/:modelName/trends?days=30` - Get cost trends over time for model
+  - **Query params**: `days` (1-365, default: 30) - Time range for trend analysis
+  - **Response**: Array of `CostTrend` objects with daily cost data
+  - **Use case**: Cost optimization and pattern analysis
+  - **Limits**: Maximum 365 days of historical data
+
+- `GET /api/metrics/costs/system/stats` - Get system-wide cost statistics
+  - **Response**: Total system cost, total requests, average cost per request, unique models, cost-bearing requests
+  - **Use case**: Financial reporting and system cost analysis
+  - **Limits**: System-wide aggregated data only
+
+- `GET /api/metrics/costs/models/map` - Get cost map for cross-repository integration
+  - **Response**: Object with modelName → {totalCost, avgCost, attempts} mapping
+  - **Use case**: Internal cross-repository data integration (used by MetricsRepository)
+  - **Limits**: No limits
+
+**🔄 Data Consistency**: All cost endpoints now return identical values for the same model (eliminated previous inconsistencies between UI components).
+
+**⚙️ Performance**: Cost queries optimized with database indexes on `(model_name, estimated_cost)` and `(created_at, estimated_cost, model_name)`.
+
 ### Model Analysis
 - `GET /api/puzzle/confidence-stats` - Model confidence analysis
   - **Limits**: No limits

@@ -1,6 +1,76 @@
 
 ### September 24 2025
 
+## v2.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring
+
+**🚨 BREAKING ARCHITECTURAL CHANGES**: Completely eliminated SRP/DRY violations in cost calculation system. All cost calculations now follow proper domain separation principles.
+
+---
+
+## 🔧 **CRITICAL ARCHITECTURAL VIOLATIONS ELIMINATED**
+
+### **Problem**: Severe SRP/DRY Violations Causing Data Inconsistency
+- **TrustworthinessRepository** was calculating costs (violating Single Responsibility Principle)
+- **MetricsRepository** had duplicate cost calculations with different business rules
+- **Same models showed different costs in different UI components** due to inconsistent data sources
+- Multiple repositories implementing cost normalization logic differently
+
+### **Root Cause Analysis**:
+```typescript
+// TrustworthinessRepository.ts (WRONG - mixing domains)
+AVG(e.estimated_cost) as avg_cost,         // Line 342
+SUM(e.estimated_cost) as total_cost        // Line 343
+
+// MetricsRepository.ts (WRONG - duplicate logic)
+SUM(COALESCE(estimated_cost, 0)) as total_cost  // Different filtering rules
+
+// Result: claude-3.5-sonnet:beta showed different costs in different components
+```
+
+### **Solution**: Dedicated Cost Domain Architecture
+✅ **Created `CostRepository`** - Single responsibility for all cost calculations
+✅ **Eliminated duplicate cost logic** from TrustworthinessRepository and MetricsRepository
+✅ **Standardized model name normalization** with shared utility
+✅ **Added dedicated cost API endpoints** following RESTful principles
+✅ **Database optimization** with targeted indexes for cost queries
+
+### **📋 Implementation Details**
+
+#### **Files Created**:
+- `server/repositories/CostRepository.ts` - Dedicated cost domain repository
+- `server/controllers/costController.ts` - RESTful cost API endpoints
+
+#### **Files Modified**:
+- `server/repositories/TrustworthinessRepository.ts` - Removed cost calculations (lines 342-343, 457-458)
+- `server/repositories/MetricsRepository.ts` - Uses CostRepository delegation
+- `server/controllers/puzzleController.ts` - Combines trustworthiness + cost data properly
+- `server/repositories/RepositoryService.ts` - Added CostRepository integration
+- `server/routes/metricsRoutes.ts` - Added cost endpoints
+- `server/repositories/database/DatabaseSchema.ts` - Added cost query indexes
+
+#### **New API Endpoints**:
+```typescript
+GET /api/metrics/costs/models              // All model costs
+GET /api/metrics/costs/models/:modelName   // Specific model cost summary
+GET /api/metrics/costs/models/:modelName/trends  // Cost trends over time
+GET /api/metrics/costs/system/stats        // System-wide cost statistics
+GET /api/metrics/costs/models/map          // Cost map for cross-repository integration
+```
+
+#### **Data Consistency Verification**:
+- **ModelDebugModal**: Uses `/api/puzzle/performance-stats` (combined data)
+- **ModelComparisonMatrix**: Uses `/api/metrics/comprehensive-dashboard` (CostRepository)
+- **TrustworthinessLeaderboard**: Uses `/api/puzzle/performance-stats` (combined data)
+- **Result**: All components now show identical cost values for same models
+
+#### **Database Optimizations Added**:
+```sql
+CREATE INDEX idx_explanations_cost_model ON explanations(model_name, estimated_cost) WHERE estimated_cost IS NOT NULL;
+CREATE INDEX idx_explanations_cost_date ON explanations(created_at, estimated_cost, model_name) WHERE estimated_cost IS NOT NULL;
+```
+
+---
+
 ## v2.24.4 - CRITICAL: PuzzleOverview Data Source Fixes and Cost Architecture Issues
 
 **CRITICAL FIXES**: Fixed multiple data source inconsistencies and architectural violations in PuzzleOverview.tsx and cost calculation system.
