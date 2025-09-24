@@ -20,9 +20,10 @@ import {
   Activity,
   BarChart3,
   MessageSquare,
-  Target
+  Target,
+  Shield
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useModels } from '@/hooks/useModels';
 import type { FeedbackStats, AccuracyStats, PerformanceStats, RawDatabaseStats, ModelConfig, PureAccuracyStats } from '@shared/types';
@@ -99,6 +100,17 @@ export function ModelDebugModal({
   const modelSpeed = performanceStats?.speedLeaders?.find(m => m.modelName === modelName);
   
   const isLoading = modelsLoading || accuracyLoading || feedbackLoading || rawLoading || performanceLoading;
+    const recoveryMutation = useMutation({
+    mutationFn: () => apiRequest('POST', '/api/admin/start-recovery'),
+    onSuccess: () => {
+      // You might want to show a toast notification here
+      console.log('Recovery process started successfully.');
+    },
+    onError: (error) => {
+      console.error('Failed to start recovery process:', error);
+    }
+  });
+
   const hasErrors = modelsError || accuracyError || feedbackError || rawError || performanceError;
 
   // Validation
@@ -352,6 +364,26 @@ export function ModelDebugModal({
                   ) : (
                     <p className="text-gray-500">No performance data available for this model</p>
                   )}
+                </CardContent>
+              </Card>
+
+              {/* Admin Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-red-500" />
+                    Admin Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <button 
+                    onClick={() => recoveryMutation.mutate()}
+                    disabled={recoveryMutation.isPending}
+                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+                  >
+                    {recoveryMutation.isPending ? 'Starting...' : 'Start Data Recovery'}
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2">Manually triggers the server-side data recovery process. Check server logs for progress.</p>
                 </CardContent>
               </Card>
 

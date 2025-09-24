@@ -170,8 +170,12 @@ With this setup:
 
 -   Your main `arc-explainer` app runs 24/7, handling user requests and saving logs to the `/app/data` volume.
 -   Once a day, at 5:00 AM UTC, Railway will automatically start the `recovery-job` service.
--   The `recovery-job` service will execute its start command (`npm run recover`), read the logs from the shared `/app/data` volume, process them, and save the results to your database.
+-   The `recovery-job` service will execute its start command (`npm run recover -- --non-interactive`), read the logs from the shared `/app/data` volume, process them, and save the results to your database.
 -   After the script finishes, the `recovery-job` service will shut down, consuming no further resources until the next scheduled run.
+
+### **Manual Recovery Trigger**
+
+You can now also trigger the recovery process manually from within the application. Open the 'Model Debug' modal for any model, where you will find an 'Admin Actions' section with a 'Start Data Recovery' button. Clicking this will start the non-interactive recovery process on the server immediately.
 
 **Status**: 🔴 **CRITICAL** - Must fix before production deployment
 **Priority**: 🚨 **HIGHEST** - Data loss occurring

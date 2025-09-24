@@ -19,6 +19,7 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
+import adminController from './controllers/adminController.js';
 
 import { eloController } from "./controllers/eloController";
 
@@ -126,6 +127,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Batch analysis routes
   
+  // Admin routes
+  app.use("/api/admin", adminController);
+
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {
     try {
