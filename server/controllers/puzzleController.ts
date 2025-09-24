@@ -262,8 +262,26 @@ export const puzzleController = {
    */
   async getRealPerformanceStats(req: Request, res: Response) {
     try {
+      // Get trustworthiness data (no longer includes cost data due to SRP separation)
       const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStats();
-      res.json(formatResponse.success(performanceStats));
+
+      // Get cost data from dedicated cost repository
+      const costMap = await repositoryService.cost.getModelCostMap();
+
+      // Combine trustworthiness data with cost data to maintain API contract
+      const combinedStats = {
+        ...performanceStats,
+        trustworthinessLeaders: performanceStats.trustworthinessLeaders.map(leader => {
+          const costData = costMap[leader.modelName];
+          return {
+            ...leader,
+            avgCost: costData?.avgCost || 0,
+            totalCost: costData?.totalCost || 0
+          };
+        })
+      };
+
+      res.json(formatResponse.success(combinedStats));
     } catch (error) {
       logger.error('Error fetching real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch real performance stats', 'An error occurred while fetching real performance statistics'));
