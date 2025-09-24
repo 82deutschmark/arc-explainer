@@ -7,7 +7,9 @@ Commented out all OpenRouter models temporarily, models.ts needs to be audited a
 
 Added docs regarding data loss on Railway deployments to 25SeptRailwayTasks.md
 
+Added command npm run retry and ap and au to package.json  these should be the basis of any new form of BatchAnalysis attempts.  Read those scripts they were done well.
 
+Previous BatchAnalysis was a flawed concept and implementation.
 
 
 ### September 16 2025

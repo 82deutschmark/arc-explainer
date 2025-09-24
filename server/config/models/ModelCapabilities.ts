@@ -1,5 +1,8 @@
 /**
  * ModelCapabilities.ts
+ * THIS FILE SEEMS LIKE TOTAL OVER-ENGINEERED INSANITY???  We dont need any of the stuff in
+ * here and none of it seems to be useful. isnt all of this defined in the models.ts file?
+ * 
  * 
  * Runtime capability detection and dynamic model feature management.
  * Handles availability checking, feature validation, and real-time capability assessment.
@@ -305,7 +308,7 @@ export class ModelCapabilities {
   }
 
   /**
-   * Perform health checks on all models
+   * Perform health checks on all models  WHY??!?!?  THIS SEEMS OVER-ENGINEERED?!?
    */
   private async performHealthChecks(): Promise<void> {
     const modelKeys = Array.from(this.capabilityCache.keys());
