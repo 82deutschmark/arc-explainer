@@ -507,23 +507,6 @@ export const MODELS: ModelConfig[] = [
 
   // New OpenRouter Models - August 2025
   {
-    key: 'x-ai/grok-code-fast-1',
-    name: 'xAI Grok Code Fast 1',
-    color: 'bg-gray-400',
-    premium: false,
-    cost: { input: '$0.20', output: '$1.50' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    isReasoning: false,
-    apiModelName: 'x-ai/grok-code-fast-1',
-    modelType: 'openrouter',
-    contextWindow: 256000,
-    maxOutputTokens: 25000,
-    requiresPromptFormat: true,
-    supportsStructuredOutput: false // Grok models have issues with JSON mode
-  },
-  {
     key: 'openai/gpt-oss-120b',
     name: 'OpenAI GPT-OSS 120B',
     color: 'bg-blue-400',
@@ -670,23 +653,38 @@ export const MODELS: ModelConfig[] = [
 
   },
   // xAI Grok Models (all via OpenRouter)
-/*
   {
     key: 'x-ai/grok-4',
-    name: 'Grok 4 (July 2025)',
+    name: 'Grok 4',
     color: 'bg-gray-900',
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
-    supportsTemperature: false,
+    supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
     isReasoning: true,
     apiModelName: 'x-ai/grok-4',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 31000
+    maxOutputTokens: 31000,
+    releaseDate: "2025-07"
   },
-*/
+  {
+    key: 'x-ai/grok-4-fast:free',
+    name: 'Grok 4 Fast',
+    color: 'bg-orange-500',
+    premium: false,
+    cost: { input: '$0.00', output: '$0.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'x-ai/grok-4-fast:free',
+    modelType: 'openrouter',
+    contextWindow: 128000,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-07"
+  },
   {
     key: 'x-ai/grok-3',
     name: 'Grok 3',
@@ -700,7 +698,8 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-3',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 31000
+    maxOutputTokens: 31000,
+    releaseDate: "2024-11"
   },
   {
     key: 'x-ai/grok-3-mini',
@@ -715,7 +714,26 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'x-ai/grok-3-mini',
     modelType: 'openrouter',
     contextWindow: 256000,
-    maxOutputTokens: 31000
+    maxOutputTokens: 31000,
+    releaseDate: "2024-11"
+  },
+  {
+    key: 'x-ai/grok-code-fast-1',
+    name: 'Grok Code Fast 1',
+    color: 'bg-gray-400',
+    premium: false,
+    cost: { input: '$0.20', output: '$1.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'x-ai/grok-code-fast-1',
+    modelType: 'openrouter',
+    contextWindow: 256000,
+    maxOutputTokens: 25000,
+    requiresPromptFormat: true,
+    supportsStructuredOutput: false,
+    releaseDate: "2025-05"
   },
 //  {
 //    key: 'cohere/command-a',
