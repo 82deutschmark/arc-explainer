@@ -31,6 +31,7 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import { AccuracyRepository } from './AccuracyRepository.ts';
 import { TrustworthinessRepository } from './TrustworthinessRepository.ts';
 import { FeedbackRepository } from './FeedbackRepository.ts';
+import { CostRepository } from './CostRepository.ts';
 import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { COST_EFFICIENCY, ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
@@ -139,12 +140,14 @@ export class MetricsRepository extends BaseRepository {
   private accuracyRepo: AccuracyRepository;
   private trustworthinessRepo: TrustworthinessRepository;
   private feedbackRepo: FeedbackRepository;
+  private costRepo: CostRepository;
   
   constructor() {
     super();
     this.accuracyRepo = new AccuracyRepository();
     this.trustworthinessRepo = new TrustworthinessRepository();
     this.feedbackRepo = new FeedbackRepository();
+    this.costRepo = new CostRepository();
   }
   
   /**
@@ -374,7 +377,7 @@ export class MetricsRepository extends BaseRepository {
         this.accuracyRepo.getModelAccuracyMap(),
         this.trustworthinessRepo.getModelTrustworthinessMap(),
         this.feedbackRepo.getModelFeedbackMap(),
-        this.getModelCostData() // Fetch real cost data instead of calculating nonsense
+        this.costRepo.getModelCostMap() // Use proper cost domain repository
       ]);
 
       // Pure aggregation using centralized business logic
@@ -561,35 +564,6 @@ export class MetricsRepository extends BaseRepository {
     };
   }
 
-  /**
-   * Gets actual cost data by model from explanations table
-   * Replaces the insane attempts/trustworthiness calculation with real cost data
-   */
-  private async getModelCostData(): Promise<Record<string, { totalCost: number; avgCost: number; attempts: number }>> {
-    const query = `
-      SELECT
-        model_name,
-        COUNT(*) as attempts,
-        SUM(COALESCE(estimated_cost, 0)) as total_cost,
-        AVG(COALESCE(estimated_cost, 0)) as avg_cost
-      FROM explanations
-      WHERE model_name IS NOT NULL
-      GROUP BY model_name
-      HAVING COUNT(*) >= 1
-      ORDER BY total_cost DESC
-    `;
-
-    const result = await this.query(query);
-
-    return result.rows.reduce((acc, row) => {
-      acc[row.model_name] = {
-        totalCost: parseFloat(row.total_cost) || 0,
-        avgCost: parseFloat(row.avg_cost) || 0,
-        attempts: parseInt(row.attempts) || 0
-      };
-      return acc;
-    }, {} as Record<string, { totalCost: number; avgCost: number; attempts: number }>);
-  }
 
   /**
    * Combines model comparison data from multiple repositories

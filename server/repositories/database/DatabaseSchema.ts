@@ -263,6 +263,10 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_elo_ratings_explanation ON elo_ratings(explanation_id)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_comparison_votes_session ON comparison_votes(session_id)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_predicted_grid ON explanations(id) WHERE predicted_output_grid IS NOT NULL`);
+
+    // Migration: Create cost calculation indexes for CostRepository optimization
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_cost_model ON explanations(model_name, estimated_cost) WHERE estimated_cost IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_cost_date ON explanations(created_at, estimated_cost, model_name) WHERE estimated_cost IS NOT NULL`);
   }
 
   /**
