@@ -40,6 +40,17 @@
    - **Documentation**: Created `docs/24SeptCostFixes.md` with complete analysis and refactoring plan
    - **Status**: Requires dedicated CostRepository and proper domain separation
 
+### Data Recovery Automation & Admin Tools
+7. **Data Recovery Refactor**: Broke up the monolithic `server/dataRecovery.ts` into a lightweight CLI orchestrator and `server/services/recoveryService.ts`
+   - **Benefit**: Centralizes recovery logic, enables reuse, and eliminates duplicated data mapping code
+8. **Shared Transformation Logic**: Extracted `transformRawExplanation()` in `server/services/explanationService.ts`
+   - **Impact**: Ensures all services use the same validated field mapping when saving explanations
+9. **Interactive & Non-Interactive Modes**: Restored interactive prompts for manual runs while adding a `--non-interactive` flag for cron jobs
+   - **Usage**: `npm run recover` (interactive) and `npm run recover -- --non-interactive` (automated Railway job)
+10. **Manual Trigger Endpoint**: Added `POST /api/admin/start-recovery` in `server/controllers/adminController.ts`
+    - **UI Hook**: Added a "Start Data Recovery" button in `client/src/components/ModelDebugModal.tsx`
+    - **Result**: Admins can kick off recovery without SSH or CLI access
+
 ### Files Modified
 - `client/src/pages/PuzzleOverview.tsx`: Fixed sort order, updated data sources
 - `client/src/components/ui/ModelPerformanceCard.tsx`: NEW - Reusable component extracted from EloVoteResultsModal
