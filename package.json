@@ -17,7 +17,8 @@
     "db:fix-names": "node --import tsx scripts/fix-model-names.ts",
     "ap": "node --import tsx puzzle-analysis.ts",
     "au": "node --import tsx analyze-unsolved-puzzles.ts",
-    "retry": "node --import tsx retry-failed-puzzles.ts"
+    "retry": "node --import tsx retry-failed-puzzles.ts",
+    "test-openrouter": "node --import tsx test-openrouter-models.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
