@@ -18,7 +18,8 @@
     "ap": "node --import tsx puzzle-analysis.ts",
     "au": "node --import tsx analyze-unsolved-puzzles.ts",
     "retry": "node --import tsx retry-failed-puzzles.ts",
-    "test-openrouter": "node --import tsx test-openrouter-models.ts"
+    "test-openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
+    "test-openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
