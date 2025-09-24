@@ -19,6 +19,7 @@ import { LeaderboardSection } from '@/components/overview/leaderboards/Leaderboa
 import { ModelComparisonMatrix } from '@/components/overview/ModelComparisonMatrix';
 import { SearchFilters } from '@/components/overview/SearchFilters';
 import { PuzzleList } from '@/components/overview/PuzzleList';
+import { ModelPerformanceCard } from '@/components/ui/ModelPerformanceCard';
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 import { useModelComparisons } from '@/hooks/useModelComparisons';
 import type { PuzzleOverviewData, PuzzleOverviewResponse, ExplanationRecord } from '@shared/types';
@@ -237,39 +238,36 @@ export default function PuzzleOverview() {
           onModelClick={handleModelClick}
         />
 
-        {/* Smart Discovery Section */}
-        {dashboard && (
+        {/* Model Performance Cards Section - Using the SAME working data as EloVoteResultsModal */}
+        {accuracyStats?.modelAccuracyRankings && accuracyStats.modelAccuracyRankings.length > 0 && (
           <section className="space-y-4">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Smart Discovery
+                Top Performing Models
               </h2>
               <p className="text-gray-600">
-                Quick insights and recommendations based on current performance data
+                Performance statistics from the same data source as ELO comparisons
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-                <h3 className="font-semibold text-green-800 mb-2">🏆 Top Performer</h3>
-                <p className="text-sm text-green-700">
-                  {dashboard.accuracyStats.topAccurateModels[0]?.modelName || 'N/A'} leads with {dashboard.accuracyStats.topAccurateModels[0]?.accuracy.toFixed(1) || '0'}% accuracy
-                </p>
-              </div>
-              
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-semibold text-blue-800 mb-2">🛡️ Most Trustworthy</h3>
-                <p className="text-sm text-blue-700">
-                  {dashboard.trustworthinessStats.topTrustworthyModels[0]?.modelName || 'N/A'} has the most reliable confidence
-                </p>
-              </div>
-              
-              <div className="bg-gradient-to-r from-pink-50 to-pink-100 p-4 rounded-lg border border-pink-200">
-                <h3 className="font-semibold text-pink-800 mb-2">❤️ User Favorite</h3>
-                <p className="text-sm text-pink-700">
-                  {dashboard.feedbackStats.topRatedModels[0]?.modelName || 'N/A'} has {dashboard.feedbackStats.topRatedModels[0]?.helpfulPercentage.toFixed(1) || '0'}% satisfaction
-                </p>
-              </div>
+              {/* FIX: accuracyStats comes sorted ASC (worst first), so we need to reverse it to show best first */}
+              {accuracyStats.modelAccuracyRankings.slice().reverse().slice(0, 3).map((model, index) => {
+                const variants = ['blue', 'purple', 'default'] as const;
+                const emojis = ['🏆', '🥈', '🥉'];
+                return (
+                  <ModelPerformanceCard
+                    key={model.modelName}
+                    modelName={`${emojis[index]} ${model.modelName}`}
+                    accuracy={{
+                      accuracyPercentage: model.accuracyPercentage,
+                      correctPredictions: model.correctPredictions,
+                      totalAttempts: model.totalAttempts
+                    }}
+                    variant={variants[index]}
+                  />
+                );
+              })}
             </div>
           </section>
         )}
