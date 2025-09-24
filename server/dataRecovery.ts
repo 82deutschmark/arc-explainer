@@ -6,6 +6,25 @@
  * SRP and DRY check: Pass - This file has a single responsibility: to start the recovery process based on command-line inputs.
  */
 
+/**
+ * Parses a raw filename into its components
+ * @param filename The raw filename to parse (e.g., '12345678-raw.json')
+ * @returns An object containing the parsed components or null if parsing fails
+ */
+export function parseRawFilename(filename: string): { puzzleId: string; timestamp: string; } | null {
+  // Example format: 12345678-raw.json or 12345678-20230101-raw.json
+  const match = filename.match(/^(\d+)(?:-(\d+))?-raw\.json$/);
+  
+  if (!match) {
+    return null;
+  }
+  
+  return {
+    puzzleId: match[1],
+    timestamp: match[2] || ''
+  };
+}
+
 import 'dotenv/config';
 import { recoveryService } from './services/recoveryService.js';
 
