@@ -15,7 +15,7 @@ dotenv.config();
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
 // GPT-5 model to use for analysis
-const GPT5_MODEL = 'gpt-5-nano-2025-08-07';
+const GPT5_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Reasoning effort setting (medium as requested)
 const REASONING_EFFORT = 'high';
@@ -29,27 +29,12 @@ const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 const PUZZLES_TO_ANALYZE = {
   // TESTED BUT NOT SOLVED (17 puzzles)
   testedButNotSolved: [
-    '05a7bcf2', 'f5c89df1', '2037f2c7', '0934a4d8', '09c534e7',
-    '0a2355a6', '22a4bbc2', '0e671a1a', 'b7f8a4d8', 'fea12743',
-    '14754a24', '15113be4', '16b78196', '18419cfa', 'cfb2ce5a',
-    '184a9768', 'a8610ef7'
+  '08573cc6', '0becf7df', '0d87d2a6', '1acc24af', '1c56ad9f', '1d398264', '1da012fc', '2037f2c7', '25094a63', '2697da3f', '351d6448', '358ba94e', '3b4c2228', '42a15761', '4b6b68e5', '4c177718', '5833af48', '5a5a2103', '5ffb2104', '62ab2642', '64a7c07e', '67636eac', '692cd3b6', '696d4842', '73ccf9c2', '88207623', '8b28cd80', '8ba14f53', '8cb8642d', '8fbca751', '929ab4e9', '92e50de0', '9356391f', '94be5b80', '99306f82', '9b4c17c4', '9ddd00f0', 'ac2e8ecf', 'ac3e2b04', 'b0722778', 'b0f4d537', 'b7999b51', 'bb52a14b', 'bf32578f', 'bf699163', 'c64f1187', 'c8b7cc0f', 'c92b942c', 'd56f2372', 'dd2401ed', 'e5c44e8f', 'e6de6e8f', 'e88171ec', 'e95e3d8e', 'f3b10344', 'f3e62deb', 'f5aa3634', 'f823c43c'
   ],
 
   // NOT TESTED (63 puzzles)
   notTested: [
-    '1e97544e', '477d2879', '85fa5666', 'ac0c5833', 'd94c3b52',
-    '47996f11', '8719f442', 'af22c60d', 'da515329', 'f8be4b64',
-    '20981f0e', '4aab4007', '891232d6', 'dc2aa30b', 'f9a67cb5',
-    '212895b5', '4e45f183', '896d5239', 'b20f7c8b', 'de493100',
-    'f9d67f8b', '50f325b5', '93c31fbe', 'b457fec5', 'e1d2900e',
-    'fd096ab6', '2546ccf6', '54db823b', '94133066', 'e2092e0c',
-    'fd4b2b02', '2c0b0aff', '551d5bf1', '96a8c0cd', 'b942fd60',
-    'e619ca6e', '3391f8c0', '67b4a34d', '981571dc', 'b9630600',
-    'e681b708', '3490cc26', '79369cc6', '992798f6', 'bd14c3bf',
-    'e78887d1', '37d3e8b2', '79fb03f4', '9b2a60aa', 'c6e1b8da',
-    'ecaa0ec1', '3ed85e70', '7c9b52a0', '9caba7c3', 'f21745ec',
-    '40f6cd08', '7d419a02', 'a096bf4d', 'f3b10344', '456873bc',
-    '85b81ff1', 'd931c21c', 'f4081712'
+    
   ]
 };
 
