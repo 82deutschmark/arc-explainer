@@ -15,7 +15,7 @@ dotenv.config();
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
 // GPT-5 model to use for analysis
-const GPT5_MODEL = 'gpt-5-2025-08-07';
+const GPT5_MODEL = 'gpt-5-mini-2025-08-07';
 
 // Reasoning effort setting (medium as requested)
 const REASONING_EFFORT = 'medium';
@@ -209,7 +209,7 @@ async function analyzePuzzleCategory(puzzleIds: string[], categoryName: string):
  */
 async function main(): Promise<void> {
   try {
-    console.log('🤖 GPT-5 PUZZLE ANALYSIS SCRIPT');
+    console.log('🤖 GPT-5 MINI PUZZLE ANALYSIS SCRIPT');
     console.log('='.repeat(80));
     console.log(`Model: ${GPT5_MODEL}`);
     console.log(`Reasoning Effort: ${REASONING_EFFORT}`);
