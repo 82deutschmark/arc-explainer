@@ -120,6 +120,59 @@ With persistent storage in place, you can now:
 
 ---
 
+## Part 2: Automating Data Recovery with a Cron Job
+
+Now that you have persistent storage, you can automate the data recovery process to ensure no analysis is ever permanently lost. As you noted, this should run automatically.
+
+To do this, you will create a **second, separate service** in your Railway project dedicated solely to running the recovery script on a schedule.
+
+### **Step 1: Create the New Cron Service**
+
+1.  In your Railway project, click **New** > **Service**.
+2.  Select **Deploy from GitHub repo** and choose your `arc-explainer` repository again.
+3.  Railway will create a new service. Give it a distinct name, like `arc-explainer-cron` or `recovery-job`.
+
+### **Step 2: Configure the Cron Service**
+
+This new service needs a different configuration from your main web app. Go to its **Settings** tab and configure the following:
+
+1.  **Build Settings**:
+    *   Builder: `DOCKERFILE`
+    *   Dockerfile Path: `./Dockerfile` (should be the default)
+
+2.  **Deploy Settings**:
+    *   **Start Command**: This is the most important part. Change it to run your recovery script:
+        ```
+        npm run recover
+        ```
+    *   **Cron Schedule**: Set this to run once a day. This expression runs the job every day at 5:00 AM UTC. You can adjust the time as needed.
+        ```
+        0 5 * * *
+        ```
+
+3.  **Variables**: Copy any necessary environment variables from your main app service that the recovery script might need (like database connection strings).
+
+### **Step 3: Attach the Persistent Volume**
+
+For the recovery script to find the logs, the cron service **must be connected to the same persistent volume** as your main application.
+
+1.  Go to the settings for your new `recovery-job` service.
+2.  Find the **Volumes** section.
+3.  Click to attach an existing volume and select `arc_explainer_data` (the volume created for your main app).
+4.  Set the **Mount Path** to be the same as your main app:
+    ```
+    /app/data
+    ```
+
+### **How It Works**
+
+With this setup:
+
+-   Your main `arc-explainer` app runs 24/7, handling user requests and saving logs to the `/app/data` volume.
+-   Once a day, at 5:00 AM UTC, Railway will automatically start the `recovery-job` service.
+-   The `recovery-job` service will execute its start command (`npm run recover`), read the logs from the shared `/app/data` volume, process them, and save the results to your database.
+-   After the script finishes, the `recovery-job` service will shut down, consuming no further resources until the next scheduled run.
+
 **Status**: 🔴 **CRITICAL** - Must fix before production deployment
 **Priority**: 🚨 **HIGHEST** - Data loss occurring
 **Impact**: 💸 **High financial impact** - Wasted API costs
