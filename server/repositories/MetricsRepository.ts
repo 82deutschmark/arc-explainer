@@ -370,14 +370,15 @@ export class MetricsRepository extends BaseRepository {
 
     try {
       // REFACTORED: Parallel data fetching using repository delegation pattern
-      const [accuracyMap, trustworthinessMap, feedbackMap] = await Promise.all([
+      const [accuracyMap, trustworthinessMap, feedbackMap, costMap] = await Promise.all([
         this.accuracyRepo.getModelAccuracyMap(),
-        this.trustworthinessRepo.getModelTrustworthinessMap(), 
-        this.feedbackRepo.getModelFeedbackMap()
+        this.trustworthinessRepo.getModelTrustworthinessMap(),
+        this.feedbackRepo.getModelFeedbackMap(),
+        this.getModelCostData() // Fetch real cost data instead of calculating nonsense
       ]);
 
       // Pure aggregation using centralized business logic
-      return this.combineModelComparisons(accuracyMap, trustworthinessMap, feedbackMap);
+      return this.combineModelComparisons(accuracyMap, trustworthinessMap, feedbackMap, costMap);
 
     } catch (error) {
       logger.error(`Error generating model comparisons: ${error instanceof Error ? error.message : String(error)}`, 'database');
@@ -561,13 +562,44 @@ export class MetricsRepository extends BaseRepository {
   }
 
   /**
+   * Gets actual cost data by model from explanations table
+   * Replaces the insane attempts/trustworthiness calculation with real cost data
+   */
+  private async getModelCostData(): Promise<Record<string, { totalCost: number; avgCost: number; attempts: number }>> {
+    const query = `
+      SELECT
+        model_name,
+        COUNT(*) as attempts,
+        SUM(COALESCE(estimated_cost, 0)) as total_cost,
+        AVG(COALESCE(estimated_cost, 0)) as avg_cost
+      FROM explanations
+      WHERE model_name IS NOT NULL
+      GROUP BY model_name
+      HAVING COUNT(*) >= 1
+      ORDER BY total_cost DESC
+    `;
+
+    const result = await this.query(query);
+
+    return result.rows.reduce((acc, row) => {
+      acc[row.model_name] = {
+        totalCost: parseFloat(row.total_cost) || 0,
+        avgCost: parseFloat(row.avg_cost) || 0,
+        attempts: parseInt(row.attempts) || 0
+      };
+      return acc;
+    }, {} as Record<string, { totalCost: number; avgCost: number; attempts: number }>);
+  }
+
+  /**
    * Combines model comparison data from multiple repositories
    * Used by generateModelComparisons() following delegation pattern
    */
   private combineModelComparisons(
     accuracyMap: ModelAccuracyMap,
     trustworthinessMap: ModelTrustworthinessMap,
-    feedbackMap: ModelFeedbackMap
+    feedbackMap: ModelFeedbackMap,
+    costMap: Record<string, { totalCost: number; avgCost: number; attempts: number }>
   ): ComprehensiveDashboard['modelComparisons'] {
     const allModelNames = new Set([
       ...Object.keys(accuracyMap),
@@ -580,12 +612,10 @@ export class MetricsRepository extends BaseRepository {
       const trustworthiness = trustworthinessMap[modelName];
       const feedback = feedbackMap[modelName];
 
-      // Calculate cost efficiency using constants
-      let costEfficiency = 0;
-      if (accuracy && trustworthiness && trustworthiness.trustworthiness > 0) {
-        const rawEfficiency = accuracy.attempts / trustworthiness.trustworthiness;
-        costEfficiency = Math.min(COST_EFFICIENCY.MAX_EFFICIENCY, Math.max(0, rawEfficiency));
-      }
+      // Get actual cost data from database instead of crazy attempts/trustworthiness calculation
+      const costData = costMap[modelName];
+      const totalCost = costData?.totalCost || 0;
+      const avgCost = costData?.avgCost || 0;
 
       return {
         modelName,
@@ -597,7 +627,8 @@ export class MetricsRepository extends BaseRepository {
           trustworthiness?.attempts || 0,
           feedback?.feedbackCount || 0
         ),
-        costEfficiency: Math.round(costEfficiency * 1000000) / 1000000
+        totalCost: Math.round(totalCost * 1000000) / 1000000, // Round to 6 decimal places for currency precision
+        avgCost: Math.round(avgCost * 1000000) / 1000000
       };
     });
   }
