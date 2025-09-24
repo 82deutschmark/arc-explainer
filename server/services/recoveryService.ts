@@ -8,6 +8,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as readline from 'readline';
 import { repositoryService } from '../repositories/RepositoryService.js';
 import { explanationService } from './explanationService.js';
 import { MODELS } from '../config/models.js';
@@ -31,6 +32,40 @@ function formatTimestamp(timestamp: string): string {
         .replace(/-(?=[0-9]{3}Z$)/, '.');
 
     return `${parts[0]}T${formattedTime}`;
+}
+
+async function askForApproval(rawFile: RawFileInfo, rawData: any): Promise<'yes' | 'no' | 'all' | 'quit'> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise((resolve) => {
+    console.log(`\n📁 File: ${rawFile.filename}`);
+    console.log(`🎯 Puzzle: ${rawFile.puzzleId}, Model: ${rawFile.modelName}`);
+    console.log(`📅 Date: ${rawFile.timestamp}`);
+    console.log(`📊 Raw data keys: [${Object.keys(rawData).join(', ')}]`);
+    
+    const analysisData = rawData.result || rawData;
+    console.log(`📝 Pattern: ${analysisData.patternDescription ? 'YES' : 'NO'}`);
+    console.log(`📝 Strategy: ${analysisData.solvingStrategy ? 'YES' : 'NO'}`);
+    console.log(`📝 Hints: ${Array.isArray(analysisData.hints) ? analysisData.hints.length : 0} items`);
+    console.log(`💰 Cost: ${rawData.estimatedCost || 'unknown'}`);
+    
+    rl.question('\nApprove this file? (y/n/a/q) (yes/no/all/quit): ', (answer) => {
+      rl.close();
+      const lowerAnswer = answer.toLowerCase();
+      if (lowerAnswer === 'y' || lowerAnswer === 'yes') {
+        resolve('yes');
+      } else if (lowerAnswer === 'a' || lowerAnswer === 'all') {
+        resolve('all');
+      } else if (lowerAnswer === 'q' || lowerAnswer === 'quit') {
+        resolve('quit');
+      } else {
+        resolve('no');
+      }
+    });
+  });
 }
 
 function parseRawFilename(filename: string): { puzzleId: string; modelName: string; timestamp: string } | null {
@@ -160,9 +195,17 @@ export const recoveryService = {
       let approved = approveAll;
 
       if (!approved) {
-        // Interactive approval logic would go here
-        // For now, we'll simulate 'yes' for any non-automated run
-        approved = true;
+        const approvalStatus = await askForApproval(rawFile, rawData);
+        if (approvalStatus === 'yes') {
+          approved = true;
+        } else if (approvalStatus === 'all') {
+          approved = true;
+          approveAll = true;
+          console.log('✅ [INFO] Approving all subsequent files...');
+        } else if (approvalStatus === 'quit') {
+          console.log('🛑 [INFO] Quitting recovery process as requested.');
+          break; // Exit the loop
+        }
       }
 
       if (approved) {
