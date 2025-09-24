@@ -7,87 +7,93 @@ Your ARC Explainer application has a **fundamental data loss issue** in producti
 ## 📋 **The Problem**
 
 ### **Current Behavior (Broken)**
-- ✅ **Local development**: Raw JSON logs saved to `data/explained/` persist between runs
-- ❌ **Railway production**: Same logs saved to ephemeral filesystem, **lost on every deployment**
+- ✅ **Local development**: Raw JSON logs and other data saved to the `data/` directory persist between application runs.
+- ❌ **Railway production**: The same data is saved to an ephemeral filesystem and is **permanently lost on every new deployment or restart**.
 
 ### **Why This Happens**
-Railway uses **ephemeral containers** by default:
-- Container restarts = fresh filesystem
-- Your `data/explained/` directory starts empty
-- Expensive AI responses disappear forever
-- No recovery mechanism in production
+By default, Railway uses **ephemeral filesystems** for deployments. When your container restarts for any reason (like a new deployment or a system update), the filesystem is wiped clean, and any data saved there is erased.
 
 ### **Impact**
-- 💸 **Lost money**: Failed database saves waste API costs
-- 📊 **Lost data**: No analytics on model performance
-- 🔄 **Lost recovery**: Can't retry failed analyses
-- 🐛 **Lost debugging**: No way to troubleshoot production issues
+- 💸 **Lost Money**: Expensive AI analysis results that fail to save to the database are lost, forcing you to re-run them and incur extra costs.
+- 📊 **Lost Data**: You lose valuable logs and model performance data, making it impossible to analyze or debug production issues.
+- 🔄 **No Recovery**: The `npm run recover` script, which relies on these local logs, is useless in production.
 
-## 🎯 **The Solution: Railway Persistent Volumes**
+## 🎯 **The Solution: Configure a Persistent Volume in `railway.json`**
 
-### **What You Need**
-Configure a **persistent volume** in Railway to store your logs permanently.
+To solve this, you must instruct Railway to attach a **persistent volume** to your service. This is a network-attached storage drive that survives deployments.
 
-### **Step 1: Create railway.toml Configuration**
+### **Step 1: Update Your `railway.json`**
 
-Create or update your `railway.toml` file in the project root:
+Your project uses a `railway.json` file and a `Dockerfile`. You need to add a `volumes` array to the `deploy` section of this file. This tells Railway to mount a persistent volume into your container at the specified path.
 
-```toml
-[build]
-builder = "nixpacks"
+Update your `railway.json` to look like this:
 
-[deploy]
-restartPolicyType = "ON_FAILURE"
-
-# Add persistent volume for logs and data
-[[volumes]]
-source = "arc_explainer_data"
-destination = "/app/data"
-
-# Optional: Environment-specific settings
-[deploy.env]
-NODE_ENV = "production"
+```json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10,
+    "startCommand": "node dist/index.js",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 300,
+    "numReplicas": 1,
+    "volumes": [
+      {
+        "name": "arc_explainer_data",
+        "mountPoint": "/app/data"
+      }
+    ]
+  }
+}
 ```
 
-### **Step 2: Deploy with Persistent Storage**
+**Key Changes:**
+- **`"builder": "DOCKERFILE"`**: This correctly reflects that your project is built using the `Dockerfile`.
+- **`"volumes": [...]`**: This new section defines the persistent volume.
+  - **`"name"`**: A unique name for your volume within the Railway project.
+  - **`"mountPoint"`**: The absolute path inside the container where the volume should be attached. Your `Dockerfile` sets up the application in `/app`, so `/app/data` is the correct path to persist your `data` directory.
 
-1. **Commit the railway.toml file** to your repository
-2. **Push to trigger deployment** - Railway will detect the new volume configuration
-3. **Railway will create** a persistent volume named `arc_explainer_data`
-4. **Mount it at** `/app/data` in your container
+### **Step 2: Deploy and Verify**
 
-### **Step 3: Verify the Fix**
+1.  **Commit your updated `railway.json` file** to your GitHub repository.
+2.  **Push the commit** to trigger a new deployment on Railway.
+3.  **Monitor the deployment** in your Railway dashboard. Railway will automatically provision the `arc_explainer_data` volume and attach it to your service.
 
-After deployment, check:
+### **Step 3: Verify Persistent Storage**
 
-```bash
-# SSH into your Railway container
-railway shell
+Once the new deployment is live, you can verify that the volume is working correctly.
 
-# Check if data directory persists
-ls -la /app/data/
-ls -la /app/data/explained/
-
-# Test with a simple file
-echo "test" > /app/data/test.txt
-railway shell  # New shell session
-cat /app/data/test.txt  # Should still exist
-```
+1.  **Open a shell** into your running service container:
+    ```bash
+    railway shell
+    ```
+2.  **Create a test file** inside the mounted data directory:
+    ```bash
+    echo "Persistence test!" > /app/data/test.txt
+    ```
+3.  **Redeploy your service** from the Railway dashboard by clicking "Redeploy" or pushing another commit.
+4.  **Open a new shell** into the container after it has finished redeploying.
+5.  **Check if the test file still exists**:
+    ```bash
+    cat /app/data/test.txt
+    ```
+    If you see "Persistence test!", your volume is working correctly.
 
 ## 🔧 **What This Fixes**
 
+This change fundamentally solves the data loss problem.
+
 ### **Before (Broken)**
-```
-API Call → AI Analysis → Save to /app/data/explained/ → Database Save Fails
-→ Container Restart → /app/data/ wiped → Logs lost forever
-```
+`API Call` → `AI Analysis` → `Save to /app/data/` → `Database Save Fails`
+**Result**: On the next deploy, `/app/data/` is wiped, and the raw log is **lost forever**.
 
 ### **After (Fixed)**
-```
-API Call → AI Analysis → Save to /app/data/explained/ → Database Save Fails
-→ Container Restart → /app/data/ persists → Logs still available
-→ Run recovery → Data recovered to database
-```
+`API Call` → `AI Analysis` → `Save to /app/data/` → `Database Save Fails`
+**Result**: On the next deploy, the volume is re-attached, the log is still present, and you can **run your recovery scripts** to save the data to the database.
 
 ## 📊 **Benefits You'll Get**
 
@@ -97,28 +103,20 @@ API Call → AI Analysis → Save to /app/data/explained/ → Database Save Fail
 4. **🔄 Reliability**: Never lose expensive AI responses
 5. **📋 Recovery**: `npm run recover` works in production too
 
-## ⚡ **Immediate Action Required**
+## ⚡ **Action Plan Summary**
 
-1. **Create** `railway.toml` with the volume configuration above
-2. **Deploy** to test the persistent storage
-3. **Verify** logs persist across container restarts
-4. **Monitor** your Railway dashboard for the new volume
+1.  **Update `railway.json`**: Add the `volumes` array to the `deploy` section as shown in the example above.
+2.  **Commit and Push**: Save the changes and push them to your GitHub repository to trigger a new deployment.
+3.  **Verify in Dashboard**: Go to your service settings in the Railway dashboard and confirm that a volume is now attached.
+4.  **Test with a File**: Use `railway shell` to create a test file in `/app/data`, redeploy, and verify the file persists.
 
-## 🚀 **Next Steps After Fix**
+## 🚀 **Next Steps After the Fix**
 
-Once persistent storage is working:
+With persistent storage in place, you can now:
 
-1. **Deploy your analysis scripts** - they can now run safely in production
-2. **Monitor storage usage** - Railway volumes have quotas
-3. **Consider cloud storage** - for very large datasets (AWS S3, etc.)
-4. **Set up log rotation** - prevent storage from growing indefinitely
-
-## 📞 **Railway Support**
-
-If you encounter issues:
-- **Railway Docs**: https://docs.railway.app/deploy/volumes
-- **Railway CLI**: `railway volume --help`
-- **Railway Dashboard**: Check "Volumes" tab in your project
+-   **Run Recovery Scripts**: Safely run `npm run recover` in a production shell to process logs that failed to save to the database.
+-   **Analyze Production Data**: Your analysis and debugging scripts can now access a complete history of production logs.
+-   **Monitor Volume Usage**: Keep an eye on your volume's storage usage in the Railway dashboard. Note that Railway plans have different storage limits.
 
 ---
 
