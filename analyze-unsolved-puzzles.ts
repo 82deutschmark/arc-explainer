@@ -72,41 +72,21 @@ interface AnalysisResult {
 }
 
 /**
- * Check if a puzzle already has explanations in the database
- */
-async function hasExistingExplanation(puzzleId: string): Promise<boolean> {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/api/puzzle/${puzzleId}/has-explanation`);
-    return response.data.data || false;
-  } catch (error) {
-    console.log(`⚠️  Could not check existing explanation for ${puzzleId}: ${error}`);
-    return false; // Assume no explanation to be safe
-  }
-}
-
-/**
  * Analyze a single puzzle with GPT-5
  */
 async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
   const startTime = Date.now();
 
   try {
-    // Check if puzzle already has explanation
-    const hasExplanation = await hasExistingExplanation(puzzleId);
-    if (hasExplanation) {
-      console.log(`⏭️  Skipping ${puzzleId} - already has explanation`);
-      return { puzzleId, success: false, error: 'Already has explanation' };
-    }
-
     console.log(`🚀 Starting analysis of ${puzzleId}...`);
 
     // Prepare analysis request (mirroring client UI behavior)
     const requestBody: AnalysisRequest = {
       temperature: 0.2, // Default temperature
-      promptId: 'custom', // Default prompt
+      promptId: 'solver', // Default prompt
       reasoningEffort: REASONING_EFFORT,
       reasoningVerbosity: 'high', // High verbosity for detailed reasoning
-      reasoningSummaryType: 'detailed', // Detailed summary
+      reasoningSummaryType: 'auto', // Detailed summary
       systemPromptMode: 'ARC', // Use ARC system prompt mode
       omitAnswer: true, // Researcher option to hide correct answer
       retryMode: false // Not in retry mode
@@ -219,6 +199,7 @@ async function main(): Promise<void> {
     console.log('='.repeat(80));
     console.log('💾 Results are immediately saved to database via API');
     console.log('🔄 Same process as client UI - analyze + save in one call');
+    console.log('⚡ Triggering fresh analysis for all puzzles (no existing explanation checks)');
     console.log('='.repeat(80));
 
     const allResults: AnalysisResult[] = [];
