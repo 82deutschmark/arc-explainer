@@ -1,4 +1,59 @@
 
+### September 24 2025
+
+## v2.24.4 - CRITICAL: PuzzleOverview Data Source Fixes and Cost Architecture Issues
+
+**CRITICAL FIXES**: Fixed multiple data source inconsistencies and architectural violations in PuzzleOverview.tsx and cost calculation system.
+
+### Data Source Consolidation & Sort Order Fixes
+1. **Fixed Critical Sort Order Bug**: PuzzleOverview was displaying the 3 WORST models with trophy emojis as "top performers"
+   - **Root Cause**: API returns ASC sort (worst first) but UI took first 3 directly
+   - **Fix**: Added `.slice().reverse().slice(0,3)` to show actual best performers
+   - **Impact**: Users now see correct top performers instead of worst performers
+
+2. **Replaced Insane Cost Calculations**: ModelComparisonMatrix showed inflated costs like "$999+"
+   - **Root Cause**: Used `attempts / trustworthiness` formula (completely unrelated to actual costs)
+   - **Examples of Broken Math**: 50 attempts ÷ 0.05 trustworthiness = 1000 → "$999+"
+   - **Fix**: Replaced with real `SUM(estimated_cost)` from database
+   - **Files**: `server/repositories/MetricsRepository.ts`, `client/src/components/overview/ModelComparisonMatrix.tsx`
+
+3. **Fixed TypeError Crash**: `Cannot read properties of undefined (reading 'toFixed')`
+   - **Root Cause**: Cost formatting function assumed cost parameter was always a number
+   - **Fix**: Added null/undefined/NaN handling with graceful "No data" fallback
+   - **Impact**: Prevents runtime crashes when cost data is incomplete
+
+### UI/UX Improvements
+4. **Proper shadcn/ui Usage**: Replaced manual color classes with Badge variants
+   - **Before**: Manually setting `bg-green-100 text-green-800 border-green-200` etc.
+   - **After**: Using Badge variants (`default`, `secondary`, `destructive`, `outline`)
+   - **Benefit**: Consistent with design system, much cleaner code
+
+5. **Fixed EloComparison Grid Overlap**: Large ARC grids (up to 30x30) were overlapping
+   - **Root Cause**: `md:grid-cols-3` forced 3 columns on medium screens
+   - **Fix**: Better responsive breakpoints (`lg:grid-cols-2 2xl:grid-cols-3`) + horizontal scroll fallback
+   - **Impact**: Handles edge cases with large grids without overlap
+
+### Architectural Issues Discovered
+6. **Cost Architecture Violations**: Documented severe SRP violations in cost calculation system
+   - **Issue**: TrustworthinessRepository calculates cost metrics (violates SRP)
+   - **Impact**: Different UI components show different costs for same model
+   - **Documentation**: Created `docs/24SeptCostFixes.md` with complete analysis and refactoring plan
+   - **Status**: Requires dedicated CostRepository and proper domain separation
+
+### Files Modified
+- `client/src/pages/PuzzleOverview.tsx`: Fixed sort order, updated data sources
+- `client/src/components/ui/ModelPerformanceCard.tsx`: NEW - Reusable component extracted from EloVoteResultsModal
+- `client/src/components/overview/ModelComparisonMatrix.tsx`: Fixed cost calculations, error handling, shadcn/ui usage
+- `client/src/pages/EloComparison.tsx`: Fixed grid overlap with better responsive design
+- `server/repositories/MetricsRepository.ts`: Added real cost calculation method
+- `client/src/hooks/useModelComparisons.ts`: Updated TypeScript interfaces
+- `docs/24SeptCostFixes.md`: NEW - Comprehensive analysis of cost architecture issues
+
+### Commits
+- `943fdb5`: Fix critical sort order bug: show top performers instead of worst
+- `7c83605`: Replace insane cost calculation with real database costs
+- `5624d5b`: Fix TypeError: Cannot read properties of undefined (reading 'toFixed')
+
 ### September 23 2025
 
 ## v2.24.3 - Documentation Updates
