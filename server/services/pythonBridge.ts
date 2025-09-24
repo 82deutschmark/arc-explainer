@@ -1,4 +1,11 @@
 /**
+ *
+ * Author: Gemini 2.5 Pro using `Gemini 2.5 Pro`
+ * Date: 2025-09-24T11:58:30-04:00
+ * PURPOSE: Ensure Saturn Python subprocess inherits required OpenAI credentials while preserving UTF-8 configuration and document bridge responsibilities.
+ * SRP and DRY check: Pass - Verified existing bridge uniquely manages Python spawning; no duplicated credential forwarding logic elsewhere.
+ */
+/**
  * server/services/pythonBridge.ts
  *
  * PythonBridge manages spawning the Saturn Python wrapper and streaming
@@ -121,6 +128,18 @@ export class PythonBridge {
         PYTHONIOENCODING: 'utf-8',
         PYTHONUTF8: '1',
       } as NodeJS.ProcessEnv;
+
+      const saturnSensitiveEnv = [
+        'OPENAI_API_KEY',
+        'OPENAI_BASE_URL',
+        'OPENAI_ORG_ID',
+      ] as const;
+
+      for (const key of saturnSensitiveEnv) {
+        if (process.env[key]) {
+          envUtf8[key] = process.env[key];
+        }
+      }
 
       const spawnOpts: SpawnOptions = {
         cwd: path.dirname(wrapper),
