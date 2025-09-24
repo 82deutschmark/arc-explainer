@@ -53,7 +53,10 @@ export function ModelComparisonMatrix({
     return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
-  const getBadgeVariant = (score: number, type: 'percentage' | 'cost'): 'default' | 'secondary' | 'destructive' | 'outline' => {
+  const getBadgeVariant = (score: number | undefined | null, type: 'percentage' | 'cost'): 'default' | 'secondary' | 'destructive' | 'outline' => {
+    // Handle missing data
+    if (score === undefined || score === null || isNaN(score)) return 'outline';
+
     if (type === 'cost') {
       // Lower total costs are better
       if (score <= 0.01) return 'default'; // Good - under 1 cent
@@ -67,19 +70,20 @@ export function ModelComparisonMatrix({
     }
   };
 
-  const formatCostEfficiency = (cost: number) => {
-    // Handle extreme values that suggest calculation errors
-    if (cost >= 1000) return '$999+';
+  const formatCostEfficiency = (cost: number | undefined | null) => {
+    // Handle missing or invalid cost data
+    if (cost === undefined || cost === null || isNaN(cost)) return 'No data';
     if (cost === 0) return 'Free'; // Handle free models from OpenRouter
     if (cost < 0) return '$0';
-    
+    if (cost >= 1000) return '$999+';
+
     const cents = cost * 100;
-    
+
     if (cents < 100) {
       // Show as cents with 2 decimal places (e.g., "6.23¢")
       return `${cents.toFixed(2)}¢`;
     } else {
-      // Convert to dollars with 2 decimal places (e.g., "$1.50") 
+      // Convert to dollars with 2 decimal places (e.g., "$1.50")
       return `$${cost.toFixed(2)}`;
     }
   };

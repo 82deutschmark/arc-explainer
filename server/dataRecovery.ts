@@ -1,4 +1,11 @@
 /**
+ * Author: Cascade (using Gemini 2.5 Pro)
+ * Date: 2025-09-24
+ * PURPOSE: This script provides functionality to recover AI explanation data that was saved as raw JSON files but failed to be inserted into the database. It can run in both an interactive mode for manual approval and a non-interactive mode for automated execution.
+ * SRP and DRY check: Fail - This file currently violates the Single Responsibility Principle by handling file system operations, data transformation, database interaction, and user input. It also violates the Don't Repeat Yourself principle by duplicating data extraction logic from other services. This file will be refactored.
+ */
+
+/**
  * dataRecovery.ts
  * 
  * Recovery script to process saved raw JSON API responses and insert missing database records.
