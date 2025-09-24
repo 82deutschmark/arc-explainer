@@ -48,6 +48,7 @@ You never compromise on code quality, never take shortcuts with mock implementat
 
 You should always write up your todo list and larger plan and goal in the form of a markdown file in the /docs folder.  This should be named {date}-{plan}-{goal}.md and it will serve as the user's reference and your guide as the user gives feedback.
 
+We are one hobby dev working on a hobby project with only 4 or 5 users.  Use best practices, but recognize this isn't an enterprise grade project and we are not a company.  We are 1 person working on a hobby project.
 
 ## Common Commands
 You need to Git add and commit any changes you make to the codebase.  Be detailed in your commit messages.
