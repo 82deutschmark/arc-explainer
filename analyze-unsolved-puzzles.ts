@@ -136,52 +136,51 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
 }
 
 /**
- * Analyze all puzzles in a category
+ * Analyze all puzzles concurrently with small delays between triggers
  */
-async function analyzePuzzleCategory(puzzleIds: string[], categoryName: string): Promise<AnalysisResult[]> {
-  console.log(`\n🎯 Starting analysis of ${categoryName} (${puzzleIds.length} puzzles)...`);
+async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<AnalysisResult[]> {
+  console.log(`\n🚀 Triggering ${puzzleIds.length} concurrent analyses...`);
   console.log('='.repeat(80));
 
   const results: AnalysisResult[] = [];
-  let completed = 0;
-  let successful = 0;
-  let failed = 0;
+  const analysisPromises: Promise<AnalysisResult>[] = [];
 
-  for (const puzzleId of puzzleIds) {
-    const result = await analyzePuzzle(puzzleId);
-    results.push(result);
+  // Trigger all analyses concurrently with small delays
+  for (let i = 0; i < puzzleIds.length; i++) {
+    const puzzleId = puzzleIds[i];
 
-    completed++;
-    if (result.success) {
-      successful++;
-    } else {
-      failed++;
-    }
+    // Trigger analysis immediately
+    const analysisPromise = analyzePuzzle(puzzleId);
+    analysisPromises.push(analysisPromise);
 
-    // Progress update
-    const progress = ((completed / puzzleIds.length) * 100).toFixed(1);
-    console.log(`📊 Progress: ${completed}/${puzzleIds.length} (${progress}%) | ✅ ${successful} | ❌ ${failed}`);
-
-    // Small delay between requests to avoid overwhelming the server
-    if (completed < puzzleIds.length) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+    // Small delay between triggers (2 seconds as requested)
+    if (i < puzzleIds.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
     }
   }
 
-  // Summary for this category
-  console.log(`\n📈 ${categoryName} Summary:`);
+  console.log(`\n✅ All ${puzzleIds.length} analyses triggered! Waiting for completion...\n`);
+
+  // Wait for all analyses to complete
+  const allResults = await Promise.all(analysisPromises);
+
+  // Count successes and failures
+  const successful = allResults.filter(r => r.success).length;
+  const failed = allResults.filter(r => !r.success).length;
+
+  console.log(`📊 CONCURRENT ANALYSIS COMPLETE:`);
   console.log(`   Total puzzles: ${puzzleIds.length}`);
   console.log(`   Successful: ${successful} (${((successful / puzzleIds.length) * 100).toFixed(1)}%)`);
   console.log(`   Failed: ${failed} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
 
   if (successful > 0) {
-    const avgTime = results
+    const avgTime = allResults
       .filter(r => r.success && r.responseTime)
       .reduce((sum, r) => sum + (r.responseTime || 0), 0) / successful;
     console.log(`   Average response time: ${Math.round(avgTime)}s`);
   }
 
-  return results;
+  return allResults;
 }
 
 /**
@@ -200,27 +199,20 @@ async function main(): Promise<void> {
     console.log('💾 Results are immediately saved to database via API');
     console.log('🔄 Same process as client UI - analyze + save in one call');
     console.log('⚡ Triggering fresh analysis for all puzzles (no existing explanation checks)');
+    console.log('🚀 All analyses run concurrently with 2-second delays between triggers');
     console.log('='.repeat(80));
 
     const allResults: AnalysisResult[] = [];
 
-    // Analyze tested but not solved puzzles first
-    if (PUZZLES_TO_ANALYZE.testedButNotSolved.length > 0) {
-      const results = await analyzePuzzleCategory(
-        PUZZLES_TO_ANALYZE.testedButNotSolved,
-        'TESTED BUT NOT SOLVED'
-      );
-      allResults.push(...results);
-    }
+    // Combine all puzzle IDs for concurrent processing
+    const allPuzzleIds = [
+      ...PUZZLES_TO_ANALYZE.testedButNotSolved,
+      ...PUZZLES_TO_ANALYZE.notTested
+    ];
 
-    // Analyze not tested puzzles
-    if (PUZZLES_TO_ANALYZE.notTested.length > 0) {
-      const results = await analyzePuzzleCategory(
-        PUZZLES_TO_ANALYZE.notTested,
-        'NOT TESTED'
-      );
-      allResults.push(...results);
-    }
+    // Process all puzzles concurrently
+    const results = await analyzeAllPuzzlesConcurrently(allPuzzleIds);
+    allResults.push(...results);
 
     // Overall summary
     console.log('\n🎉 FINAL OVERALL SUMMARY:');
