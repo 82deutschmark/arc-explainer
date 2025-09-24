@@ -1,4 +1,4 @@
-/*
+/*IS THIS FOR USERS??? we already generate a favicon in the public folder automatically, no need for user ui!!
  * Author: Cascade using Qwen 2.5 Pro
  * Date: 2025-09-19
  * PURPOSE: Dynamic favicon component that generates a 3x3 grid of random colors

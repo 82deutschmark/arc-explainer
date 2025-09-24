@@ -1,4 +1,4 @@
-/**
+/**NEEDS TOTAL REDESIGN and then deprecate!!!
  * ModelDebugModal Component
  * Debugging overlay that shows raw database statistics for a selected model
  * VERY SLOPPY
