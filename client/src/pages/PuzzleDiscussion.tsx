@@ -118,10 +118,10 @@ export default function PuzzleDiscussion() {
                   Browse All
                 </Button>
               </Link>
-              <Link href="/overview">
+              <Link href="/analytics">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Grid3X3 className="h-4 w-4" />
-                  Database Overview
+                  Analytics
                 </Button>
               </Link>
               <a

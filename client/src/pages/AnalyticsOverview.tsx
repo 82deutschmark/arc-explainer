@@ -130,23 +130,6 @@ export default function AnalyticsOverview() {
                 Model performance analysis and leaderboards
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <Button variant="outline">
-                  ← Back to Browser
-                </Button>
-              </Link>
-              <a
-                href="https://github.com/anthropics/claude-code"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <Github className="h-4 w-4" />
-                  <span className="text-xs">Open Source</span>
-                </Button>
-              </a>
-            </div>
           </div>
         </header>
 
