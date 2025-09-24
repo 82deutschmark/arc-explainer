@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import PuzzleOverview from "@/pages/PuzzleOverview";
+import AnalyticsOverview from "@/pages/AnalyticsOverview";
 import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import BatchResults from "@/pages/BatchResults";
@@ -26,6 +27,7 @@ function Router() {
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/overview" component={PuzzleOverview} />
+        <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/batch" component={BatchResults} />
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />

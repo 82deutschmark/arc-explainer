@@ -1,3 +1,21 @@
+/**
+ * ⚠️  DEPRECATED: This file has been replaced by AnalyticsOverview.tsx
+ *
+ * MIGRATION PATH:
+ * - This poorly named file was actually a leaderboard dashboard (not puzzle overview)
+ * - The new AnalyticsOverview.tsx provides the same functionality with:
+ *   - Proper naming and focused purpose
+ *   - Better shadcn/ui usage patterns
+ *   - Removed confusing "puzzle browser" toggle
+ *   - Cleaner component architecture following SRP/DRY
+ *
+ * REPLACEMENT: Use /analytics route instead of /overview
+ *
+ * TODO FOR FUTURE: Remove this file after confirming /analytics works properly
+ * and update any remaining links to point to AnalyticsOverview.tsx
+ */
+
+
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
