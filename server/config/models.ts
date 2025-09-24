@@ -585,6 +585,7 @@ export const MODELS: ModelConfig[] = [
 //    contextWindow: 131000,
 //    maxOutputTokens: 16000
 //  },
+/*
   {
     key: 'qwen/qwen3-235b-a22b-thinking-2507',
     name: 'Qwen3 235B A22B Thinking',
@@ -601,6 +602,7 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 31000
 
   },
+*/
   {
     key: 'qwen/qwen3-coder',
     name: 'Qwen3 Coder',
@@ -668,6 +670,7 @@ export const MODELS: ModelConfig[] = [
 
   },
   // xAI Grok Models (all via OpenRouter)
+/*
   {
     key: 'x-ai/grok-4',
     name: 'Grok 4 (July 2025)',
@@ -683,6 +686,7 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     maxOutputTokens: 31000
   },
+*/
   {
     key: 'x-ai/grok-3',
     name: 'Grok 3',
@@ -729,6 +733,7 @@ export const MODELS: ModelConfig[] = [
  //   maxOutputTokens: 4000,
  //   requiresPromptFormat: true
  // },
+/*
   {
     key: 'deepseek/deepseek-prover-v2',
     name: 'DeepSeek Prover v2',
@@ -744,6 +749,8 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     maxOutputTokens: 24000
   },
+*/
+/*
   {
     key: 'deepseek/deepseek-r1-0528:free',
     name: 'DeepSeek R1 0528 (Free)',
@@ -759,6 +766,7 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     maxOutputTokens: 24000,
   },
+*/
   {
     key: 'nvidia/nemotron-nano-9b-v2',
     name: 'Nemotron Nano 9B V2',
