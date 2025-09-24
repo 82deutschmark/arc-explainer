@@ -117,11 +117,75 @@ For external integrations, see:
 **Repository Pattern:**
 External apps should access data through `repositoryService.*` rather than direct database queries:
 - `repositoryService.accuracy.getPureAccuracyStats()` - For accuracy leaderboards
+- `repositoryService.trustworthiness.getTrustworthinessStats()` - For trustworthiness metrics
+- `repositoryService.cost.getAllModelCosts()` - For cost analysis
 - `repositoryService.explanation.getByPuzzle(puzzleId)` - For explanations
 - `repositoryService.feedback.create(...)` - For submitting feedback
 
+## Analytics Architecture Guidelines 🚨 CRITICAL (September 2025)
 
+### Repository Domain Separation (SRP Compliance)
+Each repository handles EXACTLY one domain - never mix unrelated concerns:
 
+```typescript
+// ✅ CORRECT - Domain-specific repositories
+AccuracyRepository → Pure puzzle-solving correctness only
+TrustworthinessRepository → AI confidence reliability analysis only
+CostRepository → Financial cost calculations only
+MetricsRepository → Cross-domain aggregation via delegation
+
+// ❌ WRONG - Mixed domains (architectural violation)
+TrustworthinessRepository calculating costs  // Violates SRP
+Multiple repositories with duplicate cost logic  // Violates DRY
+```
+
+### When Adding New Metrics - FOLLOW THIS PATTERN:
+
+1. **Identify Domain**: accuracy/trustworthiness/cost/performance/etc.
+2. **Add to Appropriate Repository**: Don't mix domains
+3. **Use Model Normalization**: Always use `utils/modelNormalizer.ts`
+4. **Add Database Indexes**: For performance optimization
+5. **Document in EXTERNAL_API.md**: For external integration
+
+### Analytics Data Flow Pattern:
+```
+explanations table → Domain Repository → API Controller → Frontend Hook → UI Component
+```
+
+### Repository Integration Examples:
+```typescript
+// Single domain - direct repository access
+const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
+
+// Cross-domain - use MetricsRepository delegation
+const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
+
+// Combined APIs - controller combines multiple repositories
+async getRealPerformanceStats() {
+  const trustworthinessStats = await repositoryService.trustworthiness.getRealPerformanceStats();
+  const costMap = await repositoryService.cost.getModelCostMap();
+  return this.combineStatsWithCosts(trustworthinessStats, costMap);
+}
+```
+
+### Model Name Normalization - ALWAYS USE:
+```typescript
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
+
+// Handles: claude-3.5-sonnet:beta → claude-3.5-sonnet
+// Handles: z-ai/glm-4.5-air:free → z-ai/glm-4.5
+const normalized = normalizeModelName(rawModelName);
+```
+
+### Database Indexes for Analytics:
+```sql
+-- Always add indexes for new analytics queries
+CREATE INDEX idx_explanations_new_metric ON explanations(model_name, new_field) WHERE new_field IS NOT NULL;
+```
+
+For comprehensive analytics architecture documentation, see:
+- `docs/Analytics_Database_Architecture.md` - Complete analytics system guide
+- `docs/Analysis_Data_Flow_Trace.md` - Updated with analytics flow patterns
 
 ## Key Technical Patterns
 
