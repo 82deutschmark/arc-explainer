@@ -15,10 +15,10 @@ dotenv.config();
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
 // GPT-5 model to use for analysis
-const GPT5_MODEL = 'gpt-5-mini-2025-08-07';
+const GPT5_MODEL = 'gpt-5-nano-2025-08-07';
 
 // Reasoning effort setting (medium as requested)
-const REASONING_EFFORT = 'medium';
+const REASONING_EFFORT = 'high';
 
 // Timeout per puzzle in milliseconds (30 minutes for complex puzzles)
 const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes

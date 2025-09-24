@@ -25,12 +25,37 @@ const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 /**
  * Puzzles that need to be retried after server unavailable errors
+ * Failed Puzzles (require manual review):
+   • 05a7bcf2: Server temporarily unavailable. Please try again
+   • 15113be4: Server temporarily unavailable. Please try again
+   • cfb2ce5a: Server temporarily unavailable. Please try again
+   • 1e97544e: Server temporarily unavailable. Please try again
+   • d94c3b52: Server temporarily unavailable. Please try again
+   • 8719f442: Server temporarily unavailable. Please try again
+   • f8be4b64: Server temporarily unavailable. Please try again
+   • 4aab4007: Server temporarily unavailable. Please try again
+   • de493100: Server temporarily unavailable. Please try again
+   • b457fec5: Server temporarily unavailable. Please try again
+   • 96a8c0cd: Server temporarily unavailable. Please try again
+   • b942fd60: Server temporarily unavailable. Please try again
+   • bd14c3bf: Server temporarily unavailable. Please try again
+   • a096bf4d: Server temporarily unavailable. Please try again
  */
 const PUZZLES_TO_RETRY = [
   '05a7bcf2',
+  '15113be4',
+  'cfb2ce5a',
+  '1e97544e',
+  'd94c3b52',
+  '8719f442',
+  'f8be4b64',
+  '4aab4007',
+  'de493100',
   'b457fec5',
+  '96a8c0cd',
   'b942fd60',
-  '67b4a34d'
+  'bd14c3bf',
+  'a096bf4d'
 ];
 
 interface AnalysisRequest {
@@ -160,7 +185,7 @@ async function retryFailedPuzzles(): Promise<AnalysisResult[]> {
  */
 async function main(): Promise<void> {
   try {
-    console.log('🔄 GPT-5 MINI PUZZLE RETRY SCRIPT');
+    console.log('🔄 PUZZLE RETRY SCRIPT');
     console.log('='.repeat(80));
     console.log(`Model: ${GPT5_MODEL}`);
     console.log(`Reasoning Effort: ${REASONING_EFFORT}`);
