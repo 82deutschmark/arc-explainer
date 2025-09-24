@@ -114,7 +114,7 @@ This change fundamentally solves the data loss problem.
 
 With persistent storage in place, you can now:
 
--   **Run Recovery Scripts**: Safely run `npm run recover` in a production shell to process logs that failed to save to the database.
+-   **Run Recovery Scripts**: Safely run `npm run recover` in a production shell to process logs that failed to save to the database.  THIS NEEDS TO RUN AUTOMATICALLY ONCE A DAY!!  
 -   **Analyze Production Data**: Your analysis and debugging scripts can now access a complete history of production logs.
 -   **Monitor Volume Usage**: Keep an eye on your volume's storage usage in the Railway dashboard. Note that Railway plans have different storage limits.
 
