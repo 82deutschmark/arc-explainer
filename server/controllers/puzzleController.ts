@@ -289,6 +289,94 @@ export const puzzleController = {
   },
 
   /**
+   * Get real performance stats with minimum attempts filtering
+   * Enhanced version for analytics with statistical significance filtering
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getRealPerformanceStatsFiltered(req: Request, res: Response) {
+    try {
+      // Get min attempts from query parameter, default to 100
+      const minAttempts = parseInt(req.query.minAttempts as string) || 100;
+
+      // Validate minAttempts is reasonable (between 1 and 1000)
+      if (minAttempts < 1 || minAttempts > 1000) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid minimum attempts',
+          'Minimum attempts must be between 1 and 1000'
+        ));
+      }
+
+      // Get filtered trustworthiness data
+      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStatsWithMinAttempts(minAttempts);
+
+      // Get cost data from dedicated cost repository
+      const costMap = await repositoryService.cost.getModelCostMap();
+
+      // Combine trustworthiness data with cost data to maintain API contract
+      const combinedStats = {
+        ...performanceStats,
+        trustworthinessLeaders: performanceStats.trustworthinessLeaders.map(leader => {
+          const costData = costMap[leader.modelName];
+          return {
+            ...leader,
+            avgCost: costData?.avgCost || 0,
+            totalCost: costData?.totalCost || 0
+          };
+        }),
+        // Add metadata about filtering
+        _metadata: {
+          minAttempts,
+          filtered: true
+        }
+      };
+
+      res.json(formatResponse.success(combinedStats));
+    } catch (error) {
+      logger.error('Error fetching filtered real performance stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch filtered real performance stats', 'An error occurred while fetching filtered real performance statistics'));
+    }
+  },
+
+  /**
+   * Get trustworthiness stats with minimum attempts filtering
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getTrustworthinessStatsFiltered(req: Request, res: Response) {
+    try {
+      // Get min attempts from query parameter, default to 100
+      const minAttempts = parseInt(req.query.minAttempts as string) || 100;
+
+      // Validate minAttempts is reasonable (between 1 and 1000)
+      if (minAttempts < 1 || minAttempts > 1000) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid minimum attempts',
+          'Minimum attempts must be between 1 and 1000'
+        ));
+      }
+
+      const trustworthinessStats = await repositoryService.trustworthiness.getTrustworthinessStatsWithMinAttempts(minAttempts);
+
+      // Add metadata about filtering
+      const statsWithMetadata = {
+        ...trustworthinessStats,
+        _metadata: {
+          minAttempts,
+          filtered: true
+        }
+      };
+
+      res.json(formatResponse.success(statsWithMetadata));
+    } catch (error) {
+      logger.error('Error fetching filtered trustworthiness stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to fetch filtered trustworthiness stats', 'An error occurred while fetching filtered trustworthiness statistics'));
+    }
+  },
+
+  /**
    * Get CONFIDENCE ANALYSIS STATS - AI confidence patterns
    *
    * Analyzes AI confidence levels and patterns across different scenarios,

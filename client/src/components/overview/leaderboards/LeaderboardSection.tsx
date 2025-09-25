@@ -56,13 +56,26 @@ interface FeedbackStats {
   }>;
 }
 
+interface OverconfidentModel {
+  modelName: string;
+  totalAttempts: number;
+  totalOverconfidentAttempts: number;
+  wrongOverconfidentPredictions: number;
+  overconfidenceRate: number;
+  avgConfidence: number;
+  overallAccuracy: number;
+  isHighRisk: boolean;
+}
+
 interface LeaderboardSectionProps {
   accuracyStats?: AccuracyStats;
   performanceStats?: PerformanceLeaderboards;
   feedbackStats?: FeedbackStats;
+  overconfidentModels?: OverconfidentModel[];
   isLoadingAccuracy?: boolean;
   isLoadingPerformance?: boolean;
   isLoadingFeedback?: boolean;
+  isLoadingOverconfident?: boolean;
   onModelClick?: (modelName: string) => void;
 }
 
@@ -70,9 +83,11 @@ export function LeaderboardSection({
   accuracyStats,
   performanceStats,
   feedbackStats,
+  overconfidentModels,
   isLoadingAccuracy,
   isLoadingPerformance,
   isLoadingFeedback,
+  isLoadingOverconfident,
   onModelClick
 }: LeaderboardSectionProps) {
   return (
@@ -88,19 +103,21 @@ export function LeaderboardSection({
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <AccuracyLeaderboard 
+        <AccuracyLeaderboard
           accuracyStats={accuracyStats}
+          overconfidentModels={overconfidentModels}
           isLoading={isLoadingAccuracy}
           onModelClick={onModelClick}
         />
-        
-        <TrustworthinessLeaderboard 
+
+        <TrustworthinessLeaderboard
           performanceStats={performanceStats}
+          overconfidentModels={overconfidentModels}
           isLoading={isLoadingPerformance}
           onModelClick={onModelClick}
         />
-        
-        <FeedbackLeaderboard 
+
+        <FeedbackLeaderboard
           feedbackStats={feedbackStats}
           isLoading={isLoadingFeedback}
           onModelClick={onModelClick}

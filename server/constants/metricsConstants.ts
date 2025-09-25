@@ -21,6 +21,13 @@ export const CONFIDENCE_THRESHOLDS = {
   HIGH_CONFIDENCE: 90,
 
   /**
+   * Overconfident threshold (≥80%)
+   * Used for model failure analysis to identify overconfident models with poor accuracy
+   * Models above this threshold but with low accuracy (<50%) are flagged as dangerous
+   */
+  OVERCONFIDENT_THRESHOLD: 80,
+
+  /**
    * Minimum confidence for statistical analysis
    * Filters out zero or extremely low confidence scores that may indicate data quality issues
    */
@@ -101,6 +108,13 @@ export const RANKING_CRITERIA = {
    * Used in AccuracyRepository.getDangerousModels()
    */
   MIN_HIGH_CONFIDENCE_ATTEMPTS: 3,
+
+  /**
+   * Minimum attempts for model failure analysis (100)
+   * Higher threshold for reliable overconfidence detection
+   * Used in enhanced model failure analysis to ensure statistical significance
+   */
+  MIN_ATTEMPTS_FAILURE_ANALYSIS: 100,
 
   /**
    * Single attempt minimum (1)
@@ -216,6 +230,19 @@ export const ANALYSIS_CRITERIA = {
   HIGH_CONFIDENCE_ANALYSIS: {
     minConfidence: CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE,
     minAttempts: RANKING_CRITERIA.MIN_HIGH_CONFIDENCE_ATTEMPTS,
+    requireModelName: DATA_QUALITY.REQUIRE_MODEL_NAME,
+    requireSolverAttempt: DATA_QUALITY.REQUIRE_SOLVER_ATTEMPT,
+  },
+
+  /**
+   * Model failure analysis criteria
+   * Used for enhanced overconfidence detection with statistical significance
+   * Identifies models with high confidence (≥80%) but poor accuracy (<50%)
+   */
+  MODEL_FAILURE_ANALYSIS: {
+    minConfidence: CONFIDENCE_THRESHOLDS.OVERCONFIDENT_THRESHOLD,
+    minAttempts: RANKING_CRITERIA.MIN_ATTEMPTS_FAILURE_ANALYSIS,
+    maxAccuracy: 50, // Models with accuracy below 50% are considered poor performers
     requireModelName: DATA_QUALITY.REQUIRE_MODEL_NAME,
     requireSolverAttempt: DATA_QUALITY.REQUIRE_SOLVER_ATTEMPT,
   },
