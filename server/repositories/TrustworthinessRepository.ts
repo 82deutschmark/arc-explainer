@@ -84,8 +84,6 @@ export interface TrustworthinessLeader {
   avgConfidence: number;
   avgProcessingTime: number;
   avgTokens: number;
-  avgCost: number;
-  totalCost: number;
 }
 
 export interface SpeedLeader {
@@ -338,9 +336,7 @@ export class TrustworthinessRepository extends BaseRepository {
           AVG(e.trustworthiness_score) as avg_trustworthiness,
           AVG(e.confidence) as avg_confidence,
           AVG(e.api_processing_time_ms) as avg_processing_time,
-          AVG(e.total_tokens) as avg_tokens,
-          AVG(e.estimated_cost) as avg_cost,
-          SUM(e.estimated_cost) as total_cost
+          AVG(e.total_tokens) as avg_tokens
         FROM explanations e
         WHERE e.model_name IS NOT NULL 
           AND e.trustworthiness_score IS NOT NULL
@@ -454,8 +450,6 @@ export class TrustworthinessRepository extends BaseRepository {
           avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
           avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
           avgTokens: Math.round(parseFloat(row.avg_tokens) || 0),
-          avgCost: Math.round((parseFloat(row.avg_cost) || 0) * 1000000) / 1000000,
-          totalCost: Math.round((parseFloat(row.total_cost) || 0) * 10000) / 10000,
         })),
         speedLeaders: speedQuery.rows.map(row => ({
           modelName: row.model_name,

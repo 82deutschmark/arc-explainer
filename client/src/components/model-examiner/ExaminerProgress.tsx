@@ -1,4 +1,4 @@
-/**
+/**Deprecated!!!  NEEDS REMOVAL!!!
  * ExaminerProgress.tsx
  *
  * @description Displays the live progress of a batch analysis session.

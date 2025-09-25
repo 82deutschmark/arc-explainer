@@ -38,7 +38,7 @@ The backend is a Node.js application using Express.js.
 
 -   **`controllers/`**: These handle incoming HTTP requests, orchestrate the necessary business logic, and send back responses. They act as the bridge between the client and the backend services (e.g., `puzzleController.ts`).
 -   **`services/`**: This is where the core business logic lives. Services are responsible for tasks like calling external AI APIs (`openai.ts`, `gemini.ts`), building prompts (`promptBuilder.ts`), and validating responses (`responseValidator.ts`).
--   **`repositories/`**: These classes are responsible for all database interactions. They contain the raw SQL queries and logic for creating, reading, updating, and deleting records (e.g., `ExplanationRepository.ts`, `AccuracyRepository.ts`). No other part of the application should interact with the database directly.
+-   **`repositories/`**: These classes are responsible for all database interactions. They contain the raw SQL queries and logic for creating, reading, updating, and deleting records (e.g., `ExplanationRepository.ts`, `AccuracyRepository.ts`, `CostRepository.ts`). Each repository follows Single Responsibility Principle (SRP) - handling only one domain concern. No other part of the application should interact with the database directly.
 -   **`routes/`**: Defines the API endpoints and maps them to the appropriate controller functions.
 -   **`utils/`**: Shared utility functions for the backend, such as logging and response formatting.
 
@@ -47,6 +47,56 @@ The backend is a Node.js application using Express.js.
 This directory contains code that is used by both the frontend and the backend.
 
 -   **`types.ts`**: Contains TypeScript type definitions and interfaces (e.g., `ARCTask`, `AnalysisResult`) shared across the entire application to ensure type safety.
+
+## Repository Architecture & Domain Separation
+
+**🚨 CRITICAL**: As of September 24, 2025, the repository layer underwent a major architectural refactoring to eliminate Single Responsibility Principle (SRP) violations and ensure proper domain separation.
+
+### Repository Design Principles
+
+1. **Single Responsibility Principle (SRP)**: Each repository handles exactly one domain concern:
+   - `AccuracyRepository` → Pure puzzle-solving correctness metrics only
+   - `TrustworthinessRepository` → AI confidence reliability analysis only
+   - `CostRepository` → All cost calculations and cost domain logic only
+   - `MetricsRepository` → Aggregated analytics using delegation pattern
+
+2. **DRY (Don't Repeat Yourself)**: No duplicate business logic across repositories:
+   - Model name normalization handled by shared `utils/modelNormalizer.ts`
+   - Cost calculations centralized in `CostRepository` only
+   - Cross-repository data access via delegation pattern
+
+3. **Domain Separation**: Related concerns are kept together, unrelated concerns are separated:
+   - **WRONG**: TrustworthinessRepository calculating costs (mixing domains)
+   - **RIGHT**: TrustworthinessRepository → trustworthiness, CostRepository → costs
+
+### Critical Architectural History
+
+**Problem Solved (September 2025)**: The system had severe SRP violations where:
+- `TrustworthinessRepository` was calculating cost metrics (lines 342-343)
+- `MetricsRepository` had duplicate cost logic with different business rules
+- Same models showed different costs in different UI components due to inconsistent data sources
+
+**Solution Implemented**: Complete domain separation with dedicated `CostRepository` following SRP/DRY principles.
+
+### Repository Integration Pattern
+
+Use `RepositoryService` for centralized access:
+
+```typescript
+// Access individual repositories through service
+const accuracyStats = await repositoryService.accuracy.getPureAccuracyStats();
+const costData = await repositoryService.cost.getAllModelCosts();
+const trustworthinessData = await repositoryService.trustworthiness.getTrustworthinessStats();
+
+// MetricsRepository aggregates data from multiple repositories
+const dashboard = await repositoryService.metrics.getComprehensiveDashboard();
+```
+
+**⚠️ Developer Guideline**: When adding new features:
+1. **Identify the domain** (accuracy, trustworthiness, cost, etc.)
+2. **Add logic to the appropriate repository** (don't mix domains)
+3. **Use delegation pattern** if multiple repositories needed
+4. **Never duplicate business logic** across repositories
 
 ## Key Component Reference
 
@@ -59,12 +109,16 @@ This section provides a quick reference to the most important files in the proje
 | `controllers` | `puzzleController.ts` | Orchestrates all puzzle-related operations, including analysis, fetching, and stats. |
 | | `batchAnalysisController.ts` | Handles starting, pausing, and monitoring batch analysis sessions. |
 | | `eloController.ts` | Manages ELO rating calculations and leaderboards for models. |
+| | `costController.ts` | **NEW**: Handles all cost-related API endpoints following RESTful principles. |
 | `services` | `puzzleAnalysisService.ts` | Core logic for analyzing a single puzzle, including prompt building and validation. |
 | | `explanationService.ts` | Handles the saving and processing of AI-generated explanations. |
 | | `aiServiceFactory.ts` | A factory that returns the correct AI provider service (e.g., OpenAI, Gemini) based on a model key. |
 | | `pythonBridge.ts` | Manages communication with Python scripts for specialized solvers. |
 | `repositories`| `ExplanationRepository.ts` | All database operations for the `explanations` table. |
-| | `AccuracyRepository.ts` | Queries for calculating and retrieving model accuracy statistics. |
+| | `AccuracyRepository.ts` | Pure puzzle-solving accuracy metrics (boolean correctness only). |
+| | `TrustworthinessRepository.ts` | AI confidence reliability analysis (no cost calculations). |
+| | `CostRepository.ts` | **NEW**: All cost calculations and cost domain logic (SRP compliant). |
+| | `MetricsRepository.ts` | Aggregated analytics from multiple repositories using delegation. |
 | | `EloRepository.ts` | Database logic for storing and updating ELO scores. |
 
 ### Client-Side Components

@@ -18,7 +18,8 @@ interface ModelComparison {
   trustworthiness: number;
   userSatisfaction: number;
   attempts: number;
-  costEfficiency: number;
+  totalCost: number;
+  avgCost: number;
 }
 
 interface ModelComparisonMatrixProps {
@@ -27,7 +28,7 @@ interface ModelComparisonMatrixProps {
   onModelClick?: (modelName: string) => void;
 }
 
-type SortField = 'modelName' | 'accuracy' | 'trustworthiness' | 'userSatisfaction' | 'attempts' | 'costEfficiency';
+type SortField = 'modelName' | 'accuracy' | 'trustworthiness' | 'userSatisfaction' | 'attempts' | 'totalCost' | 'avgCost';
 type SortOrder = 'asc' | 'desc';
 
 export function ModelComparisonMatrix({ 
@@ -52,34 +53,37 @@ export function ModelComparisonMatrix({
     return sortOrder === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
-  const getScoreColor = (score: number, type: 'percentage' | 'cost') => {
+  const getBadgeVariant = (score: number | undefined | null, type: 'percentage' | 'cost'): 'default' | 'secondary' | 'destructive' | 'outline' => {
+    // Handle missing data
+    if (score === undefined || score === null || isNaN(score)) return 'outline';
+
     if (type === 'cost') {
-      // Lower cost efficiency is better (inverted colors)
-      if (score <= 0.001) return 'bg-green-100 text-green-800 border-green-200';
-      if (score <= 0.01) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      return 'bg-red-100 text-red-800 border-red-200';
+      // Lower total costs are better
+      if (score <= 0.01) return 'default'; // Good - under 1 cent
+      if (score <= 1.00) return 'secondary'; // Moderate - under $1
+      return 'destructive'; // High cost - over $1
     } else {
       // Higher percentages are better
-      if (score >= 80) return 'bg-green-100 text-green-800 border-green-200';
-      if (score >= 60) return 'bg-blue-100 text-blue-800 border-blue-200';
-      if (score >= 40) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      return 'bg-red-100 text-red-800 border-red-200';
+      if (score >= 80) return 'default'; // Good performance
+      if (score >= 60) return 'secondary'; // Moderate performance
+      return 'outline'; // Poor performance
     }
   };
 
-  const formatCostEfficiency = (cost: number) => {
-    // Handle extreme values that suggest calculation errors
-    if (cost >= 1000) return '$999+';
+  const formatCostEfficiency = (cost: number | undefined | null) => {
+    // Handle missing or invalid cost data
+    if (cost === undefined || cost === null || isNaN(cost)) return 'No data';
     if (cost === 0) return 'Free'; // Handle free models from OpenRouter
     if (cost < 0) return '$0';
-    
+    if (cost >= 1000) return '$999+';
+
     const cents = cost * 100;
-    
+
     if (cents < 100) {
       // Show as cents with 2 decimal places (e.g., "6.23¢")
       return `${cents.toFixed(2)}¢`;
     } else {
-      // Convert to dollars with 2 decimal places (e.g., "$1.50") 
+      // Convert to dollars with 2 decimal places (e.g., "$1.50")
       return `$${cost.toFixed(2)}`;
     }
   };
@@ -222,10 +226,10 @@ export function ModelComparisonMatrix({
               variant="ghost"
               size="sm"
               className="justify-center h-8 p-1 font-semibold"
-              onClick={() => handleSort('costEfficiency')}
+              onClick={() => handleSort('totalCost')}
             >
               <DollarSign className="h-3 w-3 mr-1" />
-              Cost {getSortIcon('costEfficiency')}
+              Total Cost {getSortIcon('totalCost')}
             </Button>
           </div>
 
@@ -244,27 +248,27 @@ export function ModelComparisonMatrix({
                 </div>
                 
                 <div className="flex justify-center">
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs ${getScoreColor(model.accuracy, 'percentage')}`}
+                  <Badge
+                    variant={getBadgeVariant(model.accuracy, 'percentage')}
+                    className="text-xs"
                   >
                     {model.accuracy.toFixed(1)}%
                   </Badge>
                 </div>
                 
                 <div className="flex justify-center">
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs ${getScoreColor(model.trustworthiness * 100, 'percentage')}`}
+                  <Badge
+                    variant={getBadgeVariant(model.trustworthiness * 100, 'percentage')}
+                    className="text-xs"
                   >
                     {(model.trustworthiness * 100).toFixed(1)}%
                   </Badge>
                 </div>
                 
                 <div className="flex justify-center">
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs ${getScoreColor(model.userSatisfaction, 'percentage')}`}
+                  <Badge
+                    variant={getBadgeVariant(model.userSatisfaction, 'percentage')}
+                    className="text-xs"
                   >
                     {model.userSatisfaction.toFixed(1)}%
                   </Badge>
@@ -277,11 +281,11 @@ export function ModelComparisonMatrix({
                 </div>
                 
                 <div className="flex justify-center">
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs ${getScoreColor(model.costEfficiency, 'cost')}`}
+                  <Badge
+                    variant={getBadgeVariant(model.totalCost, 'cost')}
+                    className="text-xs"
                   >
-                    {formatCostEfficiency(model.costEfficiency)}
+                    {formatCostEfficiency(model.totalCost)}
                   </Badge>
                 </div>
               </div>
@@ -293,7 +297,7 @@ export function ModelComparisonMatrix({
           <p className="text-xs text-gray-500">
             Click any model name to view detailed information • 
             Click column headers to sort • 
-            Lower cost efficiency values are better
+            Shows total cost spent by each model across all attempts
           </p>
         </div>
       </CardContent>

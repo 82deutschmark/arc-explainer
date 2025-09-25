@@ -2,6 +2,8 @@
 
 Practical E2E testing tools for production verification.
 
+npm run test - runs prod build and dev server
+
 ## Quick Health Check
 ```bash
 node scripts/health-check.js

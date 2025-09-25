@@ -35,10 +35,10 @@ const navigationItems: NavItem[] = [
     description: 'Browse ARC puzzles and start analysis'
   },
   {
-    title: 'Overview',
-    href: '/overview',
+    title: 'Analytics',
+    href: '/analytics',
     icon: Database,
-    description: 'Database overview and puzzle statistics'
+    description: 'Model performance analytics and leaderboards'
   },
   {
     title: 'Puzzle DB',

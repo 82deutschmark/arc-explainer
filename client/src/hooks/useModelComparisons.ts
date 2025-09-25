@@ -14,7 +14,8 @@ interface ModelComparison {
   trustworthiness: number;
   userSatisfaction: number;
   attempts: number;
-  costEfficiency: number;
+  totalCost: number;
+  avgCost: number;
 }
 
 interface ComprehensiveDashboard {

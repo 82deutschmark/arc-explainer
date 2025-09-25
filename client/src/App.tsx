@@ -8,10 +8,9 @@ import DynamicFavicon from "@/components/DynamicFavicon";
 import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
-import PuzzleOverview from "@/pages/PuzzleOverview";
+import AnalyticsOverview from "@/pages/AnalyticsOverview";
 import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
-import BatchResults from "@/pages/BatchResults";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
@@ -25,8 +24,8 @@ function Router() {
         <Route path="/" component={PuzzleBrowser} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/discussion" component={PuzzleDiscussion} />
-        <Route path="/overview" component={PuzzleOverview} />
-        <Route path="/batch" component={BatchResults} />
+        <Route path="/analytics" component={AnalyticsOverview} />
+
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
