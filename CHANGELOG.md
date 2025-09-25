@@ -7,6 +7,11 @@
 
 ---
 
+### ✅ Railway Persistent Storage & Deployment Stability
+- **Persistent Volume Configured**: Added `deploy.volumes` entry to `railway.json` so Railway mounts the `arc_explainer_data` volume at `/app/data`, preventing production data loss documented in `docs/25SeptRailwayTasks.md`.
+- **Deployment Impact**: Future builds reuse the attached volume automatically; manual dashboard steps are limited to verifying the mount.
+- **Docker Hub 401 Guidance**: Identified Railway build failures as Docker Hub rate limiting/maintenance on `node:20-alpine`; documented need to use authenticated pulls or wait for Docker recovery when 401 responses appear.
+
 ## 🔧 **CRITICAL ARCHITECTURAL VIOLATIONS ELIMINATED**
 
 ### **Problem**: Severe SRP/DRY Violations Causing Data Inconsistency
