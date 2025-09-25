@@ -62,9 +62,11 @@ export default function AnalyticsOverview() {
     accuracyStats,
     performanceStats,
     feedbackStats,
+    overconfidentModels,
     isLoadingAccuracy,
     isLoadingPerformance,
     isLoadingFeedback,
+    isLoadingOverconfident,
     hasAnyError
   } = useModelLeaderboards();
 
@@ -196,9 +198,11 @@ export default function AnalyticsOverview() {
           accuracyStats={accuracyStats}
           performanceStats={performanceStats}
           feedbackStats={feedbackStats}
+          overconfidentModels={overconfidentModels}
           isLoadingAccuracy={isLoadingAccuracy}
           isLoadingPerformance={isLoadingPerformance}
           isLoadingFeedback={isLoadingFeedback}
+          isLoadingOverconfident={isLoadingOverconfident}
           onModelClick={handleModelClick}
         />
 

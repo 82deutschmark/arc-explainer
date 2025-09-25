@@ -614,4 +614,264 @@ export class TrustworthinessRepository extends BaseRepository {
       throw error;
     }
   }
+
+  /**
+   * Get TRUSTWORTHINESS STATS WITH MINIMUM ATTEMPTS - enhanced version with filtering
+   *
+   * This method extends getTrustworthinessStats() with minimum attempts filtering.
+   * Useful for analytics dashboards that want to show only models with sufficient data.
+   *
+   * @param minAttempts Minimum number of attempts required (default: 100)
+   * @returns Trustworthiness statistics filtered by minimum attempts
+   */
+  async getTrustworthinessStatsWithMinAttempts(minAttempts: number = ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts): Promise<TrustworthinessStats> {
+    if (!this.isConnected()) {
+      return {
+        totalTrustworthinessAttempts: 0,
+        overallTrustworthiness: 0,
+        modelTrustworthinessRankings: []
+      };
+    }
+
+    try {
+      // Get overall trustworthiness stats (no filtering by individual model attempts)
+      const overallStats = await this.query(`
+        SELECT
+          COUNT(*) as total_trustworthiness_attempts,
+          AVG(trustworthiness_score) as overall_trustworthiness
+        FROM explanations
+        WHERE trustworthiness_score IS NOT NULL
+          AND NOT (trustworthiness_score = 1.0 AND confidence = 0)
+      `);
+
+      // Get trustworthiness by model with minimum attempts filtering
+      const modelTrustworthiness = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          COUNT(*) as total_attempts,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          MIN(e.trustworthiness_score) as min_trustworthiness,
+          MAX(e.trustworthiness_score) as max_trustworthiness,
+          AVG(e.confidence) as avg_confidence,
+          COUNT(e.trustworthiness_score) as trustworthiness_entries
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= $1  -- Apply minimum attempts filter
+        ORDER BY avg_trustworthiness DESC, total_attempts DESC
+      `, [minAttempts]);
+
+      const overallRow = overallStats.rows[0];
+
+      logger.info(`TrustworthinessRepository.getTrustworthinessStatsWithMinAttempts: Found ${overallRow.total_trustworthiness_attempts} total trustworthiness attempts, ${modelTrustworthiness.rows.length} models with ${minAttempts}+ attempts`, 'trustworthiness-debug');
+
+      return {
+        totalTrustworthinessAttempts: parseInt(overallRow.total_trustworthiness_attempts) || 0,
+        overallTrustworthiness: Math.round((parseFloat(overallRow.overall_trustworthiness) || 0) * 10000) / 10000,
+        modelTrustworthinessRankings: modelTrustworthiness.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          minTrustworthiness: Math.round((parseFloat(row.min_trustworthiness) || 0) * 10000) / 10000,
+          maxTrustworthiness: Math.round((parseFloat(row.max_trustworthiness) || 0) * 10000) / 10000,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          trustworthinessEntries: parseInt(row.trustworthiness_entries) || 0,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting trustworthiness stats with min attempts: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get REAL PERFORMANCE STATS WITH MINIMUM ATTEMPTS - enhanced version with filtering
+   *
+   * This method extends getRealPerformanceStats() with minimum attempts filtering.
+   * Useful for analytics dashboards focusing on statistically significant model data.
+   *
+   * @param minAttempts Minimum number of attempts required (default: 100)
+   * @returns Performance statistics filtered by minimum attempts
+   */
+  async getRealPerformanceStatsWithMinAttempts(minAttempts: number = ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts): Promise<PerformanceLeaderboards> {
+    if (!this.isConnected()) {
+      return {
+        trustworthinessLeaders: [],
+        speedLeaders: [],
+        efficiencyLeaders: [],
+        overallTrustworthiness: 0
+      };
+    }
+
+    try {
+      // Get trustworthiness leaders with minimum attempts filtering
+      const trustworthinessQuery = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          COUNT(*) as total_attempts,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          AVG(e.confidence) as avg_confidence,
+          AVG(e.api_processing_time_ms) as avg_processing_time,
+          AVG(e.total_tokens) as avg_tokens
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= $1  -- Apply minimum attempts filter
+        ORDER BY avg_trustworthiness DESC, total_attempts DESC
+      `, [minAttempts]);
+
+      // Get speed leaders with minimum attempts filtering
+      const speedQuery = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          AVG(e.api_processing_time_ms) as avg_processing_time,
+          COUNT(*) as total_attempts,
+          AVG(e.trustworthiness_score) as avg_trustworthiness
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.api_processing_time_ms IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= $1  -- Apply minimum attempts filter
+        ORDER BY avg_processing_time ASC
+      `, [minAttempts]);
+
+      // Get efficiency leaders with minimum attempts filtering
+      const efficiencyQuery = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          (
+            CASE
+              WHEN AVG(e.trustworthiness_score) > 0.01
+              THEN AVG(e.estimated_cost) / AVG(e.trustworthiness_score)
+              ELSE 999999
+            END
+          ) as cost_efficiency,
+          (
+            CASE
+              WHEN AVG(e.trustworthiness_score) > 0.01
+              THEN AVG(e.total_tokens) / AVG(e.trustworthiness_score)
+              ELSE 999999
+            END
+          ) as token_efficiency,
+          AVG(e.trustworthiness_score) as avg_trustworthiness,
+          COUNT(*) as total_attempts
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.trustworthiness_score IS NOT NULL
+          AND e.estimated_cost IS NOT NULL
+          AND e.total_tokens IS NOT NULL
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= $1  -- Apply minimum attempts filter
+        ORDER BY cost_efficiency ASC
+      `, [minAttempts]);
+
+      // Get overall trustworthiness stats (no minimum attempts filter for overall stats)
+      const overallQuery = await this.query(`
+        SELECT
+          COUNT(*) as total_trustworthiness_attempts,
+          AVG(trustworthiness_score) as overall_trustworthiness
+        FROM explanations
+        WHERE trustworthiness_score IS NOT NULL
+      `);
+
+      const overallStats = overallQuery.rows[0];
+
+      logger.info(`TrustworthinessRepository.getRealPerformanceStatsWithMinAttempts: Found ${trustworthinessQuery.rows.length} trustworthiness leaders, ${speedQuery.rows.length} speed leaders, ${efficiencyQuery.rows.length} efficiency leaders with ${minAttempts}+ attempts`, 'trustworthiness-debug');
+
+      return {
+        trustworthinessLeaders: trustworthinessQuery.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          avgConfidence: Math.round((parseFloat(row.avg_confidence) || 0) * 10) / 10,
+          avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
+          avgTokens: Math.round(parseFloat(row.avg_tokens) || 0),
+        })),
+        speedLeaders: speedQuery.rows.map(row => ({
+          modelName: row.model_name,
+          avgProcessingTime: Math.round(parseFloat(row.avg_processing_time) || 0),
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000
+        })),
+        efficiencyLeaders: efficiencyQuery.rows.map(row => ({
+          modelName: row.model_name,
+          costEfficiency: Math.round((parseFloat(row.cost_efficiency) || 0) * 1000000) / 1000000,
+          tokenEfficiency: Math.round(parseFloat(row.token_efficiency) || 0),
+          avgTrustworthiness: Math.round((parseFloat(row.avg_trustworthiness) || 0) * 10000) / 10000,
+          totalAttempts: parseInt(row.total_attempts) || 0
+        })),
+        overallTrustworthiness: Math.round((parseFloat(overallStats.overall_trustworthiness) || 0) * 10000) / 10000
+      };
+    } catch (error) {
+      logger.error(`Error getting real performance stats with min attempts: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
 }

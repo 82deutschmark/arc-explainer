@@ -72,9 +72,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/raw-stats", asyncHandler(puzzleController.getRawStats));
   // NOTE: avgPredictionAccuracy field contains trustworthiness data, not pure accuracy!
   
-  // TRUSTWORTHINESS STATISTICS - AI confidence reliability analysis  
+  // TRUSTWORTHINESS STATISTICS - AI confidence reliability analysis
   app.get("/api/puzzle/performance-stats", asyncHandler(puzzleController.getRealPerformanceStats));
   // CORRECT: Returns trustworthiness-focused analysis (confidence reliability metrics)
+
+  // Enhanced trustworthiness statistics with minimum attempts filtering
+  app.get("/api/puzzle/performance-stats-filtered", asyncHandler(puzzleController.getRealPerformanceStatsFiltered));
+  app.get("/api/puzzle/trustworthiness-stats-filtered", asyncHandler(puzzleController.getTrustworthinessStatsFiltered));
 
   // CONFIDENCE ANALYSIS STATISTICS - AI confidence patterns
   app.get("/api/puzzle/confidence-stats", asyncHandler(puzzleController.getConfidenceStats));
@@ -85,7 +89,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Metrics routes (reliability, comprehensive dashboard, etc.)
   app.use("/api/metrics", metricsRouter);
-  
+
+
   // Prompt preview route - shows exact prompt that will be sent to specific provider
   app.post("/api/prompt/preview/:provider/:taskId", validation.promptPreview, asyncHandler(puzzleController.previewPrompt));
   
@@ -105,6 +110,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/feedback", asyncHandler(feedbackController.getAll));
   app.get("/api/feedback/stats", asyncHandler(feedbackController.getStats));
   app.get("/api/feedback/accuracy-stats", asyncHandler(feedbackController.getAccuracyStats));
+
+  // Enhanced accuracy analysis routes - model failure detection
+  app.get("/api/feedback/accuracy-stats-filtered", asyncHandler(feedbackController.getAccuracyStatsFiltered));
+  app.get("/api/feedback/overconfident-models", asyncHandler(feedbackController.getOverconfidentModels));
   
   // Solution submission and voting routes (from Gemini plan)
   app.get("/api/puzzles/:puzzleId/solutions", asyncHandler(feedbackController.getSolutions));

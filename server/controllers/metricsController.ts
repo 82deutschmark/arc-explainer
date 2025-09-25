@@ -1,8 +1,8 @@
 /**
  * Metrics Controller
- * 
+ *
  * Handles requests for aggregated analytics and performance metrics.
- * 
+ *
  * @author Gemini 2.5 Pro
  * @date 2025-09-10
  */
