@@ -1,55 +1,74 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-24
- * PURPOSE: Test all OpenRouter models against puzzle 253bf280 to validate which ones work properly
- * SRP and DRY check: Pass - Single responsibility for testing OpenRouter models with proper error handling and logging
+ * 
+ * Author: Cascade using `Gemini 2.5 Pro`
+ * Date: 2025-09-24T20:08:54-04:00
+ * PURPOSE: Provides a command-line utility for exercising OpenRouter-backed puzzle analysis endpoints, including retry logic for immediate failures to reduce transient noise. Touches `server/config/models.ts` for model keys and the analysis API.
+ * SRP and DRY check: Pass - Verified this script uniquely handles OpenRouter batch testing without duplicating logic elsewhere in `scripts/testing/`.
  */
 
-import axios from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
+// @ts-ignore
+import modelsConfig from '../server/config/models.ts';
 
 // Base URL for the API - adjust if running on different host/port
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
-// Test puzzle ID (253bf280 as requested)
-const TEST_PUZZLE_ID = '253bf280';
+// Test puzzle ID (insert ID as requested)
+const TEST_PUZZLE_ID = '2dc579da';
 
-// Timeout per model in milliseconds (10 minutes to account for slow models)
 const MODEL_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 
-/**
- * Active OpenRouter models from models.ts (extracted from uncommented models only)
- * These are the models that should be working and need to be tested
- */
+import axios from 'axios';
+import dotenv from 'dotenv';
+
+// Import models configuration to get all OpenRouter models
+dotenv.config();
+
+// Extract all OpenRouter models from the configuration
+interface ModelConfig {
+  key: string;
+  name: string;
+  provider: string;
+  apiModelName: string;
+  modelType: string;
+}
+
+// Complete list of all OpenRouter models from models.ts
+// This is a comprehensive list of all models with provider: 'OpenRouter' and modelType: 'openrouter'
 const OPENROUTER_MODELS_TO_TEST = [
   'meta-llama/llama-3.3-70b-instruct',
   'x-ai/grok-4-fast:free',
-  'x-ai/grok-code-fast-1',
+  'qwen/qwen-2.5-coder-32b-instruct',
+  'cohere/command-r-plus',
+  'baidu/ernie-4.5-vl-28b-a3b',
+  'nousresearch/hermes-4-70b',
+  'mistralai/mistral-large',
+  'deepseek/deepseek-chat-v3.1',
   'openai/gpt-oss-120b',
   'mistralai/codestral-2508',
-  'qwen/qwen3-30b-a3b-instruct-2507',
-  'qwen/qwen3-235b-a22b-thinking-2507',
+  'qwen/qwen3-30b-a3b-instruct',
+  'qwen/qwen3-235b-a22b-thinking',
   'qwen/qwen3-coder',
   'moonshotai/kimi-k2',
   'moonshotai/kimi-k2-0905',
   'moonshotai/kimi-dev-72b:free',
-  'x-ai/grok-4',
+  
   'x-ai/grok-3',
   'x-ai/grok-3-mini',
+  'x-ai/grok-code-fast-1',
+  'cohere/command-a',
   'deepseek/deepseek-prover-v2',
   'deepseek/deepseek-r1-0528:free',
   'nvidia/nemotron-nano-9b-v2',
   'qwen/qwen3-max',
-  'bytedance/seed-oss-36b-instruct'
+  'bytedance/seed-oss-36b-instruct',
+  'stepfun-ai/step3',
+  'qwen/qwen-plus-2025-07-28:thinking'
 ];
 
 interface ModelTestRequest {
   temperature: number;
   promptId: string;
   systemPromptMode: string;
-  omitAnswer: boolean;
   retryMode: boolean;
 }
 
@@ -66,7 +85,7 @@ interface ModelTestResult {
 }
 
 /**
- * Test a single OpenRouter model against puzzle 253bf280
+ * Test a single OpenRouter model against puzzle 3ac3eb23
  */
 async function testOpenRouterModel(modelKey: string): Promise<ModelTestResult> {
   const startTime = Date.now();
@@ -79,7 +98,6 @@ async function testOpenRouterModel(modelKey: string): Promise<ModelTestResult> {
       temperature: 0.2, // Standard temperature
       promptId: 'solver', // Use solver prompt
       systemPromptMode: 'ARC', // ARC system prompt mode
-      omitAnswer: true, // Research mode - hide correct answer
       retryMode: false // Not in retry mode
     };
 
@@ -186,30 +204,115 @@ async function testOpenRouterModel(modelKey: string): Promise<ModelTestResult> {
 }
 
 /**
- * Test all OpenRouter models sequentially with proper error handling
+ * Test all OpenRouter models in parallel with rapid succession
  */
 async function testAllOpenRouterModels(): Promise<ModelTestResult[]> {
-  console.log(`\n🔍 Testing ${OPENROUTER_MODELS_TO_TEST.length} OpenRouter models against puzzle ${TEST_PUZZLE_ID}...`);
+  console.log(`
+🔍 Testing ${OPENROUTER_MODELS_TO_TEST.length} OpenRouter models against puzzle ${TEST_PUZZLE_ID}...`);
+  console.log(`📋 Models to test: ${OPENROUTER_MODELS_TO_TEST.join(', ')}`);
   console.log('='.repeat(80));
 
-  const results: ModelTestResult[] = [];
+  console.log(`\n🚀 FIRST PASS: Testing all ${OPENROUTER_MODELS_TO_TEST.length} models rapidly...`);
 
-  // Test models sequentially to avoid overwhelming the API
+  const firstPassPromises: Promise<ModelTestResult>[] = [];
+  const modelKeys: string[] = [];
+
   for (let i = 0; i < OPENROUTER_MODELS_TO_TEST.length; i++) {
     const modelKey = OPENROUTER_MODELS_TO_TEST[i];
+    modelKeys.push(modelKey);
+    console.log(`[${i + 1}/${OPENROUTER_MODELS_TO_TEST.length}] Starting test for: ${modelKey}`);
 
-    console.log(`\n[${i + 1}/${OPENROUTER_MODELS_TO_TEST.length}] Testing: ${modelKey}`);
+    firstPassPromises.push(testOpenRouterModel(modelKey));
 
-    const result = await testOpenRouterModel(modelKey);
-    results.push(result);
-
-    // Small delay between tests to be API-friendly
     if (i < OPENROUTER_MODELS_TO_TEST.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 
-  return results;
+  console.log(`\n⚡ All ${OPENROUTER_MODELS_TO_TEST.length} requests initiated! Waiting for responses...`);
+
+  const firstPassResults = await Promise.allSettled(firstPassPromises);
+
+  const retainedResults: ModelTestResult[] = [];
+  const immediateFailures: string[] = [];
+
+  for (let i = 0; i < firstPassResults.length; i++) {
+    const settled = firstPassResults[i];
+    const modelKey = modelKeys[i];
+
+    if (settled.status === 'fulfilled') {
+      const testResult = settled.value;
+
+      if (testResult.success) {
+        retainedResults.push(testResult);
+      } else if (typeof testResult.responseTime === 'number' && testResult.responseTime < 5) {
+        console.log(`⚠️  ${modelKey} failed immediately (${testResult.responseTime}s) - will retry later`);
+        immediateFailures.push(modelKey);
+      } else {
+        retainedResults.push(testResult);
+      }
+    } else {
+      console.log(`⚠️  ${modelKey} threw exception - will retry later`);
+      immediateFailures.push(modelKey);
+    }
+  }
+
+  console.log(`\n📊 FIRST PASS RESULTS:`);
+  console.log(`   ✅ Successful: ${retainedResults.filter(result => result.success).length}`);
+  console.log(`   ❌ Failed (no retry): ${retainedResults.filter(result => !result.success).length}`);
+  console.log(`   🔄 Immediate failures to retry: ${immediateFailures.length}`);
+
+  let retryResults: ModelTestResult[] = [];
+
+  if (immediateFailures.length > 0) {
+    console.log(`\n🔄 RETRY PASS: Retrying ${immediateFailures.length} immediate failures...`);
+    console.log(`   Waiting 30 seconds before retry...`);
+
+    await new Promise(resolve => setTimeout(resolve, 30000));
+
+    console.log(`   Starting retry requests...`);
+
+    const retryPromises: Promise<ModelTestResult>[] = [];
+    for (let i = 0; i < immediateFailures.length; i++) {
+      const modelKey = immediateFailures[i];
+      console.log(`   Retrying: ${modelKey}`);
+      retryPromises.push(testOpenRouterModel(modelKey));
+
+      if (i < immediateFailures.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    const retrySettled = await Promise.allSettled(retryPromises);
+
+    retryResults = retrySettled.map((result, index) => {
+      const modelKey = immediateFailures[index];
+
+      if (result.status === 'fulfilled') {
+        const retryResult = result.value;
+        console.log(`   ${retryResult.success ? '✅' : '❌'} ${modelKey} ${retryResult.success ? 'succeeded' : 'failed'} on retry`);
+        return retryResult;
+      }
+
+      console.log(`   ❌ ${modelKey} failed with exception on retry`);
+      return {
+        modelKey,
+        success: false,
+        error: result.reason?.message || 'Unknown error on retry',
+        errorType: 'exception',
+        responseTime: 0
+      };
+    });
+  }
+
+  const allResults = [...retainedResults, ...retryResults];
+
+  console.log(`\n🎯 FINAL RESULTS:`);
+  console.log(`   Total models tested: ${allResults.length}`);
+  console.log(`   Successful: ${allResults.filter(result => result.success).length}`);
+  console.log(`   Failed: ${allResults.filter(result => !result.success).length}`);
+
+  return allResults;
 }
 
 /**
