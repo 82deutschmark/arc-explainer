@@ -356,7 +356,7 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
   },
-/*
+
   {
     key: 'qwen/qwen-plus-2025-07-28:thinking',
     name: 'Qwen: Qwen Plus 0728 (thinking)',
@@ -409,23 +409,6 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-07"
   },
     
-/*
-  {
-    key: 'qwen/qwen-2.5-coder-32b-instruct',
-    name: 'Qwen 2.5 Coder 32B',
-    color: 'bg-red-600',
-    premium: false,
-    cost: { input: '$0.30', output: '$0.30' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-    isReasoning: false,
-    apiModelName: 'qwen/qwen-2.5-coder-32b-instruct',
-    modelType: 'openrouter',
-    contextWindow: 128000,
-    maxOutputTokens: 32000,
-    releaseDate: "2024-06"
-  },
   {
     key: 'cohere/command-r-plus',
     name: 'Command R+',
@@ -442,23 +425,7 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 4000,
     requiresPromptFormat: true
   },
-  {
-    key: 'baidu/ernie-4.5-vl-28b-a3b',
-    name: 'Ernie 4.5 VL 28B',
-    color: 'bg-blue-700',
-    premium: false,
-    cost: { input: '$0.10', output: '$0.20' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: false,
-    apiModelName: 'baidu/ernie-4.5-vl-28b-a3b',
-    modelType: 'openrouter',
-    contextWindow: 30000,
-    maxOutputTokens: 8000,
-    requiresPromptFormat: true
-  }
-
+  
 
   {
     key: 'nousresearch/hermes-4-70b',
@@ -538,7 +505,7 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 8000
   },
   {
-    key: 'qwen/qwen3-30b-a3b-instruct-2507',
+    key: 'qwen/qwen3-30b-a3b-instruct',
     name: 'Qwen3 30B A3B Instruct',
     color: 'bg-red-400',
     premium: false,
@@ -547,45 +514,28 @@ export const MODELS: ModelConfig[] = [
     provider: 'OpenRouter',
     responseTime: { speed: 'fast', estimate: '<30 sec' },
     isReasoning: false,
-    apiModelName: 'qwen/qwen3-30b-a3b-instruct-2507',
+    apiModelName: 'qwen/qwen3-30b-a3b-instruct',
     modelType: 'openrouter',
     contextWindow: 262144,
     maxOutputTokens: 30000
   },
 
-//  {
-//    key: 'z-ai/glm-4.5',
-//    name: 'Z-AI GLM 4.5',
-//    color: 'bg-red-300',
-//    premium: false,
-//    cost: { input: '$0.5', output: '$2.00' },
-//    supportsTemperature: true,
-//    provider: 'OpenRouter',
-//    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
-  //  isReasoning: true,
-//    apiModelName: 'z-ai/glm-4.5-air:free',
-//    modelType: 'openrouter',
-//    contextWindow: 131000,
-//    maxOutputTokens: 16000
-//  },
-/*
   {
-    key: 'qwen/qwen3-235b-a22b-thinking-2507',
+    key: 'qwen/qwen3-235b-a22b-thinking',
     name: 'Qwen3 235B A22B Thinking',
     color: 'bg-red-700',
     premium: false,
-    cost: { input: '$0.078', output: '$0.312' },
+    cost: { input: '$0.70', output: '$8.40' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
-    apiModelName: 'qwen/qwen3-235b-a22b-thinking-2507',
+    apiModelName: 'qwen/qwen3-235b-a22b-thinking',
     modelType: 'openrouter',
-    contextWindow: 262144,
-    maxOutputTokens: 31000
-
+    contextWindow: 131100,
+    maxOutputTokens: 32800,
+    releaseDate: '2025-07'
   },
-*/
   {
     key: 'qwen/qwen3-coder',
     name: 'Qwen3 Coder',
@@ -735,56 +685,7 @@ export const MODELS: ModelConfig[] = [
     supportsStructuredOutput: false,
     releaseDate: "2025-05"
   },
-//  {
-//    key: 'cohere/command-a',
-//    name: 'Cohere Command A',
-//    color: 'bg-green-700',
-//    premium: true,
-//    cost: { input: '$2.00', output: '$8.00' },
-//    supportsTemperature: true,
-//    provider: 'OpenRouter',
-//    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-//    isReasoning: true,
-//    apiModelName: 'cohere/command-a',
-//    modelType: 'openrouter',
- //   contextWindow: 32768,
- //   maxOutputTokens: 4000,
- //   requiresPromptFormat: true
- // },
-/*
-  {
-    key: 'deepseek/deepseek-prover-v2',
-    name: 'DeepSeek Prover v2',
-    color: 'bg-cyan-500',
-    premium: false,
-    cost: { input: '$0.30', output: '$1.20' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'deepseek/deepseek-prover-v2',
-    modelType: 'openrouter',
-    contextWindow: 256000,
-    maxOutputTokens: 24000
-  },
-*/
-/*
-  {
-    key: 'deepseek/deepseek-r1-0528:free',
-    name: 'DeepSeek R1 0528 (Free)',
-    color: 'bg-cyan-300',
-    premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'deepseek/deepseek-r1-0528:free',
-    modelType: 'openrouter',
-    contextWindow: 256000,
-    maxOutputTokens: 24000,
-  },
-*/
+
   {
     key: 'nvidia/nemotron-nano-9b-v2',
     name: 'Nemotron Nano 9B V2',
@@ -837,7 +738,7 @@ export const MODELS: ModelConfig[] = [
   },
 
 
-/*
+
 {
   key: 'stepfun-ai/step3',
     name: 'Step3',
@@ -855,5 +756,5 @@ export const MODELS: ModelConfig[] = [
     requiresPromptFormat: true,
     releaseDate: "2025-08"
   },
-*/
+
 ];
