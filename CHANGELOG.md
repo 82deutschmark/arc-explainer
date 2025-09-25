@@ -1,3 +1,153 @@
+
+### September 24 2025
+
+## v2.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring
+
+**🚨 BREAKING ARCHITECTURAL CHANGES**: Completely eliminated SRP/DRY violations in cost calculation system. All cost calculations now follow proper domain separation principles.
+
+---
+
+## 🔧 **CRITICAL ARCHITECTURAL VIOLATIONS ELIMINATED**
+
+### **Problem**: Severe SRP/DRY Violations Causing Data Inconsistency
+- **TrustworthinessRepository** was calculating costs (violating Single Responsibility Principle)
+- **MetricsRepository** had duplicate cost calculations with different business rules
+- **Same models showed different costs in different UI components** due to inconsistent data sources
+- Multiple repositories implementing cost normalization logic differently
+
+### **Root Cause Analysis**:
+```typescript
+// TrustworthinessRepository.ts (WRONG - mixing domains)
+AVG(e.estimated_cost) as avg_cost,         // Line 342
+SUM(e.estimated_cost) as total_cost        // Line 343
+
+// MetricsRepository.ts (WRONG - duplicate logic)
+SUM(COALESCE(estimated_cost, 0)) as total_cost  // Different filtering rules
+
+// Result: claude-3.5-sonnet:beta showed different costs in different components
+```
+
+### **Solution**: Dedicated Cost Domain Architecture
+✅ **Created `CostRepository`** - Single responsibility for all cost calculations
+✅ **Eliminated duplicate cost logic** from TrustworthinessRepository and MetricsRepository
+✅ **Standardized model name normalization** with shared utility
+✅ **Added dedicated cost API endpoints** following RESTful principles
+✅ **Database optimization** with targeted indexes for cost queries
+
+### **📋 Implementation Details**
+
+#### **Files Created**:
+- `server/repositories/CostRepository.ts` - Dedicated cost domain repository
+- `server/controllers/costController.ts` - RESTful cost API endpoints
+
+#### **Files Modified**:
+- `server/repositories/TrustworthinessRepository.ts` - Removed cost calculations (lines 342-343, 457-458)
+- `server/repositories/MetricsRepository.ts` - Uses CostRepository delegation
+- `server/controllers/puzzleController.ts` - Combines trustworthiness + cost data properly
+- `server/repositories/RepositoryService.ts` - Added CostRepository integration
+- `server/routes/metricsRoutes.ts` - Added cost endpoints
+- `server/repositories/database/DatabaseSchema.ts` - Added cost query indexes
+
+#### **New API Endpoints**:
+```typescript
+GET /api/metrics/costs/models              // All model costs
+GET /api/metrics/costs/models/:modelName   // Specific model cost summary
+GET /api/metrics/costs/models/:modelName/trends  // Cost trends over time
+GET /api/metrics/costs/system/stats        // System-wide cost statistics
+GET /api/metrics/costs/models/map          // Cost map for cross-repository integration
+```
+
+#### **Data Consistency Verification**:
+- **ModelDebugModal**: Uses `/api/puzzle/performance-stats` (combined data)
+- **ModelComparisonMatrix**: Uses `/api/metrics/comprehensive-dashboard` (CostRepository)
+- **TrustworthinessLeaderboard**: Uses `/api/puzzle/performance-stats` (combined data)
+- **Result**: All components now show identical cost values for same models
+
+#### **Database Optimizations Added**:
+```sql
+CREATE INDEX idx_explanations_cost_model ON explanations(model_name, estimated_cost) WHERE estimated_cost IS NOT NULL;
+CREATE INDEX idx_explanations_cost_date ON explanations(created_at, estimated_cost, model_name) WHERE estimated_cost IS NOT NULL;
+```
+
+---
+
+## v2.24.4 - CRITICAL: PuzzleOverview Data Source Fixes and Cost Architecture Issues
+
+**CRITICAL FIXES**: Fixed multiple data source inconsistencies and architectural violations in PuzzleOverview.tsx and cost calculation system.
+
+### Data Source Consolidation & Sort Order Fixes
+1. **Fixed Critical Sort Order Bug**: PuzzleOverview was displaying the 3 WORST models with trophy emojis as "top performers"
+   - **Root Cause**: API returns ASC sort (worst first) but UI took first 3 directly
+   - **Fix**: Added `.slice().reverse().slice(0,3)` to show actual best performers
+   - **Impact**: Users now see correct top performers instead of worst performers
+
+2. **Replaced Insane Cost Calculations**: ModelComparisonMatrix showed inflated costs like "$999+"
+   - **Root Cause**: Used `attempts / trustworthiness` formula (completely unrelated to actual costs)
+   - **Examples of Broken Math**: 50 attempts ÷ 0.05 trustworthiness = 1000 → "$999+"
+   - **Fix**: Replaced with real `SUM(estimated_cost)` from database
+   - **Files**: `server/repositories/MetricsRepository.ts`, `client/src/components/overview/ModelComparisonMatrix.tsx`
+
+3. **Fixed TypeError Crash**: `Cannot read properties of undefined (reading 'toFixed')`
+   - **Root Cause**: Cost formatting function assumed cost parameter was always a number
+   - **Fix**: Added null/undefined/NaN handling with graceful "No data" fallback
+   - **Impact**: Prevents runtime crashes when cost data is incomplete
+
+### UI/UX Improvements
+4. **Proper shadcn/ui Usage**: Replaced manual color classes with Badge variants
+   - **Before**: Manually setting `bg-green-100 text-green-800 border-green-200` etc.
+   - **After**: Using Badge variants (`default`, `secondary`, `destructive`, `outline`)
+   - **Benefit**: Consistent with design system, much cleaner code
+
+5. **Fixed EloComparison Grid Overlap**: Large ARC grids (up to 30x30) were overlapping
+   - **Root Cause**: `md:grid-cols-3` forced 3 columns on medium screens
+   - **Fix**: Better responsive breakpoints (`lg:grid-cols-2 2xl:grid-cols-3`) + horizontal scroll fallback
+   - **Impact**: Handles edge cases with large grids without overlap
+
+### Architectural Issues Discovered
+6. **Cost Architecture Violations**: Documented severe SRP violations in cost calculation system
+   - **Issue**: TrustworthinessRepository calculates cost metrics (violates SRP)
+   - **Impact**: Different UI components show different costs for same model
+   - **Documentation**: Created `docs/24SeptCostFixes.md` with complete analysis and refactoring plan
+   - **Status**: Requires dedicated CostRepository and proper domain separation
+
+### Data Recovery Automation & Admin Tools
+7. **Data Recovery Refactor**: Broke up the monolithic `server/dataRecovery.ts` into a lightweight CLI orchestrator and `server/services/recoveryService.ts`
+   - **Benefit**: Centralizes recovery logic, enables reuse, and eliminates duplicated data mapping code
+8. **Shared Transformation Logic**: Extracted `transformRawExplanation()` in `server/services/explanationService.ts`
+   - **Impact**: Ensures all services use the same validated field mapping when saving explanations
+9. **Interactive & Non-Interactive Modes**: Restored interactive prompts for manual runs while adding a `--non-interactive` flag for cron jobs
+   - **Usage**: `npm run recover` (interactive) and `npm run recover -- --non-interactive` (automated Railway job)
+10. **Manual Trigger Endpoint**: Added `POST /api/admin/start-recovery` in `server/controllers/adminController.ts`
+    - **UI Hook**: Added a "Start Data Recovery" button in `client/src/components/ModelDebugModal.tsx`
+    - **Result**: Admins can kick off recovery without SSH or CLI access
+
+### Files Modified
+- `client/src/pages/PuzzleOverview.tsx`: Fixed sort order, updated data sources
+- `client/src/components/ui/ModelPerformanceCard.tsx`: NEW - Reusable component extracted from EloVoteResultsModal
+- `client/src/components/overview/ModelComparisonMatrix.tsx`: Fixed cost calculations, error handling, shadcn/ui usage
+- `client/src/pages/EloComparison.tsx`: Fixed grid overlap with better responsive design
+- `server/repositories/MetricsRepository.ts`: Added real cost calculation method
+- `client/src/hooks/useModelComparisons.ts`: Updated TypeScript interfaces
+- `docs/24SeptCostFixes.md`: NEW - Comprehensive analysis of cost architecture issues
+
+### Commits
+- `943fdb5`: Fix critical sort order bug: show top performers instead of worst
+- `7c83605`: Replace insane cost calculation with real database costs
+- `5624d5b`: Fix TypeError: Cannot read properties of undefined (reading 'toFixed')
+
+### September 23 2025
+
+## v2.24.3 - Documentation Updates
+
+Commented out all OpenRouter models temporarily, models.ts needs to be audited and only certain models should be enabled.
+
+Added docs regarding data loss on Railway deployments to 25SeptRailwayTasks.md
+
+Added command npm run retry and ap and au to package.json  these should be the basis of any new form of BatchAnalysis attempts.  Read those scripts they were done well.
+
+Previous BatchAnalysis was a flawed concept and implementation.
+
+
 ### September 16 2025
 
 ## v2.24.2 - CRITICAL FIX: Multi-Test Puzzle Validation and Storage System

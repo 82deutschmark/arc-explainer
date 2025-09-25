@@ -1,4 +1,4 @@
-/**
+/**DEPRECATED!!!  NEEDS REMOVAL!!
  * ExaminerActivity.tsx
  *
  * @description Displays the live processing activity and result logs for a batch session.

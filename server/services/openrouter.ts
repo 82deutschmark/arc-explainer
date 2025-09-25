@@ -67,13 +67,13 @@ export class OpenRouterService extends BaseAIService {
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // 1. Get the raw text response from the provider
-      const responseText = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
-      
-      // 2. Let the robust parser handle the raw text
-      const captureReasoning = true;
+      // 1. Get the raw response and structured reasoning from the provider
+      const { fullResponseText, fullReasoning } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+
+      // 2. Let the robust parser handle the raw text and reasoning
+      const captureReasoning = serviceOpts.captureReasoning || false;
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
-        this.parseProviderResponse(responseText, modelKey, captureReasoning, taskId);
+        this.parseProviderResponse(fullResponseText, modelKey, captureReasoning, taskId, fullReasoning);
 
       // 3. Build the standard response
       return this.buildStandardResponse(
@@ -103,13 +103,14 @@ export class OpenRouterService extends BaseAIService {
     temperature: number,
     serviceOpts: ServiceOptions,
     taskId?: string
-  ): Promise<string> { // Returns a string now
+  ): Promise<{ fullResponseText: string; fullReasoning: any; }> {
     const modelName = getApiModelName(modelKey);
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);
 
     // CONTINUATION SUPPORT: Accumulate response across multiple API calls if truncated
     let fullResponseText = '';
+    let fullReasoning: any = null;
     let generationId: string | null = null;
     let continuationStep = 0;
     let isComplete = false;
@@ -122,8 +123,13 @@ export class OpenRouterService extends BaseAIService {
         const payload: any = {
           model: modelName,
           temperature: temperature,
-          stream: false // Explicitly disable streaming
+          stream: false, // Explicitly disable streaming,
+          reasoning: serviceOpts.captureReasoning, // NEW: Explicitly request reasoning logs
+          // Additional streaming prevention
+          stream_options: undefined // Ensure no stream options
         };
+
+        logger.service('OpenRouter', `Request payload streaming config - stream: ${payload.stream}, step: ${continuationStep}`);;
 
         // Conditionally apply JSON mode based on model configuration
         const modelConfig = getModelConfig(modelKey);
@@ -211,6 +217,18 @@ export class OpenRouterService extends BaseAIService {
         const responseText = await fetchResponse.text();
         const requestDuration = Date.now() - startTime;
 
+        // FAIL-FAST: If the response is just whitespace, it's an empty response.
+        if (responseText.trim() === '') {
+          logger.service('OpenRouter', `API call to ${modelKey} returned only whitespace.`, 'error');
+          throw new Error(`Empty response from ${modelKey}. The model returned only whitespace.`);
+        }
+
+        // Debug: Check for streaming artifacts in response
+        const hasExcessiveLeadingWhitespace = responseText.length > 100 && responseText.trimStart().length < responseText.length - 50;
+        if (hasExcessiveLeadingWhitespace) {
+          logger.service('OpenRouter', `⚠️  Detected excessive leading whitespace in response from ${modelKey} (${responseText.length - responseText.trimStart().length} chars)`, 'warn');
+        }
+
         if (!fetchResponse.ok) {
             // Log detailed error for debugging but create user-friendly error message
             logger.logError(`OpenRouter API Error from ${modelKey}`, {
@@ -252,6 +270,15 @@ export class OpenRouterService extends BaseAIService {
 
         const completionText = chunkData.choices?.[0]?.message?.content || '';
         const finishReason = chunkData.choices?.[0]?.finish_reason;
+        const reasoning = chunkData.choices?.[0]?.message?.reasoning; // Extract reasoning
+
+        if (reasoning) {
+          if (!fullReasoning) {
+            fullReasoning = reasoning;
+          } else if (Array.isArray(fullReasoning) && Array.isArray(reasoning)) {
+            fullReasoning.push(...reasoning); // Append reasoning steps if both are arrays
+          }
+        }
         
         fullResponseText += completionText;
         
@@ -282,21 +309,143 @@ export class OpenRouterService extends BaseAIService {
     logger.service('OpenRouter', `Final assembled response preview: ${contentPreview.replace(/\n/g, '\\n')}`);
     
     // Return the raw text, as it's already been processed by the robust parser
-    return fullResponseText;
+    return { fullResponseText, fullReasoning };
+  }
+
+  /**
+   * OpenRouter-specific response sanitizer for handling problematic responses
+   * Some OpenRouter models return excessive leading whitespace/control characters
+   *
+   * Author: Claude Code using Sonnet 4
+   * Date: 2025-09-20
+   * PURPOSE: Defensive parsing specifically for OpenRouter responses with excessive leading junk
+   * SRP and DRY check: Pass - Single responsibility for OpenRouter response cleaning
+   */
+  private sanitizeOpenRouterResponse(responseText: string): {
+    cleanedText: string;
+    reasoningText?: string;
+    method: string;
+    charactersRemoved: number;
+  } {
+    if (!responseText || typeof responseText !== 'string') {
+      return {
+        cleanedText: responseText || '',
+        method: 'no_sanitization_needed',
+        charactersRemoved: 0
+      };
+    }
+
+    const originalLength = responseText.length;
+
+    // Step 1: Remove null bytes and other problematic control characters
+    let sanitized = responseText
+      .replace(/\u0000/g, '') // Remove null bytes
+      .replace(/\u0001/g, '') // Remove other control chars
+      .replace(/\u0002/g, '')
+      .replace(/\u0003/g, '');
+
+    // Step 2: Find the first occurrence of '{' (JSON start)
+    const jsonStartIndex = sanitized.indexOf('{');
+
+    if (jsonStartIndex === -1) {
+      // No JSON object start token '{' was found.
+      const trimmed = sanitized.trim();
+      // This case handles two scenarios:
+      // 1. The response was purely non-JSON text (e.g., a plain error message).
+      // 2. The response was only whitespace (and is now an empty string).
+      // The check in callProviderAPI should catch #2, but this is an extra safeguard.
+      return {
+        cleanedText: trimmed, // Return the non-JSON text or an empty string.
+        method: 'no_json_found',
+        charactersRemoved: originalLength - trimmed.length
+      };
+    }
+
+    // Step 3: Extract potential reasoning text before JSON
+    let reasoningText: string | undefined;
+    if (jsonStartIndex > 20) { // Only if there's substantial text before JSON
+      const preJsonText = sanitized.substring(0, jsonStartIndex).trim();
+      // Check if it looks like reasoning (not just whitespace/newlines)
+      if (preJsonText.length > 10 && /[a-zA-Z]/.test(preJsonText)) {
+        reasoningText = preJsonText;
+      }
+    }
+
+    // Step 4: Find the last '}' to get complete JSON
+    const jsonPortion = sanitized.substring(jsonStartIndex);
+    const lastBraceIndex = jsonPortion.lastIndexOf('}');
+
+    if (lastBraceIndex === -1) {
+      // No closing brace found, use everything from first {
+      const cleanedText = jsonPortion.trim();
+      return {
+        cleanedText,
+        reasoningText,
+        method: 'partial_json_extraction',
+        charactersRemoved: originalLength - cleanedText.length
+      };
+    }
+
+    // Step 5: Extract complete JSON between first { and last }
+    const completeJson = jsonPortion.substring(0, lastBraceIndex + 1);
+    const cleanedText = completeJson.trim();
+
+    // Step 6: Quick validation - ensure it looks like JSON
+    if (!cleanedText.startsWith('{') || !cleanedText.endsWith('}')) {
+      // Fall back to original text if extraction doesn't look right
+      return {
+        cleanedText: sanitized.trim(),
+        reasoningText,
+        method: 'fallback_to_original',
+        charactersRemoved: originalLength - sanitized.trim().length
+      };
+    }
+
+    return {
+      cleanedText,
+      reasoningText,
+      method: 'defensive_json_extraction',
+      charactersRemoved: originalLength - cleanedText.length
+    };
   }
 
   protected parseProviderResponse(
     responseText: string,
     modelKey: string,
     captureReasoning: boolean,
-    puzzleId?: string
+    puzzleId?: string,
+    fullReasoning?: any // NEW: Receive structured reasoning
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[] } {
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
     // Log the raw text, not a stringified object
     logger.apiResponse('OpenRouter', 'API Response', responseText, 200);
     logger.service('OpenRouter', `Processing response for ${modelKey}`);
 
-    const parseResult = jsonParser.parse(responseText, {
+    // Apply OpenRouter-specific defensive sanitization
+    const sanitizationResult = this.sanitizeOpenRouterResponse(responseText);
+    const { cleanedText, reasoningText, method, charactersRemoved } = sanitizationResult;
+
+    // Debug logging for sanitization
+    if (charactersRemoved > 0) {
+      logger.service('OpenRouter', `🛡️ Sanitized response: removed ${charactersRemoved} chars using method '${method}'`, 'info');
+      if (charactersRemoved > 50) {
+        logger.service('OpenRouter', `⚠️ Excessive leading content detected - original: ${responseText.length} chars, cleaned: ${cleanedText.length} chars`, 'warn');
+      }
+    }
+
+    // Prioritize structured reasoning if available
+    let extractedReasoningLog: string | undefined;
+    if (captureReasoning && fullReasoning) {
+      // Convert reasoning object/array to a string for logging
+      extractedReasoningLog = typeof fullReasoning === 'string' ? fullReasoning : JSON.stringify(fullReasoning, null, 2);
+      logger.service('OpenRouter', `📝 Captured structured reasoning: ${extractedReasoningLog.length} chars`);
+    } else if (captureReasoning && reasoningText && reasoningText.length > 10) {
+      // Fallback to sanitized reasoning text
+      extractedReasoningLog = reasoningText;
+      logger.service('OpenRouter', `📝 Preserved reasoning text from sanitization: ${reasoningText.length} chars`);
+    }
+
+    const parseResult = jsonParser.parse(cleanedText, {
         preserveRawInput: true,
         allowPartialExtraction: true,
         logErrors: true,
@@ -306,10 +455,15 @@ export class OpenRouterService extends BaseAIService {
     if (!parseResult.success) {
         // The raw response is preserved in the fallbackResult object
         logger.service('OpenRouter', `JSON parsing failed for ${modelKey}: ${parseResult.error}`, 'error');
-        // Create a fallback response to preserve raw data
+        logger.service('OpenRouter', `Sanitization method used: ${method}, characters removed: ${charactersRemoved}`, 'error');
+
+        // Create a fallback response to preserve raw data and sanitization info
         const fallbackResult = {
             _parseError: parseResult.error,
             _rawResponse: responseText,
+            _cleanedResponse: cleanedText,
+            _sanitizationMethod: method,
+            _charactersRemoved: charactersRemoved,
             _parsingFailed: true,
             solvingStrategy: "JSON parsing failed - raw response preserved",
             patternDescription: "Unable to parse model response",
@@ -318,7 +472,8 @@ export class OpenRouterService extends BaseAIService {
         };
         return {
             result: fallbackResult,
-            tokenUsage: { input: 0, output: 0 }
+            tokenUsage: { input: 0, output: 0 },
+            reasoningLog: extractedReasoningLog
         };
     }
 
@@ -340,10 +495,17 @@ export class OpenRouterService extends BaseAIService {
     logger.service('OpenRouter', `JSON parsing successful for ${modelKey}`);
     logger.tokenUsage('OpenRouter', modelKey, processedResponse.tokenUsage.input, processedResponse.tokenUsage.output, processedResponse.tokenUsage.reasoning);
 
+    // Merge reasoning: prioritize extracted reasoning from sanitization, then processedResponse reasoning
+    const finalReasoningLog = extractedReasoningLog || processedResponse.reasoningLog;
+
+    if (extractedReasoningLog && processedResponse.reasoningLog) {
+      logger.service('OpenRouter', `🔄 Merged reasoning: sanitized (${extractedReasoningLog.length} chars) + processed (${processedResponse.reasoningLog.length} chars)`);
+    }
+
     return {
         result: processedResponse.result,
         tokenUsage: processedResponse.tokenUsage,
-        reasoningLog: processedResponse.reasoningLog,
+        reasoningLog: finalReasoningLog,
         reasoningItems: processedResponse.reasoningItems
     };
   }

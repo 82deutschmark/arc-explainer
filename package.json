@@ -14,7 +14,12 @@
     "windows-dev": "set NODE_ENV=development&&tsx server/index.ts",
     "windows-start": "set NODE_ENV=production&&node dist/index.js",
     "recover": "node --import tsx server/dataRecovery.ts",
-    "db:fix-names": "node --import tsx scripts/fix-model-names.ts"
+    "db:fix-names": "node --import tsx scripts/fix-model-names.ts",
+    "ap": "node --import tsx puzzle-analysis.ts",
+    "au": "node --import tsx analyze-unsolved-puzzles.ts",
+    "retry": "node --import tsx retry-failed-puzzles.ts",
+    "openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
+    "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",

@@ -279,44 +279,48 @@ export default function EloComparison() {
             {/* Test Case - Input + Predicted Outputs */}
             <div className="border-t pt-4">
               <h3 className="text-lg font-semibold mb-3 text-center">Test Question & AI Predictions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Test Input */}
-                <div className="flex flex-col items-center">
-                  <PuzzleGrid
-                    grid={comparisonData.puzzle.test[0].input}
-                    title="This gets turned into...?"
-                    showEmojis={false}
-                  />
-                </div>
-                
-                {/* Prediction A */}
-                <div className="flex flex-col items-center">
-                  {comparisonData.explanationA.predictedOutputGrid ? (
+
+              {/* Responsive grid container with horizontal scroll fallback */}
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 min-w-fit">
+                  {/* Test Input */}
+                  <div className="flex flex-col items-center min-w-0">
                     <PuzzleGrid
-                      grid={comparisonData.explanationA.predictedOutputGrid}
-                      title="Prediction A"
+                      grid={comparisonData.puzzle.test[0].input}
+                      title="This gets turned into...?"
                       showEmojis={false}
                     />
-                  ) : (
-                    <div className="p-4 border border-gray-300 rounded text-center text-gray-500">
-                      No prediction available
-                    </div>
-                  )}
-                </div>
-                
-                {/* Prediction B */}
-                <div className="flex flex-col items-center">
-                  {comparisonData.explanationB.predictedOutputGrid ? (
-                    <PuzzleGrid
-                      grid={comparisonData.explanationB.predictedOutputGrid}
-                      title="Prediction B"
-                      showEmojis={false}
-                    />
-                  ) : (
-                    <div className="p-4 border border-gray-300 rounded text-center text-gray-500">
-                      No prediction available
-                    </div>
-                  )}
+                  </div>
+
+                  {/* Prediction A */}
+                  <div className="flex flex-col items-center min-w-0">
+                    {comparisonData.explanationA.predictedOutputGrid ? (
+                      <PuzzleGrid
+                        grid={comparisonData.explanationA.predictedOutputGrid}
+                        title="Prediction A"
+                        showEmojis={false}
+                      />
+                    ) : (
+                      <div className="p-4 border border-gray-300 rounded text-center text-gray-500 min-w-[200px]">
+                        No prediction available
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Prediction B */}
+                  <div className="flex flex-col items-center min-w-0">
+                    {comparisonData.explanationB.predictedOutputGrid ? (
+                      <PuzzleGrid
+                        grid={comparisonData.explanationB.predictedOutputGrid}
+                        title="Prediction B"
+                        showEmojis={false}
+                      />
+                    ) : (
+                      <div className="p-4 border border-gray-300 rounded text-center text-gray-500 min-w-[200px]">
+                        No prediction available
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

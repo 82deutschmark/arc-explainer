@@ -1,4 +1,4 @@
-/**
+/**DEPRECATED!!!  NEEDS REMOVAL!!
  * ExaminerControls.tsx
  *
  * @description Renders the control buttons for the batch analysis session.

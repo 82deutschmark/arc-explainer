@@ -46,7 +46,7 @@ export function useAnalysisResults({
   const [topP, setTopP] = useState(0.95);
   const [candidateCount, setCandidateCount] = useState(1);
   const [thinkingBudget, setThinkingBudget] = useState(-1); // Default to dynamic thinking
-  const [promptId, setPromptId] = useState('custom'); // Default to custom prompt
+  const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());

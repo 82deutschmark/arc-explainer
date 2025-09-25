@@ -1,4 +1,4 @@
-/**
+/**DEPRECATED!!!  NEEDS REMOVAL!!
  * ExaminerConfigPanel.tsx
  *
  * @description Component for configuring model, dataset, and other parameters for batch analysis.

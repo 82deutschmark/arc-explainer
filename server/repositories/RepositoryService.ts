@@ -42,6 +42,7 @@ import { BatchAnalysisRepository } from './BatchAnalysisRepository.ts';
 import { AccuracyRepository } from './AccuracyRepository.ts';
 import { TrustworthinessRepository } from './TrustworthinessRepository.ts';
 import { MetricsRepository } from './MetricsRepository.ts';
+import { CostRepository } from './CostRepository.ts';
 import { EloRepository } from './EloRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
@@ -53,6 +54,7 @@ export class RepositoryService {
   private accuracyRepository: AccuracyRepository;
   private trustworthinessRepository: TrustworthinessRepository;
   private metricsRepository: MetricsRepository;
+  private costRepository: CostRepository;
   private eloRepository: EloRepository;
   private initialized = false;
 
@@ -63,6 +65,7 @@ export class RepositoryService {
     this.accuracyRepository = new AccuracyRepository();
     this.trustworthinessRepository = new TrustworthinessRepository();
     this.metricsRepository = new MetricsRepository();
+    this.costRepository = new CostRepository();
     this.eloRepository = new EloRepository();
   }
 
@@ -144,6 +147,13 @@ export class RepositoryService {
    */
   get metrics(): MetricsRepository {
     return this.metricsRepository;
+  }
+
+  /**
+   * Get cost repository for cost calculations and analysis
+   */
+  get cost(): CostRepository {
+    return this.costRepository;
   }
 
   /**

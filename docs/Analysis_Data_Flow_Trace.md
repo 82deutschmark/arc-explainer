@@ -126,6 +126,168 @@ The process is broken down into two main parts: the Frontend (what happens in th
     *   **What**: Once the database write is successful, the controller sends a success status (e.g., `200 OK`) back to the frontend.
     *   **Action**: This response signals to the frontend that the process is complete, which triggers the data refetching step (Part 1, Step 5).
 
+## Analytics Data Flow: From Explanations to Statistics
+
+*Added September 24, 2025*
+
+Once analysis results are saved to the `explanations` table, they become the foundation for all statistics and leaderboards shown throughout the application. This section traces how raw analysis data becomes the analytics users see.
+
+### The Analytics Pipeline Architecture
+
+```
+explanations table (raw data)
+         ↓
+Domain-Specific Repositories (extract & calculate metrics)
+         ↓
+API Controllers (serve statistics)
+         ↓
+Frontend Hooks (fetch & cache statistics)
+         ↓
+UI Components (display leaderboards & comparisons)
+```
+
+### Step 1: Repository Layer Calculates Statistics
+
+**Where**: `server/repositories/` - AccuracyRepository, TrustworthinessRepository, CostRepository, etc.
+
+**What Happens**:
+Each repository is responsible for ONE domain of analytics:
+
+- **AccuracyRepository**: Calculates pure puzzle-solving correctness from `is_prediction_correct` and `multi_test_all_correct` fields
+- **TrustworthinessRepository**: Analyzes AI confidence reliability using `confidence` vs `prediction_accuracy_score` correlation
+- **CostRepository**: Aggregates financial costs from `estimated_cost` field
+- **MetricsRepository**: Combines data from multiple repositories using delegation pattern
+
+**Critical Business Logic Examples**:
+```sql
+-- Accuracy calculation (AccuracyRepository)
+SELECT
+  COUNT(CASE WHEN is_prediction_correct = true THEN 1 END) * 100.0 / COUNT(*) as accuracy_percentage
+FROM explanations
+WHERE predicted_output_grid IS NOT NULL
+
+-- Trustworthiness calculation (TrustworthinessRepository)
+SELECT
+  AVG(prediction_accuracy_score) as trustworthiness_score,
+  AVG(confidence) as avg_confidence
+FROM explanations
+WHERE trustworthiness_score IS NOT NULL AND confidence IS NOT NULL
+```
+
+### Step 2: API Endpoints Serve Statistics
+
+**Where**: `server/controllers/puzzleController.ts`, `costController.ts`, etc.
+
+**Key Analytics Endpoints**:
+- `/api/feedback/accuracy-stats` → AccuracyRepository directly
+- `/api/puzzle/performance-stats` → TrustworthinessRepository + CostRepository combination
+- `/api/metrics/comprehensive-dashboard` → MetricsRepository delegation to multiple repositories
+
+**Example - Combined Statistics API**:
+```typescript
+// puzzleController.ts - combines trustworthiness + cost data
+async getRealPerformanceStats(req: Request, res: Response) {
+  const trustworthinessStats = await repositoryService.trustworthiness.getRealPerformanceStats();
+  const costMap = await repositoryService.cost.getModelCostMap();
+
+  // Combine data to maintain API contract
+  const combinedStats = {
+    ...trustworthinessStats,
+    trustworthinessLeaders: trustworthinessStats.trustworthinessLeaders.map(leader => ({
+      ...leader,
+      avgCost: costMap[leader.modelName]?.avgCost || 0,
+      totalCost: costMap[leader.modelName]?.totalCost || 0
+    }))
+  };
+
+  res.json(combinedStats);
+}
+```
+
+### Step 3: Frontend Hooks Fetch & Cache Statistics
+
+**Where**: `client/src/hooks/` - useModelLeaderboards, useModelComparisons, usePerformanceInsights
+
+**What Happens**:
+React Query hooks fetch statistics from API endpoints and provide caching, loading states, and error handling.
+
+**Example Hook**:
+```typescript
+// useModelLeaderboards.ts
+export function useModelLeaderboards() {
+  return useQuery({
+    queryKey: ['performance-stats-leaderboards'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzle/performance-stats');
+      return response.json().data as PerformanceLeaderboards;
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+}
+```
+
+### Step 4: UI Components Display Statistics
+
+**Where**: `client/src/components/` - TrustworthinessLeaderboard, ModelComparisonMatrix, AccuracyLeaderboard
+
+**What Happens**:
+Components consume hooks to display statistics with loading states, error handling, and user interactions.
+
+**Data Flow Example - TrustworthinessLeaderboard**:
+1. Component calls `useModelLeaderboards()` hook
+2. Hook fetches from `/api/puzzle/performance-stats`
+3. Controller combines TrustworthinessRepository + CostRepository data
+4. Repositories query `explanations` table with domain-specific logic
+5. Results flow back through the chain to component
+6. Component renders leaderboard with model rankings
+
+### Step 5: Model Name Normalization (Critical)
+
+**Problem**: Same model appears with different suffixes:
+- `claude-3.5-sonnet`
+- `claude-3.5-sonnet:beta`
+- `claude-3.5-sonnet:free`
+
+**Solution**: All repositories use `utils/modelNormalizer.ts` for consistent grouping:
+```typescript
+// Before normalization: 3 separate entries
+// After normalization: 1 combined entry with aggregated statistics
+```
+
+**Impact**: Ensures statistics are properly aggregated per model, not fragmented by version suffixes.
+
+### Database Performance for Analytics
+
+**Indexes for Statistics Queries** (added September 2025):
+```sql
+-- Model-based analytics performance
+CREATE INDEX idx_explanations_model_accuracy ON explanations(model_name, is_prediction_correct);
+CREATE INDEX idx_explanations_trustworthiness ON explanations(model_name, trustworthiness_score) WHERE trustworthiness_score IS NOT NULL;
+CREATE INDEX idx_explanations_cost_model ON explanations(model_name, estimated_cost) WHERE estimated_cost IS NOT NULL;
+```
+
+These indexes dramatically improve performance of leaderboard and statistics queries by enabling efficient model-grouped aggregations.
+
+## Repository Architecture Principles (September 2025 Refactor)
+
+### Single Responsibility Principle (SRP)
+Each repository handles exactly one domain:
+- **AccuracyRepository** → Pure puzzle correctness only
+- **TrustworthinessRepository** → AI confidence reliability only
+- **CostRepository** → Financial cost calculations only
+- **MetricsRepository** → Cross-domain aggregation via delegation
+
+### DRY (Don't Repeat Yourself)
+- Model name normalization: Shared `utils/modelNormalizer.ts`
+- No duplicate business logic across repositories
+- Cross-repository data access via delegation pattern
+
+### Domain Separation
+- **WRONG**: TrustworthinessRepository calculating costs (mixing unrelated domains)
+- **RIGHT**: TrustworthinessRepository → trustworthiness, CostRepository → costs
+
+This architecture ensures maintainable, consistent analytics across the entire application.
+
 ## Conclusion
 
-This data flow ensures a high degree of data integrity. By making the database the single source of truth, we guarantee that what the user sees on the screen is always a persistent, validated, and accurate record of the analysis that was performed.
+This dual data flow - analysis creation AND analytics generation - ensures complete data integrity. The database serves as the single source of truth for both individual analysis results and aggregated statistics. By maintaining proper domain separation in the repository layer, we guarantee that statistics are calculated consistently and displayed accurately across all UI components.
