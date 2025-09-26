@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowUp, ArrowDown, BarChart3, Target, Shield, Heart, Zap, DollarSign } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, BarChart3, Target, Shield, Heart, Zap, DollarSign, Calculator } from 'lucide-react';
 
 interface ModelComparison {
   modelName: string;
@@ -20,6 +20,8 @@ interface ModelComparison {
   attempts: number;
   totalCost: number;
   avgCost: number;
+  correctAnswers: number;
+  costPerCorrectAnswer: number | null;
 }
 
 interface ModelComparisonMatrixProps {
