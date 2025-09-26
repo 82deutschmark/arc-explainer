@@ -8,8 +8,7 @@
  * shadcn/ui: Pass - Uses proper shadcn/ui components throughout (Card, Badge, Button, Select, etc.)
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { Link, useLocation } from 'wouter';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,10 +18,11 @@ import {
   BarChart3,
   TrendingUp,
   Database,
-  Github,
   Settings,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ShieldCheck,
+  DollarSign
 } from 'lucide-react';
 
 // Import existing analytics components (already well-architected)
@@ -37,7 +37,6 @@ import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 import { useModelComparisons } from '@/hooks/useModelComparisons';
 
 export default function AnalyticsOverview() {
-  const [location, setLocation] = useLocation();
 
   // Modal states
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -50,7 +49,6 @@ export default function AnalyticsOverview() {
 
   // Display preferences
   const [topModelCount, setTopModelCount] = useState<string>('3');
-  const [sortPreference, setSortPreference] = useState<string>('accuracy');
 
   // Set page title
   React.useEffect(() => {
@@ -76,6 +74,121 @@ export default function AnalyticsOverview() {
     dashboard,
     isLoading: isLoadingComparisons
   } = useModelComparisons();
+
+  const topModelLimit = useMemo(() => {
+    const parsed = Number(topModelCount);
+
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return 3;
+    }
+
+    return Math.min(Math.floor(parsed), 10);
+  }, [topModelCount]);
+
+  const topAccuracyModels = useMemo(() => {
+    if (!accuracyStats?.modelAccuracyRankings?.length) {
+      return [];
+    }
+
+    return [...accuracyStats.modelAccuracyRankings]
+      .sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)
+      .slice(0, topModelLimit);
+  }, [accuracyStats?.modelAccuracyRankings, topModelLimit]);
+
+  const percentFormatter = useMemo(
+    () => new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }),
+    []
+  );
+
+  const currencyFormatterLarge = useMemo(
+    () => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }),
+    []
+  );
+
+  const currencyFormatterSmall = useMemo(
+    () => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 4 }),
+    []
+  );
+
+  const formatCurrency = useCallback(
+    (value: number) => {
+      if (!Number.isFinite(value) || value === 0) {
+        return '$0.00';
+      }
+
+      return Math.abs(value) >= 1
+        ? currencyFormatterLarge.format(value)
+        : currencyFormatterSmall.format(value);
+    },
+    [currencyFormatterLarge, currencyFormatterSmall]
+  );
+
+  const summaryMetrics = useMemo(() => {
+    const overallAccuracy =
+      dashboard?.accuracyStats.overallAccuracyPercentage ?? accuracyStats?.overallAccuracyPercentage ?? 0;
+    const overallTrust =
+      dashboard?.trustworthinessStats.overallTrustworthiness ?? performanceStats?.overallTrustworthiness ?? 0;
+    const avgCostPerAttempt = dashboard?.performanceMetrics.avgCostPerAttempt ?? 0;
+    const totalCost = dashboard?.performanceMetrics.totalCost ?? 0;
+
+    return {
+      overallAccuracy,
+      overallTrust,
+      avgCostPerAttempt,
+      totalCost,
+    };
+  }, [dashboard, accuracyStats, performanceStats]);
+
+  const summaryCards = useMemo(() => {
+    const totalAttempts = accuracyStats?.totalSolverAttempts ?? 0;
+    const trustAttempts = dashboard?.trustworthinessStats.totalTrustworthinessAttempts ?? 0;
+
+    return [
+      {
+        key: 'accuracy',
+        label: 'Overall Accuracy',
+        value: `${percentFormatter.format(summaryMetrics.overallAccuracy)}%`,
+        helper: `${totalAttempts.toLocaleString()} solver attempts`,
+        icon: <TrendingUp className="h-5 w-5 text-primary" />,
+      },
+      {
+        key: 'trust',
+        label: 'Overall Trustworthiness',
+        value: `${percentFormatter.format(summaryMetrics.overallTrust * 100)}%`,
+        helper: `${trustAttempts.toLocaleString()} analysed responses`,
+        icon: <ShieldCheck className="h-5 w-5 text-emerald-500" />,
+      },
+      {
+        key: 'avgCost',
+        label: 'Avg Cost / Attempt',
+        value: formatCurrency(summaryMetrics.avgCostPerAttempt),
+        helper:
+          summaryMetrics.avgCostPerAttempt > 0
+            ? 'Per successful analysis run'
+            : 'No cost data recorded',
+        icon: <DollarSign className="h-5 w-5 text-amber-500" />,
+      },
+      {
+        key: 'totalCost',
+        label: 'Total Spend',
+        value: formatCurrency(summaryMetrics.totalCost),
+        helper:
+          summaryMetrics.totalCost > 0
+            ? 'Across all recorded attempts'
+            : 'No spend tracked yet',
+        icon: <Database className="h-5 w-5 text-blue-500" />,
+      },
+    ];
+  }, [
+    accuracyStats?.totalSolverAttempts,
+    dashboard?.trustworthinessStats.totalTrustworthinessAttempts,
+    summaryMetrics,
+    percentFormatter,
+    formatCurrency,
+  ]);
+
+  const topModelVariants: Array<'default' | 'blue' | 'purple'> = ['default', 'blue', 'purple'];
+
 
   // Event handlers
   const handleModelClick = useCallback((modelName: string) => {
@@ -135,6 +248,24 @@ export default function AnalyticsOverview() {
           </div>
         </header>
 
+        {/* Summary Metrics */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {summaryCards.map(card => (
+            <Card key={card.key}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{card.label}</CardTitle>
+                {card.icon}
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-semibold">{card.value}</p>
+                {card.helper && (
+                  <p className="text-xs text-muted-foreground mt-1">{card.helper}</p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         {/* Analytics Controls */}
         <Card>
           <CardHeader>
@@ -144,7 +275,7 @@ export default function AnalyticsOverview() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Top Models Display</label>
                 <Select value={topModelCount} onValueChange={setTopModelCount}>
@@ -157,23 +288,7 @@ export default function AnalyticsOverview() {
                     <SelectItem value="10">Top 10 Models</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Primary Sort</label>
-                <Select value={sortPreference} onValueChange={setSortPreference}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="accuracy">Accuracy</SelectItem>
-                    <SelectItem value="trustworthiness">Trustworthiness</SelectItem>
-                    <SelectItem value="user-satisfaction">User Satisfaction</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
+              </div>              <div className="space-y-2">
                 <label className="text-sm font-medium">Advanced Options</label>
                 <Collapsible open={showAdvancedAnalytics} onOpenChange={setShowAdvancedAnalytics}>
                   <CollapsibleTrigger asChild>
@@ -226,7 +341,7 @@ export default function AnalyticsOverview() {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Fix: accuracyStats comes sorted ASC (worst first), so reverse to show best first */}
                 {accuracyStats.modelAccuracyRankings
                   .slice()
@@ -295,3 +410,9 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
+
+
+
+
+
+
