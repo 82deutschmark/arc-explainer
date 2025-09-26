@@ -1,6 +1,21 @@
 
 ### September 26 2025
 
+## v2.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
+
+### Fixed
+- **Critical Query Bug**: Fixed model dataset performance categorization logic
+  - **Issue**: `is_prediction_correct = false AND multi_test_all_correct = false` was wrong
+  - **Fix**: Changed to `is_prediction_correct = false OR multi_test_all_correct = false`
+  - **Impact**: Puzzles were incorrectly categorized as "Not Attempted" instead of "Failed"
+  - **Location**: `server/repositories/ModelDatasetRepository.ts` line 152
+
+### Added  
+- **Clickable Puzzle Badges**: Not Attempted puzzle IDs are now clickable
+  - Opens `/puzzle/{puzzleId}` in new tab when clicked
+  - Added hover effects and cursor pointer styling
+  - Direct navigation from analytics dashboard to specific puzzles
+
 ## v2.26.0 - Dynamic Model Dataset Performance Analysis System ✨ MAJOR FEATURE
 
 ### Added
