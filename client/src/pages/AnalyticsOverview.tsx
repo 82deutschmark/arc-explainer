@@ -59,12 +59,21 @@ export default function AnalyticsOverview() {
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
 
-  // Auto-select first dataset if available
+  // Auto-select ARC1-Eval dataset if available, otherwise first dataset
   React.useEffect(() => {
     if (availableDatasets.length > 0 && !selectedDataset) {
-      setSelectedDataset(availableDatasets[0].name);
+      const arc1Eval = availableDatasets.find(d => d.name === 'ARC1-Eval');
+      setSelectedDataset(arc1Eval ? arc1Eval.name : availableDatasets[0].name);
     }
   }, [availableDatasets, selectedDataset]);
+
+  // Auto-select GPT-5-Nano model if available
+  React.useEffect(() => {
+    if (availableModels.length > 0 && !selectedModelForDataset) {
+      const gpt5Nano = availableModels.find(m => m.includes('gpt-5-nano'));
+      setSelectedModelForDataset(gpt5Nano || availableModels[0]);
+    }
+  }, [availableModels, selectedModelForDataset]);
 
 
   // Set page title
@@ -274,7 +283,7 @@ export default function AnalyticsOverview() {
               Model Performance on ARC Evaluation Dataset
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Select a model to see which ARC evaluation puzzles it solved, failed, or hasn't attempted yet. Uses real database queries.
+              Select a model to see which ARC evaluation puzzles it solved, got incorrect, or hasn't attempted yet. Uses real database queries.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -356,7 +365,7 @@ export default function AnalyticsOverview() {
                   <Card className="bg-red-50 border-red-200">
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.failed}</div>
-                      <div className="text-sm text-red-600">Puzzles Failed</div>
+                      <div className="text-sm text-red-600">Puzzles Incorrect</div>
                       <div className="text-xs text-red-500 mt-1">Attempted but incorrect</div>
                     </CardContent>
                   </Card>
@@ -406,7 +415,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-red-700 flex items-center gap-2">
-                        ❌ Failed ({modelDatasetPerformance.failed.length})
+                        ❌ Incorrect ({modelDatasetPerformance.failed.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         Attempted but is_prediction_correct = false AND multi_test_all_correct = false
@@ -421,7 +430,7 @@ export default function AnalyticsOverview() {
                         ))}
                       </div>
                       {modelDatasetPerformance.failed.length === 0 && (
-                        <p className="text-sm text-gray-500 italic">No failed attempts</p>
+                        <p className="text-sm text-gray-500 italic">No incorrect attempts</p>
                       )}
                     </CardContent>
                   </Card>
