@@ -1,4 +1,24 @@
 
+### September 26 2025
+
+## v2.25.0 - Model Dataset Performance Analysis
+
+### Added
+- **Real Database Query System**: Added proper model performance analysis on ARC evaluation dataset
+- `server/repositories/ModelDatasetRepository.ts`: NEW - Database queries showing which puzzles each model solved/failed/skipped
+- `server/controllers/modelDatasetController.ts`: NEW - API endpoints for model dataset performance
+- `client/src/hooks/useModelDatasetPerformance.ts`: NEW - React hook for fetching model performance data
+- API Routes: `/api/model-dataset/performance/:modelName` and `/api/model-dataset/models`
+
+### Removed
+- Fake natural language query functionality from AnalyticsOverview (was simulated, not real database queries)
+
+### Technical Details
+- Uses real database queries checking `is_prediction_correct` and `multi_test_all_correct` fields
+- Follows existing repository pattern and architecture
+- Based on proven query logic from `puzzle-analysis.ts`
+- Includes all 400 ARC evaluation dataset puzzle IDs
+
 ### September 24 2025
 
 ## v2.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring

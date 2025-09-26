@@ -14,9 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import {
   BarChart3,
   TrendingUp,
@@ -25,15 +22,11 @@ import {
   ChevronDown,
   ChevronUp,
   ShieldCheck,
-  DollarSign,
-  Search,
-  Loader2,
-  MessageSquare
+  DollarSign
 } from 'lucide-react';
 
 // Import existing analytics components (already well-architected)
 import { LeaderboardSection } from '@/components/overview/leaderboards/LeaderboardSection';
-import { ModelComparisonMatrix } from '@/components/overview/ModelComparisonMatrix';
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { ModelPerformanceCard } from '@/components/ui/ModelPerformanceCard';
@@ -41,6 +34,7 @@ import { ModelPerformanceCard } from '@/components/ui/ModelPerformanceCard';
 // Import hooks that follow proper repository pattern
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 import { useModelComparisons } from '@/hooks/useModelComparisons';
+import { useModelDatasetPerformance, useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 
 export default function AnalyticsOverview() {
 
@@ -56,11 +50,13 @@ export default function AnalyticsOverview() {
   // Display preferences
   const [topModelCount, setTopModelCount] = useState<string>('3');
 
-  // Custom query functionality
-  const [customQuery, setCustomQuery] = useState<string>('');
-  const [queryResult, setQueryResult] = useState<string>('');
-  const [isQueryLoading, setIsQueryLoading] = useState(false);
-  const [queryError, setQueryError] = useState<string>('');
+  // Model dataset performance state
+  const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
+
+  // Fetch available models and model dataset performance
+  const { models: availableModels, loading: loadingModels } = useAvailableModels();
+  const { performance: modelDatasetPerformance, loading: loadingPerformance } = useModelDatasetPerformance(selectedModelForDataset || null);
+
 
   // Set page title
   React.useEffect(() => {
@@ -213,85 +209,6 @@ export default function AnalyticsOverview() {
     setFeedbackModalOpen(true);
   }, []);
 
-  const handleCustomQuery = useCallback(async () => {
-    if (!customQuery.trim()) {
-      setQueryError('Please enter a query');
-      return;
-    }
-
-    setIsQueryLoading(true);
-    setQueryError('');
-    setQueryResult('');
-
-    try {
-      // For now, let's create a simple pattern matching for common queries
-      const query = customQuery.toLowerCase().trim();
-      
-      let response = '';
-      
-      // Extract model name from query
-      const modelNameMatch = query.match(/(?:gpt-?[4-5][^a-z\s]*|claude|gemini|llama|qwen|o[13]|grok|anthropic|openai)[^\s,]*/i);
-      const modelName = modelNameMatch ? modelNameMatch[0] : null;
-      
-      if (query.includes('how many') && query.includes('puzzle') && query.includes('solved')) {
-        if (modelName && accuracyStats?.modelAccuracyRankings) {
-          const model = accuracyStats.modelAccuracyRankings.find(m => 
-            m.modelName.toLowerCase().includes(modelName.toLowerCase())
-          );
-          if (model) {
-            response = `${model.modelName} has solved ${model.correctPredictions} puzzles out of ${model.totalAttempts} attempts (${model.accuracyPercentage.toFixed(1)}% accuracy).`;
-          } else {
-            response = `I couldn't find performance data for "${modelName}". Available models include: ${accuracyStats.modelAccuracyRankings.map(m => m.modelName).slice(0, 5).join(', ')}.`;
-          }
-        } else if (accuracyStats?.totalSolverAttempts) {
-          response = `In total, across all models, ${accuracyStats.totalCorrectPredictions} puzzles have been solved out of ${accuracyStats.totalSolverAttempts} attempts (${accuracyStats.overallAccuracyPercentage.toFixed(1)}% overall accuracy).`;
-        }
-      } else if (query.includes('best') || query.includes('top')) {
-        if (accuracyStats?.modelAccuracyRankings && accuracyStats.modelAccuracyRankings.length > 0) {
-          const topModel = [...accuracyStats.modelAccuracyRankings].sort((a, b) => b.accuracyPercentage - a.accuracyPercentage)[0];
-          response = `The best performing model is ${topModel.modelName} with ${topModel.accuracyPercentage.toFixed(1)}% accuracy (${topModel.correctPredictions}/${topModel.totalAttempts} puzzles solved).`;
-        }
-      } else if (query.includes('cost') && modelName) {
-        if (modelComparisons) {
-          const model = modelComparisons.find(m => 
-            m.modelName.toLowerCase().includes(modelName.toLowerCase())
-          );
-          if (model) {
-            const costInfo = model.costPerCorrectAnswer 
-              ? `$${model.costPerCorrectAnswer.toFixed(4)} per correct answer`
-              : 'cost per correct answer not available';
-            response = `${model.modelName} has a total cost of $${model.totalCost.toFixed(4)} with an average of $${model.avgCost.toFixed(6)} per attempt and ${costInfo}.`;
-          } else {
-            response = `I couldn't find cost data for "${modelName}".`;
-          }
-        }
-      } else if (query.includes('accuracy') && modelName) {
-        if (accuracyStats?.modelAccuracyRankings) {
-          const model = accuracyStats.modelAccuracyRankings.find(m => 
-            m.modelName.toLowerCase().includes(modelName.toLowerCase())
-          );
-          if (model) {
-            response = `${model.modelName} has an accuracy of ${model.accuracyPercentage.toFixed(1)}% with ${model.correctPredictions} correct predictions out of ${model.totalAttempts} attempts.`;
-          }
-        }
-      } else {
-        response = `I understand you're asking: "${customQuery}"\n\nI can help you with queries like:\n• "How many puzzles has GPT-5 solved?"\n• "What's the best performing model?"\n• "What's the cost for Claude?"\n• "What's the accuracy of Gemini?"\n\nTry rephrasing your question using one of these patterns.`;
-      }
-      
-      setQueryResult(response || "I couldn't understand your query. Please try asking about model performance, costs, or accuracy.");
-    } catch (error) {
-      setQueryError('Failed to process query. Please try again.');
-    } finally {
-      setIsQueryLoading(false);
-    }
-  }, [customQuery, accuracyStats, modelComparisons]);
-
-  const handleQueryKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleCustomQuery();
-    }
-  }, [handleCustomQuery]);
 
   // Error state
   if (hasAnyError) {
@@ -414,7 +331,7 @@ export default function AnalyticsOverview() {
         />
 
         {/* Model Comparison Matrix (Recently fixed component) */}
-        <ModelComparisonMatrix
+        {/* <ModelComparisonMatrix
           modelComparisons={modelComparisons}
           isLoading={isLoadingComparisons}
           onModelClick={handleModelClick}
@@ -464,73 +381,6 @@ export default function AnalyticsOverview() {
           </Card>
         )}
 
-        {/* Custom Query Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Ask Questions About Your Data
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Query your analytics data using natural language. Ask about model performance, costs, or accuracy.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Your Question</label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="e.g., 'How many puzzles has GPT-5 solved?' or 'What's the best performing model?'"
-                  value={customQuery}
-                  onChange={(e) => setCustomQuery(e.target.value)}
-                  onKeyPress={handleQueryKeyPress}
-                  className="flex-1"
-                />
-                <Button 
-                  onClick={handleCustomQuery}
-                  disabled={isQueryLoading || !customQuery.trim()}
-                  size="default"
-                >
-                  {isQueryLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <Search className="h-4 w-4 mr-2" />
-                  )}
-                  {isQueryLoading ? 'Analyzing...' : 'Ask'}
-                </Button>
-              </div>
-              {queryError && (
-                <p className="text-sm text-destructive mt-1">{queryError}</p>
-              )}
-            </div>
-
-            {queryResult && (
-              <div className="space-y-2">
-                <Separator />
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                    <Database className="h-4 w-4" />
-                    Analysis Result:
-                  </h4>
-                  <div className="text-sm whitespace-pre-line text-foreground">
-                    {queryResult}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <h4 className="text-sm font-semibold mb-1 text-blue-900">Example Queries:</h4>
-              <div className="text-xs text-blue-800 space-y-1">
-                <div>• "How many puzzles has GPT-5 solved?"</div>
-                <div>• "What's the best performing model?"</div>
-                <div>• "What's the cost for Claude?"</div>
-                <div>• "What's the accuracy of Gemini?"</div>
-                <div>• "How many puzzles have been solved in total?"</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Advanced Analytics Section */}
         {showAdvancedAnalytics && (

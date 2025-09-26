@@ -122,6 +122,37 @@ class MetricsController {
       });
     }
   });
+
+  /**
+   * @desc    Get model performance on specific dataset puzzles 
+   * @route   GET /api/metrics/model-dataset-performance/:modelName
+   * @access  Public
+   */
+  getModelDatasetPerformance = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { modelName } = req.params;
+      
+      if (!modelName) {
+        return res.status(400).json({
+          success: false,
+          message: 'Model name is required',
+        });
+      }
+
+      const performance = await repositoryService.metrics.getModelDatasetPerformance(modelName);
+
+      res.status(200).json({
+        success: true,
+        data: performance,
+      });
+    } catch (error) {
+      logger.error(`Error in getModelDatasetPerformance: ${error instanceof Error ? error.message : String(error)}`, 'api');
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving model dataset performance',
+      });
+    }
+  });
 }
 
 export default new MetricsController();
