@@ -1,6 +1,26 @@
 
 ### September 26 2025
 
+## v2.26.0 - Dynamic Model Dataset Performance Analysis System ✨ MAJOR FEATURE
+
+### Added
+- **Complete Model Dataset Performance System**: Dynamic analysis across ANY ARC dataset
+- **Dynamic Dataset Discovery**: Automatically scans `data/` directory for JSON puzzle files
+- **Real Database Queries**: Uses exact same logic as `puzzle-analysis.ts` and `retry-failed-puzzles.ts`
+- **Full Stack Integration**: Backend repository → API endpoints → React hooks → UI components
+- **ModelDatasetRepository**: New repository with proper RepositoryService integration
+- **API Endpoints**: `/api/model-dataset/datasets`, `/api/model-dataset/models`, `/api/model-dataset/performance/:modelName/:datasetName`
+- **React Hooks**: `useAvailableDatasets`, updated `useModelDatasetPerformance` with dataset parameter
+- **UI Components**: Dataset + Model selectors in Analytics Dashboard with error handling
+- **TypeScript Interfaces**: Exported `DatasetInfo` and `ModelDatasetPerformance` types
+- **Documentation**: Complete API documentation, hooks reference, developer guide updates
+
+### Technical Details
+- **No Hardcoded Data**: Reads any dataset from `data/*/` directories dynamically
+- **shadcn/ui Integration**: Uses Select, Card, Button components with proper styling
+- **Error Handling**: Frontend shows specific errors, loading states, auto-selection
+- **Architecture**: Follows existing repository pattern properly (not bypassed)
+
 ## v2.25.0 - Model Dataset Performance Analysis
 
 ### Added

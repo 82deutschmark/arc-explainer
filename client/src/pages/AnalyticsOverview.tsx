@@ -438,7 +438,12 @@ export default function AnalyticsOverview() {
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         {modelDatasetPerformance.notAttempted.map((puzzleId) => (
-                          <Badge key={puzzleId} variant="outline" className="text-gray-700 border-gray-300 bg-gray-50">
+                          <Badge 
+                            key={puzzleId} 
+                            variant="outline" 
+                            className="text-gray-700 border-gray-300 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+                            onClick={() => window.open(`/puzzle/${puzzleId}`, '_blank')}
+                          >
                             {puzzleId}
                           </Badge>
                         ))}
