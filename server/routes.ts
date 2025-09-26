@@ -22,6 +22,7 @@ import { saturnController } from "./controllers/saturnController";
 import adminController from './controllers/adminController.js';
 
 import { eloController } from "./controllers/eloController";
+import modelDatasetController from "./controllers/modelDatasetController.ts";
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -89,6 +90,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Metrics routes (reliability, comprehensive dashboard, etc.)
   app.use("/api/metrics", metricsRouter);
+
+  // Model Dataset Performance routes - REAL database queries showing which ARC puzzles each model solved/failed/skipped
+  app.get("/api/model-dataset/performance/:modelName", asyncHandler(modelDatasetController.getModelPerformance));
+  app.get("/api/model-dataset/models", asyncHandler(modelDatasetController.getAvailableModels));
 
 
   // Prompt preview route - shows exact prompt that will be sent to specific provider
