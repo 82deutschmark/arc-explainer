@@ -140,26 +140,33 @@ export class ModelDatasetRepository extends BaseRepository {
         };
       }
 
-      // EXACT same query logic as puzzle-analysis.ts (lines 48-54)
+      // Query logic: Correct boolean logic for validation states
       const attemptedQuery = `
         SELECT DISTINCT 
           puzzle_id,
           CASE 
+            -- Solved: Either single-test correct OR multi-test all correct
             WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'solved'
-            ELSE 'failed'
+            
+            -- Failed: Either prediction is wrong 
+            WHEN is_prediction_correct = false OR multi_test_all_correct = false THEN 'failed'
+            
+            -- Attempted but not validated yet (both fields NULL)
+            ELSE 'attempted_unvalidated'
           END as result,
-          created_at
+          created_at,
+          is_prediction_correct,
+          multi_test_all_correct
         FROM explanations 
         WHERE model_name ILIKE $1 
         AND puzzle_id = ANY($2)
-        AND (is_prediction_correct IS NOT NULL OR multi_test_all_correct IS NOT NULL)
         ORDER BY puzzle_id, created_at DESC
       `;
 
       const result = await this.query(attemptedQuery, [modelName, datasetPuzzles]);
       
       // Process results to get unique puzzles (most recent attempt for each)
-      const attemptedPuzzles = new Map<string, 'solved' | 'failed'>();
+      const attemptedPuzzles = new Map<string, 'solved' | 'failed' | 'attempted_unvalidated'>();
       
       for (const row of result.rows) {
         if (!attemptedPuzzles.has(row.puzzle_id)) {
@@ -167,17 +174,21 @@ export class ModelDatasetRepository extends BaseRepository {
         }
       }
 
-      // Categorize puzzles
+      // Categorize puzzles - ignore unvalidated attempts (treat as not attempted)
       const solved: string[] = [];
       const failed: string[] = [];
       const notAttempted: string[] = [];
 
       for (const puzzleId of datasetPuzzles) {
         if (attemptedPuzzles.has(puzzleId)) {
-          if (attemptedPuzzles.get(puzzleId) === 'solved') {
+          const result = attemptedPuzzles.get(puzzleId);
+          if (result === 'solved') {
             solved.push(puzzleId);
-          } else {
+          } else if (result === 'failed') {
             failed.push(puzzleId);
+          } else {
+            // Ignore unvalidated attempts - treat as not attempted
+            notAttempted.push(puzzleId);
           }
         } else {
           notAttempted.push(puzzleId);
