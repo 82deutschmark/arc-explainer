@@ -10,28 +10,28 @@
 
 import { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler.ts';
-import modelDatasetRepository from '../repositories/ModelDatasetRepository.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
 
 class ModelDatasetController {
 
   /**
-   * @desc    Get model performance on ARC evaluation dataset
-   * @route   GET /api/model-dataset/performance/:modelName
+   * @desc    Get model performance on any ARC dataset
+   * @route   GET /api/model-dataset/performance/:modelName/:datasetName
    * @access  Public
    */
   getModelPerformance = asyncHandler(async (req: Request, res: Response) => {
     try {
-      const { modelName } = req.params;
+      const { modelName, datasetName } = req.params;
       
-      if (!modelName) {
+      if (!modelName || !datasetName) {
         return res.status(400).json({
           success: false,
-          message: 'Model name is required',
+          message: 'Model name and dataset name are required',
         });
       }
 
-      const performance = await modelDatasetRepository.getModelDatasetPerformance(modelName);
+      const performance = await repositoryService.modelDataset.getModelDatasetPerformance(modelName, datasetName);
 
       res.status(200).json({
         success: true,
@@ -53,7 +53,7 @@ class ModelDatasetController {
    */
   getAvailableModels = asyncHandler(async (req: Request, res: Response) => {
     try {
-      const models = await modelDatasetRepository.getAvailableModels();
+      const models = await repositoryService.modelDataset.getAvailableModels();
 
       res.status(200).json({
         success: true,
@@ -65,6 +65,29 @@ class ModelDatasetController {
       res.status(500).json({
         success: false,
         message: 'Error retrieving available models',
+      });
+    }
+  });
+
+  /**
+   * @desc    Get list of available datasets (dynamic discovery)
+   * @route   GET /api/model-dataset/datasets
+   * @access  Public
+   */
+  getAvailableDatasets = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const datasets = await repositoryService.modelDataset.getAvailableDatasets();
+
+      res.status(200).json({
+        success: true,
+        count: datasets.length,
+        data: datasets,
+      });
+    } catch (error) {
+      logger.error(`Error in getAvailableDatasets: ${error instanceof Error ? error.message : String(error)}`, 'api');
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving available datasets',
       });
     }
   });
