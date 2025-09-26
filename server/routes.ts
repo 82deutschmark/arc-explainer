@@ -92,8 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/metrics", metricsRouter);
 
   // Model Dataset Performance routes - REAL database queries showing which ARC puzzles each model solved/failed/skipped
-  app.get("/api/model-dataset/performance/:modelName", asyncHandler(modelDatasetController.getModelPerformance));
+  app.get("/api/model-dataset/performance/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelPerformance));
   app.get("/api/model-dataset/models", asyncHandler(modelDatasetController.getAvailableModels));
+  app.get("/api/model-dataset/datasets", asyncHandler(modelDatasetController.getAvailableDatasets));
 
 
   // Prompt preview route - shows exact prompt that will be sent to specific provider

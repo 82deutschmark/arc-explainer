@@ -4,40 +4,51 @@ This document describes the custom React hooks used by external applications and
 
 ## Data Fetching Hooks
 
-### useModelLeaderboards
-Fetches data for all three leaderboard components simultaneously.
+### useModelDatasetPerformance ✨ NEW!
+Fetches model performance data on any ARC dataset dynamically. Completely flexible - no hardcoded datasets!
 
 ```typescript
-import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
+import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets } from '@/hooks/useModelDatasetPerformance';
 
-const MyComponent = () => {
-  const {
-    // Individual data
-    accuracyStats,      // Pure accuracy leaderboard data
-    performanceStats,   // Trustworthiness leaderboard data  
-    feedbackStats,      // User feedback leaderboard data
-    
-    // Loading states
-    isLoadingAccuracy,
-    isLoadingPerformance, 
-    isLoadingFeedback,
-    isLoadingAny,       // True if any query is loading
-    isLoadingAll,       // True if all queries are loading
-    
-    // Error states
-    accuracyError,
-    performanceError,
-    feedbackError,
-    hasAnyError,        // True if any query has error
-    
-    // Utilities
-    refetch,            // Refetch all data
-    isSuccess,          // True if all queries succeeded
-    hasAnyData          // True if any query has data
-  } = useModelLeaderboards();
+const ModelAnalysisComponent = () => {
+  // Get available datasets dynamically from filesystem
+  const { datasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   
-  return <div>/* Render leaderboards */</div>;
+  // Get available models from database
+  const { models, loading: loadingModels, error: modelsError } = useAvailableModels();
+  
+  // Get performance for specific model + dataset combination
+  const { 
+    performance,      // ModelDatasetPerformance object
+    loading,          // Loading state
+    error            // Error state
+  } = useModelDatasetPerformance(selectedModel, selectedDataset);
+  
+  // Performance object structure:
+  // {
+  //   modelName: string,
+  //   dataset: string,
+  //   solved: string[],        // Puzzle IDs where is_prediction_correct = true OR multi_test_all_correct = true
+  //   failed: string[],        // Puzzle IDs attempted but incorrect
+  //   notAttempted: string[],  // Puzzle IDs with no database entries
+  //   summary: {
+  //     solved: number,
+  //     failed: number, 
+  //     notAttempted: number,
+  //     totalPuzzles: number
+  //   }
+  // }
+  
+  return <div>/* Render model performance analysis */</div>;
 };
+```
+
+**API Endpoints Used:**
+- `GET /api/model-dataset/datasets` (Dataset discovery)
+- `GET /api/model-dataset/models` (Available models)
+- `GET /api/model-dataset/performance/:modelName/:datasetName` (Performance data)
+
+### useModelLeaderboards
 ```
 
 **API Endpoints Used:**

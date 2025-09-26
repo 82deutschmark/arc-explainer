@@ -34,7 +34,7 @@ import { ModelPerformanceCard } from '@/components/ui/ModelPerformanceCard';
 // Import hooks that follow proper repository pattern
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 import { useModelComparisons } from '@/hooks/useModelComparisons';
-import { useModelDatasetPerformance, useAvailableModels } from '@/hooks/useModelDatasetPerformance';
+import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo, ModelDatasetPerformance } from '@/hooks/useModelDatasetPerformance';
 
 export default function AnalyticsOverview() {
 
@@ -52,10 +52,19 @@ export default function AnalyticsOverview() {
 
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
+  const [selectedDataset, setSelectedDataset] = useState<string>('');
 
-  // Fetch available models and model dataset performance
-  const { models: availableModels, loading: loadingModels } = useAvailableModels();
-  const { performance: modelDatasetPerformance, loading: loadingPerformance } = useModelDatasetPerformance(selectedModelForDataset || null);
+  // Fetch available models, datasets, and model dataset performance
+  const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
+  const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
+  const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
+
+  // Auto-select first dataset if available
+  React.useEffect(() => {
+    if (availableDatasets.length > 0 && !selectedDataset) {
+      setSelectedDataset(availableDatasets[0].name);
+    }
+  }, [availableDatasets, selectedDataset]);
 
 
   // Set page title
@@ -256,6 +265,204 @@ export default function AnalyticsOverview() {
             </div>
           </div>
         </header>
+
+        {/* REAL Model Dataset Performance - Database Query Tool */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              Model Performance on ARC Evaluation Dataset
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Select a model to see which ARC evaluation puzzles it solved, failed, or hasn't attempted yet. Uses real database queries.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="dataset-select" className="text-sm font-medium mb-2 block">Dataset:</label>
+                <Select 
+                  value={selectedDataset} 
+                  onValueChange={setSelectedDataset}
+                  disabled={loadingDatasets}
+                >
+                  <SelectTrigger id="dataset-select">
+                    <SelectValue placeholder={loadingDatasets ? "Loading datasets..." : datasetsError ? "Error loading datasets" : "Choose dataset"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDatasets.map((dataset) => (
+                      <SelectItem key={dataset.name} value={dataset.name}>
+                        {dataset.name} ({dataset.puzzleCount} puzzles)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {datasetsError && (
+                  <p className="text-sm text-red-500 mt-1">Error: {datasetsError}</p>
+                )}
+                {!loadingDatasets && availableDatasets.length === 0 && !datasetsError && (
+                  <p className="text-sm text-yellow-600 mt-1">No datasets found in data/ directory</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model:</label>
+                <Select 
+                  value={selectedModelForDataset} 
+                  onValueChange={setSelectedModelForDataset}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model-select">
+                    <SelectValue placeholder={loadingModels ? "Loading models..." : modelsError ? "Error loading models" : selectedDataset ? "Choose a model to analyze" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableModels.map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {modelsError && (
+                  <p className="text-sm text-red-500 mt-1">Error: {modelsError}</p>
+                )}
+                {!loadingModels && availableModels.length === 0 && !modelsError && (
+                  <p className="text-sm text-yellow-600 mt-1">No models found with database entries</p>
+                )}
+              </div>
+            </div>
+
+            {loadingPerformance && selectedModelForDataset && (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="text-sm text-muted-foreground mt-2">Loading {selectedModelForDataset} performance data...</p>
+              </div>
+            )}
+
+            {modelDatasetPerformance && !loadingPerformance && (
+              <div className="space-y-4">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-4">
+                      <div className="text-2xl font-bold text-green-700">{modelDatasetPerformance.summary.solved}</div>
+                      <div className="text-sm text-green-600">Puzzles Solved</div>
+                      <div className="text-xs text-green-500 mt-1">
+                        {Math.round((modelDatasetPerformance.summary.solved / modelDatasetPerformance.summary.totalPuzzles) * 100)}% success rate
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-red-50 border-red-200">
+                    <CardContent className="p-4">
+                      <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.failed}</div>
+                      <div className="text-sm text-red-600">Puzzles Failed</div>
+                      <div className="text-xs text-red-500 mt-1">Attempted but incorrect</div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gray-50 border-gray-200">
+                    <CardContent className="p-4">
+                      <div className="text-2xl font-bold text-gray-700">{modelDatasetPerformance.summary.notAttempted}</div>
+                      <div className="text-sm text-gray-600">Not Attempted</div>
+                      <div className="text-xs text-gray-500 mt-1">No database entries</div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <div className="text-2xl font-bold text-blue-700">{modelDatasetPerformance.summary.totalPuzzles}</div>
+                      <div className="text-sm text-blue-600">Total Puzzles</div>
+                      <div className="text-xs text-blue-500 mt-1">ARC Evaluation Set</div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Detailed Puzzle Lists */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-green-700 flex items-center gap-2">
+                        ✅ Solved ({modelDatasetPerformance.solved.length})
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        is_prediction_correct = true OR multi_test_all_correct = true
+                      </p>
+                    </CardHeader>
+                    <CardContent className="max-h-60 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-1 text-xs">
+                        {modelDatasetPerformance.solved.map((puzzleId) => (
+                          <Badge key={puzzleId} variant="outline" className="text-green-700 border-green-300 bg-green-50">
+                            {puzzleId}
+                          </Badge>
+                        ))}
+                      </div>
+                      {modelDatasetPerformance.solved.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">No puzzles solved yet</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-red-700 flex items-center gap-2">
+                        ❌ Failed ({modelDatasetPerformance.failed.length})
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        Attempted but is_prediction_correct = false AND multi_test_all_correct = false
+                      </p>
+                    </CardHeader>
+                    <CardContent className="max-h-60 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-1 text-xs">
+                        {modelDatasetPerformance.failed.map((puzzleId) => (
+                          <Badge key={puzzleId} variant="outline" className="text-red-700 border-red-300 bg-red-50">
+                            {puzzleId}
+                          </Badge>
+                        ))}
+                      </div>
+                      {modelDatasetPerformance.failed.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">No failed attempts</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-gray-700 flex items-center gap-2">
+                        ⏳ Not Attempted ({modelDatasetPerformance.notAttempted.length})
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        No entries in explanations table for this model
+                      </p>
+                    </CardHeader>
+                    <CardContent className="max-h-60 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-1 text-xs">
+                        {modelDatasetPerformance.notAttempted.map((puzzleId) => (
+                          <Badge key={puzzleId} variant="outline" className="text-gray-700 border-gray-300 bg-gray-50">
+                            {puzzleId}
+                          </Badge>
+                        ))}
+                      </div>
+                      {modelDatasetPerformance.notAttempted.length === 0 && (
+                        <p className="text-sm text-gray-500 italic">All puzzles attempted</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
+
+            {!selectedModelForDataset && !loadingModels && (
+              <div className="text-center py-8 text-gray-500">
+                <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Select a model above to see its performance on the ARC evaluation dataset</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Real database queries using is_prediction_correct and multi_test_all_correct fields
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Summary Metrics */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
