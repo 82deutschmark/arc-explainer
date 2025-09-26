@@ -140,26 +140,29 @@ export class ModelDatasetRepository extends BaseRepository {
         };
       }
 
-      // Query logic: Correct boolean logic for validation states
+      // Query logic: NULL-safe boolean logic for validation states (fixes the OR NULL issue)
       const attemptedQuery = `
-        SELECT DISTINCT 
+        SELECT DISTINCT
           puzzle_id,
-          CASE 
+          CASE
             -- Solved: Either single-test correct OR multi-test all correct
             WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'solved'
-            
-            -- Failed: Either prediction is wrong 
-            WHEN is_prediction_correct = false OR multi_test_all_correct = false THEN 'failed'
-            
+
+            -- Failed: NULL-safe logic to handle single-test vs multi-test puzzles
+            WHEN (is_prediction_correct = false AND multi_test_all_correct IS NULL)
+              OR (is_prediction_correct IS NULL AND multi_test_all_correct = false)
+              OR (is_prediction_correct = false AND multi_test_all_correct = false) THEN 'failed'
+
             -- Attempted but not validated yet (both fields NULL)
             ELSE 'attempted_unvalidated'
           END as result,
           created_at,
           is_prediction_correct,
           multi_test_all_correct
-        FROM explanations 
-        WHERE model_name ILIKE $1 
+        FROM explanations
+        WHERE model_name ILIKE $1
         AND puzzle_id = ANY($2)
+        AND (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
         ORDER BY puzzle_id, created_at DESC
       `;
 
