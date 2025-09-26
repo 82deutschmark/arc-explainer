@@ -2,7 +2,7 @@
 The ARC Explainer stack couples a Vite/React client with an Express + Drizzle backend and solver tooling. Use these guardrails, distilled from CLAUDE.md and the architecture docs, whenever you contribute.
 
 ## Project Structure & Module Organization
-- `client/src` hosts pages, feature-scoped components, hooks, and shadcn/ui primitives—extend what exists before adding new UI.
+- `client/src` hosts pages, feature-scoped components, hooks, and shadcn/ui primitives extend what exists before adding new UI.
 - `server` carries controllers, services, repositories, and websocket plumbing; shared DTOs live in `shared/`, datasets in `data/`, and solver bridges in `solver/`.
 - Working notes belong in `docs/` as `{date}-{plan}-{goal}.md`; update analytics references when you touch reporting.
 

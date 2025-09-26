@@ -16,6 +16,8 @@ interface ModelComparison {
   attempts: number;
   totalCost: number;
   avgCost: number;
+  correctAnswers: number;
+  costPerCorrectAnswer: number | null;
 }
 
 interface ComprehensiveDashboard {

@@ -8,6 +8,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import { cn } from "@/lib/utils"
 
 interface ModelAccuracy {
   accuracyPercentage: number
@@ -21,6 +22,7 @@ interface ModelPerformanceCardProps {
   eloChange?: number
   variant?: 'blue' | 'purple' | 'default'
   className?: string
+  onClick?: () => void
 }
 
 export function ModelPerformanceCard({
@@ -28,7 +30,8 @@ export function ModelPerformanceCard({
   accuracy,
   eloChange,
   variant = 'default',
-  className
+  className,
+  onClick
 }: ModelPerformanceCardProps) {
   const getVariantClasses = () => {
     switch (variant) {
@@ -56,7 +59,7 @@ export function ModelPerformanceCard({
   const classes = getVariantClasses()
 
   return (
-    <Card className={`${classes.card} ${className || ''}`}>
+    <Card className={cn(classes.card, className, onClick && 'cursor-pointer')} onClick={onClick}>
       <CardHeader className="pb-3">
         <CardTitle className={`text-base font-medium ${classes.title}`}>
           {modelName}
