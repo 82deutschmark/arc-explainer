@@ -1,10 +1,11 @@
 /**
  * 
- * Author: Claude 4 Sonnet
- * Date: 2025-09-26T16:12:25-04:00
+ * Author: Cascade (Fixed naming issues from previous dev)
+ * Date: 2025-09-26T20:29:52-04:00
  * PURPOSE: React hooks for fetching REAL model dataset performance data from database.
  * Shows which puzzles each model solved, failed, or hasn't attempted on ANY dataset.
  * Dynamic dataset selection - no hardcoded evaluation dataset!
+ * FIXED: Backend/frontend naming mismatch (correct->solved, incorrect->failed)
  * Uses proper error handling, loading states, and data fetching patterns.
  * SRP and DRY check: Pass - Single responsibility for model dataset performance data fetching
  */
@@ -14,12 +15,12 @@ import { useState, useEffect } from 'react';
 export interface ModelDatasetPerformance {
   modelName: string;
   dataset: string;
-  solved: string[];
-  failed: string[];
+  solved: string[];   // Maps to backend 'correct'
+  failed: string[];   // Maps to backend 'incorrect' 
   notAttempted: string[];
   summary: {
-    solved: number;
-    failed: number;
+    solved: number;     // Maps to backend 'correct'
+    failed: number;     // Maps to backend 'incorrect'
     notAttempted: number;
     totalPuzzles: number;
   };
@@ -79,7 +80,22 @@ export function useModelDatasetPerformance(modelName: string | null, datasetName
         const data = await response.json();
         
         if (data.success) {
-          setPerformance(data.data);
+          // Map backend field names (correct/incorrect) to frontend names (solved/failed)
+          const backendData = data.data;
+          const mappedData: ModelDatasetPerformance = {
+            modelName: backendData.modelName,
+            dataset: backendData.dataset,
+            solved: backendData.correct || [],
+            failed: backendData.incorrect || [],
+            notAttempted: backendData.notAttempted || [],
+            summary: {
+              solved: backendData.summary?.correct || 0,
+              failed: backendData.summary?.incorrect || 0,
+              notAttempted: backendData.summary?.notAttempted || 0,
+              totalPuzzles: backendData.summary?.totalPuzzles || 0
+            }
+          };
+          setPerformance(mappedData);
         } else {
           throw new Error(data.message || 'Failed to fetch model performance');
         }
