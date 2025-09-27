@@ -17,12 +17,12 @@ import path from 'path';
 interface ModelDatasetPerformance {
   modelName: string;
   dataset: string;
-  solved: string[];
-  failed: string[];
+  correct: string[];
+  incorrect: string[];
   notAttempted: string[];
   summary: {
-    solved: number;
-    failed: number;
+    correct: number;
+    incorrect: number;
     notAttempted: number;
     totalPuzzles: number;
   };
@@ -108,7 +108,6 @@ export class ModelDatasetRepository extends BaseRepository {
       return [];
     }
   }
-
   /**
    * Get model performance on ANY dataset - completely dynamic!
    * Uses exact same query logic as puzzle-analysis.ts (lines 48-54)
@@ -118,47 +117,38 @@ export class ModelDatasetRepository extends BaseRepository {
       return {
         modelName,
         dataset: datasetName,
-        solved: [],
-        failed: [],
+        correct: [],
+        incorrect: [],
         notAttempted: [],
-        summary: { solved: 0, failed: 0, notAttempted: 0, totalPuzzles: 0 }
+        summary: { correct: 0, incorrect: 0, notAttempted: 0, totalPuzzles: 0 }
       };
     }
 
     try {
       // Get puzzle IDs from the specified dataset directory (dynamic!)
       const datasetPuzzles = this.getPuzzleIdsFromDataset(datasetName);
-      
       if (datasetPuzzles.length === 0) {
         return {
           modelName,
           dataset: datasetName,
-          solved: [],
-          failed: [],
+          correct: [],
+          incorrect: [],
           notAttempted: [],
-          summary: { solved: 0, failed: 0, notAttempted: 0, totalPuzzles: 0 }
+          summary: { correct: 0, incorrect: 0, notAttempted: 0, totalPuzzles: 0 }
         };
       }
-
-      // Query logic: NULL-safe boolean logic for validation states (fixes the OR NULL issue)
+      // Use EXACT same logic as AccuracyRepository.getPureAccuracyStats()
       const attemptedQuery = `
         SELECT DISTINCT
           puzzle_id,
           CASE
-            -- Solved: Either single-test correct OR multi-test all correct
-            WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'solved'
-
-            -- Failed: NULL-safe logic to handle single-test vs multi-test puzzles
-            WHEN (is_prediction_correct = false AND multi_test_all_correct IS NULL)
-              OR (is_prediction_correct IS NULL AND multi_test_all_correct = false)
-              OR (is_prediction_correct = false AND multi_test_all_correct = false) THEN 'failed'
-
-            -- Attempted but not validated yet (both fields NULL)
-            ELSE 'attempted_unvalidated'
+            -- CORRECT: Either single-test OR multi-test correct
+            WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'correct'
+            
+            -- INCORRECT: Everything else that was attempted (has prediction grids)
+            ELSE 'incorrect'
           END as result,
-          created_at,
-          is_prediction_correct,
-          multi_test_all_correct
+          created_at
         FROM explanations
         WHERE model_name ILIKE $1
         AND puzzle_id = ANY($2)
@@ -169,7 +159,7 @@ export class ModelDatasetRepository extends BaseRepository {
       const result = await this.query(attemptedQuery, [modelName, datasetPuzzles]);
       
       // Process results to get unique puzzles (most recent attempt for each)
-      const attemptedPuzzles = new Map<string, 'solved' | 'failed' | 'attempted_unvalidated'>();
+      const attemptedPuzzles = new Map<string, 'correct' | 'incorrect'>();
       
       for (const row of result.rows) {
         if (!attemptedPuzzles.has(row.puzzle_id)) {
@@ -177,23 +167,20 @@ export class ModelDatasetRepository extends BaseRepository {
         }
       }
 
-      // Categorize puzzles - ignore unvalidated attempts (treat as not attempted)
-      const solved: string[] = [];
-      const failed: string[] = [];
+      // Categorize based on database results
+      const correct: string[] = [];
+      const incorrect: string[] = [];
       const notAttempted: string[] = [];
 
       for (const puzzleId of datasetPuzzles) {
-        if (attemptedPuzzles.has(puzzleId)) {
-          const result = attemptedPuzzles.get(puzzleId);
-          if (result === 'solved') {
-            solved.push(puzzleId);
-          } else if (result === 'failed') {
-            failed.push(puzzleId);
-          } else {
-            // Ignore unvalidated attempts - treat as not attempted
-            notAttempted.push(puzzleId);
-          }
+        const result = attemptedPuzzles.get(puzzleId);
+        
+        if (result === 'correct') {
+          correct.push(puzzleId);
+        } else if (result === 'incorrect') {
+          incorrect.push(puzzleId);
         } else {
+          // Actually not attempted - no database entry at all
           notAttempted.push(puzzleId);
         }
       }
@@ -201,12 +188,12 @@ export class ModelDatasetRepository extends BaseRepository {
       return {
         modelName,
         dataset: datasetName,
-        solved: solved.sort(),
-        failed: failed.sort(), 
+        correct: correct.sort(),
+        incorrect: incorrect.sort(), 
         notAttempted: notAttempted.sort(),
         summary: {
-          solved: solved.length,
-          failed: failed.length,
+          correct: correct.length,
+          incorrect: incorrect.length,
           notAttempted: notAttempted.length,
           totalPuzzles: datasetPuzzles.length
         }
