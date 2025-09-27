@@ -77,18 +77,9 @@ export const puzzleController = {
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);
 
-    // Save the analysis result to database
-    try {
-      const { explanationService } = await import('../services/explanationService');
-      const saveResult = await explanationService.saveExplanation(taskId, {
-        [model]: result
-      });
-      console.log(`[DB-SAVE] Successfully saved analysis for ${taskId} with model ${model} (ID: ${saveResult.explanationIds[0] || 'unknown'})`);
-    } catch (saveError) {
-      console.error(`[DB-SAVE-ERROR] Failed to save analysis for ${taskId} with model ${model}:`, saveError);
-      // Don't fail the request if database save fails - still return the analysis result
-    }
-
+    // Analysis complete - no database save here (follows separation of concerns)
+    // Database saving is handled by separate /api/puzzle/save-explained endpoint
+    // This maintains clean architecture: analyze ≠ persist
     res.json(formatResponse.success(result));
   },
   

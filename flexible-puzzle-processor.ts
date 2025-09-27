@@ -360,44 +360,65 @@ async function analyzePuzzle(puzzleId: string, config: ProcessorConfig): Promise
     };
     
     const encodedModelKey = encodeURIComponent(config.model);
-    const url = `${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
-    
-    const response = await axios.post(url, requestBody, {
+
+    // Step 1: Analyze the puzzle (analysis only, no save)
+    const analysisUrl = `${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+    const analysisResponse = await axios.post(analysisUrl, requestBody, {
       timeout: config.timeoutMinutes * 60 * 1000,
       headers: { 'Content-Type': 'application/json' }
     });
-    
-    if (response.data.success) {
-      const endTime = Date.now();
-      const responseTime = Math.round((endTime - startTime) / 1000);
-      
-      // Get validation info if requested
-      let validationPassed, predictionCorrect, multiTestCorrect;
-      if (config.showValidation) {
-        const validation = await getValidationResults(puzzleId, config.model);
-        validationPassed = validation.validationPassed;
-        predictionCorrect = validation.predictionCorrect;
-        multiTestCorrect = validation.multiTestCorrect;
-      }
-      
-      if (config.verbose) {
-        console.log(`✅ Successfully analyzed ${puzzleId} in ${responseTime}s`);
-        if (config.showValidation) {
-          console.log(`   🔍 Validation: ${validationPassed ? '✅' : '❌'} | Prediction: ${predictionCorrect ? '✅' : '❌'} | Multi-test: ${multiTestCorrect !== undefined ? (multiTestCorrect ? '✅' : '❌') : 'N/A'}`);
-        }
-      }
-      
-      return { 
-        puzzleId, 
-        success: true, 
-        responseTime,
-        validationPassed,
-        predictionCorrect,
-        multiTestCorrect
-      };
-    } else {
-      throw new Error(response.data.message || 'Analysis failed');
+
+    if (!analysisResponse.data.success) {
+      throw new Error(analysisResponse.data.message || 'Analysis failed');
     }
+
+    const analysisData = analysisResponse.data.data;
+
+    // Step 2: Save to database (follows same pattern as frontend)
+    const explanationToSave = {
+      [config.model]: {
+        ...analysisData,
+        modelKey: config.model
+      }
+    };
+
+    const saveUrl = `${API_BASE_URL}/api/puzzle/save-explained/${puzzleId}`;
+    const saveResponse = await axios.post(saveUrl, { explanations: explanationToSave }, {
+      timeout: 30000, // 30 seconds for save operation
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!saveResponse.data.success) {
+      throw new Error(`Save request failed: ${saveResponse.statusText}`);
+    }
+
+    const endTime = Date.now();
+    const responseTime = Math.round((endTime - startTime) / 1000);
+
+    // Get validation info if requested
+    let validationPassed, predictionCorrect, multiTestCorrect;
+    if (config.showValidation) {
+      const validation = await getValidationResults(puzzleId, config.model);
+      validationPassed = validation.validationPassed;
+      predictionCorrect = validation.predictionCorrect;
+      multiTestCorrect = validation.multiTestCorrect;
+    }
+
+    if (config.verbose) {
+      console.log(`✅ Successfully analyzed and saved ${puzzleId} in ${responseTime}s`);
+      if (config.showValidation) {
+        console.log(`   🔍 Validation: ${validationPassed ? '✅' : '❌'} | Prediction: ${predictionCorrect ? '✅' : '❌'} | Multi-test: ${multiTestCorrect !== undefined ? (multiTestCorrect ? '✅' : '❌') : 'N/A'}`);
+      }
+    }
+
+    return {
+      puzzleId,
+      success: true,
+      responseTime,
+      validationPassed,
+      predictionCorrect,
+      multiTestCorrect
+    };
     
   } catch (error: any) {
     const endTime = Date.now();
