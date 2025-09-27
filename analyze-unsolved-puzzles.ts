@@ -90,8 +90,8 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
     // URL-encode model key (GPT-5 model)
     const encodedModelKey = encodeURIComponent(GPT5_MODEL);
 
-    // Make the analysis request
-    const response = await axios.post(
+    // Step 1: Analyze the puzzle (analysis only, no save)
+    const analysisResponse = await axios.post(
       `${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`,
       requestBody,
       {
@@ -102,15 +102,40 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
       }
     );
 
-    if (response.data.success) {
-      const endTime = Date.now();
-      const responseTime = Math.round((endTime - startTime) / 1000);
-
-      console.log(`✅ Successfully analyzed ${puzzleId} in ${responseTime}s`);
-      return { puzzleId, success: true, responseTime };
-    } else {
-      throw new Error(response.data.message || 'Analysis failed');
+    if (!analysisResponse.data.success) {
+      throw new Error(analysisResponse.data.message || 'Analysis failed');
     }
+
+    const analysisData = analysisResponse.data.data;
+
+    // Step 2: Save to database (follows same pattern as frontend and other scripts)
+    const explanationToSave = {
+      [GPT5_MODEL]: {
+        ...analysisData,
+        modelKey: GPT5_MODEL
+      }
+    };
+
+    const saveResponse = await axios.post(
+      `${API_BASE_URL}/api/puzzle/save-explained/${puzzleId}`,
+      { explanations: explanationToSave },
+      {
+        timeout: 30000, // 30 seconds for save operation
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+    if (!saveResponse.data.success) {
+      throw new Error(`Save request failed: ${saveResponse.statusText}`);
+    }
+
+    const endTime = Date.now();
+    const responseTime = Math.round((endTime - startTime) / 1000);
+
+    console.log(`✅ Successfully analyzed and saved ${puzzleId} in ${responseTime}s`);
+    return { puzzleId, success: true, responseTime };
 
   } catch (error: any) {
     const endTime = Date.now();
