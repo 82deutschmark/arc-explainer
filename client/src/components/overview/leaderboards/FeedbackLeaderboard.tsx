@@ -135,7 +135,7 @@ export function FeedbackLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-96">
+        <ScrollArea className="h-80">
           {/* Most Appreciated Models Section */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
