@@ -15,7 +15,8 @@
   - **Result**: Analyze endpoint now returns analysis only (as originally designed)
   - **Benefit**: Faster responses, cleaner error handling
 
-- **Script Architecture Fixed**: Both `retry-failed-puzzles.ts` and `flexible-puzzle-processor.ts`
+- **Script Architecture Fixed**: All analysis scripts now use proper 2-step pattern
+  - **Fixed Scripts**: `retry-failed-puzzles.ts`, `flexible-puzzle-processor.ts`, `analyze-unsolved-puzzles.ts`
   - **Before**: Relied on controller's architectural violation
   - **After**: Use proper 2-step pattern (analyze → save)
   - **Pattern**: Same as frontend for consistency
@@ -39,7 +40,10 @@
 
 ### Testing Instructions
 1. **Frontend**: Analyze any puzzle - should see single DB entry
-2. **Scripts**: Run `npm run retry` or `npm run process` - should work with 2-step pattern
+2. **Scripts**: All analysis scripts now work with 2-step pattern:
+   - `npm run retry` - Retry failed puzzles
+   - `npm run au` - Analyze unsolved puzzles
+   - `npm run process` - Flexible processor
 3. **Validation**: Check database for duplicate explanations (should be none)
 
 ## v2.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
