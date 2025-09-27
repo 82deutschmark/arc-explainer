@@ -392,22 +392,6 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 32000,
     releaseDate: "2024-06"
   },
-  {
-    key: 'x-ai/grok-4-fast:free',
-    name: 'Grok 4 Fast',
-    color: 'bg-orange-500',
-    premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
-    supportsTemperature: false,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'x-ai/grok-4-fast:free',
-    modelType: 'openrouter',
-    contextWindow: 128000,
-    maxOutputTokens: 32000,
-    releaseDate: "2025-07"
-  },
     
   {
     key: 'cohere/command-r-plus',

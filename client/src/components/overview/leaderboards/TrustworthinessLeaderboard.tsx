@@ -1,15 +1,28 @@
 /**
- * TrustworthinessLeaderboard Component
- * 
- * Displays models ranked by trustworthiness (confidence reliability).
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-25
+ * PURPOSE: Enhanced TrustworthinessLeaderboard Component with overconfidence warnings for Model Failure Analysis
+ *
+ * Displays models ranked by trustworthiness (confidence reliability) with integrated overconfidence warnings.
  * Uses data from TrustworthinessRepository via /api/puzzle/performance-stats
+ * Enhanced with overconfidence detection from AccuracyRepository via /api/feedback/overconfident-models
+ * Part of analytics overhaul for better model failure detection and user safety.
+ *
+ * Key Features:
+ * - Shows trustworthiness rankings with traditional reliability metrics
+ * - Highlights overconfident models with warning indicators
+ * - Cross-references trustworthiness with overconfidence patterns
+ * - Provides clear visual warnings for high-risk models
+ *
+ * SRP and DRY check: Pass - Single responsibility for trustworthiness display with overconfidence warnings
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
+import { Shield, ShieldCheck, Clock, DollarSign, AlertTriangle, ShieldAlert, AlertCircle } from 'lucide-react';
 
 interface TrustworthinessLeader {
   modelName: string;
@@ -27,17 +40,69 @@ interface PerformanceLeaderboards {
   overallTrustworthiness: number;
 }
 
+interface OverconfidentModel {
+  modelName: string;
+  totalAttempts: number;
+  totalOverconfidentAttempts: number;
+  wrongOverconfidentPredictions: number;
+  overconfidenceRate: number;
+  avgConfidence: number;
+  overallAccuracy: number;
+  isHighRisk: boolean;
+}
+
 interface TrustworthinessLeaderboardProps {
   performanceStats?: PerformanceLeaderboards;
+  overconfidentModels?: OverconfidentModel[];
   isLoading?: boolean;
   onModelClick?: (modelName: string) => void;
 }
 
-export function TrustworthinessLeaderboard({ 
-  performanceStats, 
-  isLoading, 
-  onModelClick 
+export function TrustworthinessLeaderboard({
+  performanceStats,
+  overconfidentModels,
+  isLoading,
+  onModelClick
 }: TrustworthinessLeaderboardProps) {
+  // Helper function to check if a model is overconfident
+  const isModelOverconfident = (modelName: string): OverconfidentModel | null => {
+    if (!overconfidentModels) return null;
+    return overconfidentModels.find(m => m.modelName === modelName) || null;
+  };
+
+  // Helper function to get appropriate warning icon based on overconfidence status
+  const getWarningIcon = (model: TrustworthinessLeader, index: number) => {
+    const overconfidentData = isModelOverconfident(model.modelName);
+
+    if (overconfidentData?.isHighRisk) {
+      return <ShieldAlert className="h-4 w-4 text-red-600" />;
+    } else if (overconfidentData && overconfidentData.overconfidenceRate > 70) {
+      return <AlertCircle className="h-4 w-4 text-orange-500" />;
+    } else if (overconfidentData && overconfidentData.overconfidenceRate > 50) {
+      return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+    } else {
+      // Use original ranking icons for non-overconfident models
+      if (index === 0) return <ShieldCheck className="h-4 w-4 text-green-600" />;
+      if (index === 1) return <Shield className="h-4 w-4 text-blue-600" />;
+      if (index === 2) return <Shield className="h-4 w-4 text-purple-600" />;
+      return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
+    }
+  };
+
+  // Helper function to get row styling based on overconfidence status
+  const getRowStyling = (modelName: string): string => {
+    const overconfidentData = isModelOverconfident(modelName);
+
+    if (overconfidentData?.isHighRisk) {
+      return 'border-red-200 bg-red-50';
+    } else if (overconfidentData && overconfidentData.overconfidenceRate > 70) {
+      return 'border-orange-200 bg-orange-50';
+    } else if (overconfidentData && overconfidentData.overconfidenceRate > 50) {
+      return 'border-yellow-200 bg-yellow-50';
+    }
+    return 'bg-gray-50';
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -87,12 +152,6 @@ export function TrustworthinessLeaderboard({
     );
   }
 
-  const getRankIcon = (index: number) => {
-    if (index === 0) return <ShieldCheck className="h-4 w-4 text-green-600" />;
-    if (index === 1) return <Shield className="h-4 w-4 text-blue-600" />;
-    if (index === 2) return <Shield className="h-4 w-4 text-purple-600" />;
-    return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
-  };
 
   const getTrustworthinessColor = (score: number) => {
     if (score >= 0.8) return 'bg-green-100 text-green-800 border-green-200';
@@ -119,56 +178,102 @@ export function TrustworthinessLeaderboard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-blue-600" />
-          Trustworthiness Leaders
+          🛡️ Trustworthiness Leaders
         </CardTitle>
-        <div className="text-base text-muted-foreground">
-          "Trustworthiness evaluates how confident the LLM was in its answer and if that answer was correct. It rewards models that are honest about when they are unsure of their answer."
+        <div className="text-sm text-gray-600">
+          Models ranked by trustworthiness with overconfidence warnings.
+          <br />
+          <span className="text-xs">⚠️ Red/orange indicators show models with dangerous overconfidence patterns.</span>
         </div>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-96">
           <div className="space-y-2">
-          {allModels.map((model, index) => (
-            <div 
-              key={model.modelName}
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                onModelClick ? 'hover:bg-gray-50 cursor-pointer' : 'bg-gray-50'
-              }`}
-              onClick={() => onModelClick?.(model.modelName)}
-            >
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                {getRankIcon(index)}
-                <div className="min-w-0 flex-1">
-                  <div className="font-medium text-sm truncate" title={model.modelName}>
-                    {model.modelName}
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatProcessingTime(model.avgProcessingTime)}
+          {allModels.map((model, index) => {
+            const overconfidentData = isModelOverconfident(model.modelName);
+            return (
+              <div
+                key={model.modelName}
+                className={`flex items-center justify-between p-3 rounded-lg transition-colors border ${getRowStyling(model.modelName)} ${
+                  onModelClick ? 'hover:bg-opacity-70 cursor-pointer' : ''
+                }`}
+                onClick={() => onModelClick?.(model.modelName)}
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {getWarningIcon(model, index)}
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-sm truncate flex items-center gap-2" title={model.modelName}>
+                      {model.modelName}
+                      {overconfidentData?.isHighRisk && (
+                        <span className="text-xs bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">
+                          HIGH RISK
+                        </span>
+                      )}
+                      {overconfidentData && !overconfidentData.isHighRisk && overconfidentData.overconfidenceRate > 50 && (
+                        <span className="text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded font-medium">
+                          OVERCONFIDENT
+                        </span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" />
-                      {formatCost(model.avgCost)}
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {formatProcessingTime(model.avgProcessingTime)}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        {formatCost(model.avgCost)}
+                      </div>
+                      {overconfidentData && (
+                        <div className="text-red-600 font-medium">
+                          {overconfidentData.overconfidenceRate.toFixed(1)}% wrong
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
+                <div className="flex items-center gap-2 flex-col sm:flex-row">
+                  <Badge
+                    variant="secondary"
+                    className={`text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}
+                  >
+                    {(model.avgTrustworthiness * 100).toFixed(1)}% trust
+                  </Badge>
+                  {overconfidentData && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs font-medium bg-red-100 text-red-800 border-red-200"
+                    >
+                      {overconfidentData.overallAccuracy.toFixed(1)}% acc
+                    </Badge>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}
-                >
-                  {(model.avgTrustworthiness * 100).toFixed(1)}%
+            );
+          })}
+          </div>
+        </ScrollArea>
+
+        {/* Overconfidence warnings summary */}
+        {overconfidentModels && overconfidentModels.length > 0 && (
+          <div className="mt-4 pt-3 border-t">
+            <div className="text-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Overconfident Models in List:</span>
+                <Badge className="bg-orange-100 text-orange-800">
+                  {allModels.filter(m => isModelOverconfident(m.modelName)).length}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">High Risk Models:</span>
+                <Badge className="bg-red-100 text-red-800">
+                  {allModels.filter(m => isModelOverconfident(m.modelName)?.isHighRisk).length}
                 </Badge>
               </div>
             </div>
-          ))}
           </div>
-        </ScrollArea>
-        
-        {/* Showing all models - no need for "more models" indicator */}
-        
+        )}
+
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Overall Trustworthiness:</span>

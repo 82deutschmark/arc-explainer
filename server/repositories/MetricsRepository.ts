@@ -31,7 +31,8 @@ import { BaseRepository } from './base/BaseRepository.ts';
 import { AccuracyRepository } from './AccuracyRepository.ts';
 import { TrustworthinessRepository } from './TrustworthinessRepository.ts';
 import { FeedbackRepository } from './FeedbackRepository.ts';
-import { CostRepository } from './CostRepository.ts';
+import { CostRepository, type ModelCostMap } from './CostRepository.ts';
+import { normalizeModelName } from '../utils/modelNormalizer.ts';
 import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { COST_EFFICIENCY, ANALYSIS_CRITERIA } from '../constants/metricsConstants.ts';
@@ -117,7 +118,10 @@ export interface ComprehensiveDashboard {
     trustworthiness: number;
     userSatisfaction: number;
     attempts: number;
-    costEfficiency: number;
+    totalCost: number;
+    avgCost: number;
+    correctAnswers: number;
+    costPerCorrectAnswer: number | null;
   }>;
   
   performanceMetrics: {
@@ -389,6 +393,211 @@ export class MetricsRepository extends BaseRepository {
     }
   }
 
+
+  private combineModelComparisons(
+    accuracyMap: ModelAccuracyMap,
+    trustworthinessMap: ModelTrustworthinessMap,
+    feedbackMap: ModelFeedbackMap,
+    costMap: ModelCostMap
+  ): ComprehensiveDashboard['modelComparisons'] {
+    const normalizedAccuracy = this.normalizeAccuracyMap(accuracyMap);
+    const normalizedTrustworthiness = this.normalizeTrustworthinessMap(trustworthinessMap);
+    const normalizedFeedback = this.normalizeFeedbackMap(feedbackMap);
+    const normalizedCost = this.normalizeCostMap(costMap);
+
+    const allModelNames = new Set<string>([
+      ...normalizedAccuracy.keys(),
+      ...normalizedTrustworthiness.keys(),
+      ...normalizedFeedback.keys(),
+      ...normalizedCost.keys()
+    ]);
+
+    return Array.from(allModelNames)
+      .map(modelName => {
+        const accuracy = normalizedAccuracy.get(modelName);
+        const trustworthiness = normalizedTrustworthiness.get(modelName);
+        const feedback = normalizedFeedback.get(modelName);
+        const cost = normalizedCost.get(modelName);
+
+        const attempts = Math.max(
+          accuracy?.attempts ?? 0,
+          trustworthiness?.attempts ?? 0,
+          feedback?.feedbackCount ?? 0,
+          cost?.attempts ?? 0
+        );
+
+        const correctAnswers = accuracy?.correctPredictions ?? 0;
+        const totalCost = cost?.totalCost ?? 0;
+        const avgCost = cost?.avgCost ?? 0;
+        const costPerCorrect = correctAnswers > 0 ? totalCost / correctAnswers : null;
+
+        return {
+          modelName,
+          accuracy: accuracy?.accuracy ?? 0,
+          trustworthiness: trustworthiness?.trustworthiness ?? 0,
+          userSatisfaction: feedback?.userSatisfaction ?? 0,
+          attempts,
+          totalCost: this.round(totalCost, 6),
+          avgCost: this.round(avgCost, 6),
+          correctAnswers,
+          costPerCorrectAnswer: costPerCorrect !== null ? this.round(costPerCorrect, 6) : null
+        };
+      })
+      .sort((a, b) => b.accuracy - a.accuracy);
+  }
+
+  private normalizeAccuracyMap(
+    accuracyMap: ModelAccuracyMap
+  ): Map<string, { accuracy: number; attempts: number; correctPredictions: number }> {
+    const normalized = new Map<string, { accuracy: number; attempts: number; correctPredictions: number }>();
+
+    for (const [rawName, stats] of Object.entries(accuracyMap)) {
+      const modelName = normalizeModelName(rawName);
+      const attempts = stats?.attempts ?? 0;
+      const correctPredictions = stats?.correctPredictions ?? 0;
+
+      if (normalized.has(modelName)) {
+        const existing = normalized.get(modelName)!;
+        const mergedAttempts = existing.attempts + attempts;
+        const mergedCorrect = existing.correctPredictions + correctPredictions;
+
+        normalized.set(modelName, {
+          attempts: mergedAttempts,
+          correctPredictions: mergedCorrect,
+          accuracy: mergedAttempts > 0 ? this.round((mergedCorrect / mergedAttempts) * 100, 2) : 0
+        });
+      } else {
+        normalized.set(modelName, {
+          attempts,
+          correctPredictions,
+          accuracy: attempts > 0 ? this.round((correctPredictions / attempts) * 100, 2) : 0
+        });
+      }
+    }
+
+    return normalized;
+  }
+
+  private normalizeTrustworthinessMap(
+    trustworthinessMap: ModelTrustworthinessMap
+  ): Map<string, { trustworthiness: number; attempts: number; avgConfidence: number }> {
+    const normalized = new Map<string, { trustworthiness: number; attempts: number; avgConfidence: number }>();
+
+    for (const [rawName, stats] of Object.entries(trustworthinessMap)) {
+      const modelName = normalizeModelName(rawName);
+      const attempts = stats?.attempts ?? 0;
+      const trustworthiness = stats?.trustworthiness ?? 0;
+      const avgConfidence = stats?.avgConfidence ?? 0;
+
+      if (normalized.has(modelName)) {
+        const existing = normalized.get(modelName)!;
+        const mergedAttempts = existing.attempts + attempts;
+        const aggregatedTrustworthiness =
+          mergedAttempts > 0
+            ? ((existing.trustworthiness * existing.attempts) + (trustworthiness * attempts)) / mergedAttempts
+            : 0;
+        const aggregatedConfidence =
+          mergedAttempts > 0
+            ? ((existing.avgConfidence * existing.attempts) + (avgConfidence * attempts)) / mergedAttempts
+            : 0;
+
+        normalized.set(modelName, {
+          attempts: mergedAttempts,
+          trustworthiness: this.round(aggregatedTrustworthiness, 4),
+          avgConfidence: this.round(aggregatedConfidence, 2)
+        });
+      } else {
+        normalized.set(modelName, {
+          attempts,
+          trustworthiness: this.round(trustworthiness, 4),
+          avgConfidence: this.round(avgConfidence, 2)
+        });
+      }
+    }
+
+    return normalized;
+  }
+
+  private normalizeFeedbackMap(
+    feedbackMap: ModelFeedbackMap
+  ): Map<string, { userSatisfaction: number; feedbackCount: number; helpfulCount: number; notHelpfulCount: number }> {
+    const normalized = new Map<
+      string,
+      { userSatisfaction: number; feedbackCount: number; helpfulCount: number; notHelpfulCount: number }
+    >();
+
+    for (const [rawName, stats] of Object.entries(feedbackMap)) {
+      const modelName = normalizeModelName(rawName);
+      const feedbackCount = stats?.feedbackCount ?? 0;
+      const helpfulCount = stats?.helpfulCount ?? 0;
+      const notHelpfulCount = stats?.notHelpfulCount ?? 0;
+
+      if (normalized.has(modelName)) {
+        const existing = normalized.get(modelName)!;
+        const mergedFeedback = existing.feedbackCount + feedbackCount;
+        const mergedHelpful = existing.helpfulCount + helpfulCount;
+        const mergedNotHelpful = existing.notHelpfulCount + notHelpfulCount;
+
+        normalized.set(modelName, {
+          feedbackCount: mergedFeedback,
+          helpfulCount: mergedHelpful,
+          notHelpfulCount: mergedNotHelpful,
+          userSatisfaction: mergedFeedback > 0 ? this.round((mergedHelpful / mergedFeedback) * 100, 2) : 0
+        });
+      } else {
+        normalized.set(modelName, {
+          feedbackCount,
+          helpfulCount,
+          notHelpfulCount,
+          userSatisfaction: feedbackCount > 0 ? this.round((helpfulCount / feedbackCount) * 100, 2) : 0
+        });
+      }
+    }
+
+    return normalized;
+  }
+
+  private normalizeCostMap(
+    costMap: ModelCostMap
+  ): Map<string, { totalCost: number; avgCost: number; attempts: number }> {
+    const normalized = new Map<string, { totalCost: number; avgCost: number; attempts: number }>();
+
+    for (const [rawName, stats] of Object.entries(costMap)) {
+      const modelName = normalizeModelName(rawName);
+      const attempts = stats?.attempts ?? 0;
+      const totalCost = stats?.totalCost ?? 0;
+      const avgCost = stats?.avgCost ?? 0;
+
+      if (normalized.has(modelName)) {
+        const existing = normalized.get(modelName)!;
+        const mergedAttempts = existing.attempts + attempts;
+        const mergedTotalCost = existing.totalCost + totalCost;
+
+        normalized.set(modelName, {
+          attempts: mergedAttempts,
+          totalCost: mergedTotalCost,
+          avgCost: mergedAttempts > 0 ? this.round(mergedTotalCost / mergedAttempts, 6) : 0
+        });
+      } else {
+        normalized.set(modelName, {
+          attempts,
+          totalCost,
+          avgCost: this.round(avgCost, 6)
+        });
+      }
+    }
+
+    return normalized;
+  }
+
+  private round(value: number, precision: number): number {
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+
+    const factor = Math.pow(10, precision);
+    return Math.round(value * factor) / factor;
+  }
   /**
    * Get MODEL RELIABILITY STATS - Technical success rate of API responses
    *
@@ -565,45 +774,5 @@ export class MetricsRepository extends BaseRepository {
   }
 
 
-  /**
-   * Combines model comparison data from multiple repositories
-   * Used by generateModelComparisons() following delegation pattern
-   */
-  private combineModelComparisons(
-    accuracyMap: ModelAccuracyMap,
-    trustworthinessMap: ModelTrustworthinessMap,
-    feedbackMap: ModelFeedbackMap,
-    costMap: Record<string, { totalCost: number; avgCost: number; attempts: number }>
-  ): ComprehensiveDashboard['modelComparisons'] {
-    const allModelNames = new Set([
-      ...Object.keys(accuracyMap),
-      ...Object.keys(trustworthinessMap),
-      ...Object.keys(feedbackMap)
-    ]);
 
-    return Array.from(allModelNames).map(modelName => {
-      const accuracy = accuracyMap[modelName];
-      const trustworthiness = trustworthinessMap[modelName];
-      const feedback = feedbackMap[modelName];
-
-      // Get actual cost data from database instead of crazy attempts/trustworthiness calculation
-      const costData = costMap[modelName];
-      const totalCost = costData?.totalCost || 0;
-      const avgCost = costData?.avgCost || 0;
-
-      return {
-        modelName,
-        accuracy: accuracy?.accuracy || 0,
-        trustworthiness: trustworthiness?.trustworthiness || 0,
-        userSatisfaction: feedback?.userSatisfaction || 0,
-        attempts: Math.max(
-          accuracy?.attempts || 0,
-          trustworthiness?.attempts || 0,
-          feedback?.feedbackCount || 0
-        ),
-        totalCost: Math.round(totalCost * 1000000) / 1000000, // Round to 6 decimal places for currency precision
-        avgCost: Math.round(avgCost * 1000000) / 1000000
-      };
-    });
-  }
 }

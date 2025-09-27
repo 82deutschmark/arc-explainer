@@ -8,6 +8,14 @@ Welcome to the ARC Explainer project! This guide is designed to help new develop
 
 The ARC Explainer is a full-stack web application for analyzing and visualizing Abstract Reasoning Corpus (ARC) puzzles. It allows users to submit puzzles to various AI models, view their analyses, and compare results. The application is built with a React frontend and a Node.js/Express backend, following a "database-first" architecture.
 
+### 🆕 NEW: Model Dataset Performance Analysis (September 2025)
+The application now includes dynamic model performance analysis across ANY ARC dataset:
+- **Dynamic Dataset Discovery**: Automatically discovers available datasets from `data/` directory
+- **Model Performance Tracking**: Shows which puzzles each model solved/failed/skipped on any dataset
+- **Real Database Queries**: Uses same logic as `puzzle-analysis.ts` and `retry-failed-puzzles.ts` scripts
+- **Complete Flexibility**: No hardcoded datasets or models - works with any combination
+- **Analytics Dashboard**: Available in the Analytics section with dataset and model selectors
+
 ### Core Philosophy: Database-First Architecture
 
 The application's data flow is designed to ensure data integrity and persistence. Here’s the typical flow for an analysis request:

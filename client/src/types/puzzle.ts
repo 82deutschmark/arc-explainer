@@ -124,6 +124,7 @@ export interface ExplanationData {
   multiTestResults?: Array<any> | null; // Raw database field: validation results
   multiTestAllCorrect?: boolean | null; // Raw database field: all predictions correct flag
   multiTestAverageAccuracy?: number | null; // Raw database field: average accuracy score
+  hasMultiplePredictions?: boolean | null; // Raw database field: indicates if puzzle has multiple test cases
   // Analysis parameters used to generate this explanation
   temperature?: number | null;
   reasoningEffort?: string | null;
