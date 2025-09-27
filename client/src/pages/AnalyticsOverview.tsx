@@ -282,7 +282,7 @@ export default function AnalyticsOverview() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              Model Performance on ARC Evaluation Dataset
+              Examine a Model's Performance on ARC Datasets
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Select a model to see which ARC puzzles it got right, got incorrect, or hasn't attempted yet. Uses real database queries.
