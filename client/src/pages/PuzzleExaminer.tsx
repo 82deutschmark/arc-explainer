@@ -20,12 +20,13 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, Eye, Hash, Brain, Rocket, RefreshCw, Grid3X3, Settings } from 'lucide-react';
+import { Loader2, Eye, Hash, Brain, Rocket, RefreshCw, Grid3X3, Settings, Filter, CheckCircle, XCircle } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EMOJI_SET_INFO, DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 // Import our refactored components and hooks
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
@@ -48,6 +49,7 @@ export default function PuzzleExaminer() {
   const [sendAsEmojis, setSendAsEmojis] = useState(false); // Controls what gets sent to AI models
   const [showPromptPreview, setShowPromptPreview] = useState(false);
   const [omitAnswer, setOmitAnswer] = useState(true); // Cascade: researcher option to hide correct answer in prompt
+  const [correctnessFilter, setCorrectnessFilter] = useState<'all' | 'correct' | 'incorrect'>('all'); // Filter for showing only correct/incorrect results
   // systemPromptMode is now hardcoded to 'ARC' - the new modular architecture replaces legacy {ARC}/{None} toggle
 
   // Set page title with puzzle ID
@@ -119,6 +121,26 @@ export default function PuzzleExaminer() {
       return bTime - aTime;
     });
   }, [explanations]);
+
+  // Filter results based on correctness
+  const filteredResults = React.useMemo(() => {
+    if (correctnessFilter === 'all') {
+      return allResults;
+    }
+    
+    return allResults.filter((result) => {
+      // Determine if this result is "correct"
+      // For single-test puzzles, use isPredictionCorrect
+      // For multi-test puzzles, use multiTestAllCorrect
+      const isSingleTestCorrect = result.isPredictionCorrect === true;
+      const isMultiTestCorrect = result.multiTestAllCorrect === true;
+      const hasMultiTest = result.hasMultiplePredictions === true;
+      
+      const isCorrect = hasMultiTest ? isMultiTestCorrect : isSingleTestCorrect;
+      
+      return correctnessFilter === 'correct' ? isCorrect : !isCorrect;
+    });
+  }, [allResults, correctnessFilter]);
 
   // Loading state
   if (isLoadingTask || isLoadingModels) {
@@ -610,9 +632,34 @@ export default function PuzzleExaminer() {
           {/* Analysis Results */}
           {(allResults.length > 0 || isAnalyzing) && (
             <div className="mt-4">
-              <h4 className="text-lg font-semibold mb-2">
-                Analysis Results ({explanations.length})
-              </h4>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold">
+                  Analysis Results ({explanations.length})
+                </h4>
+                
+                {/* Correctness Filter */}
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <ToggleGroup
+                    type="single"
+                    value={correctnessFilter}
+                    onValueChange={(value) => setCorrectnessFilter(value as 'all' | 'correct' | 'incorrect' || 'all')}
+                    className="bg-white border border-gray-200 rounded-md"
+                  >
+                    <ToggleGroupItem value="all" className="text-xs px-3 py-1">
+                      All ({allResults.length})
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="correct" className="text-xs px-3 py-1 text-green-700 data-[state=on]:bg-green-100">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Correct ({allResults.filter(r => (r.hasMultiplePredictions ? r.multiTestAllCorrect : r.isPredictionCorrect) === true).length})
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="incorrect" className="text-xs px-3 py-1 text-red-700 data-[state=on]:bg-red-100">
+                      <XCircle className="h-3 w-3 mr-1" />
+                      Incorrect ({allResults.filter(r => (r.hasMultiplePredictions ? r.multiTestAllCorrect : r.isPredictionCorrect) === false).length})
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
+              </div>
 
               {/* Show loading state when analysis is in progress */}
               {isAnalyzing && (
@@ -639,9 +686,9 @@ export default function PuzzleExaminer() {
               )}
 
               {/* Show existing results */}
-              {allResults.length > 0 && (
+              {filteredResults.length > 0 && (
                 <div className="space-y-3">
-                  {allResults.map((result) => (
+                  {filteredResults.map((result) => (
                     <AnalysisResultCard
                       key={`${result.id}-${result.modelName}`}
                       modelKey={result.modelName}
@@ -650,6 +697,19 @@ export default function PuzzleExaminer() {
                       testCases={task.test} // Pass the full test array
                     />
                   ))}
+                </div>
+              )}
+              
+              {/* Show message when no results match filter */}
+              {filteredResults.length === 0 && allResults.length > 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Filter className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p>No {correctnessFilter === 'correct' ? 'correct' : 'incorrect'} results found.</p>
+                  <p className="text-sm mt-1">
+                    {correctnessFilter === 'correct' 
+                      ? 'Try running more analyses or switch to "All" to see all results.'
+                      : 'All results appear to be correct, or switch to "All" to see all results.'}
+                  </p>
                 </div>
               )}
             </div>

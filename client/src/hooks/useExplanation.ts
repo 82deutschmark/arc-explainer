@@ -75,6 +75,8 @@ export function useExplanations(puzzleId: string | null) {
           multiTestResults: (raw as any).multiTestResults,
           multiTestAllCorrect: (raw as any).multiTestAllCorrect,
           multiTestAverageAccuracy: (raw as any).multiTestAverageAccuracy,
+          hasMultiplePredictions: (raw as any).hasMultiplePredictions,
+          isPredictionCorrect: (raw as any).isPredictionCorrect,
         }));
       } catch (error) {
         console.error("Error fetching explanations:", error);
