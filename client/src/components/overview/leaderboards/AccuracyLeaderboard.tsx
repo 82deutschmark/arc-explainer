@@ -174,13 +174,12 @@ export function AccuracyLeaderboard({
     if (accuracy >= 40) return 'bg-orange-100 text-orange-800 border-orange-200';
     return 'bg-red-100 text-red-800 border-red-200';
   };
-
   // Render overconfident models view
-  if (showingOverconfident && overconfidentModels) {
+  if (showingOverconfident && overconfidentModels && overconfidentModels.length > 0) {
     const topModels = overconfidentModels.slice(0, 15);
 
     return (
-      <Card className="h-full">
+      <Card className="h-full flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShieldAlert className="h-5 w-5 text-red-600" />
@@ -277,12 +276,12 @@ export function AccuracyLeaderboard({
   }
 
   // Render legacy accuracy view (fallback)
-  if (!accuracyStats) return null;
+  if (!accuracyStats || !accuracyStats.modelAccuracyRankings) return null;
 
   const topModels = accuracyStats.modelAccuracyRankings.slice(0, 15);
 
   return (
-    <Card className="h-full">
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-orange-600" />

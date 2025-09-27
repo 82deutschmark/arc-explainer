@@ -187,7 +187,7 @@ export function TrustworthinessLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-96">
+        <ScrollArea className="h-80">
           <div className="space-y-2">
           {allModels.map((model, index) => {
             const overconfidentData = isModelOverconfident(model.modelName);
@@ -232,7 +232,7 @@ export function TrustworthinessLeaderboard({
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-col sm:flex-row">
+                <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
                   <Badge
                     variant="secondary"
                     className={`text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}
