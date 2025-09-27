@@ -139,20 +139,16 @@ export class ModelDatasetRepository extends BaseRepository {
           summary: { correct: 0, incorrect: 0, notAttempted: 0, totalPuzzles: 0 }
         };
       }
-      // FIXED: Use proper three-way classification like existing working code
+      // SIMPLIFIED: Just two categories for attempts - correct or incorrect
       const attemptedQuery = `
         SELECT DISTINCT
           puzzle_id,
           CASE
-            -- CORRECT: Either single-test OR multi-test explicitly correct (true values)
+            -- CORRECT: Either field is explicitly true
             WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'correct'
             
-            -- INCORRECT: Either single-test OR multi-test explicitly incorrect (false values)
-            WHEN is_prediction_correct = false OR multi_test_all_correct = false THEN 'incorrect'
-            
-            -- INDETERMINATE: Has predictions but correctness not determined (NULLs)
-            -- These will be treated as "not attempted" since validation failed
-            ELSE 'indeterminate'
+            -- INCORRECT: Everything else (false OR null) - all count as failures
+            ELSE 'incorrect'
           END as result,
           created_at
         FROM explanations
@@ -165,7 +161,7 @@ export class ModelDatasetRepository extends BaseRepository {
       const result = await this.query(attemptedQuery, [modelName, datasetPuzzles]);
       
       // Process results to get unique puzzles (most recent attempt for each)
-      const attemptedPuzzles = new Map<string, 'correct' | 'incorrect' | 'indeterminate'>();
+      const attemptedPuzzles = new Map<string, 'correct' | 'incorrect'>();
       
       for (const row of result.rows) {
         if (!attemptedPuzzles.has(row.puzzle_id)) {
@@ -186,8 +182,7 @@ export class ModelDatasetRepository extends BaseRepository {
         } else if (result === 'incorrect') {
           incorrect.push(puzzleId);
         } else {
-          // Either not attempted OR indeterminate (has predictions but no correctness determination)
-          // Both treated as "not attempted" since we can't confirm success
+          // No database entry at all - truly not attempted
           notAttempted.push(puzzleId);
         }
       }
