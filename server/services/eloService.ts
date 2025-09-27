@@ -14,7 +14,46 @@ import { AppError } from '../middleware/errorHandler.ts';
 import { puzzleService } from './puzzleService.ts';
 import { logger } from '../utils/logger.ts';
 import type { EloRating, ComparisonPair, VoteData, EloLeaderboard, ModelEloStats } from '../repositories/EloRepository.ts';
-import type { ComparisonOutcome } from '../../shared/types.ts';
+import type { ComparisonOutcome, ARCTask } from '../../shared/types.ts';
+
+// Use the local ExplanationData type from EloRepository
+interface ExplanationData {
+  id: number;
+  puzzleId: string;
+  modelName: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string[];
+  confidence: number;
+  alienMeaning?: string;
+  alienMeaningConfidence?: number;
+  reasoningLog?: string;
+  hasReasoningLog: boolean;
+  reasoningItems?: any;
+  apiProcessingTimeMs?: number;
+  predictedOutputGrid?: any;
+  isPredictionCorrect?: boolean;
+  predictionAccuracyScore?: number;
+  temperature?: number;
+  reasoningEffort?: string;
+  reasoningVerbosity?: string;
+  reasoningSummaryType?: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  reasoningTokens?: number;
+  totalTokens?: number;
+  estimatedCost?: number;
+  hasMultiplePredictions?: boolean;
+  multiplePredictedOutputs?: any;
+  multiTestPredictionGrids?: any;
+  multiTestResults?: any;
+  multiTestAllCorrect?: boolean;
+  multiTestAverageAccuracy?: number;
+  createdAt: string;
+  multiValidation?: any;
+  helpfulVotes?: number;
+  notHelpfulVotes?: number;
+}
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ComparisonRequest {
@@ -32,7 +71,7 @@ export interface VoteRequest {
 
 export interface ComparisonResponse {
   puzzleId: string;
-  puzzle: PuzzleData;
+  puzzle: ARCTask;
   explanationA: ExplanationData & { eloRating: EloRating };
   explanationB: ExplanationData & { eloRating: EloRating };
   sessionId: string;
@@ -63,33 +102,39 @@ export const eloService = {
       const pair = await repositoryService.elo.getComparisonPair(request.puzzleId, sessionId);
 
       if (!pair) {
-        throw new AppError(404, 'No suitable explanations found for comparison', {
+        throw new AppError('No suitable explanations found for comparison', 404, JSON.stringify({
           puzzleId: request.puzzleId,
           reason: 'insufficient_explanations'
-        });
+        }));
       }
 
       // Fetch puzzle data
       const puzzle = await puzzleService.getPuzzleById(pair.puzzleId);
       if (!puzzle) {
-        throw new AppError(404, `Puzzle ${pair.puzzleId} not found`);
+        throw new AppError(`Puzzle ${pair.puzzleId} not found`, 404);
       }
 
       // Validate that both explanations have predicted grids
       if (!pair.explanationA.predictedOutputGrid || !pair.explanationB.predictedOutputGrid) {
-        logger.warn('One or both explanations missing predicted output grid', {
+        logger.warn('One or both explanations missing predicted output grid', JSON.stringify({
           explanationA: pair.explanationA.id,
           explanationB: pair.explanationB.id,
           puzzleId: pair.puzzleId
-        });
-        throw new AppError(400, 'Selected explanations do not have predicted output grids');
+        }));
+        throw new AppError('Selected explanations do not have predicted output grids', 400);
       }
+
+      // Get ELO ratings for both explanations
+      const [eloRatingA, eloRatingB] = await Promise.all([
+        repositoryService.elo.getOrCreateEloRating(pair.explanationA.id),
+        repositoryService.elo.getOrCreateEloRating(pair.explanationB.id)
+      ]);
 
       return {
         puzzleId: pair.puzzleId,
         puzzle,
-        explanationA: pair.explanationA,
-        explanationB: pair.explanationB,
+        explanationA: { ...pair.explanationA, eloRating: eloRatingA },
+        explanationB: { ...pair.explanationB, eloRating: eloRatingB },
         sessionId
       };
 
@@ -97,8 +142,8 @@ export const eloService = {
       if (error instanceof AppError) {
         throw error;
       }
-      logger.error('Error getting comparison pair:', error);
-      throw new AppError(500, 'Failed to get comparison pair', { originalError: error instanceof Error ? error.message : String(error) });
+      logger.error('Error getting comparison pair:', error instanceof Error ? error.message : String(error));
+      throw new AppError('Failed to get comparison pair', 500, JSON.stringify({ originalError: error instanceof Error ? error.message : String(error) }));
     }
   },
 
@@ -122,12 +167,12 @@ export const eloService = {
       );
 
       if (hasRecent) {
-        throw new AppError(409, 'These explanations have already been compared in this session');
+        throw new AppError('These explanations have already been compared in this session', 409);
       }
 
       // Validate outcome
       if (!['A_WINS', 'B_WINS', 'BOTH_BAD'].includes(request.outcome)) {
-        throw new AppError(400, 'Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD');
+        throw new AppError('Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD', 400);
       }
 
       // Record the vote and update ratings
@@ -153,8 +198,8 @@ export const eloService = {
       if (error instanceof AppError) {
         throw error;
       }
-      logger.error('Error recording vote:', error);
-      throw new AppError(500, 'Failed to record vote', { originalError: error instanceof Error ? error.message : String(error) });
+      logger.error('Error recording vote:', error instanceof Error ? error.message : String(error));
+      throw new AppError('Failed to record vote', 500, JSON.stringify({ originalError: error instanceof Error ? error.message : String(error) }));
     }
   },
 
@@ -167,7 +212,7 @@ export const eloService = {
   async getExplanationLeaderboard(limit: number = 50): Promise<EloLeaderboard[]> {
     try {
       if (limit < 1 || limit > 500) {
-        throw new AppError(400, 'Limit must be between 1 and 500');
+        throw new AppError('Limit must be between 1 and 500', 400);
       }
 
       return await repositoryService.elo.getExplanationLeaderboard(limit);
@@ -176,8 +221,8 @@ export const eloService = {
       if (error instanceof AppError) {
         throw error;
       }
-      logger.error('Error getting explanation leaderboard:', error);
-      throw new AppError(500, 'Failed to get explanation leaderboard');
+      logger.error('Error getting explanation leaderboard:', error instanceof Error ? error.message : String(error));
+      throw new AppError('Failed to get explanation leaderboard', 500);
     }
   },
 
@@ -191,8 +236,8 @@ export const eloService = {
       return await repositoryService.elo.getModelEloStats();
 
     } catch (error) {
-      logger.error('Error getting model Elo stats:', error);
-      throw new AppError(500, 'Failed to get model Elo statistics');
+      logger.error('Error getting model Elo stats:', error instanceof Error ? error.message : String(error));
+      throw new AppError('Failed to get model Elo statistics', 500);
     }
   },
 
@@ -227,8 +272,8 @@ export const eloService = {
       };
 
     } catch (error) {
-      logger.error('Error getting Elo system stats:', error);
-      throw new AppError(500, 'Failed to get system statistics');
+      logger.error('Error getting Elo system stats:', error instanceof Error ? error.message : String(error));
+      throw new AppError('Failed to get system statistics', 500);
     }
   },
 
@@ -237,36 +282,36 @@ export const eloService = {
    */
   validateVoteRequest(request: VoteRequest): void {
     if (!request.sessionId) {
-      throw new AppError(400, 'Session ID is required');
+      throw new AppError('Session ID is required', 400);
     }
 
     if (!request.explanationAId || !request.explanationBId) {
-      throw new AppError(400, 'Both explanation IDs are required');
+      throw new AppError('Both explanation IDs are required', 400);
     }
 
     if (request.explanationAId === request.explanationBId) {
-      throw new AppError(400, 'Cannot compare an explanation with itself');
+      throw new AppError('Cannot compare an explanation with itself', 400);
     }
 
     if (!request.outcome) {
-      throw new AppError(400, 'Outcome is required');
+      throw new AppError('Outcome is required', 400);
     }
 
     if (!['A_WINS', 'B_WINS', 'BOTH_BAD'].includes(request.outcome)) {
-      throw new AppError(400, 'Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD');
+      throw new AppError('Invalid outcome. Must be A_WINS, B_WINS, or BOTH_BAD', 400);
     }
 
     if (!request.puzzleId) {
-      throw new AppError(400, 'Puzzle ID is required');
+      throw new AppError('Puzzle ID is required', 400);
     }
 
     // Validate ID types
     if (!Number.isInteger(request.explanationAId) || !Number.isInteger(request.explanationBId)) {
-      throw new AppError(400, 'Explanation IDs must be integers');
+      throw new AppError('Explanation IDs must be integers', 400);
     }
 
     if (request.explanationAId < 1 || request.explanationBId < 1) {
-      throw new AppError(400, 'Explanation IDs must be positive integers');
+      throw new AppError('Explanation IDs must be positive integers', 400);
     }
   }
 };

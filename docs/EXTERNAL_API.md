@@ -40,16 +40,35 @@ This document describes the public APIs that external applications rely on. Thes
 - `GET /api/models` - List all available AI models and providers
   - **Limits**: No limits
 
-THESE ARE LARGELY DEPRECATED!  They never worked correctly.
+### Model Dataset Performance Analysis ✨ NEW! 
+- `GET /api/model-dataset/datasets` - Get all available ARC datasets dynamically
+  - **Response**: Array of `DatasetInfo` objects with `name`, `puzzleCount`, and `path`
+  - **Discovery**: Automatically scans `data/` directory for JSON puzzle files
+  - **Examples**: evaluation (400 puzzles), training (400 puzzles), evaluation2 (117 puzzles), etc.
+  - **Limits**: No limits - returns all discovered datasets
+
+- `GET /api/model-dataset/models` - Get all models that have attempted puzzles
+  - **Response**: Array of model names from database `explanations` table
+  - **Data Source**: Distinct `model_name` values with existing attempts
+  - **Limits**: No limits - returns all models with database entries
+
+- `GET /api/model-dataset/performance/:modelName/:datasetName` - Get model performance on specific dataset
+  - **Params**: `modelName` (string), `datasetName` (string) - Any model and any dataset
+  - **Response**: `ModelDatasetPerformance` with categorized puzzle results:
+    - `solved[]`: Puzzle IDs where `is_prediction_correct = true OR multi_test_all_correct = true`
+    - `failed[]`: Puzzle IDs attempted but incorrect
+    - `notAttempted[]`: Puzzle IDs with no database entries for this model
+    - `summary`: Counts and success rate percentage
+  - **Query Logic**: Uses exact same logic as `puzzle-analysis.ts` script
+  - **Dynamic**: Works with ANY model name and ANY dataset discovered from filesystem
+  - **Limits**: No limits
+
+DEPRECATED BATCH ENDPOINTS (never worked correctly):
 - `POST /api/model/batch-analyze` - Start batch analysis across multiple puzzles
 - `GET /api/model/batch-status/:sessionId` - Get batch analysis progress
 - `POST /api/model/batch-control/:sessionId` - Control batch analysis (pause/resume/stop)
 - `GET /api/model/batch-results/:sessionId` - Get batch analysis results
-  - **Query params**: `limit`, `offset`, `status`
-  - **Default limit**: 50 (configurable up to 10000)
 - `GET /api/model/batch-sessions` - Get all batch analysis sessions
-  - **Query params**: `limit`, `offset`
-  - **Default limit**: 50 (configurable up to 10000)
 
 ### Explanation Management   SUPER IMPORTANT!!
 - `GET /api/puzzle/:puzzleId/explanations` - Get all explanations for a puzzle

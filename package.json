@@ -18,6 +18,7 @@
     "ap": "node --import tsx puzzle-analysis.ts",
     "au": "node --import tsx analyze-unsolved-puzzles.ts",
     "retry": "node --import tsx retry-failed-puzzles.ts",
+    "process": "node --import tsx flexible-puzzle-processor.ts",
     "openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
     "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts"
   },
@@ -112,6 +113,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
+    "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",

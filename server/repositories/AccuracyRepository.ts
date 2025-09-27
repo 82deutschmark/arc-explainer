@@ -63,6 +63,17 @@ export interface DangerousModelRanking {
   overallAccuracy: number;
 }
 
+export interface OverconfidentModelRanking {
+  modelName: string;
+  totalAttempts: number;
+  totalOverconfidentAttempts: number; // Attempts with confidence ≥80%
+  wrongOverconfidentPredictions: number; // Wrong predictions with confidence ≥80%
+  overconfidenceRate: number; // Percentage of overconfident attempts that were wrong
+  avgConfidence: number;
+  overallAccuracy: number;
+  isHighRisk: boolean; // True if accuracy < 50% AND confidence ≥ 80%
+}
+
 /**
  * Basic accuracy statistics for MetricsRepository delegation
  * Simplified version of PureAccuracyStats for aggregation purposes
@@ -535,6 +546,243 @@ export class AccuracyRepository extends BaseRepository {
 
     } catch (error) {
       logger.error(`Error getting model accuracy map: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get OVERCONFIDENT MODELS - models with high confidence (≥80%) but poor accuracy (<50%)
+   *
+   * This method identifies overconfident models using enhanced criteria:
+   * - Confidence threshold: ≥80% (more inclusive than getDangerousModels)
+   * - Poor accuracy: <50% overall accuracy
+   * - Minimum attempts: 100+ for statistical significance
+   *
+   * These models are particularly dangerous because they appear confident
+   * but consistently produce poor results, potentially misleading users.
+   *
+   * @param limit Maximum number of overconfident models to return
+   * @returns Array of models ranked by risk level (highest risk first)
+   */
+  async getOverconfidentModels(limit: number = 15): Promise<OverconfidentModelRanking[]> {
+    if (!this.isConnected()) {
+      return [];
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+
+          -- Total attempts for this model
+          COUNT(e.id) as total_attempts,
+
+          -- Overconfident attempts (≥80% confidence)
+          COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END) as total_overconfident_attempts,
+
+          -- Wrong overconfident predictions
+          COUNT(CASE
+            WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
+            AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+            THEN 1
+          END) as wrong_overconfident_predictions,
+
+          -- Overconfidence rate: percentage of overconfident attempts that were wrong
+          CASE
+            WHEN COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END) > 0
+            THEN (COUNT(CASE
+              WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
+              AND (e.is_prediction_correct = false OR e.multi_test_all_correct = false)
+              THEN 1
+            END) * 100.0 / COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END))
+            ELSE 0
+          END as overconfidence_rate,
+
+          -- Average confidence for this model
+          AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) as avg_confidence,
+
+          -- Overall accuracy
+          CASE
+            WHEN COUNT(e.id) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0
+          END as overall_accuracy_percentage
+
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.confidence IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING
+          -- Require minimum attempts for statistical significance
+          COUNT(e.id) >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts}
+          -- Must have some overconfident attempts
+          AND COUNT(CASE WHEN e.confidence >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence} THEN 1 END) > 0
+        ORDER BY
+          -- First sort by high-risk models (poor accuracy + overconfident)
+          CASE WHEN (
+            (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id)) < ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.maxAccuracy}
+            AND AVG(CASE WHEN e.confidence IS NOT NULL THEN e.confidence END) >= ${ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence}
+          ) THEN 1 ELSE 2 END,
+          -- Then by number of wrong overconfident predictions (descending)
+          wrong_overconfident_predictions DESC,
+          -- Then by overconfidence rate (descending)
+          overconfidence_rate DESC,
+          -- Finally by total attempts (descending)
+          total_attempts DESC
+        LIMIT $1
+      `, [limit]);
+
+      return result.rows.map(row => {
+        const overallAccuracy = parseFloat(row.overall_accuracy_percentage) || 0;
+        const avgConfidence = parseFloat(row.avg_confidence) || 0;
+        const isHighRisk = overallAccuracy < ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.maxAccuracy &&
+                          avgConfidence >= ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minConfidence;
+
+        return {
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          totalOverconfidentAttempts: parseInt(row.total_overconfident_attempts) || 0,
+          wrongOverconfidentPredictions: parseInt(row.wrong_overconfident_predictions) || 0,
+          overconfidenceRate: Math.round((parseFloat(row.overconfidence_rate) || 0) * 10) / 10,
+          avgConfidence: Math.round(avgConfidence * 10) / 10,
+          overallAccuracy: Math.round(overallAccuracy * 10) / 10,
+          isHighRisk
+        };
+      });
+    } catch (error) {
+      logger.error(`Error getting overconfident models: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get PURE ACCURACY STATS WITH MINIMUM ATTEMPTS - enhanced version with filtering
+   *
+   * This method extends getPureAccuracyStats() with minimum attempts filtering.
+   * Useful for analytics dashboards that want to show only models with sufficient data.
+   *
+   * @param minAttempts Minimum number of attempts required (default: 100)
+   * @returns Accuracy statistics filtered by minimum attempts
+   */
+  async getPureAccuracyStatsWithMinAttempts(minAttempts: number = ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts): Promise<PureAccuracyStats> {
+    if (!this.isConnected()) {
+      return {
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        overallAccuracyPercentage: 0,
+        modelAccuracyRankings: []
+      };
+    }
+
+    try {
+      // Get overall pure accuracy stats (no filtering by model attempts)
+      const overallStats = await this.query(`
+        SELECT
+          COUNT(*) as total_solver_attempts,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
+        FROM explanations
+        WHERE (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+      `);
+
+      // Get model accuracy with minimum attempts filtering
+      const modelAccuracy = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          COUNT(e.id) as total_attempts,
+
+          -- Single test accuracy
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+
+          -- Multi test accuracy
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_correct_predictions,
+
+          -- Overall accuracy
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions,
+
+          -- Calculate accuracy percentages
+          CASE
+            WHEN COUNT(e.id) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0
+          END as accuracy_percentage,
+
+          CASE
+            WHEN COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as single_test_accuracy_percentage,
+
+          CASE
+            WHEN COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as multi_test_accuracy_percentage
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(e.id) >= $1  -- Apply minimum attempts filter
+        ORDER BY accuracy_percentage ASC, total_attempts DESC
+      `, [minAttempts]);
+
+      const overallRow = overallStats.rows[0];
+      const totalAttempts = parseInt(overallRow.total_solver_attempts) || 0;
+      const totalCorrect = parseInt(overallRow.total_correct_predictions) || 0;
+
+      logger.info(`AccuracyRepository.getPureAccuracyStatsWithMinAttempts: Found ${totalAttempts} total solver attempts, ${totalCorrect} correct, ${modelAccuracy.rows.length} models with ${minAttempts}+ attempts`, 'accuracy-debug');
+
+      return {
+        totalSolverAttempts: totalAttempts,
+        totalCorrectPredictions: totalCorrect,
+        overallAccuracyPercentage: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100 * 10) / 10 : 0,
+        modelAccuracyRankings: modelAccuracy.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: Math.round((parseFloat(row.accuracy_percentage) || 0) * 10) / 10,
+          singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+          singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+          singleTestAccuracy: Math.round((parseFloat(row.single_test_accuracy_percentage) || 0) * 10) / 10,
+          multiTestAttempts: parseInt(row.multi_test_attempts) || 0,
+          multiCorrectPredictions: parseInt(row.multi_correct_predictions) || 0,
+          multiTestAccuracy: Math.round((parseFloat(row.multi_test_accuracy_percentage) || 0) * 10) / 10,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting pure accuracy stats with min attempts: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }

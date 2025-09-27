@@ -174,6 +174,66 @@ export const feedbackController = {
   },
 
   /**
+   * Get accuracy statistics with minimum attempts filtering
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getAccuracyStatsFiltered(req: Request, res: Response) {
+    try {
+      // Get min attempts from query parameter, default to 100
+      const minAttempts = parseInt(req.query.minAttempts as string) || 100;
+
+      // Validate minAttempts is reasonable (between 1 and 1000)
+      if (minAttempts < 1 || minAttempts > 1000) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid minimum attempts',
+          'Minimum attempts must be between 1 and 1000'
+        ));
+      }
+
+      const stats = await repositoryService.accuracy.getPureAccuracyStatsWithMinAttempts(minAttempts);
+      res.json(formatResponse.success(stats));
+    } catch (error) {
+      console.error('Error getting filtered accuracy stats:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to get filtered accuracy stats',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
+   * Get overconfident models analysis - models with high confidence but poor accuracy
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getOverconfidentModels(req: Request, res: Response) {
+    try {
+      // Get limit from query parameter, default to 15
+      const limit = parseInt(req.query.limit as string) || 15;
+
+      // Validate limit is reasonable (between 1 and 50)
+      if (limit < 1 || limit > 50) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid limit',
+          'Limit must be between 1 and 50'
+        ));
+      }
+
+      const overconfidentModels = await repositoryService.accuracy.getOverconfidentModels(limit);
+      res.json(formatResponse.success(overconfidentModels));
+    } catch (error) {
+      console.error('Error getting overconfident models:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to get overconfident models',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
    * Health check endpoint for feedback system
    * 
    * @param req - Express request object

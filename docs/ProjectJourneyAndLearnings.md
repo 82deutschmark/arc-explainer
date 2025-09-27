@@ -35,7 +35,7 @@ We proudly shipped dashboards that lied.
 
 ## 4. UX & Ops: When the Experience Got Worse Before Better
 
-- **50-minute client timeout (`v2.0.3`):** We extended the global fetch timeout to 50 minutes because Grok was slow. The changelog even admits "there are no non-AI requests"—yet the code creates a divergent timeout branch anyway. We complicated the stack to solve a problem that didnt exist.
+- **50-minute client timeout (`v2.0.3`):** We extended the global fetch timeout to 50 minutes because Grok was slow. The changelog even admits "there are no non-AI requests"—yet the code creates a divergent timeout branch anyway. We complicated the stack to solve a problem that didnt exist. 
 - **Batch progress invisibility (`v2.5.24`):** The first batch refactor entirely broke live progress updates. Users saw nothing happening for hours. We only noticed after testers complained, because we were watching logs instead of the UI.
 - **Overzealous logging spam (`v2.22.0`):** We logged entire 10,000-character reasoning blobs at info level, tanking readability and storage. Cleaning that up required writing a logger the size of a microservice.
 

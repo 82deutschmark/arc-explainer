@@ -363,6 +363,170 @@ export class CostRepository extends BaseRepository {
       };
     }
   }
+
+  /**
+   * Get COST EFFICIENCY METRICS - cost per correct answer calculations
+   *
+   * This method calculates the actual cost per correct prediction, which is more
+   * meaningful than cost per attempt. It combines cost data with accuracy data
+   * to provide insights into which models provide the best value for money.
+   *
+   * Key metrics:
+   * - Cost per accurate prediction: total cost / number of correct answers
+   * - Cost per trustworthy answer: total cost / trustworthiness score
+   * - Accuracy and trustworthiness rates for context
+   *
+   * @param minAttempts Minimum attempts required for reliable statistics (default: 100)
+   * @returns Array of models sorted by cost efficiency (lowest cost per correct answer first)
+   */
+  async getCostEfficiencyMetrics(minAttempts: number = ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts): Promise<CostEfficiencyMetrics[]> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty cost efficiency metrics', 'database');
+      return [];
+    }
+
+    try {
+      const query = `
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+
+          -- Cost metrics
+          COUNT(*) as attempts,
+          SUM(COALESCE(e.estimated_cost, 0)) as total_cost,
+          AVG(COALESCE(e.estimated_cost, 0)) as avg_cost,
+
+          -- Accuracy metrics
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as correct_predictions,
+          CASE
+            WHEN COUNT(*) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(*))
+            ELSE 0
+          END as accuracy_rate,
+
+          -- Trustworthiness metrics
+          AVG(COALESCE(e.trustworthiness_score, 0)) as trustworthiness_score,
+
+          -- Cost efficiency calculations
+          CASE
+            WHEN SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) > 0
+            THEN SUM(COALESCE(e.estimated_cost, 0)) / SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END)
+            ELSE 999999 -- High value for models with no correct predictions
+          END as cost_per_accurate_prediction,
+
+          CASE
+            WHEN AVG(COALESCE(e.trustworthiness_score, 0)) > 0.001
+            THEN SUM(COALESCE(e.estimated_cost, 0)) / AVG(COALESCE(e.trustworthiness_score, 0))
+            ELSE 999999 -- High value for models with no trustworthiness
+          END as cost_per_trustworthy_answer
+
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND e.estimated_cost IS NOT NULL
+          AND e.estimated_cost > 0
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL) -- Only solver attempts
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(*) >= $1  -- Apply minimum attempts filter
+        ORDER BY cost_per_accurate_prediction ASC, accuracy_rate DESC
+      `;
+
+      const result = await this.query(query, [minAttempts]);
+
+      logger.info(`CostRepository.getCostEfficiencyMetrics: Found ${result.rows.length} models with ${minAttempts}+ attempts and cost data`, 'cost-debug');
+
+      return result.rows.map(row => ({
+        modelName: row.model_name,
+        costPerAccuratePrediction: Math.round((parseFloat(row.cost_per_accurate_prediction) || 0) * 100000) / 100000, // 5 decimal precision for costs
+        costPerTrustworthyAnswer: Math.round((parseFloat(row.cost_per_trustworthy_answer) || 0) * 100000) / 100000,
+        totalCost: Math.round((parseFloat(row.total_cost) || 0) * 10000) / 10000,
+        accuracyRate: Math.round((parseFloat(row.accuracy_rate) || 0) * 10) / 10,
+        trustworthinessScore: Math.round((parseFloat(row.trustworthiness_score) || 0) * 10000) / 10000,
+        attempts: parseInt(row.attempts) || 0
+      }));
+
+    } catch (error) {
+      logger.error(`Error getting cost efficiency metrics: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return [];
+    }
+  }
+
+  /**
+   * Get COST EFFICIENCY for a specific model
+   *
+   * @param modelName The model to analyze (will be normalized)
+   * @returns Cost efficiency metrics for the specific model, or null if insufficient data
+   */
+  async getModelCostEfficiency(modelName: string): Promise<CostEfficiencyMetrics | null> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning null for model cost efficiency', 'database');
+      return null;
+    }
+
+    try {
+      const normalizedName = normalizeModelName(modelName);
+      const results = await this.getCostEfficiencyMetrics(1); // Allow single attempt for specific model lookup
+
+      const modelResult = results.find(result => result.modelName === normalizedName);
+      return modelResult || null;
+
+    } catch (error) {
+      logger.error(`Error getting cost efficiency for model ${modelName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return null;
+    }
+  }
+
+  /**
+   * Get COST WASTE ANALYSIS - identify models with poor cost efficiency
+   *
+   * This method identifies models that are expensive relative to their accuracy.
+   * Useful for highlighting models that waste resources and should be avoided.
+   *
+   * @param minAttempts Minimum attempts for statistical significance
+   * @param maxCostPerCorrect Maximum acceptable cost per correct answer
+   * @returns Models exceeding cost efficiency thresholds, sorted by waste (highest first)
+   */
+  async getCostWasteAnalysis(
+    minAttempts: number = ANALYSIS_CRITERIA.MODEL_FAILURE_ANALYSIS.minAttempts,
+    maxCostPerCorrect: number = 0.10 // $0.10 per correct answer threshold
+  ): Promise<CostEfficiencyMetrics[]> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty cost waste analysis', 'database');
+      return [];
+    }
+
+    try {
+      const allMetrics = await this.getCostEfficiencyMetrics(minAttempts);
+
+      // Filter for models with poor cost efficiency
+      const wastefulModels = allMetrics.filter(model =>
+        model.costPerAccuratePrediction > maxCostPerCorrect &&
+        model.costPerAccuratePrediction < 999999 // Exclude models with infinite cost
+      );
+
+      logger.info(`CostRepository.getCostWasteAnalysis: Found ${wastefulModels.length} models exceeding $${maxCostPerCorrect} per correct answer`, 'cost-debug');
+
+      // Sort by cost per correct answer (highest waste first)
+      return wastefulModels.sort((a, b) => b.costPerAccuratePrediction - a.costPerAccuratePrediction);
+
+    } catch (error) {
+      logger.error(`Error getting cost waste analysis: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      return [];
+    }
+  }
 }
 
 export default new CostRepository();

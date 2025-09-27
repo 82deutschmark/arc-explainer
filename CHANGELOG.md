@@ -1,4 +1,100 @@
 
+### September 26 2025
+
+## v2.26.2 - Architectural Restoration: Fix Duplicate Database Saves 🏗️ CRITICAL ARCHITECTURE FIX
+
+### Fixed
+- **CRITICAL: Duplicate Database Saves Eliminated**
+  - **Issue**: Explanations were being saved to database TWICE due to architectural violations
+  - **Root Cause**: Controller was mixing analysis and persistence concerns
+  - **Fix**: Restored clean separation of concerns throughout the system
+
+### Changed
+- **Controller Architecture Restored**: `puzzleController.analyze()`
+  - **Removed**: Inappropriate database save (lines 82-86)
+  - **Result**: Analyze endpoint now returns analysis only (as originally designed)
+  - **Benefit**: Faster responses, cleaner error handling
+
+- **Script Architecture Fixed**: Both `retry-failed-puzzles.ts` and `flexible-puzzle-processor.ts`
+  - **Before**: Relied on controller's architectural violation
+  - **After**: Use proper 2-step pattern (analyze → save)
+  - **Pattern**: Same as frontend for consistency
+
+### Removed
+- **Dead Code Cleanup**: Deleted `client/src/hooks/useAnalysisResult.ts`
+  - **Reason**: Unused duplicate of `useAnalysisResults.ts`
+  - **Impact**: Eliminated architectural confusion
+
+### Updated
+- **Documentation**: `docs/flexible-puzzle-processor-guide.md`
+  - **Added**: Explanation of proper 2-step analysis pattern
+  - **Emphasized**: Separation of concerns and consistency with web UI
+
+### Technical Benefits
+- ⚡ **Zero duplicate saves** - Fixed root cause completely
+- 🚀 **Faster analyze endpoint** - No database operations during analysis
+- 🔄 **Architectural consistency** - All code paths use same pattern
+- 🛡️ **Better error handling** - Analysis failures separate from save failures
+- 💾 **No data loss** - All API responses properly saved via correct endpoints
+
+### Testing Instructions
+1. **Frontend**: Analyze any puzzle - should see single DB entry
+2. **Scripts**: Run `npm run retry` or `npm run process` - should work with 2-step pattern
+3. **Validation**: Check database for duplicate explanations (should be none)
+
+## v2.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
+
+### Fixed
+- **Critical Query Bug**: Fixed model dataset performance categorization logic
+  - **Issue**: `is_prediction_correct = false AND multi_test_all_correct = false` was wrong
+  - **Fix**: Changed to `is_prediction_correct = false OR multi_test_all_correct = false`
+  - **Impact**: Puzzles were incorrectly categorized as "Not Attempted" instead of "Failed"
+  - **Location**: `server/repositories/ModelDatasetRepository.ts` line 152
+
+### Added  
+- **Clickable Puzzle Badges**: Not Attempted puzzle IDs are now clickable
+  - Opens `/puzzle/{puzzleId}` in new tab when clicked
+  - Added hover effects and cursor pointer styling
+  - Direct navigation from analytics dashboard to specific puzzles
+
+## v2.26.0 - Dynamic Model Dataset Performance Analysis System ✨ MAJOR FEATURE
+
+### Added
+- **Complete Model Dataset Performance System**: Dynamic analysis across ANY ARC dataset
+- **Dynamic Dataset Discovery**: Automatically scans `data/` directory for JSON puzzle files
+- **Real Database Queries**: Uses exact same logic as `puzzle-analysis.ts` and `retry-failed-puzzles.ts`
+- **Full Stack Integration**: Backend repository → API endpoints → React hooks → UI components
+- **ModelDatasetRepository**: New repository with proper RepositoryService integration
+- **API Endpoints**: `/api/model-dataset/datasets`, `/api/model-dataset/models`, `/api/model-dataset/performance/:modelName/:datasetName`
+- **React Hooks**: `useAvailableDatasets`, updated `useModelDatasetPerformance` with dataset parameter
+- **UI Components**: Dataset + Model selectors in Analytics Dashboard with error handling
+- **TypeScript Interfaces**: Exported `DatasetInfo` and `ModelDatasetPerformance` types
+- **Documentation**: Complete API documentation, hooks reference, developer guide updates
+
+### Technical Details
+- **No Hardcoded Data**: Reads any dataset from `data/*/` directories dynamically
+- **shadcn/ui Integration**: Uses Select, Card, Button components with proper styling
+- **Error Handling**: Frontend shows specific errors, loading states, auto-selection
+- **Architecture**: Follows existing repository pattern properly (not bypassed)
+
+## v2.25.0 - Model Dataset Performance Analysis
+
+### Added
+- **Real Database Query System**: Added proper model performance analysis on ARC evaluation dataset
+- `server/repositories/ModelDatasetRepository.ts`: NEW - Database queries showing which puzzles each model solved/failed/skipped
+- `server/controllers/modelDatasetController.ts`: NEW - API endpoints for model dataset performance
+- `client/src/hooks/useModelDatasetPerformance.ts`: NEW - React hook for fetching model performance data
+- API Routes: `/api/model-dataset/performance/:modelName` and `/api/model-dataset/models`
+
+### Removed
+- Fake natural language query functionality from AnalyticsOverview (was simulated, not real database queries)
+
+### Technical Details
+- Uses real database queries checking `is_prediction_correct` and `multi_test_all_correct` fields
+- Follows existing repository pattern and architecture
+- Based on proven query logic from `puzzle-analysis.ts`
+- Includes all 400 ARC evaluation dataset puzzle IDs
+
 ### September 24 2025
 
 ## v2.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring

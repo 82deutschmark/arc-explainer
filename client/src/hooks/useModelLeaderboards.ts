@@ -22,6 +22,17 @@ interface AccuracyStats {
   }>;
 }
 
+interface OverconfidentModel {
+  modelName: string;
+  totalAttempts: number;
+  totalOverconfidentAttempts: number;
+  wrongOverconfidentPredictions: number;
+  overconfidenceRate: number;
+  avgConfidence: number;
+  overallAccuracy: number;
+  isHighRisk: boolean;
+}
+
 interface PerformanceLeaderboards {
   trustworthinessLeaders: Array<{
     modelName: string;
@@ -98,11 +109,20 @@ export function useModelLeaderboards() {
           return json.data as ReliabilityStats[];
         },
         staleTime: 5 * 60 * 1000,
+      },
+      {
+        queryKey: ['overconfident-models'],
+        queryFn: async () => {
+          const response = await apiRequest('GET', '/api/feedback/overconfident-models');
+          const json = await response.json();
+          return json.data as OverconfidentModel[];
+        },
+        staleTime: 5 * 60 * 1000,
       }
     ]
   });
 
-  const [accuracyQuery, trustworthinessQuery, feedbackQuery, reliabilityQuery] = queries;
+  const [accuracyQuery, trustworthinessQuery, feedbackQuery, reliabilityQuery, overconfidentQuery] = queries;
 
   return {
     // Individual data
@@ -110,12 +130,14 @@ export function useModelLeaderboards() {
     performanceStats: trustworthinessQuery.data,
     feedbackStats: feedbackQuery.data,
     reliabilityStats: reliabilityQuery.data,
+    overconfidentModels: overconfidentQuery.data,
 
     // Loading states
     isLoadingAccuracy: accuracyQuery.isLoading,
     isLoadingPerformance: trustworthinessQuery.isLoading,
     isLoadingFeedback: feedbackQuery.isLoading,
     isLoadingReliability: reliabilityQuery.isLoading,
+    isLoadingOverconfident: overconfidentQuery.isLoading,
     isLoadingAny: queries.some(q => q.isLoading),
     isLoadingAll: queries.every(q => q.isLoading),
 
@@ -124,11 +146,12 @@ export function useModelLeaderboards() {
     performanceError: trustworthinessQuery.error,
     feedbackError: feedbackQuery.error,
     reliabilityError: reliabilityQuery.error,
+    overconfidentError: overconfidentQuery.error,
     hasAnyError: queries.some(q => q.error),
 
     // Utility functions
     refetch: () => Promise.all(queries.map(q => q.refetch())),
-    
+
     // Success states
     isSuccess: queries.every(q => q.isSuccess),
     hasAnyData: queries.some(q => q.data),

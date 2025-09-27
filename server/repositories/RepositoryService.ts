@@ -44,11 +44,13 @@ import { TrustworthinessRepository } from './TrustworthinessRepository.ts';
 import { MetricsRepository } from './MetricsRepository.ts';
 import { CostRepository } from './CostRepository.ts';
 import { EloRepository } from './EloRepository.ts';
+import { ModelDatasetRepository } from './ModelDatasetRepository.ts';
 import { DatabaseSchema } from './database/DatabaseSchema.ts';
 import { logger } from '../utils/logger.ts';
 
 export class RepositoryService {
   private explanationRepository: ExplanationRepository;
+  private modelDatasetRepository: ModelDatasetRepository;
   private feedbackRepository: FeedbackRepository;
   private batchAnalysisRepository: BatchAnalysisRepository;
   private accuracyRepository: AccuracyRepository;
@@ -60,6 +62,7 @@ export class RepositoryService {
 
   constructor() {
     this.explanationRepository = new ExplanationRepository();
+    this.modelDatasetRepository = new ModelDatasetRepository();
     this.feedbackRepository = new FeedbackRepository();
     this.batchAnalysisRepository = new BatchAnalysisRepository();
     this.accuracyRepository = new AccuracyRepository();
@@ -161,6 +164,13 @@ export class RepositoryService {
    */
   get elo(): EloRepository {
     return this.eloRepository;
+  }
+
+  /**
+   * Get model dataset repository (model performance on datasets)
+   */
+  get modelDataset(): ModelDatasetRepository {
+    return this.modelDatasetRepository;
   }
 
   /**
