@@ -339,7 +339,7 @@ export default function PuzzleExaminer() {
             onSendAsEmojisChange={setSendAsEmojis}
             omitAnswer={omitAnswer}
             onOmitAnswerChange={setOmitAnswer}
-            // systemPromptMode removed - now using modular architecture
+            // systemPromptMode removed - now using modular architecture Collapse this by default!!
           />
 
           {/* Prompt Preview */}
@@ -355,41 +355,7 @@ export default function PuzzleExaminer() {
               Preview Prompt
             </Button>
           </div>
-          
-
-          {/* Saturn Visual Solver */}
-          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
-                <Rocket className="h-4 w-4" />
-                Alternative Visual Solver
-              </h5>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href={`/puzzle/saturn/${taskId}`}>
-                <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
-                  <Rocket className="h-4 w-4" />
-                  Open Saturn Visual Solver
-                </Button>
-              </Link>
-              <div className="flex-1">
-                <p className="text-sm text-indigo-700 mb-1">
-                  Uses iterative visual analysis to solve puzzles step-by-step
-                </p>
-                <p className="text-xs text-indigo-600">
-                  💡 Powered by the open-source{' '}
-                  <a
-                    href="https://github.com/zoecarver/saturn-arc"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-medium hover:text-indigo-800"
-                  >
-                    Saturn ARC project by Zoe Carver
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
+      
           
           {/* Advanced Controls moved above model buttons and expanded by default */}
           <CollapsibleCard
