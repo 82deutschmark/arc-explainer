@@ -1,6 +1,47 @@
 
 ### September 26 2025
 
+## v2.26.2 - Architectural Restoration: Fix Duplicate Database Saves 🏗️ CRITICAL ARCHITECTURE FIX
+
+### Fixed
+- **CRITICAL: Duplicate Database Saves Eliminated**
+  - **Issue**: Explanations were being saved to database TWICE due to architectural violations
+  - **Root Cause**: Controller was mixing analysis and persistence concerns
+  - **Fix**: Restored clean separation of concerns throughout the system
+
+### Changed
+- **Controller Architecture Restored**: `puzzleController.analyze()`
+  - **Removed**: Inappropriate database save (lines 82-86)
+  - **Result**: Analyze endpoint now returns analysis only (as originally designed)
+  - **Benefit**: Faster responses, cleaner error handling
+
+- **Script Architecture Fixed**: Both `retry-failed-puzzles.ts` and `flexible-puzzle-processor.ts`
+  - **Before**: Relied on controller's architectural violation
+  - **After**: Use proper 2-step pattern (analyze → save)
+  - **Pattern**: Same as frontend for consistency
+
+### Removed
+- **Dead Code Cleanup**: Deleted `client/src/hooks/useAnalysisResult.ts`
+  - **Reason**: Unused duplicate of `useAnalysisResults.ts`
+  - **Impact**: Eliminated architectural confusion
+
+### Updated
+- **Documentation**: `docs/flexible-puzzle-processor-guide.md`
+  - **Added**: Explanation of proper 2-step analysis pattern
+  - **Emphasized**: Separation of concerns and consistency with web UI
+
+### Technical Benefits
+- ⚡ **Zero duplicate saves** - Fixed root cause completely
+- 🚀 **Faster analyze endpoint** - No database operations during analysis
+- 🔄 **Architectural consistency** - All code paths use same pattern
+- 🛡️ **Better error handling** - Analysis failures separate from save failures
+- 💾 **No data loss** - All API responses properly saved via correct endpoints
+
+### Testing Instructions
+1. **Frontend**: Analyze any puzzle - should see single DB entry
+2. **Scripts**: Run `npm run retry` or `npm run process` - should work with 2-step pattern
+3. **Validation**: Check database for duplicate explanations (should be none)
+
 ## v2.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
 
 ### Fixed
