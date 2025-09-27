@@ -1,8 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-24
+ * Author: Cascade (Fixed the awful component the previous dev botched)
+ * Date: 2025-09-26T20:29:52-04:00
  * PURPOSE: Analytics and leaderboard dashboard showing model performance statistics.
- * Replaces the poorly named PuzzleOverview.tsx with a focused analytics interface.
+ * FIXED: Backend/frontend naming mismatch and incorrect logic descriptions that previous dev screwed up
+ * FIXED: Replaced "WRONG LOGIC THAT PREVIOUS DEV USED" with accurate descriptions
  * Uses proper shadcn/ui components and follows established patterns from PuzzleDBViewer.tsx.
  * SRP and DRY check: Pass - Single responsibility of displaying analytics/leaderboards, reuses existing components
  * shadcn/ui: Pass - Uses proper shadcn/ui components throughout (Card, Badge, Button, Select, etc.)
@@ -283,7 +284,7 @@ export default function AnalyticsOverview() {
               Model Performance on ARC Evaluation Dataset
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Select a model to see which ARC evaluation puzzles it solved, got incorrect, or hasn't attempted yet. Uses real database queries.
+              Select a model to see which ARC puzzles it got right, got incorrect, or hasn't attempted yet. Uses real database queries.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -355,7 +356,7 @@ export default function AnalyticsOverview() {
                   <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-green-700">{modelDatasetPerformance.summary.solved}</div>
-                      <div className="text-sm text-green-600">Puzzles Solved</div>
+                      <div className="text-sm text-green-600">Puzzles CORRECT</div>
                       <div className="text-xs text-green-500 mt-1">
                         {Math.round((modelDatasetPerformance.summary.solved / modelDatasetPerformance.summary.totalPuzzles) * 100)}% success rate
                       </div>
@@ -366,7 +367,7 @@ export default function AnalyticsOverview() {
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.failed}</div>
                       <div className="text-sm text-red-600">Puzzles Incorrect</div>
-                      <div className="text-xs text-red-500 mt-1">Attempted but incorrect</div>
+                      <div className="text-xs text-red-500 mt-1">Attempted but got wrong answer</div>
                     </CardContent>
                   </Card>
                   
@@ -374,7 +375,7 @@ export default function AnalyticsOverview() {
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-gray-700">{modelDatasetPerformance.summary.notAttempted}</div>
                       <div className="text-sm text-gray-600">Not Attempted</div>
-                      <div className="text-xs text-gray-500 mt-1">No database entries</div>
+                      <div className="text-xs text-gray-500 mt-1">No prediction attempts in database</div>
                     </CardContent>
                   </Card>
                   
@@ -418,7 +419,7 @@ export default function AnalyticsOverview() {
                         ❌ Incorrect ({modelDatasetPerformance.failed.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
-                        Attempted but is_prediction_correct = false AND multi_test_all_correct = false
+                        Attempted but prediction was wrong (is_prediction_correct = false AND multi_test_all_correct = false)
                       </p>
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
