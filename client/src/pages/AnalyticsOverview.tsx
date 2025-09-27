@@ -31,6 +31,7 @@ import { LeaderboardSection } from '@/components/overview/leaderboards/Leaderboa
 import { FeedbackModal } from '@/components/feedback/FeedbackModal';
 import { ModelDebugModal } from '@/components/ModelDebugModal';
 import { ModelPerformanceCard } from '@/components/ui/ModelPerformanceCard';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 
 // Import hooks that follow proper repository pattern
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
@@ -402,9 +403,7 @@ export default function AnalyticsOverview() {
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         {modelDatasetPerformance.solved.map((puzzleId) => (
-                          <Badge key={puzzleId} variant="outline" className="text-green-700 border-green-300 bg-green-50">
-                            {puzzleId}
-                          </Badge>
+                          <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
                         ))}
                       </div>
                       {modelDatasetPerformance.solved.length === 0 && (
@@ -425,9 +424,7 @@ export default function AnalyticsOverview() {
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         {modelDatasetPerformance.failed.map((puzzleId) => (
-                          <Badge key={puzzleId} variant="outline" className="text-red-700 border-red-300 bg-red-50">
-                            {puzzleId}
-                          </Badge>
+                          <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
                         ))}
                       </div>
                       {modelDatasetPerformance.failed.length === 0 && (
@@ -448,14 +445,7 @@ export default function AnalyticsOverview() {
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         {modelDatasetPerformance.notAttempted.map((puzzleId) => (
-                          <Badge 
-                            key={puzzleId} 
-                            variant="outline" 
-                            className="text-gray-700 border-gray-300 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                            onClick={() => window.open(`/puzzle/${puzzleId}`, '_blank')}
-                          >
-                            {puzzleId}
-                          </Badge>
+                          <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="neutral" />
                         ))}
                       </div>
                       {modelDatasetPerformance.notAttempted.length === 0 && (
