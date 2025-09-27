@@ -19,6 +19,7 @@ The `flexible-puzzle-processor.ts` script is a comprehensive replacement for:
 - ✅ **Flexible puzzle sources** - directories, specific IDs, database queries
 - ✅ **Database integration** for status checking and result validation
 - ✅ **Configurable concurrency** with rate limiting and batching
+- ✅ **Proper architecture** - follows same 2-step pattern as web UI (analyze then save)
 
 ## Quick Start
 
@@ -39,13 +40,22 @@ npm run process -- --mode retry --source ids --ids "08573cc6,0becf7df,0d87d2a6"
 ## Operation Modes
 
 ### 1. Analyze Mode (`--mode analyze`)
-Triggers AI analysis for puzzles and saves results to database.
+Triggers AI analysis for puzzles and saves results to database using proper 2-step pattern.
 
 **Features:**
-- Sends puzzles to AI models for analysis
-- Saves results directly to database via API
+- Sends puzzles to AI models for analysis (step 1: `/api/puzzle/analyze`)
+- Saves results to database via separate API call (step 2: `/api/puzzle/save-explained`)
+- Follows same architecture as frontend to maintain consistency
 - Shows validation results in real-time
 - Records failures for retry
+
+**Architecture Note:**
+This processor follows the established "database-first" pattern:
+1. Analyze → get AI response
+2. Save → store to database
+3. Validate → check results
+
+This ensures separation of concerns and consistency with the web UI.
 
 **Example:**
 ```bash
