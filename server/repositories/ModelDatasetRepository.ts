@@ -1,11 +1,13 @@
 /**
  * 
- * Author: Claude 4 Sonnet
- * Date: 2025-09-26T16:03:24-04:00
+ * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR)
+ * Date: 2025-09-26T20:43:42-04:00
  * PURPOSE: REAL database queries for model performance on ANY ARC dataset.
  * Dynamic dataset selection like retry-failed-puzzles.ts - no hardcoded puzzle IDs!
- * Shows which puzzles each model solved correctly (is_prediction_correct OR multi_test_all_correct), 
- * failed, or hasn't attempted. Based on puzzle-analysis.ts exact query logic.
+ * FIXED: Correct three-way classification using explicit boolean checks (not just NULL fallback)
+ * - CORRECT: is_prediction_correct = true OR multi_test_all_correct = true
+ * - INCORRECT: is_prediction_correct = false OR multi_test_all_correct = false  
+ * - NOT ATTEMPTED: No entry OR indeterminate (NULL correctness values)
  * SRP and DRY check: Pass - Single responsibility for model dataset performance, reuses database connection patterns
  */
 
@@ -137,16 +139,20 @@ export class ModelDatasetRepository extends BaseRepository {
           summary: { correct: 0, incorrect: 0, notAttempted: 0, totalPuzzles: 0 }
         };
       }
-      // Use EXACT same logic as AccuracyRepository.getPureAccuracyStats()
+      // FIXED: Use proper three-way classification like existing working code
       const attemptedQuery = `
         SELECT DISTINCT
           puzzle_id,
           CASE
-            -- CORRECT: Either single-test OR multi-test correct
+            -- CORRECT: Either single-test OR multi-test explicitly correct (true values)
             WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 'correct'
             
-            -- INCORRECT: Everything else that was attempted (has prediction grids)
-            ELSE 'incorrect'
+            -- INCORRECT: Either single-test OR multi-test explicitly incorrect (false values)
+            WHEN is_prediction_correct = false OR multi_test_all_correct = false THEN 'incorrect'
+            
+            -- INDETERMINATE: Has predictions but correctness not determined (NULLs)
+            -- These will be treated as "not attempted" since validation failed
+            ELSE 'indeterminate'
           END as result,
           created_at
         FROM explanations
@@ -159,7 +165,7 @@ export class ModelDatasetRepository extends BaseRepository {
       const result = await this.query(attemptedQuery, [modelName, datasetPuzzles]);
       
       // Process results to get unique puzzles (most recent attempt for each)
-      const attemptedPuzzles = new Map<string, 'correct' | 'incorrect'>();
+      const attemptedPuzzles = new Map<string, 'correct' | 'incorrect' | 'indeterminate'>();
       
       for (const row of result.rows) {
         if (!attemptedPuzzles.has(row.puzzle_id)) {
@@ -180,7 +186,8 @@ export class ModelDatasetRepository extends BaseRepository {
         } else if (result === 'incorrect') {
           incorrect.push(puzzleId);
         } else {
-          // Actually not attempted - no database entry at all
+          // Either not attempted OR indeterminate (has predictions but no correctness determination)
+          // Both treated as "not attempted" since we can't confirm success
           notAttempted.push(puzzleId);
         }
       }

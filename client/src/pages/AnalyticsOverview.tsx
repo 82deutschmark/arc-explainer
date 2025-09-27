@@ -419,7 +419,7 @@ export default function AnalyticsOverview() {
                         ❌ Incorrect ({modelDatasetPerformance.failed.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
-                        Attempted but prediction was wrong (is_prediction_correct = false AND multi_test_all_correct = false)
+                        Attempted but prediction was wrong (is_prediction_correct = false OR multi_test_all_correct = false)
                       </p>
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
