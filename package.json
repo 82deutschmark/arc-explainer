@@ -18,6 +18,7 @@
     "ap": "node --import tsx puzzle-analysis.ts",
     "au": "node --import tsx analyze-unsolved-puzzles.ts",
     "retry": "node --import tsx retry-failed-puzzles.ts",
+    "process": "node --import tsx flexible-puzzle-processor.ts",
     "openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
     "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts"
   },
