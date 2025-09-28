@@ -441,14 +441,14 @@ export const puzzleController = {
    * Get puzzle statistics for the puzzle database viewer.
    * Returns a comprehensive list of ALL puzzles with their performance metrics.
    * Shows both analyzed puzzles (with performance data) and unexplored puzzles.
-   * 
+   *
    * @param req - Express request object
    * @param res - Express response object
    */
   async getPuzzleStats(req: Request, res: Response) {
     try {
       const { includeRichMetrics = 'true', limit = '3000' } = req.query;
-      
+
       const filters = {
         includeRichMetrics: includeRichMetrics === 'true'
       };
@@ -463,6 +463,145 @@ export const puzzleController = {
     } catch (error) {
       logger.error('Error fetching puzzle stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch puzzle stats', 'An error occurred while fetching puzzle statistics'));
+    }
+  },
+
+  /**
+   * Analyze a list of puzzle IDs to see which models solved them
+   * Based on puzzle-analysis.ts functionality but with dynamic puzzle IDs
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async analyzeList(req: Request, res: Response) {
+    try {
+      const { puzzleIds } = req.body;
+
+      if (!puzzleIds || !Array.isArray(puzzleIds) || puzzleIds.length === 0) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid puzzle IDs',
+          'Request body must contain an array of puzzle IDs'
+        ));
+      }
+
+      // Validate puzzle IDs are strings and reasonable length
+      if (puzzleIds.length > 500) {
+        return res.status(400).json(formatResponse.error(
+          'Too many puzzle IDs',
+          'Maximum 500 puzzle IDs allowed per request'
+        ));
+      }
+
+      for (const id of puzzleIds) {
+        if (typeof id !== 'string' || id.length === 0) {
+          return res.status(400).json(formatResponse.error(
+            'Invalid puzzle ID format',
+            'All puzzle IDs must be non-empty strings'
+          ));
+        }
+      }
+
+      logger.debug(`Analyzing ${puzzleIds.length} puzzles for model performance`, 'puzzle-controller');
+
+      // Get correct models for each puzzle
+      const puzzleResults = [];
+      for (const puzzleId of puzzleIds) {
+        try {
+          const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+          const correctModels = explanations
+            .filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true)
+            .map(exp => exp.modelName);
+
+          // Remove duplicates
+          const uniqueCorrectModels = [...new Set(correctModels)];
+
+          puzzleResults.push({
+            puzzle_id: puzzleId,
+            correct_models: uniqueCorrectModels,
+            total_attempts: explanations.length
+          });
+        } catch (error) {
+          logger.error(`Error querying puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
+          puzzleResults.push({
+            puzzle_id: puzzleId,
+            correct_models: [],
+            total_attempts: 0
+          });
+        }
+      }
+
+      // Categorize puzzles by status
+      const puzzleStatus = {
+        solved: [] as string[],
+        tested_but_not_solved: [] as string[],
+        not_tested: [] as string[],
+        missing_from_db: [] as string[]
+      };
+
+      // Get all unique puzzle IDs that have been tested (exist in database)
+      const allTestedPuzzles = new Set<string>();
+      const allSolvedPuzzles = new Set<string>();
+
+      for (const result of puzzleResults) {
+        if (result.total_attempts > 0) {
+          allTestedPuzzles.add(result.puzzle_id);
+          if (result.correct_models.length > 0) {
+            allSolvedPuzzles.add(result.puzzle_id);
+          }
+        }
+      }
+
+      // Categorize each requested puzzle
+      for (const puzzleId of puzzleIds) {
+        if (allSolvedPuzzles.has(puzzleId)) {
+          puzzleStatus.solved.push(puzzleId);
+        } else if (allTestedPuzzles.has(puzzleId)) {
+          puzzleStatus.tested_but_not_solved.push(puzzleId);
+        } else {
+          puzzleStatus.not_tested.push(puzzleId);
+        }
+      }
+
+      // Generate model summary (which models solved which puzzles)
+      const modelToPuzzles = new Map<string, string[]>();
+
+      for (const result of puzzleResults) {
+        if (result.correct_models.length > 0) {
+          for (const model of result.correct_models) {
+            if (!modelToPuzzles.has(model)) {
+              modelToPuzzles.set(model, []);
+            }
+            modelToPuzzles.get(model)!.push(result.puzzle_id);
+          }
+        }
+      }
+
+      // Sort models by number of puzzles solved (descending)
+      const modelSummary = Array.from(modelToPuzzles.entries())
+        .map(([model, puzzles]) => ({
+          modelName: model,
+          solvedPuzzles: puzzles.sort(),
+          solvedCount: puzzles.length
+        }))
+        .sort((a, b) => b.solvedCount - a.solvedCount);
+
+      const response = {
+        puzzleResults,
+        puzzleStatus,
+        modelSummary,
+        summary: {
+          totalPuzzles: puzzleIds.length,
+          solvedPuzzles: puzzleStatus.solved.length,
+          testedButNotSolved: puzzleStatus.tested_but_not_solved.length,
+          notTested: puzzleStatus.not_tested.length,
+          modelsWithSolutions: modelSummary.length
+        }
+      };
+
+      res.json(formatResponse.success(response));
+    } catch (error) {
+      logger.error('Error analyzing puzzle list: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to analyze puzzle list', 'An error occurred while analyzing the puzzle list'));
     }
   }
 };

@@ -20,11 +20,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, MessageSquare, Brain, Settings } from 'lucide-react';
+import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, MessageSquare, Brain, Settings, Database, BarChart3 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
+import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
 import type { ExplanationData } from '@/types/puzzle';
 
 const LAST_MODEL_STORAGE_KEY = 'puzzleFeedback:lastModel';
@@ -57,6 +59,10 @@ export default function PuzzleFeedback() {
   const [solvingStrategy, setSolvingStrategy] = useState('');
   const [hints, setHints] = useState('');
   const [confidence, setConfidence] = useState<number>(50);
+
+  // Puzzle list analysis state
+  const [puzzleListInput, setPuzzleListInput] = useState('');
+  const { analyzePuzzleList, data: puzzleAnalysisData, isLoading: isAnalyzing, isError: analysisError, error: analysisErrorDetails } = usePuzzleListAnalysis();
 
 // Set page title
   React.useEffect(() => {
@@ -279,18 +285,240 @@ export default function PuzzleFeedback() {
     }
   };
 
+  // Handle puzzle list analysis
+  const handleAnalyzePuzzleList = () => {
+    if (!puzzleListInput.trim()) {
+      return;
+    }
+
+    // Parse puzzle IDs from input (comma or newline separated)
+    const puzzleIds = puzzleListInput
+      .split(/[,\n]/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+
+    if (puzzleIds.length === 0) {
+      return;
+    }
+
+    analyzePuzzleList(puzzleIds);
+  };
+
+  // Copy example puzzle list to clipboard
+  const copyExamplePuzzleList = () => {
+    const exampleList = "7e0986d6,543a7ed5,f76d97a5,484b58aa,4c4377d9,855e0971,3618c87e,88a62173,40853293,85c4e7cd";
+    navigator.clipboard.writeText(exampleList);
+  };
+
 
   return (
     <div className="container mx-auto p-1 max-w-7xl space-y-1">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
         <div>
-          <h1 className="text-lg font-semibold">Test Your Solution</h1>
+          <h1 className="text-lg font-semibold">Puzzle Analysis & Testing</h1>
           <p className="text-xs text-gray-600">
-            Enter a puzzle ID and paste your predicted grid to see if it's correct
+            Analyze multiple puzzles or test individual solutions
           </p>
         </div>
         <Grid3X3 className="h-4 w-4 text-blue-600" />
+      </div>
+
+      {/* Puzzle List Analysis Section */}
+      <Card className="mb-1">
+        <CardHeader className="pb-1">
+          <CardTitle className="text-sm flex items-center gap-1">
+            <BarChart3 className="h-3 w-3 text-blue-500" />
+            Analyze Multiple Puzzles
+          </CardTitle>
+          <p className="text-xs text-gray-600">
+            Enter puzzle IDs to see which models solved them and get performance insights
+          </p>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-2">
+          <div>
+            <div className="flex items-center justify-between mb-0.5">
+              <Label htmlFor="puzzleListInput" className="text-xs font-medium">Puzzle IDs</Label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={copyExamplePuzzleList}
+                className="flex items-center gap-1 h-5 px-1 text-xs"
+              >
+                <Copy className="h-2 w-2" />
+                Example
+              </Button>
+            </div>
+            <Textarea
+              id="puzzleListInput"
+              value={puzzleListInput}
+              onChange={(e) => setPuzzleListInput(e.target.value)}
+              placeholder="7e0986d6,543a7ed5,f76d97a5&#10;Or one per line:&#10;7e0986d6&#10;543a7ed5&#10;f76d97a5"
+              className="font-mono text-xs h-12"
+            />
+            <p className="text-xs text-gray-500 mt-0.5">
+              Comma or newline separated puzzle IDs
+            </p>
+          </div>
+
+          <Button
+            onClick={handleAnalyzePuzzleList}
+            disabled={!puzzleListInput.trim() || isAnalyzing}
+            className="w-full h-6"
+            size="sm"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="h-2 w-2 mr-1 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Database className="h-2 w-2 mr-1" />
+                Analyze Puzzles
+              </>
+            )}
+          </Button>
+
+          {/* Analysis Results */}
+          {analysisError && (
+            <Alert className="py-1">
+              <XCircle className="h-3 w-3" />
+              <AlertDescription className="text-xs">
+                Error: {analysisErrorDetails?.message || 'Failed to analyze puzzles'}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {puzzleAnalysisData && (
+            <div className="space-y-2 mt-2">
+              {/* Summary Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <Card className="bg-green-50 border-green-200">
+                  <CardContent className="p-2">
+                    <div className="text-lg font-bold text-green-700">{puzzleAnalysisData.summary.solvedPuzzles}</div>
+                    <div className="text-xs text-green-600">Solved</div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-red-50 border-red-200">
+                  <CardContent className="p-2">
+                    <div className="text-lg font-bold text-red-700">{puzzleAnalysisData.summary.testedButNotSolved}</div>
+                    <div className="text-xs text-red-600">Tested Failed</div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-50 border-gray-200">
+                  <CardContent className="p-2">
+                    <div className="text-lg font-bold text-gray-700">{puzzleAnalysisData.summary.notTested}</div>
+                    <div className="text-xs text-gray-600">Not Tested</div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardContent className="p-2">
+                    <div className="text-lg font-bold text-blue-700">{puzzleAnalysisData.summary.modelsWithSolutions}</div>
+                    <div className="text-xs text-blue-600">Models</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Detailed Results */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                {/* Solved Puzzles */}
+                <Card>
+                  <CardHeader className="pb-1">
+                    <CardTitle className="text-green-700 flex items-center gap-1 text-sm">
+                      ✅ Solved ({puzzleAnalysisData.puzzleStatus.solved.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-3 gap-1 text-xs">
+                      {puzzleAnalysisData.puzzleStatus.solved.map((puzzleId) => (
+                        <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
+                      ))}
+                    </div>
+                    {puzzleAnalysisData.puzzleStatus.solved.length === 0 && (
+                      <p className="text-sm text-gray-500 italic">No puzzles solved</p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Model Summary */}
+                <Card>
+                  <CardHeader className="pb-1">
+                    <CardTitle className="text-blue-700 flex items-center gap-1 text-sm">
+                      🏆 Top Models
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="max-h-40 overflow-y-auto">
+                    {puzzleAnalysisData.modelSummary.slice(0, 5).map((model, index) => (
+                      <div key={model.modelName} className="flex justify-between items-center py-1 text-xs">
+                        <span className="truncate">{model.modelName}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {model.solvedCount}
+                        </Badge>
+                      </div>
+                    ))}
+                    {puzzleAnalysisData.modelSummary.length === 0 && (
+                      <p className="text-sm text-gray-500 italic">No models found</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Failed and Not Tested */}
+              {(puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length > 0 || puzzleAnalysisData.puzzleStatus.not_tested.length > 0) && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                  {puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length > 0 && (
+                    <Card>
+                      <CardHeader className="pb-1">
+                        <CardTitle className="text-red-700 flex items-center gap-1 text-sm">
+                          ❌ Tested but Failed ({puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="max-h-32 overflow-y-auto">
+                        <div className="grid grid-cols-3 gap-1 text-xs">
+                          {puzzleAnalysisData.puzzleStatus.tested_but_not_solved.map((puzzleId) => (
+                            <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {puzzleAnalysisData.puzzleStatus.not_tested.length > 0 && (
+                    <Card>
+                      <CardHeader className="pb-1">
+                        <CardTitle className="text-gray-700 flex items-center gap-1 text-sm">
+                          ⏳ Not Tested ({puzzleAnalysisData.puzzleStatus.not_tested.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="max-h-32 overflow-y-auto">
+                        <div className="grid grid-cols-3 gap-1 text-xs">
+                          {puzzleAnalysisData.puzzleStatus.not_tested.map((puzzleId) => (
+                            <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="neutral" />
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Individual Puzzle Testing Section */}
+      <div className="border-t border-gray-200 pt-2">
+        <h2 className="text-sm font-semibold mb-1 flex items-center gap-1">
+          <Lightbulb className="h-3 w-3 text-yellow-500" />
+          Test Individual Solution
+        </h2>
+        <p className="text-xs text-gray-600 mb-2">
+          Load a specific puzzle and test your solution
+        </p>
       </div>
 
       {/* Puzzle ID Input */}
