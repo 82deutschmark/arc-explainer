@@ -291,10 +291,17 @@ export default function PuzzleFeedback() {
       return;
     }
 
-    // Parse puzzle IDs from input (comma or newline separated)
+    // Parse puzzle IDs from input - handle multiple formats:
+    // - 'id1', 'id2', 'id3' (quoted, comma-separated)
+    // - id1,id2,id3 (unquoted, comma-separated)
+    // - id1\nid2\nid3 (newline-separated)
+    // - Mixed formats
     const puzzleIds = puzzleListInput
       .split(/[,\n]/)
-      .map(id => id.trim())
+      .map(id => {
+        // Remove quotes and trim whitespace
+        return id.trim().replace(/^['"`]|['"`]$/g, '');
+      })
       .filter(id => id.length > 0);
 
     if (puzzleIds.length === 0) {
@@ -306,7 +313,7 @@ export default function PuzzleFeedback() {
 
   // Copy example puzzle list to clipboard
   const copyExamplePuzzleList = () => {
-    const exampleList = "7e0986d6,543a7ed5,f76d97a5,484b58aa,4c4377d9,855e0971,3618c87e,88a62173,40853293,85c4e7cd";
+    const exampleList = "'9aec4887', 'b782dc8a', '4258a5f9', '810b9b61', '06df4c85'";
     navigator.clipboard.writeText(exampleList);
   };
 
@@ -353,7 +360,7 @@ export default function PuzzleFeedback() {
               id="puzzleListInput"
               value={puzzleListInput}
               onChange={(e) => setPuzzleListInput(e.target.value)}
-              placeholder="7e0986d6,543a7ed5,f76d97a5&#10;Or one per line:&#10;7e0986d6&#10;543a7ed5&#10;f76d97a5"
+              placeholder="'9aec4887', 'b782dc8a', '4258a5f9'&#10;Or unquoted: 9aec4887,b782dc8a,4258a5f9&#10;Or one per line:&#10;9aec4887&#10;b782dc8a"
               className="font-mono text-xs h-12"
             />
             <p className="text-xs text-gray-500 mt-0.5">
