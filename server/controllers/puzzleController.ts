@@ -467,8 +467,8 @@ export const puzzleController = {
   },
 
   /**
-   * Analyze a list of puzzle IDs to see which models solved them
-   * Based on puzzle-analysis.ts functionality but with dynamic puzzle IDs
+   * Analyze a list of puzzle IDs to see which models got them correct/incorrect/not attempted
+   * Shows model performance categorization (inverse of model dataset analysis)
    *
    * @param req - Express request object
    * @param res - Express response object
@@ -503,98 +503,102 @@ export const puzzleController = {
 
       logger.debug(`Analyzing ${puzzleIds.length} puzzles for model performance`, 'puzzle-controller');
 
-      // Get correct models for each puzzle
-      const puzzleResults = [];
+      // Get all explanations for the provided puzzles
+      const allExplanations = [];
       for (const puzzleId of puzzleIds) {
         try {
           const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
-          const correctModels = explanations
-            .filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true)
-            .map(exp => exp.modelName);
-
-          // Remove duplicates
-          const uniqueCorrectModels = [...new Set(correctModels)];
-
-          puzzleResults.push({
-            puzzle_id: puzzleId,
-            correct_models: uniqueCorrectModels,
-            total_attempts: explanations.length
-          });
+          allExplanations.push(...explanations.map(exp => ({ ...exp, puzzleId })));
         } catch (error) {
           logger.error(`Error querying puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
-          puzzleResults.push({
-            puzzle_id: puzzleId,
-            correct_models: [],
-            total_attempts: 0
-          });
         }
       }
 
-      // Categorize puzzles by status
-      const puzzleStatus = {
-        solved: [] as string[],
-        tested_but_not_solved: [] as string[],
-        not_tested: [] as string[],
-        missing_from_db: [] as string[]
-      };
+      // Get all unique models from the database to categorize them
+      const modelDatasetRepo = await import('../repositories/ModelDatasetRepository.ts');
+      const allModels = await modelDatasetRepo.default.getAvailableModels();
 
-      // Get all unique puzzle IDs that have been tested (exist in database)
-      const allTestedPuzzles = new Set<string>();
-      const allSolvedPuzzles = new Set<string>();
+      // Build model-puzzle matrix
+      const modelPuzzleMatrix = [];
 
-      for (const result of puzzleResults) {
-        if (result.total_attempts > 0) {
-          allTestedPuzzles.add(result.puzzle_id);
-          if (result.correct_models.length > 0) {
-            allSolvedPuzzles.add(result.puzzle_id);
+      for (const modelName of allModels) {
+        const puzzleStatuses = [];
+
+        for (const puzzleId of puzzleIds) {
+          const explanationsForModelAndPuzzle = allExplanations.filter(
+            exp => exp.modelName === modelName && exp.puzzleId === puzzleId
+          );
+
+          if (explanationsForModelAndPuzzle.length === 0) {
+            // Model never attempted this puzzle
+            puzzleStatuses.push({
+              puzzleId,
+              status: 'not_attempted'
+            });
+          } else {
+            // Check if any attempt was correct
+            const hasCorrectAttempt = explanationsForModelAndPuzzle.some(
+              exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true
+            );
+
+            puzzleStatuses.push({
+              puzzleId,
+              status: hasCorrectAttempt ? 'correct' : 'incorrect'
+            });
           }
         }
+
+        modelPuzzleMatrix.push({
+          modelName,
+          puzzleStatuses
+        });
       }
 
-      // Categorize each requested puzzle
+      // Sort by model name for consistent output
+      modelPuzzleMatrix.sort((a, b) => a.modelName.localeCompare(b.modelName));
+
+      // Generate per-puzzle results for additional context
+      const puzzleResults = [];
       for (const puzzleId of puzzleIds) {
-        if (allSolvedPuzzles.has(puzzleId)) {
-          puzzleStatus.solved.push(puzzleId);
-        } else if (allTestedPuzzles.has(puzzleId)) {
-          puzzleStatus.tested_but_not_solved.push(puzzleId);
+        const explanationsForPuzzle = allExplanations.filter(exp => exp.puzzleId === puzzleId);
+        const correctModels = explanationsForPuzzle
+          .filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true)
+          .map(exp => exp.modelName);
+
+        puzzleResults.push({
+          puzzle_id: puzzleId,
+          correct_models: [...new Set(correctModels)].sort(),
+          total_attempts: explanationsForPuzzle.length
+        });
+      }
+
+      // Calculate summary stats from matrix
+      let perfectModels = 0;
+      let partialModels = 0;
+      let notAttemptedModels = 0;
+
+      for (const model of modelPuzzleMatrix) {
+        const correctCount = model.puzzleStatuses.filter(p => p.status === 'correct').length;
+        const attemptedCount = model.puzzleStatuses.filter(p => p.status !== 'not_attempted').length;
+
+        if (attemptedCount === 0) {
+          notAttemptedModels++;
+        } else if (correctCount === puzzleIds.length) {
+          perfectModels++;
         } else {
-          puzzleStatus.not_tested.push(puzzleId);
+          partialModels++;
         }
       }
-
-      // Generate model summary (which models solved which puzzles)
-      const modelToPuzzles = new Map<string, string[]>();
-
-      for (const result of puzzleResults) {
-        if (result.correct_models.length > 0) {
-          for (const model of result.correct_models) {
-            if (!modelToPuzzles.has(model)) {
-              modelToPuzzles.set(model, []);
-            }
-            modelToPuzzles.get(model)!.push(result.puzzle_id);
-          }
-        }
-      }
-
-      // Sort models by number of puzzles solved (descending)
-      const modelSummary = Array.from(modelToPuzzles.entries())
-        .map(([model, puzzles]) => ({
-          modelName: model,
-          solvedPuzzles: puzzles.sort(),
-          solvedCount: puzzles.length
-        }))
-        .sort((a, b) => b.solvedCount - a.solvedCount);
 
       const response = {
+        modelPuzzleMatrix,
         puzzleResults,
-        puzzleStatus,
-        modelSummary,
         summary: {
           totalPuzzles: puzzleIds.length,
-          solvedPuzzles: puzzleStatus.solved.length,
-          testedButNotSolved: puzzleStatus.tested_but_not_solved.length,
-          notTested: puzzleStatus.not_tested.length,
-          modelsWithSolutions: modelSummary.length
+          totalModels: allModels.length,
+          perfectModels,      // Got ALL puzzles correct
+          partialModels,      // Got some correct, some incorrect
+          notAttemptedModels  // Never attempted any
         }
       };
 
