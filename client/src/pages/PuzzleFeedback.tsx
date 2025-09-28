@@ -11,6 +11,8 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
+import { useSolutions } from '@/hooks/useSolutions';
+import { useModels } from '@/hooks/useModels';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,11 +20,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb } from 'lucide-react';
+import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, MessageSquare, Brain, Settings } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import type { ExplanationData } from '@/types/puzzle';
+
+const LAST_MODEL_STORAGE_KEY = 'puzzleFeedback:lastModel';
+const LAST_CUSTOM_MODEL_STORAGE_KEY = 'puzzleFeedback:lastCustomModel';
 
 export default function PuzzleFeedback() {
   const { taskId: paramTaskId } = useParams<{ taskId?: string }>();
@@ -31,15 +37,78 @@ export default function PuzzleFeedback() {
   // State for puzzle ID input and grid input
   const [puzzleId, setPuzzleId] = useState(paramTaskId || '');
   const [gridInput, setGridInput] = useState('');
-  const [validationError, setValidationError] = useState<string>('');
 
-  // Set page title
+  // Structured explanation form state
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(LAST_MODEL_STORAGE_KEY) || 'x-ai/grok-4';
+    }
+    return 'x-ai/grok-4';
+  });
+
+  const [customModelName, setCustomModelName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(LAST_CUSTOM_MODEL_STORAGE_KEY) || '';
+    }
+    return '';
+  });
+
+  const [patternDescription, setPatternDescription] = useState('');
+  const [solvingStrategy, setSolvingStrategy] = useState('');
+  const [hints, setHints] = useState('');
+  const [confidence, setConfidence] = useState<number>(50);
+
+// Set page title
   React.useEffect(() => {
     document.title = puzzleId ? `Test Solution - ${puzzleId}` : 'Test Your Solution';
   }, [puzzleId]);
 
   // Fetch puzzle data when puzzleId changes
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(puzzleId || undefined);
+
+  // Fetch community solutions and available models
+  const { solutions, submitSolutionAsync, isSubmitting } = useSolutions(puzzleId || '');
+  const { data: models } = useModels();
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (selectedModel) {
+      localStorage.setItem(LAST_MODEL_STORAGE_KEY, selectedModel);
+    }
+  }, [selectedModel]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const trimmedName = customModelName.trim();
+    if (trimmedName) {
+      localStorage.setItem(LAST_CUSTOM_MODEL_STORAGE_KEY, trimmedName);
+    } else {
+      localStorage.removeItem(LAST_CUSTOM_MODEL_STORAGE_KEY);
+    }
+  }, [customModelName]);
+
+  React.useEffect(() => {
+    if (!models || models.length === 0) {
+      return;
+    }
+
+    const isValidSelection =
+      selectedModel === 'custom' ||
+      selectedModel === 'Human User' ||
+      models.some((model) => model.key === selectedModel);
+
+    if (!isValidSelection) {
+      const grokModel = models.find((model) => model.key === 'x-ai/grok-4');
+      const fallbackModel = grokModel?.key || models[0]?.key || 'Human User';
+      setSelectedModel(fallbackModel);
+    }
+  }, [models, selectedModel]);
 
   // Parse and validate user grid input
   const { parsedGrid, isValidFormat, formatError } = useMemo(() => {
@@ -153,37 +222,92 @@ export default function PuzzleFeedback() {
     navigator.clipboard.writeText(exampleGrid);
   };
 
+  // Handle structured explanation submission (like LLM analysis)
+  const handleSubmitExplanation = async () => {
+    if (
+      !puzzleId.trim() ||
+      !parsedGrid ||
+      !isValidFormat ||
+      !patternDescription.trim() ||
+      !solvingStrategy.trim()
+    ) {
+      return;
+    }
+
+    try {
+      const resolvedModelName =
+        selectedModel === 'custom'
+          ? customModelName.trim() || 'Custom Model'
+          : selectedModel || 'Human User';
+
+      const hintsArray = hints.trim()
+        ? hints.split('\n').map((hint) => hint.trim()).filter((hint) => hint.length > 0)
+        : [];
+
+      const formattedHints =
+        hintsArray.length > 0 ? hintsArray.map((hint) => `- ${hint}`) : ['- None provided'];
+
+      const formattedGrid = parsedGrid.map((row) => `  ${JSON.stringify(row)}`);
+
+      const solutionComment = [
+        `Puzzle ID: ${puzzleId.trim()}`,
+        `Model: ${resolvedModelName}`,
+        `Confidence: ${confidence}%`,
+        '',
+        'Pattern Description:',
+        patternDescription.trim(),
+        '',
+        'Solving Strategy:',
+        solvingStrategy.trim(),
+        '',
+        'Hints:',
+        ...formattedHints,
+        '',
+        'Predicted Output Grid:',
+        ...formattedGrid,
+      ].join('\n');
+
+      await submitSolutionAsync({ comment: solutionComment });
+
+      setGridInput('');
+      setPatternDescription('');
+      setSolvingStrategy('');
+      setHints('');
+      setConfidence(50);
+    } catch (error) {
+      console.error('Failed to submit solution explanation:', error);
+    }
+  };
+
+
   return (
-    <div className="container mx-auto p-3 max-w-6xl space-y-3">
+    <div className="container mx-auto p-1 max-w-7xl space-y-1">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-1">
         <div>
-          <h1 className="text-2xl font-bold">Test Your Solution</h1>
-          <p className="text-gray-600">
+          <h1 className="text-lg font-semibold">Test Your Solution</h1>
+          <p className="text-xs text-gray-600">
             Enter a puzzle ID and paste your predicted grid to see if it's correct
           </p>
         </div>
-        <Grid3X3 className="h-8 w-8 text-blue-600" />
+        <Grid3X3 className="h-4 w-4 text-blue-600" />
       </div>
 
       {/* Puzzle ID Input */}
-      <Card>
-        <CardHeader>
-          <CardTitle>1. Select Puzzle</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handlePuzzleIdSubmit} className="flex gap-3">
+      <Card className="mb-1">
+        <CardContent className="p-2">
+          <form onSubmit={handlePuzzleIdSubmit} className="flex gap-1 items-end">
             <div className="flex-1">
-              <Label htmlFor="puzzleId">Puzzle ID</Label>
+              <Label htmlFor="puzzleId" className="text-xs font-medium">Puzzle ID</Label>
               <Input
                 id="puzzleId"
                 value={puzzleId}
                 onChange={(e) => setPuzzleId(e.target.value)}
                 placeholder="e.g., 0520fde7"
-                className="mt-1"
+                className="mt-0.5 h-6 text-sm"
               />
             </div>
-            <Button type="submit" className="mt-6">
+            <Button type="submit" size="sm" className="h-6 px-2 text-xs">
               Load Puzzle
             </Button>
           </form>
@@ -193,10 +317,10 @@ export default function PuzzleFeedback() {
       {/* Loading state */}
       {isLoadingTask && (
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-2">
             <div className="flex items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin mr-2" />
-              <span>Loading puzzle...</span>
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              <span className="text-sm">Loading puzzle...</span>
             </div>
           </CardContent>
         </Card>
@@ -204,9 +328,9 @@ export default function PuzzleFeedback() {
 
       {/* Error state */}
       {taskError && (
-        <Alert>
-          <XCircle className="h-4 w-4" />
-          <AlertDescription>
+        <Alert className="py-1">
+          <XCircle className="h-3 w-3" />
+          <AlertDescription className="text-xs">
             Failed to load puzzle: {taskError.message}
           </AlertDescription>
         </Alert>
@@ -215,16 +339,16 @@ export default function PuzzleFeedback() {
       {/* Show puzzle and solution input when puzzle is loaded */}
       {task && (
         <>
-          {/* Puzzle Display */}
-          <CollapsibleCard
-            title={`Puzzle ${puzzleId} - Question`}
-            icon={Grid3X3}
-            defaultOpen={true}
-            headerDescription={
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-600">Understand the pattern from training examples, then solve the test case</p>
+          {/* Solution Input Section - Now at top */}
+          <Card className="mb-1">
+            <CardHeader className="pb-1">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Lightbulb className="h-3 w-3 text-yellow-500" />
+                  Enter Your Solution
+                </CardTitle>
                 {task.source && (
-                  <Badge variant="outline" className={`${
+                  <Badge variant="outline" className={`text-xs ${
                     task.source === 'ARC1' ? 'bg-blue-50 text-blue-700' :
                     task.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' :
                     task.source === 'ARC2' ? 'bg-purple-50 text-purple-700' :
@@ -235,72 +359,19 @@ export default function PuzzleFeedback() {
                   </Badge>
                 )}
               </div>
-            }
-          >
-            <div className="space-y-6">
-              {/* Training Examples */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  Training Examples
-                  <Badge variant="outline">{task.train.length} examples</Badge>
-                </h3>
-                <div className="space-y-4">
-                  {task.train.map((example, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-3">
-                      <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
-                      <div className="flex items-center justify-center gap-6">
-                        <PuzzleGrid
-                          grid={example.input}
-                          title="Input"
-                          showEmojis={false}
-                        />
-                        <div className="text-3xl text-gray-400">→</div>
-                        <PuzzleGrid
-                          grid={example.output}
-                          title="Output"
-                          showEmojis={false}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Test Case Input */}
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold mb-3 text-center">Test Case - What should the output be?</h3>
-                <div className="flex justify-center">
-                  <PuzzleGrid
-                    grid={task.test[0].input}
-                    title="Test Input - Solve This!"
-                    showEmojis={false}
-                    highlight={true}
-                  />
-                </div>
-              </div>
-            </div>
-          </CollapsibleCard>
-
-          {/* Solution Input */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                2. Enter Your Solution
-                <Lightbulb className="h-5 w-5 text-yellow-500" />
-              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="pt-0 space-y-2">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="gridInput">Predicted Output Grid (JSON format)</Label>
+                <div className="flex items-center justify-between mb-0.5">
+                  <Label htmlFor="gridInput" className="text-xs font-medium">Predicted Output Grid</Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={copyExampleGrid}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 h-5 px-1 text-xs"
                   >
-                    <Copy className="h-3 w-3" />
-                    Copy Example Format
+                    <Copy className="h-2 w-2" />
+                    Example
                   </Button>
                 </div>
                 <Textarea
@@ -308,39 +379,168 @@ export default function PuzzleFeedback() {
                   value={gridInput}
                   onChange={(e) => setGridInput(e.target.value)}
                   placeholder="[[0,8,8,8,0],[8,0,0,0,8],[0,8,8,8,0],[8,0,0,0,8],[0,8,8,8,0]]"
-                  className="font-mono text-sm"
-                  rows={6}
+                  className="font-mono text-xs h-12"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter your solution as a 2D array. Numbers must be 0-9. Example: [[0,1],[2,3]] for a 2x2 grid.
+                <p className="text-xs text-gray-500 mt-0.5">
+                  2D array, numbers 0-9
                 </p>
               </div>
 
-              {/* Validation feedback */}
+              {/* Validation feedback and grid preview */}
               {gridInput && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {formatError ? (
-                    <Alert>
-                      <XCircle className="h-4 w-4" />
-                      <AlertDescription>{formatError}</AlertDescription>
+                    <Alert className="py-1">
+                      <XCircle className="h-3 w-3" />
+                      <AlertDescription className="text-xs">{formatError}</AlertDescription>
                     </Alert>
                   ) : isValidFormat && parsedGrid ? (
-                    <div className="space-y-2">
-                      <Alert className="border-green-200 bg-green-50">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <AlertDescription className="text-green-700">
-                          Valid grid format! Grid size: {parsedGrid.length}×{parsedGrid[0]?.length || 0}
+                    <div className="space-y-1">
+                      <Alert className="border-green-200 bg-green-50 py-1">
+                        <CheckCircle className="h-3 w-3 text-green-600" />
+                        <AlertDescription className="text-green-700 text-xs">
+                          Valid! {parsedGrid.length}×{parsedGrid[0]?.length || 0}
                         </AlertDescription>
                       </Alert>
 
+                      {/* Show the parsed grid visually */}
+                      <div className="border border-gray-200 rounded p-2 bg-gray-50">
+                        <h4 className="text-xs font-medium mb-1 text-center">Your Grid</h4>
+                        <div className="flex justify-center">
+                          <PuzzleGrid
+                            grid={parsedGrid}
+                            title=""
+                            showEmojis={false}
+                          />
+                        </div>
+                      </div>
+
                       {expectedGrid && !dimensionsMatch && (
-                        <Alert>
-                          <XCircle className="h-4 w-4" />
-                          <AlertDescription>
-                            Dimension mismatch! Your grid is {parsedGrid.length}×{parsedGrid[0]?.length || 0},
-                            but expected {expectedGrid.length}×{expectedGrid[0]?.length || 0}
+                        <Alert className="py-1">
+                          <XCircle className="h-3 w-3" />
+                          <AlertDescription className="text-xs">
+                            Wrong size! Expected {expectedGrid.length}×{expectedGrid[0]?.length || 0}
                           </AlertDescription>
                         </Alert>
+                      )}
+
+                      {/* Structured explanation submission form */}
+                      {dimensionsMatch && (
+                        <CollapsibleCard
+                          title="Submit Analysis"
+                          icon={Brain}
+                          defaultOpen={true}
+                          className="border-blue-200 bg-blue-50"
+                          headerDescription={
+                            <p className="text-xs text-gray-600">Structured analysis</p>
+                          }
+                        >
+                          <div className="space-y-2">
+                            {/* Model Selection */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label htmlFor="modelSelect" className="text-xs">Model</Label>
+                                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                                  <SelectTrigger className="mt-0.5 h-6">
+                                    <SelectValue placeholder="Select model" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Human User">Human</SelectItem>
+                                    <SelectItem value="custom">Custom</SelectItem>
+                                    {models?.map((model) => (
+                                      <SelectItem key={model.key} value={model.key}>
+                                        {model.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              {selectedModel === 'custom' && (
+                                <div>
+                                  <Label htmlFor="customModel" className="text-xs">Custom Name</Label>
+                                  <Input
+                                    id="customModel"
+                                    value={customModelName}
+                                    onChange={(e) => setCustomModelName(e.target.value)}
+                                    placeholder="Model name"
+                                    className="mt-0.5 h-6 text-xs"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Pattern & Strategy side by side */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label htmlFor="patternDescription" className="text-xs">Pattern *</Label>
+                                <Textarea
+                                  id="patternDescription"
+                                  value={patternDescription}
+                                  onChange={(e) => setPatternDescription(e.target.value)}
+                                  placeholder="Pattern description..."
+                                  className="mt-0.5 text-xs h-12"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="solvingStrategy" className="text-xs">Strategy *</Label>
+                                <Textarea
+                                  id="solvingStrategy"
+                                  value={solvingStrategy}
+                                  onChange={(e) => setSolvingStrategy(e.target.value)}
+                                  placeholder="Solving strategy..."
+                                  className="mt-0.5 text-xs h-12"
+                                  required
+                                />
+                              </div>
+                            </div>
+
+                            {/* Hints & Confidence */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label htmlFor="hints" className="text-xs">Hints</Label>
+                                <Textarea
+                                  id="hints"
+                                  value={hints}
+                                  onChange={(e) => setHints(e.target.value)}
+                                  placeholder="One per line..."
+                                  className="mt-0.5 text-xs h-8"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="confidence" className="text-xs">Confidence: {confidence}%</Label>
+                                <input
+                                  type="range"
+                                  id="confidence"
+                                  min="0"
+                                  max="100"
+                                  value={confidence}
+                                  onChange={(e) => setConfidence(parseInt(e.target.value))}
+                                  className="w-full mt-0.5"
+                                />
+                              </div>
+                            </div>
+
+                            <Button
+                              onClick={handleSubmitExplanation}
+                              disabled={isSubmitting || !patternDescription.trim() || !solvingStrategy.trim()}
+                              className="w-full h-6"
+                              size="sm"
+                            >
+                              {isSubmitting ? (
+                                <>
+                                  <Loader2 className="h-2 w-2 mr-1 animate-spin" />
+                                  Submitting...
+                                </>
+                              ) : (
+                                <>
+                                  <Brain className="h-2 w-2 mr-1" />
+                                  Submit Analysis
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </CollapsibleCard>
                       )}
                     </div>
                   ) : null}
@@ -349,20 +549,78 @@ export default function PuzzleFeedback() {
             </CardContent>
           </Card>
 
+          {/* Compact Puzzle Display - Side by Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            {/* Training Examples - Left Side */}
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Settings className="h-3 w-3" />
+                  Training Examples
+                  <Badge variant="outline" className="text-xs">{task.train.length}</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-1">
+                {task.train.map((example, index) => (
+                  <div key={index} className="border border-gray-200 rounded p-1">
+                    <h4 className="text-xs font-medium mb-1 text-center">Ex {index + 1}</h4>
+                    <div className="flex items-center justify-center gap-2">
+                      <PuzzleGrid
+                        grid={example.input}
+                        title=""
+                        showEmojis={false}
+                      />
+                      <div className="text-sm text-gray-400">→</div>
+                      <PuzzleGrid
+                        grid={example.output}
+                        title=""
+                        showEmojis={false}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Test Case - Right Side */}
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-sm flex items-center gap-1">
+                  <Grid3X3 className="h-3 w-3" />
+                  Test Case
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="border border-gray-200 rounded p-2 bg-yellow-50">
+                  <h4 className="text-xs font-medium mb-1 text-center">Solve This!</h4>
+                  <div className="flex justify-center">
+                    <PuzzleGrid
+                      grid={task.test[0].input}
+                      title=""
+                      showEmojis={false}
+                      highlight={true}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+
           {/* Results Display */}
           {syntheticExplanation && isValidFormat && dimensionsMatch && (
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Results</h2>
-                <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold">Results</h2>
+                <div className="flex items-center gap-1">
                   {isCorrect ? (
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
-                      <CheckCircle className="h-3 w-3 mr-1" />
+                    <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                      <CheckCircle className="h-2 w-2 mr-1" />
                       Correct!
                     </Badge>
                   ) : (
-                    <Badge className="bg-red-100 text-red-800 border-red-200">
-                      <XCircle className="h-3 w-3 mr-1" />
+                    <Badge className="bg-red-100 text-red-800 border-red-200 text-xs">
+                      <XCircle className="h-2 w-2 mr-1" />
                       Incorrect
                     </Badge>
                   )}
@@ -375,6 +633,48 @@ export default function PuzzleFeedback() {
                 testCases={task.test}
               />
             </div>
+          )}
+
+          {/* Community Solutions Display */}
+          {solutions.length > 0 && (
+            <CollapsibleCard
+              title={`Community Solutions (${solutions.length})`}
+              icon={Users}
+              defaultOpen={false}
+              headerDescription={
+                <p className="text-xs text-gray-600">Community solutions</p>
+              }
+            >
+              <div className="space-y-2">
+                {solutions.map((solution) => (
+                  <div key={solution.id} className="border border-gray-200 rounded p-2">
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="h-3 w-3 text-gray-500" />
+                        <span className="text-xs text-gray-500">
+                          {new Date(solution.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {solution.helpful_count !== undefined && (
+                          <Badge variant="outline" className="text-xs h-4">
+                            👍 {solution.helpful_count}
+                          </Badge>
+                        )}
+                        {solution.not_helpful_count !== undefined && solution.not_helpful_count > 0 && (
+                          <Badge variant="outline" className="text-xs h-4">
+                            👎 {solution.not_helpful_count}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-700 whitespace-pre-wrap">
+                      {solution.comment}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleCard>
           )}
         </>
       )}

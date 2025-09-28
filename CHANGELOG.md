@@ -1,3 +1,59 @@
+### September 28 2025
+
+## v2.27.0 - User Solution Feedback Upgrade
+
+### Added
+- **Standalone human-feedback flow**
+  - Puzzle Feedback now submits structured explanations through the community solutions API (`/api/puzzles/:puzzleId/solutions`)
+  - Generates formatted commentary with model name, confidence, hints, and grids before forwarding to the backend
+- **Model preference persistence**
+  - Remembers last-used model in local storage (default `x-ai/grok-4`) so returning users jump straight in
+
+### Changed
+- **Feedback workspace UX**
+  - Submission form opens by default and highlights validation errors inline
+  - Results render as soon as the backend acknowledges the community submission
+- **Explanation details**
+  - Renders `apiProcessingTimeMs`, trustworthiness, and cost directly from backend responses
+  - Updated transformers map raw trustworthiness/status fields to the UI
+- **Analysis context plumbing**
+  - Context hook wraps `useAnalysisResults` directly and blocks analyze actions when no `taskId` is active
+
+### Removed
+- **Dead metrics endpoint**
+  - Dropped `/api/metrics/model-dataset-performance/:modelName` stub that referenced a non-existent repository method
+
+### Testing
+- `npm run check`
+
+
+### September 28 2025
+
+## v2.26.3 - Puzzle Feedback API Alignment
+
+### Fixed
+- **Puzzle Feedback submissions use community solutions endpoint**
+  - User analyses now POST to `/api/puzzles/:puzzleId/solutions` via `useSolutions`
+  - Ensures community data stays in sync with external API contract
+
+### Changed
+- **Puzzle Feedback UX**
+  - Solution form opens by default and persists last-selected model (default `x-ai/grok-4`)
+  - Structured submission captures hints, strategy, and grid before forwarding to backend
+- **Explanation display**
+  - Uses `apiProcessingTimeMs`, cost, and trustworthiness fields directly from backend
+  - Maps trustworthiness score and status via updated transformers
+- **Analysis context**
+  - Refactored to wrap `useAnalysisResults` and guard actions when no `taskId` is provided
+
+### Removed
+- **Dead metrics endpoint**
+  - Dropped `/api/metrics/model-dataset-performance/:modelName` stub that called a non-existent repository method
+
+### Testing
+- `npm run check`
+
+
 
 ### September 26 2025
 

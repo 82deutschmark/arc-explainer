@@ -9,8 +9,32 @@
  */
 
 import React, { createContext, useContext, useCallback, ReactNode } from 'react';
-import { useAnalysisResult, type UseAnalysisResultProps, type AnalysisConfig } from '../hooks/useAnalysisResult';
+import { useAnalysisResults } from '../hooks/useAnalysisResults';
 import { useBatchSession, type BatchSessionConfig } from '../hooks/useBatchSession';
+
+export interface AnalysisConfig {
+
+  temperature: number;
+
+  topP: number;
+
+  candidateCount: number;
+
+  thinkingBudget: number;
+
+  promptId: string;
+
+  customPrompt: string;
+
+  reasoningEffort: 'minimal' | 'low' | 'medium' | 'high';
+
+  reasoningVerbosity: 'low' | 'medium' | 'high';
+
+  reasoningSummaryType: 'auto' | 'detailed';
+
+}
+
+
 
 // Combined analysis context state
 export interface AnalysisContextState {
@@ -72,35 +96,39 @@ export function AnalysisProvider({
   onAnalysisComplete, 
   refetchExplanations 
 }: AnalysisProviderProps) {
-  // Initialize single analysis hook (only if taskId provided)
-  const singleAnalysisProps: UseAnalysisResultProps | null = taskId ? {
-    taskId,
-    onAnalysisComplete,
-    refetchExplanations
-  } : null;
+  const safeRefetch = refetchExplanations ?? (() => {});
 
-  const singleAnalysis = useAnalysisResult(singleAnalysisProps!);
+  const singleAnalysis = useAnalysisResults({
+    taskId: taskId ?? '',
+    refetchExplanations: safeRefetch,
+  });
   const batchSession = useBatchSession();
 
-  // Combined state
+  const aggregatedError = singleAnalysis.analyzerErrors.size > 0
+    ? singleAnalysis.analyzerErrors.values().next().value ?? null
+    : null;
+
+  const analysisConfig: AnalysisConfig = {
+    temperature: singleAnalysis.temperature,
+    topP: singleAnalysis.topP,
+    candidateCount: singleAnalysis.candidateCount,
+    thinkingBudget: singleAnalysis.thinkingBudget,
+    promptId: singleAnalysis.promptId,
+    customPrompt: singleAnalysis.customPrompt,
+    reasoningEffort: singleAnalysis.reasoningEffort,
+    reasoningVerbosity: singleAnalysis.reasoningVerbosity,
+    reasoningSummaryType: singleAnalysis.reasoningSummaryType,
+  };
+
   const state: AnalysisContextState = {
     singleAnalysis: {
-      config: singleAnalysis?.config || {
-        temperature: 0.2,
-        topP: 0.95,
-        candidateCount: 1,
-        promptId: 'solver',
-        customPrompt: '',
-        reasoningEffort: 'low',
-        reasoningVerbosity: 'high',
-        reasoningSummaryType: 'detailed'
-      },
-      currentModelKey: singleAnalysis?.currentModelKey || null,
-      processingModels: singleAnalysis?.processingModels || new Set(),
-      analysisStartTime: singleAnalysis?.analysisStartTime || {},
-      analysisTimes: singleAnalysis?.analysisTimes || {},
-      isAnalyzing: singleAnalysis?.isAnalyzing || false,
-      error: singleAnalysis?.analyzerError || null
+      config: analysisConfig,
+      currentModelKey: singleAnalysis.currentModelKey || null,
+      processingModels: singleAnalysis.processingModels,
+      analysisStartTime: singleAnalysis.analysisStartTime,
+      analysisTimes: singleAnalysis.analysisTimes,
+      isAnalyzing: singleAnalysis.isAnalyzing,
+      error: aggregatedError,
     },
     batchAnalysis: {
       sessionId: batchSession.sessionId,
@@ -108,23 +136,52 @@ export function AnalysisProvider({
       isCompleted: batchSession.isCompleted,
       isPaused: batchSession.isPaused,
       progressPercentage: batchSession.progressPercentage,
-      hasActiveSession: batchSession.hasActiveSession
-    }
+      hasActiveSession: batchSession.hasActiveSession,
+    },
   };
 
   // Combined actions
   const actions: AnalysisContextActions = {
     // Single analysis actions
     analyzeWithModel: useCallback((modelKey: string, supportsTemperature = true) => {
-      singleAnalysis?.analyzeWithModel(modelKey, supportsTemperature);
-    }, [singleAnalysis]),
+      if (!taskId) {
+        return;
+      }
+      singleAnalysis.analyzeWithModel(modelKey, supportsTemperature);
+    }, [singleAnalysis, taskId]),
 
     updateAnalysisConfig: useCallback((updates: Partial<AnalysisConfig>) => {
-      singleAnalysis?.updateConfig(updates);
+      if (updates.temperature !== undefined) {
+        singleAnalysis.setTemperature(updates.temperature);
+      }
+      if (updates.topP !== undefined) {
+        singleAnalysis.setTopP(updates.topP);
+      }
+      if (updates.candidateCount !== undefined) {
+        singleAnalysis.setCandidateCount(updates.candidateCount);
+      }
+      if (updates.thinkingBudget !== undefined) {
+        singleAnalysis.setThinkingBudget(updates.thinkingBudget);
+      }
+      if (updates.promptId !== undefined) {
+        singleAnalysis.setPromptId(updates.promptId);
+      }
+      if (updates.customPrompt !== undefined) {
+        singleAnalysis.setCustomPrompt(updates.customPrompt);
+      }
+      if (updates.reasoningEffort !== undefined) {
+        singleAnalysis.setReasoningEffort(updates.reasoningEffort);
+      }
+      if (updates.reasoningVerbosity !== undefined) {
+        singleAnalysis.setReasoningVerbosity(updates.reasoningVerbosity);
+      }
+      if (updates.reasoningSummaryType !== undefined) {
+        singleAnalysis.setReasoningSummaryType(updates.reasoningSummaryType);
+      }
     }, [singleAnalysis]),
 
     isGPT5ReasoningModel: useCallback((modelKey: string) => {
-      return singleAnalysis?.isGPT5ReasoningModel(modelKey) || false;
+      return singleAnalysis.isGPT5ReasoningModel(modelKey);
     }, [singleAnalysis]),
 
     // Batch analysis actions
@@ -146,7 +203,7 @@ export function AnalysisProvider({
 
     clearBatchSession: useCallback(() => {
       batchSession.clearSession();
-    }, [batchSession])
+    }, [batchSession]),
   };
 
   // Combined context value
