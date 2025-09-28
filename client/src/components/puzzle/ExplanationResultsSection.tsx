@@ -25,13 +25,17 @@ export function ExplanationResultsSection({ taskId }: ExplanationResultsSectionP
     return new Date(dateString).toLocaleString();
   };
 
-  const formatProcessingTime = (timeMs: number | undefined) => {
-    if (!timeMs) return null;
+  const formatProcessingTime = (timeMs: number | null | undefined) => {
+    if (typeof timeMs !== 'number' || Number.isNaN(timeMs)) {
+      return null;
+    }
     return (timeMs / 1000).toFixed(1) + 's';
   };
 
-  const formatCost = (cost: number | undefined) => {
-    if (!cost) return null;
+  const formatCost = (cost: number | null | undefined) => {
+    if (typeof cost !== 'number' || Number.isNaN(cost)) {
+      return null;
+    }
     return '$' + cost.toFixed(4);
   };
 
@@ -77,83 +81,87 @@ export function ExplanationResultsSection({ taskId }: ExplanationResultsSectionP
           </div>
         ) : (
           <div className="space-y-4">
-            {explanations.map((explanation) => (
-              <div key={explanation.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="font-mono text-sm">
-                        {explanation.modelName}
-                      </Badge>
-                      {explanation.isPredictionCorrect ? (
-                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          Correct
+            {explanations.map((explanation) => {
+              const processingTime = formatProcessingTime(explanation.apiProcessingTimeMs);
+              const hasMultiTestInfo = explanation.multiTestAllCorrect !== null && explanation.multiTestAllCorrect !== undefined;
+              return (
+                <div key={explanation.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="font-mono text-sm">
+                          {explanation.modelName}
                         </Badge>
-                      ) : (
-                        <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
-                          <XCircle className="h-3 w-3" />
-                          Incorrect
+                        {explanation.isPredictionCorrect ? (
+                          <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3" />
+                            Correct
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+                            <XCircle className="h-3 w-3" />
+                            Incorrect
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="text-xs">
+                          {explanation.confidence}% confidence
                         </Badge>
+                        {hasMultiTestInfo && (
+                          <Badge
+                            variant="outline"
+                            className={explanation.multiTestAllCorrect ? 'text-green-700' : 'text-orange-700'}
+                          >
+                            Multi-test: {explanation.multiTestAllCorrect ? 'All Correct' : 'Partial'}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {formatDate(explanation.createdAt)}
+                      </p>
+                    </div>
+                    <div className="text-right text-sm text-gray-500 space-y-1">
+                      {processingTime && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {processingTime}
+                        </div>
                       )}
-                      <Badge variant="outline" className="text-xs">
-                        {explanation.confidence}% confidence
-                      </Badge>
-                      {explanation.multiTestAllCorrect !== undefined && (
-                        <Badge 
-                          variant="outline" 
-                          className={explanation.multiTestAllCorrect ? "text-green-700" : "text-orange-700"}
-                        >
-                          Multi-test: {explanation.multiTestAllCorrect ? 'All Correct' : 'Partial'}
-                        </Badge>
+                      {explanation.estimatedCost !== null && explanation.estimatedCost !== undefined && (
+                        <div>{formatCost(explanation.estimatedCost)}</div>
+                      )}
+                      {explanation.predictionAccuracyScore !== null && explanation.predictionAccuracyScore !== undefined && (
+                        <div className="text-xs text-blue-600">
+                          Trustworthiness: {explanation.predictionAccuracyScore.toFixed(3)}
+                        </div>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600">
-                      {formatDate(explanation.createdAt)}
-                    </p>
                   </div>
-                  <div className="text-right text-sm text-gray-500 space-y-1">
-                    {explanation.processingTime && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {formatProcessingTime(explanation.processingTime)}
-                      </div>
-                    )}
-                    {explanation.estimatedCost && (
-                      <div>{formatCost(explanation.estimatedCost)}</div>
-                    )}
-                    {explanation.predictionAccuracyScore !== undefined && (
-                      <div className="text-xs text-blue-600">
-                        Trustworthiness: {explanation.predictionAccuracyScore.toFixed(3)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div>
-                    <h4 className="font-medium text-gray-800 text-sm">Pattern Description:</h4>
-                    <p className="text-gray-700 text-sm">{explanation.patternDescription || 'No description provided'}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-800 text-sm">Solving Strategy:</h4>
-                    <p className="text-gray-700 text-sm">{explanation.solvingStrategy || 'No strategy provided'}</p>
-                  </div>
-                  
-                  {explanation.hints && explanation.hints.length > 0 && (
+
+                  <div className="space-y-2">
                     <div>
-                      <h4 className="font-medium text-gray-800 text-sm">Hints:</h4>
-                      <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-                        {explanation.hints.map((hint, index) => (
-                          <li key={index}>{hint}</li>
-                        ))}
-                      </ul>
+                      <h4 className="font-medium text-gray-800 text-sm">Pattern Description:</h4>
+                      <p className="text-gray-700 text-sm">{explanation.patternDescription || 'No description provided'}</p>
                     </div>
-                  )}
+
+                    <div>
+                      <h4 className="font-medium text-gray-800 text-sm">Solving Strategy:</h4>
+                      <p className="text-gray-700 text-sm">{explanation.solvingStrategy || 'No strategy provided'}</p>
+                    </div>
+
+                    {explanation.hints && explanation.hints.length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-gray-800 text-sm">Hints:</h4>
+                        <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                          {explanation.hints.map((hint, index) => (
+                            <li key={index}>{hint}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>

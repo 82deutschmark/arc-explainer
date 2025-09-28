@@ -29,7 +29,7 @@ export function transformExplanation(dbExplanation: DatabaseExplanation): Explan
     saturnSuccess: dbExplanation.saturn_success,
     predictedOutputGrid: dbExplanation.predicted_output_grid,
     isPredictionCorrect: dbExplanation.is_prediction_correct,
-    predictionAccuracyScore: dbExplanation.prediction_accuracy_score,
+    predictionAccuracyScore: dbExplanation.trustworthiness_score,
     providerRawResponse: dbExplanation.provider_raw_response,
     reasoningItems: dbExplanation.reasoning_items,
     temperature: dbExplanation.temperature,
@@ -48,6 +48,7 @@ export function transformExplanation(dbExplanation: DatabaseExplanation): Explan
     hasMultiplePredictions: dbExplanation.has_multiple_predictions,
     multiTestPredictionGrids: dbExplanation.multi_test_prediction_grids,
     createdAt: dbExplanation.created_at,
+    status: dbExplanation.status,
   };
 }
 
