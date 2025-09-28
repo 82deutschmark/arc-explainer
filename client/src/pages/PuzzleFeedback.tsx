@@ -400,118 +400,76 @@ export default function PuzzleFeedback() {
           {puzzleAnalysisData && (
             <div className="space-y-2 mt-2">
               {/* Summary Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <Card className="bg-green-50 border-green-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-green-700">{puzzleAnalysisData.summary.solvedPuzzles}</div>
-                    <div className="text-xs text-green-600">Solved</div>
+                    <div className="text-lg font-bold text-green-700">{puzzleAnalysisData.summary.perfectModels}</div>
+                    <div className="text-xs text-green-600">Perfect Models</div>
+                    <div className="text-xs text-green-500">Got all correct</div>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-red-50 border-red-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-red-700">{puzzleAnalysisData.summary.testedButNotSolved}</div>
-                    <div className="text-xs text-red-600">Tested Failed</div>
+                    <div className="text-lg font-bold text-red-700">{puzzleAnalysisData.summary.partialModels}</div>
+                    <div className="text-xs text-red-600">Partial Models</div>
+                    <div className="text-xs text-red-500">Got some wrong</div>
                   </CardContent>
                 </Card>
 
                 <Card className="bg-gray-50 border-gray-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-gray-700">{puzzleAnalysisData.summary.notTested}</div>
-                    <div className="text-xs text-gray-600">Not Tested</div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-blue-50 border-blue-200">
-                  <CardContent className="p-2">
-                    <div className="text-lg font-bold text-blue-700">{puzzleAnalysisData.summary.modelsWithSolutions}</div>
-                    <div className="text-xs text-blue-600">Models</div>
+                    <div className="text-lg font-bold text-gray-700">{puzzleAnalysisData.summary.notAttemptedModels}</div>
+                    <div className="text-xs text-gray-600">Not Attempted</div>
+                    <div className="text-xs text-gray-500">Never tried any</div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Detailed Results */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                {/* Solved Puzzles */}
-                <Card>
-                  <CardHeader className="pb-1">
-                    <CardTitle className="text-green-700 flex items-center gap-1 text-sm">
-                      ✅ Solved ({puzzleAnalysisData.puzzleStatus.solved.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="max-h-40 overflow-y-auto">
-                    <div className="grid grid-cols-3 gap-1 text-xs">
-                      {puzzleAnalysisData.puzzleStatus.solved.map((puzzleId) => (
-                        <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
-                      ))}
-                    </div>
-                    {puzzleAnalysisData.puzzleStatus.solved.length === 0 && (
-                      <p className="text-sm text-gray-500 italic">No puzzles solved</p>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Model Summary */}
-                <Card>
-                  <CardHeader className="pb-1">
-                    <CardTitle className="text-blue-700 flex items-center gap-1 text-sm">
-                      🏆 Top Models
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="max-h-40 overflow-y-auto">
-                    {puzzleAnalysisData.modelSummary.slice(0, 5).map((model, index) => (
-                      <div key={model.modelName} className="flex justify-between items-center py-1 text-xs">
-                        <span className="truncate">{model.modelName}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {model.solvedCount}
-                        </Badge>
-                      </div>
-                    ))}
-                    {puzzleAnalysisData.modelSummary.length === 0 && (
-                      <p className="text-sm text-gray-500 italic">No models found</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Failed and Not Tested */}
-              {(puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length > 0 || puzzleAnalysisData.puzzleStatus.not_tested.length > 0) && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                  {puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length > 0 && (
-                    <Card>
-                      <CardHeader className="pb-1">
-                        <CardTitle className="text-red-700 flex items-center gap-1 text-sm">
-                          ❌ Tested but Failed ({puzzleAnalysisData.puzzleStatus.tested_but_not_solved.length})
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="max-h-32 overflow-y-auto">
-                        <div className="grid grid-cols-3 gap-1 text-xs">
-                          {puzzleAnalysisData.puzzleStatus.tested_but_not_solved.map((puzzleId) => (
-                            <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
+              {/* Model vs Puzzle Matrix Table */}
+              <Card>
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-sm flex items-center gap-1">
+                    <Database className="h-3 w-3" />
+                    Model Performance Matrix
+                  </CardTitle>
+                  <p className="text-xs text-gray-600">
+                    ✅ = Correct, ❌ = Incorrect, ⏳ = Not Attempted
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-1 px-2 font-medium">Model</th>
+                          {puzzleAnalysisData.puzzleResults.map((puzzle) => (
+                            <th key={puzzle.puzzle_id} className="text-center py-1 px-2 font-medium min-w-16">
+                              {puzzle.puzzle_id.slice(0, 8)}
+                            </th>
                           ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {puzzleAnalysisData.puzzleStatus.not_tested.length > 0 && (
-                    <Card>
-                      <CardHeader className="pb-1">
-                        <CardTitle className="text-gray-700 flex items-center gap-1 text-sm">
-                          ⏳ Not Tested ({puzzleAnalysisData.puzzleStatus.not_tested.length})
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="max-h-32 overflow-y-auto">
-                        <div className="grid grid-cols-3 gap-1 text-xs">
-                          {puzzleAnalysisData.puzzleStatus.not_tested.map((puzzleId) => (
-                            <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="neutral" />
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {puzzleAnalysisData.modelPuzzleMatrix.map((model) => (
+                          <tr key={model.modelName} className="border-b hover:bg-gray-50">
+                            <td className="py-1 px-2 font-medium truncate max-w-32" title={model.modelName}>
+                              {model.modelName}
+                            </td>
+                            {model.puzzleStatuses.map((puzzle) => (
+                              <td key={puzzle.puzzleId} className="text-center py-1 px-2">
+                                {puzzle.status === 'correct' && '✅'}
+                                {puzzle.status === 'incorrect' && '❌'}
+                                {puzzle.status === 'not_attempted' && '⏳'}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </CardContent>

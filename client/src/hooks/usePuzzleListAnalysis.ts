@@ -18,28 +18,24 @@ export interface PuzzleResult {
 }
 
 export interface PuzzleStatus {
-  solved: string[];
-  tested_but_not_solved: string[];
-  not_tested: string[];
-  missing_from_db: string[];
+  puzzleId: string;
+  status: 'correct' | 'incorrect' | 'not_attempted';
 }
 
-export interface ModelSummary {
+export interface ModelPuzzleMatrix {
   modelName: string;
-  solvedPuzzles: string[];
-  solvedCount: number;
+  puzzleStatuses: PuzzleStatus[];
 }
 
 export interface PuzzleListAnalysisResponse {
+  modelPuzzleMatrix: ModelPuzzleMatrix[];
   puzzleResults: PuzzleResult[];
-  puzzleStatus: PuzzleStatus;
-  modelSummary: ModelSummary[];
   summary: {
     totalPuzzles: number;
-    solvedPuzzles: number;
-    testedButNotSolved: number;
-    notTested: number;
-    modelsWithSolutions: number;
+    totalModels: number;
+    perfectModels: number;     // Got ALL puzzles correct
+    partialModels: number;     // Got some correct, some incorrect
+    notAttemptedModels: number; // Never attempted any
   };
 }
 
