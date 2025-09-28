@@ -1,5 +1,35 @@
 ### September 28 2025
 
+## v2.28.0 - Puzzle List Analysis Feature
+
+### Added
+- **Bulk Puzzle Analysis**
+  - New API endpoint `POST /api/puzzle/analyze-list` accepts dynamic puzzle IDs and returns which models solved them
+  - Extracts functionality from `puzzle-analysis.ts` but with user-provided puzzle IDs instead of hardcoded ones
+  - React hook `usePuzzleListAnalysis` for frontend integration with TanStack Query
+- **Enhanced PuzzleFeedback page**
+  - "Analyze Multiple Puzzles" section allows pasting comma/newline-separated puzzle IDs
+  - UI mirrors AnalyticsOverview patterns with summary cards and detailed breakdowns
+  - Shows solved/tested/not-tested categorization and top performing models
+  - Clear visual separation from individual puzzle testing workflow
+
+### Changed
+- **PuzzleFeedback page structure**
+  - Added bulk analysis section above individual testing
+  - Updated page title to "Puzzle Analysis & Testing"
+  - Enhanced with BarChart3 and Database icons for better UX
+
+### Technical
+- **Controller**: `puzzleController.analyzeList()` with validation and error handling (max 500 puzzle IDs)
+- **Database queries**: Reuses existing repository patterns from `puzzle-analysis.ts`
+- **UI components**: Leverages existing ClickablePuzzleBadge and Card patterns
+- **Clean architecture**: Maintains separation between bulk analysis and individual solution testing
+
+### Testing
+- `npm run test`
+- API endpoint tested with sample puzzle IDs - returns structured analysis data
+- Server running at http://localhost:5000
+
 ## v2.27.0 - User Solution Feedback Upgrade
 
 ### Added
