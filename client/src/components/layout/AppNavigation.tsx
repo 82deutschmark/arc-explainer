@@ -17,7 +17,8 @@ import {
   MessageCircle,
   Github,
   Target,
-  Trophy
+  Trophy,
+  CheckCircle
 } from 'lucide-react';
 
 interface NavItem {
@@ -63,6 +64,12 @@ const navigationItems: NavItem[] = [
     href: '/elo',
     icon: Trophy,
     description: 'Compare AI explanations head-to-head with ELO ratings'
+  },
+  {
+    title: 'Test Solution',
+    href: '/feedback',
+    icon: CheckCircle,
+    description: 'Test your own predicted solutions against ARC puzzles'
   }
 ];
 

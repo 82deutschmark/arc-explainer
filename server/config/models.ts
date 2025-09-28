@@ -356,6 +356,23 @@ export const MODELS: ModelConfig[] = [
     apiModelName: 'deepseek-reasoner',
     modelType: 'deepseek',
   },
+  {
+    key: 'deepseek/deepseek-v3.1-terminus',
+    name: 'DeepSeek V3.1 Terminus',
+    color: 'bg-cyan-500',
+    premium: false,
+    cost: { input: '$0.27', output: '$1.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-2 min' },
+    isReasoning: true,
+    apiModelName: 'deepseek/deepseek-v3.1-terminus',
+    modelType: 'openrouter',
+    contextWindow: 163840,
+    maxOutputTokens: 32000,
+    releaseDate: "2025-09",
+    supportsStructuredOutput: true
+  },
 
   {
     key: 'qwen/qwen-plus-2025-07-28:thinking',
