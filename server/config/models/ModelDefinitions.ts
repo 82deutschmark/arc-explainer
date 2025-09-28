@@ -1,11 +1,10 @@
-/**
- * ModelDefinitions.ts
- * 
- * Static model metadata definitions for all AI models.
- * This file imports the raw model data and provides structured access to it.
- * Follows Phase 5.1 architecture: separates static definitions from runtime logic.
- * 
- * @author Cascade (with guidance from user)
+/*
+ *
+ * Author: AI Agent using GPT-5-Codex
+ * Date: 2025-09-28T19:05:00Z
+ * PURPOSE: Provide typed accessors and categorization helpers for model configurations while delegating data storage to models.ts.
+ * SRP/DRY check: Pass - centralizes lookup logic without duplicating model data.
+ * shadcn/ui: Pass - backend utility code with no UI.
  */
 
 import { MODELS as MODEL_DEFINITIONS } from '../models.js';

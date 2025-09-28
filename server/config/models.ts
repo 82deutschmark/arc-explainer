@@ -1,11 +1,10 @@
 /*
- * models.ts
- * 
- * Centralized model configuration - single source of truth for all AI models.
- * This file contains the raw data array of model configurations.
- * It is imported by the modular configuration system in `/models/*`.
- * 
- * @author Cascade
+ *
+ * Author: AI Agent using GPT-5-Codex
+ * Date: 2025-09-28T19:05:00Z
+ * PURPOSE: Centralized AI model configuration list consumed by ModelDefinitions and provider lookup utilities; updated to drop deprecated Command R entries.
+ * SRP/DRY check: Pass - file encapsulates shared model metadata without duplication.
+ * shadcn/ui: Pass - configuration only.
  */
 
 import type { ModelConfig } from '@shared/types';
@@ -408,23 +407,6 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 128000,
     maxOutputTokens: 32000,
     releaseDate: "2024-06"
-  },
-    
-  {
-    key: 'cohere/command-r-plus',
-    name: 'Command R+',
-    color: 'bg-green-600',
-    premium: false,
-    cost: { input: '$0.50', output: '$1.50' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'cohere/command-r-plus',
-    modelType: 'openrouter',
-    contextWindow: 128000,
-    maxOutputTokens: 4000,
-    requiresPromptFormat: true
   },
   
 
