@@ -185,21 +185,57 @@ export function buildDebateUserPrompt(
 
   // Add original explanation context if provided
   if (originalExplanation) {
-    const wasIncorrect = originalExplanation.isPredictionCorrect === false ||
-      (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === false);
-
-    prompt += `\n\n---\n\n🧠 ORIGINAL AI'S ${wasIncorrect ? 'INCORRECT ' : ''}EXPLANATION:\n`;
-    prompt += `• Model: ${originalExplanation.modelName}\n`;
-    prompt += `• Pattern: ${originalExplanation.patternDescription}\n`;
-    prompt += `• Strategy: ${originalExplanation.solvingStrategy}\n`;
-    prompt += `• Hints: ${originalExplanation.hints?.join(', ') || 'None provided'}\n`;
-    prompt += `• Confidence: ${originalExplanation.confidence}%\n`;
-    if (wasIncorrect) {
-      prompt += `• ❌ Result: INCORRECT prediction\n`;
+    prompt += `\n\nORIGINAL AI EXPLANATION TO CRITIQUE:\n`;
+    prompt += `Model: ${originalExplanation.modelName}\n`;
+    prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
+    prompt += `Solving Strategy: ${originalExplanation.solvingStrategy}\n`;
+    
+    if (originalExplanation.hints && originalExplanation.hints.length > 0) {
+      prompt += `Hints: ${originalExplanation.hints.join(', ')}\n`;
+    }
+    
+    // CRITICAL: Include the predicted output - this is what we're debating
+    // We only debate INCORRECT or invalid predictions
+    const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
+    
+    if (hasMultiTest) {
+      // Multi-test puzzle - check multi_test_all_correct and use multiple_predicted_outputs or multi_test_prediction_grids
+      const wasCorrect = originalExplanation.multiTestAllCorrect === true;
+      
+      prompt += `\nORIGINAL AI PREDICTED OUTPUTS (INCORRECT):\n`;
+      
+      // Try multiple_predicted_outputs first (raw from AI), then multi_test_prediction_grids (validated)
+      const predictions = originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
+      
+      if (predictions && Array.isArray(predictions) && predictions.length > 0) {
+        predictions.forEach((grid: any, index: number) => {
+          if (grid && Array.isArray(grid) && grid.length > 0) {
+            prompt += `Test ${index + 1}: ${JSON.stringify(grid)}\n`;
+          } else {
+            prompt += `Test ${index + 1}: No valid prediction\n`;
+          }
+        });
+      } else {
+        prompt += `No valid predictions were provided\n`;
+      }
+    } else {
+      // Single-test puzzle - check is_prediction_correct and use predicted_output_grid
+      const wasCorrect = originalExplanation.isPredictionCorrect === true;
+      
+      prompt += `\nORIGINAL AI PREDICTED OUTPUT (INCORRECT):\n`;
+      
+      // predicted_output_grid is THE field (mapped to predictedOutputGrid in JS)
+      const prediction = originalExplanation.predictedOutputGrid;
+      
+      if (prediction && Array.isArray(prediction) && prediction.length > 0) {
+        prompt += `${JSON.stringify(prediction)}\n`;
+      } else {
+        prompt += `No valid prediction was provided\n`;
+      }
     }
 
-    if (customChallenge) {
-      prompt += `\n🎯 HUMAN FOCUS AREA: ${customChallenge}\n`;
+    if (customChallenge && customChallenge.trim()) {
+      prompt += `\nHUMAN GUIDANCE: ${customChallenge.trim()}\n`;
     }
   }
 
