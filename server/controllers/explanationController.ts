@@ -14,25 +14,34 @@ import { formatResponse } from '../utils/responseFormatter';
 export const explanationController = {
   /**
    * Get all explanations for a puzzle
-   * 
+   *
    * @param req - Express request object
    * @param res - Express response object
+   * Query params:
+   *   - correctness: 'all' | 'correct' | 'incorrect' (optional, defaults to 'all')
    */
   async getAll(req: Request, res: Response) {
     try {
       const { puzzleId } = req.params;
-      const explanations = await explanationService.getExplanationsForPuzzle(puzzleId);
-      
+      const { correctness } = req.query;
+
+      // Validate correctness filter parameter
+      const correctnessFilter = ['all', 'correct', 'incorrect'].includes(correctness as string)
+        ? (correctness as 'all' | 'correct' | 'incorrect')
+        : 'all';
+
+      const explanations = await explanationService.getExplanationsForPuzzle(puzzleId, correctnessFilter);
+
       if (explanations === null) {
         // Database is not connected, return an empty array instead of null
         return res.json(formatResponse.success([]));
       }
-      
+
       res.json(formatResponse.success(explanations));
     } catch (error) {
       console.error('Error in explanationController.getAll:', error);
       res.status(500).json(formatResponse.error(
-        'INTERNAL_ERROR', 
+        'INTERNAL_ERROR',
         'Failed to retrieve explanations',
         { error: error instanceof Error ? error.message : 'Unknown error' }
       ));

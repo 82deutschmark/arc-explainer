@@ -151,13 +151,33 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     return result.rows.length > 0 ? this.mapRowToExplanation(result.rows[0]) : null;
   }
 
-  async getExplanationsForPuzzle(puzzleId: string): Promise<ExplanationResponse[]> {
+  async getExplanationsForPuzzle(puzzleId: string, correctnessFilter?: 'all' | 'correct' | 'incorrect'): Promise<ExplanationResponse[]> {
     if (!this.isConnected()) {
       return [];
     }
 
+    // Build WHERE clause with optional correctness filtering
+    let whereClause = 'WHERE puzzle_id = $1';
+    const queryParams: any[] = [puzzleId];
+
+    if (correctnessFilter && correctnessFilter !== 'all') {
+      if (correctnessFilter === 'correct') {
+        // Explanation is correct if single test is correct OR multi-test all correct
+        whereClause += ` AND (
+          (has_multiple_predictions = false AND is_prediction_correct = true) OR
+          (has_multiple_predictions = true AND multi_test_all_correct = true)
+        )`;
+      } else if (correctnessFilter === 'incorrect') {
+        // Explanation is incorrect if single test is incorrect OR multi-test has some incorrect
+        whereClause += ` AND (
+          (has_multiple_predictions = false AND is_prediction_correct = false) OR
+          (has_multiple_predictions = true AND multi_test_all_correct = false)
+        )`;
+      }
+    }
+
     const result = await this.query(`
-      SELECT 
+      SELECT
         id, puzzle_id AS "puzzleId", pattern_description AS "patternDescription",
         solving_strategy AS "solvingStrategy", hints, confidence,
         alien_meaning_confidence AS "alienMeaningConfidence",
@@ -184,10 +204,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
-      FROM explanations 
-      WHERE puzzle_id = $1 
+      FROM explanations
+      ${whereClause}
       ORDER BY created_at DESC
-    `, [puzzleId]);
+    `, queryParams);
 
     return result.rows.map(row => this.mapRowToExplanation(row));
   }
