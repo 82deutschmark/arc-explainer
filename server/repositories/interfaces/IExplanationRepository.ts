@@ -158,8 +158,10 @@ export interface IExplanationRepository {
 
   /**
    * Get all explanations for a puzzle (multiple models/attempts)
+   * @param puzzleId - The puzzle ID to get explanations for
+   * @param correctnessFilter - Optional filter: 'all', 'correct', or 'incorrect'
    */
-  getExplanationsForPuzzle(puzzleId: string): Promise<ExplanationResponse[]>;
+  getExplanationsForPuzzle(puzzleId: string, correctnessFilter?: 'all' | 'correct' | 'incorrect'): Promise<ExplanationResponse[]>;
 
   /**
    * Get explanation by ID

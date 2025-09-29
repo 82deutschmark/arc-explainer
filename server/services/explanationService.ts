@@ -84,13 +84,14 @@ export const explanationService = {
 
   /**
    * Get all explanations for a specific puzzle
-   * 
+   *
    * @param puzzleId - The ID of the puzzle to get explanations for
+   * @param correctnessFilter - Optional filter: 'all', 'correct', or 'incorrect'
    * @returns Array of explanations for the puzzle
    * @throws AppError if explanations cannot be retrieved
    */
-  async getExplanationsForPuzzle(puzzleId: string) {
-    const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+  async getExplanationsForPuzzle(puzzleId: string, correctnessFilter?: 'all' | 'correct' | 'incorrect') {
+    const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId, correctnessFilter);
     // Let controller handle null case - don't throw here
     return explanations;
   },
