@@ -1,3 +1,32 @@
+### January 1 2026
+
+## v2.29.0 - Model Debate Feature
+
+### Added
+- **Model Debate System**
+  - New `/debate` and `/debate/:taskId` routes for AI model debates
+  - Chat-like interface where AI models challenge each other's puzzle explanations
+  - Reuses existing infrastructure: AnalysisResultCard, useAnalysisResults, useModels hooks
+  - Select existing explanations from database as debate starting points
+  - AI models generate challenges using custom prompts targeting flaws in reasoning
+  - Real-time conversation display with model-specific styling and timestamps
+- **Enhanced Navigation**
+  - Added "Model Debate" link to main navigation with MessageSquare icon
+  - Quick actions for switching between debate, ELO comparison, and puzzle examination
+  - Seamless integration with existing puzzle workflow
+
+### Technical
+- **Frontend Components**: ModelDebate.tsx following ELO comparison pattern
+- **Backend Integration**: Leverages existing puzzle analysis API with custom challenge prompts
+- **UI/UX**: shadcn/ui components throughout with responsive design
+- **Architecture**: Maintains SRP and DRY principles by reusing existing components
+
+### Testing
+- Navigate to `/debate` or click "Model Debate" in navigation
+- Select a puzzle with existing explanations to start debates
+- Choose challenger models and watch AI-generated critiques
+- Verify seamless transitions between debate, ELO, and puzzle pages
+
 ### September 28 2025
 
 ## v2.28.0 - Puzzle List Analysis Feature
