@@ -72,7 +72,9 @@ export const puzzleController = {
       reasoningVerbosity: req.body.reasoningVerbosity,
       reasoningSummaryType: req.body.reasoningSummaryType,
       systemPromptMode: req.body.systemPromptMode || 'ARC',
-      retryMode: req.body.retryMode || false
+      retryMode: req.body.retryMode || false,
+      originalExplanation: req.body.originalExplanation, // For debate mode
+      customChallenge: req.body.customChallenge // For debate mode
     };
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);

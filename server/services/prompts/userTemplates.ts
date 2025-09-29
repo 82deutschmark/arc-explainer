@@ -172,6 +172,41 @@ export function buildCustomUserPromptSimple(
 }
 
 /**
+ * Generate debate mode user prompt with original explanation context
+ */
+export function buildDebateUserPrompt(
+  task: ARCTask,
+  options: UserPromptOptions = {},
+  originalExplanation?: any,
+  customChallenge?: string
+): string {
+  // Start with solver-style puzzle data
+  let prompt = buildSolverUserPrompt(task, options);
+
+  // Add original explanation context if provided
+  if (originalExplanation) {
+    const wasIncorrect = originalExplanation.isPredictionCorrect === false ||
+      (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === false);
+
+    prompt += `\n\n---\n\n🧠 ORIGINAL AI'S ${wasIncorrect ? 'INCORRECT ' : ''}EXPLANATION:\n`;
+    prompt += `• Model: ${originalExplanation.modelName}\n`;
+    prompt += `• Pattern: ${originalExplanation.patternDescription}\n`;
+    prompt += `• Strategy: ${originalExplanation.solvingStrategy}\n`;
+    prompt += `• Hints: ${originalExplanation.hints?.join(', ') || 'None provided'}\n`;
+    prompt += `• Confidence: ${originalExplanation.confidence}%\n`;
+    if (wasIncorrect) {
+      prompt += `• ❌ Result: INCORRECT prediction\n`;
+    }
+
+    if (customChallenge) {
+      prompt += `\n🎯 HUMAN FOCUS AREA: ${customChallenge}\n`;
+    }
+  }
+
+  return prompt;
+}
+
+/**
  * Template mapping for different prompt types
  */
 export const USER_TEMPLATE_BUILDERS = {
@@ -179,7 +214,8 @@ export const USER_TEMPLATE_BUILDERS = {
   standardExplanation: buildExplanationUserPrompt,
   educationalApproach: buildExplanationUserPrompt,
   alienCommunication: buildAlienUserPrompt,
-  gepa: buildSolverUserPrompt
+  gepa: buildSolverUserPrompt,
+  debate: buildDebateUserPrompt
 } as const;
 
 /**
@@ -199,13 +235,21 @@ export function buildUserPromptForTemplate(
   task: ARCTask,
   promptId: string,
   options: UserPromptOptions = {},
-  customText?: string
+  customText?: string,
+  originalExplanation?: any,
+  customChallenge?: string
 ): string {
-  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
-  
+  // Handle custom prompt mode
   if (promptId === 'custom' && customText) {
     return buildCustomUserPrompt(task, customText, options);
   }
-  
+
+  // Handle debate mode with explanation context
+  if (promptId === 'debate') {
+    return buildDebateUserPrompt(task, options, originalExplanation, customChallenge);
+  }
+
+  // Standard template builders
+  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
   return builderFn(task, options);
 }
