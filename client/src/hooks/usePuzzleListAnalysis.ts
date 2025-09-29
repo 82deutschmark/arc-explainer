@@ -42,12 +42,7 @@ export interface PuzzleListAnalysisResponse {
 export function usePuzzleListAnalysis() {
   const mutation = useMutation({
     mutationFn: async (puzzleIds: string[]): Promise<PuzzleListAnalysisResponse> => {
-      const response = await apiRequest('POST', '/api/puzzle/analyze-list', {
-        body: JSON.stringify({ puzzleIds }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiRequest('POST', '/api/puzzle/analyze-list', { puzzleIds });
 
       if (!response.ok) {
         const errorData = await response.json();

@@ -382,7 +382,7 @@ export default function PuzzleFeedback() {
             ) : (
               <>
                 <Database className="h-2 w-2 mr-1" />
-                Analyze Puzzles
+                Check Puzzles
               </>
             )}
           </Button>
