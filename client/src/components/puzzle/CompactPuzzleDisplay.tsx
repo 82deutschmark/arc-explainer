@@ -59,56 +59,58 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
         </CardHeader>
       )}
       <CardContent className="p-1">
-        {/* Test Input and Correct Output - ALWAYS VISIBLE */}
-        <div className="flex items-center gap-2">
-          <div>
-            <div className="text-[9px] text-gray-600 mb-1">Input</div>
-            <TinyGrid grid={testCase.input} cellSize={4} />
-          </div>
-          <div className="text-xs text-gray-400">→</div>
-          <div>
-            <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
-            <TinyGrid grid={testCase.output} cellSize={4} />
+        <div className="flex items-start gap-2">
+          {/* Training Examples - COLLAPSIBLE (LEFT SIDE) */}
+          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen} className="flex-shrink-0">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="p-1 h-auto hover:bg-gray-100">
+                <div className="flex items-center">
+                  {isTrainingOpen ? (
+                    <ChevronDown className="h-3 w-3" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3" />
+                  )}
+                  <span className="text-[10px] font-semibold ml-1">
+                    Train
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 ml-1">
+                      {trainExamples.length}
+                    </Badge>
+                  </span>
+                </div>
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="flex gap-2 overflow-x-auto p-1">
+                {displayedExamples.map((example, index) => (
+                  <div key={index} className="flex items-center gap-1 flex-shrink-0">
+                    <div className="text-[9px] text-gray-500">{index + 1}.</div>
+                    <TinyGrid grid={example.input} cellSize={3} />
+                    <div className="text-[9px] text-gray-400">→</div>
+                    <TinyGrid grid={example.output} cellSize={3} />
+                  </div>
+                ))}
+                {trainExamples.length > maxTrainingExamples && (
+                  <div className="text-[9px] text-gray-500 flex-shrink-0">
+                    +{trainExamples.length - maxTrainingExamples}
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Test Input and Correct Output - ALWAYS VISIBLE (RIGHT SIDE) */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div>
+              <div className="text-[9px] text-gray-600 mb-1">Input</div>
+              <TinyGrid grid={testCase.input} cellSize={4} />
+            </div>
+            <div className="text-xs text-gray-400">→</div>
+            <div>
+              <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
+              <TinyGrid grid={testCase.output} cellSize={4} />
+            </div>
           </div>
         </div>
-
-        {/* Training Examples - COLLAPSIBLE */}
-        <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-start p-1 h-auto hover:bg-gray-100">
-              <div className="flex items-center w-full">
-                {isTrainingOpen ? (
-                  <ChevronDown className="h-3 w-3" />
-                ) : (
-                  <ChevronRight className="h-3 w-3" />
-                )}
-                <span className="text-[10px] font-semibold ml-1">
-                  Training Examples
-                  <Badge variant="outline" className="text-[9px] px-1 py-0 ml-1">
-                    {trainExamples.length}
-                  </Badge>
-                </span>
-              </div>
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="flex gap-2 overflow-x-auto p-1">
-              {displayedExamples.map((example, index) => (
-                <div key={index} className="flex items-center gap-1">
-                  <div className="text-[9px] text-gray-500">{index + 1}.</div>
-                  <TinyGrid grid={example.input} cellSize={3} />
-                  <div className="text-[9px] text-gray-400">→</div>
-                  <TinyGrid grid={example.output} cellSize={3} />
-                </div>
-              ))}
-              {trainExamples.length > maxTrainingExamples && (
-                <div className="text-[9px] text-gray-500">
-                  +{trainExamples.length - maxTrainingExamples}
-                </div>
-              )}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
       </CardContent>
     </Card>
   );
