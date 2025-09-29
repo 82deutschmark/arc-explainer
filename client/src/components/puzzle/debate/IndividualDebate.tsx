@@ -31,8 +31,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 
 // Types
-import type { ExplanationData, Model } from '@/types/puzzle';
-import type { ARCExample } from '@shared/types';
+import type { ExplanationData } from '@/types/puzzle';
+import type { ARCExample, ModelConfig } from '@shared/types';
 
 interface DebateMessage {
   id: string;
@@ -48,7 +48,7 @@ interface IndividualDebateProps {
   debateMessages: DebateMessage[];
   taskId: string;
   testCases: ARCExample[];
-  models?: Model[];
+  models?: ModelConfig[];
 
   // State
   challengerModel: string;

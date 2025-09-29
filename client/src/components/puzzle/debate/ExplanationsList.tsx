@@ -20,13 +20,13 @@ import { MessageSquare, Filter } from 'lucide-react';
 import { AnalysisResultListCard } from '@/components/puzzle/AnalysisResultListCard';
 
 // Types
-import type { ExplanationData, Model } from '@/types/puzzle';
-import type { ARCExample } from '@shared/types';
+import type { ExplanationData } from '@/types/puzzle';
+import type { ARCExample, ModelConfig } from '@shared/types';
 
 interface ExplanationsListProps {
   // Data
   explanations: ExplanationData[];
-  models?: Model[];
+  models?: ModelConfig[];
   testCases: ARCExample[];
 
   // State
