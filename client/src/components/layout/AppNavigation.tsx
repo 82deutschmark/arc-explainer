@@ -18,7 +18,8 @@ import {
   Github,
   Target,
   Trophy,
-  CheckCircle
+  CheckCircle,
+  MessageSquare
 } from 'lucide-react';
 
 interface NavItem {
@@ -70,6 +71,12 @@ const navigationItems: NavItem[] = [
     href: '/feedback',
     icon: CheckCircle,
     description: 'Test your own predicted solutions against ARC puzzles'
+  },
+  {
+    title: 'Model Debate',
+    href: '/debate',
+    icon: MessageSquare,
+    description: 'Watch AI models challenge each other\'s explanations'
   }
 ];
 
