@@ -34,15 +34,6 @@ import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import type { ExplanationData, Model } from '@/types/puzzle';
 import type { ARCExample } from '@shared/types';
 
-// Available models for challenging
-const CHALLENGER_MODELS = [
-  'gpt-4o',
-  'claude-3-5-sonnet-20241022',
-  'gemini-1.5-pro',
-  'grok-beta',
-  'deepseek-chat'
-];
-
 interface DebateMessage {
   id: string;
   modelName: string;
@@ -193,9 +184,9 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                     <SelectValue placeholder="Choose a model to challenge..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {CHALLENGER_MODELS.map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
+                    {models?.map((model) => (
+                      <SelectItem key={model.key} value={model.key}>
+                        {model.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
