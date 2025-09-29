@@ -1,5 +1,70 @@
 ### September 29 2025
 
+## v2.30.5 - Debate Mode Custom Challenge Implementation
+
+### ✨ **New Features**
+- **Custom Challenge Prompts**: Users can now provide optional guidance when challenging explanations
+  - Text input for challenge focus (e.g., "Focus on edge cases", "Explain color transformations")
+  - Challenge text forwarded to AI with 🎯 marker in prompt
+  - Original explanation context included (pattern, strategy, hints, confidence)
+  - Incorrect predictions flagged with ❌ marker for challenger awareness
+- **Prompt Preview for Debates**: Preview exact debate prompts before generating
+  - Shows full system prompt with debate instructions
+  - Shows user prompt with puzzle data, original explanation, and custom challenge
+  - Reuses existing `PromptPreviewModal` component (DRY principle)
+
+### 🔧 **Backend Enhancements**
+- **Complete End-to-End Data Flow**: `originalExplanation` and `customChallenge` flow through entire pipeline
+  - `promptController`: Accept and forward debate parameters in preview endpoint
+  - `puzzleController`: Accept and forward debate parameters in analysis endpoint
+  - `puzzleAnalysisService`: Add debate options to analysis interface
+  - `promptBuilder`: Pass debate context to template builders
+- **Debate Prompt Generation**:
+  - Created `buildDebateUserPrompt()` in `userTemplates.ts`
+  - Formats original explanation with all metadata (model, pattern, strategy, hints, confidence)
+  - Appends custom challenge if provided
+  - Integrated with modular prompt architecture
+- **System Prompt Support**:
+  - Added `debate` task description in `basePrompts.ts`
+  - Added comprehensive debate instructions (critique, analysis, solution, justification)
+  - Mapped debate prompt in `systemPrompts.ts`
+
+### 🐛 **Critical Bug Fix**
+- **Missing Debate Template**: Added `debate` entry to `PROMPT_TEMPLATES` in `shared/types.ts`
+  - Template ID: `debate`
+  - Name: ⚔️ Debate Mode
+  - Description: "AI-vs-AI challenge mode - critique and improve another AI's explanation"
+  - This was preventing prompt preview and debate mode from functioning properly
+
+### 🏗️ **Architecture Improvements**
+- **SRP Maintained**: Each component retains single responsibility
+  - PromptPreviewModal: Display prompts only
+  - useAnalysisResults: Manage analysis state only
+  - puzzleAnalysisService: Orchestrate analysis only
+  - promptBuilder: Build prompts only
+- **DRY Principles**: Reused existing components without duplication
+  - Extended `PromptPreviewModal` for debate preview (no new modal)
+  - Extended `useAnalysisResults` for debate parameters (no new hook)
+  - Extended prompt architecture for debate mode (no separate system)
+- **Backward Compatibility**: No breaking changes to existing APIs
+  - New parameters are optional
+  - Only used when `promptId === 'debate'`
+  - All existing code continues to work unchanged
+
+### 📋 **Files Modified (13 files)**
+- Frontend (4): PromptPreviewModal, useAnalysisResults, ModelDebate, IndividualDebate
+- Backend (7): promptController, puzzleController, puzzleAnalysisService, promptBuilder, userTemplates, systemPrompts, basePrompts
+- Shared (1): types.ts (added debate template)
+- Docs (1): 2025-09-29-debate-mode-implementation.md (NEW)
+
+### 📝 **Testing Status**
+- Code complete and committed
+- Ready for manual testing
+- See `docs/2025-09-29-debate-mode-implementation.md` for comprehensive testing checklist
+- Includes test scenarios for basic flow, custom challenges, preview, errors, and edge cases
+
+---
+
 ## v2.30.4 - Fix Model List Caching Issue
 
 ### 🐛 **Bug Fix**
