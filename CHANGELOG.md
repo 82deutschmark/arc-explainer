@@ -1,5 +1,62 @@
 ### September 29 2025
 
+## v2.30.3 - Model Debate Complete Implementation & UX Enhancements
+
+### 🚀 **Critical Functionality Restored**
+- **Fixed Broken Challenge Generation Flow**: Challenge responses now properly display in debate UI
+  - Previous implementation had UI stubs but no working data flow
+  - `useDebateState.addChallengeMessage()` was never called - now properly integrated
+  - Challenge explanations are now captured and added to debate messages
+- **Async/Await Implementation**: Proper handling of API responses with mutateAsync pattern
+- **Success Feedback**: Toast notifications for successful challenge generation and errors
+
+### ✨ **New Features**
+- **Prompt Preview Modal**: Users can now preview challenge prompts before generating
+  - Reuses `PromptPreviewModal` component from PuzzleExaminer
+  - Shows full system and user prompts with character counts
+  - "Preview Challenge Prompt" button added to debate interface
+- **Enhanced Error Handling**: Comprehensive error messages with toast notifications
+  - Network errors, rate limits, and API failures now clearly communicated
+  - User-friendly error descriptions replace technical messages
+
+### 🔧 **Technical Improvements**
+- **useAnalysisResults Hook Enhancement**:
+  - Exposed `analyzeAndSaveMutation` for advanced use cases requiring async/await
+  - Enables debate page to capture API response data directly
+  - Maintains backward compatibility with existing `analyzeWithModel()` function
+- **ModelDebate.tsx Fixes**:
+  - `handleGenerateChallenge` now properly awaits mutation result
+  - Extracts new explanation from saved data and adds to UI
+  - Includes all necessary parameters (temperature, topP, reasoning settings)
+- **IndividualDebate.tsx Enhancements**:
+  - Added prompt preview functionality with modal integration
+  - Added proper prop types for task, promptId, and customPrompt
+  - Integrated generateChallengePrompt callback for preview generation
+
+### 🎯 **User Experience Improvements**
+- **Visual Feedback**: Loading states during challenge generation
+- **Success Confirmation**: Toast message with model name when challenge completes
+- **Error Recovery**: Clear error messages with retry suggestions
+- **Prompt Transparency**: Users can inspect exact prompts before sending to AI
+
+### 📝 **Architecture Compliance**
+- **SRP Maintained**: Each component retains single responsibility
+- **DRY Principles**: Reused existing PromptPreviewModal and toast components
+- **Modular Integration**: Clean separation between UI, state, and API logic
+
+### 🐛 **Bug Fixes**
+- Fixed: Challenge responses saved to database but never displayed in UI
+- Fixed: No user feedback during or after challenge generation
+- Fixed: Missing prompt preview capability (unlike PuzzleExaminer page)
+- Fixed: Orphaned `addChallengeMessage()` function never being called
+
+### ✅ **Testing Results**
+- Build compilation successful with no TypeScript errors
+- Dev server running without issues at http://0.0.0.0:5000
+- All imports and dependencies resolved correctly
+
+---
+
 ## v2.30.2 - Claude Sonnet 4.5 Model Addition
 
 ### ✨ **New Model Support**

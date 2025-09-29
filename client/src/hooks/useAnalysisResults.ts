@@ -303,6 +303,7 @@ export function useAnalysisResults({
     customPrompt,
     setCustomPrompt,
     analyzeWithModel,
+    analyzeAndSaveMutation, // Expose mutation for advanced use cases (e.g., debate page needs mutateAsync)
     currentModelKey,
     processingModels,
     isAnalyzing: analyzeAndSaveMutation.isPending,

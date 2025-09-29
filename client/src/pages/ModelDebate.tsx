@@ -9,12 +9,13 @@
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Plus, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Focused components
 import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
@@ -32,6 +33,8 @@ import { useChallengeGeneration } from '@/hooks/debate/useChallengeGeneration';
 
 export default function ModelDebate() {
   const { taskId } = useParams<{ taskId?: string }>();
+  const { toast } = useToast();
+  const [showPromptPreview, setShowPromptPreview] = useState(false);
 
   // Page title management
   useEffect(() => {
@@ -49,10 +52,19 @@ export default function ModelDebate() {
 
   // Analysis hook for challenge generation
   const {
-    analyzeWithModel,
+    analyzeAndSaveMutation,
     processingModels,
     analyzerErrors,
-    setCustomPrompt
+    setCustomPrompt,
+    promptId,
+    temperature,
+    isGPT5ReasoningModel,
+    reasoningEffort,
+    reasoningVerbosity,
+    reasoningSummaryType,
+    topP,
+    candidateCount,
+    thinkingBudget
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -60,16 +72,64 @@ export default function ModelDebate() {
   });
 
   // Challenge generation handler
-  const handleGenerateChallenge = () => {
+  const handleGenerateChallenge = async () => {
     if (!debateState.challengerModel || !debateState.selectedExplanationId || !taskId) return;
 
     const originalExplanation = explanations?.find(e => e.id === debateState.selectedExplanationId);
     if (!originalExplanation) return;
 
-    const challengePrompt = generateChallengePrompt(originalExplanation, debateState.customChallenge);
-    setCustomPrompt(challengePrompt);
-    analyzeWithModel(debateState.challengerModel, true);
-    debateState.setCustomChallenge('');
+    try {
+      // Generate the challenge prompt
+      const challengePrompt = generateChallengePrompt(originalExplanation, debateState.customChallenge);
+      setCustomPrompt(challengePrompt);
+
+      // Build mutation payload
+      const payload: any = {
+        modelKey: debateState.challengerModel,
+        temperature,
+        topP,
+        candidateCount,
+        thinkingBudget,
+        ...(isGPT5ReasoningModel(debateState.challengerModel) ? {
+          reasoningEffort,
+          reasoningVerbosity,
+          reasoningSummaryType
+        } : {})
+      };
+
+      // Call mutation and wait for result
+      const savedData = await analyzeAndSaveMutation.mutateAsync(payload);
+
+      // Refetch to get the complete explanation with all fields
+      await refetchExplanations();
+
+      // Find the new explanation from the saved data
+      // The savedData contains the explanations keyed by model
+      const newExplanationData = savedData?.explanations?.[debateState.challengerModel];
+
+      if (newExplanationData) {
+        // Add to debate messages
+        debateState.addChallengeMessage(newExplanationData);
+
+        // Show success feedback
+        toast({
+          title: "Challenge Generated!",
+          description: `${models?.find(m => m.key === debateState.challengerModel)?.name || debateState.challengerModel} has responded to the challenge.`,
+        });
+      } else {
+        throw new Error("Failed to retrieve challenge response");
+      }
+
+      // Clear custom challenge input
+      debateState.setCustomChallenge('');
+    } catch (error) {
+      console.error('Challenge generation error:', error);
+      toast({
+        title: "Challenge Failed",
+        description: error instanceof Error ? error.message : "Failed to generate challenge. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Loading states
@@ -134,10 +194,13 @@ export default function ModelDebate() {
               taskId={taskId}
               testCases={task!.test}
               models={models}
+              task={task}
               challengerModel={debateState.challengerModel}
               customChallenge={debateState.customChallenge}
               processingModels={processingModels}
               analyzerErrors={analyzerErrors}
+              promptId={promptId}
+              generateChallengePrompt={generateChallengePrompt}
               onBackToList={debateState.endDebate}
               onResetDebate={debateState.resetDebate}
               onChallengerModelChange={debateState.setChallengerModel}

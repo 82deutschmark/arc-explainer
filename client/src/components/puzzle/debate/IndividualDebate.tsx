@@ -9,7 +9,7 @@
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,13 +22,15 @@ import {
   Send,
   RotateCcw,
   Trophy,
-  Loader2
+  Loader2,
+  Eye
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 // Reuse existing components
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 // Types
 import type { ExplanationData } from '@/types/puzzle';
@@ -49,12 +51,15 @@ interface IndividualDebateProps {
   taskId: string;
   testCases: ARCExample[];
   models?: ModelConfig[];
+  task?: any; // Full task object for prompt preview
 
   // State
   challengerModel: string;
   customChallenge: string;
   processingModels: Set<string>;
   analyzerErrors: Map<string, Error>;
+  promptId?: string; // For prompt preview
+  customPrompt?: string; // Generated challenge prompt for preview
 
   // Actions
   onBackToList: () => void;
@@ -62,6 +67,7 @@ interface IndividualDebateProps {
   onChallengerModelChange: (model: string) => void;
   onCustomChallengeChange: (challenge: string) => void;
   onGenerateChallenge: () => void;
+  generateChallengePrompt?: (explanation: ExplanationData, customChallenge?: string) => string;
 }
 
 export const IndividualDebate: React.FC<IndividualDebateProps> = ({
@@ -70,16 +76,32 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   taskId,
   testCases,
   models,
+  task,
   challengerModel,
   customChallenge,
   processingModels,
   analyzerErrors,
+  promptId = 'custom',
+  customPrompt,
   onBackToList,
   onResetDebate,
   onChallengerModelChange,
   onCustomChallengeChange,
-  onGenerateChallenge
+  onGenerateChallenge,
+  generateChallengePrompt
 }) => {
+  const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [previewPrompt, setPreviewPrompt] = useState<string>('');
+
+  // Handle prompt preview
+  const handlePreviewPrompt = () => {
+    if (generateChallengePrompt) {
+      const prompt = generateChallengePrompt(originalExplanation, customChallenge);
+      setPreviewPrompt(prompt);
+      setShowPromptPreview(true);
+    }
+  };
+
   // Everything is debatable unless explicitly correct
   const hasMultiTest = originalExplanation.hasMultiplePredictions &&
     (originalExplanation.multiTestAllCorrect !== undefined || originalExplanation.multiTestAverageAccuracy !== undefined);
@@ -205,6 +227,19 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 />
               </div>
 
+              {/* Preview Prompt Button */}
+              {generateChallengePrompt && (
+                <Button
+                  variant="outline"
+                  onClick={handlePreviewPrompt}
+                  disabled={!challengerModel}
+                  className="w-full"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview Challenge Prompt
+                </Button>
+              )}
+
               <Button
                 onClick={onGenerateChallenge}
                 disabled={!challengerModel || processingModels.has(challengerModel)}
@@ -272,6 +307,19 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
           </Card>
         </div>
       </div>
+
+      {/* Prompt Preview Modal */}
+      {task && (
+        <PromptPreviewModal
+          isOpen={showPromptPreview}
+          onClose={() => setShowPromptPreview(false)}
+          task={task}
+          taskId={taskId}
+          promptId={promptId}
+          customPrompt={previewPrompt}
+          options={{ omitAnswer: false }}
+        />
+      )}
     </div>
   );
 };
