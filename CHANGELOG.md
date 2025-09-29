@@ -1,5 +1,22 @@
 ### September 29 2025
 
+## v2.30.2 - Claude Sonnet 4.5 Model Addition
+
+### ✨ **New Model Support**
+- **Added Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)**: Latest Anthropic model now available in model configuration
+- **Model specs**: Premium tier, $3.00 input / $15.00 output, 64K max output tokens
+- **Release date**: September 2025
+- **Features**: Extended reasoning capabilities, temperature control support
+
+### 🔧 **Technical Details**
+- **Location**: `server/config/models.ts:193-207`
+- **Provider**: Anthropic
+- **Model type**: Claude
+- **Context window**: Standard Claude configuration
+- **Integration**: Ready for use in all puzzle analysis and explanation workflows
+
+---
+
 ## v2.30.1 - IndividualDebate Error Fix & Debate Availability Logic
 
 ### 🐛 **Critical Bug Fixes**

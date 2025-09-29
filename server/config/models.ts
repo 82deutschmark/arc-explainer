@@ -175,10 +175,10 @@ export const MODELS: ModelConfig[] = [
   },
 
   // Anthropic Models
-  { 
-    key: 'claude-sonnet-4-20250514', 
-    name: 'Claude Sonnet 4', 
-    color: 'bg-indigo-500', 
+  {
+    key: 'claude-sonnet-4-20250514',
+    name: 'Claude Sonnet 4',
+    color: 'bg-indigo-500',
     premium: true,
     cost: { input: '$3.00', output: '$15.00' },
     supportsTemperature: true,
@@ -189,6 +189,21 @@ export const MODELS: ModelConfig[] = [
     modelType: 'claude',
     maxOutputTokens: 64000,
     releaseDate: "2025-05"
+  },
+  {
+    key: 'claude-sonnet-4-5-20250929',
+    name: 'Claude Sonnet 4.5',
+    color: 'bg-indigo-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    isReasoning: true,
+    apiModelName: 'claude-sonnet-4-5-20250929',
+    modelType: 'claude',
+    maxOutputTokens: 64000,
+    releaseDate: "2025-09"
   },
   { 
     key: 'claude-3-7-sonnet-20250219', 
