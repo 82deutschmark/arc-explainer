@@ -185,8 +185,7 @@ export function buildDebateUserPrompt(
 
   // Add original explanation context if provided
   if (originalExplanation) {
-    prompt += `\n\nORIGINAL AI EXPLANATION TO CRITIQUE:\n`;
-    prompt += `Model: ${originalExplanation.modelName}\n`;
+    prompt += `\n\nPREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
     prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
     prompt += `Solving Strategy: ${originalExplanation.solvingStrategy}\n`;
     
@@ -198,33 +197,25 @@ export function buildDebateUserPrompt(
     // We only debate INCORRECT or invalid predictions
     const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
     
+    prompt += `\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
+    
     if (hasMultiTest) {
-      // Multi-test puzzle - check multi_test_all_correct and use multiple_predicted_outputs or multi_test_prediction_grids
-      const wasCorrect = originalExplanation.multiTestAllCorrect === true;
-      
-      prompt += `\nORIGINAL AI PREDICTED OUTPUTS (INCORRECT):\n`;
-      
-      // Try multiple_predicted_outputs first (raw from AI), then multi_test_prediction_grids (validated)
+      // Multi-test puzzle - use multiple_predicted_outputs or multi_test_prediction_grids
       const predictions = originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
       
       if (predictions && Array.isArray(predictions) && predictions.length > 0) {
         predictions.forEach((grid: any, index: number) => {
           if (grid && Array.isArray(grid) && grid.length > 0) {
-            prompt += `Test ${index + 1}: ${JSON.stringify(grid)}\n`;
+            prompt += `Test ${index + 1} Predicted Output: ${JSON.stringify(grid)}\n`;
           } else {
-            prompt += `Test ${index + 1}: No valid prediction\n`;
+            prompt += `Test ${index + 1} Predicted Output: No valid prediction\n`;
           }
         });
       } else {
         prompt += `No valid predictions were provided\n`;
       }
     } else {
-      // Single-test puzzle - check is_prediction_correct and use predicted_output_grid
-      const wasCorrect = originalExplanation.isPredictionCorrect === true;
-      
-      prompt += `\nORIGINAL AI PREDICTED OUTPUT (INCORRECT):\n`;
-      
-      // predicted_output_grid is THE field (mapped to predictedOutputGrid in JS)
+      // Single-test puzzle - use predicted_output_grid
       const prediction = originalExplanation.predictedOutputGrid;
       
       if (prediction && Array.isArray(prediction) && prediction.length > 0) {
@@ -235,7 +226,7 @@ export function buildDebateUserPrompt(
     }
 
     if (customChallenge && customChallenge.trim()) {
-      prompt += `\nHUMAN GUIDANCE: ${customChallenge.trim()}\n`;
+      prompt += `\nHUMAN GUIDANCE FOR YOUR ANALYSIS: ${customChallenge.trim()}\n`;
     }
   }
 

@@ -29,7 +29,8 @@
 
 import { 
   buildCustomPrompt,
-  buildSystemPrompt
+  buildSystemPrompt,
+  buildDebatePrompt
 } from './components/promptBuilder.js';
 import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePrompts.js';
 
@@ -48,7 +49,7 @@ export const SYSTEM_PROMPT_MAP = {
   alienCommunication: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication }),
   educationalApproach: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational }),
   gepa: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa }),
-  debate: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.debate, additionalInstructions: ADDITIONAL_INSTRUCTIONS.debate }),
+  debate: () => buildDebatePrompt(), // Uses special builder with debate instructions FIRST
   custom: () => buildCustomPrompt()
 } as const;
 
