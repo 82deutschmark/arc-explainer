@@ -168,10 +168,12 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           (has_multiple_predictions = true AND multi_test_all_correct = true)
         )`;
       } else if (correctnessFilter === 'incorrect') {
-        // Explanation is incorrect if single test is incorrect OR multi-test has some incorrect
+        // Explanation is incorrect OR unvalidated (null) - debatable explanations
+        // Include: false values OR null values (unvalidated explanations)
         whereClause += ` AND (
-          (has_multiple_predictions = false AND is_prediction_correct = false) OR
-          (has_multiple_predictions = true AND multi_test_all_correct = false)
+          (has_multiple_predictions = false AND (is_prediction_correct = false OR is_prediction_correct IS NULL)) OR
+          (has_multiple_predictions = true AND (multi_test_all_correct = false OR multi_test_all_correct IS NULL)) OR
+          (has_multiple_predictions IS NULL AND (is_prediction_correct = false OR is_prediction_correct IS NULL))
         )`;
       }
     }

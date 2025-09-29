@@ -89,9 +89,11 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   onCustomChallengeChange,
   onGenerateChallenge
 }) => {
-  // Determine if original explanation was incorrect
+  // Determine if original explanation was incorrect OR unvalidated (null means debatable)
   const wasIncorrect = originalExplanation.isPredictionCorrect === false ||
-    (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === false);
+    originalExplanation.isPredictionCorrect === null ||
+    (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === false) ||
+    (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === null);
 
   return (
     <div className="space-y-4">
@@ -108,7 +110,9 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                   Debating: {originalExplanation.modelName}
                   {wasIncorrect && (
                     <Badge variant="destructive" className="text-xs">
-                      Incorrect Prediction
+                      {originalExplanation.isPredictionCorrect === false || originalExplanation.multiTestAllCorrect === false
+                        ? 'Incorrect Prediction'
+                        : 'Unvalidated - Debatable'}
                     </Badge>
                   )}
                 </h2>
