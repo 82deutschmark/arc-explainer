@@ -25,7 +25,7 @@ export interface CorrectnessResult {
   isPredictionCorrect?: boolean | null;
   multiTestAllCorrect?: boolean | null;
   allPredictionsCorrect?: boolean | null; // Alternative field name (backward compat)
-  hasMultiplePredictions?: boolean;
+  hasMultiplePredictions?: boolean | null;
 }
 
 export interface CorrectnessStatus {

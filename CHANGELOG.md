@@ -1,5 +1,24 @@
 ### September 29 2025
 
+## v2.30.6 - TypeScript Type Consistency Fix
+
+### 🐛 **Critical Bug Fix**
+- **Fixed TypeScript Type Mismatch in Correctness Utility**:
+  - **Root Cause**: `CorrectnessResult` interface defined `hasMultiplePredictions` as `boolean | undefined` but database schema returns `boolean | null | undefined`
+  - **Error Impact**: TypeScript compilation errors in `AnalysisResultListCard.tsx` and `ExplanationsList.tsx` preventing builds
+  - **Solution**: Updated `hasMultiplePredictions` field in `shared/utils/correctness.ts` to accept `boolean | null` (line 28)
+  - **Files Fixed**: 
+    - `shared/utils/correctness.ts` - Added `| null` to `hasMultiplePredictions` type
+    - `client/src/components/puzzle/AnalysisResultListCard.tsx` - Cleaned up unnecessary type coercion
+  - **Why null/undefined weren't displaying as false**: Type system was preventing compilation, but logic was correct - `determineCorrectness()` already treats `null`, `undefined`, and `false` identically as "incorrect"
+  
+### 🏗️ **Architecture Notes**
+- **Type Consistency**: All boolean flags in `CorrectnessResult` now match database schema types (`boolean | null`)
+- **No Logic Changes**: Existing correctness determination logic unchanged - maintains backward compatibility
+- **Proper Null Handling**: Uses nullish coalescing (`??`) throughout for robust null/undefined handling
+
+---
+
 ## v2.30.5 - Debate Mode Custom Challenge Implementation
 
 ### ✨ **New Features**
