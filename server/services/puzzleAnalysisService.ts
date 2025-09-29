@@ -1,10 +1,14 @@
 /**
  * puzzleAnalysisService.ts
  * 
- * Service for handling puzzle analysis business logic.
+ * Author: Cascade using GPT-4.1
+ * Date: 2025-09-29T17:15:00-04:00
+ * PURPOSE: Service for handling puzzle analysis business logic.
  * Extracts complex AI analysis orchestration from controller.
- * 
- * @author Claude Code
+ * CRITICAL FIX: Added originalExplanation and customChallenge extraction in generatePromptPreview()
+ * to enable debate mode prompt preview. These fields were missing, causing API calls to fail
+ * when previewing debate prompts. Now properly forwards debate context to promptOptions.
+ * SRP/DRY check: Pass - Single service responsibility, delegates to specialized services
  */
 
 import { aiServiceFactory } from './aiServiceFactory';
@@ -286,7 +290,9 @@ export class PuzzleAnalysisService {
       reasoningEffort,
       reasoningVerbosity,
       reasoningSummaryType,
-      systemPromptMode = 'ARC'
+      systemPromptMode = 'ARC',
+      originalExplanation,
+      customChallenge
     } = options;
 
     const puzzle = await puzzleService.getPuzzleById(taskId);
@@ -296,6 +302,9 @@ export class PuzzleAnalysisService {
     const promptOptions: PromptOptions = {};
     if (emojiSetKey) promptOptions.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
+    // Add debate mode context
+    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
 
     const serviceOpts: any = {};
     if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;

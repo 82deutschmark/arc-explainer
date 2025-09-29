@@ -1,10 +1,11 @@
 /**
  * DebateAnalysisResultCard.tsx
  *
- * Author: Cascade using Claude Sonnet 4
- * Date: 2025-09-29T15:01:20-04:00
- * PURPOSE: Compact, scaled version of AnalysisResultCard specifically for Model Debate views.
- * Uses CSS transforms to scale down grids to fit multiple analyses side-by-side without overlap.
+ * Author: Cascade using GPT-4.1
+ * Date: 2025-09-29T17:15:00-04:00
+ * PURPOSE: Ultra-compact scaled version of AnalysisResultCard for Model Debate views.
+ * Uses CSS transforms to scale grids down to 20-25% (was 40%) with tighter negative margins (-75% vs -50%)
+ * to prevent overlap. Reduced all spacing, padding, and font sizes for dense display.
  * SRP/DRY check: Pass - Reuses existing AnalysisResultCard, adds only scaling wrapper
  * shadcn/ui: Pass - Uses shadcn/ui components throughout via AnalysisResultCard
  */
@@ -26,7 +27,7 @@ interface DebateAnalysisResultCardProps extends AnalysisResultCardProps {
  * Uses CSS transform to prevent grid overlap on smaller screens.
  */
 export const DebateAnalysisResultCard: React.FC<DebateAnalysisResultCardProps> = ({
-  gridScale = 0.4,
+  gridScale = 0.25,
   ...props
 }) => {
   return (
@@ -43,7 +44,7 @@ export const DebateAnalysisResultCard: React.FC<DebateAnalysisResultCardProps> =
         .debate-result-card .inline-block {
           transform: scale(var(--grid-scale));
           transform-origin: center;
-          margin: calc(-50% * var(--grid-scale)) auto;
+          margin: calc(-75% * var(--grid-scale)) auto;
         }
         
         /* Ensure the parent container doesn't overflow */
@@ -51,9 +52,18 @@ export const DebateAnalysisResultCard: React.FC<DebateAnalysisResultCardProps> =
           overflow: visible;
         }
         
-        /* Adjust spacing around scaled grids */
+        /* Reduce all padding and spacing for ultra-compact display */
         .debate-result-card [class*="space-y"] {
-          gap: 0.5rem;
+          gap: 0.25rem;
+        }
+        
+        .debate-result-card .card {
+          padding: 0.25rem;
+        }
+        
+        /* Make text smaller */
+        .debate-result-card {
+          font-size: 0.75rem;
         }
       `}</style>
       <AnalysisResultCard {...props} />
