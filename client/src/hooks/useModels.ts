@@ -24,6 +24,6 @@ export const useModels = () => {
   return useQuery<ModelConfig[], Error>({
     queryKey: ['models'],
     queryFn: fetchModels,
-    staleTime: Infinity // Model configuration is static, so we can cache it indefinitely
+    staleTime: 5 * 60 * 1000 // Cache for 5 minutes, then refetch to catch new models
   });
 };
