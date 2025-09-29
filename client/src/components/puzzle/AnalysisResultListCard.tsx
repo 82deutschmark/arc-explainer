@@ -61,6 +61,7 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
     });
 
     // Map correctness status to display icons and colors
+    // Only two states now: correct or incorrect (null/undefined = incorrect)
     if (correctness.isCorrect) {
       return {
         status: correctness.status,
@@ -68,19 +69,13 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
         icon: CheckCircle,
         color: 'text-green-600'
       };
-    } else if (correctness.isIncorrect) {
+    } else {
+      // Everything else is incorrect
       return {
         status: correctness.status,
         label: correctness.label,
         icon: result.hasMultiplePredictions ? AlertTriangle : XCircle,
         color: result.hasMultiplePredictions ? 'text-yellow-600' : 'text-red-600'
-      };
-    } else {
-      return {
-        status: correctness.status,
-        label: correctness.label,
-        icon: AlertTriangle,
-        color: 'text-gray-400'
       };
     }
   }, [result]);
