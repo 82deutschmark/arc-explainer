@@ -65,7 +65,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           <div className="flex gap-2 items-center">
             <div className="border border-gray-200 rounded p-1">
               <div className="text-[10px] text-center mb-1 text-gray-600">Input</div>
-              <div className="scale-25 origin-center transform -my-8 -mx-4">
+              <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                 <PuzzleGrid
                   grid={testCase.input}
                   title=""
@@ -76,7 +76,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             <div className="text-sm text-gray-400">→</div>
             <div className="border border-green-200 bg-green-50 rounded p-1">
               <div className="text-[10px] text-center mb-1 text-green-700 font-medium">Correct Output</div>
-              <div className="scale-25 origin-center transform -my-8 -mx-4">
+              <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                 <PuzzleGrid
                   grid={testCase.output}
                   title=""
@@ -112,7 +112,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 <div key={index} className="border border-gray-200 rounded p-1 flex-shrink-0">
                   <div className="text-xs text-center mb-1">{index + 1}</div>
                   <div className="flex items-center gap-1">
-                    <div className="scale-25 origin-center transform -my-8 -mx-4">
+                    <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                       <PuzzleGrid
                         grid={example.input}
                         title=""
@@ -120,7 +120,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                       />
                     </div>
                     <div className="text-xs text-gray-400">→</div>
-                    <div className="scale-25 origin-center transform -my-8 -mx-4">
+                    <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                       <PuzzleGrid
                         grid={example.output}
                         title=""
