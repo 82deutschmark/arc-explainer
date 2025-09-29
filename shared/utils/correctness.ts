@@ -31,8 +31,8 @@ export interface CorrectnessResult {
 export interface CorrectnessStatus {
   isCorrect: boolean;
   isIncorrect: boolean;
-  isUnknown: boolean;
-  status: 'correct' | 'incorrect' | 'unknown';
+  isUnknown: boolean; // Always false - kept for backward compatibility
+  status: 'correct' | 'incorrect';
   label: string;
 }
 
@@ -57,7 +57,9 @@ export function determineCorrectness(result: CorrectnessResult): CorrectnessStat
   // This properly handles null/undefined and gives us the first non-null value
   const correctnessValue = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
 
-  // Simple boolean check
+  // MATCHES AccuracyRepository SQL logic:
+  // SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END)
+  // Anything NOT explicitly true counts as incorrect (null, undefined, false all = incorrect)
   if (correctnessValue === true) {
     return {
       isCorrect: true,
@@ -66,22 +68,14 @@ export function determineCorrectness(result: CorrectnessResult): CorrectnessStat
       status: 'correct',
       label: result.hasMultiplePredictions ? 'All Correct' : 'Correct'
     };
-  } else if (correctnessValue === false) {
+  } else {
+    // false, null, or undefined - all count as incorrect
     return {
       isCorrect: false,
       isIncorrect: true,
       isUnknown: false,
       status: 'incorrect',
       label: result.hasMultiplePredictions ? 'Some Incorrect' : 'Incorrect'
-    };
-  } else {
-    // null or undefined - no prediction data available
-    return {
-      isCorrect: false,
-      isIncorrect: false,
-      isUnknown: true,
-      status: 'unknown',
-      label: 'Unknown'
     };
   }
 }
