@@ -55,12 +55,6 @@ const navigationItems: NavItem[] = [
     description: 'Community discussion and analysis insights'
   },
   {
-    title: 'Kaggle Readiness',
-    href: '/kaggle-readiness',
-    icon: Target,
-    description: 'Validate technical readiness for machine learning competitions'
-  },
-  {
     title: 'ELO Arena',
     href: '/elo',
     icon: Trophy,
@@ -77,6 +71,12 @@ const navigationItems: NavItem[] = [
     href: '/debate',
     icon: MessageSquare,
     description: 'Watch AI models challenge each other\'s explanations'
+  },
+  {
+    title: 'Kaggle Readiness',
+    href: '/kaggle-readiness',
+    icon: Target,
+    description: 'Validate technical readiness for machine learning competitions'
   }
 ];
 
