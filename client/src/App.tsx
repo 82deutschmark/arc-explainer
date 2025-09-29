@@ -17,6 +17,7 @@ import ModelBrowser from "@/pages/ModelBrowser";
 import EloComparison from "@/pages/EloComparison";
 import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
+import ModelDebate from "@/pages/ModelDebate";
 
 function Router() {
   return (
@@ -38,6 +39,8 @@ function Router() {
         <Route path="/compare/:taskId" component={EloComparison} />
         <Route path="/feedback" component={PuzzleFeedback} />
         <Route path="/feedback/:taskId" component={PuzzleFeedback} />
+        <Route path="/debate" component={ModelDebate} />
+        <Route path="/debate/:taskId" component={ModelDebate} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />
