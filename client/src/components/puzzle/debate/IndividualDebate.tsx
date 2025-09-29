@@ -89,11 +89,15 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   onCustomChallengeChange,
   onGenerateChallenge
 }) => {
-  // Determine if original explanation was incorrect OR unvalidated (null means debatable)
-  const wasIncorrect = originalExplanation.isPredictionCorrect === false ||
-    originalExplanation.isPredictionCorrect === null ||
-    (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === false) ||
-    (originalExplanation.hasMultiplePredictions && originalExplanation.multiTestAllCorrect === null);
+  // Everything is debatable unless explicitly correct
+  const hasMultiTest = originalExplanation.hasMultiplePredictions &&
+    (originalExplanation.multiTestAllCorrect !== undefined || originalExplanation.multiTestAverageAccuracy !== undefined);
+
+  const isExplicitlyCorrect = hasMultiTest
+    ? originalExplanation.multiTestAllCorrect === true
+    : originalExplanation.isPredictionCorrect === true;
+
+  const wasIncorrect = !isExplicitlyCorrect;
 
   return (
     <div className="space-y-4">
@@ -110,9 +114,9 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                   Debating: {originalExplanation.modelName}
                   {wasIncorrect && (
                     <Badge variant="destructive" className="text-xs">
-                      {originalExplanation.isPredictionCorrect === false || originalExplanation.multiTestAllCorrect === false
+                      {(hasMultiTest ? originalExplanation.multiTestAllCorrect : originalExplanation.isPredictionCorrect) === false
                         ? 'Incorrect Prediction'
-                        : 'Unvalidated - Debatable'}
+                        : 'Available for Debate'}
                     </Badge>
                   )}
                 </h2>
