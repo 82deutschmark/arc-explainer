@@ -1,11 +1,13 @@
 /**
  * IndividualDebate.tsx
  *
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-29
- * PURPOSE: Focused component for handling individual AI-vs-AI debate interface.
+ * Author: Cascade using GPT-4.1
+ * Date: 2025-09-29T17:15:00-04:00
+ * PURPOSE: Ultra-compact debate interface with 1/5 scale grids (20%), minimal padding/whitespace.
+ * Fixed massive grid overlap and wasted space by reducing all padding from p-4 to p-2, 
+ * shrinking grids from 50% to 20% scale, and reducing all text/icon sizes by ~40%.
  * Single responsibility: Manage one debate session between AI models about a specific explanation.
- * SRP/DRY check: Pass - Single responsibility (debate UI), reuses AnalysisResultCard
+ * SRP/DRY check: Pass - Single responsibility (debate UI), reuses DebateAnalysisResultCard
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
@@ -102,10 +104,10 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   const wasIncorrect = !isExplicitlyCorrect;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Debate Header with Back Button */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-full ${wasIncorrect ? 'bg-red-100' : 'bg-blue-100'}`}>
@@ -136,29 +138,29 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {/* Debate Messages */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-2">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
+            <CardHeader className="p-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <MessageSquare className="h-4 w-4" />
                 AI Model Debate
-                <Badge variant="outline">{debateMessages.length} participants</Badge>
+                <Badge variant="outline" className="text-xs">{debateMessages.length} participants</Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+            <CardContent className="p-2">
+              <div className="space-y-2 max-h-96 overflow-y-auto">
                 {debateMessages.map((message) => (
                   <div key={message.id}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant={message.messageType === 'original' ? 'default' : 'destructive'}>
+                    <div className="flex items-center gap-1 mb-1">
+                      <Badge variant={message.messageType === 'original' ? 'default' : 'destructive'} className="text-xs px-1 py-0">
                         {message.modelName}
                       </Badge>
-                      <Badge variant="outline">
-                        {message.messageType === 'original' ? 'Original Explanation' : 'Challenge'}
+                      <Badge variant="outline" className="text-xs px-1 py-0">
+                        {message.messageType === 'original' ? 'Original' : 'Challenge'}
                       </Badge>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] text-gray-500">
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
@@ -170,7 +172,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                       model={models?.find(m => m.key === message.modelName)}
                       testCases={testCases}
                       eloMode={true}
-                      gridScale={0.5}
+                      gridScale={0.2}
                     />
                   </div>
                 ))}
@@ -180,17 +182,17 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </div>
 
         {/* Challenge Controls */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Plus className="h-5 w-5" />
+            <CardHeader className="p-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Plus className="h-4 w-4" />
                 Add Challenge
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2 p-2">
               <div>
-                <label className="text-sm font-medium mb-2 block">Challenger Model</label>
+                <label className="text-xs font-medium mb-1 block">Challenger Model</label>
                 <Select value={challengerModel} onValueChange={onChallengerModelChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a model to challenge..." />
@@ -206,14 +208,15 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">
+                <label className="text-xs font-medium mb-1 block">
                   Custom Challenge Focus (Optional)
                 </label>
                 <Textarea
                   value={customChallenge}
                   onChange={(e) => onCustomChallengeChange(e.target.value)}
                   placeholder="Guide the challenger's focus..."
-                  rows={3}
+                  rows={2}
+                  className="text-xs"
                 />
               </div>
 
@@ -222,25 +225,27 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 variant="outline"
                 onClick={handlePreviewPrompt}
                 disabled={!challengerModel}
-                className="w-full"
+                className="w-full h-8 text-xs"
+                size="sm"
               >
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye className="h-3 w-3 mr-1" />
                 Preview Challenge Prompt
               </Button>
 
               <Button
                 onClick={onGenerateChallenge}
                 disabled={!challengerModel || processingModels.has(challengerModel)}
-                className="w-full"
+                className="w-full h-8 text-xs"
+                size="sm"
               >
                 {processingModels.has(challengerModel) ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating Challenge...
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Generating...
                   </>
                 ) : (
                   <>
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send className="h-3 w-3 mr-1" />
                     Generate Challenge
                   </>
                 )}
@@ -258,37 +263,37 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 
           {/* Quick Actions */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
+            <CardHeader className="p-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Plus className="h-3 w-3" />
                 Debate Actions
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-1 p-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full h-7 text-xs"
                 onClick={onBackToList}
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Choose Different Explanation
+                <ArrowLeft className="h-3 w-3 mr-1" />
+                Choose Different
               </Button>
 
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full h-7 text-xs"
                 onClick={onResetDebate}
               >
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Reset This Debate
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Reset Debate
               </Button>
 
               <Link href={`/elo/${taskId}`}>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Trophy className="h-4 w-4 mr-2" />
-                  Compare in ELO Mode
+                <Button variant="outline" size="sm" className="w-full h-7 text-xs">
+                  <Trophy className="h-3 w-3 mr-1" />
+                  ELO Mode
                 </Button>
               </Link>
             </CardContent>
