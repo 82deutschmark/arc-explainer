@@ -68,8 +68,16 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   }, [result]);
 
   const canDebate = useMemo(() => {
-    return accuracyStatus.status === 'incorrect' || accuracyStatus.status === 'some_incorrect';
-  }, [accuracyStatus]);
+    // Everything is debatable unless explicitly correct
+    const hasMultiTest = result.hasMultiplePredictions &&
+      (result.multiTestAllCorrect !== undefined || result.multiTestAverageAccuracy !== undefined);
+
+    const isExplicitlyCorrect = hasMultiTest
+      ? result.multiTestAllCorrect === true
+      : result.isPredictionCorrect === true;
+
+    return !isExplicitlyCorrect;
+  }, [result]);
 
   const handleDebateClick = () => {
     if (onStartDebate && result.id) {
