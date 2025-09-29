@@ -4,112 +4,81 @@
  * Author: Claude Sonnet 4.5
  * Date: 2025-09-29
  * PURPOSE: Single source of truth for puzzle-solving correctness determination.
- * Ensures consistency between frontend and backend correctness logic.
- * Matches the exact logic used in AccuracyRepository.ts (lines 138, 167, 263, etc.)
+ * MATCHES THE WORKING LOGIC FROM AnalysisResultHeader.tsx (lines 110-133)
+ * Uses simple nullish coalescing (??) for robust null/undefined handling.
  *
  * SRP/DRY check: Pass - Single responsibility: correctness determination only
  *
- * CORRECTNESS LOGIC (matches database queries):
- * THREE EVALUATION METRICS (per CLAUDE.md lines 115, 130-131):
- * 1. is_prediction_correct - boolean (evaluation 1 of 3) - for single-test puzzles
- * 2. multi_test_all_correct - boolean (evaluation 2 of 3) - ALL tests must be correct
- * 3. multi_test_average_accuracy - double (evaluation 3 of 3) - PARTIAL CREDIT SCORING
+ * CORRECTNESS LOGIC (matches AnalysisResultHeader and AccuracyRepository):
+ * ```typescript
+ * const isCorrect = result.multiTestAllCorrect ?? result.isPredictionCorrect;
+ * ```
+ * - Uses ?? nullish coalescing (handles null/undefined properly)
+ * - Priority: multiTestAllCorrect first, then isPredictionCorrect
+ * - Simple boolean result: true = correct, false = incorrect, null/undefined = unknown
  *
- * CORRECTNESS DETERMINATION:
- * - A prediction is CORRECT if: is_prediction_correct = true OR multi_test_all_correct = true
- * - A prediction is INCORRECT if: is_prediction_correct = false OR multi_test_all_correct = false
- * - PARTIAL CORRECT: multi_test_average_accuracy between 0 and 1 (some tests passed, not all)
- * - Unknown status if neither field is defined
- *
- * This prevents DRY violations where frontend components invented their own correctness logic!
+ * This prevents DRY violations where components invented their own correctness logic!
  */
 
 export interface CorrectnessResult {
   modelName: string;
   isPredictionCorrect?: boolean | null;
   multiTestAllCorrect?: boolean | null;
-  multiTestAverageAccuracy?: number | null; // CRITICAL: Evaluation 3 of 3 - partial credit
+  allPredictionsCorrect?: boolean | null; // Alternative field name (backward compat)
   hasMultiplePredictions?: boolean;
 }
 
 export interface CorrectnessStatus {
   isCorrect: boolean;
   isIncorrect: boolean;
-  isPartialCorrect: boolean;
   isUnknown: boolean;
-  status: 'correct' | 'incorrect' | 'partial-correct' | 'unknown';
+  status: 'correct' | 'incorrect' | 'unknown';
   label: string;
-  partialScore?: number; // For displaying partial accuracy (0.0 to 1.0)
 }
 
 /**
- * Determines if a result is correct using the EXACT same logic as AccuracyRepository
- * PLUS handles partial correctness via multi_test_average_accuracy
+ * Determines if a result is correct using EXACT same logic as AnalysisResultHeader
  *
- * MATCHES: AccuracyRepository query logic:
+ * MATCHES: AnalysisResultHeader.tsx lines 114, 120, 126:
+ * ```typescript
+ * const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
+ * ```
+ *
+ * AND MATCHES: AccuracyRepository query logic:
  * ```sql
  * is_prediction_correct = true OR multi_test_all_correct = true
  * ```
- *
- * PLUS PARTIAL CREDIT: multi_test_average_accuracy for gradual scoring
  *
  * @param result - Result object with prediction correctness fields
  * @returns CorrectnessStatus with boolean flags and display label
  */
 export function determineCorrectness(result: CorrectnessResult): CorrectnessStatus {
-  // Match repository logic: is_prediction_correct = true OR multi_test_all_correct = true
-  const isCorrect = result.isPredictionCorrect === true || result.multiTestAllCorrect === true;
+  // Use the EXACT working logic from AnalysisResultHeader (nullish coalescing)
+  // This properly handles null/undefined and gives us the first non-null value
+  const correctnessValue = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
 
-  // Match repository logic for incorrect: either field is explicitly false
-  const isIncorrect = result.isPredictionCorrect === false || result.multiTestAllCorrect === false;
-
-  // Check for partial correctness using multi_test_average_accuracy (evaluation 3 of 3)
-  const hasPartialScore = result.hasMultiplePredictions && 
-                          result.multiTestAverageAccuracy !== null && 
-                          result.multiTestAverageAccuracy !== undefined &&
-                          result.multiTestAverageAccuracy > 0 &&
-                          result.multiTestAverageAccuracy < 1;
-
-  const isPartialCorrect = !isCorrect && hasPartialScore;
-
-  // Unknown if no evaluation metrics are defined
-  const isUnknown = !isCorrect && !isIncorrect && !isPartialCorrect;
-
-  // Determine status and label
-  if (isCorrect) {
+  // Simple boolean check
+  if (correctnessValue === true) {
     return {
       isCorrect: true,
       isIncorrect: false,
-      isPartialCorrect: false,
       isUnknown: false,
       status: 'correct',
       label: result.hasMultiplePredictions ? 'All Correct' : 'Correct'
     };
-  } else if (isPartialCorrect) {
-    const percentCorrect = Math.round((result.multiTestAverageAccuracy || 0) * 100);
-    return {
-      isCorrect: false,
-      isIncorrect: false,
-      isPartialCorrect: true,
-      isUnknown: false,
-      status: 'partial-correct',
-      label: `Partial (${percentCorrect}%)`,
-      partialScore: result.multiTestAverageAccuracy || 0
-    };
-  } else if (isIncorrect) {
+  } else if (correctnessValue === false) {
     return {
       isCorrect: false,
       isIncorrect: true,
-      isPartialCorrect: false,
       isUnknown: false,
       status: 'incorrect',
-      label: result.hasMultiplePredictions ? 'All Incorrect' : 'Incorrect'
+      label: result.hasMultiplePredictions ? 'Some Incorrect' : 'Incorrect'
     };
   } else {
+    // null or undefined - no prediction data available
     return {
       isCorrect: false,
       isIncorrect: false,
-      isPartialCorrect: false,
       isUnknown: true,
       status: 'unknown',
       label: 'Unknown'

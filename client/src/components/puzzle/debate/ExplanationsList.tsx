@@ -1,15 +1,17 @@
 /**
  * ExplanationsList.tsx
  *
- * Author: Claude Code using Sonnet 4
+ * Author: Claude Sonnet 4.5
  * Date: 2025-09-29
  * PURPOSE: Reusable component for displaying and filtering explanations with debate triggers.
+ * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
  * Single responsibility: Explanation list display and filtering only.
- * SRP/DRY check: Pass - Reuses filtering logic from PuzzleExaminer, focused on list concerns
+ * SRP/DRY check: Pass - Uses shared correctness utility, focused on list concerns
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
 import React, { useMemo } from 'react';
+import { determineCorrectness } from '@shared/utils/correctness';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -53,22 +55,21 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
   title = "Explanations Available for Debate",
   subtitle = "Browse existing explanations and start debates on incorrect ones"
 }) => {
-  // Filter explanations based on correctness (reuse PuzzleExaminer logic)
+  // Filter explanations based on correctness (use shared correctness logic!)
   const filteredExplanations = useMemo(() => {
     if (correctnessFilter === 'all') {
       return explanations;
     }
 
     return explanations.filter((explanation) => {
-      const hasMultiTest = explanation.hasMultiplePredictions &&
-        (explanation.multiTestAllCorrect !== undefined || explanation.multiTestAverageAccuracy !== undefined);
+      const correctness = determineCorrectness({
+        modelName: explanation.modelName,
+        isPredictionCorrect: explanation.isPredictionCorrect,
+        multiTestAllCorrect: explanation.multiTestAllCorrect,
+        hasMultiplePredictions: explanation.hasMultiplePredictions
+      });
 
-      const isMultiTestCorrect = explanation.multiTestAllCorrect === true;
-      const isSingleTestCorrect = explanation.isPredictionCorrect === true;
-
-      const isCorrect = hasMultiTest ? isMultiTestCorrect : isSingleTestCorrect;
-
-      return correctnessFilter === 'correct' ? isCorrect : !isCorrect;
+      return correctnessFilter === 'correct' ? correctness.isCorrect : correctness.isIncorrect;
     });
   }, [explanations, correctnessFilter]);
 

@@ -84,9 +84,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 {displayedExamples.map((example, index) => (
                   <div key={index} className="flex items-center gap-1 flex-shrink-0">
                     <div className="text-[9px] text-gray-500">{index + 1}.</div>
-                    <TinyGrid grid={example.input} maxSize={60} minCellSize={2} maxCellSize={6} />
+                    <TinyGrid grid={example.input} maxSize={100} minCellSize={3} maxCellSize={8} />
                     <div className="text-[9px] text-gray-400">→</div>
-                    <TinyGrid grid={example.output} maxSize={60} minCellSize={2} maxCellSize={6} />
+                    <TinyGrid grid={example.output} maxSize={100} minCellSize={3} maxCellSize={8} />
                   </div>
                 ))}
                 {trainExamples.length > maxTrainingExamples && (
@@ -102,12 +102,12 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           <div className="flex items-center gap-2 flex-shrink-0">
             <div>
               <div className="text-[9px] text-gray-600 mb-1">Input</div>
-              <TinyGrid grid={testCase.input} maxSize={120} minCellSize={3} maxCellSize={8} />
+              <TinyGrid grid={testCase.input} maxSize={200} minCellSize={4} maxCellSize={12} />
             </div>
             <div className="text-xs text-gray-400">→</div>
             <div>
               <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
-              <TinyGrid grid={testCase.output} maxSize={120} minCellSize={3} maxCellSize={8} />
+              <TinyGrid grid={testCase.output} maxSize={200} minCellSize={4} maxCellSize={12} />
             </div>
           </div>
         </div>
