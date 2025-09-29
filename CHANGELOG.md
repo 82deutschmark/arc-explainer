@@ -1,4 +1,4 @@
-### January 1 2026
+### September 29 2025
 
 ## v2.29.0 - Model Debate Feature
 
