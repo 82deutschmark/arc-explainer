@@ -499,6 +499,13 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     description: "Full control over AI instructions - write your own custom prompt to guide the AI's analysis approach and output style exactly as you want.",
     content: "",
     emojiMapIncluded: false
+  },
+  debate: {
+    id: "debate",
+    name: "⚔️ Debate Mode",
+    description: "AI-vs-AI challenge mode - critique and improve another AI's explanation with superior reasoning and problem-solving.",
+    content: "You are participating in an AI model debate. Another AI model has provided an explanation for this puzzle. Critically evaluate their reasoning, identify flaws or weaknesses, and provide a superior analysis with the correct solution.",
+    emojiMapIncluded: false
   }
 };
 

@@ -23,13 +23,11 @@ import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
 import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
 
-// Hooks
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { useDebateState } from '@/hooks/debate/useDebateState';
-import { useChallengeGeneration } from '@/hooks/debate/useChallengeGeneration';
 
 export default function ModelDebate() {
   const { taskId } = useParams<{ taskId?: string }>();
@@ -48,15 +46,17 @@ export default function ModelDebate() {
 
   // Debate state management
   const debateState = useDebateState();
-  const { generateChallengePrompt } = useChallengeGeneration();
+
+  // Get the selected explanation for debate context
+  const selectedExplanation = explanations?.find(e => e.id === debateState.selectedExplanationId);
 
   // Analysis hook for challenge generation
   const {
     analyzeAndSaveMutation,
     processingModels,
     analyzerErrors,
-    setCustomPrompt,
     promptId,
+    setPromptId,
     temperature,
     isGPT5ReasoningModel,
     reasoningEffort,
@@ -68,20 +68,29 @@ export default function ModelDebate() {
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
-    omitAnswer: false
+    omitAnswer: false,
+    originalExplanation: selectedExplanation,
+    customChallenge: debateState.customChallenge
   });
+
+  // Set promptId to 'debate' when debate mode is active
+  useEffect(() => {
+    if (debateState.isDebateActive && selectedExplanation) {
+      setPromptId('debate');
+    } else {
+      setPromptId('solver'); // Reset to default when not in debate
+    }
+  }, [debateState.isDebateActive, selectedExplanation, setPromptId]);
 
   // Challenge generation handler
   const handleGenerateChallenge = async () => {
     if (!debateState.challengerModel || !debateState.selectedExplanationId || !taskId) return;
 
-    const originalExplanation = explanations?.find(e => e.id === debateState.selectedExplanationId);
-    if (!originalExplanation) return;
+    if (!selectedExplanation) return;
 
     try {
-      // Generate the challenge prompt
-      const challengePrompt = generateChallengePrompt(originalExplanation, debateState.customChallenge);
-      setCustomPrompt(challengePrompt);
+      // Set prompt to debate mode for backend prompt generation
+      setPromptId('debate');
 
       // Build mutation payload
       const payload: any = {
@@ -199,8 +208,6 @@ export default function ModelDebate() {
               customChallenge={debateState.customChallenge}
               processingModels={processingModels}
               analyzerErrors={analyzerErrors}
-              promptId={promptId}
-              generateChallengePrompt={generateChallengePrompt}
               onBackToList={debateState.endDebate}
               onResetDebate={debateState.resetDebate}
               onChallengerModelChange={debateState.setChallengerModel}

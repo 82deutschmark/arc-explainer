@@ -58,8 +58,6 @@ interface IndividualDebateProps {
   customChallenge: string;
   processingModels: Set<string>;
   analyzerErrors: Map<string, Error>;
-  promptId?: string; // For prompt preview
-  customPrompt?: string; // Generated challenge prompt for preview
 
   // Actions
   onBackToList: () => void;
@@ -67,7 +65,6 @@ interface IndividualDebateProps {
   onChallengerModelChange: (model: string) => void;
   onCustomChallengeChange: (challenge: string) => void;
   onGenerateChallenge: () => void;
-  generateChallengePrompt?: (explanation: ExplanationData, customChallenge?: string) => string;
 }
 
 export const IndividualDebate: React.FC<IndividualDebateProps> = ({
@@ -81,25 +78,17 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   customChallenge,
   processingModels,
   analyzerErrors,
-  promptId = 'custom',
-  customPrompt,
   onBackToList,
   onResetDebate,
   onChallengerModelChange,
   onCustomChallengeChange,
-  onGenerateChallenge,
-  generateChallengePrompt
+  onGenerateChallenge
 }) => {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
-  const [previewPrompt, setPreviewPrompt] = useState<string>('');
 
-  // Handle prompt preview
+  // Handle prompt preview - now uses API-based prompt generation
   const handlePreviewPrompt = () => {
-    if (generateChallengePrompt) {
-      const prompt = generateChallengePrompt(originalExplanation, customChallenge);
-      setPreviewPrompt(prompt);
-      setShowPromptPreview(true);
-    }
+    setShowPromptPreview(true);
   };
 
   // Everything is debatable unless explicitly correct
@@ -229,17 +218,15 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
               </div>
 
               {/* Preview Prompt Button */}
-              {generateChallengePrompt && (
-                <Button
-                  variant="outline"
-                  onClick={handlePreviewPrompt}
-                  disabled={!challengerModel}
-                  className="w-full"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview Challenge Prompt
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                onClick={handlePreviewPrompt}
+                disabled={!challengerModel}
+                className="w-full"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Preview Challenge Prompt
+              </Button>
 
               <Button
                 onClick={onGenerateChallenge}
@@ -316,9 +303,12 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
           onClose={() => setShowPromptPreview(false)}
           task={task}
           taskId={taskId}
-          promptId={promptId}
-          customPrompt={previewPrompt}
-          options={{ omitAnswer: false }}
+          promptId="debate"
+          options={{
+            omitAnswer: false,
+            originalExplanation: originalExplanation,
+            customChallenge: customChallenge
+          }}
         />
       )}
     </div>

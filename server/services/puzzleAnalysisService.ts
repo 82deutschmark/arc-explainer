@@ -29,6 +29,8 @@ export interface AnalysisOptions {
   reasoningSummaryType?: string;
   systemPromptMode?: string;
   retryMode?: boolean;
+  originalExplanation?: any; // For debate mode
+  customChallenge?: string; // For debate mode
 }
 
 export interface RetryContext {
@@ -58,7 +60,9 @@ export class PuzzleAnalysisService {
       reasoningVerbosity,
       reasoningSummaryType,
       systemPromptMode = 'ARC',
-      retryMode = false
+      retryMode = false,
+      originalExplanation,
+      customChallenge
     } = options;
 
     // Track server processing time
@@ -81,6 +85,9 @@ export class PuzzleAnalysisService {
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
             if (retryContext.badFeedback && retryContext.badFeedback.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
+    // Add debate mode context
+    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
     
     // Build service options
     const serviceOpts: any = {};
