@@ -40,12 +40,12 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({ grid, title, showEmoj
   }, [grid, showEmojis, gridMetadata.size, emojiSet, diffMask]);
   
   return (
-    <div className={`text-center space-y-2 ${highlight ? 'bg-green-50 p-4 rounded-lg border-2 border-green-300' : ''}`}>
-      <div className="flex items-center justify-center gap-2">
-        <h3 className="text-sm font-medium">{title}</h3>
-        <Badge variant="outline" className="text-xs">{gridMetadata.rows}×{gridMetadata.cols}</Badge>
+    <div className={`text-center ${highlight ? 'bg-green-50 p-2 rounded-lg border-2 border-green-300' : ''}`}>
+      <div className="flex items-center justify-center gap-1 mb-1">
+        <h3 className="text-xs font-medium">{title}</h3>
+        <Badge variant="outline" className="text-[10px] px-1 py-0">{gridMetadata.rows}×{gridMetadata.cols}</Badge>
       </div>
-      <div className="inline-block border-2 border-gray-400 rounded">
+      <div className="inline-block border border-gray-400 rounded">
         {gridContent}
       </div>
     </div>

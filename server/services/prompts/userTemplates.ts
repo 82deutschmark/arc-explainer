@@ -180,29 +180,28 @@ export function buildDebateUserPrompt(
   originalExplanation?: any,
   customChallenge?: string
 ): string {
-  // Start with solver-style puzzle data
-  let prompt = buildSolverUserPrompt(task, options);
+  let prompt = '';
 
-  // Add original explanation context if provided
+  // DEBATE CONTEXT COMES FIRST - AI needs to know its role before seeing puzzle!
   if (originalExplanation) {
-    prompt += `\n\nPREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
+    prompt += `PREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
     prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
     prompt += `Solving Strategy: ${originalExplanation.solvingStrategy}\n`;
-    
+
     if (originalExplanation.hints && originalExplanation.hints.length > 0) {
       prompt += `Hints: ${originalExplanation.hints.join(', ')}\n`;
     }
-    
+
     // CRITICAL: Include the predicted output - this is what we're debating
     // We only debate INCORRECT or invalid predictions
     const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
-    
+
     prompt += `\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
-    
+
     if (hasMultiTest) {
       // Multi-test puzzle - use multiple_predicted_outputs or multi_test_prediction_grids
       const predictions = originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
-      
+
       if (predictions && Array.isArray(predictions) && predictions.length > 0) {
         predictions.forEach((grid: any, index: number) => {
           if (grid && Array.isArray(grid) && grid.length > 0) {
@@ -217,7 +216,7 @@ export function buildDebateUserPrompt(
     } else {
       // Single-test puzzle - use predicted_output_grid
       const prediction = originalExplanation.predictedOutputGrid;
-      
+
       if (prediction && Array.isArray(prediction) && prediction.length > 0) {
         prompt += `${JSON.stringify(prediction)}\n`;
       } else {
@@ -228,7 +227,13 @@ export function buildDebateUserPrompt(
     if (customChallenge && customChallenge.trim()) {
       prompt += `\nHUMAN GUIDANCE FOR YOUR ANALYSIS: ${customChallenge.trim()}\n`;
     }
+
+    // Add separator before puzzle data
+    prompt += `\n---\n\n`;
   }
+
+  // NOW add the puzzle data AFTER debate context
+  prompt += buildSolverUserPrompt(task, options);
 
   return prompt;
 }
