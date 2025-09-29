@@ -1,16 +1,17 @@
 /**
  * AnalysisResultListCard.tsx
  *
- * Author: Claude Code using Sonnet 4
- * Date: 2025-01-01
+ * Author: Claude Sonnet 4.5
+ * Date: 2025-09-29
  * PURPOSE: Compact list version of AnalysisResultCard optimized for browsing multiple explanations.
  * Shows key information (model, confidence, accuracy, date) with optional "Start Debate" trigger.
- * Reuses existing AnalysisResultCard data processing logic and can expand to show full details inline.
- * SRP/DRY check: Pass - Reuses existing AnalysisResultCard logic, focused on list display concerns only
+ * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
+ * SRP/DRY check: Pass - Reuses shared correctness utility, focused on list display concerns only
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
 import React, { useMemo, useState } from 'react';
+import { determineCorrectness, isDebatable } from '@shared/utils/correctness';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -50,38 +51,48 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Reuse existing accuracy determination logic from AnalysisResultCard
+  // Use shared correctness logic (matches AccuracyRepository exactly!)
   const accuracyStatus = useMemo(() => {
-    const hasMultiTest = result.hasMultiplePredictions &&
-      (result.multiTestAllCorrect !== undefined || result.multiTestAverageAccuracy !== undefined);
+    const correctness = determineCorrectness({
+      modelName: result.modelName,
+      isPredictionCorrect: result.isPredictionCorrect,
+      multiTestAllCorrect: result.multiTestAllCorrect,
+      hasMultiplePredictions: result.hasMultiplePredictions
+    });
 
-    if (hasMultiTest) {
-      if (result.multiTestAllCorrect === true) {
-        return { status: 'all_correct', label: 'All Correct', icon: CheckCircle, color: 'text-green-600' };
-      } else if (result.multiTestAllCorrect === false) {
-        return { status: 'some_incorrect', label: 'Some Incorrect', icon: AlertTriangle, color: 'text-yellow-600' };
-      }
+    // Map correctness status to display icons and colors
+    if (correctness.isCorrect) {
+      return {
+        status: correctness.status,
+        label: correctness.label,
+        icon: CheckCircle,
+        color: 'text-green-600'
+      };
+    } else if (correctness.isIncorrect) {
+      return {
+        status: correctness.status,
+        label: correctness.label,
+        icon: result.hasMultiplePredictions ? AlertTriangle : XCircle,
+        color: result.hasMultiplePredictions ? 'text-yellow-600' : 'text-red-600'
+      };
     } else {
-      if (result.isPredictionCorrect === true) {
-        return { status: 'correct', label: 'Correct', icon: CheckCircle, color: 'text-green-600' };
-      } else if (result.isPredictionCorrect === false) {
-        return { status: 'incorrect', label: 'Incorrect', icon: XCircle, color: 'text-red-600' };
-      }
+      return {
+        status: correctness.status,
+        label: correctness.label,
+        icon: AlertTriangle,
+        color: 'text-gray-400'
+      };
     }
-
-    return { status: 'unknown', label: 'Unknown', icon: AlertTriangle, color: 'text-gray-400' };
   }, [result]);
 
   const canDebate = useMemo(() => {
-    // Everything is debatable unless explicitly correct
-    const hasMultiTest = result.hasMultiplePredictions &&
-      (result.multiTestAllCorrect !== undefined || result.multiTestAverageAccuracy !== undefined);
-
-    const isExplicitlyCorrect = hasMultiTest
-      ? result.multiTestAllCorrect === true
-      : result.isPredictionCorrect === true;
-
-    return !isExplicitlyCorrect;
+    // Use shared debatable logic (matches repository correctness logic)
+    return isDebatable({
+      modelName: result.modelName,
+      isPredictionCorrect: result.isPredictionCorrect,
+      multiTestAllCorrect: result.multiTestAllCorrect,
+      hasMultiplePredictions: result.hasMultiplePredictions
+    });
   }, [result]);
 
   const handleDebateClick = () => {

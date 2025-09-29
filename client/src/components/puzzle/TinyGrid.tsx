@@ -54,9 +54,9 @@ const calculateCellSize = (
 export const TinyGrid: React.FC<TinyGridProps> = ({
   grid,
   cellSize,
-  maxSize = 120,
-  minCellSize = 2,
-  maxCellSize = 8
+  maxSize = 200,
+  minCellSize = 3,
+  maxCellSize = 12
 }) => {
   if (!grid || grid.length === 0) return null;
 

@@ -1,11 +1,11 @@
 /**
  * PuzzleExaminer.tsx
- * 
- * @author Cascade
+ *
+ * @author Claude Sonnet 4.5
+ * @date 2025-09-29
  * @description This is the main page component for examining a single ARC puzzle.
  * It orchestrates the fetching of puzzle data and existing explanations from the database.
- * It uses the useAnalysisResults hook to handle new analysis requests and renders the results
- * using modular child components like PuzzleGrid and AnalysisResultCard.
+ * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
  * The component is designed around a database-first architecture, ensuring that the UI
  * always reflects the stored state, making puzzle pages static and shareable.
  */
@@ -13,6 +13,7 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { AnalysisResult } from '@/types/puzzle';
+import { determineCorrectness } from '@shared/utils/correctness';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -122,23 +123,21 @@ export default function PuzzleExaminer() {
     });
   }, [explanations]);
 
-  // Filter results based on correctness
+  // Filter results based on correctness (use shared correctness logic!)
   const filteredResults = React.useMemo(() => {
     if (correctnessFilter === 'all') {
       return allResults;
     }
-    
+
     return allResults.filter((result) => {
-      // Determine if this result is "correct"
-      // For single-test puzzles, use isPredictionCorrect
-      // For multi-test puzzles, use multiTestAllCorrect
-      const isSingleTestCorrect = result.isPredictionCorrect === true;
-      const isMultiTestCorrect = result.multiTestAllCorrect === true;
-      const hasMultiTest = result.hasMultiplePredictions === true;
-      
-      const isCorrect = hasMultiTest ? isMultiTestCorrect : isSingleTestCorrect;
-      
-      return correctnessFilter === 'correct' ? isCorrect : !isCorrect;
+      const correctness = determineCorrectness({
+        modelName: result.modelName,
+        isPredictionCorrect: result.isPredictionCorrect,
+        multiTestAllCorrect: result.multiTestAllCorrect,
+        hasMultiplePredictions: result.hasMultiplePredictions
+      });
+
+      return correctnessFilter === 'correct' ? correctness.isCorrect : correctness.isIncorrect;
     });
   }, [allResults, correctnessFilter]);
 
@@ -651,11 +650,21 @@ export default function PuzzleExaminer() {
                     </ToggleGroupItem>
                     <ToggleGroupItem value="correct" className="text-xs px-3 py-1 text-green-700 data-[state=on]:bg-green-100">
                       <CheckCircle className="h-3 w-3 mr-1" />
-                      Correct ({allResults.filter(r => (r.hasMultiplePredictions ? r.multiTestAllCorrect : r.isPredictionCorrect) === true).length})
+                      Correct ({allResults.filter(r => determineCorrectness({
+                        modelName: r.modelName,
+                        isPredictionCorrect: r.isPredictionCorrect,
+                        multiTestAllCorrect: r.multiTestAllCorrect,
+                        hasMultiplePredictions: r.hasMultiplePredictions
+                      }).isCorrect).length})
                     </ToggleGroupItem>
                     <ToggleGroupItem value="incorrect" className="text-xs px-3 py-1 text-red-700 data-[state=on]:bg-red-100">
                       <XCircle className="h-3 w-3 mr-1" />
-                      Incorrect ({allResults.filter(r => (r.hasMultiplePredictions ? r.multiTestAllCorrect : r.isPredictionCorrect) === false).length})
+                      Incorrect ({allResults.filter(r => determineCorrectness({
+                        modelName: r.modelName,
+                        isPredictionCorrect: r.isPredictionCorrect,
+                        multiTestAllCorrect: r.multiTestAllCorrect,
+                        hasMultiplePredictions: r.hasMultiplePredictions
+                      }).isIncorrect).length})
                     </ToggleGroupItem>
                   </ToggleGroup>
                 </div>
