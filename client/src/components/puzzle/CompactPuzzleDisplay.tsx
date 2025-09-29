@@ -50,21 +50,21 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   const displayedExamples = trainExamples.slice(0, maxTrainingExamples);
 
   return (
-    <Card>
+    <Card className="p-0">
       {showTitle && (
-        <CardHeader className="p-3">
-          <CardTitle className="text-sm font-semibold">
+        <CardHeader className="p-1">
+          <CardTitle className="text-xs font-semibold">
             {title}
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className="p-3 space-y-3">
+      <CardContent className="p-0">
         {/* Test Input and Correct Output - ALWAYS VISIBLE */}
         <div>
-          <h3 className="text-xs font-semibold mb-2">Test Input & Correct Output</h3>
-          <div className="flex gap-2 items-center">
-            <div className="border border-gray-200 rounded p-1">
-              <div className="text-[10px] text-center mb-1 text-gray-600">Input</div>
+          <h3 className="text-[10px] font-semibold px-1">Test Input & Correct Output</h3>
+          <div className="flex items-center">
+            <div className="border-r border-gray-200">
+              <div className="text-[9px] text-center text-gray-600">Input</div>
               <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                 <PuzzleGrid
                   grid={testCase.input}
@@ -73,9 +73,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 />
               </div>
             </div>
-            <div className="text-sm text-gray-400">→</div>
-            <div className="border border-green-200 bg-green-50 rounded p-1">
-              <div className="text-[10px] text-center mb-1 text-green-700 font-medium">Correct Output</div>
+            <div className="text-xs text-gray-400 px-1">→</div>
+            <div className="border-l border-green-200 bg-green-50">
+              <div className="text-[9px] text-center text-green-700 font-medium">Correct</div>
               <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                 <PuzzleGrid
                   grid={testCase.output}
@@ -90,28 +90,28 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
         {/* Training Examples - COLLAPSIBLE */}
         <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen}>
           <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-start p-2 h-auto hover:bg-gray-100">
-              <div className="flex items-center gap-2 w-full">
+            <Button variant="ghost" size="sm" className="w-full justify-start p-1 h-auto hover:bg-gray-100">
+              <div className="flex items-center w-full">
                 {isTrainingOpen ? (
                   <ChevronDown className="h-3 w-3" />
                 ) : (
                   <ChevronRight className="h-3 w-3" />
                 )}
-                <h3 className="text-xs font-semibold flex items-center gap-1">
+                <span className="text-[10px] font-semibold ml-1">
                   Training Examples
-                  <Badge variant="outline" className="text-xs px-1 py-0">
+                  <Badge variant="outline" className="text-[9px] px-1 py-0 ml-1">
                     {trainExamples.length}
                   </Badge>
-                </h3>
+                </span>
               </div>
             </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2">
-            <div className="flex gap-1 overflow-x-auto">
+          <CollapsibleContent>
+            <div className="flex overflow-x-auto">
               {displayedExamples.map((example, index) => (
-                <div key={index} className="border border-gray-200 rounded p-1 flex-shrink-0">
-                  <div className="text-xs text-center mb-1">{index + 1}</div>
-                  <div className="flex items-center gap-1">
+                <div key={index} className="border-r border-gray-200 flex-shrink-0">
+                  <div className="text-[9px] text-center">{index + 1}</div>
+                  <div className="flex items-center">
                     <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                       <PuzzleGrid
                         grid={example.input}
@@ -119,7 +119,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                         showEmojis={showEmojis}
                       />
                     </div>
-                    <div className="text-xs text-gray-400">→</div>
+                    <div className="text-[9px] text-gray-400">→</div>
                     <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
                       <PuzzleGrid
                         grid={example.output}
@@ -131,8 +131,8 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 </div>
               ))}
               {trainExamples.length > maxTrainingExamples && (
-                <div className="text-xs text-gray-500 self-center px-2">
-                  +{trainExamples.length - maxTrainingExamples} more
+                <div className="text-[9px] text-gray-500 self-center px-1">
+                  +{trainExamples.length - maxTrainingExamples}
                 </div>
               )}
             </div>
