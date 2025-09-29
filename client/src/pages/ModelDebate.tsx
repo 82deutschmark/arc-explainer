@@ -175,7 +175,7 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="container mx-auto p-3 max-w-7xl space-y-4">
+    <div className="container mx-auto p-1 max-w-7xl space-y-1">
       <PuzzleDebateHeader taskId={taskId} />
 
       <CompactPuzzleDisplay
