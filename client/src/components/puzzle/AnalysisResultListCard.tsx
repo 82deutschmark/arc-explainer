@@ -25,12 +25,15 @@ import {
   Trophy
 } from 'lucide-react';
 import { AnalysisResultCard } from './AnalysisResultCard';
+import { DebateAnalysisResultCard } from './debate/DebateAnalysisResultCard';
 import type { AnalysisResultCardProps } from '@/types/puzzle';
 
 interface AnalysisResultListCardProps extends AnalysisResultCardProps {
   onStartDebate?: (explanationId: number) => void;
   showDebateButton?: boolean;
   compact?: boolean;
+  useScaledGrids?: boolean; // Use scaled grids for debate context
+  gridScale?: number; // Scale factor (default 0.5 for debate)
 }
 
 export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
@@ -41,7 +44,9 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   onStartDebate,
   showDebateButton = true,
   compact = true,
-  eloMode = false
+  eloMode = false,
+  useScaledGrids = false,
+  gridScale = 0.5
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -202,14 +207,25 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
         </div>
       </div>
 
-      {/* Full AnalysisResultCard */}
-      <AnalysisResultCard
-        result={result}
-        modelKey={modelKey}
-        model={model}
-        testCases={testCases}
-        eloMode={eloMode}
-      />
+      {/* Full AnalysisResultCard - scaled if in debate context */}
+      {useScaledGrids ? (
+        <DebateAnalysisResultCard
+          result={result}
+          modelKey={modelKey}
+          model={model}
+          testCases={testCases}
+          eloMode={eloMode}
+          gridScale={gridScale}
+        />
+      ) : (
+        <AnalysisResultCard
+          result={result}
+          modelKey={modelKey}
+          model={model}
+          testCases={testCases}
+          eloMode={eloMode}
+        />
+      )}
     </div>
   );
 };

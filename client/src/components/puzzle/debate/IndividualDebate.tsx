@@ -29,7 +29,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 
 // Reuse existing components
-import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { DebateAnalysisResultCard } from '@/components/puzzle/debate/DebateAnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 // Types
@@ -174,13 +174,14 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                       </span>
                     </div>
 
-                    {/* Reuse existing AnalysisResultCard for consistent display */}
-                    <AnalysisResultCard
+                    {/* Use scaled DebateAnalysisResultCard for compact display */}
+                    <DebateAnalysisResultCard
                       result={message.content}
                       modelKey={message.modelName}
                       model={models?.find(m => m.key === message.modelName)}
                       testCases={testCases}
                       eloMode={true}
+                      gridScale={0.5}
                     />
                   </div>
                 ))}
