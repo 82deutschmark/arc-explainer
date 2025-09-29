@@ -192,11 +192,23 @@ export function buildDebateUserPrompt(
       prompt += `Hints: ${originalExplanation.hints.join(', ')}\n`;
     }
 
-    // CRITICAL: Include the predicted output - this is what we're debating
-    // We only debate INCORRECT or invalid predictions
+    if (customChallenge && customChallenge.trim()) {
+      prompt += `\nHUMAN GUIDANCE FOR YOUR ANALYSIS: ${customChallenge.trim()}\n`;
+    }
+
+    // Add separator before puzzle data
+    prompt += `\n---\n\n`;
+  }
+
+  // Add the puzzle data (training examples)
+  prompt += buildSolverUserPrompt(task, options);
+
+  // PREDICTED OUTPUT COMES AFTER TRAINING EXAMPLES
+  // This lets the AI see the pattern first, THEN critique the wrong prediction
+  if (originalExplanation) {
     const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
 
-    prompt += `\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
+    prompt += `\n\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
 
     if (hasMultiTest) {
       // Multi-test puzzle - use multiple_predicted_outputs or multi_test_prediction_grids
@@ -223,17 +235,7 @@ export function buildDebateUserPrompt(
         prompt += `No valid prediction was provided\n`;
       }
     }
-
-    if (customChallenge && customChallenge.trim()) {
-      prompt += `\nHUMAN GUIDANCE FOR YOUR ANALYSIS: ${customChallenge.trim()}\n`;
-    }
-
-    // Add separator before puzzle data
-    prompt += `\n---\n\n`;
   }
-
-  // NOW add the puzzle data AFTER debate context
-  prompt += buildSolverUserPrompt(task, options);
 
   return prompt;
 }
