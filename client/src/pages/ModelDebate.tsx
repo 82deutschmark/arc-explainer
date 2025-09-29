@@ -41,7 +41,7 @@ export default function ModelDebate() {
   // Data hooks
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
-  const { models } = useModels();
+  const { data: models } = useModels();
 
   // Debate state management
   const debateState = useDebateState();
@@ -116,22 +116,36 @@ export default function ModelDebate() {
 
       {/* Individual Debate or Explanations List */}
       {debateState.isDebateActive && explanations ? (
-        <IndividualDebate
-          originalExplanation={explanations.find(e => e.id === debateState.selectedExplanationId)!}
-          debateMessages={debateState.debateMessages}
-          taskId={taskId}
-          testCases={task!.test}
-          models={models}
-          challengerModel={debateState.challengerModel}
-          customChallenge={debateState.customChallenge}
-          processingModels={processingModels}
-          analyzerErrors={analyzerErrors}
-          onBackToList={debateState.endDebate}
-          onResetDebate={debateState.resetDebate}
-          onChallengerModelChange={debateState.setChallengerModel}
-          onCustomChallengeChange={debateState.setCustomChallenge}
-          onGenerateChallenge={handleGenerateChallenge}
-        />
+        (() => {
+          const selectedExplanation = explanations.find(e => e.id === debateState.selectedExplanationId);
+          if (!selectedExplanation) {
+            return (
+              <Alert>
+                <AlertDescription>
+                  Selected explanation not found. <Button variant="link" onClick={debateState.endDebate}>Return to list</Button>
+                </AlertDescription>
+              </Alert>
+            );
+          }
+          return (
+            <IndividualDebate
+              originalExplanation={selectedExplanation}
+              debateMessages={debateState.debateMessages}
+              taskId={taskId}
+              testCases={task!.test}
+              models={models}
+              challengerModel={debateState.challengerModel}
+              customChallenge={debateState.customChallenge}
+              processingModels={processingModels}
+              analyzerErrors={analyzerErrors}
+              onBackToList={debateState.endDebate}
+              onResetDebate={debateState.resetDebate}
+              onChallengerModelChange={debateState.setChallengerModel}
+              onCustomChallengeChange={debateState.setCustomChallenge}
+              onGenerateChallenge={handleGenerateChallenge}
+            />
+          );
+        })()
       ) : explanations && explanations.length > 0 ? (
         <ExplanationsList
           explanations={explanations}
@@ -139,7 +153,12 @@ export default function ModelDebate() {
           testCases={task!.test}
           correctnessFilter={debateState.correctnessFilter}
           onCorrectnessFilterChange={debateState.setCorrectnessFilter}
-          onStartDebate={debateState.startDebate}
+          onStartDebate={(explanationId: number) => {
+            const explanation = explanations.find(e => e.id === explanationId);
+            if (explanation) {
+              debateState.startDebate(explanation);
+            }
+          }}
         />
       ) : (
         <Card>

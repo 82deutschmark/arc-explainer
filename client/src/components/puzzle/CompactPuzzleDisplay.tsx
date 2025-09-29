@@ -35,7 +35,7 @@ interface CompactPuzzleDisplayProps {
 export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   trainExamples,
   testCase,
-  title = "Puzzle Pattern",
+  title = "Training Grids",
   maxTrainingExamples = 4,
   showEmojis = false,
   showTitle = true
@@ -52,60 +52,58 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent>
-        {/* Compact puzzle overview */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Training examples in compact format */}
-            <div>
-              <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                Training Examples
-                <Badge variant="outline" className="text-xs">
-                  {trainExamples.length}
-                </Badge>
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {displayedExamples.map((example, index) => (
-                  <div key={index} className="border border-gray-200 rounded p-2">
-                    <div className="text-xs text-center mb-1">Ex {index + 1}</div>
-                    <div className="flex items-center gap-1">
-                      <div className="scale-75 origin-top-left">
-                        <PuzzleGrid
-                          grid={example.input}
-                          title=""
-                          showEmojis={showEmojis}
-                        />
-                      </div>
-                      <div className="text-sm text-gray-400">→</div>
-                      <div className="scale-75 origin-top-right">
-                        <PuzzleGrid
-                          grid={example.output}
-                          title=""
-                          showEmojis={showEmojis}
-                        />
-                      </div>
+      <CardContent className="p-3">
+        {/* Very compact puzzle overview - minimal vertical space */}
+        <div className="flex gap-4">
+          {/* Training examples in ultra-compact format */}
+          <div className="flex-1">
+            <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+              Training Grids
+              <Badge variant="outline" className="text-xs px-1 py-0">
+                {trainExamples.length}
+              </Badge>
+            </h3>
+            <div className="flex gap-1 overflow-x-auto">
+              {displayedExamples.map((example, index) => (
+                <div key={index} className="border border-gray-200 rounded p-1 flex-shrink-0">
+                  <div className="text-xs text-center mb-1">{index + 1}</div>
+                  <div className="flex items-center gap-1">
+                    <div className="scale-25 origin-center transform -my-8 -mx-4">
+                      <PuzzleGrid
+                        grid={example.input}
+                        title=""
+                        showEmojis={showEmojis}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-400">→</div>
+                    <div className="scale-25 origin-center transform -my-8 -mx-4">
+                      <PuzzleGrid
+                        grid={example.output}
+                        title=""
+                        showEmojis={showEmojis}
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
               {trainExamples.length > maxTrainingExamples && (
-                <p className="text-xs text-gray-500 mt-1">
-                  ...and {trainExamples.length - maxTrainingExamples} more examples
-                </p>
+                <div className="text-xs text-gray-500 self-center px-2">
+                  +{trainExamples.length - maxTrainingExamples} more
+                </div>
               )}
             </div>
+          </div>
 
-            {/* Test case */}
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Test Question</h3>
-              <div className="border border-gray-200 rounded p-2">
-                <div className="flex justify-center">
-                  <PuzzleGrid
-                    grid={testCase.input}
-                    title="Solve this"
-                    showEmojis={showEmojis}
-                  />
-                </div>
+          {/* Test case - also very compact */}
+          <div className="flex-shrink-0">
+            <h3 className="text-xs font-semibold mb-1">Test Grid</h3>
+            <div className="border border-gray-200 rounded p-1">
+              <div className="scale-25 origin-center transform -my-8 -mx-4">
+                <PuzzleGrid
+                  grid={testCase.input}
+                  title=""
+                  showEmojis={showEmojis}
+                />
               </div>
             </div>
           </div>
