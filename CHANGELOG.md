@@ -1,5 +1,39 @@
 ### September 29 2025
 
+## v2.30.0 - Model Debate SRP Refactor & Architecture Improvements
+
+### 🏗️ **Major Architectural Refactoring**
+- **Decomposed Monolithic ModelDebate Component (600+ lines → 7 focused components)**
+  - `ModelDebate.tsx`: Clean orchestration-only component (97 lines)
+  - `IndividualDebate.tsx`: Focused AI-vs-AI debate interface
+  - `ExplanationsList.tsx`: Reusable explanation browsing with filtering
+  - `CompactPuzzleDisplay.tsx`: Reusable puzzle visualization component
+  - `PuzzleDebateHeader.tsx`: Header with puzzle navigation
+  - `AnalysisResultListCard.tsx`: Compact explanation cards
+
+### 🎯 **Single Responsibility Principle (SRP) Compliance**
+- **Each component now has exactly one responsibility**
+- **Custom hooks for clean separation of concerns:**
+  - `useDebateState.ts`: Debate state management only
+  - `useChallengeGeneration.ts`: Challenge prompt generation logic
+- **High reusability**: Components can be used across the application
+
+### 🔄 **DRY Principle Improvements**
+- **Reused filtering logic** from PuzzleExaminer component
+- **Eliminated code duplication** in puzzle display and explanation handling
+- **Modular components** following established patterns
+
+### 🛠️ **Backend Enhancements**
+- **Added backend explanation filtering** with correctness parameter
+- **Enhanced API**: `GET /api/puzzle/:puzzleId/explanations?correctness=incorrect`
+- **Improved performance** with database-level filtering
+
+### ✅ **Quality Improvements**
+- **Eliminated JSX parsing errors** through clean component structure
+- **Improved maintainability** - easy to modify individual concerns
+- **Enhanced testability** - each component can be tested in isolation
+- **Production-ready architecture** following clean code principles
+
 ## v2.29.0 - Model Debate Feature
 
 ### Added
