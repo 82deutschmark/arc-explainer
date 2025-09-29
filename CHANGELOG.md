@@ -1,5 +1,21 @@
 ### September 29 2025
 
+## v2.30.4 - Fix Model List Caching Issue
+
+### 🐛 **Bug Fix**
+- **Fixed infinite model cache**: Changed `staleTime` from `Infinity` to 5 minutes in useModels hook
+- **Issue**: Browser cached old model list forever, preventing new models from appearing
+- **Impact**: Claude Sonnet 4.5 and future models now appear without hard refresh
+- **Solution**: 5-minute cache balances performance with freshness
+
+### 📝 **User Action Required**
+- **Hard refresh your browser once** to see Claude Sonnet 4.5:
+  - Windows/Linux: `Ctrl + Shift + R`
+  - Mac: `Cmd + Shift + R`
+- After refresh, model list will auto-update every 5 minutes
+
+---
+
 ## v2.30.3 - Model Debate Complete Implementation & UX Enhancements
 
 ### 🚀 **Critical Functionality Restored**
