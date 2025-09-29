@@ -19,7 +19,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 // Reuse existing components
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 
 // Types
 import type { ARCExample } from '@shared/types';
@@ -58,32 +58,17 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className="p-0">
+      <CardContent className="p-1">
         {/* Test Input and Correct Output - ALWAYS VISIBLE */}
-        <div>
-          <h3 className="text-[10px] font-semibold px-1">Test Input & Correct Output</h3>
-          <div className="flex items-center">
-            <div className="border-r border-gray-200">
-              <div className="text-[9px] text-center text-gray-600">Input</div>
-              <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
-                <PuzzleGrid
-                  grid={testCase.input}
-                  title=""
-                  showEmojis={showEmojis}
-                />
-              </div>
-            </div>
-            <div className="text-xs text-gray-400 px-1">→</div>
-            <div className="border-l border-green-200 bg-green-50">
-              <div className="text-[9px] text-center text-green-700 font-medium">Correct</div>
-              <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
-                <PuzzleGrid
-                  grid={testCase.output}
-                  title=""
-                  showEmojis={showEmojis}
-                />
-              </div>
-            </div>
+        <div className="flex items-center gap-2">
+          <div>
+            <div className="text-[9px] text-gray-600 mb-1">Input</div>
+            <TinyGrid grid={testCase.input} cellSize={4} />
+          </div>
+          <div className="text-xs text-gray-400">→</div>
+          <div>
+            <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
+            <TinyGrid grid={testCase.output} cellSize={4} />
           </div>
         </div>
 
@@ -107,31 +92,17 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="flex overflow-x-auto">
+            <div className="flex gap-2 overflow-x-auto p-1">
               {displayedExamples.map((example, index) => (
-                <div key={index} className="border-r border-gray-200 flex-shrink-0">
-                  <div className="text-[9px] text-center">{index + 1}</div>
-                  <div className="flex items-center">
-                    <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
-                      <PuzzleGrid
-                        grid={example.input}
-                        title=""
-                        showEmojis={showEmojis}
-                      />
-                    </div>
-                    <div className="text-[9px] text-gray-400">→</div>
-                    <div style={{ transform: 'scale(0.2)', transformOrigin: 'center', margin: '-40% auto' }}>
-                      <PuzzleGrid
-                        grid={example.output}
-                        title=""
-                        showEmojis={showEmojis}
-                      />
-                    </div>
-                  </div>
+                <div key={index} className="flex items-center gap-1">
+                  <div className="text-[9px] text-gray-500">{index + 1}.</div>
+                  <TinyGrid grid={example.input} cellSize={3} />
+                  <div className="text-[9px] text-gray-400">→</div>
+                  <TinyGrid grid={example.output} cellSize={3} />
                 </div>
               ))}
               {trainExamples.length > maxTrainingExamples && (
-                <div className="text-[9px] text-gray-500 self-center px-1">
+                <div className="text-[9px] text-gray-500">
                   +{trainExamples.length - maxTrainingExamples}
                 </div>
               )}
