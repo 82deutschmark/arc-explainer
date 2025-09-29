@@ -128,6 +128,8 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
                 onStartDebate={onStartDebate}
                 showDebateButton={showDebateButton}
                 compact={true}
+                useScaledGrids={true}
+                gridScale={0.5}
               />
             ))}
           </div>
