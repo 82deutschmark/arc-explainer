@@ -1,5 +1,29 @@
 ### September 29 2025
 
+## v2.30.1 - IndividualDebate Error Fix & Debate Availability Logic
+
+### 🐛 **Critical Bug Fixes**
+- **Fixed TypeError in IndividualDebate.tsx**: `Cannot read properties of undefined (reading 'isPredictionCorrect')` at line 93
+- **Enhanced null value handling**: Updated ExplanationData interface to properly handle null prediction correctness fields
+- **Improved error resilience**: Fixed wasIncorrect logic to handle null/undefined values gracefully
+
+### 🎯 **Debate Availability Logic Enhancement**
+- **Unvalidated explanations are now debatable**: Explanations with `null` isPredictionCorrect are available for debate
+- **Smarter filtering**: Backend now includes null values in 'incorrect' filter for debate purposes
+- **Improved UX**: Added differentiated badges - "Incorrect Prediction" vs "Unvalidated - Debatable"
+
+### 🔧 **Technical Improvements**
+- **Enhanced repository filtering**: ExplanationRepository now handles null correctness values properly
+- **Maintained SRP compliance**: Each fix addresses single responsibility without violating architecture
+- **Backend transformation verified**: Confirmed proper snake_case → camelCase conversion works correctly
+
+### ✅ **Testing & Validation**
+- **Build verification**: TypeScript compilation successful without React DOM errors
+- **Server initialization**: Database loading and API endpoints functional
+- **Component stability**: IndividualDebate component now handles all data states properly
+
+---
+
 ## v2.30.0 - Model Debate SRP Refactor & Architecture Improvements
 
 ### 🏗️ **Major Architectural Refactoring**
