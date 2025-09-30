@@ -125,7 +125,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced accuracy analysis routes - model failure detection
   app.get("/api/feedback/accuracy-stats-filtered", asyncHandler(feedbackController.getAccuracyStatsFiltered));
   app.get("/api/feedback/overconfident-models", asyncHandler(feedbackController.getOverconfidentModels));
-  
+
+  // Debate accuracy statistics - separate from pure solver accuracy
+  app.get("/api/feedback/debate-accuracy-stats", asyncHandler(feedbackController.getDebateAccuracyStats));
+
   // Solution submission and voting routes (from Gemini plan)
   app.get("/api/puzzles/:puzzleId/solutions", asyncHandler(feedbackController.getSolutions));
   app.post("/api/puzzles/:puzzleId/solutions", validation.solutionSubmission, asyncHandler(feedbackController.submitSolution));
