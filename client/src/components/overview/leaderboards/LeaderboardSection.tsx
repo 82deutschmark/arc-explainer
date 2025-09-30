@@ -1,10 +1,15 @@
 /**
- * LeaderboardSection Component
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-27T12:28:08-04:00
+ * PURPOSE: Enhanced LeaderboardSection with improved responsive layout and scaling
  * 
- * Container component that displays three main leaderboards side by side:
+ * Container component that displays three main leaderboards with better responsive design:
  * - Accuracy Leaderboard (pure puzzle-solving performance)
  * - Trustworthiness Leaderboard (confidence reliability)
  * - Feedback Leaderboard (user satisfaction)
+ * 
+ * FIXED: Improved grid layout, card height consistency, and mobile responsiveness
+ * SRP and DRY check: Pass - Single responsibility for leaderboard layout, reuses existing components
  */
 
 import React from 'react';
@@ -102,7 +107,7 @@ export function LeaderboardSection({
         </p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
         <AccuracyLeaderboard
           accuracyStats={accuracyStats}
           overconfidentModels={overconfidentModels}

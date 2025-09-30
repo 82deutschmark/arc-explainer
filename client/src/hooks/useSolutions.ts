@@ -115,6 +115,7 @@ export function useSolutions(puzzleId: string) {
     
     // Actions
     submitSolution: (submission: SolutionSubmission) => submitSolutionMutation.mutate(submission),
+    submitSolutionAsync: (submission: SolutionSubmission) => submitSolutionMutation.mutateAsync(submission),
     refetch: solutionsQuery.refetch,
     
     // Status

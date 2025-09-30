@@ -89,9 +89,12 @@ TASK: Explain the transformation pattern AND interpret what the aliens might be 
 
   educational: `TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer.`,
 
-  gepa: `TASK: Each puzzle has training sets which are the examples to learn from. 
-Analyze training examples, identify the transformation patterns, 
-and predict the correct output for the test case. Some puzzles have multiple test cases.`
+  gepa: `TASK: Each puzzle has training sets which are the examples to learn from.
+Analyze training examples, identify the transformation patterns,
+and predict the correct output for the test case. Some puzzles have multiple test cases.`,
+
+  debate: `TASK: You are participating in an AI model debate. Another AI model has already provided an explanation for this puzzle.
+Your job is to critically evaluate their reasoning, identify flaws or weaknesses, and provide a superior analysis with the correct solution.`
 } as const;
 
 /**
@@ -147,5 +150,26 @@ Successful Strategies to Consider:
 - **Relate Input to Output:** How do the properties of the input grid (dimensions, colors, object counts) relate to the output grid?
 - **Avoid Over-complication:** Propose the simplest rule that explains ALL training examples. Do not suggest overly complex mathematical or recursive patterns unless absolutely necessary and supported by every example.
 
-Apply the discovered pattern to predict the output for the test case.`
+Apply the discovered pattern to predict the output for the test case.`,
+
+  debate: `DEBATE CHALLENGE INSTRUCTIONS:
+
+You will be shown:
+1. The original AI model's explanation (model name, pattern description, strategy, hints, confidence)
+2. Whether their prediction was correct or incorrect
+3. Optional human guidance on what to focus on in your challenge
+
+Your challenge response must:
+1. **Critique the original explanation**: Identify specific flaws, gaps, or incorrect reasoning
+2. **Provide superior analysis**: Offer a clearer, more accurate understanding of the transformation pattern
+3. **Deliver the correct solution**: Predict the output with proper reasoning
+4. **Justify your approach**: Explain why your analysis is better than the original
+
+Focus on:
+- Logical consistency and completeness
+- Pattern recognition accuracy
+- Clear explanation of transformation rules
+- Providing the correct answer with supporting evidence
+
+Be constructive but thorough in identifying weaknesses. Your goal is to demonstrate superior reasoning and problem-solving.`
 } as const;

@@ -1,10 +1,14 @@
 /**
  * puzzleAnalysisService.ts
  * 
- * Service for handling puzzle analysis business logic.
+ * Author: Cascade using GPT-4.1
+ * Date: 2025-09-29T17:15:00-04:00
+ * PURPOSE: Service for handling puzzle analysis business logic.
  * Extracts complex AI analysis orchestration from controller.
- * 
- * @author Claude Code
+ * CRITICAL FIX: Added originalExplanation and customChallenge extraction in generatePromptPreview()
+ * to enable debate mode prompt preview. These fields were missing, causing API calls to fail
+ * when previewing debate prompts. Now properly forwards debate context to promptOptions.
+ * SRP/DRY check: Pass - Single service responsibility, delegates to specialized services
  */
 
 import { aiServiceFactory } from './aiServiceFactory';
@@ -14,6 +18,7 @@ import { validateSolverResponse, validateSolverResponseMulti } from './responseV
 import { logger } from '../utils/logger';
 import type { PromptOptions } from './promptBuilder';
 import type { ARCExample, DetailedFeedback } from '../../shared/types';
+import type { ExplanationData } from '../repositories/interfaces/IExplanationRepository.ts';
 
 export interface AnalysisOptions {
   temperature?: number;
@@ -29,6 +34,8 @@ export interface AnalysisOptions {
   reasoningSummaryType?: string;
   systemPromptMode?: string;
   retryMode?: boolean;
+  originalExplanation?: ExplanationData; // For debate mode
+  customChallenge?: string; // For debate mode
 }
 
 export interface RetryContext {
@@ -58,7 +65,9 @@ export class PuzzleAnalysisService {
       reasoningVerbosity,
       reasoningSummaryType,
       systemPromptMode = 'ARC',
-      retryMode = false
+      retryMode = false,
+      originalExplanation,
+      customChallenge
     } = options;
 
     // Track server processing time
@@ -81,6 +90,9 @@ export class PuzzleAnalysisService {
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
             if (retryContext.badFeedback && retryContext.badFeedback.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
+    // Add debate mode context
+    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
     
     // Build service options
     const serviceOpts: any = {};
@@ -105,19 +117,25 @@ export class PuzzleAnalysisService {
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
     result.apiProcessingTimeMs = apiProcessingTimeMs;
-    
+
     // Validate solver responses and custom prompts that may be attempting to solve
     if (promptId === "solver" || promptId === "custom") {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
-    
+
+    // Add rebuttal tracking if this is a debate response
+    if (originalExplanation && originalExplanation.id) {
+      result.rebuttingExplanationId = originalExplanation.id;
+      logger.debug(`Marking as rebuttal to explanation ${originalExplanation.id}`, 'puzzle-analysis-service');
+    }
+
     // Note: Database saving is handled by the calling service (explanationService)
     // This service only handles AI analysis and validation - not persistence
     logger.debug(`Analysis completed for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
-    
+
     // Save raw analysis log
     await this.saveRawLog(taskId, model, result);
-    
+
     return result;
   }
 
@@ -279,7 +297,9 @@ export class PuzzleAnalysisService {
       reasoningEffort,
       reasoningVerbosity,
       reasoningSummaryType,
-      systemPromptMode = 'ARC'
+      systemPromptMode = 'ARC',
+      originalExplanation,
+      customChallenge
     } = options;
 
     const puzzle = await puzzleService.getPuzzleById(taskId);
@@ -289,6 +309,9 @@ export class PuzzleAnalysisService {
     const promptOptions: PromptOptions = {};
     if (emojiSetKey) promptOptions.emojiSetKey = emojiSetKey;
     if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
+    // Add debate mode context
+    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
 
     const serviceOpts: any = {};
     if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;

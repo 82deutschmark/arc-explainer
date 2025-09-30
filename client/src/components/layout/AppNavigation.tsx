@@ -17,7 +17,9 @@ import {
   MessageCircle,
   Github,
   Target,
-  Trophy
+  Trophy,
+  CheckCircle,
+  MessageSquare
 } from 'lucide-react';
 
 interface NavItem {
@@ -53,16 +55,28 @@ const navigationItems: NavItem[] = [
     description: 'Community discussion and analysis insights'
   },
   {
-    title: 'Kaggle Readiness',
-    href: '/kaggle-readiness',
-    icon: Target,
-    description: 'Validate technical readiness for machine learning competitions'
-  },
-  {
     title: 'ELO Arena',
     href: '/elo',
     icon: Trophy,
     description: 'Compare AI explanations head-to-head with ELO ratings'
+  },
+  {
+    title: 'Test Solution',
+    href: '/feedback',
+    icon: CheckCircle,
+    description: 'Test your own predicted solutions against ARC puzzles'
+  },
+  {
+    title: 'Model Debate',
+    href: '/debate',
+    icon: MessageSquare,
+    description: 'Watch AI models challenge each other\'s explanations'
+  },
+  {
+    title: 'Kaggle Readiness',
+    href: '/kaggle-readiness',
+    icon: Target,
+    description: 'Validate technical readiness for machine learning competitions'
   }
 ];
 

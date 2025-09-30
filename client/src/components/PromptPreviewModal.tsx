@@ -19,6 +19,8 @@ interface PromptOptions {
   sendAsEmojis?: boolean;
   topP?: number;
   candidateCount?: number;
+  originalExplanation?: any; // For debate mode
+  customChallenge?: string; // For debate mode
 }
 
 interface PromptPreviewModalProps {
@@ -72,10 +74,12 @@ export function PromptPreviewModal({
             taskId,
             promptId,
             customPrompt,
-            emojiSetKey: options.emojiSetKey,
+            emojiSetKey: options.sendAsEmojis ? options.emojiSetKey : undefined,
             omitAnswer: options.omitAnswer ?? true,
             topP: options.topP,
-            candidateCount: options.candidateCount
+            candidateCount: options.candidateCount,
+            originalExplanation: options.originalExplanation, // For debate mode
+            customChallenge: options.customChallenge // For debate mode
           }),
         });
 
@@ -99,7 +103,7 @@ export function PromptPreviewModal({
     };
 
     fetchPromptPreview();
-  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount]);
+  }, [isOpen, taskId, promptId, customPrompt, options.emojiSetKey, options.omitAnswer, options.topP, options.candidateCount, options.originalExplanation, options.customChallenge]);
 
   const copyToClipboard = async (text: string, section: string) => {
     try {

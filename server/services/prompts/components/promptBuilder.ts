@@ -96,6 +96,18 @@ export function buildEducationalPrompt(): string {
 }
 
 /**
+ * Build debate prompt with debate instructions FIRST, then ARC rules
+ * The challenger AI needs context about its role before learning puzzle rules
+ */
+export function buildDebatePrompt(): string {
+  return buildSystemPrompt({
+    basePrompt: ADDITIONAL_INSTRUCTIONS.debate, // Debate instructions FIRST
+    taskDescription: TASK_DESCRIPTIONS.debate,
+    additionalInstructions: BASE_SYSTEM_PROMPT // ARC rules come AFTER debate context
+  });
+}
+
+/**
  * Build custom prompt with minimal JSON enforcement
  * Used for custom prompts to ensure structured output while preserving flexibility
  * Note: Reasoning instructions are handled at the service level based on model capabilities

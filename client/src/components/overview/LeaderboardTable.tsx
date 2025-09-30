@@ -1,11 +1,13 @@
 /**
- * LeaderboardTable Component
+ * Author: Cascade using Claude 3.5 Sonnet (improved responsiveness)
+ * Date: 2025-09-27T12:35:19-04:00
+ * PURPOSE: Enhanced LeaderboardTable with improved responsive design
  * 
- * A reusable component to display leaderboard data in a table format.
+ * A reusable component to display leaderboard data in a table format with better mobile support.
  * It is designed to be generic and can be used for various leaderboards.
  * 
- * @author Gemini 2.5 Pro
- * @date 2025-08-28
+ * FIXED: Improved responsive table layout, better text wrapping, and mobile-friendly design
+ * SRP and DRY check: Pass - Single responsibility for tabular leaderboard display
  */
 
 import React from 'react';
@@ -46,16 +48,16 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ title, data }) => {
   return (
     <div>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">Rank</TableHead>
-              <TableHead>Model</TableHead>
-              <TableHead className="text-right">Avg. Trust</TableHead>
-              <TableHead className="text-right">Attempts</TableHead>
-              <TableHead className="text-right">Avg. Confidence</TableHead>
-              <TableHead className="text-right">Calibration Error</TableHead>
+              <TableHead className="min-w-[120px]">Model</TableHead>
+              <TableHead className="text-right whitespace-nowrap">Avg. Trust</TableHead>
+              <TableHead className="text-right whitespace-nowrap">Attempts</TableHead>
+              <TableHead className="text-right whitespace-nowrap hidden sm:table-cell">Avg. Confidence</TableHead>
+              <TableHead className="text-right whitespace-nowrap hidden md:table-cell">Calibration Error</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,11 +66,11 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ title, data }) => {
                 <TableCell>
                   <Badge variant={index < 3 ? 'default' : 'secondary'}>{index + 1}</Badge>
                 </TableCell>
-                <TableCell className="font-medium">{item.modelName}</TableCell>
+                <TableCell className="font-medium truncate max-w-[120px]" title={item.modelName}>{item.modelName}</TableCell>
                 <TableCell className="text-right">{(item.avgTrustworthiness * 100).toFixed(2)}%</TableCell>
                 <TableCell className="text-right">{item.totalAttempts}</TableCell>
-                <TableCell className="text-right">{item.avgConfidence.toFixed(1)}%</TableCell>
-                <TableCell className="text-right">{item.calibrationError.toFixed(2)}%</TableCell>
+                <TableCell className="text-right hidden sm:table-cell">{item.avgConfidence.toFixed(1)}%</TableCell>
+                <TableCell className="text-right hidden md:table-cell">{item.calibrationError.toFixed(2)}%</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -72,7 +72,9 @@ export const puzzleController = {
       reasoningVerbosity: req.body.reasoningVerbosity,
       reasoningSummaryType: req.body.reasoningSummaryType,
       systemPromptMode: req.body.systemPromptMode || 'ARC',
-      retryMode: req.body.retryMode || false
+      retryMode: req.body.retryMode || false,
+      originalExplanation: req.body.originalExplanation, // For debate mode
+      customChallenge: req.body.customChallenge // For debate mode
     };
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);
@@ -441,14 +443,14 @@ export const puzzleController = {
    * Get puzzle statistics for the puzzle database viewer.
    * Returns a comprehensive list of ALL puzzles with their performance metrics.
    * Shows both analyzed puzzles (with performance data) and unexplored puzzles.
-   * 
+   *
    * @param req - Express request object
    * @param res - Express response object
    */
   async getPuzzleStats(req: Request, res: Response) {
     try {
       const { includeRichMetrics = 'true', limit = '3000' } = req.query;
-      
+
       const filters = {
         includeRichMetrics: includeRichMetrics === 'true'
       };
@@ -463,6 +465,149 @@ export const puzzleController = {
     } catch (error) {
       logger.error('Error fetching puzzle stats: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
       res.status(500).json(formatResponse.error('Failed to fetch puzzle stats', 'An error occurred while fetching puzzle statistics'));
+    }
+  },
+
+  /**
+   * Analyze a list of puzzle IDs to see which models got them correct/incorrect/not attempted
+   * Shows model performance categorization (inverse of model dataset analysis)
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async analyzeList(req: Request, res: Response) {
+    try {
+      const { puzzleIds } = req.body;
+
+      if (!puzzleIds || !Array.isArray(puzzleIds) || puzzleIds.length === 0) {
+        return res.status(400).json(formatResponse.error(
+          'Invalid puzzle IDs',
+          'Request body must contain an array of puzzle IDs'
+        ));
+      }
+
+      // Validate puzzle IDs are strings and reasonable length
+      if (puzzleIds.length > 500) {
+        return res.status(400).json(formatResponse.error(
+          'Too many puzzle IDs',
+          'Maximum 500 puzzle IDs allowed per request'
+        ));
+      }
+
+      for (const id of puzzleIds) {
+        if (typeof id !== 'string' || id.length === 0) {
+          return res.status(400).json(formatResponse.error(
+            'Invalid puzzle ID format',
+            'All puzzle IDs must be non-empty strings'
+          ));
+        }
+      }
+
+      logger.debug(`Analyzing ${puzzleIds.length} puzzles for model performance`, 'puzzle-controller');
+
+      // Get all explanations for the provided puzzles
+      const allExplanations = [];
+      for (const puzzleId of puzzleIds) {
+        try {
+          const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+          allExplanations.push(...explanations.map(exp => ({ ...exp, puzzleId })));
+        } catch (error) {
+          logger.error(`Error querying puzzle ${puzzleId}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-controller');
+        }
+      }
+
+      // Get all unique models from the database to categorize them
+      const modelDatasetRepo = await import('../repositories/ModelDatasetRepository.ts');
+      const allModels = await modelDatasetRepo.default.getAvailableModels();
+
+      // Build model-puzzle matrix
+      const modelPuzzleMatrix = [];
+
+      for (const modelName of allModels) {
+        const puzzleStatuses = [];
+
+        for (const puzzleId of puzzleIds) {
+          const explanationsForModelAndPuzzle = allExplanations.filter(
+            exp => exp.modelName === modelName && exp.puzzleId === puzzleId
+          );
+
+          if (explanationsForModelAndPuzzle.length === 0) {
+            // Model never attempted this puzzle
+            puzzleStatuses.push({
+              puzzleId,
+              status: 'not_attempted'
+            });
+          } else {
+            // Check if any attempt was correct
+            const hasCorrectAttempt = explanationsForModelAndPuzzle.some(
+              exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true
+            );
+
+            puzzleStatuses.push({
+              puzzleId,
+              status: hasCorrectAttempt ? 'correct' : 'incorrect'
+            });
+          }
+        }
+
+        modelPuzzleMatrix.push({
+          modelName,
+          puzzleStatuses
+        });
+      }
+
+      // Sort by model name for consistent output
+      modelPuzzleMatrix.sort((a, b) => a.modelName.localeCompare(b.modelName));
+
+      // Generate per-puzzle results for additional context
+      const puzzleResults = [];
+      for (const puzzleId of puzzleIds) {
+        const explanationsForPuzzle = allExplanations.filter(exp => exp.puzzleId === puzzleId);
+        const correctModels = explanationsForPuzzle
+          .filter(exp => exp.isPredictionCorrect === true || exp.multiTestAllCorrect === true)
+          .map(exp => exp.modelName);
+
+        puzzleResults.push({
+          puzzle_id: puzzleId,
+          correct_models: [...new Set(correctModels)].sort(),
+          total_attempts: explanationsForPuzzle.length
+        });
+      }
+
+      // Calculate summary stats from matrix
+      let perfectModels = 0;
+      let partialModels = 0;
+      let notAttemptedModels = 0;
+
+      for (const model of modelPuzzleMatrix) {
+        const correctCount = model.puzzleStatuses.filter(p => p.status === 'correct').length;
+        const attemptedCount = model.puzzleStatuses.filter(p => p.status !== 'not_attempted').length;
+
+        if (attemptedCount === 0) {
+          notAttemptedModels++;
+        } else if (correctCount === puzzleIds.length) {
+          perfectModels++;
+        } else {
+          partialModels++;
+        }
+      }
+
+      const response = {
+        modelPuzzleMatrix,
+        puzzleResults,
+        summary: {
+          totalPuzzles: puzzleIds.length,
+          totalModels: allModels.length,
+          perfectModels,      // Got ALL puzzles correct
+          partialModels,      // Got some correct, some incorrect
+          notAttemptedModels  // Never attempted any
+        }
+      };
+
+      res.json(formatResponse.success(response));
+    } catch (error) {
+      logger.error('Error analyzing puzzle list: ' + (error instanceof Error ? error.message : String(error)), 'puzzle-controller');
+      res.status(500).json(formatResponse.error('Failed to analyze puzzle list', 'An error occurred while analyzing the puzzle list'));
     }
   }
 };

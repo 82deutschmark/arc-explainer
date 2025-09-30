@@ -72,15 +72,15 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Single prediction display */}
       {predictedGrid && expectedOutputGrids.length === 1 && (
         <div className="border rounded bg-gray-50 border-gray-200">
           <button
             onClick={() => setShowPrediction(!showPrediction)}
-            className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-2 text-left hover:bg-gray-100 transition-colors"
           >
-            <h5 className="font-semibold text-gray-800">AI Prediction</h5>
+            <h5 className="font-semibold text-sm text-gray-800">AI Prediction</h5>
             {showPrediction ? (
               <ChevronUp className="h-4 w-4 text-gray-600" />
             ) : (
@@ -88,19 +88,17 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             )}
           </button>
           {showPrediction && (
-            <div className={`p-3 grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-4 items-start`}>
+            <div className={`p-2 grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-2 items-start`}>
               <div>
-                <h6 className="font-medium text-center mb-1">Predicted Output</h6>
                 <PuzzleGrid grid={predictedGrid} diffMask={showDiff ? diffMask : undefined} title="Predicted Output" showEmojis={false} />
               </div>
               {!eloMode && (
                 <div>
-                  <h6 className="font-medium text-center mb-1">Expected Output</h6>
                   <PuzzleGrid grid={expectedOutputGrids[0]} title="Expected Output" showEmojis={false} />
                 </div>
               )}
               {!eloMode && (
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 mt-1">
                   <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
                     {showDiff ? 'Hide' : 'Show'} Mismatches
                   </Button>
@@ -116,10 +114,10 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
         <div className="border rounded bg-gray-50 border-gray-200">
           <button
             onClick={() => setShowMultiTest(!showMultiTest)}
-            className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-between p-2 text-left hover:bg-gray-100 transition-colors"
           >
             <div className="flex items-center gap-2 flex-wrap">
-              <h5 className="font-semibold text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
+              <h5 className="font-semibold text-sm text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
                 <Badge
                   variant="outline"
@@ -145,18 +143,17 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             {showMultiTest ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
           {showMultiTest && (
-            <div className="p-3 space-y-4">
+            <div className="p-2 space-y-2">
               {!eloMode && (
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 mb-1">
                   <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
                     {showDiff ? 'Hide' : 'Show'} Mismatches
                   </Button>
                 </div>
               )}
               {expectedOutputGrids.map((expectedGrid, index) => (
-                <div key={index} className={`grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-4 items-start border-t pt-4 first:border-t-0 first:pt-0`}>
+                <div key={index} className={`grid grid-cols-1 ${eloMode ? '' : 'md:grid-cols-2'} gap-2 items-start border-t pt-2 first:border-t-0 first:pt-0`}>
                   <div>
-                    <h6 className="font-medium text-center mb-1">Predicted Output {index + 1}</h6>
                     {predictedGrids && predictedGrids[index] ? (
                       <PuzzleGrid
                         grid={predictedGrids[index]}
@@ -165,12 +162,11 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                         diffMask={showDiff && multiDiffMasks ? multiDiffMasks[index] : undefined}
                       />
                     ) : (
-                      <div className="text-center text-gray-500 italic">No prediction</div>
+                      <div className="text-center text-gray-500 italic text-xs">No prediction</div>
                     )}
                   </div>
                   {!eloMode && (
                     <div>
-                      <h6 className="font-medium text-center mb-1">Expected Output {index + 1}</h6>
                       <PuzzleGrid
                         grid={expectedGrid}
                         title={`Expected Output ${index + 1}`}

@@ -104,8 +104,8 @@ export interface ExplanationData {
   saturnEvents?: string | null; // Compressed NDJSON/JSON event trace
   // Solver mode validation fields
   predictedOutputGrid?: number[][] | null; // Grid extracted from AI response
-  isPredictionCorrect?: boolean; // Whether prediction matches correct answer
-  predictionAccuracyScore?: number; // Accuracy score (0-1) based on confidence and correctness
+  isPredictionCorrect?: boolean | null; // Whether prediction matches correct answer
+  predictionAccuracyScore?: number | null; // Accuracy score (0-1) based on confidence and correctness
   extractionMethod?: string; // Method used to extract the grid
   // Multi-test validation fields (set by backend controller for multi-test cases)
   predictedOutputGrids?: (number[][] | null)[]; // Array of predicted grids from validateSolverResponseMulti
@@ -136,6 +136,8 @@ export interface ExplanationData {
   reasoningTokens?: number | null;
   totalTokens?: number | null;
   estimatedCost?: number | null;
+  // Rebuttal tracking
+  rebuttingExplanationId?: number | null; // Link to explanation this is rebutting (debate mode)
   // Optimistic UI fields (only present during pending analysis)
   isOptimistic?: boolean; // Flag to indicate this is an optimistic/pending result
   status?: 'analyzing' | 'saving' | 'completed' | 'error'; // Current status of the analysis
