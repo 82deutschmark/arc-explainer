@@ -131,13 +131,14 @@ export class AccuracyRepository extends BaseRepository {
     }
 
     try {
-      // Get overall pure accuracy stats
+      // Get overall pure accuracy stats (EXCLUDE REBUTTALS - only count original solver attempts)
       const overallStats = await this.query(`
-        SELECT 
+        SELECT
           COUNT(*) as total_solver_attempts,
           SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
         FROM explanations
         WHERE (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+          AND rebutting_explanation_id IS NULL
       `);
 
       // Get pure accuracy by model - NO trustworthiness or confidence filtering
@@ -189,7 +190,8 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
-        GROUP BY 
+          AND e.rebutting_explanation_id IS NULL
+        GROUP BY
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
@@ -283,6 +285,7 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name = $1
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NULL
         GROUP BY e.model_name
       `, [modelName]);
 
@@ -331,6 +334,7 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NULL
         GROUP BY e.model_name
         HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}  -- Require at least 3 attempts for meaningful ranking
         ORDER BY accuracy_percentage DESC, total_attempts DESC
@@ -418,6 +422,7 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NULL
         GROUP BY e.model_name
         HAVING COUNT(CASE WHEN e.confidence >= ${CONFIDENCE_THRESHOLDS.HIGH_CONFIDENCE} THEN 1 END) >= ${ANALYSIS_CRITERIA.HIGH_CONFIDENCE_ANALYSIS.minAttempts}  -- At least 3 high-confidence attempts
           AND COUNT(CASE 
@@ -476,7 +481,8 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE ${MetricsQueryBuilder.combineConditions(
           MetricsQueryBuilder.modelFilter(),
-          MetricsQueryBuilder.solverAttemptFilter()
+          MetricsQueryBuilder.solverAttemptFilter(),
+          MetricsQueryBuilder.originalSolverFilter()
         )}
       `;
 
@@ -524,7 +530,8 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE ${MetricsQueryBuilder.combineConditions(
           MetricsQueryBuilder.modelFilter(),
-          MetricsQueryBuilder.solverAttemptFilter()
+          MetricsQueryBuilder.solverAttemptFilter(),
+          MetricsQueryBuilder.originalSolverFilter()
         )}
         ${MetricsQueryBuilder.modelGroupBy()}
         HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.STANDARD_RANKING.minAttempts}
@@ -619,6 +626,7 @@ export class AccuracyRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL
           AND e.confidence IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NULL
         GROUP BY
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
@@ -691,13 +699,14 @@ export class AccuracyRepository extends BaseRepository {
     }
 
     try {
-      // Get overall pure accuracy stats (no filtering by model attempts)
+      // Get overall pure accuracy stats (no filtering by model attempts, but EXCLUDE REBUTTALS)
       const overallStats = await this.query(`
         SELECT
           COUNT(*) as total_solver_attempts,
           SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
         FROM explanations
         WHERE (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+          AND rebutting_explanation_id IS NULL
       `);
 
       // Get model accuracy with minimum attempts filtering
@@ -745,6 +754,7 @@ export class AccuracyRepository extends BaseRepository {
         FROM explanations e
         WHERE e.model_name IS NOT NULL
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NULL
         GROUP BY
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
@@ -783,6 +793,219 @@ export class AccuracyRepository extends BaseRepository {
       };
     } catch (error) {
       logger.error(`Error getting pure accuracy stats with min attempts: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get DEBATE ACCURACY STATS - only for rebuttals/challenges (NOT original solver attempts)
+   *
+   * This method returns accuracy metrics specifically for debate rebuttals.
+   * These are explanations created in response to other (usually incorrect) explanations
+   * using the debate prompt template.
+   *
+   * INCLUSION CRITERIA:
+   * - Only rebuttals (rebutting_explanation_id IS NOT NULL)
+   * - Models that made solver attempts (have prediction grids)
+   *
+   * CORRECTNESS CRITERIA:
+   * - is_prediction_correct = true (single test correct)
+   * - multi_test_all_correct = true (multi-test correct)
+   * - Simple percentage: correct / total attempts
+   *
+   * USE CASES:
+   * - Understand which models are good at challenging incorrect explanations
+   * - Compare debate performance vs pure solver performance
+   * - Identify models that excel at critique vs pure solving
+   *
+   * @returns {Promise<PureAccuracyStats>} Debate accuracy statistics
+   */
+  async getDebateAccuracyStats(): Promise<PureAccuracyStats> {
+    if (!this.isConnected()) {
+      return {
+        totalSolverAttempts: 0,
+        totalCorrectPredictions: 0,
+        overallAccuracyPercentage: 0,
+        modelAccuracyRankings: []
+      };
+    }
+
+    try {
+      // Get overall debate accuracy stats (ONLY REBUTTALS - debate challenges)
+      const overallStats = await this.query(`
+        SELECT
+          COUNT(*) as total_solver_attempts,
+          SUM(CASE WHEN is_prediction_correct = true OR multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions
+        FROM explanations
+        WHERE (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+          AND rebutting_explanation_id IS NOT NULL
+      `);
+
+      // Get debate accuracy by model - ONLY rebuttals
+      const modelAccuracy = await this.query(`
+        SELECT
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END as model_name,
+          COUNT(e.id) as total_attempts,
+
+          -- Single test accuracy
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+
+          -- Multi test accuracy
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_correct_predictions,
+
+          -- Overall accuracy
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions,
+
+          -- Calculate overall accuracy percentage
+          CASE
+            WHEN COUNT(e.id) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0
+          END as accuracy_percentage,
+
+          -- Single test accuracy percentage
+          CASE
+            WHEN COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as single_test_accuracy_percentage,
+
+          -- Multi test accuracy percentage
+          CASE
+            WHEN COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as multi_test_accuracy_percentage
+        FROM explanations e
+        WHERE e.model_name IS NOT NULL
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NOT NULL
+        GROUP BY
+          CASE
+            WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
+            WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
+            WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
+            WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
+            ELSE e.model_name
+          END
+        HAVING COUNT(e.id) >= ${ANALYSIS_CRITERIA.BASIC_STATISTICS.minAttempts}
+        ORDER BY accuracy_percentage DESC, total_attempts DESC
+      `);
+
+      const overallRow = overallStats.rows[0];
+      const totalAttempts = parseInt(overallRow.total_solver_attempts) || 0;
+      const totalCorrect = parseInt(overallRow.total_correct_predictions) || 0;
+
+      logger.info(`AccuracyRepository.getDebateAccuracyStats: Found ${totalAttempts} debate attempts, ${totalCorrect} correct, ${modelAccuracy.rows.length} models with debate data`, 'debate-accuracy-debug');
+
+      return {
+        totalSolverAttempts: totalAttempts,
+        totalCorrectPredictions: totalCorrect,
+        overallAccuracyPercentage: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100 * 10) / 10 : 0,
+        modelAccuracyRankings: modelAccuracy.rows.map(row => ({
+          modelName: row.model_name,
+          totalAttempts: parseInt(row.total_attempts) || 0,
+          correctPredictions: parseInt(row.total_correct_predictions) || 0,
+          accuracyPercentage: Math.round((parseFloat(row.accuracy_percentage) || 0) * 10) / 10,
+          singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+          singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+          singleTestAccuracy: Math.round((parseFloat(row.single_test_accuracy_percentage) || 0) * 10) / 10,
+          multiTestAttempts: parseInt(row.multi_test_attempts) || 0,
+          multiCorrectPredictions: parseInt(row.multi_correct_predictions) || 0,
+          multiTestAccuracy: Math.round((parseFloat(row.multi_test_accuracy_percentage) || 0) * 10) / 10,
+        }))
+      };
+    } catch (error) {
+      logger.error(`Error getting debate accuracy stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get debate performance for a specific model
+   *
+   * Returns accuracy stats for a model's debate rebuttals only.
+   * Useful for comparing a model's solver vs debate performance.
+   *
+   * @param modelName The model to get debate stats for
+   * @returns {Promise<ModelAccuracyRanking | null>} Model debate stats or null if no data
+   */
+  async getModelDebatePerformance(modelName: string): Promise<ModelAccuracyRanking | null> {
+    if (!this.isConnected()) {
+      return null;
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT
+          e.model_name,
+          COUNT(e.id) as total_attempts,
+
+          -- Single test accuracy
+          COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) as single_test_attempts,
+          SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) as single_correct_predictions,
+
+          -- Multi test accuracy
+          COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) as multi_test_attempts,
+          SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) as multi_correct_predictions,
+
+          -- Overall accuracy
+          SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) as total_correct_predictions,
+
+          -- Calculate accuracy percentages
+          CASE
+            WHEN COUNT(e.id) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true OR e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(e.id))
+            ELSE 0
+          END as accuracy_percentage,
+
+          CASE
+            WHEN COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.is_prediction_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.is_prediction_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as single_test_accuracy_percentage,
+
+          CASE
+            WHEN COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END) > 0
+            THEN (SUM(CASE WHEN e.multi_test_all_correct = true THEN 1 ELSE 0 END) * 100.0 / COUNT(CASE WHEN e.multi_test_all_correct IS NOT NULL THEN 1 END))
+            ELSE 0
+          END as multi_test_accuracy_percentage
+        FROM explanations e
+        WHERE e.model_name = $1
+          AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
+          AND e.rebutting_explanation_id IS NOT NULL
+        GROUP BY e.model_name
+      `, [modelName]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const row = result.rows[0];
+      return {
+        modelName: row.model_name,
+        totalAttempts: parseInt(row.total_attempts) || 0,
+        correctPredictions: parseInt(row.total_correct_predictions) || 0,
+        accuracyPercentage: Math.round((parseFloat(row.accuracy_percentage) || 0) * 10) / 10,
+        singleTestAttempts: parseInt(row.single_test_attempts) || 0,
+        singleCorrectPredictions: parseInt(row.single_correct_predictions) || 0,
+        singleTestAccuracy: Math.round((parseFloat(row.single_test_accuracy_percentage) || 0) * 10) / 10,
+        multiTestAttempts: parseInt(row.multi_test_attempts) || 0,
+        multiCorrectPredictions: parseInt(row.multi_correct_predictions) || 0,
+        multiTestAccuracy: Math.round((parseFloat(row.multi_test_accuracy_percentage) || 0) * 10) / 10,
+      };
+    } catch (error) {
+      logger.error(`Error getting model debate performance for ${modelName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }
