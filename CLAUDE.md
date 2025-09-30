@@ -79,7 +79,7 @@ Use `npm run test` to build and start the dev server and wait 10 seconds for it 
 - **Routing**: Wouter (lightweight client-side routing)
 - **State Management**: TanStack Query for server state
 - **UI Components**: shadcn/ui + TailwindCSS
-- **Key Pages**: PuzzleBrowser, PuzzleExaminer, ModelExaminer, PuzzleOverview, SaturnVisualSolver
+- **Key Pages**: PuzzleBrowser, PuzzleExaminer, ModelDebate (v2.30.0+), AnalyticsOverview, EloLeaderboard
 
 ### Backend Architecture (Express + TypeScript)
 - **Server**: Express.js with ESM modules
@@ -131,6 +131,7 @@ multi_test_all_correct - boolean  // THIS is evaluation 2 of 3 that should be us
 multi_test_average_accuracy - double precision  // THIS is evaluation 3 of 3 that should be used for `accuracy`!!!
 has_multiple_predictions - boolean // False if there is only one test (then multi_test_all_correct and multi_test_average_accuracy are not applicable!!!)
 multi_test_prediction_grids - jsonb // IMPORTANT FOR PUZZLES WITH MULTIPLE TESTS!!!
+rebutting_explanation_id - integer // NEW (v2.30.7+): Foreign key to explanations(id), tracks debate rebuttals. NULL for original explanations, set to parent ID for challenges. ON DELETE SET NULL.
 created_at - timestamp with time zone
 
 **FEEDBACK Table**:
@@ -154,6 +155,8 @@ For external integrations, see:
 - `/api/puzzle/performance-stats` - Trustworthiness metrics (used by TrustworthinessLeaderboard)
 - `/api/feedback/stats` - User feedback statistics (used by FeedbackLeaderboard)
 - `/api/metrics/comprehensive-dashboard` - Combined analytics for dashboards
+- `/api/explanations/:id/chain` - Get full debate rebuttal chain (v2.30.7+)
+- `/api/explanations/:id/original` - Get parent explanation of a rebuttal (v2.30.7+)
 
 **Repository Pattern:**
 External apps should access data through `repositoryService.*` rather than direct database queries:
@@ -161,6 +164,8 @@ External apps should access data through `repositoryService.*` rather than direc
 - `repositoryService.trustworthiness.getTrustworthinessStats()` - For trustworthiness metrics
 - `repositoryService.cost.getAllModelCosts()` - For cost analysis
 - `repositoryService.explanation.getByPuzzle(puzzleId)` - For explanations
+- `repositoryService.explanation.getRebuttalChain(explanationId)` - For debate chains (v2.30.7+)
+- `repositoryService.explanation.getOriginalExplanation(rebuttalId)` - For parent explanations (v2.30.7+)
 - `repositoryService.feedback.create(...)` - For submitting feedback
 
 ## Analytics Architecture Guidelines 🚨 CRITICAL (September 2025)
