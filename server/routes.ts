@@ -20,6 +20,7 @@ import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
 import adminController from './controllers/adminController.js';
+import * as modelManagementController from './controllers/modelManagementController.js';
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -49,6 +50,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Models API routes
   app.use("/api/models", modelsRouter);
+  
+  // Model Management GUI API routes
+  app.get("/api/model-management/list", asyncHandler(modelManagementController.listModels));
+  app.get("/api/model-management/stats", asyncHandler(modelManagementController.getModelStats));
+  app.get("/api/model-management/search", asyncHandler(modelManagementController.searchModels));
+  app.post("/api/model-management/validate", asyncHandler(modelManagementController.validateModel));
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));

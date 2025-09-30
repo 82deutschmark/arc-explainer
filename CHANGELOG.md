@@ -1,6 +1,16 @@
 ## [2025-09-30]
 
 ### Added
+- **Model Management GUI** (`/model-config`)
+  - Web-based interface for viewing and managing AI model configurations
+  - Real-time model statistics and provider distribution
+  - Advanced filtering: search, provider, premium/free, speed categories
+  - Detailed model cards showing context windows, pricing, and capabilities
+  - Recent model releases timeline
+  - Unlinked route accessible at `/model-config` for admin use
+  - Backend API: `/api/model-management/list`, `/api/model-management/stats`, `/api/model-management/search`
+  - Uses shadcn/ui components: Table, Badge, Card, Select, Input
+
 - **Model Management Script** (`scripts/manage-models.ts`)
   - CLI tool for adding, removing, and listing AI models without manual edits to models.ts
   - Commands: `npm run models list`, `npm run models remove <key>`
@@ -18,6 +28,12 @@
     - Context: 1.05M tokens, Max Output: 65.5K tokens
     - Pricing: $0.30 input / $2.50 output per million tokens
     - Speed: Fast (<30 sec), Reasoning: Yes
+
+### Removed
+- **Deprecated Qwen Models** (low usage)
+  - Qwen3 30B A3B Instruct (qwen/qwen3-30b-a3b-instruct)
+  - Qwen3 235B A22B Thinking (qwen/qwen3-235b-a22b-thinking)
+  - Reason: Replaced by newer Qwen models with better performance
 
 ### Fixed
 - **CRITICAL: Fixed debate validation bug causing all rebuttals to skip validation and show 0% accuracy**

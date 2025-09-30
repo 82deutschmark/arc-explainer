@@ -503,38 +503,6 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 8000
   },
   {
-    key: 'qwen/qwen3-30b-a3b-instruct',
-    name: 'Qwen3 30B A3B Instruct',
-    color: 'bg-red-400',
-    premium: false,
-    cost: { input: '$0.10', output: '$0.30' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    isReasoning: false,
-    apiModelName: 'qwen/qwen3-30b-a3b-instruct',
-    modelType: 'openrouter',
-    contextWindow: 262144,
-    maxOutputTokens: 30000
-  },
-
-  {
-    key: 'qwen/qwen3-235b-a22b-thinking',
-    name: 'Qwen3 235B A22B Thinking',
-    color: 'bg-red-700',
-    premium: false,
-    cost: { input: '$0.70', output: '$8.40' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'qwen/qwen3-235b-a22b-thinking',
-    modelType: 'openrouter',
-    contextWindow: 131100,
-    maxOutputTokens: 32800,
-    releaseDate: '2025-07'
-  },
-  {
     key: 'qwen/qwen3-coder',
     name: 'Qwen3 Coder',
     color: 'bg-red-500',
