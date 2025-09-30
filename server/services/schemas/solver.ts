@@ -38,7 +38,8 @@ import {
 
 /**
  * JSON schema for single test case solver responses
- * NOTE: predictedOutput should be first field per system prompt instructions
+ * NOTE: Supports multiple field names: predictedOutput, output, solution, answer, result
+ * Field order does not matter - JSON parsers handle any order
  */
 export const SINGLE_SOLVER_SCHEMA = createSchema(
   {
@@ -51,13 +52,11 @@ export const SINGLE_SOLVER_SCHEMA = createSchema(
 
 /**
  * JSON schema for multi test case solver responses
- * NOTE: predictedOutputs should be first field per system prompt instructions  
- */
-/**
- * JSON schema for multi test case solver responses
- * NOTE: multiplePredictedOutputs should be first field per system prompt instructions
- * The schema also allows for dynamic keys like predictedOutput1, predictedOutput2, etc.
- * which are handled in the custom validation logic.
+ * NOTE: Supports multiple formats:
+ * - multiplePredictedOutputs: true with numbered fields (predictedOutput1, predictedOutput2, etc.)
+ * - Direct arrays in any field (output: [[grid1], [grid2]])
+ * - Backward compatible with old predictedOutputs field
+ * Field order does not matter - JSON parsers handle any order
  */
 export const MULTI_SOLVER_SCHEMA = createSchema(
   {
@@ -99,12 +98,14 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
   }
   
   // Check prediction fields: accept single, new multi, or old multi format
-  const hasSingle = 'predictedOutput' in response;
+  // Also support common field name aliases: output, solution, answer, result
+  const singleFieldAliases = ['predictedOutput', 'output', 'solution', 'answer', 'result'];
+  const hasSingle = singleFieldAliases.some(field => field in response);
   const hasNewMulti = 'multiplePredictedOutputs' in response;
   const hasOldMulti = 'predictedOutputs' in response; // For backward compatibility
 
   if (!hasSingle && !hasNewMulti && !hasOldMulti) {
-    errors.push('Missing required prediction field (e.g., predictedOutput, multiplePredictedOutputs)');
+    errors.push('Missing required prediction field (e.g., predictedOutput, output, solution, answer, result, multiplePredictedOutputs)');
   } else if (hasNewMulti) {
     const collectedGrids = [];
     let i = 1;
@@ -142,11 +143,24 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
     if (errors.length === 0) {
       predictedGrids = response.predictedOutputs;
     }
-  } else if (hasSingle && response.predictedOutput != null) {
-    if (!validateGrid(response.predictedOutput)) {
-      errors.push('predictedOutput is not a valid 2D grid of integers 0-9');
-    } else {
-      predictedGrids = [response.predictedOutput];
+  } else if (hasSingle) {
+    // Find which single field alias was used
+    const foundField = singleFieldAliases.find(field => response[field] != null);
+    if (foundField && response[foundField] != null) {
+      const fieldValue = response[foundField];
+
+      // Handle array of grids (direct multi-test format using alias)
+      if (Array.isArray(fieldValue) && fieldValue.every(item => validateGrid(item))) {
+        predictedGrids = fieldValue;
+      }
+      // Handle single grid
+      else if (validateGrid(fieldValue)) {
+        predictedGrids = [fieldValue];
+      }
+      // Invalid grid format
+      else {
+        errors.push(`${foundField} is not a valid 2D grid of integers 0-9`);
+      }
     }
   }
   
@@ -234,12 +248,30 @@ export function extractPredictions(response: any, testCaseCount: number): {
     return { predictedOutputs: response.predictedOutputs };
   }
 
-  // Handle single output format or TestCase array format
-  if (response?.predictedOutput) {
-    // Check if predictedOutput is an array of TestCase objects (OpenAI multi-test format)
-    if (Array.isArray(response.predictedOutput)) {
+  // Handle single output format or TestCase array format with flexible field names
+  // Support common aliases: predictedOutput, output, solution, answer, result
+  const singleFieldNames = ['predictedOutput', 'output', 'solution', 'answer', 'result'];
+  const foundField = singleFieldNames.find(name => response?.[name]);
+
+  if (foundField && response[foundField]) {
+    const fieldValue = response[foundField];
+
+    // Log which field name was used (helpful for monitoring)
+    if (foundField !== 'predictedOutput') {
+      console.log(`[EXTRACT] Using alias field '${foundField}' as prediction`);
+    }
+
+    // Check if it's an array (could be multi-test or TestCase format)
+    if (Array.isArray(fieldValue)) {
+      // Check if it's an array of valid grids (direct multi-test format)
+      if (fieldValue.every(item => validateGrid(item))) {
+        console.log(`[EXTRACT] Found ${fieldValue.length} grids from direct array in '${foundField}'`);
+        return { predictedOutputs: fieldValue };
+      }
+
+      // Check if it's an array of TestCase objects (OpenAI multi-test format)
       const extractedGrids = [];
-      for (const item of response.predictedOutput) {
+      for (const item of fieldValue) {
         if (item && typeof item === 'object' && item.output) {
           // Extract the output grid from TestCase format: { "TestCase": 1, "output": [...] }
           if (validateGrid(item.output)) {
@@ -250,15 +282,22 @@ export function extractPredictions(response: any, testCaseCount: number): {
           extractedGrids.push(item);
         }
       }
-      return { predictedOutputs: extractedGrids };
+
+      if (extractedGrids.length > 0) {
+        console.log(`[EXTRACT] Found ${extractedGrids.length} grids from TestCase format in '${foundField}'`);
+        return { predictedOutputs: extractedGrids };
+      }
     }
-    
+
     // Handle single grid format
-    return testCaseCount > 1
-      ? { predictedOutputs: [response.predictedOutput] }
-      : { predictedOutput: response.predictedOutput };
+    if (validateGrid(fieldValue)) {
+      return testCaseCount > 1
+        ? { predictedOutputs: [fieldValue] }
+        : { predictedOutput: fieldValue };
+    }
   }
 
+  console.log(`[EXTRACT] No valid prediction fields found. Checked: ${singleFieldNames.join(', ')}`);
   return {};
 }
 
