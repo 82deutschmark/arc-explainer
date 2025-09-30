@@ -36,14 +36,25 @@ Key transformation types include:
  * JSON output enforcement instructions with answer-first requirement
  * SINGLE DEFINITION - used by all system prompts
  */
-export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`;
+export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: Do not use any special characters or formatting that might break JSON parsers.`;
 
 
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
+
+- For single test cases: 
+  * "predictedOutput": your solution grid (2D array)
+
+- For multiple test cases:
+  * "multiplePredictedOutputs": true (must be first field)
+  * "predictedOutput": [] (empty array)
+  * "predictedOutput1": first solution grid
+  * "predictedOutput2": second solution grid
+  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
 - solvingStrategy: Create a domain specific language to solve the puzzle
-- patternDescription: The transformation rules you identified, simply stated.
-- hints: Array of strings. Three short algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
-- confidence: Your certainty level (1-100)`;
+- patternDescription: The transformation rules you identified that transform the input into the output, simply stated as 2 or 3 short imperatives for a human to apply.
+- hints: Array of strings. Three short python pseudo-code algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
+- confidence: Your certainty level (1-100)`
+  ;
 
 /**
  * @deprecated Use the composable parts: JSON_HEADER, JSON_FIELDS_INSTRUCTIONS
@@ -57,22 +68,10 @@ export const JSON_OUTPUT_INSTRUCTIONS = [
  * Prediction field instructions - used by many modes including solver and explanation modes
  * SINGLE DEFINITION - eliminates massive duplication
  */
-export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: 
-- For single test cases: 
-  * "multiplePredictedOutputs": false (must be first field)
-  * "predictedOutput": your solution grid (2D array)
-  * "predictedOutput1": [] (empty array)
-  * "predictedOutput2": [] (empty array) 
-  * "predictedOutput3": [] (empty array)
-- For multiple test cases:
-  * "multiplePredictedOutputs": true (must be first field)
-  * "predictedOutput": [] (empty array)
-  * "predictedOutput1": first solution grid
-  * "predictedOutput2": second solution grid
-  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)`;
+export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: Provide the output grid(s) as the first field in the JSON response.` 
 
 /**
- * Common task patterns for different prompt types  WHAT IS THIS???  WHERE DO WE USE IT?
+ * Common task patterns for different prompt types  THIS SEEMS LIKE EXCESSIVE OVERKILL
  */
 export const TASK_DESCRIPTIONS = {
   solver: `TASK: Each puzzle has training which are the examples to learn from. 
@@ -93,31 +92,15 @@ TASK: Explain the transformation pattern AND interpret what the aliens might be 
 Analyze training examples, identify the transformation patterns,
 and predict the correct output for the test case. Some puzzles have multiple test cases.`,
 
-  debate: `TASK: You are participating in an AI model debate. Another AI model has already provided an explanation for this puzzle.
-Your job is to critically evaluate their reasoning, identify flaws or weaknesses, and provide a superior analysis with the correct solution. Begin with a clear statement of the flaw or weakness you identified in the approach of the previous explanation.`
+  debate: `TASK: You are correcting the explanation of another AI model. Another AI model from a competitor has already provided an incorrect explanation for this very simple visual reasoning puzzle that even a child could solve. 
+Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`
 } as const;
 
 /**
  * Additional instructions for specific prompt modes
  */
 export const ADDITIONAL_INSTRUCTIONS = {
-  solver: `API-BASED SOLVER APPROACH:
-
-1. SYSTEMATIC PATTERN ANALYSIS:
-   - Identify geometric transformations (rotation, reflection, translation, scaling)
-   - Detect pattern operations (completion, extension, repetition, sequences)
-   - Recognize logical operations (AND/OR/XOR/NOT, conditionals)
-   - Analyze grid operations (splitting, merging, overlay, subtraction)
-   - Count and classify objects (sorting, filtering, grouping)
-   - Map color transformations (replacement, mapping, counting, patterns)
-   - Detect shape operations (detection, transformation, completion, generation)
-   - Evaluate spatial relationships (adjacency, containment, alignment, distances)
-
-2. MATHEMATICAL TRANSFORMATION MODELING:
-   - Express patterns as deterministic functions: input_grid → output_grid
-   - Model transformations as composable operations: T(input) = output
-   - Represent grid states as matrices with defined algebraic properties
-   - Apply constraint satisfaction for multi-rule puzzles`,
+  solver: `Predict the correct output grid for the test case.`,
 
   explanation: `Focus on:
 1. What transformation pattern is demonstrated in the training examples
@@ -155,21 +138,16 @@ Apply the discovered pattern to predict the output for the test case.`,
   debate: `DEBATE CHALLENGE INSTRUCTIONS:
 
 You will be shown:
-1. The original AI model's explanation (pattern description, strategy, hints, confidence)
+1. The original AI model's explanation (pattern description, strategy, hints)
 2. Whether their prediction was correct or incorrect
 3. Optional human guidance on what to focus on in your challenge
 
 Your challenge response must:
-1. **Critique the original explanation**: Identify specific flaws, gaps, or incorrect reasoning
+1. **Critique the original explanation**: Identify specific flaws, gaps, or incorrect reasoning that led to the wrong answer
 2. **Provide superior analysis**: Offer a clearer, more accurate understanding of the transformation pattern
 3. **Deliver the correct solution**: Predict the output with proper reasoning
 4. **Justify your approach**: Explain why your analysis is better than the original
 
-Focus on:
-- Logical consistency and completeness
-- Pattern recognition accuracy
-- Clear explanation of transformation rules
-- Providing the correct answer with supporting evidence
 
-Be constructive but thorough in identifying weaknesses. Your goal is to demonstrate superior reasoning and problem-solving.`
+Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`
 } as const;
