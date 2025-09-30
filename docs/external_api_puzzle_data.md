@@ -2,7 +2,9 @@
 
 This document outlines the process for an external application to query the Arc-Explainer API and retrieve all available information for a specific puzzle, using its unique ID.
 
-**🔄 Recent API Changes:** As of September 15 2025, API result limits have been significantly increased for external applications. See changelog for details.
+**🔄 Recent API Changes:**
+- September 15, 2025: API result limits have been significantly increased for external applications
+- September 30, 2025: Added debate and rebuttal tracking endpoints
 
 **Example Puzzle ID:** `e7dd8335`
 
@@ -70,6 +72,60 @@ GET /api/puzzles/e7dd8335/solutions
 
 ---
 
+## 5. Debate & Rebuttal Chain Data ✨ NEW! (September 2025)
+
+These endpoints retrieve AI-vs-AI debate information for explanations, showing which models challenged which explanations.
+
+### 5a. Get Rebuttal Chain for an Explanation
+
+*   **Endpoint:** `GET /api/explanations/:id/chain`
+*   **Description:** Retrieves the complete debate chain for an explanation, showing all rebuttals in chronological order.
+*   **Returns:** A JSON array of explanation objects, ordered from original explanation through all subsequent rebuttals.
+
+**Example Request:**
+```
+GET /api/explanations/123/chain
+```
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "data": [
+    { "id": 100, "modelName": "gpt-4o", "rebuttingExplanationId": null, "isPredictionCorrect": false },
+    { "id": 101, "modelName": "claude-3.5-sonnet", "rebuttingExplanationId": 100, "isPredictionCorrect": false },
+    { "id": 102, "modelName": "gemini-2.5-pro", "rebuttingExplanationId": 101, "isPredictionCorrect": true }
+  ]
+}
+```
+
+### 5b. Get Original Explanation Being Challenged
+
+*   **Endpoint:** `GET /api/explanations/:id/original`
+*   **Description:** For a rebuttal explanation, retrieves the parent explanation it is challenging.
+*   **Returns:** A single explanation object, or 404 if not a rebuttal.
+
+**Example Request:**
+```
+GET /api/explanations/101/original
+```
+
+### 5c. Filter Explanations by Correctness (for Debate)
+
+*   **Endpoint:** `GET /api/puzzle/:puzzleId/explanations?correctness=incorrect`
+*   **Description:** Retrieve only incorrect explanations for a puzzle (used for debate challenges).
+*   **Query Parameters:**
+    - `correctness=correct` - Only correct predictions
+    - `correctness=incorrect` - Only incorrect predictions (includes null/unvalidated)
+    - `correctness=all` - All explanations (default)
+
+**Example Request:**
+```
+GET /api/puzzle/e7dd8335/explanations?correctness=incorrect
+```
+
+---
+
 ## Summary of Process
 
 To aggregate all data for puzzle `e7dd8335`, an external application should:
@@ -78,3 +134,7 @@ To aggregate all data for puzzle `e7dd8335`, an external application should:
 2.  Call `GET /api/puzzle/e7dd8335/explanations` to get all AI analyses.
 3.  Call `GET /api/puzzle/e7dd8335/feedback` to get all user feedback on those analyses.
 4.  Call `GET /api/puzzles/e7dd8335/solutions` to get community-provided solutions.
+5.  For debate data:
+    - Call `GET /api/puzzle/e7dd8335/explanations?correctness=incorrect` to get debatable explanations.
+    - Call `GET /api/explanations/:id/chain` for any explanation to see its debate chain.
+    - Call `GET /api/explanations/:id/original` to navigate from rebuttal back to parent.
