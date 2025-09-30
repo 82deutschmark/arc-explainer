@@ -96,6 +96,7 @@ export class DatabaseSchema {
         user_prompt_used TEXT DEFAULT NULL,
         prompt_template_id VARCHAR(50) DEFAULT NULL,
         custom_prompt_text TEXT DEFAULT NULL,
+        rebutting_explanation_id INTEGER DEFAULT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -267,6 +268,30 @@ export class DatabaseSchema {
     // Migration: Create cost calculation indexes for CostRepository optimization
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_cost_model ON explanations(model_name, estimated_cost) WHERE estimated_cost IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_cost_date ON explanations(created_at, estimated_cost, model_name) WHERE estimated_cost IS NOT NULL`);
+
+    // Migration: Add rebuttal tracking column
+    await client.query(`ALTER TABLE explanations ADD COLUMN IF NOT EXISTS rebutting_explanation_id INTEGER DEFAULT NULL`);
+
+    // Migration: Add foreign key constraint for rebuttal tracking
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE constraint_name = 'fk_rebutting_explanation'
+          AND table_name = 'explanations'
+        ) THEN
+          ALTER TABLE explanations
+          ADD CONSTRAINT fk_rebutting_explanation
+          FOREIGN KEY (rebutting_explanation_id)
+          REFERENCES explanations(id)
+          ON DELETE SET NULL;
+        END IF;
+      END $$;
+    `);
+
+    // Migration: Add index for rebuttal tracking queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_rebutting_explanation_id ON explanations(rebutting_explanation_id) WHERE rebutting_explanation_id IS NOT NULL`);
   }
 
   /**
