@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning } from 'lucide-react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 
@@ -48,6 +49,11 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
   isSaturnResult,
   eloMode = false
 }) => {
+  // Determine if challenge badge will be shown (for layout purposes)
+  const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
+  const hasPrediction = !!(result.predictedOutputGrid || result.multiplePredictedOutputs);
+  const showChallengeBadge = !eloMode && !isCorrect && hasPrediction && !!result.puzzleId;
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {/* Hide model identifying information in ELO mode for double-blind A/B testing */}
@@ -108,28 +114,32 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
       )}
 
       {!eloMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
-        <Badge
-          variant="outline"
-          className={`flex items-center gap-1 ${(() => {
-              const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
-              if (isCorrect) return 'bg-green-50 border-green-200 text-green-700';
-              if (result.predictedOutputGrid || result.multiplePredictedOutputs) return 'bg-red-50 border-red-200 text-red-700';
-              return 'bg-yellow-50 border-yellow-200 text-yellow-700';
-            })()}`}>
-          {(() => {
-            const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
-            if (isCorrect) return <CheckCircle className="h-3 w-3" />;
-            return <XCircle className="h-3 w-3" />;
-          })()}
-          <span className="text-xs font-medium">
-            {(() => {
-              const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
-              if (isCorrect) return 'CORRECT';
-              if (result.predictedOutputGrid || result.multiplePredictedOutputs) return 'INCORRECT';
-              return 'NOT FOUND';
-            })()}
-          </span>
-        </Badge>
+        <>
+          <Badge
+            variant="outline"
+            className={`flex items-center gap-1 ${
+              isCorrect ? 'bg-green-50 border-green-200 text-green-700' :
+              hasPrediction ? 'bg-red-50 border-red-200 text-red-700' :
+              'bg-yellow-50 border-yellow-200 text-yellow-700'
+            }`}>
+            {isCorrect ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+            <span className="text-xs font-medium">
+              {isCorrect ? 'CORRECT' : hasPrediction ? 'INCORRECT' : 'NOT FOUND'}
+            </span>
+          </Badge>
+
+          {/* Challenge badge - only show when incorrect */}
+          {showChallengeBadge && (
+            <Link href={`/debate/${result.puzzleId}`}>
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 cursor-pointer ml-auto transition-colors">
+                <MessageSquareWarning className="h-3 w-3" />
+                <span className="text-xs font-medium">Get a second opinion!</span>
+              </Badge>
+            </Link>
+          )}
+        </>
       )}
       
       {model?.releaseDate && (
@@ -223,7 +233,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         variant="ghost"
         size="sm"
         onClick={() => setShowRawDb(!showRawDb)}
-        className="h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ml-auto"
+        className={`h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ${!showChallengeBadge ? 'ml-auto' : ''}`}
         title="Show the raw explanation record from the database"
       >
         {showRawDb ? (
