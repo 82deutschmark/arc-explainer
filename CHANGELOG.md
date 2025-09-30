@@ -1,6 +1,27 @@
 ## [2025-09-30]
 
 ### Fixed
+- **CRITICAL: Fixed debate validation bug causing all rebuttals to skip validation and show 0% accuracy**
+  - Root cause: DRY principle violation - solver mode detection logic duplicated in 3 places with inconsistent checks
+  - `systemPrompts.ts` correctly included 'debate', 'educationalApproach', 'gepa' in solver mode list
+  - `responseValidator.ts` (lines 414, 475) only checked for 'solver' and 'custom' → skipped debate validation
+  - `puzzleAnalysisService.ts` (line 122) only checked for 'solver' and 'custom' → skipped calling validator
+  - **Impact**: All debate rebuttals had NULL predicted grids, marked as incorrect, 0% accuracy scores in database
+  - **Fix**: Import centralized `isSolverMode()` function from systemPrompts.ts in both files
+  - Single source of truth ensures consistent validation across all solver-type prompts
+  - Also fixes same issue affecting 'educationalApproach' and 'gepa' prompt types
+  - Files: `server/services/responseValidator.ts`, `server/services/puzzleAnalysisService.ts`
+  - Commit: `ffea1f6` - fix(validation): Fix critical debate validation bug in two locations + audit solver.ts
+
+- **Audited solver.ts schema file - NO ISSUES FOUND**
+  - Removed alarming "THIS OLD FILE MAY BE CAUSING CONFLICTS!!! NEEDS AUDITING!!!!" header warning
+  - Completed comprehensive audit of validation logic and schema definitions
+  - Confirmed correct handling of single-test and multi-test cases
+  - Confirmed backward compatibility with old 'predictedOutputs' field name
+  - Confirmed proper extraction of numbered prediction fields (predictedOutput1, predictedOutput2, etc.)
+  - Updated header with comprehensive documentation and audit status
+  - File: `server/services/schemas/solver.ts`
+
 - **CRITICAL: Fixed ModelDebate challenge generation failure**
   - Root cause: Backend `/api/puzzle/save-explained` endpoint was returning only `{ explanationIds: [123] }` instead of including full explanation data
   - Frontend `ModelDebate.tsx` expected `savedData.explanations[modelKey]` structure to access the challenge response
