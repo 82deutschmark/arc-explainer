@@ -246,7 +246,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 ) : (
                   <>
                     <Send className="h-3 w-3 mr-1" />
-                    Generate Challenge
+                    Ask other LLM
                   </>
                 )}
               </Button>
