@@ -37,6 +37,8 @@ import { Textarea } from '@/components/ui/textarea';
 // Reuse existing components
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
+import { OriginalExplanationCard } from './OriginalExplanationCard';
+import { RebuttalCard } from './RebuttalCard';
 
 // Types
 import type { ExplanationData } from '@/types/puzzle';
@@ -188,6 +190,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {/* Debate Messages */}
         <div className="lg:col-span-2 space-y-2">
+          {/* Header Card */}
           <Card>
             <CardHeader className="p-2">
               <CardTitle className="flex items-center gap-2 text-sm">
@@ -196,36 +199,31 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 <Badge variant="outline" className="text-xs">{debateMessages.length} participants</Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-2">
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {debateMessages.map((message) => (
-                  <div key={message.id}>
-                    <div className="flex items-center gap-1 mb-1">
-                      <Badge variant={message.messageType === 'original' ? 'default' : 'destructive'} className="text-xs px-1 py-0">
-                        {message.modelName}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs px-1 py-0">
-                        {message.messageType === 'original' ? 'Original' : 'Challenge'}
-                      </Badge>
-                      <span className="text-[10px] text-gray-500">
-                        {new Date(message.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-
-                    {/* AnalysisResultCard with proper PuzzleGrid/GridCell components */}
-                    {/* eloMode=false to show Expected Output and diff comparison */}
-                    <AnalysisResultCard
-                      result={message.content}
-                      modelKey={message.modelName}
-                      model={models?.find(m => m.key === message.modelName)}
-                      testCases={testCases}
-                      eloMode={false}
-                    />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
           </Card>
+
+          {/* Scrollable debate content */}
+          <div className="space-y-2 max-h-[800px] overflow-y-auto">
+            {debateMessages.map((message, index) => (
+              message.messageType === 'original' ? (
+                <OriginalExplanationCard
+                  key={message.id}
+                  explanation={message.content}
+                  models={models}
+                  testCases={testCases}
+                  timestamp={message.timestamp}
+                />
+              ) : (
+                <RebuttalCard
+                  key={message.id}
+                  explanation={message.content}
+                  models={models}
+                  testCases={testCases}
+                  timestamp={message.timestamp}
+                  rebuttalNumber={debateMessages.slice(0, index).filter(m => m.messageType === 'challenge').length + 1}
+                />
+              )
+            ))}
+          </div>
         </div>
 
         {/* Challenge Controls */}
