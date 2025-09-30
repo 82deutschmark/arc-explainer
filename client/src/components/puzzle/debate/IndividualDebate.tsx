@@ -212,14 +212,14 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                       </span>
                     </div>
 
-                    {/* Use scaled DebateAnalysisResultCard for compact display */}
+                    {/* AnalysisResultCard with proper PuzzleGrid/GridCell components */}
+                    {/* eloMode=false to show Expected Output and diff comparison */}
                     <DebateAnalysisResultCard
                       result={message.content}
                       modelKey={message.modelName}
                       model={models?.find(m => m.key === message.modelName)}
                       testCases={testCases}
-                      eloMode={true}
-                      gridScale={0.2}
+                      eloMode={false}
                     />
                   </div>
                 ))}
