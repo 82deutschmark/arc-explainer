@@ -50,11 +50,9 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
           <Badge variant="default" className="text-xs">
             {explanation.modelName}
           </Badge>
-          {wasIncorrect && (
+          {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false && (
             <Badge variant="destructive" className="text-xs">
-              {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false
-                ? 'Incorrect'
-                : 'Under Review'}
+              Incorrect
             </Badge>
           )}
           {explanation.rebuttingExplanationId && (
