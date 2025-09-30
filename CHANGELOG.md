@@ -1,4 +1,84 @@
+## [2025-09-30]
+
+### Fixed
+- Fixed emoji mode being enabled by default when "Send as emojis" toggle was checked in PuzzleExaminer
+- Emojis are now only used in Alien Communication mode as intended
+- The `sendAsEmojis` toggle and `emojiSetKey` parameters are still passed through for potential future use but don't automatically enable emoji mode
+- Updated `promptBuilder.ts` to use `useEmojis: isAlien` instead of `useEmojis: !!emojiSetKey || isAlien`
+
 ### September 29 2025
+
+## v2.30.8 - Rebuttal Tracking UI Complete (100% DONE! 🎉)
+
+### ✅ **UI Components Implemented**
+- **Rebuttal Badges on Explanation Cards**:
+  - Added "Rebuttal" badge with arrow icon to `AnalysisResultListCard.tsx`
+  - Badge displays when `rebuttingExplanationId` is present
+  - Shows in both compact and expanded views
+  - Color: Secondary variant with ArrowRight icon for visual clarity
+  - Files: `client/src/components/puzzle/AnalysisResultListCard.tsx`
+
+- **Debate Chain Navigation in IndividualDebate**:
+  - Added recursive chain query using TanStack Query
+  - Fetches full debate thread via `GET /api/explanations/:id/chain`
+  - Displays breadcrumb showing: Original → Rebuttal 1 → Rebuttal 2 → ...
+  - Current explanation highlighted with default badge variant
+  - Chain displays with Link2 icon and participant count
+  - 30-second cache to reduce API calls
+  - Files: `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+### 🎨 **Visual Design**
+- **Rebuttal Badge**: Secondary variant with ArrowRight icon (subtle gray)
+- **Chain Breadcrumb**: Horizontal layout with arrow separators
+- **Active Highlight**: Current explanation uses default badge (filled blue)
+- **Hover States**: Chain badges have hover effect for future click navigation
+- **Responsive**: Flex-wrap ensures proper display on mobile devices
+
+### 🔧 **Technical Implementation**
+- **API Integration**: `useQuery` hook from `@tanstack/react-query`
+- **Response Handling**: Safely handles both `{success, data}` and direct array responses
+- **Type Safety**: Proper TypeScript types for explanation data
+- **Cache Strategy**: 30-second stale time balances freshness with performance
+- **Error Handling**: Graceful handling of missing/invalid chains
+
+### 📊 **Final Implementation Status**
+```
+Task 1: Database Schema           ✅ Complete (100%)
+Task 2: TypeScript Interfaces     ✅ Complete (100%)
+Task 3: Repository Save Method    ✅ Complete (100%)
+Task 4: Repository Query Methods  ✅ Complete (100%)
+Task 5: Backend Analysis Service  ✅ Complete (100%)
+Task 6: Frontend Debate State     ✅ Complete (100%)
+Task 7: Pass ID to Backend        ✅ Complete (100%)
+Task 8: UI Display Components     ✅ Complete (100%) ← JUST FINISHED!
+Task 9: API Endpoints             ✅ Complete (100%)
+
+Overall Progress: 100% Complete! 🎉
+```
+
+### 🔍 **Manual Testing Checklist**
+- [ ] Generate debate challenge → verify `rebutting_explanation_id` is stored in database
+- [ ] View explanation list → verify "Rebuttal" badge appears on challenge explanations
+- [ ] Open IndividualDebate → verify chain breadcrumb displays when debates exist
+- [ ] Check chain display → verify current explanation is highlighted
+- [ ] Verify participant count → matches number of models in chain
+- [ ] Test with single explanation → verify no chain display (length check works)
+- [ ] Delete original explanation → verify child FK becomes NULL (ON DELETE SET NULL)
+
+### 🎯 **Usage Guide**
+1. Navigate to ModelDebate page (`/debate/:taskId`)
+2. Select an incorrect explanation from the list
+3. Generate a challenge with a different model
+4. Observe "Rebuttal" badge on the new challenge explanation
+5. View IndividualDebate to see full chain breadcrumb
+6. Chain shows progression: Original Model → Challenger Model 1 → Challenger Model 2
+
+### 📚 **Documentation Updated**
+- Implementation plan: `docs/30Sept2025-RebuttalTracking-Implementation.md` (marked 100% complete)
+- API reference: `docs/EXTERNAL_API.md` (includes debate endpoints)
+- Developer guide: `docs/DEVELOPER_GUIDE.md` (includes debate architecture)
+
+---
 
 ## v2.30.7 - Rebuttal Tracking Backend Implementation (95% Complete)
 

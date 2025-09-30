@@ -178,7 +178,7 @@ export function buildAnalysisPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey,
     omitAnswer,
-    useEmojis: !!emojiSetKey || isAlien, // Use emojis if user selected emoji set OR in alien mode
+    useEmojis: isAlien, // Only use emojis in alien communication mode
     isSolverMode: isSolver,
     isMultiTest: task.test.length > 1
   };
@@ -229,7 +229,7 @@ function buildLegacyPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey: options.emojiSetKey,
     omitAnswer: options.omitAnswer,
-    useEmojis: !!options.emojiSetKey || selectedTemplate?.emojiMapIncluded || false, // Use emojis if user selected emoji set OR template requires it
+    useEmojis: selectedTemplate?.emojiMapIncluded || false, // Only use emojis if template requires it (alien mode)
     isSolverMode: isSolverMode(promptId),
     isMultiTest: task.test.length > 1
   };
