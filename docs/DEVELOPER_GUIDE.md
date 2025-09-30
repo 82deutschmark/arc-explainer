@@ -1,6 +1,6 @@
 # ARC Explainer Developer Onboarding Guide
 
-*Last Updated: September 29, 2025*
+*Last Updated: September 30, 2025*
 
 Welcome to the ARC Explainer project! This guide is designed to help new developers understand the project's architecture, locate key files, and contribute effectively. Our goal is to reuse existing components and maintain a clear, modular structure.
 
@@ -8,14 +8,19 @@ Welcome to the ARC Explainer project! This guide is designed to help new develop
 
 The ARC Explainer is a full-stack web application for analyzing and visualizing Abstract Reasoning Corpus (ARC) puzzles. It allows users to submit puzzles to various AI models, view their analyses, and compare results. The application is built with a React frontend and a Node.js/Express backend, following a "database-first" architecture.
 
-### 🆕 NEW: Model Debate & Rebuttal Tracking (September 2025)
+### 🆕 NEW: Model Debate & Rebuttal Tracking (September 2025) ✅ COMPLETE
 The application now includes AI-vs-AI debate functionality with parent-child rebuttal tracking:
 - **ModelDebate Page**: Interface for AI models to challenge each other's incorrect explanations
-- **Rebuttal Tracking**: Database tracks which explanations are rebuttals challenging other explanations
-- **Debate Chains**: Recursive queries to show full debate threads (Original → Rebuttal 1 → Rebuttal 2)
-- **Custom Challenges**: Users can provide optional guidance when generating challenges
-- **API Endpoints**: `GET /api/explanations/:id/chain` and `GET /api/explanations/:id/original`
-- **95% Complete**: Backend fully implemented, UI display of chains pending
+- **Rebuttal Tracking**: Database tracks which explanations are rebuttals challenging other explanations via `rebutting_explanation_id` FK
+- **Debate Chains**: Recursive CTE queries to show full debate threads (Original → Rebuttal 1 → Rebuttal 2)
+- **Custom Challenges**: Users can provide optional guidance text when generating challenges
+- **Debate Chain UI**: Breadcrumb navigation showing debate participants with current explanation highlighted
+- **Rebuttal Badges**: Visual indicators on explanation cards showing rebuttal relationships
+- **API Endpoints**:
+  - `GET /api/explanations/:id/chain` - Get full debate chain
+  - `GET /api/explanations/:id/original` - Get parent explanation
+  - `GET /api/puzzle/:puzzleId/explanations?correctness=incorrect` - Filter debatable explanations
+- **Status**: 100% Complete (v2.30.8) - Backend, UI, and navigation fully implemented
 
 ### Model Dataset Performance Analysis (September 2025)
 The application includes dynamic model performance analysis across ANY ARC dataset:
@@ -131,12 +136,17 @@ This section provides a quick reference to the most important files in the proje
 | | `explanationService.ts` | Handles the saving and processing of AI-generated explanations. |
 | | `aiServiceFactory.ts` | A factory that returns the correct AI provider service (e.g., OpenAI, Gemini) based on a model key. |
 | | `pythonBridge.ts` | Manages communication with Python scripts for specialized solvers. |
-| `repositories`| `ExplanationRepository.ts` | All database operations for the `explanations` table. |
+| `repositories`| `ExplanationRepository.ts` | All database operations for the `explanations` table, including debate chain queries. |
 | | `AccuracyRepository.ts` | Pure puzzle-solving accuracy metrics (boolean correctness only). |
 | | `TrustworthinessRepository.ts` | AI confidence reliability analysis (no cost calculations). |
 | | `CostRepository.ts` | **NEW**: All cost calculations and cost domain logic (SRP compliant). |
 | | `MetricsRepository.ts` | Aggregated analytics from multiple repositories using delegation. |
 | | `EloRepository.ts` | Database logic for storing and updating ELO scores. |
+
+**Key Repository Methods for Debate:**
+- `ExplanationRepository.getRebuttalChain(explanationId)` - Recursive CTE query for debate threads
+- `ExplanationRepository.getOriginalExplanation(rebuttalId)` - Parent explanation lookup
+- `ExplanationRepository.getByPuzzle(puzzleId, correctness)` - Filter by correct/incorrect for debates
 
 ### Client-Side Components
 
@@ -145,16 +155,19 @@ This section provides a quick reference to the most important files in the proje
 | `pages` | `PuzzleExaminer.tsx` | The main page for viewing a puzzle, triggering analysis, and displaying results. |
 | | `PuzzleBrowser.tsx` | The primary dashboard for browsing and filtering all puzzles. |
 | | `EloLeaderboard.tsx` | Displays the ELO rankings of all AI models. |
-| | `ModelDebate.tsx` | **NEW**: AI-vs-AI debate interface for challenging incorrect explanations. |
+| | `ModelDebate.tsx` | **v2.30.0**: AI-vs-AI debate interface for challenging incorrect explanations. |
 | `components` | `PuzzleViewer.tsx` | A core component that displays the training and test grids for a puzzle. |
 | | `AnalysisResultCard.tsx`| Renders a single AI model's explanation for a puzzle. |
+| | `AnalysisResultListCard.tsx`| **v2.30.8**: Compact explanation cards with rebuttal badges. |
 | | `ModelButton.tsx` | A specialized button for triggering an analysis with a specific model. |
-| | `debate/IndividualDebate.tsx` | **NEW**: Manages individual debate sessions with challenge generation. |
-| | `debate/ExplanationsList.tsx` | **NEW**: Reusable explanation browsing with correctness filtering. |
+| | `debate/IndividualDebate.tsx` | **v2.30.0**: Manages individual debate sessions with challenge generation and chain display. |
+| | `debate/ExplanationsList.tsx` | **v2.30.0**: Reusable explanation browsing with correctness filtering. |
+| | `TinyGrid.tsx` | **v2.30.5**: Minimal grid component for compact puzzle display in debates. |
 | `hooks` | `usePuzzle.ts` | Fetches and manages the state for a single puzzle. |
-| | `useAnalysisResults.ts`| Manages the state and logic for running analyses and handling results. |
+| | `useAnalysisResults.ts`| Manages the state and logic for running analyses and handling results (includes debate support). |
 | | `useExplanation.ts` | Fetches existing explanations for a puzzle from the database. |
-| | `debate/useDebateState.ts` | **NEW**: Debate-specific state management (selected explanation, challenger model, etc.). |
+| | `debate/useDebateState.ts` | **v2.30.0**: Debate-specific state management (messages, challenges). |
+| | `debate/useChallengeGeneration.ts` | **v2.30.0**: Challenge prompt generation with original explanation context. |
 | `contexts` | `AnalysisContext.tsx` | Provides shared state for analysis operations across different components. |
 
 By familiarizing yourself with this structure, you can quickly identify where to find existing logic and where to add new features, ensuring that we continue to build upon the solid foundation of the ARC Explainer.
