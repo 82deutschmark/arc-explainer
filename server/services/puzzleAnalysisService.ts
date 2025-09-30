@@ -1,14 +1,24 @@
 /**
  * puzzleAnalysisService.ts
- * 
- * Author: Cascade using GPT-4.1
- * Date: 2025-09-29T17:15:00-04:00
- * PURPOSE: Service for handling puzzle analysis business logic.
- * Extracts complex AI analysis orchestration from controller.
- * CRITICAL FIX: Added originalExplanation and customChallenge extraction in generatePromptPreview()
- * to enable debate mode prompt preview. These fields were missing, causing API calls to fail
- * when previewing debate prompts. Now properly forwards debate context to promptOptions.
- * SRP/DRY check: Pass - Single service responsibility, delegates to specialized services
+ *
+ * Author: Cascade using GPT-4.1 (original), Claude Code using Sonnet 4.5 (2025-09-30 fix)
+ * Date: 2025-09-29T17:15:00-04:00 (original), 2025-09-30 (validation fix)
+ * PURPOSE: Service for handling puzzle analysis business logic. Extracts complex AI analysis
+ * orchestration from controller. Manages the full analysis pipeline: prompt building, AI service
+ * calls, response validation, and database persistence preparation.
+ *
+ * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded
+ * from validateAndEnrichResult() call (line 124). This caused debate rebuttals to skip prediction
+ * extraction and validation entirely, resulting in NULL predicted grids and default values
+ * (isPredictionCorrect: false, predictionAccuracyScore: 0) being saved to database. Now uses
+ * centralized isSolverMode() function from systemPrompts.ts to ensure consistent validation.
+ *
+ * PREVIOUS FIX (2025-09-29): Added originalExplanation and customChallenge extraction in
+ * generatePromptPreview() to enable debate mode prompt preview. These fields were missing,
+ * causing API calls to fail when previewing debate prompts.
+ *
+ * SRP/DRY check: Pass - Single service responsibility (analysis orchestration), now properly
+ * uses centralized solver mode detection instead of duplicating logic.
  */
 
 import { aiServiceFactory } from './aiServiceFactory';
@@ -16,6 +26,7 @@ import { puzzleService } from './puzzleService';
 import { repositoryService } from '../repositories/RepositoryService';
 import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator';
 import { logger } from '../utils/logger';
+import { isSolverMode } from './prompts/systemPrompts';
 import type { PromptOptions } from './promptBuilder';
 import type { ARCExample, DetailedFeedback } from '../../shared/types';
 import type { ExplanationData } from '../repositories/interfaces/IExplanationRepository.ts';
@@ -119,7 +130,8 @@ export class PuzzleAnalysisService {
     result.apiProcessingTimeMs = apiProcessingTimeMs;
 
     // Validate solver responses and custom prompts that may be attempting to solve
-    if (promptId === "solver" || promptId === "custom") {
+    // FIXED: Use centralized isSolverMode function to include debate, educationalApproach, gepa
+    if (isSolverMode(promptId)) {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
 
