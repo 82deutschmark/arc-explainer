@@ -107,5 +107,74 @@ export const explanationController = {
         { error: error instanceof Error ? error.message : 'Unknown database error' }
       ));
     }
+  },
+
+  /**
+   * Get rebuttal chain for an explanation
+   *
+   * @param req - Express request object (params.id = explanation ID)
+   * @param res - Express response object
+   */
+  async getRebuttalChain(req: Request, res: Response) {
+    try {
+      const explanationId = parseInt(req.params.id);
+
+      if (isNaN(explanationId)) {
+        return res.status(400).json(formatResponse.error(
+          'INVALID_ID',
+          'Invalid explanation ID'
+        ));
+      }
+
+      const { repositoryService } = await import('../repositories/RepositoryService');
+      const chain = await repositoryService.explanations.getRebuttalChain(explanationId);
+
+      res.json(formatResponse.success(chain));
+    } catch (error) {
+      console.error('Error in explanationController.getRebuttalChain:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR',
+        'Failed to retrieve rebuttal chain',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
+  },
+
+  /**
+   * Get original explanation that a rebuttal is challenging
+   *
+   * @param req - Express request object (params.id = rebuttal explanation ID)
+   * @param res - Express response object
+   */
+  async getOriginalExplanation(req: Request, res: Response) {
+    try {
+      const rebuttalId = parseInt(req.params.id);
+
+      if (isNaN(rebuttalId)) {
+        return res.status(400).json(formatResponse.error(
+          'INVALID_ID',
+          'Invalid explanation ID'
+        ));
+      }
+
+      const { repositoryService } = await import('../repositories/RepositoryService');
+      const original = await repositoryService.explanations.getOriginalExplanation(rebuttalId);
+
+      if (!original) {
+        return res.status(404).json(formatResponse.error(
+          'NOT_FOUND',
+          'Original explanation not found or this is not a rebuttal'
+        ));
+      }
+
+      res.json(formatResponse.success(original));
+    } catch (error) {
+      console.error('Error in explanationController.getOriginalExplanation:', error);
+      res.status(500).json(formatResponse.error(
+        'INTERNAL_ERROR',
+        'Failed to retrieve original explanation',
+        { error: error instanceof Error ? error.message : 'Unknown error' }
+      ));
+    }
   }
 };
