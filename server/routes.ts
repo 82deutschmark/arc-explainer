@@ -109,7 +109,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));
   app.get("/api/puzzle/:puzzleId/explanation", asyncHandler(explanationController.getOne));
   app.post("/api/puzzle/save-explained/:puzzleId", validation.explanationCreate, asyncHandler(explanationController.create));
-  
+
+  // Rebuttal chain routes
+  app.get("/api/explanations/:id/chain", asyncHandler(explanationController.getRebuttalChain));
+  app.get("/api/explanations/:id/original", asyncHandler(explanationController.getOriginalExplanation));
+
   // Feedback routes
   app.post("/api/feedback", validation.feedback, asyncHandler(feedbackController.create));
   app.get("/api/explanation/:explanationId/feedback", asyncHandler(feedbackController.getByExplanation));
