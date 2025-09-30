@@ -1,18 +1,33 @@
-/**THIS OLD FILE MAY BE CAUSING CONFLICTS!!!  NEEDS AUDITING!!!!
- * server/services/schemas/solver.ts
- * 
- * JSON schema for solver mode responses where AI predicts puzzle answers.
- * Enforces strict structure for OpenAI structured outputs and provides
- * validation for other providers.
- * 
+/**
+ * Author: Claude Code (original), Claude Code using Sonnet 4.5 (2025-09-30 audit & header update)
+ * Date: 2025-08-22 (original), 2025-09-30 (audit completed)
+ * PURPOSE: JSON schema definitions and validation functions for solver mode responses where AI
+ * predicts puzzle answers. Enforces strict structure for OpenAI structured outputs and provides
+ * validation for all providers. Critical for ensuring LLM responses contain properly formatted
+ * prediction grids that can be extracted and validated against correct answers.
+ *
+ * AUDIT STATUS (2025-09-30): ✅ AUDITED - File reviewed as part of debate validation bug investigation.
+ * No issues found in this file. The validation logic correctly handles single-test and multi-test
+ * cases, supports both old (predictedOutputs) and new (multiplePredictedOutputs) field names for
+ * backward compatibility, and properly extracts numbered prediction fields (predictedOutput1,
+ * predictedOutput2, etc.) from multi-test responses.
+ *
  * Key Features:
- * - Prediction fields (predictedOutput/predictedOutputs)
- * - Reasoning capture in structured format
- * - Single and multi-test case support
+ * - Single-test schema (SINGLE_SOLVER_SCHEMA) for puzzles with one test case
+ * - Multi-test schema (MULTI_SOLVER_SCHEMA) for puzzles with multiple test cases
+ * - Schema selection helper (getSolverSchema) based on test case count
+ * - Validation functions (validateSolverResponse, extractPredictions) for structure checking
+ * - Grid validation (validateGrid) ensures 2D arrays of integers 0-9
+ * - Backward compatibility with old 'predictedOutputs' field name
+ * - Support for dynamic numbered fields (predictedOutput1, predictedOutput2, etc.)
  * - OpenAI structured outputs compatibility
- * 
- * @author Claude Code
- * @date August 22, 2025
+ *
+ * Used By:
+ * - responseValidator.ts (imports extractPredictions for response parsing)
+ * - All AI service providers for response structure enforcement
+ * - Debate system for validating rebuttal predictions
+ *
+ * SRP/DRY check: Pass - Single responsibility (schema definition & validation for solver responses)
  */
 
 import { 

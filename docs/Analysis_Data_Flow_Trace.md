@@ -3,12 +3,12 @@
   What: A step-by-step trace of the data flow for puzzle analysis.
   How: Explains the process from a user click to the result display.
   Author: Cascade
-  Last Updated: August 24, 2025
+  Last Updated: September 30, 2025
 -->
 
 # Analysis Data Flow Trace
 
-*Last Updated: August 23, 2025*
+*Last Updated: September 30, 2025*
 
 > **Note:** For recent changes, see the [Changelog](../Changelog.md#august-23-2025) for details on the multi-output prediction support added on this date.
 
@@ -125,6 +125,109 @@ The process is broken down into two main parts: the Frontend (what happens in th
 7.  **Sending Success Back to Frontend**
     *   **What**: Once the database write is successful, the controller sends a success status (e.g., `200 OK`) back to the frontend.
     *   **Action**: This response signals to the frontend that the process is complete, which triggers the data refetching step (Part 1, Step 5).
+
+## Debate Mode Data Flow (v2.30.0+)
+
+*Added September 30, 2025*
+
+When operating in debate mode, the analysis flow includes additional steps to track AI-vs-AI debates and rebuttal chains.
+
+### Debate Mode Frontend Flow
+
+1. **User Selects Incorrect Explanation**
+   * **Where**: `ModelDebate.tsx` page
+   * **What**: User browses existing explanations filtered by `correctness=incorrect`
+   * **Action**: User clicks "Challenge" button to have a different AI critique the explanation
+
+2. **Generate Challenge with Original Context**
+   * **Where**: `IndividualDebate.tsx` component
+   * **What**: Frontend prepares debate request with:
+     - `originalExplanation` object (contains parent explanation ID and all metadata)
+     - `customChallenge` text (optional user guidance)
+     - `promptId: "debate"` to use debate prompt template
+   * **Action**: POST request to `/api/puzzle/analyze/:taskId/:model` with debate parameters
+
+3. **UI Updates with Rebuttal Badge**
+   * **Where**: `AnalysisResultListCard.tsx`
+   * **What**: New explanation appears with "Rebuttal" badge showing it's challenging another explanation
+   * **Action**: Clicking explanation navigates to `IndividualDebate` showing full debate chain
+
+### Debate Mode Backend Flow
+
+1. **Debate Parameters Received**
+   * **Where**: `server/controllers/puzzleController.ts`
+   * **What**: Controller receives `originalExplanation` and `customChallenge` from request body
+   * **Action**: Passes debate context to `puzzleAnalysisService`
+
+2. **Debate Prompt Construction**
+   * **Where**: `server/services/promptBuilder.ts`
+   * **What**: When `promptId === 'debate'`:
+     - System prompt includes debate instructions (critique, analyze, solve, justify)
+     - User prompt includes original explanation context:
+       ```
+       Original Model: gpt-4o
+       Original Pattern: [pattern description]
+       Original Strategy: [solving strategy]
+       Original Hints: [hints array]
+       Original Confidence: 85%
+       Prediction: INCORRECT ❌
+
+       [Optional] Challenge Focus: Focus on edge cases in corners
+       ```
+   * **Action**: AI model receives complete context to generate informed rebuttal
+
+3. **Rebuttal ID Extraction**
+   * **Where**: `server/services/puzzleAnalysisService.ts`
+   * **What**: Service detects debate mode via `originalExplanation` parameter
+   * **Action**: Extracts parent ID and sets `result.rebuttingExplanationId = originalExplanation.id` (lines 127-129)
+
+4. **Database Relationship Storage**
+   * **Where**: `server/repositories/ExplanationRepository.ts`
+   * **What**: INSERT query includes `rebutting_explanation_id` column
+   * **Database**:
+     ```sql
+     INSERT INTO explanations (..., rebutting_explanation_id, ...)
+     VALUES (..., $rebuttingExplanationId, ...)
+     ```
+   * **Foreign Key**: `REFERENCES explanations(id) ON DELETE SET NULL`
+   * **Action**: Relationship stored for debate chain queries
+
+5. **Debate Chain Queries**
+   * **Where**: `ExplanationRepository.getRebuttalChain()`
+   * **What**: Recursive CTE query walks rebuttal relationships:
+     ```sql
+     WITH RECURSIVE rebuttal_chain AS (
+       SELECT * FROM explanations WHERE id = $explanationId
+       UNION ALL
+       SELECT e.* FROM explanations e
+       INNER JOIN rebuttal_chain rc ON e.rebutting_explanation_id = rc.id
+     )
+     SELECT * FROM rebuttal_chain ORDER BY created_at ASC
+     ```
+   * **Result**: Complete debate thread from original → rebuttal 1 → rebuttal 2 → ...
+
+### Debate Chain Visualization
+
+Frontend components query and display debate chains:
+
+1. **API Endpoint**: `GET /api/explanations/:id/chain`
+2. **Response**: Array of explanations in chronological order
+3. **UI Display**:
+   - Breadcrumb showing: Original Model → Challenger 1 → Challenger 2
+   - Current explanation highlighted with default badge
+   - Participant count displayed with Link2 icon
+4. **Caching**: 30-second stale time to reduce API calls
+
+### Key Differences from Standard Analysis
+
+| Aspect | Standard Analysis | Debate Mode Analysis |
+|--------|------------------|---------------------|
+| Prompt Template | `solver`, `explanation`, etc. | `debate` |
+| Context Provided | Only puzzle data | Puzzle + original explanation |
+| User Guidance | Optional custom prompt | Optional challenge focus |
+| Database Field | `rebutting_explanation_id = NULL` | `rebutting_explanation_id = [parent_id]` |
+| UI Badge | None or standard | "Rebuttal" badge with arrow icon |
+| Chain Query | Not applicable | Recursive CTE to get full thread |
 
 ## Analytics Data Flow: From Explanations to Statistics
 

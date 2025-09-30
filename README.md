@@ -1,6 +1,6 @@
 # ARC-AGI Analysis Platform
 
-**Last updated: September 16, 2025**
+**Last updated: September 30, 2025**
 
 A professional research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models. Built for researchers, developers, and AI practitioners working on abstract reasoning and pattern recognition.
 
@@ -14,6 +14,13 @@ This platform provides a robust suite of tools for ARC-AGI puzzle analysis, feat
 - **Pairwise Comparison**: Anonymously compare and vote on the quality of two different AI explanations for the same puzzle.
 - **Quality Leaderboard**: Dynamically ranks AI models based on head-to-head user judgments, providing a more nuanced view of performance than simple accuracy.
 - **Bias Reduction**: Hides model names during comparison to ensure impartial evaluation.
+
+### 🤝 AI Model Debate System
+- **Challenge Mode**: Select incorrect AI explanations and challenge them with different models to critique and improve the reasoning.
+- **Rebuttal Tracking**: Complete debate chain visualization showing progression from original explanation through multiple rebuttals.
+- **Custom Challenges**: Optional guidance text to focus challenger models on specific aspects (edge cases, color transformations, etc.).
+- **Debate Navigation**: Breadcrumb UI displaying debate participants and relationships with clickable chain navigation.
+- **Database Integration**: Foreign key relationships track debate chains with proper cascade behavior for data integrity.
 
 ### ✨ Instant & Optimistic UI
 - **Immediate Feedback**: Analysis result cards appear instantly, with skeleton loaders and progressive status updates (`ANALYZING` → `SAVING` → `COMPLETED`).
@@ -147,7 +154,7 @@ CREATE TABLE explanations (
     api_processing_time_ms INTEGER,
     -- Token & Cost Tracking
     input_tokens INTEGER,
-    output_tokens INTEGER, 
+    output_tokens INTEGER,
     reasoning_tokens INTEGER,
     total_tokens INTEGER,
     estimated_cost NUMERIC,
@@ -156,8 +163,13 @@ CREATE TABLE explanations (
     reasoning_effort TEXT,
     reasoning_verbosity TEXT,
     reasoning_summary_type TEXT,
+    -- Debate & Rebuttal Tracking (v2.30.7+)
+    rebutting_explanation_id INTEGER REFERENCES explanations(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Index for debate chain queries
+CREATE INDEX idx_explanations_rebutting_explanation_id ON explanations(rebutting_explanation_id);
 ```
 
 #### Feedback Table
@@ -249,6 +261,21 @@ GET /api/puzzle/:puzzleId                  # Get specific puzzle data
 GET /api/puzzle/:puzzleId/explanations     # Get all analyses for puzzle
 GET /api/overview?limit=50&offset=0        # Paginated overview with filters
 GET /api/elo/comparison_pair               # Get a pair of explanations for ELO voting
+```
+
+### Debate & Rebuttal Endpoints
+```http
+POST /api/puzzle/analyze/:puzzleId/:modelKey
+Content-Type: application/json
+
+{
+    "originalExplanation": { /* explanation to challenge */ },
+    "customChallenge": "Focus on edge cases...",
+    "temperature": 0.2
+}
+
+GET /api/explanations/:id/chain            # Get full rebuttal chain
+GET /api/explanations/:id/original         # Get parent explanation
 ```
 
 ## Deployment
