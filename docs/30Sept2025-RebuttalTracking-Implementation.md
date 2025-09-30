@@ -221,23 +221,27 @@ const { data: chain } = useQuery({
   - `GET /api/explanations/:id/original` wired up (routes.ts line 115)
   - Controller methods handle errors and validation
 
-### REMAINING WORK
-- **UI Display Components** (30 min) NOT STARTED
-  - Task 8 from implementation plan
-  - Need to add rebuttal badges to cards
-  - Need to add chain navigation to IndividualDebate
-  - See CHANGELOG v2.30.7 for detailed UI requirements
+### COMPLETED WORK
+- **UI Display Components** (30 min) DONE (Sept 29, 2025)
+  - Added rebuttal badges to `AnalysisResultListCard.tsx`
+  - Added chain navigation to `IndividualDebate.tsx` with TanStack Query
+  - Displays breadcrumb: Original → Rebuttal 1 → Rebuttal 2
+  - Current explanation highlighted in chain
+  - See CHANGELOG v2.30.8 for full details
 
-- **End-to-End Testing** (10 min) NOT STARTED
+### REMAINING WORK
+- **End-to-End Testing** (10 min) PENDING USER TESTING
   - Verify rebuttal generation stores ID correctly
   - Test chain queries return expected data
   - Test FK cascade behavior on deletion
+  - Verify UI displays badges and chains correctly
+  - Check responsive design on mobile
 
 ### Progress Summary
 **Backend: 100% Complete (6/6 tasks)**
-**Frontend UI: 0% Complete (0/1 tasks)**
+**Frontend UI: 100% Complete (1/1 tasks)**
 **Testing: 0% Complete (0/1 tasks)**
 
-**Overall: 95% Complete**
+**Overall: 98% Complete** (only manual testing remains)
 
-**Estimated Time Remaining:** ~40 minutes for UI + testing
+**Estimated Time Remaining:** ~10 minutes for end-to-end testing

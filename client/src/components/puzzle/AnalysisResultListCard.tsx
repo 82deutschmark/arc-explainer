@@ -23,7 +23,9 @@ import {
   XCircle,
   Clock,
   AlertTriangle,
-  Trophy
+  Trophy,
+  ArrowRight,
+  Link2
 } from 'lucide-react';
 import { AnalysisResultCard } from './AnalysisResultCard';
 import { DebateAnalysisResultCard } from './debate/DebateAnalysisResultCard';
@@ -112,10 +114,19 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
           <div className="flex items-center justify-between gap-4">
             {/* Left side: Model info and accuracy */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="font-mono text-xs">
                   {result.modelName}
                 </Badge>
+                
+                {/* Rebuttal badge - shows if this is challenging another explanation */}
+                {result.rebuttingExplanationId && (
+                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    <ArrowRight className="h-3 w-3" />
+                    Rebuttal
+                  </Badge>
+                )}
+                
                 <div className={`flex items-center gap-1 ${accuracyStatus.color}`}>
                   <accuracyStatus.icon className="h-4 w-4" />
                   <span className="text-xs font-medium">{accuracyStatus.label}</span>
@@ -179,10 +190,19 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
     <div className="space-y-2">
       {/* Compact header with collapse button */}
       <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="font-mono text-xs">
             {result.modelName}
           </Badge>
+          
+          {/* Rebuttal badge - shows if this is challenging another explanation */}
+          {result.rebuttingExplanationId && (
+            <Badge variant="secondary" className="text-xs flex items-center gap-1">
+              <ArrowRight className="h-3 w-3" />
+              Rebuttal
+            </Badge>
+          )}
+          
           <div className={`flex items-center gap-1 ${accuracyStatus.color}`}>
             <accuracyStatus.icon className="h-4 w-4" />
             <span className="text-xs font-medium">{accuracyStatus.label}</span>

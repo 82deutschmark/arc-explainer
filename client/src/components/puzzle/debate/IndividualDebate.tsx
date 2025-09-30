@@ -13,6 +13,8 @@
 
 import React, { useState } from 'react';
 import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +27,9 @@ import {
   RotateCcw,
   Trophy,
   Loader2,
-  Eye
+  Eye,
+  ArrowRight,
+  Link2
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
@@ -88,6 +92,19 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 }) => {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
 
+  // Fetch rebuttal chain if this explanation is part of a chain
+  const { data: rebuttalChain, isLoading: chainLoading } = useQuery({
+    queryKey: ['rebuttal-chain', originalExplanation.id],
+    queryFn: async () => {
+      if (!originalExplanation.id) return null;
+      const response: any = await apiRequest('GET', `/api/explanations/${originalExplanation.id}/chain`);
+      // API returns {success, data} or {success, error} format
+      return response?.data || response || [];
+    },
+    enabled: !!originalExplanation.id,
+    staleTime: 30000 // Cache for 30 seconds
+  });
+
   // Handle prompt preview - now uses API-based prompt generation
   const handlePreviewPrompt = () => {
     setShowPromptPreview(true);
@@ -123,6 +140,12 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                         : 'Available for Debate'}
                     </Badge>
                   )}
+                  {originalExplanation.rebuttingExplanationId && (
+                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                      <ArrowRight className="h-3 w-3" />
+                      Rebuttal
+                    </Badge>
+                  )}
                 </h2>
                 <p className="text-sm text-gray-600">
                   Challenge this explanation with a better AI analysis
@@ -135,6 +158,30 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
               Back to List
             </Button>
           </div>
+          
+          {/* Rebuttal Chain Breadcrumb */}
+          {rebuttalChain && rebuttalChain.length > 1 && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
+                <Link2 className="h-3 w-3" />
+                <span className="font-medium">Debate Chain:</span>
+                {rebuttalChain.map((exp: any, idx: number) => (
+                  <React.Fragment key={exp.id}>
+                    {idx > 0 && <ArrowRight className="h-3 w-3 text-gray-400" />}
+                    <Badge 
+                      variant={exp.id === originalExplanation.id ? "default" : "outline"}
+                      className="text-xs cursor-pointer hover:bg-gray-100"
+                    >
+                      {exp.modelName}
+                    </Badge>
+                  </React.Fragment>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-500 mt-1">
+                {rebuttalChain.length} models in this debate thread
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
