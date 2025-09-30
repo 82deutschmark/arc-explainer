@@ -18,6 +18,7 @@ import { validateSolverResponse, validateSolverResponseMulti } from './responseV
 import { logger } from '../utils/logger';
 import type { PromptOptions } from './promptBuilder';
 import type { ARCExample, DetailedFeedback } from '../../shared/types';
+import type { ExplanationData } from '../repositories/interfaces/IExplanationRepository.ts';
 
 export interface AnalysisOptions {
   temperature?: number;
@@ -33,7 +34,7 @@ export interface AnalysisOptions {
   reasoningSummaryType?: string;
   systemPromptMode?: string;
   retryMode?: boolean;
-  originalExplanation?: any; // For debate mode
+  originalExplanation?: ExplanationData; // For debate mode
   customChallenge?: string; // For debate mode
 }
 
@@ -116,19 +117,25 @@ export class PuzzleAnalysisService {
     // Calculate API processing time
     const apiProcessingTimeMs = Date.now() - apiStartTime;
     result.apiProcessingTimeMs = apiProcessingTimeMs;
-    
+
     // Validate solver responses and custom prompts that may be attempting to solve
     if (promptId === "solver" || promptId === "custom") {
       this.validateAndEnrichResult(result, puzzle, promptId);
     }
-    
+
+    // Add rebuttal tracking if this is a debate response
+    if (originalExplanation && originalExplanation.id) {
+      result.rebuttingExplanationId = originalExplanation.id;
+      logger.debug(`Marking as rebuttal to explanation ${originalExplanation.id}`, 'puzzle-analysis-service');
+    }
+
     // Note: Database saving is handled by the calling service (explanationService)
     // This service only handles AI analysis and validation - not persistence
     logger.debug(`Analysis completed for puzzle ${taskId} with model ${model}`, 'puzzle-analysis-service');
-    
+
     // Save raw analysis log
     await this.saveRawLog(taskId, model, result);
-    
+
     return result;
   }
 
