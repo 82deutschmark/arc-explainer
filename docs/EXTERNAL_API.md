@@ -150,11 +150,24 @@ DEPRECATED BATCH ENDPOINTS (never worked correctly):
 ### Performance Statistics SUPER IMPORTANT!!
 
 #### Accuracy Statistics
-- `GET /api/feedback/accuracy-stats` - **Primary accuracy endpoint** - Pure puzzle-solving accuracy statistics
+
+**🚨 CRITICAL CHANGE (Sept 30, 2025):** Solver accuracy and debate accuracy are now tracked separately to prevent data pollution.
+
+- `GET /api/feedback/accuracy-stats` - **Primary solver accuracy endpoint** - Pure 1-shot puzzle-solving accuracy
   - **Response**: `PureAccuracyStats` with `modelAccuracyRankings[]` (used by AccuracyLeaderboard)
   - **Sort Order**: Ascending by accuracy (worst performers first - "Models Needing Improvement")
   - **Data Source**: `is_prediction_correct` and `multi_test_all_correct` boolean fields only
+  - **Filtering**: `WHERE rebutting_explanation_id IS NULL` - **EXCLUDES debate rebuttals**
+  - **Use Case**: Fair apples-to-apples model comparison for pure puzzle solving (no contextual advantage)
   - **🔄 CHANGED**: No longer limited to 10 results - returns ALL models with stats
+
+- `GET /api/feedback/debate-accuracy-stats` - **Debate challenger accuracy** - Success rate for AI challenges/rebuttals
+  - **Response**: `PureAccuracyStats` with `modelAccuracyRankings[]` (same structure as solver accuracy)
+  - **Sort Order**: Descending by accuracy (best performers first - "Top Debate Challengers")
+  - **Data Source**: `is_prediction_correct` and `multi_test_all_correct` boolean fields only
+  - **Filtering**: `WHERE rebutting_explanation_id IS NOT NULL` - **ONLY debate rebuttals**
+  - **Use Case**: Identify which models excel at challenging/critiquing incorrect explanations
+  - **Research Value**: Compare solver vs. critique capabilities across models
 
 #### Trustworthiness Statistics  
 - `GET /api/puzzle/performance-stats` - Trustworthiness and confidence reliability metrics
