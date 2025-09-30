@@ -47,6 +47,33 @@ export class MetricsQueryBuilder {
     return `${tableAlias}.confidence IS NOT NULL AND ${tableAlias}.confidence > 0`;
   }
 
+  /**
+   * Original solver attempt filter - EXCLUDES debate rebuttals
+   * Ensures accuracy stats only include pure 1-shot solver attempts
+   *
+   * Use this for:
+   * - Pure solver accuracy (baseline AI performance)
+   * - Model leaderboards (fair apples-to-apples comparison)
+   * - Performance metrics (avoid mixing problem types)
+   *
+   * @param tableAlias Database table alias (default: 'e')
+   * @returns SQL filter clause
+   */
+  static originalSolverFilter(tableAlias: string = 'e'): string {
+    return `${tableAlias}.rebutting_explanation_id IS NULL`;
+  }
+
+  /**
+   * Debate rebuttal filter - ONLY debate challenge responses
+   * Use this for analyzing models' ability to challenge incorrect explanations
+   *
+   * @param tableAlias Database table alias (default: 'e')
+   * @returns SQL filter clause
+   */
+  static debateRebuttalFilter(tableAlias: string = 'e'): string {
+    return `${tableAlias}.rebutting_explanation_id IS NOT NULL`;
+  }
+
   // ==================== COMMON SELECT FRAGMENTS ====================
 
   /**
