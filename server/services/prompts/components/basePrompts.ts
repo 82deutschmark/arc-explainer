@@ -94,7 +94,7 @@ Analyze training examples, identify the transformation patterns,
 and predict the correct output for the test case. Some puzzles have multiple test cases.`,
 
   debate: `TASK: You are participating in an AI model debate. Another AI model has already provided an explanation for this puzzle.
-Your job is to critically evaluate their reasoning, identify flaws or weaknesses, and provide a superior analysis with the correct solution.`
+Your job is to critically evaluate their reasoning, identify flaws or weaknesses, and provide a superior analysis with the correct solution. Begin with a clear statement of the flaw or weakness you identified in the approach of the previous explanation.`
 } as const;
 
 /**
