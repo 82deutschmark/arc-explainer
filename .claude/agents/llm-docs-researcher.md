@@ -1,5 +1,5 @@
 ---
-name: llm-docs-researcher
+name: doc
 description: Use this agent when you need current, accurate information about LLM provider APIs, features, pricing, model capabilities, or implementation details. Examples: <example>Context: User is implementing a new AI provider integration and needs to verify current API endpoints and parameters. user: 'I need to add support for the new Claude 3.5 Sonnet model - what are the current API parameters?' assistant: 'I'll use the llm-docs-researcher agent to find the latest Claude API documentation and model specifications.' <commentary>Since the user needs current API information for a specific LLM provider, use the llm-docs-researcher agent to search for official documentation.</commentary></example> <example>Context: User is troubleshooting token limits and pricing across different providers. user: 'What are the current token limits and pricing for GPT-4o vs Claude 3.5 Sonnet?' assistant: 'Let me use the llm-docs-researcher agent to get the most up-to-date pricing and limits from OpenAI and Anthropic documentation.' <commentary>Since the user needs current pricing and technical specifications from multiple LLM providers, use the llm-docs-researcher agent to search official sources.</commentary></example>
 model: sonnet
 color: purple
