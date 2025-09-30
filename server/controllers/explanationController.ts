@@ -93,7 +93,22 @@ export const explanationController = {
       const result = await explanationService.saveExplanation(puzzleId, explanations);
 
       if (result.success) {
-        res.status(201).json(formatResponse.success({ explanationIds: result.explanationIds }, 'Explanation saved successfully.'));
+        // Fetch the full explanation objects to return to frontend
+        const { repositoryService } = await import('../repositories/RepositoryService');
+        const explanationObjects: Record<string, any> = {};
+        
+        // Build explanations object keyed by model name
+        for (const id of result.explanationIds) {
+          const explanation = await repositoryService.explanations.getExplanationById(id);
+          if (explanation) {
+            explanationObjects[explanation.modelName] = explanation;
+          }
+        }
+        
+        res.status(201).json(formatResponse.success({ 
+          explanationIds: result.explanationIds,
+          explanations: explanationObjects 
+        }, 'Explanation saved successfully.'));
       } else {
         // Handle controlled failures, e.g., validation errors from the service
         res.status(400).json(formatResponse.error('SAVE_FAILED', result.message || 'Failed to save explanation due to invalid data.'));

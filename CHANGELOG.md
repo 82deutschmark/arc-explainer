@@ -1,6 +1,13 @@
 ## [2025-09-30]
 
 ### Fixed
+- **CRITICAL: Fixed ModelDebate challenge generation failure**
+  - Root cause: Backend `/api/puzzle/save-explained` endpoint was returning only `{ explanationIds: [123] }` instead of including full explanation data
+  - Frontend `ModelDebate.tsx` expected `savedData.explanations[modelKey]` structure to access the challenge response
+  - Updated `explanationController.create()` to fetch and return full explanation objects keyed by model name
+  - Now returns `{ explanationIds: [123], explanations: { 'model-name': {...} } }` with complete rebuttal data including `rebuttingExplanationId`
+  - Files: `server/controllers/explanationController.ts` (lines 96-111)
+  
 - Fixed emoji mode being enabled by default when "Send as emojis" toggle was checked in PuzzleExaminer
 - Emojis are OFF by default; enabled when 'Send as emojis' is ON or in Alien Communication mode
 - Prompt Preview now respects the toggle (sends emojiSetKey only when sendAsEmojis is true); analysis requests already did
