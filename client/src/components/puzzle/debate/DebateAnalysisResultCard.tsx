@@ -1,72 +1,25 @@
 /**
  * DebateAnalysisResultCard.tsx
  *
- * Author: Cascade using GPT-4.1
- * Date: 2025-09-29T17:15:00-04:00
- * PURPOSE: Ultra-compact scaled version of AnalysisResultCard for Model Debate views.
- * Uses CSS transforms to scale grids down to 20-25% (was 40%) with tighter negative margins (-75% vs -50%)
- * to prevent overlap. Reduced all spacing, padding, and font sizes for dense display.
- * SRP/DRY check: Pass - Reuses existing AnalysisResultCard, adds only scaling wrapper
- * shadcn/ui: Pass - Uses shadcn/ui components throughout via AnalysisResultCard
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-09-29T21:48:00-04:00
+ * PURPOSE: Simple pass-through to AnalysisResultCard for Model Debate views.
+ * NO MORE CSS TRANSFORM HACKS - let PuzzleGrid/GridCell handle sizing naturally.
+ * The proper components (PuzzleGrid, GridCell) already scale based on grid dimensions.
+ * 
+ * SRP/DRY check: Pass - Just delegates to AnalysisResultCard
+ * shadcn/ui: Pass - Uses shadcn/ui components via AnalysisResultCard
  */
 
 import React from 'react';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import type { AnalysisResultCardProps } from '@/types/puzzle';
 
-interface DebateAnalysisResultCardProps extends AnalysisResultCardProps {
-  /**
-   * Scale factor for the grids (0.3 = 30% of original size)
-   * Default: 0.4 (40% scale for readable but compact display)
-   */
-  gridScale?: number;
-}
-
 /**
- * Wrapper component that scales down AnalysisResultCard for compact debate view.
- * Uses CSS transform to prevent grid overlap on smaller screens.
+ * For debate views, just use the standard AnalysisResultCard.
+ * PuzzleGrid automatically scales based on grid dimensions (small/normal/large).
+ * No transform hacks needed - proper components handle it.
  */
-export const DebateAnalysisResultCard: React.FC<DebateAnalysisResultCardProps> = ({
-  gridScale = 0.25,
-  ...props
-}) => {
-  return (
-    <div 
-      className="debate-result-card"
-      style={{
-        // Scale the entire card's grids
-        // Use transform-origin center so scaling happens from the middle
-        '--grid-scale': gridScale.toString(),
-      } as React.CSSProperties}
-    >
-      <style>{`
-        .debate-result-card [class*="PuzzleGrid"],
-        .debate-result-card .inline-block {
-          transform: scale(var(--grid-scale));
-          transform-origin: center;
-          margin: calc(-75% * var(--grid-scale)) auto;
-        }
-        
-        /* Ensure the parent container doesn't overflow */
-        .debate-result-card .grid {
-          overflow: visible;
-        }
-        
-        /* Reduce all padding and spacing for ultra-compact display */
-        .debate-result-card [class*="space-y"] {
-          gap: 0.25rem;
-        }
-        
-        .debate-result-card .card {
-          padding: 0.25rem;
-        }
-        
-        /* Make text smaller */
-        .debate-result-card {
-          font-size: 0.75rem;
-        }
-      `}</style>
-      <AnalysisResultCard {...props} />
-    </div>
-  );
+export const DebateAnalysisResultCard: React.FC<AnalysisResultCardProps> = (props) => {
+  return <AnalysisResultCard {...props} />;
 };
