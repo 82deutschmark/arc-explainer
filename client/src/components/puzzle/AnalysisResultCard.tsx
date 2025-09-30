@@ -35,8 +35,8 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
   const [showDiff, setShowDiff] = useState(false);
-  const [showPrediction, setShowPrediction] = useState(eloMode); // Expanded by default in ELO mode
-  const [showMultiTest, setShowMultiTest] = useState(eloMode); // Expanded by default in ELO mode
+  const [showPrediction, setShowPrediction] = useState(true); // Always expanded by default
+  const [showMultiTest, setShowMultiTest] = useState(true); // Always expanded by default
 
   const { summary: feedbackSummary } = useFeedbackPreview(result.id > 0 ? result.id : undefined);
 
