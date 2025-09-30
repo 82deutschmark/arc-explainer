@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { MessageSquare, Filter } from 'lucide-react';
+import { MessageSquare, Filter, CheckCircle, XCircle } from 'lucide-react';
 
 // Reuse existing components
 import { AnalysisResultListCard } from '@/components/puzzle/AnalysisResultListCard';
@@ -103,14 +103,26 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
               onValueChange={(value) => onCorrectnessFilterChange(value as 'all' | 'correct' | 'incorrect' || 'all')}
               className="bg-white border border-gray-200 rounded-md"
             >
-              <ToggleGroupItem value="all" className="px-3 py-1 text-xs">
+              <ToggleGroupItem value="all" className="text-xs px-3 py-1">
                 All ({explanations.length})
               </ToggleGroupItem>
-              <ToggleGroupItem value="incorrect" className="px-3 py-1 text-xs">
-                Incorrect
+              <ToggleGroupItem value="correct" className="text-xs px-3 py-1 text-green-700 data-[state=on]:bg-green-100">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Correct ({explanations.filter(e => determineCorrectness({
+                  modelName: e.modelName,
+                  isPredictionCorrect: e.isPredictionCorrect,
+                  multiTestAllCorrect: e.multiTestAllCorrect,
+                  hasMultiplePredictions: e.hasMultiplePredictions
+                }).isCorrect).length})
               </ToggleGroupItem>
-              <ToggleGroupItem value="correct" className="px-3 py-1 text-xs">
-                Correct
+              <ToggleGroupItem value="incorrect" className="text-xs px-3 py-1 text-red-700 data-[state=on]:bg-red-100">
+                <XCircle className="h-3 w-3 mr-1" />
+                Incorrect ({explanations.filter(e => determineCorrectness({
+                  modelName: e.modelName,
+                  isPredictionCorrect: e.isPredictionCorrect,
+                  multiTestAllCorrect: e.multiTestAllCorrect,
+                  hasMultiplePredictions: e.hasMultiplePredictions
+                }).isIncorrect).length})
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
