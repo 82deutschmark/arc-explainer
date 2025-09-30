@@ -136,6 +136,8 @@ export interface ExplanationData {
   reasoningTokens?: number | null;
   totalTokens?: number | null;
   estimatedCost?: number | null;
+  // Rebuttal tracking
+  rebuttingExplanationId?: number | null; // Link to explanation this is rebutting (debate mode)
   // Optimistic UI fields (only present during pending analysis)
   isOptimistic?: boolean; // Flag to indicate this is an optimistic/pending result
   status?: 'analyzing' | 'saving' | 'completed' | 'error'; // Current status of the analysis
