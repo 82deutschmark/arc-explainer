@@ -55,11 +55,9 @@ export const RebuttalCard: React.FC<RebuttalCardProps> = ({
               Correct
             </Badge>
           )}
-          {!isExplicitlyCorrect && (
-            <Badge variant="outline" className="text-xs">
-              {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false
-                ? 'Incorrect'
-                : 'Unverified'}
+          {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false && (
+            <Badge variant="destructive" className="text-xs">
+              Incorrect
             </Badge>
           )}
           <span className="ml-auto text-[10px] text-gray-500 font-normal">
