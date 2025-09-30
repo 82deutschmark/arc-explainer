@@ -80,15 +80,15 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="flex gap-2 overflow-x-auto p-1">
+              <div className="flex gap-3 overflow-x-auto p-1">
                 {displayedExamples.map((example, index) => (
-                  <div key={index} className="flex items-center gap-1 flex-shrink-0">
+                  <div key={index} className="flex items-center gap-2 flex-shrink-0">
                     <div className="text-[9px] text-gray-500">{index + 1}.</div>
-                    <div className="w-16 h-16">
+                    <div className="w-16 h-16 border border-white/30 p-0.5 bg-gray-900/5">
                       <TinyGrid grid={example.input} />
                     </div>
                     <div className="text-[9px] text-gray-400">→</div>
-                    <div className="w-16 h-16">
+                    <div className="w-16 h-16 border border-white/30 p-0.5 bg-gray-900/5">
                       <TinyGrid grid={example.output} />
                     </div>
                   </div>
@@ -103,17 +103,17 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </Collapsible>
 
           {/* Test Input and Correct Output - ALWAYS VISIBLE (RIGHT SIDE) */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-4 flex-shrink-0">
             <div>
               <div className="text-[9px] text-gray-600 mb-1">Input</div>
-              <div className="w-32 h-32">
+              <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
                 <TinyGrid grid={testCase.input} />
               </div>
             </div>
             <div className="text-xs text-gray-400">→</div>
             <div>
               <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
-              <div className="w-32 h-32">
+              <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
                 <TinyGrid grid={testCase.output} />
               </div>
             </div>
