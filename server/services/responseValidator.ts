@@ -1,11 +1,27 @@
 /**
- * Response Validation Service for Solver Mode
- * Extracts predicted grids from AI responses and validates them against correct answers
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-09-30
+ * PURPOSE: Response validation service that extracts predicted grids from AI responses and validates
+ * them against correct answers. Handles both single-test and multi-test puzzle validation with accuracy
+ * scoring, grid extraction, and prediction correctness checking. Critical for debate system to properly
+ * validate rebuttal responses.
+ *
+ * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded from
+ * solver mode validation, causing all debate rebuttals to skip prediction extraction and be marked as
+ * 100% correct regardless of actual accuracy. Now uses centralized isSolverMode() function from
+ * systemPrompts.ts to ensure consistent validation across all solver-type prompts (solver, custom,
+ * debate, educationalApproach, gepa).
+ *
+ * SRP and DRY check: Pass - Single responsibility (response validation only), now properly uses
+ * centralized solver mode detection instead of duplicating logic. File is 561 lines due to complex
+ * grid extraction strategies (text parsing, JSON extraction, multi-format support) and detailed
+ * accuracy calculation logic. Could potentially be refactored into smaller modules in the future.
  */
 
 import { logger } from '../utils/logger.ts';
 import { extractPredictions } from './schemas/solver.ts';
 import { jsonParser } from '../utils/JsonParser.js';
+import { isSolverMode } from './prompts/systemPrompts.js';
 
 export interface ValidationResult {
   predictedGrid: number[][] | null;
@@ -410,9 +426,10 @@ export function validateSolverResponse(
 ): ValidationResult {
   // Validate solver mode responses AND custom prompts that may be attempting to solve
   // Custom prompts often ask AI to predict answers, so they should be validated too
-  const isSolverMode = promptId === "solver" || promptId === "custom";
-  
-  if (!isSolverMode) {
+  // FIXED: Use centralized isSolverMode function to include debate, educationalApproach, gepa
+  const isValidatorSolverMode = isSolverMode(promptId);
+
+  if (!isValidatorSolverMode) {
     return {
       predictedGrid: null,
       isPredictionCorrect: true,
@@ -470,8 +487,9 @@ export function validateSolverResponseMulti(
   console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse?.predictedOutput1:', response._rawResponse?.predictedOutput1);
   // Validate solver mode responses AND custom prompts that may be attempting to solve
   // Custom prompts often ask AI to predict answers, so they should be validated too
-  const isSolverMode = promptId === 'solver' || promptId === 'custom';
-  if (!isSolverMode) {
+  // FIXED: Use centralized isSolverMode function to include debate, educationalApproach, gepa
+  const isValidatorSolverMode = isSolverMode(promptId);
+  if (!isValidatorSolverMode) {
     // Non-solver mode: return empty multi-test structure
     return {
       hasMultiplePredictions: false,
