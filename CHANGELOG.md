@@ -2,9 +2,9 @@
 
 ### Fixed
 - Fixed emoji mode being enabled by default when "Send as emojis" toggle was checked in PuzzleExaminer
-- Emojis are now only used in Alien Communication mode as intended
-- The `sendAsEmojis` toggle and `emojiSetKey` parameters are still passed through for potential future use but don't automatically enable emoji mode
-- Updated `promptBuilder.ts` to use `useEmojis: isAlien` instead of `useEmojis: !!emojiSetKey || isAlien`
+- Emojis are OFF by default; enabled when 'Send as emojis' is ON or in Alien Communication mode
+- Prompt Preview now respects the toggle (sends emojiSetKey only when sendAsEmojis is true); analysis requests already did
+- Updated `promptBuilder.ts` to use `useEmojis: (!!emojiSetKey) || isAlien` so toggle or Alien mode enables emoji formatting
 
 ### September 29 2025
 
