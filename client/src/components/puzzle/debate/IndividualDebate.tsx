@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 
 // Reuse existing components
-import { DebateAnalysisResultCard } from '@/components/puzzle/debate/DebateAnalysisResultCard';
+import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 // Types
@@ -214,7 +214,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 
                     {/* AnalysisResultCard with proper PuzzleGrid/GridCell components */}
                     {/* eloMode=false to show Expected Output and diff comparison */}
-                    <DebateAnalysisResultCard
+                    <AnalysisResultCard
                       result={message.content}
                       modelKey={message.modelName}
                       model={models?.find(m => m.key === message.modelName)}
