@@ -155,7 +155,7 @@ Apply the discovered pattern to predict the output for the test case.`,
   debate: `DEBATE CHALLENGE INSTRUCTIONS:
 
 You will be shown:
-1. The original AI model's explanation (model name, pattern description, strategy, hints, confidence)
+1. The original AI model's explanation (pattern description, strategy, hints, confidence)
 2. Whether their prediction was correct or incorrect
 3. Optional human guidance on what to focus on in your challenge
 
