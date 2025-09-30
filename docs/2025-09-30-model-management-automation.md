@@ -160,12 +160,62 @@ Tested successfully:
 **Files Changed:** 8 files, +570 insertions, -39 deletions  
 **Branch:** enhancements (or current branch)
 
+## Model Management GUI (Added)
+
+### ✅ Web Interface Created
+
+**Route:** `/model-config` (unlinked admin route)
+
+**Features:**
+1. **Real-time Model List** - All 66+ models in searchable table
+2. **Statistics Dashboard**
+   - Total models, providers, reasoning/premium counts
+   - Speed distribution (fast/moderate/slow)
+   - Provider breakdown chart
+3. **Advanced Filtering**
+   - Text search (name, key, provider)
+   - Provider dropdown filter
+   - Premium/Free tier filter
+   - Speed category filter
+4. **Model Details Display**
+   - Context window and max output tokens
+   - Input/output pricing per million tokens
+   - Release dates
+   - Type badges (Premium, Reasoning, Temperature support)
+   - Speed indicators with color coding
+5. **Recent Models Timeline** - Shows 5 newest models by release date
+
+**Backend API:**
+- `GET /api/model-management/list` - Full model list
+- `GET /api/model-management/stats` - Statistics
+- `GET /api/model-management/search` - Filtered search
+- `POST /api/model-management/validate` - Config validation
+
+**Technology:**
+- React + TypeScript
+- TanStack Query for data fetching
+- shadcn/ui components (Table, Badge, Card, Select, Input)
+- Responsive design
+
+### ✅ Models Removed
+
+1. **Qwen3 30B A3B Instruct** (`qwen/qwen3-30b-a3b-instruct`)
+   - Removed due to low usage
+   - Superseded by newer Qwen models
+   
+2. **Qwen3 235B A22B Thinking** (`qwen/qwen3-235b-a22b-thinking`)
+   - Removed due to low usage
+   - Better alternatives available
+
+**Total Models:** 66 (down from 68)
+
 ## Next Steps
 
 1. Test new models with actual puzzle analysis
 2. Verify pricing accuracy with provider documentation
 3. Monitor performance/response times
-4. Consider removing deprecated models from earlier 2025
+4. Use GUI for weekly model configuration reviews
+5. Consider removing more deprecated models from earlier 2025
 
 ## Notes for Future AI Agents
 
