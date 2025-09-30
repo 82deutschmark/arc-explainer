@@ -11,7 +11,7 @@
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -93,6 +93,12 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   onGenerateChallenge
 }) => {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to newest message when debate updates
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [debateMessages.length]);
 
   // Fetch rebuttal chain if this explanation is part of a chain
   const { data: rebuttalChain, isLoading: chainLoading } = useQuery({
@@ -201,8 +207,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
             </CardHeader>
           </Card>
 
-          {/* Scrollable debate content */}
-          <div className="space-y-2 max-h-[800px] overflow-y-auto">
+          {/* Scrollable debate content - viewport-based height */}
+          <div className="space-y-2 h-[calc(100vh-280px)] overflow-y-auto">
             {debateMessages.map((message, index) => (
               message.messageType === 'original' ? (
                 <OriginalExplanationCard
@@ -223,6 +229,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 />
               )
             ))}
+            {/* Anchor for auto-scroll to bottom */}
+            <div ref={messagesEndRef} />
           </div>
         </div>
 

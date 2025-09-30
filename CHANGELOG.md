@@ -1,5 +1,24 @@
 ## [2025-09-30]
 
+### Added
+- **Model Management Script** (`scripts/manage-models.ts`)
+  - CLI tool for adding, removing, and listing AI models without manual edits to models.ts
+  - Commands: `npm run models list`, `npm run models remove <key>`
+  - Programmatic interface for adding models with validation
+  - Automatic model type detection based on provider
+  - Documentation in `docs/Model-Management-Guide.md`
+  - Reduces weekly maintenance burden for model configuration updates
+
+- **New AI Models (September 2025)**
+  - **GLM 4.6** (z-ai/glm-4.6) via OpenRouter
+    - Context: 200K tokens, Max Output: 128K tokens
+    - Pricing: $0.60 input / $2.20 output per million tokens
+    - Speed: Moderate (30-60 sec), Reasoning: Yes
+  - **Gemini 2.5 Flash Preview** (google/gemini-2.5-flash-preview-09-2025) via OpenRouter
+    - Context: 1.05M tokens, Max Output: 65.5K tokens
+    - Pricing: $0.30 input / $2.50 output per million tokens
+    - Speed: Fast (<30 sec), Reasoning: Yes
+
 ### Fixed
 - **CRITICAL: Fixed debate validation bug causing all rebuttals to skip validation and show 0% accuracy**
   - Root cause: DRY principle violation - solver mode detection logic duplicated in 3 places with inconsistent checks

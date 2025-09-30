@@ -755,4 +755,38 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-08"
   },
 
+  {
+    key: 'google/gemini-2.5-flash-preview-09-2025',
+    name: 'Gemini 2.5 Flash Preview (Sep 2025)',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.30', output: '$2.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-2.5-flash-preview-09-2025',
+    modelType: 'openrouter',
+    contextWindow: 1050000,
+    maxOutputTokens: 65500,
+    releaseDate: "2025-09"
+  },
+
+  {
+    key: 'z-ai/glm-4.6',
+    name: 'GLM 4.6',
+    color: 'bg-sky-500',
+    premium: false,
+    cost: { input: '$0.60', output: '$2.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'z-ai/glm-4.6',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-09"
+  },
+
 ];
