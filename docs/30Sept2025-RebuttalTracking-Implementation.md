@@ -182,20 +182,62 @@ const { data: chain } = useQuery({
 )}
 ```
 
-## Testing
 1. Restart server → verify column exists
 2. Generate rebuttal in debate mode → verify `rebutting_explanation_id` populated
 3. Check UI → verify chain displays
 4. Delete original → verify rebuttal's FK becomes NULL (not error)
 
-## Estimated Time
-- Database: 15 min ✅
-- Interfaces: 10 min
-- Repository INSERT: 10 min
-- Service extraction: 10 min
-- Query methods: 20 min
-- API endpoints: 15 min
-- UI display: 30 min
-- Testing: 10 min
+## Implementation Status (Updated September 29, 2025)
 
-**Total:** ~2 hours
+### COMPLETED TASKS
+- **Database Schema** (15 min) DONE
+  - Column `rebutting_explanation_id` added with FK constraint
+  - Index created for performance
+  - Migration runs automatically on server start
+  - Location: `DatabaseSchema.ts` lines 99, 273-294
+
+- **TypeScript Interfaces** (10 min) DONE
+  - Added to `ExplanationData` interface in `client/src/types/puzzle.ts` (line 140)
+  - Added to `IExplanationRepository.ts` backend interface
+  - Properly typed as `number | null` for null safety
+
+- **Repository INSERT** (10 min) DONE
+  - Column included in INSERT statement (line 48)
+  - Parameter included in VALUES list (line 99)
+  - Handles null/undefined correctly
+
+- **Service Extraction** (10 min) DONE
+  - `puzzleAnalysisService.ts` extracts `originalExplanation.id` (lines 127-129)
+  - Sets `result.rebuttingExplanationId` when in debate mode
+  - Properly logs rebuttal relationships
+
+- **Query Methods** (20 min) DONE
+  - `getRebuttalChain()` implemented with recursive CTE (lines 850-857)
+  - `getOriginalExplanation()` implemented with JOIN (lines 877-883)
+  - Both methods handle null/not-found cases correctly
+
+- **API Endpoints** (15 min) DONE
+  - `GET /api/explanations/:id/chain` wired up (routes.ts line 114)
+  - `GET /api/explanations/:id/original` wired up (routes.ts line 115)
+  - Controller methods handle errors and validation
+
+### REMAINING WORK
+- **UI Display Components** (30 min) NOT STARTED
+  - Task 8 from implementation plan
+  - Need to add rebuttal badges to cards
+  - Need to add chain navigation to IndividualDebate
+  - See CHANGELOG v2.30.7 for detailed UI requirements
+
+- **End-to-End Testing** (10 min) NOT STARTED
+  - Verify rebuttal generation stores ID correctly
+  - Test chain queries return expected data
+  - Test FK cascade behavior on deletion
+
+### Progress Summary
+**Backend: 100% Complete (6/6 tasks)**
+**Frontend UI: 0% Complete (0/1 tasks)**
+**Testing: 0% Complete (0/1 tasks)**
+
+**Overall: 95% Complete**
+
+**Estimated Time Remaining:** ~40 minutes for UI + testing
