@@ -1,5 +1,8 @@
 ### September 29 2025
 
+## v2.30.7 - ?????
+
+
 ## v2.30.6 - TypeScript Type Consistency Fix
 
 ### 🐛 **Critical Bug Fix**
@@ -24,9 +27,9 @@
 ### ✨ **New Features**
 - **Custom Challenge Prompts**: Users can now provide optional guidance when challenging explanations
   - Text input for challenge focus (e.g., "Focus on edge cases", "Explain color transformations")
-  - Challenge text forwarded to AI with 🎯 marker in prompt
+  - Challenge text forwarded to AI with 🎯 marker in prompt (THIS WAS WRONG AND GOT STRIPPED LATER!)
   - Original explanation context included (pattern, strategy, hints, confidence)
-  - Incorrect predictions flagged with ❌ marker for challenger awareness
+  - Incorrect predictions flagged with ❌ marker for challenger awareness (NO IDEA WHO THIS IS FOR?  THE CHALLENGER IS A LLM WHO PRESUMABLY DOESN'T CARE?)
 - **Prompt Preview for Debates**: Preview exact debate prompts before generating
   - Shows full system prompt with debate instructions
   - Shows user prompt with puzzle data, original explanation, and custom challenge
