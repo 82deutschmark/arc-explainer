@@ -31,6 +31,8 @@ interface UseAnalysisResultsProps {
   omitAnswer?: boolean;
   // systemPromptMode removed - now using modular architecture (hardcoded to 'ARC')
   retryMode?: boolean; // Enhanced prompting for retry analysis
+  originalExplanation?: any; // For debate mode
+  customChallenge?: string; // For debate mode
 }
 
 // Removed PendingAnalysis type - no longer using optimistic UI
@@ -41,6 +43,8 @@ export function useAnalysisResults({
   emojiSetKey,
   omitAnswer,
   retryMode,
+  originalExplanation,
+  customChallenge,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
@@ -92,6 +96,9 @@ export function useAnalysisResults({
           ...(emojiSetKey ? { emojiSetKey } : {}),
           ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
           ...(retryMode ? { retryMode } : {}),
+          // Debate mode context
+          ...(originalExplanation ? { originalExplanation } : {}),
+          ...(customChallenge ? { customChallenge } : {}),
           systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
           // GPT-5 reasoning parameters
           ...(effort ? { reasoningEffort: effort } : {}),
@@ -303,6 +310,7 @@ export function useAnalysisResults({
     customPrompt,
     setCustomPrompt,
     analyzeWithModel,
+    analyzeAndSaveMutation, // Expose mutation for advanced use cases (e.g., debate page needs mutateAsync)
     currentModelKey,
     processingModels,
     isAnalyzing: analyzeAndSaveMutation.isPending,

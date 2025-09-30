@@ -42,12 +42,12 @@ export function PuzzleGrid({
   }
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn("flex flex-col", className)}>
       {title && (
-        <h3 className="text-lg font-semibold text-center">{title}</h3>
+        <h3 className="text-xs font-semibold text-center mb-1">{title}</h3>
       )}
       <div 
-        className="inline-block border-2 border-gray-800 bg-white"
+        className="inline-block border border-gray-800 bg-white"
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${grid[0].length}, 1fr)`,

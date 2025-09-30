@@ -2,7 +2,7 @@
 
 This document describes the public APIs that external applications rely on. These endpoints provide access to puzzle data, AI model analysis, user feedback, and performance metrics.
 
-**🔄 Recent Changes (January 2025):** All artificial API result limits have been removed or significantly increased to support external applications.
+**🔄 Recent Changes (Sept 2025):** All artificial API result limits have been removed or significantly increased to support external applications.
 
 ## Core Data Endpoints SUPER IMPORTANT!!
 
@@ -72,11 +72,28 @@ DEPRECATED BATCH ENDPOINTS (never worked correctly):
 
 ### Explanation Management   SUPER IMPORTANT!!
 - `GET /api/puzzle/:puzzleId/explanations` - Get all explanations for a puzzle
+  - **Query params**: `correctness` (optional) - Filter by 'correct', 'incorrect', or 'all'
   - **Limits**: No limits - returns all explanations
+  - **Use case**: ModelDebate page uses `?correctness=incorrect` to show only wrong answers for debate
 - `GET /api/puzzle/:puzzleId/explanation` - Get single explanation for a puzzle
   - **Limits**: Single result - no limits
 - `POST /api/puzzle/save-explained/:puzzleId` - Save AI-generated explanation
   - **Limits**: No limits
+
+### Debate & Rebuttal Tracking  ✨ NEW! (September 2025)
+- `GET /api/explanations/:id/chain` - Get full rebuttal chain for an explanation
+  - **Params**: `id` (number) - Explanation ID to get debate chain for
+  - **Response**: Array of `ExplanationData` objects in chronological order (original → rebuttals)
+  - **Use case**: Display complete debate thread showing which AIs challenged which
+  - **Database**: Uses recursive CTE query to walk rebuttal relationships
+  - **Limits**: No limits - returns entire chain regardless of depth
+  
+- `GET /api/explanations/:id/original` - Get parent explanation that a rebuttal is challenging
+  - **Params**: `id` (number) - Rebuttal explanation ID
+  - **Response**: Single `ExplanationData` object or 404 if not a rebuttal
+  - **Use case**: Navigate from challenge back to original explanation
+  - **Database**: Joins on `rebutting_explanation_id` foreign key
+  - **Returns 404**: If explanation is not a rebuttal or parent doesn't exist
 
 ### User Feedback  VERY IMPORTANT!!
 - `POST /api/feedback` - Submit user feedback on explanations

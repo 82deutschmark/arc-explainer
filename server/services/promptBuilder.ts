@@ -40,6 +40,8 @@ export interface PromptOptions {
   retryMode?: boolean; // Enhanced prompting for retry analysis
   previousAnalysis?: any; // Previous failed analysis data
   badFeedback?: any[]; // Bad feedback entries for context
+  originalExplanation?: any; // For debate mode: the original explanation to challenge
+  customChallenge?: string; // For debate mode: human guidance on what to focus on
 }
 
 /**
@@ -72,7 +74,9 @@ export function buildAnalysisPrompt(
     useStructuredOutput = true,
     retryMode = false,
     previousAnalysis,
-    badFeedback
+    badFeedback,
+    originalExplanation,
+    customChallenge
   } = options;
 
   // Determine prompt characteristics
@@ -174,7 +178,7 @@ export function buildAnalysisPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey,
     omitAnswer,
-    useEmojis: isAlien,
+    useEmojis: (!!emojiSetKey) || isAlien, // Use emojis if explicit toggle selected (emojiSetKey) OR alien mode
     isSolverMode: isSolver,
     isMultiTest: task.test.length > 1
   };
@@ -189,7 +193,7 @@ export function buildAnalysisPrompt(
     // New ARC mode: clean user prompt with just data
     // If custom prompt is being used as system prompt, don't include it in user prompt
     const customPromptForUser = (isCustom && customPrompt && customPrompt.trim()) ? undefined : customPrompt;
-    userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPromptForUser);
+    userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPromptForUser, originalExplanation, customChallenge);
   }
 
   console.log(`[PromptBuilder] Generated system prompt: ${systemPrompt.length} chars`);
@@ -225,7 +229,7 @@ function buildLegacyPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey: options.emojiSetKey,
     omitAnswer: options.omitAnswer,
-    useEmojis: selectedTemplate?.emojiMapIncluded || false,
+    useEmojis: (!!options.emojiSetKey) || (selectedTemplate?.emojiMapIncluded || false), // Emoji when toggle set OR template requires
     isSolverMode: isSolverMode(promptId),
     isMultiTest: task.test.length > 1
   };

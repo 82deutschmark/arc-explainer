@@ -390,7 +390,7 @@ export default function AnalyticsOverview() {
                 </div>
 
                 {/* Detailed Puzzle Lists */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-green-700 flex items-center gap-2">
@@ -470,7 +470,7 @@ export default function AnalyticsOverview() {
         </Card>
 
         {/* Summary Metrics */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {summaryCards.map(card => (
             <Card key={card.key}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -562,7 +562,7 @@ export default function AnalyticsOverview() {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {/* Fix: accuracyStats comes sorted ASC (worst first), so reverse to show best first */}
                 {accuracyStats.modelAccuracyRankings
                   .slice()

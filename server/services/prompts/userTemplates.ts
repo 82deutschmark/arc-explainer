@@ -172,6 +172,75 @@ export function buildCustomUserPromptSimple(
 }
 
 /**
+ * Generate debate mode user prompt with original explanation context
+ */
+export function buildDebateUserPrompt(
+  task: ARCTask,
+  options: UserPromptOptions = {},
+  originalExplanation?: any,
+  customChallenge?: string
+): string {
+  let prompt = '';
+
+  // DEBATE CONTEXT COMES FIRST - AI needs to know its role before seeing puzzle!
+  if (originalExplanation) {
+    prompt += `PREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
+    prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
+    prompt += `Solving Strategy: ${originalExplanation.solvingStrategy}\n`;
+
+    if (originalExplanation.hints && originalExplanation.hints.length > 0) {
+      prompt += `Hints: ${originalExplanation.hints.join(', ')}\n`;
+    }
+
+    if (customChallenge && customChallenge.trim()) {
+      prompt += `\nHUMAN GUIDANCE FOR YOUR ANALYSIS: ${customChallenge.trim()}\n`;
+    }
+
+    // Add separator before puzzle data
+    prompt += `\n---\n\n`;
+  }
+
+  // Add the puzzle data (training examples)
+  prompt += buildSolverUserPrompt(task, options);
+
+  // PREDICTED OUTPUT COMES AFTER TRAINING EXAMPLES
+  // This lets the AI see the pattern first, THEN critique the wrong prediction
+  if (originalExplanation) {
+    const hasMultiTest = originalExplanation.hasMultiplePredictions === true;
+
+    prompt += `\n\nPREVIOUS AI PREDICTED OUTPUT (INCORRECT):\n`;
+
+    if (hasMultiTest) {
+      // Multi-test puzzle - use multiple_predicted_outputs or multi_test_prediction_grids
+      const predictions = originalExplanation.multiplePredictedOutputs || originalExplanation.multiTestPredictionGrids;
+
+      if (predictions && Array.isArray(predictions) && predictions.length > 0) {
+        predictions.forEach((grid: any, index: number) => {
+          if (grid && Array.isArray(grid) && grid.length > 0) {
+            prompt += `Test ${index + 1} Predicted Output: ${JSON.stringify(grid)}\n`;
+          } else {
+            prompt += `Test ${index + 1} Predicted Output: No valid prediction\n`;
+          }
+        });
+      } else {
+        prompt += `No valid predictions were provided\n`;
+      }
+    } else {
+      // Single-test puzzle - use predicted_output_grid
+      const prediction = originalExplanation.predictedOutputGrid;
+
+      if (prediction && Array.isArray(prediction) && prediction.length > 0) {
+        prompt += `${JSON.stringify(prediction)}\n`;
+      } else {
+        prompt += `No valid prediction was provided\n`;
+      }
+    }
+  }
+
+  return prompt;
+}
+
+/**
  * Template mapping for different prompt types
  */
 export const USER_TEMPLATE_BUILDERS = {
@@ -179,7 +248,8 @@ export const USER_TEMPLATE_BUILDERS = {
   standardExplanation: buildExplanationUserPrompt,
   educationalApproach: buildExplanationUserPrompt,
   alienCommunication: buildAlienUserPrompt,
-  gepa: buildSolverUserPrompt
+  gepa: buildSolverUserPrompt,
+  debate: buildDebateUserPrompt
 } as const;
 
 /**
@@ -199,13 +269,21 @@ export function buildUserPromptForTemplate(
   task: ARCTask,
   promptId: string,
   options: UserPromptOptions = {},
-  customText?: string
+  customText?: string,
+  originalExplanation?: any,
+  customChallenge?: string
 ): string {
-  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
-  
+  // Handle custom prompt mode
   if (promptId === 'custom' && customText) {
     return buildCustomUserPrompt(task, customText, options);
   }
-  
+
+  // Handle debate mode with explanation context
+  if (promptId === 'debate') {
+    return buildDebateUserPrompt(task, options, originalExplanation, customChallenge);
+  }
+
+  // Standard template builders
+  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
   return builderFn(task, options);
 }
