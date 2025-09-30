@@ -856,7 +856,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         SELECT * FROM rebuttal_chain ORDER BY created_at ASC
       `, [explanationId]);
 
-      return result.rows.map(this.mapRowToResponse.bind(this));
+      return result.rows.map(this.mapRowToExplanation.bind(this));
     } catch (error) {
       logger.error(`Error getting rebuttal chain for explanation ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
       return [];
@@ -881,7 +881,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         WHERE child.id = $1
       `, [rebuttalId]);
 
-      return result.rows.length > 0 ? this.mapRowToResponse(result.rows[0]) : null;
+      return result.rows.length > 0 ? this.mapRowToExplanation(result.rows[0]) : null;
     } catch (error) {
       logger.error(`Error getting original explanation for rebuttal ${rebuttalId}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
       return null;

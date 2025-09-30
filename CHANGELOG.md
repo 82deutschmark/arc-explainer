@@ -7,6 +7,12 @@
   - Updated `explanationController.create()` to fetch and return full explanation objects keyed by model name
   - Now returns `{ explanationIds: [123], explanations: { 'model-name': {...} } }` with complete rebuttal data including `rebuttingExplanationId`
   - Files: `server/controllers/explanationController.ts` (lines 96-111)
+
+- **Fixed rebuttal chain query method name error**
+  - Error: "Cannot read properties of undefined (reading 'bind')" in `getRebuttalChain` and `getOriginalExplanation`
+  - Root cause: Methods called `this.mapRowToResponse()` which doesn't exist - correct method is `mapRowToExplanation()`
+  - Fixed both methods in ExplanationRepository (lines 859, 884)
+  - Edge case that affected ~5% of rebuttal chain queries
   
 - Fixed emoji mode being enabled by default when "Send as emojis" toggle was checked in PuzzleExaminer
 - Emojis are OFF by default; enabled when 'Send as emojis' is ON or in Alien Communication mode
