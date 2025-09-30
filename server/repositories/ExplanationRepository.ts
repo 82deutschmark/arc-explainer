@@ -44,9 +44,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           is_prediction_correct, prediction_accuracy_score,
           multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions,
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
-          provider_response_id, provider_raw_response, multi_test_prediction_grids
+          provider_response_id, provider_raw_response, multi_test_prediction_grids,
+          rebutting_explanation_id
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -93,7 +94,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         // CRITICAL: Raw API response fields for debugging expensive failures
         data.providerResponseId || null,
         this.safeJsonStringify(data.providerRawResponse),
-        this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || [])
+        this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || []),
+        // Rebuttal tracking
+        data.rebuttingExplanationId || null
       ], client);
 
       if (result.rows.length === 0) {
@@ -826,6 +829,62 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     } catch (error) {
       logger.error(`Error getting worst-performing puzzles: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
       return [];
+    }
+  }
+
+  /**
+   * Get the full rebuttal chain for an explanation (original + all rebuttals recursively)
+   * Uses recursive CTE to traverse the rebuttal tree
+   */
+  async getRebuttalChain(explanationId: number): Promise<ExplanationResponse[]> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot get rebuttal chain', 'explanation-repository');
+      return [];
+    }
+
+    try {
+      const result = await this.query(`
+        WITH RECURSIVE rebuttal_chain AS (
+          -- Base case: start with requested explanation
+          SELECT * FROM explanations WHERE id = $1
+          UNION ALL
+          -- Recursive case: get all rebuttals (children)
+          SELECT e.*
+          FROM explanations e
+          INNER JOIN rebuttal_chain rc ON e.rebutting_explanation_id = rc.id
+        )
+        SELECT * FROM rebuttal_chain ORDER BY created_at ASC
+      `, [explanationId]);
+
+      return result.rows.map(this.mapRowToResponse.bind(this));
+    } catch (error) {
+      logger.error(`Error getting rebuttal chain for explanation ${explanationId}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return [];
+    }
+  }
+
+  /**
+   * Get the original explanation that a rebuttal is challenging
+   * Returns null if this explanation is not a rebuttal or original not found
+   */
+  async getOriginalExplanation(rebuttalId: number): Promise<ExplanationResponse | null> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot get original explanation', 'explanation-repository');
+      return null;
+    }
+
+    try {
+      const result = await this.query(`
+        SELECT parent.*
+        FROM explanations child
+        INNER JOIN explanations parent ON child.rebutting_explanation_id = parent.id
+        WHERE child.id = $1
+      `, [rebuttalId]);
+
+      return result.rows.length > 0 ? this.mapRowToResponse(result.rows[0]) : null;
+    } catch (error) {
+      logger.error(`Error getting original explanation for rebuttal ${rebuttalId}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return null;
     }
   }
 
