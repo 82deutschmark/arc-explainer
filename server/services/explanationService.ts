@@ -76,6 +76,7 @@ function transformRawExplanation(sourceData: any, modelKey: string) {
     userPromptUsed: analysisData.userPromptUsed ?? sourceData.userPromptUsed ?? null,
     promptTemplateId: analysisData.promptTemplateId ?? sourceData.promptTemplateId ?? null,
     customPromptText: analysisData.customPromptText ?? sourceData.customPromptText ?? null,
+    rebuttingExplanationId: analysisData.rebuttingExplanationId ?? sourceData.rebuttingExplanationId ?? null,
   };
 }
 
