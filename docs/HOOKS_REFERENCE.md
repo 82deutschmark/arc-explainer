@@ -260,7 +260,7 @@ const AnalysisResult = ({ analysisId }: { analysisId: string }) => {
 ```
 
 ### useAnalysisResults
-Manages multiple analysis results with filtering and pagination.
+Manages multiple analysis results with filtering and pagination. Supports debate mode for AI-vs-AI challenges.
 
 ```typescript
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
@@ -271,22 +271,39 @@ const AnalysisHistory = () => {
     totalCount,      // Total number of results
     isLoading,
     error,
-    
+
     // Pagination
     page,
     setPage,
     pageSize,
     setPageSize,
-    
+
     // Filtering
     filters,
     setFilters,
-    
+
     // Operations
     bulkDelete,
-    bulkExport
+    bulkExport,
+
+    // Debate Mode (v2.30.0+)
+    analyzeAndSaveMutation  // Exposed mutation for debate challenges with async/await
   } = useAnalysisResults();
-  
+
+  // Example: Generate debate challenge
+  const handleDebateChallenge = async () => {
+    const result = await analyzeAndSaveMutation.mutateAsync({
+      taskId: 'puzzle-123',
+      modelKey: 'claude-3.5-sonnet',
+      options: {
+        originalExplanation: { /* parent explanation */ },
+        customChallenge: 'Focus on edge cases',
+        promptId: 'debate'
+      }
+    });
+    console.log('Challenge generated:', result);
+  };
+
   return <div>/* Render results table */</div>;
 };
 ```
@@ -338,18 +355,68 @@ return <DataComponent data={data} />;
 - **1-minute cache**: Real-time analysis status
 - **Infinite cache**: Static puzzle data (invalidated on updates)
 
+### useDebateState ✨ NEW! (v2.30.0+)
+Manages debate state for AI-vs-AI challenge mode. Internal hook used by ModelDebate components.
+
+```typescript
+import { useDebateState } from '@/hooks/useDebateState';
+
+const DebateInterface = () => {
+  const {
+    messages,              // Debate message history
+    addChallengeMessage,   // Add new challenge to debate
+    clearMessages,         // Clear debate history
+    isDebating            // Debate in progress
+  } = useDebateState();
+
+  const handleGenerateChallenge = (explanation) => {
+    addChallengeMessage({
+      modelName: 'claude-3.5-sonnet',
+      explanation: explanation,
+      timestamp: new Date()
+    });
+  };
+
+  return <div>/* Render debate interface */</div>;
+};
+```
+
+### useChallengeGeneration ✨ NEW! (v2.30.0+)
+Generates debate challenge prompts with original explanation context. Internal hook used by debate components.
+
+```typescript
+import { useChallengeGeneration } from '@/hooks/useChallengeGeneration';
+
+const ChallengeGenerator = ({ originalExplanation }) => {
+  const {
+    generateChallengePrompt,  // Generate prompt with original context
+    previewPrompt            // Preview prompt before sending
+  } = useChallengeGeneration();
+
+  const prompt = generateChallengePrompt({
+    original: originalExplanation,
+    customChallenge: 'Focus on edge cases',
+    taskData: puzzleData
+  });
+
+  return <div>/* Render challenge interface */</div>;
+};
+```
+
 ### Query Keys
 Hooks use structured query keys for cache management:
 
 ```typescript
 // Examples of query key patterns
 ['accuracy-leaderboard']
-['trustworthiness-leaderboard'] 
+['trustworthiness-leaderboard']
 ['feedback-leaderboard']
 ['puzzle', taskId]
 ['explanation', puzzleId]
 ['models']
 ['analysis-result', analysisId]
+['rebuttal-chain', explanationId]  // Debate chain query (v2.30.0+)
+['original-explanation', rebuttalId]  // Parent explanation query (v2.30.0+)
 ```
 
 ## Integration Notes

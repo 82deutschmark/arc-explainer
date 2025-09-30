@@ -22,10 +22,11 @@ This document describes the public APIs that external applications rely on. Thes
   - **Limits**: Single puzzle fetch - no limits
 
 - `POST /api/puzzle/analyze/:taskId/:model` - Analyze puzzle with specific AI model
-  - **Params**: `taskId` (string), `model` (string) - Model name  
-  - **Body**: Analysis configuration options
+  - **Params**: `taskId` (string), `model` (string) - Model name
+  - **Body**: Analysis configuration options (see Debate Mode below for debate-specific options)
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
+  - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)
@@ -81,13 +82,49 @@ DEPRECATED BATCH ENDPOINTS (never worked correctly):
   - **Limits**: No limits
 
 ### Debate & Rebuttal Tracking  ✨ NEW! (September 2025)
+
+#### Generate Debate Rebuttal
+- `POST /api/puzzle/analyze/:taskId/:model` - Generate AI challenge to existing explanation
+  - **Debate Mode Body**:
+    ```json
+    {
+      "originalExplanation": {
+        "id": 123,
+        "modelName": "gpt-4o",
+        "patternDescription": "...",
+        "solvingStrategy": "...",
+        "hints": ["..."],
+        "confidence": 85,
+        "isPredictionCorrect": false
+      },
+      "customChallenge": "Focus on edge cases in corners",
+      "temperature": 0.2,
+      "promptId": "debate"
+    }
+    ```
+  - **Response**: New explanation with `rebuttingExplanationId` set to original explanation's ID
+  - **Use case**: AI-vs-AI debate where one model critiques another's reasoning
+  - **Database**: Stores relationship in `rebutting_explanation_id` column
+
+#### Query Debate Chains
 - `GET /api/explanations/:id/chain` - Get full rebuttal chain for an explanation
   - **Params**: `id` (number) - Explanation ID to get debate chain for
   - **Response**: Array of `ExplanationData` objects in chronological order (original → rebuttals)
   - **Use case**: Display complete debate thread showing which AIs challenged which
   - **Database**: Uses recursive CTE query to walk rebuttal relationships
   - **Limits**: No limits - returns entire chain regardless of depth
-  
+  - **Example Response**:
+    ```json
+    {
+      "success": true,
+      "data": [
+        { "id": 100, "modelName": "gpt-4o", "rebuttingExplanationId": null },
+        { "id": 101, "modelName": "claude-3.5-sonnet", "rebuttingExplanationId": 100 },
+        { "id": 102, "modelName": "gemini-2.5-pro", "rebuttingExplanationId": 101 }
+      ]
+    }
+    ```
+
 - `GET /api/explanations/:id/original` - Get parent explanation that a rebuttal is challenging
   - **Params**: `id` (number) - Rebuttal explanation ID
   - **Response**: Single `ExplanationData` object or 404 if not a rebuttal
