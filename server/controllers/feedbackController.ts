@@ -234,8 +234,36 @@ export const feedbackController = {
   },
 
   /**
+   * Get debate accuracy statistics - ONLY for debate rebuttals/challenges
+   *
+   * This endpoint returns accuracy stats specifically for debate rebuttals,
+   * excluding original solver attempts. Use this to understand which models
+   * are good at challenging incorrect explanations.
+   *
+   * Comparison with getAccuracyStats():
+   * - getAccuracyStats() → Pure solver attempts (rebutting_explanation_id IS NULL)
+   * - getDebateAccuracyStats() → Debate challenges only (rebutting_explanation_id IS NOT NULL)
+   *
+   * @param req - Express request object
+   * @param res - Express response object
+   */
+  async getDebateAccuracyStats(req: Request, res: Response) {
+    try {
+      // Get debate accuracy stats (best performers first - sorted DESC)
+      const stats = await repositoryService.accuracy.getDebateAccuracyStats();
+      res.json(formatResponse.success(stats));
+    } catch (error) {
+      console.error('Error getting debate accuracy stats:', error);
+      res.status(500).json(formatResponse.error(
+        'Failed to get debate accuracy stats',
+        error instanceof Error ? error.message : 'Unknown error'
+      ));
+    }
+  },
+
+  /**
    * Health check endpoint for feedback system
-   * 
+   *
    * @param req - Express request object
    * @param res - Express response object
    */
