@@ -2,7 +2,7 @@
 
 This document describes the public APIs that external applications rely on. These endpoints provide access to puzzle data, AI model analysis, user feedback, and performance metrics.
 
-**🔄 Recent Changes (January 2025):** All artificial API result limits have been removed or significantly increased to support external applications.
+**🔄 Recent Changes (Sept 2025):** All artificial API result limits have been removed or significantly increased to support external applications.
 
 ## Core Data Endpoints SUPER IMPORTANT!!
 
