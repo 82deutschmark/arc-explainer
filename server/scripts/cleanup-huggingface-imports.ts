@@ -267,6 +267,7 @@ function parseArgs(): CleanupConfig {
       config.verbose = true;
     } else if (arg === '--yes' || arg === '-y') {
       config.skipConfirmation = true;
+      config.dryRun = false; // --yes implies --live
     }
   }
   
