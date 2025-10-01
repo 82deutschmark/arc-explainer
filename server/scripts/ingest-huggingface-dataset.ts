@@ -172,9 +172,9 @@ function calculateProcessingTime(startTimestamp: string, endTimestamp: string): 
 }
 
 /**
- * Extract reasoning text from assistant's message
+ * Extract pattern description (assistant's content) from choices
  */
-function extractReasoning(choices: any[]): string | null {
+function extractPatternDescription(choices: any[]): string | null {
   const assistantMessage = choices.find((c: any) => c.message.role === 'assistant');
   return assistantMessage?.message.content || null;
 }
@@ -199,10 +199,11 @@ async function validateAndEnrichAggregatedAttempt(
 ): Promise<any> {
   // Use first prediction's metadata as representative
   const metadata = predictions[0].metadata;
-  const baseModel = metadata.model;
+  // Use dataset name as base model (includes variants like -thinking-32k)
+  const baseModel = config.datasetName;
   
   // Extract all prediction grids in order of pair_index
-  const sortedPredictions = [...predictions].sort((a, b) => 
+  const sortedPredictions = [...predictions].sort((a, b) =>
     a.metadata.pair_index - b.metadata.pair_index
   );
   const predictedGrids = sortedPredictions.map(p => p.answer);
@@ -244,23 +245,26 @@ async function validateAndEnrichAggregatedAttempt(
       'external-huggingface',
       undefined
     );
-    
+
     if (config.verbose) {
       console.log(`   📊 Single-test: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
       console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
     }
   }
   
-  // Extract reasoning and prompts
-  const reasoningText = extractReasoning(metadata.choices);
+  // Extract content and reasoning from HF metadata
+  const patternDescription = extractPatternDescription(metadata.choices);
+  const reasoningSummary = metadata.reasoning_summary || null;
   const userPrompt = extractUserPrompt(metadata.choices);
   
   // Aggregate token usage (sum across all test cases for this attempt)
   const totalInputTokens = predictions.reduce((sum, p) => sum + (p.metadata.usage.prompt_tokens || 0), 0);
   const totalOutputTokens = predictions.reduce((sum, p) => sum + (p.metadata.usage.completion_tokens || 0), 0);
-  const totalReasoningTokens = predictions.reduce((sum, p) => 
+  const totalReasoningTokens = predictions.reduce((sum, p) =>
     sum + (p.metadata.usage.completion_tokens_details?.reasoning_tokens || 0), 0);
-  const totalCost = predictions.reduce((sum, p) => sum + (p.metadata.cost.total_cost || 0), 0);
+
+  // Aggregate cost (map HF total_cost to our estimated_cost)
+  const estimatedCost = predictions.reduce((sum, p) => sum + (p.metadata.cost.total_cost || 0), 0);
   
   // Aggregate processing time
   const totalProcessingTime = predictions.reduce((sum, p) => 
@@ -270,16 +274,16 @@ async function validateAndEnrichAggregatedAttempt(
   const enrichedData: any = {
     puzzleId: metadata.task_id,
     modelName: `${baseModel}-attempt${attemptNumber}`,
-    
+
     // Single-test fields (used when !isMultiTest)
-    predictedOutputGrid: isMultiTest ? null : validationResult.predictedGrid,
+    predictedOutputGrid: isMultiTest ? null : predictedGrids[0],  // STORE ACTUAL HF PREDICTION
     isPredictionCorrect: isMultiTest ? null : validationResult.isPredictionCorrect,
     predictionAccuracyScore: isMultiTest ? null : validationResult.predictionAccuracyScore,
-    
+
     // Multi-test fields (used when isMultiTest)
     hasMultiplePredictions: isMultiTest,
-    multiplePredictedOutputs: isMultiTest ? validationResult.multiplePredictedOutputs : null,
-    multiTestPredictionGrids: isMultiTest ? validationResult.multiTestPredictionGrids : null,
+    multiplePredictedOutputs: isMultiTest ? predictedGrids : null,  // STORE ACTUAL HF PREDICTIONS
+    multiTestPredictionGrids: isMultiTest ? predictedGrids : null,  // STORE ACTUAL HF PREDICTIONS
     multiTestResults: isMultiTest ? validationResult.multiTestResults : null,
     multiTestAllCorrect: isMultiTest ? validationResult.multiTestAllCorrect : null,
     multiTestAverageAccuracy: isMultiTest ? validationResult.multiTestAverageAccuracy : null,
@@ -290,26 +294,24 @@ async function validateAndEnrichAggregatedAttempt(
     reasoningTokens: totalReasoningTokens || null,
     totalTokens: totalInputTokens + totalOutputTokens,
     
-    // Cost (aggregated)
-    estimatedCost: totalCost,
-    
+    // Cost (aggregated from HF total_cost)
+    estimatedCost: estimatedCost,
+
     // Timing (aggregated)
     apiProcessingTimeMs: Math.round(totalProcessingTime),
-    
-    // Reasoning & prompts
-    reasoningLog: reasoningText,
+
+    // Reasoning & prompts (mapped from HF fields)
+    reasoningLog: reasoningSummary,  // HF reasoning_summary → our reasoning_log
     systemPromptUsed: userPrompt,
     userPromptUsed: null,
     promptTemplateId: 'external-huggingface',
     customPromptText: null,
-    
-    // Analysis fields (external data doesn't provide these, use intelligent defaults)
-    patternDescription: reasoningText 
-      ? `External HuggingFace import - Attempt ${attemptNumber}: ${reasoningText.substring(0, 200)}...`
-      : `External HuggingFace import - Attempt ${attemptNumber}`,
-    solvingStrategy: null,
-    hints: [],
-    confidence: null,
+
+    // Analysis fields (mapped from HF content)
+    patternDescription: patternDescription || `External HuggingFace import - Attempt ${attemptNumber}`,  // HF content → our pattern_description
+    solvingStrategy: null,  // Not provided by HF
+    hints: [],  // Not provided by HF
+    confidence: null,  // Not provided by HF
     
     // Raw data preservation (store all predictions for this attempt)
     providerRawResponse: JSON.stringify(predictions, null, 2),
@@ -531,6 +533,17 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
  * Main ingestion function
  */
 async function ingestDataset(config: IngestionConfig): Promise<void> {
+  // Initialize database connection
+  console.log('🔌 Initializing database connection...');
+  const dbConnected = await repositoryService.initialize();
+
+  if (!dbConnected) {
+    console.error('❌ Failed to connect to database. Check your DATABASE_URL environment variable.');
+    process.exit(1);
+  }
+
+  console.log('✅ Database connected\n');
+
   // Auto-detect source from URL if not explicitly set
   if (!config.source && config.baseUrl.includes('arcprize')) {
     config.source = autoDetectSource(config.baseUrl);
