@@ -150,11 +150,37 @@ export default function HuggingFaceIngestion() {
     validateMutation.mutate();
   };
 
+  // Ingestion mutation
+  const ingestionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/admin/start-ingestion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          datasetName: config.datasetName,
+          baseUrl: config.baseUrl,
+          source: config.source,
+          limit: config.limit,
+          delay: config.delay,
+          dryRun: config.dryRun,
+          forceOverwrite: config.forceOverwrite,
+          verbose: config.verbose
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ingestion failed to start');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      setShowValidationDialog(false);
+      queryClient.invalidateQueries({ queryKey: ['ingestion-history'] });
+    },
+  });
+
   const handleStartIngestion = () => {
-    // TODO: Implement actual ingestion with SSE streaming
-    // This will be implemented by the user during testing
-    alert('Ingestion will be implemented with SSE streaming during testing phase');
-    setShowValidationDialog(false);
+    ingestionMutation.mutate();
   };
 
   const formatDuration = (ms: number) => {
@@ -559,9 +585,18 @@ export default function HuggingFaceIngestion() {
               Cancel
             </Button>
             {validationResult?.valid && (
-              <Button onClick={handleStartIngestion}>
-                <Upload className="h-4 w-4 mr-2" />
-                {config.dryRun ? 'Start Dry Run' : 'Start Ingestion'}
+              <Button onClick={handleStartIngestion} disabled={ingestionMutation.isPending}>
+                {ingestionMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {config.dryRun ? 'Start Dry Run' : 'Start Ingestion'}
+                  </>
+                )}
               </Button>
             )}
           </DialogFooter>

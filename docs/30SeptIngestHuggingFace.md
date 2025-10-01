@@ -591,35 +591,34 @@ router.post('/upload', upload.single('dataset'), async (req, res) => {
 ## Implementation Checklist
 
 ### Phase 1: PoC Script
-- [ ] Create `server/scripts/ingest-huggingface-dataset.ts`
-- [ ] Implement CLI argument parsing
-- [ ] Implement HuggingFace JSON loader
-- [ ] Integrate with `puzzleLoader` for matching
-- [ ] Integrate with `responseValidator` for validation
-- [ ] Map HF structure → ExplanationData
-- [ ] Implement `repositoryService.explanations.saveExplanation()` call
-- [ ] Add duplicate detection logic
-- [ ] Implement progress reporting
-- [ ] Add error handling for all failure modes
-- [ ] Generate summary report
-- [ ] Write npm script in package.json: `"ingest-hf": "tsx server/scripts/ingest-huggingface-dataset.ts"`
-- [ ] Test with `claude-sonnet-4-5-20250929` dataset
-- [ ] Document results in CHANGELOG.md
+- [x] Create `server/scripts/ingest-huggingface-dataset.ts` ✅
+- [x] Implement CLI argument parsing ✅
+- [x] Implement HuggingFace JSON loader ✅
+- [x] Integrate with `puzzleLoader` for matching ✅
+- [x] Integrate with `responseValidator` for validation ✅
+- [x] Map HF structure → ExplanationData ✅
+- [x] Implement `repositoryService.explanations.saveExplanation()` call ✅
+- [x] Add duplicate detection logic ✅
+- [x] Implement progress reporting ✅
+- [x] Add error handling for all failure modes ✅
+- [x] Generate summary report ✅
+- [x] Write npm script in package.json: `"ingest-hf": "tsx server/scripts/ingest-huggingface-dataset.ts"` ✅
+- [x] Test with `claude-sonnet-4-5-20250929` dataset ✅ (Tested by user)
+- [x] Document results in CHANGELOG.md ✅
 
 ### Phase 2: GUI Integration
-- [ ] Create `server/controllers/datasetIngestionController.ts`
-- [ ] Create `server/services/ingestionQueue.ts`
-- [ ] Add API routes to `server/routes.ts`
-- [ ] Create `client/src/components/dataset-ingestion/IngestionForm.tsx`
-- [ ] Create `client/src/components/dataset-ingestion/IngestionProgress.tsx`
-- [ ] Create `client/src/components/dataset-ingestion/IngestionHistory.tsx`
-- [ ] Extend `client/src/pages/ModelManagement.tsx` with new tab
-- [ ] Add React Query hooks for API calls
-- [ ] Add file upload handling (multer backend + FormData frontend)
-- [ ] Test end-to-end ingestion flow
-- [ ] Add cancel functionality
-- [ ] Add error notifications (toast/alert)
-- [ ] Document in CHANGELOG.md
+- [x] ~~Create `server/controllers/datasetIngestionController.ts`~~ Extended `adminController.ts` instead ✅
+- [x] ~~Create `server/services/ingestionQueue.ts`~~ Async execution without queue for simplicity ✅
+- [x] Add API routes to `server/routes.ts` ✅
+- [x] Create `client/src/pages/HuggingFaceIngestion.tsx` (full page, not components) ✅
+- [x] Create validation dialog and ingestion history table ✅
+- [x] ~~Extend `client/src/pages/ModelManagement.tsx`~~ Created new Admin Hub instead ✅
+- [x] Add React Query hooks for API calls (validation, ingestion, history) ✅
+- [ ] Add file upload handling (multer backend + FormData frontend) - Future enhancement
+- [x] Test end-to-end ingestion flow ✅ (Tested by user - button now working)
+- [ ] Add cancel functionality - Future enhancement (needs job tracking)
+- [x] Add error notifications (React Query error handling) ✅
+- [x] Document in CHANGELOG.md ✅
 
 ---
 

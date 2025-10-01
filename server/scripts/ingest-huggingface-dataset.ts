@@ -745,9 +745,14 @@ ENVIRONMENT:
   `);
 }
 
-// Run the script
-const config = parseArgs();
-ingestDataset(config).catch((error) => {
-  console.error('\n❌ Fatal error:', error);
-  process.exit(1);
-});
+// Export for programmatic use
+export { ingestDataset as ingestHuggingFaceDataset };
+
+// Run the script if executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const config = parseArgs();
+  ingestDataset(config).catch((error) => {
+    console.error('\n❌ Fatal error:', error);
+    process.exit(1);
+  });
+}

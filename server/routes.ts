@@ -164,6 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/quick-stats", asyncHandler(adminControllerFns.getQuickStats));
   app.get("/api/admin/recent-activity", asyncHandler(adminControllerFns.getRecentActivity));
   app.post("/api/admin/validate-ingestion", asyncHandler(adminControllerFns.validateIngestion));
+  app.post("/api/admin/start-ingestion", asyncHandler(adminControllerFns.startIngestion));
   app.get("/api/admin/ingestion-history", asyncHandler(adminControllerFns.getIngestionHistory));
 
   // Recovery routes for multiple predictions data
