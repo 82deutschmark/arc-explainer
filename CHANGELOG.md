@@ -1,3 +1,72 @@
+## [2025-10-01]
+
+### Added
+- **Admin Hub Dashboard** (`/admin`)
+  - Centralized admin interface for all administrative operations
+  - Quick stats: total models, total explanations, database status, last ingestion
+  - Navigation cards to Model Management and HuggingFace Ingestion
+  - Recent activity feed showing last 10 ingestion runs
+  - Real-time database connection monitoring with health indicators
+  - Backend API: `/api/admin/quick-stats`, `/api/admin/recent-activity`
+  - Uses shadcn/ui: Card, Button, Badge, Separator, Alert
+
+- **HuggingFace Ingestion UI** (`/admin/ingest-hf`)
+  - Full-featured web interface for importing external model predictions
+  - Configuration form with preset HuggingFace URLs (arcprize v1/v2 eval/training)
+  - Auto-detection of ARC source from dataset URLs
+  - Pre-flight validation with detailed checks:
+    - URL accessibility verification
+    - HF_TOKEN environment variable check
+    - Database connection test
+    - Sample puzzle data preview
+  - Ingestion history table with sortable columns
+  - Dry run mode for testing without database writes
+  - Support for force overwrite and verbose logging options
+  - Puzzle limit option for testing (process subset of puzzles)
+  - Backend API: `/api/admin/validate-ingestion`, `/api/admin/ingestion-history`
+  - Uses shadcn/ui: Card, Input, Select, Button, Checkbox, Alert, Dialog, Table, Tabs, Badge
+  - Note: Actual ingestion execution (SSE streaming) prepared but requires user testing
+
+- **Ingestion Runs Database Table** (`ingestion_runs`)
+  - Tracks complete history of HuggingFace dataset ingestion operations
+  - Stores: dataset name, base URL, source, total puzzles, success/fail/skip counts
+  - Records: duration, accuracy percentage, dry run mode, error logs
+  - Indexed by dataset name and started timestamp for efficient querying
+  - Migration: `server/migrations/001_create_ingestion_runs.sql`
+
+- **Admin API Endpoints**
+  - `GET /api/admin/quick-stats` - Dashboard statistics (models, explanations, DB status)
+  - `GET /api/admin/recent-activity` - Last 10 ingestion runs for activity feed
+  - `POST /api/admin/validate-ingestion` - Pre-flight validation before ingestion
+  - `GET /api/admin/ingestion-history` - Complete ingestion run history
+  - All endpoints include graceful handling of missing database/tables
+
+- **Admin Routes Reorganization**
+  - `/admin` → Admin Hub (new dashboard)
+  - `/admin/models` → Model Management (relocated from `/model-config`)
+  - `/admin/ingest-hf` → HuggingFace Ingestion UI (new)
+  - `/model-config` → Preserved for backward compatibility
+
+### Technical Details
+- **SRP Compliance**: Each page has single responsibility (dashboard, model config, ingestion)
+- **DRY**: Reuses existing services (PuzzleLoader, repositoryService, responseValidator)
+- **shadcn/ui**: 100% shadcn/ui components, no custom UI
+- **Data Mapping**: Applies same critical fixes from CLI ingestion script:
+  - Uses `datasetName` for model name (not metadata.model)
+  - Stores actual HF predictions in `predicted_output_grid`
+  - Maps `content` → `pattern_description`
+  - Maps `reasoning_summary` → `reasoning_log`
+  - Maps `total_cost` → `estimated_cost`
+
+### Changed
+- Model Management moved from `/model-config` to `/admin/models` (backward compatible)
+- Admin controller extended with ingestion endpoints (preserves existing recovery endpoint)
+
+### Notes
+- Database migration must be run: Execute `server/migrations/001_create_ingestion_runs.sql`
+- Actual ingestion execution with SSE streaming is prepared but awaits user testing
+- All new code follows established patterns and architectural principles
+
 ## [2025-09-30]
 
 ### Added
