@@ -19,7 +19,7 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
-import adminController from './controllers/adminController.js';
+import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 
 import { eloController } from "./controllers/eloController";
@@ -159,6 +159,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Admin routes
   app.use("/api/admin", adminController);
+
+  // Admin dashboard and HuggingFace ingestion routes
+  app.get("/api/admin/quick-stats", asyncHandler(adminControllerFns.getQuickStats));
+  app.get("/api/admin/recent-activity", asyncHandler(adminControllerFns.getRecentActivity));
+  app.post("/api/admin/validate-ingestion", asyncHandler(adminControllerFns.validateIngestion));
+  app.get("/api/admin/ingestion-history", asyncHandler(adminControllerFns.getIngestionHistory));
 
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {
