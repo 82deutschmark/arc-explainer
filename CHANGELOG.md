@@ -1,6 +1,42 @@
 ## [2025-10-01]
 
+### Fixed
+- **Admin Hub Quick Stats Bug** (Critical)
+  - Fixed 500 error on `/api/admin/quick-stats` endpoint
+  - Root cause: Controller called non-existent `getAllExplanations()` method
+  - Solution: Added `countExplanations()` method to ExplanationRepository
+  - Added `db` property to RepositoryService for direct SQL queries (marked deprecated)
+  - All adminController errors resolved
+  - Commits: c048930, c5f9fe6
+
+- **HuggingFace Ingestion Button Not Working** (Critical)
+  - Frontend button showed alert placeholder instead of triggering ingestion
+  - Root cause: Missing `/api/admin/start-ingestion` backend endpoint
+  - Solution:
+    - Exported `ingestHuggingFaceDataset` function from ingestion script
+    - Added `startIngestion()` controller function in adminController
+    - Registered route in server/routes.ts
+    - Implemented ingestion mutation in frontend with loading states
+    - Ingestion now starts asynchronously and returns 202 Accepted
+  - Files: server/scripts/ingest-huggingface-dataset.ts, server/controllers/adminController.ts, server/routes.ts, client/src/pages/HuggingFaceIngestion.tsx
+
 ### Added
+- **ARC2 Research Paper Link** (Landing Page Enhancement)
+  - Added prominent card on PuzzleBrowser landing page linking to ARC2 paper (https://www.arxiv.org/pdf/2505.11831)
+  - Gradient purple-to-blue background for visual distinction
+  - Responsive layout with BookOpen and ExternalLink icons
+  - Positioned strategically below mission statement in hero section
+
+- **About Page** (`/about`)
+  - Comprehensive project information and background
+  - Accessibility focus section explaining colorblindness support and emoji usage
+  - Technology stack details and open source information
+  - Acknowledgments for François Chollet, ARC Prize team, open source community, and users
+  - Contact section with GitHub repository and issues links
+  - Navigation integration with Info icon in AppNavigation
+  - Fully responsive design using shadcn/ui components (Card, Button, Badge)
+
+
 - **Admin Hub Dashboard** (`/admin`)
   - Centralized admin interface for all administrative operations
   - Quick stats: total models, total explanations, database status, last ingestion

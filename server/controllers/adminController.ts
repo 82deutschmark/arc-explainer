@@ -277,6 +277,58 @@ export async function validateIngestion(req: Request, res: Response) {
 }
 
 /**
+ * @route   POST /api/admin/start-ingestion
+ * @desc    Start HuggingFace dataset ingestion
+ * @access  Private
+ */
+export async function startIngestion(req: Request, res: Response) {
+  try {
+    const { datasetName, baseUrl, source, limit, delay, dryRun, forceOverwrite, verbose } = req.body;
+
+    if (!datasetName || !baseUrl) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'datasetName and baseUrl are required'
+      });
+    }
+
+    // Import the ingestion function dynamically
+    const { ingestHuggingFaceDataset } = await import('../scripts/ingest-huggingface-dataset.js');
+
+    // Start ingestion asynchronously
+    ingestHuggingFaceDataset({
+      datasetName,
+      baseUrl,
+      source: source === 'auto' ? autoDetectSource(baseUrl) : source,
+      limit: limit || undefined,
+      delay: delay || 100,
+      dryRun: !!dryRun,
+      forceOverwrite: !!forceOverwrite,
+      verbose: !!verbose
+    }).catch((error: Error) => {
+      console.error('[Admin] Ingestion error:', error);
+    });
+
+    res.status(202).json({
+      success: true,
+      message: 'Ingestion started. Check server logs for progress.',
+      config: {
+        datasetName,
+        baseUrl,
+        source: source === 'auto' ? autoDetectSource(baseUrl) : source,
+        dryRun
+      }
+    });
+  } catch (error) {
+    console.error('[Admin] Error starting ingestion:', error);
+    res.status(500).json({
+      error: 'Failed to start ingestion',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
  * @route   GET /api/admin/ingestion-history
  * @desc    Get history of past ingestion runs
  * @access  Private

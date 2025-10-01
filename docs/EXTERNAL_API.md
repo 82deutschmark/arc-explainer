@@ -358,6 +358,56 @@ interface FeedbackStats {
 }
 ```
 
+## Admin Dashboard & Ingestion ✨ NEW! (October 2025)
+
+### Admin Dashboard Stats
+- `GET /api/admin/quick-stats` - Dashboard statistics
+  - **Response**: `{ totalModels, totalExplanations, databaseConnected, lastIngestion, timestamp }`
+  - **Use case**: Admin Hub homepage quick stats
+  - **Limits**: No limits
+
+- `GET /api/admin/recent-activity` - Recent ingestion activity
+  - **Response**: Array of last 10 ingestion runs with stats
+  - **Limits**: Fixed at 10 most recent runs
+
+### HuggingFace Dataset Ingestion
+- `POST /api/admin/validate-ingestion` - Pre-flight validation before ingestion
+  - **Body**: `{ datasetName, baseUrl }`
+  - **Response**: Validation result with checks (URL accessible, token present, DB connected, etc.)
+  - **Use case**: Validate configuration before starting ingestion
+  - **Limits**: No limits
+
+- `POST /api/admin/start-ingestion` - Start HuggingFace dataset ingestion
+  - **Body**: `{ datasetName, baseUrl, source, limit, delay, dryRun, forceOverwrite, verbose }`
+  - **Response**: `{ success, message, config }` (202 Accepted - async operation)
+  - **Use case**: Import external model predictions from HuggingFace datasets
+  - **Limits**: No limits
+  - **Note**: Returns immediately; ingestion runs in background
+
+- `GET /api/admin/ingestion-history` - Complete ingestion run history
+  - **Response**: Array of all ingestion runs with full details
+  - **Limits**: No limits - returns all historical runs
+
+### Ingestion Data Model
+```typescript
+interface IngestionRun {
+  id: number;
+  datasetName: string;
+  baseUrl: string;
+  source: string;  // ARC1-Eval, ARC2-Eval, etc.
+  totalPuzzles: number;
+  successful: number;
+  failed: number;
+  skipped: number;
+  durationMs: number;
+  dryRun: boolean;
+  accuracyPercent: number | null;
+  startedAt: string;
+  completedAt: string;
+  errorLog: string | null;
+}
+```
+
 ## Authentication
 
 Currently no authentication required. All endpoints are publicly accessible.
