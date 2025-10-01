@@ -16,10 +16,9 @@
     }
   ],
   "addedSpawnableAgents": [
-    
-    
     "mark-barney/edgar-the-engineer@0.0.4",
     "mark-barney/benny@0.0.5",
-    "mark-barney/mark@0.2.6"
+    "mark-barney/mark@0.2.6",
+    "codebuff/implementation-planner@0.0.2"
   ]
 }
