@@ -30,7 +30,7 @@ dotenv.config();
 
 // Dynamic imports for ESM modules
 const { puzzleLoader } = await import('../services/puzzleLoader.js');
-const { responseValidator } = await import('../services/responseValidator.js');
+const { validateSolverResponse, validateSolverResponseMulti } = await import('../services/responseValidator.js');
 const { repositoryService } = await import('../repositories/RepositoryService.js');
 const { logger } = await import('../utils/logger.js');
 
@@ -337,9 +337,16 @@ async function validateAndEnrich(
     // Multi-test validation
     const predictedGrids = attempts.map(a => a.answer);
     
-    validationResult = await responseValidator.validateMultipleTestPredictions(
-      { multiplePredictedOutputs: predictedGrids },
+    // Build response structure that validator expects
+    const multiResponse: any = { multiplePredictedOutputs: predictedGrids };
+    predictedGrids.forEach((grid, index) => {
+      multiResponse[`predictedOutput${index + 1}`] = grid;
+    });
+    
+    validationResult = validateSolverResponseMulti(
+      multiResponse,
       expectedOutputs,
+      'external-huggingface', // promptId for validation
       null // No confidence for external data
     );
     
@@ -350,9 +357,10 @@ async function validateAndEnrich(
     
   } else {
     // Single-test validation
-    validationResult = await responseValidator.validatePrediction(
+    validationResult = validateSolverResponse(
       { predictedOutput: primaryAttempt.answer },
       expectedOutputs[0],
+      'external-huggingface', // promptId
       null // No confidence
     );
     
