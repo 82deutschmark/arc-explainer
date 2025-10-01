@@ -1,6 +1,20 @@
 ## [2025-09-30]
 
 ### Added
+- **HuggingFace Dataset Ingestion** (`server/scripts/ingest-huggingface-dataset.ts`)
+  - CLI script for ingesting external AI model predictions from HuggingFace datasets
+  - Validates predictions against actual puzzle solutions BEFORE database insertion
+  - Handles single-test and multi-test puzzles with full accuracy calculation
+  - Supports authenticated HuggingFace API requests via HUGGINGFACE_TOKEN
+  - Automatic duplicate detection with skip or overwrite modes
+  - Comprehensive error handling and progress reporting
+  - Detailed summary statistics including accuracy breakdowns
+  - Command: `npm run ingest-hf -- --dataset <name> [--options]`
+  - Dry run mode for testing without database writes
+  - Preserves raw HuggingFace data in provider_raw_response field
+  - Extracts reasoning, token usage, cost, and timing data
+  - Uses existing responseValidator and repositoryService patterns (SRP/DRY compliant)
+
 - **Model Management GUI** (`/model-config`)
   - Web-based interface for viewing and managing AI model configurations
   - Real-time model statistics and provider distribution
