@@ -28,7 +28,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
-import { repositoryService } from '../services/repositoryService.ts';
+import { repositoryService } from '../repositories/RepositoryService.ts';
 
 // Load environment variables
 dotenv.config();
@@ -324,15 +324,16 @@ async function validateAndEnrichAggregatedAttempt(
  * Check if duplicate entry exists
  */
 async function checkDuplicate(puzzleId: string, modelName: string): Promise<boolean> {
-  const existing = await repositoryService.explanation.getByPuzzleAndModel(puzzleId, modelName);
-  return existing !== null;
+  const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+  return explanations.some(exp => exp.modelName === modelName);
 }
 
 /**
  * Delete duplicate entry if exists
  */
 async function deleteDuplicate(puzzleId: string, modelName: string): Promise<void> {
-  const existing = await repositoryService.explanation.getByPuzzleAndModel(puzzleId, modelName);
+  const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+  const existing = explanations.find(exp => exp.modelName === modelName);
   if (existing) {
     // Note: This would require implementing a delete method in the repository
     console.log(`   ⚠️  Would delete existing entry for ${modelName} (not implemented)`);
@@ -349,7 +350,7 @@ async function saveToDatabase(data: any, config: IngestionConfig): Promise<boole
   }
   
   try {
-    await repositoryService.explanation.create(data);
+    await repositoryService.explanations.saveExplanation(data);
     return true;
   } catch (error: any) {
     console.error(`   ❌ Error saving to database: ${error.message}`);
