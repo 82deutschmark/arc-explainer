@@ -300,104 +300,56 @@ function calculateProcessingTime(startTimestamp: string, endTimestamp: string): 
   return end - start;
 }
 
-async function validateAndEnrich(
-  hfDataArray: HuggingFacePuzzleData[],
-  puzzleId: string,
+async function validateAndEnrichAttempt(
+  attempt: HuggingFaceAttempt,
+  attemptNumber: number,
+  puzzleData: any,
   config: IngestionConfig
 ): Promise<any> {
-  // Load the actual puzzle from our datasets
-  const puzzleData = await puzzleLoader.loadPuzzle(puzzleId);
+  const metadata = attempt.metadata;
+  const expectedOutput = puzzleData.test[0].output; // ARC puzzles have single test output
   
-  if (!puzzleData) {
-    throw new Error(`Puzzle ${puzzleId} not found in local datasets`);
-  }
+  // Validate the prediction
+  const validationResult = validateSolverResponse(
+    { predictedOutput: attempt.answer },
+    expectedOutput,
+    'external-huggingface', // promptId
+    undefined // No confidence
+  );
   
-  // Take the first element of the array (should only be one per puzzle)
-  const hfData = hfDataArray[0];
-  
-  // Extract all attempts
-  const attempts = extractAllAttempts(hfData);
-  
-  if (attempts.length === 0) {
-    throw new Error('No attempts found in HuggingFace data');
-  }
-  
-  // Use first attempt's metadata for common fields
-  const primaryAttempt = attempts[0];
-  const metadata = primaryAttempt.metadata;
-  
-  // Determine if this is a multi-test puzzle
-  const isMultiTest = attempts.length > 1;
-  const expectedOutputs = puzzleData.test.map(t => t.output);
-  
-  // Validate predictions
-  let validationResult: any;
-  
-  if (isMultiTest) {
-    // Multi-test validation
-    const predictedGrids = attempts.map(a => a.answer);
-    
-    // Build response structure that validator expects
-    const multiResponse: any = { multiplePredictedOutputs: predictedGrids };
-    predictedGrids.forEach((grid, index) => {
-      multiResponse[`predictedOutput${index + 1}`] = grid;
-    });
-    
-    validationResult = validateSolverResponseMulti(
-      multiResponse,
-      expectedOutputs,
-      'external-huggingface', // promptId for validation
-      undefined // No confidence for external data
-    );
-    
-    if (config.verbose) {
-      console.log(`   📊 Multi-test: ${validationResult.multiTestAllCorrect ? 'All correct' : 'Some incorrect'}`);
-      console.log(`   📈 Average accuracy: ${(validationResult.multiTestAverageAccuracy * 100).toFixed(1)}%`);
-    }
-    
-  } else {
-    // Single-test validation
-    validationResult = validateSolverResponse(
-      { predictedOutput: primaryAttempt.answer },
-      expectedOutputs[0],
-      'external-huggingface', // promptId
-      undefined // No confidence
-    );
-    
-    if (config.verbose) {
-      console.log(`   📊 Single-test: ${validationResult.isPredictionCorrect ? 'Correct' : 'Incorrect'}`);
-      console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
-    }
+  if (config.verbose) {
+    console.log(`   📊 Attempt ${attemptNumber}: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
+    console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
   }
   
   // Extract reasoning from the assistant's response if available
   let reasoningText = null;
-  const assistantMessage = metadata.choices.find(c => c.message.role === 'assistant');
+  const assistantMessage = metadata.choices.find((c: any) => c.message.role === 'assistant');
   if (assistantMessage) {
     reasoningText = assistantMessage.message.content;
   }
   
   // Extract user prompt
-  const userMessage = metadata.choices.find(c => c.message.role === 'user');
+  const userMessage = metadata.choices.find((c: any) => c.message.role === 'user');
   const userPrompt = userMessage?.message.content || null;
   
-  // Build enriched explanation data
+  // Build enriched explanation data for this specific attempt
   const enrichedData: any = {
-    puzzleId: puzzleId,
-    modelName: metadata.model,
+    puzzleId: puzzleData.id,
+    modelName: `${metadata.model}-attempt${attemptNumber}`, // Distinguish attempts
     
-    // Prediction fields
-    predictedOutputGrid: isMultiTest ? attempts[0].answer : validationResult.predictedGrid,
-    isPredictionCorrect: isMultiTest ? validationResult.multiTestAllCorrect : validationResult.isPredictionCorrect,
-    predictionAccuracyScore: isMultiTest ? validationResult.multiTestAverageAccuracy : validationResult.predictionAccuracyScore,
+    // Prediction fields (single test only)
+    predictedOutputGrid: validationResult.predictedGrid,
+    isPredictionCorrect: validationResult.isPredictionCorrect,
+    predictionAccuracyScore: validationResult.predictionAccuracyScore,
     
-    // Multi-test fields
-    hasMultiplePredictions: isMultiTest,
-    multiplePredictedOutputs: isMultiTest ? attempts.map(a => a.answer) : null,
-    multiTestPredictionGrids: isMultiTest ? validationResult.multiTestPredictionGrids : null,
-    multiTestResults: isMultiTest ? validationResult.multiTestResults : null,
-    multiTestAllCorrect: isMultiTest ? validationResult.multiTestAllCorrect : null,
-    multiTestAverageAccuracy: isMultiTest ? validationResult.multiTestAverageAccuracy : null,
+    // Multi-test fields (all null for single test)
+    hasMultiplePredictions: false,
+    multiplePredictedOutputs: null,
+    multiTestPredictionGrids: null,
+    multiTestResults: null,
+    multiTestAllCorrect: null,
+    multiTestAverageAccuracy: null,
     
     // Token usage
     inputTokens: metadata.usage.prompt_tokens,
@@ -419,13 +371,13 @@ async function validateAndEnrich(
     customPromptText: null,
     
     // Analysis fields (external data doesn't provide these)
-    patternDescription: 'External dataset import - no analysis provided',
+    patternDescription: `External HuggingFace import - Attempt ${attemptNumber}`,
     solvingStrategy: null,
     hints: [],
     confidence: null,
     
-    // Raw data preservation
-    providerRawResponse: JSON.stringify(hfDataArray, null, 2),
+    // Raw data preservation (include full attempt data)
+    providerRawResponse: JSON.stringify(attempt, null, 2),
     
     // Temperature and other AI params
     temperature: null,
@@ -495,43 +447,73 @@ async function processPuzzle(
       return;
     }
     
-    // Extract model name from first attempt
-    const modelName = hfData[0].attempt_1.metadata.model;
+    // Load the puzzle data for validation
+    const puzzleData = await puzzleLoader.loadPuzzle(puzzleId);
     
-    // Check for duplicates
-    if (config.skipDuplicates) {
-      const isDuplicate = await checkDuplicate(puzzleId, modelName);
-      if (isDuplicate) {
-        progress.skipped++;
-        if (config.verbose) {
-          console.log(`⚠️  ${puzzleId} - Skipped (duplicate exists)`);
-        }
-        return;
-      }
-    } else if (config.forceOverwrite) {
-      await deleteDuplicate(puzzleId, modelName);
+    if (!puzzleData) {
+      throw new Error(`Puzzle ${puzzleId} not found in local datasets`);
     }
     
-    // Validate and enrich
-    const enrichedData = await validateAndEnrich(hfData, puzzleId, config);
+    // Extract all attempts from HuggingFace data
+    const hfPuzzle = hfData[0]; // Array contains single puzzle object
+    const attempts = extractAllAttempts(hfPuzzle);
     
-    // Save to database
-    const saved = await saveToDatabase(enrichedData, config);
+    if (attempts.length === 0) {
+      throw new Error('No attempts found in HuggingFace data');
+    }
     
-    if (saved) {
-      progress.successful++;
-      progress.successDetails.push({
-        puzzleId,
-        isCorrect: enrichedData.isPredictionCorrect,
-        isMultiTest: enrichedData.hasMultiplePredictions,
-        accuracy: enrichedData.predictionAccuracyScore
-      });
+    if (config.verbose) {
+      console.log(`\n📝 ${puzzleId} - Processing ${attempts.length} attempts...`);
+    }
+    
+    // Process each attempt separately
+    let attemptsSaved = 0;
+    for (let i = 0; i < attempts.length; i++) {
+      const attempt = attempts[i];
+      const attemptNumber = i + 1;
+      const modelName = `${attempt.metadata.model}-attempt${attemptNumber}`;
       
-      const statusIcon = enrichedData.isPredictionCorrect ? '✅' : '❌';
-      const testType = enrichedData.hasMultiplePredictions ? 'multi-test' : 'single-test';
-      const accuracyPercent = (enrichedData.predictionAccuracyScore * 100).toFixed(1);
+      // Check for duplicates
+      if (config.skipDuplicates) {
+        const isDuplicate = await checkDuplicate(puzzleId, modelName);
+        if (isDuplicate) {
+          progress.skipped++;
+          if (config.verbose) {
+            console.log(`   ⚠️  Attempt ${attemptNumber} - Skipped (duplicate exists)`);
+          }
+          continue;
+        }
+      } else if (config.forceOverwrite) {
+        await deleteDuplicate(puzzleId, modelName);
+      }
       
-      console.log(`${statusIcon} ${puzzleId} - Validated & Saved (${testType}, ${accuracyPercent}% accuracy)`);
+      // Validate and enrich this attempt
+      const enrichedData = await validateAndEnrichAttempt(attempt, attemptNumber, puzzleData, config);
+      
+      // Save to database
+      const saved = await saveToDatabase(enrichedData, config);
+      
+      if (saved) {
+        attemptsSaved++;
+        progress.successful++;
+        progress.successDetails.push({
+          puzzleId: `${puzzleId}-attempt${attemptNumber}`,
+          isCorrect: enrichedData.isPredictionCorrect,
+          isMultiTest: false,
+          accuracy: enrichedData.predictionAccuracyScore
+        });
+      }
+    }
+    
+    // Summary for this puzzle
+    if (attemptsSaved > 0) {
+      const correctCount = attempts.filter((_, i) => {
+        const enriched = progress.successDetails.find(d => d.puzzleId === `${puzzleId}-attempt${i + 1}`);
+        return enriched?.isCorrect;
+      }).length;
+      
+      const statusIcon = correctCount === attempts.length ? '✅' : correctCount > 0 ? '⚠️' : '❌';
+      console.log(`${statusIcon} ${puzzleId} - Saved ${attemptsSaved}/${attempts.length} attempts (${correctCount} correct)`);
     }
     
   } catch (error: any) {
