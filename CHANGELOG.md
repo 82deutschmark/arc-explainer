@@ -32,7 +32,8 @@
   - Stores: dataset name, base URL, source, total puzzles, success/fail/skip counts
   - Records: duration, accuracy percentage, dry run mode, error logs
   - Indexed by dataset name and started timestamp for efficient querying
-  - Migration: `server/migrations/001_create_ingestion_runs.sql`
+  - Migration: Integrated into `DatabaseSchema.ts` as `createIngestionRunsTable()`
+  - Auto-creates on server startup via schema initialization
 
 - **Admin API Endpoints**
   - `GET /api/admin/quick-stats` - Dashboard statistics (models, explanations, DB status)

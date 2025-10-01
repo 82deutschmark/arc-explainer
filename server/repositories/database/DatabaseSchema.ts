@@ -30,6 +30,7 @@ export class DatabaseSchema {
       await this.createEloRatingsTable(client);
       await this.createComparisonVotesTable(client);
       await this.createComparisonSessionsTable(client);
+      await this.createIngestionRunsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -204,6 +205,32 @@ export class DatabaseSchema {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `);
+  }
+
+  private static async createIngestionRunsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ingestion_runs (
+        id SERIAL PRIMARY KEY,
+        dataset_name VARCHAR(255) NOT NULL,
+        base_url TEXT NOT NULL,
+        source VARCHAR(50),
+        total_puzzles INTEGER NOT NULL,
+        successful INTEGER NOT NULL,
+        failed INTEGER NOT NULL,
+        skipped INTEGER NOT NULL,
+        duration_ms INTEGER NOT NULL,
+        dry_run BOOLEAN DEFAULT FALSE,
+        accuracy_percent DECIMAL(5,2),
+        started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        completed_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        error_log TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `);
+    
+    // Create indexes for ingestion_runs table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_dataset ON ingestion_runs(dataset_name)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_started ON ingestion_runs(started_at DESC)`);
   }
 
   /**
