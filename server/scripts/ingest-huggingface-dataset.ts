@@ -347,7 +347,7 @@ async function validateAndEnrich(
       multiResponse,
       expectedOutputs,
       'external-huggingface', // promptId for validation
-      null // No confidence for external data
+      undefined // No confidence for external data
     );
     
     if (config.verbose) {
@@ -361,7 +361,7 @@ async function validateAndEnrich(
       { predictedOutput: primaryAttempt.answer },
       expectedOutputs[0],
       'external-huggingface', // promptId
-      null // No confidence
+      undefined // No confidence
     );
     
     if (config.verbose) {
