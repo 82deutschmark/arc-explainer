@@ -88,6 +88,10 @@ interface IngestionConfig {
   verbose: boolean;
   forceOverwrite: boolean;
   skipDuplicates: boolean;
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  limit?: number;
+  delay: number;
+  stopOnError: boolean;
 }
 
 interface IngestionProgress {
@@ -120,8 +124,8 @@ async function fetchHuggingFaceData(
   
   try {
     const response = await fetch(url, {
-      headers: config.baseUrl.includes('huggingface.co') && process.env.HUGGINGFACE_TOKEN
-        ? { 'Authorization': `Bearer ${process.env.HUGGINGFACE_TOKEN}` }
+      headers: config.baseUrl.includes('huggingface.co') && process.env.HF_TOKEN
+        ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` }
         : {}
     });
     
@@ -504,14 +508,28 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
   console.log('\n🌐 HuggingFace Dataset Ingestion Script\n');
   console.log(`Dataset: ${config.datasetName}`);
   console.log(`Base URL: ${config.baseUrl}`);
+  console.log(`Source Filter: ${config.source || 'All sources'}`);
+  console.log(`Limit: ${config.limit || 'No limit'}`);
+  console.log(`Delay: ${config.delay}ms between requests`);
   console.log(`Mode: ${config.dryRun ? 'DRY RUN' : 'LIVE'}`);
-  console.log(`Duplicates: ${config.skipDuplicates ? 'Skip' : config.forceOverwrite ? 'Overwrite' : 'Error'}\n`);
+  console.log(`Duplicates: ${config.skipDuplicates ? 'Skip' : config.forceOverwrite ? 'Overwrite' : 'Error'}`);
+  console.log(`Stop on Error: ${config.stopOnError ? 'Yes' : 'No'}\n`);
   
-  // Load all available puzzles
+  // Load puzzles based on source filter
   console.log('📚 Loading puzzle library...');
-  const allPuzzles = puzzleLoader.getPuzzleList();
-  const allPuzzleIds = allPuzzles.map(p => p.id);
-  console.log(`Found ${allPuzzleIds.length} puzzles in local datasets\n`);
+  const allPuzzles = config.source
+    ? puzzleLoader.getPuzzleList({ source: config.source })
+    : puzzleLoader.getPuzzleList();
+
+  let allPuzzleIds = allPuzzles.map(p => p.id);
+
+  // Apply limit if specified
+  if (config.limit) {
+    allPuzzleIds = allPuzzleIds.slice(0, config.limit);
+    console.log(`Limiting to first ${config.limit} puzzles`);
+  }
+
+  console.log(`Found ${allPuzzleIds.length} puzzles to process${config.source ? ` from ${config.source}` : ''}\n`);
   
   const progress: IngestionProgress = {
     total: allPuzzleIds.length,
@@ -527,8 +545,21 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
   // Process each puzzle
   for (let i = 0; i < allPuzzleIds.length; i++) {
     const puzzleId = allPuzzleIds[i];
+
+    console.log(`\n[${i + 1}/${allPuzzleIds.length}] Processing ${puzzleId}...`);
     await processPuzzle(puzzleId, config, progress);
-    
+
+    // Rate limiting delay
+    if (config.delay > 0 && i < allPuzzleIds.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, config.delay));
+    }
+
+    // Stop on error if configured
+    if (config.stopOnError && progress.failed > 0) {
+      console.log(`\n⚠️  Stopping due to error (--stop-on-error flag set)\n`);
+      break;
+    }
+
     // Progress update every 10 puzzles
     if ((i + 1) % 10 === 0) {
       console.log(`\n📊 Progress: ${i + 1}/${allPuzzleIds.length} puzzles processed`);
@@ -564,19 +595,21 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
  */
 function parseArgs(): IngestionConfig {
   const args = process.argv.slice(2);
-  
+
   const config: IngestionConfig = {
     datasetName: 'claude-sonnet-4-5-20250929',
     baseUrl: 'https://huggingface.co/datasets/barc0/claude-3.5-v2-ARC-AGI/resolve/main',
     dryRun: false,
     verbose: false,
     forceOverwrite: false,
-    skipDuplicates: true
+    skipDuplicates: true,
+    delay: 100,
+    stopOnError: false
   };
-  
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg === '--help') {
       printHelp();
       process.exit(0);
@@ -584,10 +617,32 @@ function parseArgs(): IngestionConfig {
       config.datasetName = args[++i];
     } else if (arg === '--base-url' && i + 1 < args.length) {
       config.baseUrl = args[++i];
+    } else if (arg === '--source' && i + 1 < args.length) {
+      const source = args[++i];
+      if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
+        config.source = source as any;
+      } else {
+        console.error(`Invalid source: ${source}. Must be one of: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy`);
+        process.exit(1);
+      }
+    } else if (arg === '--limit' && i + 1 < args.length) {
+      config.limit = parseInt(args[++i], 10);
+      if (isNaN(config.limit) || config.limit <= 0) {
+        console.error(`Invalid limit: ${args[i]}. Must be a positive integer.`);
+        process.exit(1);
+      }
+    } else if (arg === '--delay' && i + 1 < args.length) {
+      config.delay = parseInt(args[++i], 10);
+      if (isNaN(config.delay) || config.delay < 0) {
+        console.error(`Invalid delay: ${args[i]}. Must be a non-negative integer.`);
+        process.exit(1);
+      }
     } else if (arg === '--dry-run') {
       config.dryRun = true;
     } else if (arg === '--verbose') {
       config.verbose = true;
+    } else if (arg === '--stop-on-error') {
+      config.stopOnError = true;
     } else if (arg === '--force-overwrite') {
       config.forceOverwrite = true;
       config.skipDuplicates = false;
@@ -595,7 +650,7 @@ function parseArgs(): IngestionConfig {
       config.skipDuplicates = false;
     }
   }
-  
+
   return config;
 }
 
@@ -612,24 +667,32 @@ USAGE:
 OPTIONS:
   --dataset <name>         Dataset name (default: claude-sonnet-4-5-20250929)
   --base-url <url>         Base URL for HuggingFace dataset
+  --source <source>        Only process puzzles from specific ARC source
+                           Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
+  --limit <N>              Only process first N puzzles (useful for testing)
+  --delay <ms>             Delay in milliseconds between requests (default: 100)
   --dry-run                Preview without saving to database
   --verbose                Enable detailed logging
+  --stop-on-error          Stop processing on first error
   --force-overwrite        Overwrite existing entries (default: skip)
   --no-skip-duplicates     Don't skip duplicates (error instead)
   --help                   Show this help message
 
 EXAMPLES:
-  # Ingest Claude Sonnet 4.5 dataset
-  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929
+  # Test with first 5 puzzles from ARC1-Eval with detailed output
+  npm run ingest-hf -- --source ARC1-Eval --limit 5 --dry-run --verbose
 
-  # Dry run with verbose logging
-  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929 --dry-run --verbose
+  # Ingest all ARC1-Eval puzzles (400 puzzles) with rate limiting
+  npm run ingest-hf -- --source ARC1-Eval --delay 200
 
-  # Force overwrite existing entries
-  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929 --force-overwrite
+  # Dry run with verbose logging for first 10 puzzles
+  npm run ingest-hf -- --limit 10 --dry-run --verbose
+
+  # Force overwrite existing entries from specific dataset
+  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929 --source ARC1-Eval --force-overwrite
 
 ENVIRONMENT:
-  HUGGINGFACE_TOKEN        HuggingFace API token for authenticated requests
+  HF_TOKEN                 HuggingFace API token for authenticated requests
   `);
 }
 
