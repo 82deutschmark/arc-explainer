@@ -268,7 +268,7 @@ async function validateAndEnrichAggregatedAttempt(
   
   // Build enriched explanation data
   const enrichedData: any = {
-    puzzleId: puzzleData.id,
+    puzzleId: metadata.task_id,
     modelName: `${baseModel}-attempt${attemptNumber}`,
     
     // Single-test fields (used when !isMultiTest)
@@ -502,9 +502,43 @@ async function processPuzzle(
 }
 
 /**
+ * Auto-detect ARC source from HuggingFace dataset URL
+ */
+function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | undefined {
+  const url = baseUrl.toLowerCase();
+
+  // arcprize/arc_agi_v1_public_eval → ARC1-Eval
+  if (url.includes('arc_agi_v1') && url.includes('eval')) {
+    return 'ARC1-Eval';
+  }
+  // arcprize/arc_agi_v1_training or arc_agi_v1 → ARC1
+  if (url.includes('arc_agi_v1') && url.includes('train')) {
+    return 'ARC1';
+  }
+  // arcprize/arc_agi_v2_public_eval → ARC2-Eval
+  if (url.includes('arc_agi_v2') && url.includes('eval')) {
+    return 'ARC2-Eval';
+  }
+  // arcprize/arc_agi_v2_training or arc_agi_v2 → ARC2
+  if (url.includes('arc_agi_v2') && url.includes('train')) {
+    return 'ARC2';
+  }
+
+  return undefined;
+}
+
+/**
  * Main ingestion function
  */
 async function ingestDataset(config: IngestionConfig): Promise<void> {
+  // Auto-detect source from URL if not explicitly set
+  if (!config.source && config.baseUrl.includes('arcprize')) {
+    config.source = autoDetectSource(config.baseUrl);
+    if (config.source) {
+      console.log(`🔍 Auto-detected source: ${config.source} from URL\n`);
+    }
+  }
+
   console.log('\n🌐 HuggingFace Dataset Ingestion Script\n');
   console.log(`Dataset: ${config.datasetName}`);
   console.log(`Base URL: ${config.baseUrl}`);
@@ -514,8 +548,8 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
   console.log(`Mode: ${config.dryRun ? 'DRY RUN' : 'LIVE'}`);
   console.log(`Duplicates: ${config.skipDuplicates ? 'Skip' : config.forceOverwrite ? 'Overwrite' : 'Error'}`);
   console.log(`Stop on Error: ${config.stopOnError ? 'Yes' : 'No'}\n`);
-  
-  // Load puzzles based on source filter
+
+  // Load puzzles based on source filter (auto-detected or manual)
   console.log('📚 Loading puzzle library...');
   const allPuzzles = config.source
     ? puzzleLoader.getPuzzleList({ source: config.source })
@@ -598,7 +632,7 @@ function parseArgs(): IngestionConfig {
 
   const config: IngestionConfig = {
     datasetName: 'claude-sonnet-4-5-20250929',
-    baseUrl: 'https://huggingface.co/datasets/barc0/claude-3.5-v2-ARC-AGI/resolve/main',
+    baseUrl: 'https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main',
     dryRun: false,
     verbose: false,
     forceOverwrite: false,
@@ -665,10 +699,12 @@ USAGE:
   npm run ingest-hf -- [options]
 
 OPTIONS:
-  --dataset <name>         Dataset name (default: claude-sonnet-4-5-20250929)
+  --dataset <name>         Model folder name in HF dataset (default: claude-sonnet-4-5-20250929)
   --base-url <url>         Base URL for HuggingFace dataset
-  --source <source>        Only process puzzles from specific ARC source
+                           (default: arcprize/arc_agi_v1_public_eval)
+  --source <source>        Override auto-detected ARC source
                            Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
+                           (Auto-detected from arcprize/* URLs)
   --limit <N>              Only process first N puzzles (useful for testing)
   --delay <ms>             Delay in milliseconds between requests (default: 100)
   --dry-run                Preview without saving to database
@@ -679,17 +715,17 @@ OPTIONS:
   --help                   Show this help message
 
 EXAMPLES:
-  # Test with first 5 puzzles from ARC1-Eval with detailed output
-  npm run ingest-hf -- --source ARC1-Eval --limit 5 --dry-run --verbose
+  # Test with first 5 puzzles (auto-detects ARC1-Eval from URL)
+  npm run ingest-hf -- --limit 5 --dry-run --verbose
 
-  # Ingest all ARC1-Eval puzzles (400 puzzles) with rate limiting
-  npm run ingest-hf -- --source ARC1-Eval --delay 200
+  # Ingest all ARC1-Eval puzzles from default arcprize dataset
+  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929
 
-  # Dry run with verbose logging for first 10 puzzles
-  npm run ingest-hf -- --limit 10 --dry-run --verbose
+  # Ingest from different arcprize dataset (auto-detects ARC2-Eval)
+  npm run ingest-hf -- --base-url https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main
 
-  # Force overwrite existing entries from specific dataset
-  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929 --source ARC1-Eval --force-overwrite
+  # Use custom HF dataset with manual source specification
+  npm run ingest-hf -- --base-url https://huggingface.co/datasets/custom/dataset/resolve/main --source ARC1-Eval
 
 ENVIRONMENT:
   HF_TOKEN                 HuggingFace API token for authenticated requests
