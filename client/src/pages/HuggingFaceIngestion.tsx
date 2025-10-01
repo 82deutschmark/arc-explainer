@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { ArrowLeft, CheckCircle, AlertCircle, Loader2, Upload } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -99,6 +100,7 @@ interface IngestionRun {
 
 export default function HuggingFaceIngestion() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Form state
   const [config, setConfig] = useState<IngestionConfig>({
@@ -116,14 +118,16 @@ export default function HuggingFaceIngestion() {
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
-  // Fetch ingestion history
+  // Fetch ingestion history with auto-refresh every 5 seconds
   const { data: historyData, isLoading: historyLoading } = useQuery<{ runs: IngestionRun[] }>({
     queryKey: ['ingestion-history'],
     queryFn: async () => {
       const response = await fetch('/api/admin/ingestion-history');
       if (!response.ok) throw new Error('Failed to fetch history');
       return response.json();
-    }
+    },
+    refetchInterval: 5000, // Auto-refresh every 5 seconds to show new completions
+    refetchIntervalInBackground: false // Only when tab is active
   });
 
   // Validation mutation
@@ -173,9 +177,24 @@ export default function HuggingFaceIngestion() {
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setShowValidationDialog(false);
       queryClient.invalidateQueries({ queryKey: ['ingestion-history'] });
+      
+      // Show success toast with clear feedback
+      toast({
+        title: config.dryRun ? "Dry Run Started" : "Ingestion Started",
+        description: `${config.datasetName} is processing in the background. Switch to the History tab - it auto-refreshes every 5 seconds to show completion.`,
+        duration: 10000,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Ingestion Failed",
+        description: error.message,
+        variant: "destructive",
+        duration: 8000,
+      });
     },
   });
 

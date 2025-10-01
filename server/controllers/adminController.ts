@@ -304,7 +304,9 @@ export async function startIngestion(req: Request, res: Response) {
       delay: delay || 100,
       dryRun: !!dryRun,
       forceOverwrite: !!forceOverwrite,
-      verbose: !!verbose
+      verbose: !!verbose,
+      skipDuplicates: !forceOverwrite, // Skip duplicates unless force overwrite is enabled
+      stopOnError: false // Continue processing even on errors
     }).catch((error: Error) => {
       console.error('[Admin] Ingestion error:', error);
     });

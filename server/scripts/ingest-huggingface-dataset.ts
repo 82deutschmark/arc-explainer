@@ -552,6 +552,10 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
     }
   }
 
+  // Track ingestion run start
+  const startTime = Date.now();
+  let ingestionRunId: number | null = null;
+  
   console.log('\n🌐 HuggingFace Dataset Ingestion Script\n');
   console.log(`Dataset: ${config.datasetName}`);
   console.log(`Base URL: ${config.baseUrl}`);
@@ -588,6 +592,29 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
     currentPuzzle: '',
     successDetails: []
   };
+
+  // Create ingestion run record (if not dry run)
+  if (!config.dryRun && repositoryService.db) {
+    try {
+      const result = await repositoryService.db.query(`
+        INSERT INTO ingestion_runs (
+          dataset_name, base_url, source, total_puzzles, 
+          dry_run, started_at
+        ) VALUES ($1, $2, $3, $4, $5, NOW())
+        RETURNING id
+      `, [
+        config.datasetName,
+        config.baseUrl,
+        config.source || null,
+        allPuzzleIds.length,
+        false
+      ]);
+      ingestionRunId = result.rows[0]?.id;
+      console.log(`📝 Created ingestion run record (ID: ${ingestionRunId})\n`);
+    } catch (error) {
+      console.warn('⚠️  Could not create ingestion_runs record:', error);
+    }
+  }
   
   // Process each puzzle
   for (let i = 0; i < allPuzzleIds.length; i++) {
@@ -635,6 +662,36 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
   
   console.log(`\n📈 Overall Accuracy: ${accuracyPct}% (${correctCount}/${totalAttempts} correct)`);
   console.log('='.repeat(60) + '\n');
+
+  // Update ingestion run record with completion stats
+  if (ingestionRunId && repositoryService.db) {
+    try {
+      const endTime = Date.now();
+      const durationMs = endTime - startTime;
+      
+      await repositoryService.db.query(`
+        UPDATE ingestion_runs 
+        SET 
+          successful = $1,
+          failed = $2,
+          skipped = $3,
+          duration_ms = $4,
+          accuracy_percent = $5,
+          completed_at = NOW()
+        WHERE id = $6
+      `, [
+        progress.successful,
+        progress.failed,
+        progress.skipped,
+        durationMs,
+        parseFloat(accuracyPct),
+        ingestionRunId
+      ]);
+      console.log(`✅ Updated ingestion run record (ID: ${ingestionRunId})\n`);
+    } catch (error) {
+      console.warn('⚠️  Could not update ingestion_runs record:', error);
+    }
+  }
 }
 
 /**
