@@ -509,8 +509,8 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
   
   // Load all available puzzles
   console.log('📚 Loading puzzle library...');
-  await puzzleLoader.initialize();
-  const allPuzzleIds = puzzleLoader.getAllPuzzleIds();
+  const allPuzzles = puzzleLoader.getPuzzleList();
+  const allPuzzleIds = allPuzzles.map(p => p.id);
   console.log(`Found ${allPuzzleIds.length} puzzles in local datasets\n`);
   
   const progress: IngestionProgress = {
