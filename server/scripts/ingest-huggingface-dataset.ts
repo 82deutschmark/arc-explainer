@@ -303,11 +303,26 @@ function calculateProcessingTime(startTimestamp: string, endTimestamp: string): 
 async function validateAndEnrichAttempt(
   attempt: HuggingFaceAttempt,
   attemptNumber: number,
+  testCaseIndex: number,
   puzzleData: any,
   config: IngestionConfig
 ): Promise<any> {
   const metadata = attempt.metadata;
-  const expectedOutput = puzzleData.test[0].output; // ARC puzzles have single test output
+  
+  // Use pair_index from metadata to determine which test case this is for
+  const pairIndex = metadata.pair_index || 0;
+  
+  // Validate that pairIndex matches our expectation
+  if (pairIndex !== testCaseIndex) {
+    console.warn(`⚠️  Warning: pair_index ${pairIndex} doesn't match expected test case ${testCaseIndex}`);
+  }
+  
+  // Get the correct test output for this specific test case
+  if (!puzzleData.test[pairIndex]) {
+    throw new Error(`Test case ${pairIndex} not found in puzzle data`);
+  }
+  
+  const expectedOutput = puzzleData.test[pairIndex].output;
   
   // Validate the prediction
   const validationResult = validateSolverResponse(
@@ -318,7 +333,7 @@ async function validateAndEnrichAttempt(
   );
   
   if (config.verbose) {
-    console.log(`   📊 Attempt ${attemptNumber}: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
+    console.log(`   📊 Test ${pairIndex} / Attempt ${attemptNumber}: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
     console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
   }
   
@@ -334,9 +349,14 @@ async function validateAndEnrichAttempt(
   const userPrompt = userMessage?.message.content || null;
   
   // Build enriched explanation data for this specific attempt
+  // Model name includes both test case and attempt number for multi-test puzzles
+  const modelNameSuffix = puzzleData.test.length > 1 
+    ? `-test${pairIndex}-attempt${attemptNumber}`
+    : `-attempt${attemptNumber}`;
+  
   const enrichedData: any = {
     puzzleId: puzzleData.id,
-    modelName: `${metadata.model}-attempt${attemptNumber}`, // Distinguish attempts
+    modelName: `${metadata.model}${modelNameSuffix}`, // Distinguish test case AND attempt
     
     // Prediction fields (single test only)
     predictedOutputGrid: validationResult.predictedGrid,
@@ -371,7 +391,9 @@ async function validateAndEnrichAttempt(
     customPromptText: null,
     
     // Analysis fields (external data doesn't provide these)
-    patternDescription: `External HuggingFace import - Attempt ${attemptNumber}`,
+    patternDescription: puzzleData.test.length > 1
+      ? `External HuggingFace import - Test case ${pairIndex}, Attempt ${attemptNumber}`
+      : `External HuggingFace import - Attempt ${attemptNumber}`,
     solvingStrategy: null,
     hints: [],
     confidence: null,
@@ -454,66 +476,92 @@ async function processPuzzle(
       throw new Error(`Puzzle ${puzzleId} not found in local datasets`);
     }
     
-    // Extract all attempts from HuggingFace data
-    const hfPuzzle = hfData[0]; // Array contains single puzzle object
-    const attempts = extractAllAttempts(hfPuzzle);
+    // HuggingFace data is an array where each element represents predictions for ONE test case
+    // Each element contains attempt_1 and attempt_2 for that specific test case
+    const numTestCases = hfData.length;
+    const numPuzzleTests = puzzleData.test.length;
     
-    if (attempts.length === 0) {
-      throw new Error('No attempts found in HuggingFace data');
+    if (numTestCases !== numPuzzleTests) {
+      console.warn(`⚠️  Warning: HuggingFace has ${numTestCases} test cases but puzzle has ${numPuzzleTests} tests`);
     }
     
     if (config.verbose) {
-      console.log(`\n📝 ${puzzleId} - Processing ${attempts.length} attempts...`);
+      console.log(`\n📝 ${puzzleId} - ${numTestCases} test case(s), 2 attempts each = ${numTestCases * 2} total predictions`);
     }
     
-    // Process each attempt separately
-    let attemptsSaved = 0;
-    for (let i = 0; i < attempts.length; i++) {
-      const attempt = attempts[i];
-      const attemptNumber = i + 1;
-      const modelName = `${attempt.metadata.model}-attempt${attemptNumber}`;
+    // Process each test case
+    let totalSaved = 0;
+    let totalCorrect = 0;
+    
+    for (let testIdx = 0; testIdx < numTestCases; testIdx++) {
+      const testCaseData = hfData[testIdx];
+      const attempts = extractAllAttempts(testCaseData);
       
-      // Check for duplicates
-      if (config.skipDuplicates) {
-        const isDuplicate = await checkDuplicate(puzzleId, modelName);
-        if (isDuplicate) {
-          progress.skipped++;
-          if (config.verbose) {
-            console.log(`   ⚠️  Attempt ${attemptNumber} - Skipped (duplicate exists)`);
-          }
-          continue;
-        }
-      } else if (config.forceOverwrite) {
-        await deleteDuplicate(puzzleId, modelName);
+      if (attempts.length === 0) {
+        console.warn(`⚠️  No attempts found for test case ${testIdx}`);
+        continue;
       }
       
-      // Validate and enrich this attempt
-      const enrichedData = await validateAndEnrichAttempt(attempt, attemptNumber, puzzleData, config);
-      
-      // Save to database
-      const saved = await saveToDatabase(enrichedData, config);
-      
-      if (saved) {
-        attemptsSaved++;
-        progress.successful++;
-        progress.successDetails.push({
-          puzzleId: `${puzzleId}-attempt${attemptNumber}`,
-          isCorrect: enrichedData.isPredictionCorrect,
-          isMultiTest: false,
-          accuracy: enrichedData.predictionAccuracyScore
-        });
+      // Process both attempts for this test case
+      for (let attemptIdx = 0; attemptIdx < attempts.length; attemptIdx++) {
+        const attempt = attempts[attemptIdx];
+        const attemptNumber = attemptIdx + 1;
+        
+        // Build model name that includes test case for multi-test puzzles
+        const modelNameSuffix = numTestCases > 1 
+          ? `-test${testIdx}-attempt${attemptNumber}`
+          : `-attempt${attemptNumber}`;
+        const modelName = `${attempt.metadata.model}${modelNameSuffix}`;
+        
+        // Check for duplicates
+        if (config.skipDuplicates) {
+          const isDuplicate = await checkDuplicate(puzzleId, modelName);
+          if (isDuplicate) {
+            progress.skipped++;
+            if (config.verbose) {
+              console.log(`   ⚠️  Test ${testIdx} / Attempt ${attemptNumber} - Skipped (duplicate exists)`);
+            }
+            continue;
+          }
+        } else if (config.forceOverwrite) {
+          await deleteDuplicate(puzzleId, modelName);
+        }
+        
+        // Validate and enrich this attempt
+        const enrichedData = await validateAndEnrichAttempt(
+          attempt, 
+          attemptNumber, 
+          testIdx,
+          puzzleData, 
+          config
+        );
+        
+        // Save to database
+        const saved = await saveToDatabase(enrichedData, config);
+        
+        if (saved) {
+          totalSaved++;
+          progress.successful++;
+          
+          if (enrichedData.isPredictionCorrect) {
+            totalCorrect++;
+          }
+          
+          progress.successDetails.push({
+            puzzleId: `${puzzleId}-test${testIdx}-attempt${attemptNumber}`,
+            isCorrect: enrichedData.isPredictionCorrect,
+            isMultiTest: numTestCases > 1,
+            accuracy: enrichedData.predictionAccuracyScore
+          });
+        }
       }
     }
     
     // Summary for this puzzle
-    if (attemptsSaved > 0) {
-      const correctCount = attempts.filter((_, i) => {
-        const enriched = progress.successDetails.find(d => d.puzzleId === `${puzzleId}-attempt${i + 1}`);
-        return enriched?.isCorrect;
-      }).length;
-      
-      const statusIcon = correctCount === attempts.length ? '✅' : correctCount > 0 ? '⚠️' : '❌';
-      console.log(`${statusIcon} ${puzzleId} - Saved ${attemptsSaved}/${attempts.length} attempts (${correctCount} correct)`);
+    if (totalSaved > 0) {
+      const totalExpected = numTestCases * 2;
+      const statusIcon = totalCorrect === totalExpected ? '✅' : totalCorrect > 0 ? '⚠️' : '❌';
+      console.log(`${statusIcon} ${puzzleId} - Saved ${totalSaved}/${totalExpected} predictions (${totalCorrect} correct)`);
     }
     
   } catch (error: any) {
