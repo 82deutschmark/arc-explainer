@@ -888,4 +888,21 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
   }
 
+  /**
+   * Count total explanations in database (for admin dashboard)
+   */
+  async countExplanations(): Promise<number> {
+    if (!this.isConnected()) {
+      return 0;
+    }
+
+    try {
+      const result = await this.query(`SELECT COUNT(*) as count FROM explanations`);
+      return result.rows[0]?.count ? parseInt(result.rows[0].count) : 0;
+    } catch (error) {
+      logger.error(`Error counting explanations: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return 0;
+    }
+  }
+
 }

@@ -65,9 +65,8 @@ export async function getQuickStats(req: Request, res: Response) {
     let lastIngestion = null;
 
     if (dbConnected) {
-      // Count all explanations
-      const allExplanations = await repositoryService.explanations.getAllExplanations();
-      totalExplanations = allExplanations.length;
+      // Count all explanations using repository method
+      totalExplanations = await repositoryService.explanations.countExplanations();
 
       // Get last ingestion run from ingestion_runs table
       try {
