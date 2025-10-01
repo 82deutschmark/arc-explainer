@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -198,6 +198,36 @@ export default function PuzzleBrowser() {
           
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
+
+          {/* ARC2 Paper Reference */}
+          <Card className="shadow-md border-0 bg-gradient-to-r from-purple-50 to-blue-50 backdrop-blur-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="h-6 w-6 text-purple-600 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">ARC2 Research Paper</h3>
+                    <p className="text-sm text-gray-600">Learn about the extended ARC-AGI challenge dataset</p>
+                  </div>
+                </div>
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  className="bg-white hover:bg-purple-50 border-purple-200 flex-shrink-0"
+                >
+                  <a 
+                    href="https://www.arxiv.org/pdf/2505.11831" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <span className="hidden sm:inline">Read Paper</span>
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </header>
 
         {/* Filters */}
