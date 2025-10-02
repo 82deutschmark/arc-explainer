@@ -24,8 +24,8 @@
  */
 
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { dirname, join, resolve } from 'path';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
@@ -847,7 +847,7 @@ ENVIRONMENT:
 export { ingestDataset as ingestHuggingFaceDataset };
 
 // Run the script if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const config = parseArgs();
   ingestDataset(config).catch((error) => {
     console.error('\n❌ Fatal error:', error);
