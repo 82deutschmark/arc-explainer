@@ -69,10 +69,10 @@ export function isAlienCommunicationMode(promptId: string): boolean {
 }
 
 /**
- * Check if a prompt ID is solver mode (predicting answers)
+ * Check if a prompt ID is solver mode (predicting answers)  NEED TO TREAT ALL PROMPTS AS SOLVER MODE!!!
  */
 export function isSolverMode(promptId: string): boolean {
-  return promptId === 'solver' || promptId === 'educationalApproach' || promptId === 'gepa' || promptId === 'debate' || promptId === 'custom';
+  return promptId === 'solver' || promptId === 'educationalApproach' || promptId === 'gepa' || promptId === 'debate' || promptId === 'custom' || promptId === 'standardExplanation' || promptId === 'alienCommunication' || promptId === 'externalHuggingFace';
 }
 
 // All legacy commented code removed - now using clean DRY architecture
