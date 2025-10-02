@@ -22,7 +22,7 @@ async function deleteNow() {
   
   const result = await pool.query(`
     DELETE FROM explanations 
-    WHERE prompt_template_id = 'external-huggingface'
+    WHERE prompt_template_id IN ('external-huggingface','externalHuggingFace')
     RETURNING id
   `);
   
