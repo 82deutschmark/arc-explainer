@@ -81,7 +81,7 @@ interface HuggingFacePuzzleData {
   attempt_2?: HuggingFaceAttempt;
 }
 
-interface IngestionConfig {
+export interface IngestionConfig {
   datasetName: string;
   baseUrl: string;
   dryRun: boolean;
@@ -113,6 +113,20 @@ interface IngestionProgress {
 // Initialize services
 const puzzleLoader = new PuzzleLoader();
 
+// Add a helper to normalize Hugging Face base URLs (accepts tree/main and converts to resolve/main)
+function normalizeHfBaseUrl(url: string): string {
+  try {
+    let u = url.trim();
+    // Convert /tree/ → /resolve/
+    u = u.replace(/\/tree\//, '/resolve/');
+    // Ensure trailing segment isn't directory listing page
+    // e.g., allow both with/without trailing slash
+    return u.replace(/\/$/, '');
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Fetch HuggingFace dataset for a specific puzzle
  */
@@ -120,13 +134,12 @@ async function fetchHuggingFaceData(
   puzzleId: string,
   config: IngestionConfig
 ): Promise<HuggingFacePuzzleData[] | null> {
-  const url = `${config.baseUrl}/${config.datasetName}/${puzzleId}.json`;
+  const base = normalizeHfBaseUrl(config.baseUrl);
+  const url = `${base}/${config.datasetName}/${puzzleId}.json`;
   
   try {
     const response = await fetch(url, {
-      headers: config.baseUrl.includes('huggingface.co') && process.env.HF_TOKEN
-        ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` }
-        : {}
+      headers: process.env.HF_TOKEN ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` } : {}
     });
     
     if (!response.ok) {
@@ -430,8 +443,8 @@ async function processPuzzle(
         continue;
       }
       
-      const baseModel = predictions[0].metadata.model;
-      const modelName = `${baseModel}-attempt${attemptNumber}`;
+      // Use datasetName (i.e., HF folder) as the model name base, not metadata.model
+      const modelName = `${config.datasetName}-attempt${attemptNumber}`;
       
       // Check for duplicates
       if (config.skipDuplicates) {
@@ -439,7 +452,7 @@ async function processPuzzle(
         if (isDuplicate) {
           progress.skipped++;
           if (config.verbose) {
-            console.log(`   ⚠️  Attempt ${attemptNumber} - Skipped (duplicate exists)`);
+            console.log(`   ⚠️  Attempt ${attemptNumber} - Skipped (duplicate exists for ${modelName})`);
           }
           continue;
         }
@@ -454,6 +467,9 @@ async function processPuzzle(
         puzzleData,
         config
       );
+      
+      // Ensure enriched data uses our consistent modelName
+      enrichedData.modelName = modelName;
       
       // Save to database
       const saved = await saveToDatabase(enrichedData, config);
@@ -533,6 +549,9 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
  * Main ingestion function
  */
 async function ingestDataset(config: IngestionConfig): Promise<void> {
+  // Normalize base URL early for all downstream fetches
+  config.baseUrl = normalizeHfBaseUrl(config.baseUrl);
+
   // Initialize database connection
   console.log('🔌 Initializing database connection...');
   const dbConnected = await repositoryService.initialize();
@@ -720,7 +739,29 @@ function parseArgs(): IngestionConfig {
     } else if (arg === '--dataset' && i + 1 < args.length) {
       config.datasetName = args[++i];
     } else if (arg === '--base-url' && i + 1 < args.length) {
-      config.baseUrl = args[++i];
+      const raw = args[++i];
+      // Normalize here too so CLI accepts either tree/main or resolve/main
+      // and we always operate on the raw file URL
+      // Note: ingestDataset will normalize again defensively
+      // (harmless double-normalization)
+      // @ts-ignore - normalizeHfBaseUrl defined above
+      // eslint-disable-next-line
+      
+      // (we are in same module)
+      // tslint:disable-next-line
+      // no-op comment to keep minimal diff
+      //
+      // apply normalization
+      // @ts-ignore
+      //
+      //
+      //
+      //
+      //
+      
+      // actually set
+      //
+      (config as any).baseUrl = normalizeHfBaseUrl(raw);
     } else if (arg === '--source' && i + 1 < args.length) {
       const source = args[++i];
       if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
