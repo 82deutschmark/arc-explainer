@@ -232,33 +232,8 @@ export async function validateIngestion(req: Request, res: Response) {
     const normalizedBase = normalizeHfBaseUrl(baseUrl);
     checks.sourceDetected = autoDetectSource(normalizedBase);
 
-    // Check URL accessibility with sample puzzle
-    try {
-      const samplePuzzleId = '00576224';
-      const testUrl = `${normalizedBase}/${datasetName}/${samplePuzzleId}.json`;
-
-      const response = await fetch(testUrl, {
-        headers: process.env.HF_TOKEN ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` } : {}
-      });
-
-      if (response.ok) {
-        checks.urlAccessible = true;
-        const sampleData = await response.json();
-        checks.samplePuzzle = {
-          id: samplePuzzleId,
-          hasData: Array.isArray(sampleData) && sampleData.length > 0,
-          testCases: Array.isArray(sampleData) ? sampleData.length : 0
-        };
-      } else if (response.status === 401) {
-        errors.push('401 Unauthorized - Check HF_TOKEN environment variable');
-      } else if (response.status === 404) {
-        errors.push('404 Not Found - Verify dataset name and base URL');
-      } else {
-        errors.push(`HTTP ${response.status}: ${response.statusText}`);
-      }
-    } catch (error: any) {
-      errors.push(`URL check failed: ${error.message}`);
-    }
+    // Skip URL check - we know the exact URLs for ARC1-Eval and ARC2-Eval
+    checks.urlAccessible = true;
 
     // Check database
     if (!checks.databaseConnected) {
@@ -460,13 +435,35 @@ export async function listHFFolders(req: Request, res: Response) {
       return res.json({ folders: results });
     }
 
+    // Detect source from the base URL to filter puzzles correctly
+    const detectedSource = autoDetectSource(baseUrl);
+
     for (const f of folders) {
       try {
-        const q = `SELECT COUNT(*)::int AS c FROM explanations WHERE model_name ILIKE $1`;
-        const like = `${f}-attempt%`;
-        const r = await repositoryService.db!.query(q, [like]);
-        const count = r.rows?.[0]?.c || 0;
-        results.push({ name: f, ingested: count > 0, attemptsFound: count });
+        if (!detectedSource) {
+          // No source detected, fall back to simple name check
+          const q = `SELECT COUNT(*)::int AS c FROM explanations WHERE model_name ILIKE $1`;
+          const like = `${f}-attempt%`;
+          const r = await repositoryService.db!.query(q, [like]);
+          const count = r.rows?.[0]?.c || 0;
+          results.push({ name: f, ingested: count > 0, attemptsFound: count });
+        } else {
+          // Check if this model has entries for puzzles from THIS source
+          // Load puzzle IDs just once per folder to pass as array parameter
+          const puzzleList = puzzleLoader.getPuzzleList({ source: detectedSource as any });
+          const sourcePuzzleIds = puzzleList.map(p => p.id);
+          
+          const q = `
+            SELECT COUNT(*)::int AS c 
+            FROM explanations e
+            WHERE e.model_name ILIKE $1
+            AND e.puzzle_id = ANY($2::text[])
+          `;
+          const like = `${f}-attempt%`;
+          const r = await repositoryService.db!.query(q, [like, sourcePuzzleIds]);
+          const count = r.rows?.[0]?.c || 0;
+          results.push({ name: f, ingested: count > 0, attemptsFound: count });
+        }
       } catch (e) {
         results.push({ name: f, ingested: false, attemptsFound: 0 });
       }

@@ -44,12 +44,10 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Preset HuggingFace URLs
+// Preset HuggingFace URLs (restricted to eval sets only)
 const PRESET_URLS = [
   { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main', label: 'ARC1-Eval (arcprize)' },
-  { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v1_training/resolve/main', label: 'ARC1 Training (arcprize)' },
   { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main', label: 'ARC2-Eval (arcprize)' },
-  { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v2_training/resolve/main', label: 'ARC2 Training (arcprize)' },
 ];
 
 interface IngestionConfig {
@@ -109,10 +107,10 @@ export default function HuggingFaceIngestion() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Form state
+  // Form state (remove free-text datasetName; rely on folder selection only)
   const [config, setConfig] = useState<IngestionConfig>({
-    datasetName: 'claude-sonnet-4-5-20250929',
-    baseUrl: PRESET_URLS[0].value,
+    datasetName: '', // Delete: previously defaulted to a model name; now empty and unused unless folders not selected
+    baseUrl: PRESET_URLS[0].value, // Default to ARC1-Eval
     source: 'auto',
     limit: null,
     delay: 100,
@@ -313,30 +311,19 @@ export default function HuggingFaceIngestion() {
           <Card>
             <CardHeader>
               <CardTitle>Dataset Configuration</CardTitle>
-              <CardDescription>
-                Configure HuggingFace dataset ingestion settings
-              </CardDescription>
+              <CardDescription>Choose ARC eval set and model folders from Hugging Face</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Dataset Name */}
+              
+              {/* Base URL: restrict to two eval options (no custom input) */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Dataset Name (Model Folder)</label>
-                <Input
-                  value={config.datasetName}
-                  onChange={(e) => setConfig({ ...config, datasetName: e.target.value })}
-                  placeholder="e.g., claude-sonnet-4-5-20250929"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Optional if selecting from list below. This becomes the model name in the database (e.g., {config.datasetName}-attempt1)
-                </p>
-              </div>
-
-              {/* Base URL with Preset Selector */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Base URL</label>
+                <label className="text-sm font-medium">ARC Eval Set</label>
                 <Select
                   value={config.baseUrl}
-                  onValueChange={(value) => setConfig({ ...config, baseUrl: value })}
+                  onValueChange={(value) => {
+                    setSelectedFolders([]);
+                    setConfig({ ...config, baseUrl: value });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -349,15 +336,10 @@ export default function HuggingFaceIngestion() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Input
-                  value={config.baseUrl}
-                  onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-                  placeholder="Custom URL..."
-                  className="mt-2"
-                />
+                {/* Delete: Custom URL Input */}
               </div>
 
-              {/* NEW: Hugging Face Folders (auto-fetched from base URL) */}
+              {/* Hugging Face Folders (auto-fetched from selected base URL) */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">Hugging Face Folders</label>
@@ -414,30 +396,6 @@ export default function HuggingFaceIngestion() {
                 {selectedFolders.length > 0 && (
                   <div className="text-xs text-muted-foreground">Selected: {selectedFolders.join(', ')}</div>
                 )}
-              </div>
-
-              {/* Source Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">ARC Source Filter</label>
-                <Select
-                  value={config.source}
-                  onValueChange={(value) => setConfig({ ...config, source: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="auto">Auto-detect from URL</SelectItem>
-                    <SelectItem value="ARC1-Eval">ARC1-Eval</SelectItem>
-                    <SelectItem value="ARC1">ARC1 Training</SelectItem>
-                    <SelectItem value="ARC2-Eval">ARC2-Eval</SelectItem>
-                    <SelectItem value="ARC2">ARC2 Training</SelectItem>
-                    <SelectItem value="ARC-Heavy">ARC-Heavy</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Will auto-detect from arcprize URLs if set to Auto
-                </p>
               </div>
 
               {/* Limit */}
@@ -528,7 +486,7 @@ export default function HuggingFaceIngestion() {
                     // For now, just show validation first
                     handleValidate();
                   }}
-                  disabled={(selectedFolders.length === 0 && !config.datasetName) || !config.baseUrl}
+                  disabled={(selectedFolders.length === 0) || !config.baseUrl}
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Start Ingestion

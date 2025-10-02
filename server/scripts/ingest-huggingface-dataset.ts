@@ -534,16 +534,16 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
   if (url.includes('arc_agi_v1') && url.includes('eval')) {
     return 'ARC1-Eval';
   }
-  // arcprize/arc_agi_v1_training or arc_agi_v1 → ARC1
-  if (url.includes('arc_agi_v1') && url.includes('train')) {
+  // arcprize/arc_agi_v1_training → ARC1
+  if (url.includes('arc_agi_v1') && (url.includes('train') || url.includes('training'))) {
     return 'ARC1';
   }
   // arcprize/arc_agi_v2_public_eval → ARC2-Eval
   if (url.includes('arc_agi_v2') && url.includes('eval')) {
     return 'ARC2-Eval';
   }
-  // arcprize/arc_agi_v2_training or arc_agi_v2 → ARC2
-  if (url.includes('arc_agi_v2') && url.includes('train')) {
+  // arcprize/arc_agi_v2_training → ARC2
+  if (url.includes('arc_agi_v2') && (url.includes('train') || url.includes('training'))) {
     return 'ARC2';
   }
 
