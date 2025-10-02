@@ -720,7 +720,7 @@ function parseArgs(): IngestionConfig {
   const args = process.argv.slice(2);
 
   const config: IngestionConfig = {
-    datasetName: 'claude-sonnet-4-5-20250929',
+    datasetName: 'claude-sonnet-4-5-20250929-thinking-1k',
     baseUrl: 'https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main',
     dryRun: false,
     verbose: false,
@@ -810,7 +810,7 @@ USAGE:
   npm run ingest-hf -- [options]
 
 OPTIONS:
-  --dataset <name>         Model folder name in HF dataset (default: claude-sonnet-4-5-20250929)
+  --dataset <name>         Model folder name in HF dataset (default: claude-sonnet-4-5-20250929-thinking-1k)
   --base-url <url>         Base URL for HuggingFace dataset
                            (default: arcprize/arc_agi_v1_public_eval)
   --source <source>        Override auto-detected ARC source
@@ -830,7 +830,7 @@ EXAMPLES:
   npm run ingest-hf -- --limit 5 --dry-run --verbose
 
   # Ingest all ARC1-Eval puzzles from default arcprize dataset
-  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929
+  npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929-thinking-1k
 
   # Ingest from different arcprize dataset (auto-detects ARC2-Eval)
   npm run ingest-hf -- --base-url https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main
