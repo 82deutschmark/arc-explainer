@@ -187,6 +187,27 @@ function autoDetectSource(baseUrl: string): string | null {
   return null;
 }
 
+// Helper: normalize HF base url to use resolve/main for raw JSON
+function normalizeHfBaseUrl(url: string): string {
+  try {
+    let u = (url || '').trim();
+    return u.replace(/\/tree\//, '/resolve/').replace(/\/$/, '');
+  } catch {
+    return url;
+  }
+}
+
+// Helper: extract dataset path parts from a HF URL (namespace/repo)
+function parseHfDatasetPath(url: string): { namespace: string; repo: string } | null {
+  try {
+    const m = url.match(/huggingface\.co\/datasets\/([^\/]+)\/([^\/?#]+)/i);
+    if (!m) return null;
+    return { namespace: m[1], repo: m[2] };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * @route   POST /api/admin/validate-ingestion
  * @desc    Validate ingestion configuration before running
@@ -207,18 +228,17 @@ export async function validateIngestion(req: Request, res: Response) {
 
     const errors: string[] = [];
 
-    // Auto-detect source
-    checks.sourceDetected = autoDetectSource(baseUrl);
+    // Auto-detect source (works with either tree or resolve form)
+    const normalizedBase = normalizeHfBaseUrl(baseUrl);
+    checks.sourceDetected = autoDetectSource(normalizedBase);
 
     // Check URL accessibility with sample puzzle
     try {
-      const samplePuzzleId = '00576224'; // Known puzzle ID
-      const testUrl = `${baseUrl}/${datasetName}/${samplePuzzleId}.json`;
+      const samplePuzzleId = '00576224';
+      const testUrl = `${normalizedBase}/${datasetName}/${samplePuzzleId}.json`;
 
       const response = await fetch(testUrl, {
-        headers: baseUrl.includes('huggingface.co') && process.env.HF_TOKEN
-          ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` }
-          : {}
+        headers: process.env.HF_TOKEN ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` } : {}
       });
 
       if (response.ok) {
@@ -393,6 +413,68 @@ export async function getIngestionHistory(req: Request, res: Response) {
       error: 'Failed to get ingestion history',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
+}
+
+/**
+ * @route   GET /api/admin/hf-folders
+ * @desc    List top-level folders in a HuggingFace dataset repo and mark which are already ingested
+ * @query   baseUrl: string (e.g., https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/tree/main or resolve/main)
+ */
+export async function listHFFolders(req: Request, res: Response) {
+  try {
+    const baseUrl = String(req.query.baseUrl || '');
+    if (!baseUrl) {
+      return res.status(400).json({ error: 'Missing baseUrl query param' });
+    }
+
+    const parsed = parseHfDatasetPath(baseUrl);
+    if (!parsed) {
+      return res.status(400).json({ error: 'Invalid Hugging Face dataset URL' });
+    }
+
+    // HF API: list tree for datasets
+    // Example: https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval/tree/main?path=
+    const apiUrl = `https://huggingface.co/api/datasets/${parsed.namespace}/${parsed.repo}/tree/main?path=`;
+
+    const resp = await fetch(apiUrl, {
+      headers: process.env.HF_TOKEN ? { 'Authorization': `Bearer ${process.env.HF_TOKEN}` } : {}
+    });
+
+    if (!resp.ok) {
+      const info = await resp.text().catch(() => resp.statusText);
+      return res.status(resp.status).json({ error: `HF API error: ${info}` });
+    }
+
+    const items = await resp.json();
+    // Expect array of entries with {type, path}
+    const folders: string[] = Array.isArray(items)
+      ? items.filter((it: any) => it.type === 'directory').map((it: any) => it.path.split('/').pop())
+      : [];
+
+    // For each folder, check DB if any entries exist matching `${folder}-attempt%`
+    const results: Array<{ name: string; ingested: boolean; attemptsFound: number }> = [];
+
+    if (!repositoryService.isInitialized() || folders.length === 0) {
+      for (const f of folders) results.push({ name: f, ingested: false, attemptsFound: 0 });
+      return res.json({ folders: results });
+    }
+
+    for (const f of folders) {
+      try {
+        const q = `SELECT COUNT(*)::int AS c FROM explanations WHERE model_name ILIKE $1`;
+        const like = `${f}-attempt%`;
+        const r = await repositoryService.db!.query(q, [like]);
+        const count = r.rows?.[0]?.c || 0;
+        results.push({ name: f, ingested: count > 0, attemptsFound: count });
+      } catch (e) {
+        results.push({ name: f, ingested: false, attemptsFound: 0 });
+      }
+    }
+
+    res.json({ folders: results });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to list HF folders', message: error instanceof Error ? error.message : String(error) });
   }
 }
 
