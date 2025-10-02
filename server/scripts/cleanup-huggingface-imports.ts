@@ -83,7 +83,7 @@ async function findHuggingFaceEntries(config: CleanupConfig): Promise<any[]> {
       has_multiple_predictions
     FROM explanations
     WHERE 
-      prompt_template_id = 'external-huggingface'
+      prompt_template_id IN ('external-huggingface','externalHuggingFace')
       ${config.modelPattern ? `AND model_name LIKE $1` : ''}
     ORDER BY created_at DESC
   `;
@@ -247,7 +247,7 @@ function parseArgs(): CleanupConfig {
     dryRun: true, // Default to dry-run for safety
     verbose: false,
     modelPattern: undefined,
-    promptTemplateId: 'external-huggingface',
+    promptTemplateId: 'externalHuggingFace',
     skipConfirmation: false
   };
   
@@ -310,11 +310,11 @@ SAFETY:
   - Script defaults to DRY RUN mode (--dry-run)
   - Requires explicit --live flag to actually delete
   - Shows confirmation prompt before deletion (unless --yes is used)
-  - Only targets entries with prompt_template_id = 'external-huggingface'
+  - Only targets entries with prompt_template_id IN ('external-huggingface','externalHuggingFace')
 
 WHAT IT DELETES:
   - All explanations entries created by the HuggingFace ingestion script
-  - Identified by prompt_template_id = 'external-huggingface'
+  - Identified by prompt_template_id IN ('external-huggingface','externalHuggingFace')
   - Optionally filtered by model name pattern
   `);
 }
