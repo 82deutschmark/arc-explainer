@@ -89,7 +89,10 @@ export default function AnalyticsOverview() {
   // Auto-select Claude 4.5 Sonnet model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const claude45 = availableModels.find(m => m.includes('claude-sonnet-4-5-20250929-thinking'));
+      const targetModel = 'claude-sonnet-4-5-20250929-thinking-32k-attempt2';
+      const claude45 = availableModels.includes(targetModel) 
+        ? targetModel 
+        : availableModels.find(m => m.includes('claude-sonnet-4-5-20250929-thinking-32k-attempt2'));
       setSelectedModelForDataset(claude45 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
@@ -412,7 +415,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-green-700 flex items-center gap-2">
-                        ??? Solved ({modelDatasetPerformance.solved.length})
+                        ✅ Correct ({modelDatasetPerformance.solved.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         is_prediction_correct = true OR multi_test_all_correct = true
@@ -433,7 +436,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-red-700 flex items-center gap-2">
-                        ??? Incorrect ({modelDatasetPerformance.failed.length})
+                        ❌ Incorrect ({modelDatasetPerformance.failed.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         Attempted but failed (false OR null values count as incorrect)
@@ -454,7 +457,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-gray-700 flex items-center gap-2">
-                        ??? Not Attempted ({modelDatasetPerformance.notAttempted.length})
+                        ⚠️ Not Attempted ({modelDatasetPerformance.notAttempted.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         No entries in explanations table for this model
