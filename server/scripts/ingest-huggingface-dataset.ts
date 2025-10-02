@@ -29,6 +29,7 @@ import { dirname, join, resolve } from 'path';
 import { PuzzleLoader } from '../services/puzzleLoader.ts';
 import { validateSolverResponse, validateSolverResponseMulti } from '../services/responseValidator.ts';
 import { repositoryService } from '../repositories/RepositoryService.ts';
+import { determineCorrectness } from '../../shared/utils/correctness.ts';
 
 // Load environment variables
 dotenv.config();
@@ -327,7 +328,7 @@ async function validateAndEnrichAggregatedAttempt(
     confidence: null,  // Not provided by HF
     
     // Raw data preservation (store all predictions for this attempt)
-    providerRawResponse: JSON.stringify(predictions, null, 2),
+    providerRawResponse: predictions,
     
     // AI params
     temperature: null,
@@ -478,17 +479,21 @@ async function processPuzzle(
         totalSaved++;
         progress.successful++;
         
-        const isCorrect = isMultiTest 
-          ? enrichedData.multiTestAllCorrect 
-          : enrichedData.isPredictionCorrect;
-        
+        const correctnessStatus = determineCorrectness({
+          modelName: enrichedData.modelName,
+          multiTestAllCorrect: enrichedData.multiTestAllCorrect,
+          isPredictionCorrect: enrichedData.isPredictionCorrect,
+          hasMultiplePredictions: enrichedData.hasMultiplePredictions
+        });
+        const isCorrect = correctnessStatus.isCorrect;
+
         if (isCorrect) {
           totalCorrect++;
         }
-        
+
         progress.successDetails.push({
           puzzleId: `${puzzleId}-attempt${attemptNumber}`,
-          isCorrect: isCorrect || false,
+          isCorrect,
           isMultiTest,
           accuracy: isMultiTest 
             ? enrichedData.multiTestAverageAccuracy 
