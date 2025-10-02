@@ -115,59 +115,14 @@ interface IngestionProgress {
 const puzzleLoader = new PuzzleLoader();
 
 /**
- * Normalize Hugging Face base URLs for the ONLY two datasets we support
- * HARDCODED: arc_agi_v1 and arc_agi_v2 use different HuggingFace URL structures
- * - V1 uses: /resolve/main (older HF format)
- * - V2 uses: /resolve/refs/heads/main (newer HF format)
- * This converts browser URLs (/tree/main) to raw file URLs
- */
-function normalizeHfBaseUrl(url: string): string {
-  try {
-    let u = url.trim();
-    
-    // HARDCODED: ARC v2 dataset (newer HF format)
-    if (u.includes('arc_agi_v2_public_eval')) {
-      // Convert /tree/main → /resolve/refs/heads/main for v2
-      u = u.replace(/\/tree\/main\/?$/, '/resolve/refs/heads/main');
-      // If already has /resolve/ but not the full path, fix it
-      if (u.includes('/resolve/main')) {
-        u = u.replace(/\/resolve\/main\/?$/, '/resolve/refs/heads/main');
-      }
-      // Ensure it ends with the correct path
-      if (!u.endsWith('/resolve/refs/heads/main')) {
-        u = u.replace(/\/$/, '') + '/resolve/refs/heads/main';
-      }
-      return u;
-    }
-    
-    // HARDCODED: ARC v1 dataset (older HF format)
-    if (u.includes('arc_agi_v1_public_eval')) {
-      // Convert /tree/main → /resolve/main for v1
-      u = u.replace(/\/tree\/main\/?$/, '/resolve/main');
-      // Ensure it ends with /resolve/main
-      if (!u.endsWith('/resolve/main')) {
-        u = u.replace(/\/$/, '') + '/resolve/main';
-      }
-      return u;
-    }
-    
-    // Fallback for other URLs: basic tree → resolve conversion
-    u = u.replace(/\/tree\//, '/resolve/');
-    return u.replace(/\/$/, '');
-  } catch {
-    return url;
-  }
-}
-
-/**
  * Fetch HuggingFace dataset for a specific puzzle
+ * No normalization - URLs are hardcoded in frontend
  */
 async function fetchHuggingFaceData(
   puzzleId: string,
   config: IngestionConfig
 ): Promise<HuggingFacePuzzleData[] | null> {
-  const base = normalizeHfBaseUrl(config.baseUrl);
-  const url = `${base}/${config.datasetName}/${puzzleId}.json`;
+  const url = `${config.baseUrl}/${config.datasetName}/${puzzleId}.json`;
   
   try {
     const response = await fetch(url, {
@@ -585,9 +540,6 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
  * Main ingestion function
  */
 async function ingestDataset(config: IngestionConfig): Promise<void> {
-  // Normalize base URL early for all downstream fetches
-  config.baseUrl = normalizeHfBaseUrl(config.baseUrl);
-
   // Initialize database connection
   console.log('🔌 Initializing database connection...');
   const dbConnected = await repositoryService.initialize();
@@ -654,9 +606,9 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
       const result = await repositoryService.db.query(`
         INSERT INTO ingestion_runs (
           dataset_name, base_url, source, total_puzzles, 
-          successful, failed, skipped,
+          successful, failed, skipped, duration_ms,
           dry_run, started_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
         RETURNING id
       `, [
         config.datasetName,
@@ -666,6 +618,7 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
         0,  // Initialize successful to 0
         0,  // Initialize failed to 0
         0,  // Initialize skipped to 0
+        0,  // Initialize duration_ms to 0
         false
       ]);
       ingestionRunId = result.rows[0]?.id;
@@ -779,10 +732,7 @@ function parseArgs(): IngestionConfig {
     } else if (arg === '--dataset' && i + 1 < args.length) {
       config.datasetName = args[++i];
     } else if (arg === '--base-url' && i + 1 < args.length) {
-      const raw = args[++i];
-      // Normalize URL to handle both /tree/main and /resolve/main formats
-      // V1 and V2 datasets use different HuggingFace URL structures
-      config.baseUrl = normalizeHfBaseUrl(raw);
+      config.baseUrl = args[++i];
     } else if (arg === '--source' && i + 1 < args.length) {
       const source = args[++i];
       if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
