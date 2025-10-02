@@ -61,7 +61,7 @@ export default function AnalyticsOverview() {
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
 
-  // Auto-select ARC1-Eval dataset if available, otherwise first dataset
+  // Auto-select ARC1-Eval dataset (changed from ARC2-Eval to ARC1-Eval as default)
   React.useEffect(() => {
     if (availableDatasets.length > 0 && !selectedDataset) {
       const arc1Eval = availableDatasets.find(d => d.name === 'ARC1-Eval');
@@ -69,18 +69,19 @@ export default function AnalyticsOverview() {
     }
   }, [availableDatasets, selectedDataset]);
 
-  // Auto-select GPT-5-Nano model if available
+  // Auto-select Claude 4.5 Sonnet model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const gpt5Nano = availableModels.find(m => m.includes('gpt-5-nano'));
-      setSelectedModelForDataset(gpt5Nano || availableModels[0]);
+      const claude45 = availableModels.find(m => m.includes('claude-sonnet-4-5-20250929-thinking'));
+      setSelectedModelForDataset(claude45 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
 
-  // Set page title
+  // Set page title and scroll to top
   React.useEffect(() => {
     document.title = 'Analytics Dashboard - ARC Explainer';
+    window.scrollTo(0, 0);
   }, []);
 
   // Fetch analytics data using proper repository-backed hooks
