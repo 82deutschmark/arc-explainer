@@ -202,53 +202,30 @@ class IngestionJobManager {
       const remaining = job.progress.total - job.progress.processed;
       job.progress.estimatedRemainingMs = avgTimePerPuzzle * remaining;
     }
-    
-    // Broadcast update
-    this.broadcastProgress(jobId);
   }
 
   /**
    * Mark job as completed with summary
    */
-  completeJob(jobId: string, summary: IngestionJobState['summary']) {
+  public completeJob(jobId: string, summary?: IngestionJobState['summary']): boolean {
     const job = this.jobs.get(jobId);
-    if (!job) return;
-    
-    job.status = 'completed';
-    job.summary = summary;
-    
-    console.log(`[JobManager] Job ${jobId} completed - ${summary.successful}/${summary.total} successful`);
-    
-    // Broadcast completion
-    broadcast(jobId, {
-      status: job.status,
-      progress: job.progress,
-      summary: job.summary,
-      message: `Ingestion complete! ${summary.successful}/${summary.total} successful (${summary.accuracyPercent.toFixed(1)}% accuracy)`,
-      timestamp: Date.now()
-    });
-  }
+    if (!job) return false;
 
-  /**
-   * Mark job as failed with error
-   */
-  failJob(jobId: string, error: string) {
-    const job = this.jobs.get(jobId);
-    if (!job) return;
-    
-    job.status = 'error';
-    job.errorMessage = error;
-    
-    console.error(`[JobManager] Job ${jobId} failed:`, error);
-    
-    // Broadcast error
-    broadcast(jobId, {
-      status: job.status,
-      progress: job.progress,
-      error: error,
-      message: `Ingestion failed: ${error}`,
-      timestamp: Date.now()
-    });
+    job.status = 'completed';
+    job.summary = summary || {
+      total: 0,
+      successful: 0,
+      failed: 0,
+      skipped: 0,
+      accuracyPercent: 0,
+      durationMs: 0
+    };
+    job.progress.processed = job.progress.total;
+    job.progress.elapsedMs = Date.now() - job.progress.startTime;
+    job.progress.estimatedRemainingMs = 0;
+
+    this.broadcastProgress(jobId);
+    return true;
   }
 
   /**
@@ -257,21 +234,25 @@ class IngestionJobManager {
   private broadcastProgress(jobId: string) {
     const job = this.jobs.get(jobId);
     if (!job) return;
-    
-    const message = job.status === 'paused' 
-      ? 'Paused - click Resume to continue'
-      : job.status === 'cancelled'
-      ? 'Cancelled by user'
-      : job.progress.currentPuzzle
-      ? `Processing ${job.progress.currentPuzzle}...`
-      : 'Initializing...';
-    
-    broadcast(jobId, {
+
+    const progress = {
+      jobId: job.jobId,
       status: job.status,
-      progress: job.progress,
-      message,
+      progress: {
+        ...job.progress,
+        percentage: Math.round((job.progress.processed / job.progress.total) * 100) || 0,
+      },
+      summary: job.summary || {
+        total: 0,
+        successful: 0,
+        failed: 0,
+        skipped: 0
+      },
+      error: job.errorMessage,
       timestamp: Date.now()
-    });
+    };
+
+    broadcast('ingestion:progress', progress);
   }
 
   /**
