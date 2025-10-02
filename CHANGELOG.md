@@ -1,4 +1,159 @@
+## [2025-10-01]
+
+### Fixed
+- **Admin Hub Quick Stats Bug** (Critical)
+  - Fixed 500 error on `/api/admin/quick-stats` endpoint
+  - Root cause: Controller called non-existent `getAllExplanations()` method
+  - Solution: Added `countExplanations()` method to ExplanationRepository
+  - Added `db` property to RepositoryService for direct SQL queries (marked deprecated)
+  - All adminController errors resolved
+  - Commits: c048930, c5f9fe6
+
+- **HuggingFace Ingestion Button Not Working** (Critical)
+  - Frontend button showed alert placeholder instead of triggering ingestion
+  - Root cause: Missing `/api/admin/start-ingestion` backend endpoint
+  - Solution:
+    - Exported `ingestHuggingFaceDataset` function from ingestion script
+    - Added `startIngestion()` controller function in adminController
+    - Registered route in server/routes.ts
+    - Implemented ingestion mutation in frontend with loading states
+    - Ingestion now starts asynchronously and returns 202 Accepted
+  - Files: server/scripts/ingest-huggingface-dataset.ts, server/controllers/adminController.ts, server/routes.ts, client/src/pages/HuggingFaceIngestion.tsx
+
+### Added
+- **ARC2 Research Paper Link** (Landing Page Enhancement)
+  - Added prominent card on PuzzleBrowser landing page linking to ARC2 paper (https://www.arxiv.org/pdf/2505.11831)
+  - Gradient purple-to-blue background for visual distinction
+  - Responsive layout with BookOpen and ExternalLink icons
+  - Positioned strategically below mission statement in hero section
+
+- **About Page** (`/about`)
+  - Comprehensive project information and background
+  - Accessibility focus section explaining colorblindness support and emoji usage
+  - Technology stack details and open source information
+  - Acknowledgments for François Chollet, ARC Prize team, open source community, and users
+  - Contact section with GitHub repository and issues links
+  - Navigation integration with Info icon in AppNavigation
+  - Fully responsive design using shadcn/ui components (Card, Button, Badge)
+
+
+- **Admin Hub Dashboard** (`/admin`)
+  - Centralized admin interface for all administrative operations
+  - Quick stats: total models, total explanations, database status, last ingestion
+  - Navigation cards to Model Management and HuggingFace Ingestion
+  - Recent activity feed showing last 10 ingestion runs
+  - Real-time database connection monitoring with health indicators
+  - Backend API: `/api/admin/quick-stats`, `/api/admin/recent-activity`
+  - Uses shadcn/ui: Card, Button, Badge, Separator, Alert
+
+- **HuggingFace Ingestion UI** (`/admin/ingest-hf`)
+  - Full-featured web interface for importing external model predictions
+  - Configuration form with preset HuggingFace URLs (arcprize v1/v2 eval/training)
+  - Auto-detection of ARC source from dataset URLs
+  - Pre-flight validation with detailed checks:
+    - URL accessibility verification
+    - HF_TOKEN environment variable check
+    - Database connection test
+    - Sample puzzle data preview
+  - Ingestion history table with sortable columns
+  - Dry run mode for testing without database writes
+  - Support for force overwrite and verbose logging options
+  - Puzzle limit option for testing (process subset of puzzles)
+  - Backend API: `/api/admin/validate-ingestion`, `/api/admin/ingestion-history`
+  - Uses shadcn/ui: Card, Input, Select, Button, Checkbox, Alert, Dialog, Table, Tabs, Badge
+  - Note: Actual ingestion execution (SSE streaming) prepared but requires user testing
+
+- **Ingestion Runs Database Table** (`ingestion_runs`)
+  - Tracks complete history of HuggingFace dataset ingestion operations
+  - Stores: dataset name, base URL, source, total puzzles, success/fail/skip counts
+  - Records: duration, accuracy percentage, dry run mode, error logs
+  - Indexed by dataset name and started timestamp for efficient querying
+  - Migration: Integrated into `DatabaseSchema.ts` as `createIngestionRunsTable()`
+  - Auto-creates on server startup via schema initialization
+
+- **Admin API Endpoints**
+  - `GET /api/admin/quick-stats` - Dashboard statistics (models, explanations, DB status)
+  - `GET /api/admin/recent-activity` - Last 10 ingestion runs for activity feed
+  - `POST /api/admin/validate-ingestion` - Pre-flight validation before ingestion
+  - `GET /api/admin/ingestion-history` - Complete ingestion run history
+  - All endpoints include graceful handling of missing database/tables
+
+- **Admin Routes Reorganization**
+  - `/admin` → Admin Hub (new dashboard)
+  - `/admin/models` → Model Management (relocated from `/model-config`)
+  - `/admin/ingest-hf` → HuggingFace Ingestion UI (new)
+  - `/model-config` → Preserved for backward compatibility
+
+### Technical Details
+- **SRP Compliance**: Each page has single responsibility (dashboard, model config, ingestion)
+- **DRY**: Reuses existing services (PuzzleLoader, repositoryService, responseValidator)
+- **shadcn/ui**: 100% shadcn/ui components, no custom UI
+- **Data Mapping**: Applies same critical fixes from CLI ingestion script:
+  - Uses `datasetName` for model name (not metadata.model)
+  - Stores actual HF predictions in `predicted_output_grid`
+  - Maps `content` → `pattern_description`
+  - Maps `reasoning_summary` → `reasoning_log`
+  - Maps `total_cost` → `estimated_cost`
+
+### Changed
+- Model Management moved from `/model-config` to `/admin/models` (backward compatible)
+- Admin controller extended with ingestion endpoints (preserves existing recovery endpoint)
+
+### Notes
+- Database migration must be run: Execute `server/migrations/001_create_ingestion_runs.sql`
+- Actual ingestion execution with SSE streaming is prepared but awaits user testing
+- All new code follows established patterns and architectural principles
+
 ## [2025-09-30]
+
+### Added
+- **HuggingFace Dataset Ingestion** (`server/scripts/ingest-huggingface-dataset.ts`)
+  - CLI script for ingesting external AI model predictions from HuggingFace datasets
+  - Validates predictions against actual puzzle solutions BEFORE database insertion
+  - Handles single-test and multi-test puzzles with full accuracy calculation
+  - Supports authenticated HuggingFace API requests via HUGGINGFACE_TOKEN
+  - Automatic duplicate detection with skip or overwrite modes
+  - Comprehensive error handling and progress reporting
+  - Detailed summary statistics including accuracy breakdowns
+  - Command: `npm run ingest-hf -- --dataset <name> [--options]`
+  - Dry run mode for testing without database writes
+  - Preserves raw HuggingFace data in provider_raw_response field
+  - Extracts reasoning, token usage, cost, and timing data
+  - Uses existing responseValidator and repositoryService patterns (SRP/DRY compliant)
+
+- **Model Management GUI** (`/model-config`)
+  - Web-based interface for viewing and managing AI model configurations
+  - Real-time model statistics and provider distribution
+  - Advanced filtering: search, provider, premium/free, speed categories
+  - Detailed model cards showing context windows, pricing, and capabilities
+  - Recent model releases timeline
+  - Unlinked route accessible at `/model-config` for admin use
+  - Backend API: `/api/model-management/list`, `/api/model-management/stats`, `/api/model-management/search`
+  - Uses shadcn/ui components: Table, Badge, Card, Select, Input
+
+- **Model Management Script** (`scripts/manage-models.ts`)
+  - CLI tool for adding, removing, and listing AI models without manual edits to models.ts
+  - Commands: `npm run models list`, `npm run models remove <key>`
+  - Programmatic interface for adding models with validation
+  - Automatic model type detection based on provider
+  - Documentation in `docs/Model-Management-Guide.md`
+  - Reduces weekly maintenance burden for model configuration updates
+
+- **New AI Models (September 2025)**
+  - **GLM 4.6** (z-ai/glm-4.6) via OpenRouter
+    - Context: 200K tokens, Max Output: 128K tokens
+    - Pricing: $0.60 input / $2.20 output per million tokens
+    - Speed: Moderate (30-60 sec), Reasoning: Yes
+  - **Gemini 2.5 Flash Preview** (google/gemini-2.5-flash-preview-09-2025) via OpenRouter
+    - Context: 1.05M tokens, Max Output: 65.5K tokens
+    - Pricing: $0.30 input / $2.50 output per million tokens
+    - Speed: Fast (<30 sec), Reasoning: Yes
+
+### Removed
+- **Deprecated Qwen Models** (low usage)
+  - Qwen3 30B A3B Instruct (qwen/qwen3-30b-a3b-instruct)
+  - Qwen3 235B A22B Thinking (qwen/qwen3-235b-a22b-thinking)
+  - Reason: Replaced by newer Qwen models with better performance
 
 ### Fixed
 - **CRITICAL: Fixed debate validation bug causing all rebuttals to skip validation and show 0% accuracy**

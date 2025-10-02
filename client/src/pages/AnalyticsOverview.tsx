@@ -38,6 +38,17 @@ import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
 import { useModelComparisons } from '@/hooks/useModelComparisons';
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo, ModelDatasetPerformance } from '@/hooks/useModelDatasetPerformance';
 
+const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
+  evaluation: 'ARC1-Eval',
+  training: 'ARC1-Train',
+  evaluation2: 'ARC2-Eval',
+  training2: 'ARC2-Train',
+  'arc-heavy': 'ARC-Heavy',
+  explained: 'Explained'
+};
+
+type DatasetOption = DatasetInfo & { displayName: string };
+
 export default function AnalyticsOverview() {
 
   // Modal states
@@ -60,27 +71,37 @@ export default function AnalyticsOverview() {
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
+  const datasetOptions: DatasetOption[] = useMemo(() => {
+    return availableDatasets.map((dataset) => ({
+      ...dataset,
+      displayName: DATASET_DISPLAY_NAME_MAP[dataset.name] ?? dataset.name
+    }));
+  }, [availableDatasets]);
 
-  // Auto-select ARC1-Eval dataset if available, otherwise first dataset
+  // Prefer ARC1 evaluation dataset by default; fall back to first available directory
   React.useEffect(() => {
-    if (availableDatasets.length > 0 && !selectedDataset) {
-      const arc1Eval = availableDatasets.find(d => d.name === 'ARC1-Eval');
-      setSelectedDataset(arc1Eval ? arc1Eval.name : availableDatasets[0].name);
+    if (datasetOptions.length > 0 && !selectedDataset) {
+      const arc1EvalDataset = datasetOptions.find(option => option.name === 'evaluation');
+      setSelectedDataset((arc1EvalDataset ?? datasetOptions[0]).name);
     }
-  }, [availableDatasets, selectedDataset]);
+  }, [datasetOptions, selectedDataset]);
 
-  // Auto-select GPT-5-Nano model if available
+  // Auto-select Claude 4.5 Sonnet model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const gpt5Nano = availableModels.find(m => m.includes('gpt-5-nano'));
-      setSelectedModelForDataset(gpt5Nano || availableModels[0]);
+      const targetModel = 'claude-sonnet-4-5-20250929-thinking-32k-attempt2';
+      const claude45 = availableModels.includes(targetModel) 
+        ? targetModel 
+        : availableModels.find(m => m.includes('claude-sonnet-4-5-20250929-thinking-32k-attempt2'));
+      setSelectedModelForDataset(claude45 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
 
-  // Set page title
+  // Set page title and scroll to top
   React.useEffect(() => {
     document.title = 'Analytics Dashboard - ARC Explainer';
+    window.scrollTo(0, 0);
   }, []);
 
   // Fetch analytics data using proper repository-backed hooks
@@ -301,9 +322,9 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder={loadingDatasets ? "Loading datasets..." : datasetsError ? "Error loading datasets" : "Choose dataset"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableDatasets.map((dataset) => (
+                    {datasetOptions.map((dataset) => (
                       <SelectItem key={dataset.name} value={dataset.name}>
-                        {dataset.name} ({dataset.puzzleCount} puzzles)
+                        {dataset.displayName} ({dataset.puzzleCount} puzzles)
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -394,7 +415,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-green-700 flex items-center gap-2">
-                        ✅ Solved ({modelDatasetPerformance.solved.length})
+                        ✅ Correct ({modelDatasetPerformance.solved.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         is_prediction_correct = true OR multi_test_all_correct = true
@@ -436,7 +457,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-gray-700 flex items-center gap-2">
-                        ⏳ Not Attempted ({modelDatasetPerformance.notAttempted.length})
+                        ⚠️ Not Attempted ({modelDatasetPerformance.notAttempted.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         No entries in explanations table for this model
@@ -570,7 +591,7 @@ export default function AnalyticsOverview() {
                   .slice(0, parseInt(topModelCount))
                   .map((model, index) => {
                     const variants = ['default', 'blue', 'purple'] as const;
-                    const emojis = ['🏆', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+                    const emojis = ['????', '????', '????', '4??????', '5??????', '6??????', '7??????', '8??????', '9??????', '????'];
                     const emoji = emojis[index] || `#${index + 1}`;
 
                     return (
@@ -632,6 +653,8 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
+
+
 
 
 

@@ -503,38 +503,6 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 8000
   },
   {
-    key: 'qwen/qwen3-30b-a3b-instruct',
-    name: 'Qwen3 30B A3B Instruct',
-    color: 'bg-red-400',
-    premium: false,
-    cost: { input: '$0.10', output: '$0.30' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'fast', estimate: '<30 sec' },
-    isReasoning: false,
-    apiModelName: 'qwen/qwen3-30b-a3b-instruct',
-    modelType: 'openrouter',
-    contextWindow: 262144,
-    maxOutputTokens: 30000
-  },
-
-  {
-    key: 'qwen/qwen3-235b-a22b-thinking',
-    name: 'Qwen3 235B A22B Thinking',
-    color: 'bg-red-700',
-    premium: false,
-    cost: { input: '$0.70', output: '$8.40' },
-    supportsTemperature: true,
-    provider: 'OpenRouter',
-    responseTime: { speed: 'moderate', estimate: '1-2 min' },
-    isReasoning: true,
-    apiModelName: 'qwen/qwen3-235b-a22b-thinking',
-    modelType: 'openrouter',
-    contextWindow: 131100,
-    maxOutputTokens: 32800,
-    releaseDate: '2025-07'
-  },
-  {
     key: 'qwen/qwen3-coder',
     name: 'Qwen3 Coder',
     color: 'bg-red-500',
@@ -753,6 +721,40 @@ export const MODELS: ModelConfig[] = [
     maxOutputTokens: 25000,
     requiresPromptFormat: true,
     releaseDate: "2025-08"
+  },
+
+  {
+    key: 'google/gemini-2.5-flash-preview-09-2025',
+    name: 'Gemini 2.5 Flash Preview (Sep 2025)',
+    color: 'bg-teal-300',
+    premium: false,
+    cost: { input: '$0.30', output: '$2.50' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'google/gemini-2.5-flash-preview-09-2025',
+    modelType: 'openrouter',
+    contextWindow: 1050000,
+    maxOutputTokens: 65500,
+    releaseDate: "2025-09"
+  },
+
+  {
+    key: 'z-ai/glm-4.6',
+    name: 'GLM 4.6',
+    color: 'bg-sky-500',
+    premium: false,
+    cost: { input: '$0.60', output: '$2.20' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '30-60 sec' },
+    isReasoning: true,
+    apiModelName: 'z-ai/glm-4.6',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 128000,
+    releaseDate: "2025-09"
   },
 
 ];

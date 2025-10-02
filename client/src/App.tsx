@@ -14,10 +14,14 @@ import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
 import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
+import ModelManagement from "@/pages/ModelManagement";
+import AdminHub from "@/pages/AdminHub";
+import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
 import EloComparison from "@/pages/EloComparison";
 import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
 import ModelDebate from "@/pages/ModelDebate";
+import About from "@/pages/About";
 
 function Router() {
   return (
@@ -32,6 +36,13 @@ function Router() {
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
         <Route path="/puzzles/database" component={PuzzleDBViewer} />
         <Route path="/models" component={ModelBrowser} />
+        <Route path="/model-config" component={ModelManagement} />
+
+        {/* Admin routes */}
+        <Route path="/admin" component={AdminHub} />
+        <Route path="/admin/models" component={ModelManagement} />
+        <Route path="/admin/ingest-hf" component={HuggingFaceIngestion} />
+
         <Route path="/elo" component={EloComparison} />
         <Route path="/elo/leaderboard" component={EloLeaderboard} />
         <Route path="/elo/:taskId" component={EloComparison} />
@@ -41,6 +52,7 @@ function Router() {
         <Route path="/feedback/:taskId" component={PuzzleFeedback} />
         <Route path="/debate" component={ModelDebate} />
         <Route path="/debate/:taskId" component={ModelDebate} />
+        <Route path="/about" component={About} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
         <Route component={NotFound} />
