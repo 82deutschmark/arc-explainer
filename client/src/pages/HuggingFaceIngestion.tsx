@@ -98,6 +98,13 @@ interface IngestionRun {
   errorLog: string | null;
 }
 
+// Add HF folder type for UI selection
+interface HFFolder {
+  name: string;
+  ingested: boolean;
+  attemptsFound: number;
+}
+
 export default function HuggingFaceIngestion() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -118,6 +125,9 @@ export default function HuggingFaceIngestion() {
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
 
+  // Add selection for HF folders
+  const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
+
   // Fetch ingestion history with auto-refresh every 5 seconds
   const { data: historyData, isLoading: historyLoading } = useQuery<{ runs: IngestionRun[] }>({
     queryKey: ['ingestion-history'],
@@ -130,14 +140,34 @@ export default function HuggingFaceIngestion() {
     refetchIntervalInBackground: false // Only when tab is active
   });
 
+  // Fetch HF folders for selected baseUrl
+  const { data: hfFoldersData, isLoading: hfFoldersLoading, refetch: refetchHFFolders } = useQuery<{ folders: HFFolder[] }>({
+    queryKey: ['hf-folders', config.baseUrl],
+    queryFn: async () => {
+      const resp = await fetch(`/api/admin/hf-folders?baseUrl=${encodeURIComponent(config.baseUrl)}`);
+      if (!resp.ok) throw new Error('Failed to fetch HF folders');
+      return resp.json();
+    },
+    enabled: !!config.baseUrl,
+  });
+
+  const toggleFolder = (name: string) => {
+    setSelectedFolders(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]);
+  };
+  const selectNotIngested = () => {
+    const list = hfFoldersData?.folders?.filter(f => !f.ingested).map(f => f.name) || [];
+    setSelectedFolders(list);
+  };
+  const clearSelection = () => setSelectedFolders([]);
+
   // Validation mutation
   const validateMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (datasetToValidate: string) => {
       const response = await fetch('/api/admin/validate-ingestion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          datasetName: config.datasetName,
+          datasetName: datasetToValidate,
           baseUrl: config.baseUrl,
         }),
       });
@@ -151,7 +181,8 @@ export default function HuggingFaceIngestion() {
   });
 
   const handleValidate = () => {
-    validateMutation.mutate();
+    const dataset = selectedFolders.length > 0 ? selectedFolders[0] : config.datasetName;
+    validateMutation.mutate(dataset);
   };
 
   // Ingestion mutation
@@ -198,7 +229,45 @@ export default function HuggingFaceIngestion() {
     },
   });
 
-  const handleStartIngestion = () => {
+  const handleStartIngestion = async () => {
+    if (selectedFolders.length > 0) {
+      let started = 0;
+      let failed: string[] = [];
+      for (const folder of selectedFolders) {
+        try {
+          const response = await fetch('/api/admin/start-ingestion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              datasetName: folder,
+              baseUrl: config.baseUrl,
+              source: config.source,
+              limit: config.limit,
+              delay: config.delay,
+              dryRun: config.dryRun,
+              forceOverwrite: config.forceOverwrite,
+              verbose: config.verbose,
+            }),
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Failed to start');
+          }
+          started++;
+        } catch (e) {
+          failed.push(folder);
+        }
+      }
+      setShowValidationDialog(false);
+      queryClient.invalidateQueries({ queryKey: ['ingestion-history'] });
+      toast({
+        title: config.dryRun ? 'Dry Run Started' : 'Ingestion Started',
+        description: `Started ${started} run(s) ${failed.length ? `(failed: ${failed.join(', ')})` : ''}. History auto-refreshes every 5s.`,
+        duration: 10000,
+      });
+      return;
+    }
+    // Fallback to single dataset using current config
     ingestionMutation.mutate();
   };
 
@@ -258,7 +327,7 @@ export default function HuggingFaceIngestion() {
                   placeholder="e.g., claude-sonnet-4-5-20250929"
                 />
                 <p className="text-xs text-muted-foreground">
-                  This becomes the model name in the database (e.g., {config.datasetName}-attempt1)
+                  Optional if selecting from list below. This becomes the model name in the database (e.g., {config.datasetName}-attempt1)
                 </p>
               </div>
 
@@ -286,6 +355,65 @@ export default function HuggingFaceIngestion() {
                   placeholder="Custom URL..."
                   className="mt-2"
                 />
+              </div>
+
+              {/* NEW: Hugging Face Folders (auto-fetched from base URL) */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Hugging Face Folders</label>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedFolders([]); refetchHFFolders(); }} disabled={hfFoldersLoading}>
+                      {hfFoldersLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                      Refresh
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={selectNotIngested} disabled={!hfFoldersData || (hfFoldersData.folders?.length || 0) === 0}>
+                      Select Not-Ingested
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={clearSelection} disabled={selectedFolders.length === 0}>
+                      Clear Selection
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">Browse model folders from the Hugging Face dataset. Select one or more to ingest. You don't need to type the dataset name when selecting here.</p>
+
+                <div className="border rounded-md p-3 max-h-64 overflow-auto">
+                  {hfFoldersLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading folders...
+                    </div>
+                  ) : hfFoldersData && hfFoldersData.folders.length > 0 ? (
+                    <div className="space-y-2">
+                      {hfFoldersData.folders.map((f) => (
+                        <div key={f.name} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id={`folder-${f.name}`}
+                              checked={selectedFolders.includes(f.name)}
+                              onCheckedChange={() => toggleFolder(f.name)}
+                            />
+                            <label htmlFor={`folder-${f.name}`} className="text-sm font-medium cursor-pointer">
+                              {f.name}
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {f.ingested ? (
+                              <Badge variant="outline">Ingested</Badge>
+                            ) : (
+                              <Badge variant="secondary">Not Ingested</Badge>
+                            )}
+                            <span className="text-xs text-muted-foreground">attempts: {f.attemptsFound}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">No folders found. Check the base URL or your HF_TOKEN.</div>
+                  )}
+                </div>
+
+                {selectedFolders.length > 0 && (
+                  <div className="text-xs text-muted-foreground">Selected: {selectedFolders.join(', ')}</div>
+                )}
               </div>
 
               {/* Source Filter */}
@@ -400,7 +528,7 @@ export default function HuggingFaceIngestion() {
                     // For now, just show validation first
                     handleValidate();
                   }}
-                  disabled={!config.datasetName || !config.baseUrl}
+                  disabled={(selectedFolders.length === 0 && !config.datasetName) || !config.baseUrl}
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Start Ingestion
