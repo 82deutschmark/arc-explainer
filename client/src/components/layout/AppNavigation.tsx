@@ -19,7 +19,8 @@ import {
   Target,
   Trophy,
   CheckCircle,
-  MessageSquare
+  MessageSquare,
+  Info
 } from 'lucide-react';
 
 interface NavItem {
@@ -77,6 +78,12 @@ const navigationItems: NavItem[] = [
     href: '/kaggle-readiness',
     icon: Target,
     description: 'Validate technical readiness for machine learning competitions'
+  },
+  {
+    title: 'About',
+    href: '/about',
+    icon: Info,
+    description: 'Learn about this project and acknowledgments'
   }
 ];
 

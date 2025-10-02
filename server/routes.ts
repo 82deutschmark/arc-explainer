@@ -19,7 +19,8 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
-import adminController from './controllers/adminController.js';
+import adminController, * as adminControllerFns from './controllers/adminController.js';
+import * as modelManagementController from './controllers/modelManagementController.js';
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -49,6 +50,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Models API routes
   app.use("/api/models", modelsRouter);
+  
+  // Model Management GUI API routes
+  app.get("/api/model-management/list", asyncHandler(modelManagementController.listModels));
+  app.get("/api/model-management/stats", asyncHandler(modelManagementController.getModelStats));
+  app.get("/api/model-management/search", asyncHandler(modelManagementController.searchModels));
+  app.post("/api/model-management/validate", asyncHandler(modelManagementController.validateModel));
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));
@@ -152,6 +159,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Admin routes
   app.use("/api/admin", adminController);
+
+  // Admin dashboard and HuggingFace ingestion routes
+  app.get("/api/admin/quick-stats", asyncHandler(adminControllerFns.getQuickStats));
+  app.get("/api/admin/recent-activity", asyncHandler(adminControllerFns.getRecentActivity));
+  app.post("/api/admin/validate-ingestion", asyncHandler(adminControllerFns.validateIngestion));
+  app.post("/api/admin/start-ingestion", asyncHandler(adminControllerFns.startIngestion));
+  app.get("/api/admin/ingestion-history", asyncHandler(adminControllerFns.getIngestionHistory));
+  app.get("/api/admin/hf-folders", asyncHandler(adminControllerFns.listHFFolders));
 
   // Recovery routes for multiple predictions data
   app.get("/api/admin/recovery-stats", asyncHandler(async (req: any, res: any) => {

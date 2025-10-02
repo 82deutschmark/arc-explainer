@@ -21,7 +21,7 @@
  */
 
 export interface CorrectnessResult {
-  modelName: string;
+  modelName?: string;
   isPredictionCorrect?: boolean | null;
   multiTestAllCorrect?: boolean | null;
   allPredictionsCorrect?: boolean | null; // Alternative field name (backward compat)

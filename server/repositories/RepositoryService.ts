@@ -181,6 +181,14 @@ export class RepositoryService {
   }
 
   /**
+   * Get database pool for direct queries (use sparingly - prefer repository methods)
+   * @deprecated Use repository methods when possible for better encapsulation
+   */
+  get db() {
+    return getPool();
+  }
+
+  /**
    * Get database statistics for monitoring
    */
   async getDatabaseStats(): Promise<{
