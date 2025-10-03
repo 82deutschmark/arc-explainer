@@ -1,22 +1,12 @@
 /**
- * AnalysisResultCard Component
- * Displays the results of a puzzle analysis from an AI model
- * Includes proper error handling for empty or incomplete results
- * Now supports displaying reasoning logs and structured reasoning items from AI models
- * 
- * 
- * Now displays API processing time metrics for model performance analysis
- * Author: Cascade
+ *
+ * Author: AI Agent using GPT-5-Codex
+ * Date: 2025-10-02T21:47:10-04:00
+ * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility, predicted grid metrics, feedback toggles, and Saturn integrations without duplicating logic from child components.
+ * SRP/DRY check: Pass - single responsibility organizing child modules; reuses existing subcomponents and hooks with no duplicated logic.
+ * shadcn/ui: Pass - leverages shared shadcn/ui Badge component; no custom UI replacements introduced.
  */
 
-/**
- * AnalysisResultCard.tsx
- * 
- * @author Cascade
- * @description A modular component responsible for displaying the analysis results for a single AI model.
- * It takes in explanation data, formats it for display, and includes the ExplanationFeedback widget.
- * This component is designed to be a self-contained card, making it easy to reuse and maintain.
- */
 import React, { useMemo, useState } from 'react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { useFeedbackPreview } from '@/hooks/useFeedback';
@@ -30,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
   const hasFeedback = (result.helpfulVotes ?? 0) > 0 || (result.notHelpfulVotes ?? 0) > 0;
-  const [showReasoning, setShowReasoning] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(true);
   const [showAlienMeaning, setShowAlienMeaning] = useState(false);
   const [showExistingFeedback, setShowExistingFeedback] = useState(false);
   const [showRawDb, setShowRawDb] = useState(false);
@@ -209,3 +199,5 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     </div>
   );
 });
+
+
