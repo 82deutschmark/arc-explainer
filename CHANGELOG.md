@@ -1,5 +1,7 @@
 ## [2025-10-03]
 
+## v2.5.0 - Bug Fixes and Deep Linking
+
 ### Added
 - **Deep Linking to Specific Explanations** (Feature)
   - Users can now share direct links to specific AI explanations
@@ -75,6 +77,8 @@
   - Commit: fde0dd9
 
 ## [2025-10-01]
+
+## v2.4.1 - Admin Hub Fixes
 
 ### Fixed
 - **Admin Hub Quick Stats Bug** (Critical)

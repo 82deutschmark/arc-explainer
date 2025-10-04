@@ -59,6 +59,22 @@ export default function PuzzleExaminer() {
     document.title = taskId ? `ARC Puzzle ${taskId}` : 'ARC Puzzle Examiner';
   }, [taskId]);
 
+  // Early return if no taskId
+  if (!taskId) {
+    return (
+      <div className="container mx-auto p-6 max-w-6xl">
+        <Alert>
+          <AlertDescription>Invalid puzzle ID</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  // Fetch puzzle data
+  const { data: models, isLoading: isLoadingModels, error: modelsError } = useModels();
+  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  const { explanations, hasExplanation, refetchExplanations } = usePuzzleWithExplanation(taskId);
+
   // Handle highlight query parameter for deep linking
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -85,22 +101,6 @@ export default function PuzzleExaminer() {
       return () => clearTimeout(timeoutId);
     }
   }, [explanations]);
-
-  // Early return if no taskId
-  if (!taskId) {
-    return (
-      <div className="container mx-auto p-6 max-w-6xl">
-        <Alert>
-          <AlertDescription>Invalid puzzle ID</AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  // Fetch puzzle data
-  const { data: models, isLoading: isLoadingModels, error: modelsError } = useModels();
-  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { explanations, hasExplanation, refetchExplanations } = usePuzzleWithExplanation(taskId);
 
   // Use the custom hook for analysis results management
   const {
