@@ -566,6 +566,13 @@ export interface ModelConfig {
   supportsStructuredOutput?: boolean;
   supportsVision?: boolean;
   requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
+  
+  // Model Management fields
+  isActive?: boolean; // Controls whether model appears in selectors (default: true)
+  aliasFor?: string; // Key of the model this is an alias for
+  notes?: string; // Admin notes about this model
+  addedVia?: 'config' | 'ui' | 'openrouter'; // How this model was added
+  addedAt?: string; // ISO timestamp when added
 }
 
 export interface ReasoningItem {
