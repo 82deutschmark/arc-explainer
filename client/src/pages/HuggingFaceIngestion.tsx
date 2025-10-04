@@ -45,6 +45,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Preset HuggingFace URLs (restricted to eval sets only)
+// HARDCODED: These are the ONLY two HuggingFace datasets we support
 const PRESET_URLS = [
   { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main', label: 'ARC1-Eval (arcprize)' },
   { value: 'https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main', label: 'ARC2-Eval (arcprize)' },

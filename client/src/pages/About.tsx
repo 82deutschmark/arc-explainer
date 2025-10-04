@@ -37,7 +37,7 @@ export default function About() {
             About This Project
           </h1>
           <p className="text-lg text-slate-600">
-            Built with curiosity, accessibility, and a love for puzzles
+            Built with curiosity, accessibility, and LLMs
           </p>
         </header>
 
@@ -56,9 +56,7 @@ export default function About() {
               Most of these puzzles made me feel genuinely confused, and I wanted to understand <em>why</em> the answers were correct.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              Instead of just solving puzzles, this app takes a different approach: we ask AI models to <strong>explain</strong> why 
-              the correct answers are correct. The results are eye-opening—if AI can't even articulate the reasoning behind 
-              known solutions, what hope does it have of solving novel problems?
+            
             </p>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className="bg-blue-50 text-blue-700">Open Source</Badge>
@@ -79,13 +77,10 @@ export default function About() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700 leading-relaxed">
-              My dad is one of the smartest people I know, but colorblindness turns half of these grids into a monochrome blur. 
-              My nephew dreams of running mission control for rocket ships, but he inherited that same colorblindness. 
-              He'll need the fluid intelligence skills these puzzles can build, and I don't want accessibility barriers to stop him.
+              I want people from outside of computer science, machine learning, and math to understand the capabilities of AI models.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              That's why this app replaces colors with <strong>emojis</strong>. The grids stay playful, the logic stays intact, 
-              and anyone—colorblind, math-shy, or simply curious—can explore the kind of reasoning that currently eludes AI.
+              I want to explore the kind of reasoning that currently eludes AI.
             </p>
           </CardContent>
         </Card>
@@ -158,7 +153,7 @@ export default function About() {
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">AI Research Community</h4>
+                <h4 className="font-semibold text-gray-800 mb-1">Discord ARC-AGI Community</h4>
                 <p className="text-sm text-gray-600">
                   For the ongoing work in understanding and improving AI reasoning capabilities, and for making 
                   these powerful models accessible through APIs.

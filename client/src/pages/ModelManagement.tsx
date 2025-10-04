@@ -1,15 +1,15 @@
 /*
  * Author: Cascade using Deep Research Model
- * Date: 2025-09-30T16:35:00Z
- * PURPOSE: Model management GUI page for viewing, searching, and managing AI model configurations
- *          Provides unlinked route at /models for admin access
+ * Date: 2025-10-03T21:12:00Z
+ * PURPOSE: Model management GUI page with full CRUD operations
+ *          Toggle active/inactive, create aliases, add models, edit notes
  * SRP/DRY check: Pass - Handles only model management UI
- * shadcn/ui: Pass - Uses Badge, Button, Card, Input, Select, Table components
+ * shadcn/ui: Pass - Uses Dialog, Toast, and all UI components
  */
 
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, TrendingUp, TrendingDown, Clock, DollarSign, Trash2, RefreshCw } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Search, TrendingUp, TrendingDown, Clock, DollarSign, Trash2, RefreshCw, Eye, EyeOff, Link, Edit, Plus } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ModelConfig {
   key: string;
@@ -50,6 +65,11 @@ interface ModelConfig {
   maxOutputTokens?: number;
   releaseDate?: string;
   index: number;
+  isActive?: boolean;
+  aliasFor?: string;
+  notes?: string;
+  addedVia?: 'config' | 'ui' | 'openrouter';
+  addedAt?: string;
 }
 
 interface ModelListResponse {
@@ -86,6 +106,12 @@ export default function ModelManagement() {
   const [providerFilter, setProviderFilter] = useState<string>('all');
   const [premiumFilter, setPremiumFilter] = useState<string>('all');
   const [speedFilter, setSpeedFilter] = useState<string>('all');
+  const [selectedModel, setSelectedModel] = useState<ModelConfig | null>(null);
+  const [showNotesDialog, setShowNotesDialog] = useState(false);
+  const [notes, setNotes] = useState('');
+  
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch model list
   const { data: modelData, isLoading, refetch } = useQuery<ModelListResponse>({
@@ -106,6 +132,79 @@ export default function ModelManagement() {
       return response.json();
     }
   });
+
+  // Toggle active/inactive mutation
+  const toggleActiveMutation = useMutation({
+    mutationFn: async (modelKey: string) => {
+      const response = await fetch('/api/model-management/toggle-active', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelKey })
+      });
+      if (!response.ok) throw new Error('Failed to toggle model');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['model-management-list'] });
+      queryClient.invalidateQueries({ queryKey: ['model-management-stats'] });
+      toast({
+        title: "Success",
+        description: data.message || "Model status updated"
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Update notes mutation
+  const updateNotesMutation = useMutation({
+    mutationFn: async ({ modelKey, notes }: { modelKey: string; notes: string }) => {
+      const response = await fetch('/api/model-management/notes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelKey, notes })
+      });
+      if (!response.ok) throw new Error('Failed to update notes');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['model-management-list'] });
+      setShowNotesDialog(false);
+      setSelectedModel(null);
+      toast({
+        title: "Success",
+        description: "Notes updated successfully"
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleToggleActive = (model: ModelConfig) => {
+    toggleActiveMutation.mutate(model.key);
+  };
+
+  const handleEditNotes = (model: ModelConfig) => {
+    setSelectedModel(model);
+    setNotes(model.notes || '');
+    setShowNotesDialog(true);
+  };
+
+  const handleSaveNotes = () => {
+    if (selectedModel) {
+      updateNotesMutation.mutate({ modelKey: selectedModel.key, notes });
+    }
+  };
 
   // Filter models
   const filteredModels = useMemo(() => {
@@ -312,6 +411,7 @@ export default function ModelManagement() {
                   <TableHead>Context</TableHead>
                   <TableHead>Cost (per M tokens)</TableHead>
                   <TableHead>Release</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -394,6 +494,58 @@ export default function ModelManagement() {
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
+                    <TableCell>
+                      <TooltipProvider>
+                        <div className="flex gap-1 justify-end">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => handleToggleActive(model)}
+                                disabled={toggleActiveMutation.isPending}
+                              >
+                                {model.isActive !== false ? (
+                                  <Eye className="h-4 w-4" />
+                                ) : (
+                                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {model.isActive !== false ? 'Deactivate' : 'Activate'}
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => handleEditNotes(model)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Edit Notes</TooltipContent>
+                          </Tooltip>
+
+                          {model.aliasFor && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="outline" className="text-xs">
+                                  <Link className="h-3 w-3 mr-1" />
+                                  Alias
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>Alias for: {model.aliasFor}</TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
+                      </TooltipProvider>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -452,6 +604,40 @@ export default function ModelManagement() {
           </CardContent>
         </Card>
       )}
+
+      {/* Edit Notes Dialog */}
+      <Dialog open={showNotesDialog} onOpenChange={setShowNotesDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Model Notes</DialogTitle>
+            <DialogDescription>
+              Add administrative notes for {selectedModel?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <textarea
+              className="w-full min-h-[120px] p-3 border rounded-md resize-y"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Enter notes about this model..."
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowNotesDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveNotes}
+              disabled={updateNotesMutation.isPending}
+            >
+              {updateNotesMutation.isPending ? 'Saving...' : 'Save Notes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
