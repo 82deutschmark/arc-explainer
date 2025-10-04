@@ -317,19 +317,18 @@ export default function PuzzleExaminer() {
         </div>
       </CollapsibleCard>
 
-      {/* AI Model Testing */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            AI Model Analysis
-          </CardTitle>
-          <div className="flex items-center justify-between">
+      {/* AI Model Testing - Collapsed by default */}
+      <CollapsibleCard
+        title="AI Model Analysis"
+        icon={Brain}
+        defaultOpen={false}
+        headerDescription={
+          <>
             <p className="text-sm text-gray-600">
               Test how different AI models try to explain why this solution is correct
             </p>
             {isAnalyzing && currentModel && (
-              <div className="flex flex-col">
+              <div className="flex flex-col mt-2">
                 <div className="flex items-center gap-2 text-sm text-blue-600">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Analyzing with {currentModel.name}...
@@ -345,10 +344,9 @@ export default function PuzzleExaminer() {
                 )}
               </div>
             )}
-          </div>
-          
-        </CardHeader>
-        <CardContent>
+          </>
+        }
+      >
           {/* Prompt Picker */}
           <PromptPicker
             selectedPromptId={promptId}
@@ -378,11 +376,11 @@ export default function PuzzleExaminer() {
           </div>
       
           
-          {/* Advanced Controls moved above model buttons and expanded by default */}
+          {/* Advanced Controls - Collapsed by default */}
           <CollapsibleCard
             title="Advanced Controls"
             icon={Settings}
-            defaultOpen={true}
+            defaultOpen={false}
             className="mb-4"
             headerDescription={
               <p className="text-sm text-gray-600">Fine-tune model behavior with advanced parameters</p>
@@ -575,27 +573,37 @@ export default function PuzzleExaminer() {
               </div>
             </CollapsibleCard>
 
-          {/* Model Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-4">
-            {models?.map((model) => {
-              const isThisModelProcessing = processingModels.has(model.key);
+          {/* Model Buttons - Collapsed by default */}
+          <CollapsibleCard
+            title="Model Selection"
+            icon={Rocket}
+            defaultOpen={false}
+            className="mb-4"
+            headerDescription={
+              <p className="text-sm text-gray-600">Choose which AI models to run analysis with</p>
+            }
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+              {models?.map((model) => {
+                const isThisModelProcessing = processingModels.has(model.key);
 
-              return (
-                <ModelButton
-                  key={model.key}
-                  model={model}
-                  isAnalyzing={isThisModelProcessing}
-                  explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
-                  onAnalyze={handleAnalyzeWithModel}
-                  disabled={isThisModelProcessing}
-                  error={analyzerErrors.get(model.key)}
-                />
-              );
-            })}
-          </div>
+                return (
+                  <ModelButton
+                    key={model.key}
+                    model={model}
+                    isAnalyzing={isThisModelProcessing}
+                    explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
+                    onAnalyze={handleAnalyzeWithModel}
+                    disabled={isThisModelProcessing}
+                    error={analyzerErrors.get(model.key)}
+                  />
+                );
+              })}
+            </div>
+          </CollapsibleCard>
 
           {/* Saturn Visual Solver */}
-          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
                 <Rocket className="h-4 w-4" />
@@ -627,17 +635,20 @@ export default function PuzzleExaminer() {
               </div>
             </div>
           </div>
+      </CollapsibleCard>
 
-          {/* Analysis Results */}
-          {(allResults.length > 0 || isAnalyzing) && (
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold">
-                  Analysis Results ({explanations.length})
-                </h4>
+      {/* Analysis Results - THE FOCUS OF THE PAGE (separate from AI Model Testing) */}
+      {(allResults.length > 0 || isAnalyzing) && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                Analysis Results ({explanations.length})
+              </CardTitle>
                 
-                {/* Correctness Filter */}
-                <div className="flex items-center gap-2">
+              {/* Correctness Filter */}
+              <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-500" />
                   <ToggleGroup
                     type="single"
@@ -667,9 +678,10 @@ export default function PuzzleExaminer() {
                       }).isIncorrect).length})
                     </ToggleGroupItem>
                   </ToggleGroup>
-                </div>
               </div>
-
+            </div>
+          </CardHeader>
+          <CardContent>
               {/* Show loading state when analysis is in progress */}
               {isAnalyzing && (
                 <div className="mb-3 p-4 border rounded-lg bg-blue-50 border-blue-200">
@@ -721,10 +733,9 @@ export default function PuzzleExaminer() {
                   </p>
                 </div>
               )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
       
       {/* Prompt Preview Modal */}
       <PromptPreviewModal
