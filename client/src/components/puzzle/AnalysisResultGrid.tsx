@@ -121,7 +121,15 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
                 <Badge
                   variant="outline"
-                  className={`flex items-center gap-1 text-xs ${multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect)) ? 'bg-green-50 border-green-200 text-green-700' : multiTestStats.accuracyLevel === 'all_incorrect' ? 'bg-red-50 border-red-200 text-red-700' : multiTestStats.accuracyLevel === 'some_incorrect' ? 'bg-orange-50 border-orange-200 text-orange-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                  className={`flex items-center gap-1 text-xs ${
+                    multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect)) 
+                      ? 'bg-green-50 border-green-200 text-green-700' 
+                      : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0) 
+                        ? 'bg-red-50 border-red-200 text-red-700' 
+                        : multiTestStats.accuracyLevel === 'some_incorrect' 
+                          ? 'bg-orange-50 border-orange-200 text-orange-700' 
+                          : 'bg-red-50 border-red-200 text-red-700'
+                  }`}>
                   {(() => {
                     const isAllCorrect = multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect));
                     if (isAllCorrect) return <CheckCircle className="h-3 w-3" />;
@@ -135,7 +143,15 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                         case 'some_incorrect': return 'Some Incorrect';
                       }
                     }
-                    return (result.multiTestAllCorrect ?? result.allPredictionsCorrect) ? 'All Correct' : 'Some Incorrect';
+                    // Fallback when multiTestStats is empty
+                    if (result.multiTestAllCorrect ?? result.allPredictionsCorrect) {
+                      return 'All Correct';
+                    }
+                    // Check if all predictions were incorrect using average accuracy
+                    if (result.multiTestAverageAccuracy === 0) {
+                      return 'All Incorrect';
+                    }
+                    return 'Some Incorrect';
                   })()}
                 </Badge>
               )}

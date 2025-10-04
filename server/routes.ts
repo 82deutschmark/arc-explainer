@@ -56,6 +56,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/model-management/stats", asyncHandler(modelManagementController.getModelStats));
   app.get("/api/model-management/search", asyncHandler(modelManagementController.searchModels));
   app.post("/api/model-management/validate", asyncHandler(modelManagementController.validateModel));
+  app.post("/api/model-management/toggle-active", asyncHandler(modelManagementController.toggleActive));
+  app.post("/api/model-management/create-alias", asyncHandler(modelManagementController.createAlias));
+  app.post("/api/model-management/add", asyncHandler(modelManagementController.addModel));
+  app.put("/api/model-management/notes", asyncHandler(modelManagementController.updateNotes));
+  app.delete("/api/model-management/delete", asyncHandler(modelManagementController.deleteModel));
+  app.get("/api/model-management/openrouter-models", asyncHandler(modelManagementController.fetchOpenRouterModels));
   
   // Puzzle routes
   app.get("/api/puzzle/list", asyncHandler(puzzleController.list));

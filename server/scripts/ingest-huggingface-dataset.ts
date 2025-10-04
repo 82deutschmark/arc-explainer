@@ -114,29 +114,15 @@ interface IngestionProgress {
 // Initialize services
 const puzzleLoader = new PuzzleLoader();
 
-// Add a helper to normalize Hugging Face base URLs (accepts tree/main and converts to resolve/main)
-function normalizeHfBaseUrl(url: string): string {
-  try {
-    let u = url.trim();
-    // Convert /tree/ → /resolve/
-    u = u.replace(/\/tree\//, '/resolve/');
-    // Ensure trailing segment isn't directory listing page
-    // e.g., allow both with/without trailing slash
-    return u.replace(/\/$/, '');
-  } catch {
-    return url;
-  }
-}
-
 /**
  * Fetch HuggingFace dataset for a specific puzzle
+ * No normalization - URLs are hardcoded in frontend
  */
 async function fetchHuggingFaceData(
   puzzleId: string,
   config: IngestionConfig
 ): Promise<HuggingFacePuzzleData[] | null> {
-  const base = normalizeHfBaseUrl(config.baseUrl);
-  const url = `${base}/${config.datasetName}/${puzzleId}.json`;
+  const url = `${config.baseUrl}/${config.datasetName}/${puzzleId}.json`;
   
   try {
     const response = await fetch(url, {
@@ -554,9 +540,6 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
  * Main ingestion function
  */
 async function ingestDataset(config: IngestionConfig): Promise<void> {
-  // Normalize base URL early for all downstream fetches
-  config.baseUrl = normalizeHfBaseUrl(config.baseUrl);
-
   // Initialize database connection
   console.log('🔌 Initializing database connection...');
   const dbConnected = await repositoryService.initialize();
@@ -623,14 +606,19 @@ async function ingestDataset(config: IngestionConfig): Promise<void> {
       const result = await repositoryService.db.query(`
         INSERT INTO ingestion_runs (
           dataset_name, base_url, source, total_puzzles, 
+          successful, failed, skipped, duration_ms,
           dry_run, started_at
-        ) VALUES ($1, $2, $3, $4, $5, NOW())
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
         RETURNING id
       `, [
         config.datasetName,
         config.baseUrl,
         config.source || null,
         allPuzzleIds.length,
+        0,  // Initialize successful to 0
+        0,  // Initialize failed to 0
+        0,  // Initialize skipped to 0
+        0,  // Initialize duration_ms to 0
         false
       ]);
       ingestionRunId = result.rows[0]?.id;
@@ -744,29 +732,7 @@ function parseArgs(): IngestionConfig {
     } else if (arg === '--dataset' && i + 1 < args.length) {
       config.datasetName = args[++i];
     } else if (arg === '--base-url' && i + 1 < args.length) {
-      const raw = args[++i];
-      // Normalize here too so CLI accepts either tree/main or resolve/main
-      // and we always operate on the raw file URL
-      // Note: ingestDataset will normalize again defensively
-      // (harmless double-normalization)
-      // @ts-ignore - normalizeHfBaseUrl defined above
-      // eslint-disable-next-line
-      
-      // (we are in same module)
-      // tslint:disable-next-line
-      // no-op comment to keep minimal diff
-      //
-      // apply normalization
-      // @ts-ignore
-      //
-      //
-      //
-      //
-      //
-      
-      // actually set
-      //
-      (config as any).baseUrl = normalizeHfBaseUrl(raw);
+      config.baseUrl = args[++i];
     } else if (arg === '--source' && i + 1 < args.length) {
       const source = args[++i];
       if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
@@ -817,7 +783,10 @@ USAGE:
 OPTIONS:
   --dataset <name>         Model folder name in HF dataset (default: claude-sonnet-4-5-20250929-thinking-1k)
   --base-url <url>         Base URL for HuggingFace dataset
-                           (default: arcprize/arc_agi_v1_public_eval)
+                           HARDCODED: Only arc_agi_v1_public_eval and arc_agi_v2_public_eval supported
+                           V1 uses: /resolve/main (older HF format)
+                           V2 uses: /resolve/refs/heads/main (newer HF format)
+                           (default: arcprize/arc_agi_v1_public_eval/resolve/main)
   --source <source>        Override auto-detected ARC source
                            Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
                            (Auto-detected from arcprize/* URLs)
@@ -831,17 +800,17 @@ OPTIONS:
   --help                   Show this help message
 
 EXAMPLES:
-  # Test with first 5 puzzles (auto-detects ARC1-Eval from URL)
+  # Test with first 5 puzzles from ARC v1 (auto-detects ARC1-Eval from URL)
   npm run ingest-hf -- --limit 5 --dry-run --verbose
 
   # Ingest all ARC1-Eval puzzles from default arcprize dataset
   npm run ingest-hf -- --dataset claude-sonnet-4-5-20250929-thinking-1k
 
-  # Ingest from different arcprize dataset (auto-detects ARC2-Eval)
-  npm run ingest-hf -- --base-url https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main
+  # Ingest from ARC v2 dataset (note: uses /tree/main which gets normalized to /resolve/refs/heads/main)
+  npm run ingest-hf -- --base-url https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/tree/main --dataset gpt-4-1-nano-2025-04-14
 
-  # Use custom HF dataset with manual source specification
-  npm run ingest-hf -- --base-url https://huggingface.co/datasets/custom/dataset/resolve/main --source ARC1-Eval
+  # Or use direct resolve URL for v2
+  npm run ingest-hf -- --base-url https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/refs/heads/main --dataset gpt-4-1-nano-2025-04-14
 
 ENVIRONMENT:
   HF_TOKEN                 HuggingFace API token for authenticated requests
