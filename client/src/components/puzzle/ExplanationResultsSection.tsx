@@ -1,9 +1,13 @@
 /**
  * ExplanationResultsSection Component
  * 
- * Displays LLM analysis results for a puzzle.
- * Reuses patterns from leaderboard components for consistent UI.
- * Single responsibility: Show AI explanations with performance metrics.
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T23:00:00-04:00
+ * PURPOSE: Displays LLM analysis results for a puzzle.
+ * FIXED: Now uses shared determineCorrectness utility instead of only checking isPredictionCorrect.
+ * Properly handles both single-test and multi-test puzzles.
+ * SRP/DRY check: Pass - Uses shared correctness logic, focused on display only
+ * shadcn/ui: Pass - Uses shadcn/ui components
  */
 
 import React from 'react';
@@ -13,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Brain, CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
 import { useExplanations } from '@/hooks/useExplanation';
+import { determineCorrectness } from '@shared/utils/correctness';
 
 interface ExplanationResultsSectionProps {
   taskId: string;
@@ -92,17 +97,25 @@ export function ExplanationResultsSection({ taskId }: ExplanationResultsSectionP
                         <Badge variant="outline" className="font-mono text-sm">
                           {explanation.modelName}
                         </Badge>
-                        {explanation.isPredictionCorrect ? (
-                          <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
-                            <CheckCircle className="h-3 w-3" />
-                            Correct
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
-                            <XCircle className="h-3 w-3" />
-                            Incorrect
-                          </Badge>
-                        )}
+                        {(() => {
+                          const correctness = determineCorrectness({
+                            modelName: explanation.modelName,
+                            isPredictionCorrect: explanation.isPredictionCorrect,
+                            multiTestAllCorrect: explanation.multiTestAllCorrect,
+                            hasMultiplePredictions: explanation.hasMultiplePredictions
+                          });
+                          return correctness.isCorrect ? (
+                            <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                              <CheckCircle className="h-3 w-3" />
+                              {correctness.label}
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+                              <XCircle className="h-3 w-3" />
+                              {correctness.label}
+                            </Badge>
+                          );
+                        })()}
                         <Badge variant="outline" className="text-xs">
                           {explanation.confidence}% confidence
                         </Badge>
