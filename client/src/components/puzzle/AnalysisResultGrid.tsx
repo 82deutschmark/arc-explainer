@@ -1,3 +1,15 @@
+/**
+ * AnalysisResultGrid.tsx
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:30:00-04:00
+ * PURPOSE: Displays predicted output grids alongside expected outputs for both single-test
+ * and multi-test puzzles. Shows correctness badges, grid comparisons, and diff highlighting.
+ * Handles optimistic UI states with skeleton loaders during analysis/saving.
+ * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
+ * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ */
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

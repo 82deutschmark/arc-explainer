@@ -1,3 +1,15 @@
+/**
+ * AnalysisResultHeader.tsx
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:30:00-04:00
+ * PURPOSE: Displays header information for analysis result cards including model badges,
+ * correctness status, timestamps, processing time, costs, and feedback summaries.
+ * Handles ELO mode hiding and multi-test correctness determination.
+ * SRP/DRY check: Pass - Single responsibility (header display), reuses utility functions
+ * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ */
+
 import React from 'react';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
