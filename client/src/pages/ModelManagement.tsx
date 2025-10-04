@@ -5,6 +5,12 @@
  *          Provides unlinked route at /models for admin access
  * SRP/DRY check: Pass - Handles only model management UI
  * shadcn/ui: Pass - Uses Badge, Button, Card, Input, Select, Table components
+ * 
+ * DOESNT ACTUALLY HAVE UI TO ADD OR REMOVE OR EDIT MODELS?!?
+ * Needs to have a way to set a model as "inactive" (don't delete any!)
+ * Needs a way to set that one model is actually the same as another (alias)
+ * Needs a way to easily add a new model from OpenRouter!!
+ * Needs a way to allow between using OpenRouter for the API calls or using the native API (stretch)
  */
 
 import { useState, useMemo } from 'react';
