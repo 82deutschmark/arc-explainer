@@ -1,3 +1,16 @@
+/**
+ * AnalysisResultContent.tsx
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:50:00-04:00
+ * PURPOSE: Displays the main content of analysis results including pattern descriptions,
+ * solving strategies, hints, alien meanings, and AI reasoning. Handles Saturn results and
+ * optimistic update states (analyzing, saving, error). Shows trustworthiness badge for
+ * non-ELO, non-debate, non-Saturn results only (predictionAccuracyScore).
+ * SRP/DRY check: Pass - Single responsibility (content display), reuses Badge/Button components
+ * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ */
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -120,10 +133,16 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 Confidence: {formatConfidence(result.confidence)}
               </Badge>
             )}
-            {!eloMode && !isSaturnResult && (result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null) && (
+            {!eloMode && !isSaturnResult && result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null && (
               <Badge
                 variant="outline"
-                className={`text-xs ${result.predictionAccuracyScore >= 0.8 ? 'bg-green-50 border-green-200 text-green-700' : result.predictionAccuracyScore >= 0.5 ? 'bg-yellow-50 border-yellow-200 text-yellow-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                className={`text-xs ${
+                  result.predictionAccuracyScore >= 0.8 
+                    ? 'bg-green-50 border-green-200 text-green-700' 
+                    : result.predictionAccuracyScore >= 0.5 
+                      ? 'bg-yellow-50 border-yellow-200 text-yellow-700' 
+                      : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
                 Trustworthiness: {Math.round(result.predictionAccuracyScore * 100)}%
               </Badge>
             )}

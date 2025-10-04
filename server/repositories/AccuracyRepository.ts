@@ -1,6 +1,6 @@
 /**
  * Accuracy Repository Implementation
- * 
+ * prediction_accuracy_score
  * Handles PURE PUZZLE-SOLVING ACCURACY operations only.
  * Focuses exclusively on boolean correctness metrics without any trustworthiness filtering.
  * 
@@ -8,12 +8,12 @@
  * - PURE ACCURACY (puzzle-solving correctness):
  *   - Whether an AI model actually solved the puzzle correctly (boolean)
  *   - Database field: is_prediction_correct (boolean) - single test correctness
- *   - Database field: multi_test_all_correct (boolean) - multi-test correctness
+ *   - Database field: multi_test_all_correct (boolean) - multi-test correctness... what if one is correct and the other two are wrong?!  HOW IS THAT CALCULATED?!?
  *   - Simple percentage: correct predictions / total attempts
  *   - Used for: Actual solver performance stats, accuracy leaderboards
  * 
  * KEY DISTINCTIONS:
- * - NO trustworthiness filtering (prediction_accuracy_score requirements)
+ * - NO trustworthiness filtering (prediction_accuracy_score IS THE OLD DEPRECATED MISLEADING NAME!!!)
  * - NO confidence correlation analysis
  * - NO user feedback about explanation quality
  * - ONLY pure boolean correctness metrics

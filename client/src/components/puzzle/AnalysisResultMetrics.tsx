@@ -1,3 +1,14 @@
+/**
+ * AnalysisResultMetrics.tsx
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:30:00-04:00
+ * PURPOSE: Displays Saturn Visual Solver-specific metrics including generated images,
+ * execution logs, and event traces. Conditionally rendered only for Saturn results.
+ * SRP/DRY check: Pass - Single responsibility (Saturn metrics display), reuses Badge component
+ * shadcn/ui: Pass - Uses shadcn/ui Badge component
+ */
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ExplanationData } from '@/types/puzzle';

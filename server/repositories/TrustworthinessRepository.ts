@@ -1,6 +1,7 @@
 /**
  * Trustworthiness Repository Implementation
- * 
+ * prediction_accuracy_score was the previous INCORRECT metric name!!!  IT MAY STILL EXIST IN SOME PLACES!!!
+ * trustworthiness_score is the NEW CORRECT metric name!!!
  * Handles AI CONFIDENCE RELIABILITY analysis operations only.
  * Focuses exclusively on how well AI confidence correlates with actual performance.
  * 

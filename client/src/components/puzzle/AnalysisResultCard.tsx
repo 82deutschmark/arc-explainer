@@ -1,10 +1,15 @@
 /**
+ * AnalysisResultCard.tsx
  *
- * Author: AI Agent using GPT-5-Codex
- * Date: 2025-10-02T21:47:10-04:00
- * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility, predicted grid metrics, feedback toggles, and Saturn integrations without duplicating logic from child components.
- * SRP/DRY check: Pass - single responsibility organizing child modules; reuses existing subcomponents and hooks with no duplicated logic.
- * shadcn/ui: Pass - leverages shared shadcn/ui Badge component; no custom UI replacements introduced.
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T23:35:00-04:00
+ * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility,
+ * predicted grid metrics, feedback toggles, and Saturn integrations. FIXED: Multi-test stats now
+ * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
+ * logic to rely on multiTestAllCorrect flag when detailed validation data is unavailable.
+ * ADDED: Deep linking support - each card has id="explanation-{id}" and data-explanation-id for direct URLs.
+ * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
+ * shadcn/ui: Pass - Uses shadcn/ui Badge component
  */
 
 import React, { useMemo, useState } from 'react';
@@ -90,6 +95,28 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   const multiTestStats = useMemo(() => {
     if (!multiValidation || multiValidation.length === 0) {
+      // Fallback to database fields when multiValidation is not available
+      // This handles cases where old data was saved without detailed validation
+      if (result.hasMultiplePredictions) {
+        const totalCount = predictedGrids?.length || expectedOutputGrids.length || 0;
+        
+        // Determine accuracy level ONLY from multiTestAllCorrect flag
+        // We cannot reliably estimate correctCount without detailed validation data
+        let accuracyLevel = 'unknown';
+        let correctCount = 0;
+        
+        if (result.multiTestAllCorrect === true) {
+          accuracyLevel = 'all_correct';
+          correctCount = totalCount;
+        } else if (result.multiTestAllCorrect === false) {
+          // When multiTestAllCorrect is false, we can't determine if it's "all" or "some" incorrect
+          // without the detailed multiValidation data, so we treat it as all incorrect
+          accuracyLevel = 'all_incorrect';
+          correctCount = 0;
+        }
+        
+        return { correctCount, totalCount, accuracyLevel };
+      }
       return { correctCount: 0, totalCount: 0, accuracyLevel: 'unknown' };
     }
     const correctCount = multiValidation.filter((v: any) => v.isPredictionCorrect).length;
@@ -105,7 +132,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       }
     }
     return { correctCount, totalCount, accuracyLevel };
-  }, [multiValidation]);
+  }, [multiValidation, result.hasMultiplePredictions, result.multiTestAllCorrect, predictedGrids, expectedOutputGrids]);
 
   const multiDiffMasks = useMemo(() => {
     if (!predictedGrids || predictedGrids.length === 0) {
@@ -130,7 +157,11 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
   return (
-    <div className="border rounded-lg p-4 space-y-3">
+    <div 
+      id={result.id ? `explanation-${result.id}` : undefined}
+      className="border rounded-lg p-4 space-y-3 scroll-mt-20 transition-all"
+      data-explanation-id={result.id}
+    >
       <AnalysisResultHeader
         result={result}
         model={model}

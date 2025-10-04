@@ -1,4 +1,84 @@
+## [2025-10-03]
+
+## v3.5.0 - Bug Fixes and Deep Linking
+
+### Added
+- **Deep Linking to Specific Explanations** (Feature)
+  - Users can now share direct links to specific AI explanations
+  - URL format: `/puzzle/{puzzleId}?highlight={explanationId}`
+  - Example: `/puzzle/0934a4d8?highlight=20779` jumps directly to explanation #20779
+  - Features:
+    - Auto-scroll to highlighted explanation on page load
+    - Visual highlight effect (blue ring pulse for 3 seconds)
+    - Copy Link button on each AnalysisResultCard
+    - Toast notification when link copied to clipboard
+    - Works across all pages showing explanations (Examiner, Feedback, Debate)
+  - Implementation:
+    - Added `id="explanation-{id}"` and `data-explanation-id` attributes to AnalysisResultCard wrapper
+    - Added `scroll-mt-20` Tailwind class for proper scroll positioning
+    - Added query parameter handling in PuzzleExaminer with smooth scroll behavior
+    - Copy Link button uses clipboard API and toast notifications
+    - Hidden in ELO mode (doesn't show for unsaved explanations)
+  - Files: client/src/components/puzzle/AnalysisResultCard.tsx, AnalysisResultHeader.tsx, client/src/pages/PuzzleExaminer.tsx
+  - Commit: 577ef99
+
+### Fixed
+- **"Some Incorrect" Bug - Root Cause Fixed** (CRITICAL)
+  - THE BUG WAS IN THE SHARED UTILITY ITSELF - `shared/utils/correctness.ts`
+  - Line 78 returned `'Some Incorrect'` for ALL multi-test failures, even 0/N correct
+  - Root cause chain:
+    1. Components invented their own logic (ExplanationResultsSection, AnalysisResultGrid) - FIXED in 358296d
+    2. Components used shared utility (ExplanationsList, AnalysisResultListCard) - BUG PROPAGATED
+    3. **The shared utility had the bug** - returning "Some Incorrect" when it should say "Incorrect"
+  - Logic error: `multiTestAllCorrect === false` means "NOT all correct" (could be 0/N or some failed)
+  - Without detailed validation data, cannot distinguish "all" vs "some" incorrect
+  - Solution: Removed hasMultiplePredictions check, now always returns "Incorrect" for failures
+  - Impact: Fixes bug in ALL components simultaneously (single source of truth)
+  - Files: shared/utils/correctness.ts, ExplanationResultsSection.tsx, AnalysisResultGrid.tsx
+  - Commits: 358296d (component fixes), 0cfbafa (root cause fix)
+
+- **Multi-Test Accuracy Display** (Critical)
+  - Fixed "0/2 correct" showing "Some Incorrect" instead of "Incorrect"
+  - Root cause: multiTestStats fallback logic was using multiTestAverageAccuracy (calibration score) to estimate correctCount
+  - Solution: Simplified logic to rely ONLY on multiTestAllCorrect boolean flag
+    - When multiTestAllCorrect === false → "Incorrect" with 0 correct
+    - When multiTestAllCorrect === true → "All Correct" with totalCount correct
+  - Removed unreliable estimation from multiTestAverageAccuracy field
+  - Files: client/src/components/puzzle/AnalysisResultCard.tsx
+  - Commits: fde0dd9, 356de4f
+
+- **Trustworthiness Badge Display**
+  - Restored trustworthiness badge (predictionAccuracyScore) to AnalysisResultCard
+  - Conditional display: shows only in non-ELO, non-debate, non-Saturn contexts
+  - Badge shows calibration score as "Trustworthiness: X%" with color coding
+  - Properly hidden in debate components and ELO mode as requested
+  - Files: client/src/components/puzzle/AnalysisResultContent.tsx
+  - Commit: 356de4f
+
+- **ModelDebate Nested Scroll Box** (UX)
+  - Removed nested scroll container in IndividualDebate.tsx
+  - Changed from `h-[calc(100vh-280px)] overflow-y-auto` to natural page flow
+  - Debate cards now display exactly like PuzzleExaminer results
+  - Eliminated scroll-within-scroll pattern for better UX
+  - Files: client/src/components/puzzle/debate/IndividualDebate.tsx
+  - Commit: 07d4cd6
+
+### Improved
+- **AnalysisResultListCard UI Cleanup**
+  - Removed trophy emoji from confidence display
+  - Changed from icon-based to simple "Confidence: X%" text
+  - Cleaner, less cluttered list view
+  - Files: client/src/components/puzzle/AnalysisResultListCard.tsx
+  - Commit: 356de4f
+
+- **Component File Headers**
+  - Added proper headers to AnalysisResultContent.tsx, AnalysisResultHeader.tsx, AnalysisResultGrid.tsx, AnalysisResultMetrics.tsx
+  - Updated headers to reflect recent fixes and changes
+  - Commit: fde0dd9
+
 ## [2025-10-01]
+
+## v3.4.1 - Admin Hub Fixes
 
 ### Fixed
 - **Admin Hub Quick Stats Bug** (Critical)
@@ -106,6 +186,8 @@
 
 ## [2025-09-30]
 
+## v3.4.0 - HuggingFace Ingestion
+
 ### Added
 - **HuggingFace Dataset Ingestion** (`server/scripts/ingest-huggingface-dataset.ts`)
   - CLI script for ingesting external AI model predictions from HuggingFace datasets
@@ -120,6 +202,8 @@
   - Preserves raw HuggingFace data in provider_raw_response field
   - Extracts reasoning, token usage, cost, and timing data
   - Uses existing responseValidator and repositoryService patterns (SRP/DRY compliant)
+
+## v3.30.9 - Admin Features
 
 - **Model Management GUI** (`/model-config`)
   - Web-based interface for viewing and managing AI model configurations
@@ -197,7 +281,7 @@
 
 ### September 29 2025
 
-## v2.30.8 - Rebuttal Tracking UI Complete (100% DONE! 🎉)
+## v3.30.8 - Rebuttal Tracking UI Complete (100% DONE! 🎉)
 
 ### ✅ **UI Components Implemented**
 - **Rebuttal Badges on Explanation Cards**:
@@ -269,7 +353,7 @@ Overall Progress: 100% Complete! 🎉
 
 ---
 
-## v2.30.7 - Rebuttal Tracking Backend Implementation (95% Complete)
+## v3.30.7 - Rebuttal Tracking Backend Implementation (95% Complete)
 
 ### ✅ **Backend Infrastructure Complete**
 - **Database Schema**: `rebutting_explanation_id` column added with foreign key constraint and index
@@ -379,7 +463,7 @@ To complete rebuttal tracking:
 **Total remaining work: ~4.5 hours for full completion**
 
 
-## v2.30.6 - TypeScript Type Consistency Fix
+## v3.30.6 - TypeScript Type Consistency Fix
 
 ### 🐛 **Critical Bug Fix**
 - **Fixed TypeScript Type Mismatch in Correctness Utility**:
@@ -398,7 +482,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.5 - Debate Mode Custom Challenge Implementation
+## v3.30.5 - Debate Mode Custom Challenge Implementation
 
 ### ✨ **New Features**
 - **Custom Challenge Prompts**: Users can now provide optional guidance when challenging explanations
@@ -463,7 +547,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.4 - Fix Model List Caching Issue
+## v3.30.4 - Fix Model List Caching Issue
 
 ### 🐛 **Bug Fix**
 - **Fixed infinite model cache**: Changed `staleTime` from `Infinity` to 5 minutes in useModels hook
@@ -479,7 +563,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.3 - Model Debate Complete Implementation & UX Enhancements
+## v3.30.3 - Model Debate Complete Implementation & UX Enhancements
 
 ### 🚀 **Critical Functionality Restored**
 - **Fixed Broken Challenge Generation Flow**: Challenge responses now properly display in debate UI
@@ -536,7 +620,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.2 - Claude Sonnet 4.5 Model Addition
+## v3.30.2 - Claude Sonnet 4.5 Model Addition
 
 ### ✨ **New Model Support**
 - **Added Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)**: Latest Anthropic model now available in model configuration
@@ -553,7 +637,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.1 - IndividualDebate Error Fix & Debate Availability Logic
+## v3.30.1 - IndividualDebate Error Fix & Debate Availability Logic
 
 ### 🐛 **Critical Bug Fixes**
 - **Fixed TypeError in IndividualDebate.tsx**: `Cannot read properties of undefined (reading 'isPredictionCorrect')` at line 93
@@ -577,7 +661,7 @@ To complete rebuttal tracking:
 
 ---
 
-## v2.30.0 - Model Debate SRP Refactor & Architecture Improvements
+## v3.30.0 - Model Debate SRP Refactor & Architecture Improvements
 
 ### 🏗️ **Major Architectural Refactoring**
 - **Decomposed Monolithic ModelDebate Component (600+ lines → 7 focused components)**
@@ -611,7 +695,7 @@ To complete rebuttal tracking:
 - **Enhanced testability** - each component can be tested in isolation
 - **Production-ready architecture** following clean code principles
 
-## v2.29.0 - Model Debate Feature
+## v3.29.0 - Model Debate Feature
 
 ### Added
 - **Model Debate System**
@@ -640,7 +724,7 @@ To complete rebuttal tracking:
 
 ### September 28 2025
 
-## v2.28.0 - Puzzle List Analysis Feature
+## v3.28.0 - Puzzle List Analysis Feature
 
 ### Added
 - **Bulk Puzzle Analysis**
@@ -670,7 +754,7 @@ To complete rebuttal tracking:
 - API endpoint tested with sample puzzle IDs - returns structured analysis data
 - Server running at http://localhost:5000
 
-## v2.27.0 - User Solution Feedback Upgrade
+## v3.27.0 - User Solution Feedback Upgrade
 
 ### Added
 - **Standalone human-feedback flow**
@@ -699,7 +783,7 @@ To complete rebuttal tracking:
 
 ### September 28 2025
 
-## v2.26.3 - Puzzle Feedback API Alignment
+## v3.26.3 - Puzzle Feedback API Alignment
 
 ### Fixed
 - **Puzzle Feedback submissions use community solutions endpoint**
@@ -727,7 +811,7 @@ To complete rebuttal tracking:
 
 ### September 26 2025
 
-## v2.26.2 - Architectural Restoration: Fix Duplicate Database Saves 🏗️ CRITICAL ARCHITECTURE FIX
+## v3.26.2 - Architectural Restoration: Fix Duplicate Database Saves 🏗️ CRITICAL ARCHITECTURE FIX
 
 ### Fixed
 - **CRITICAL: Duplicate Database Saves Eliminated**
@@ -772,7 +856,7 @@ To complete rebuttal tracking:
    - `npm run process` - Flexible processor
 3. **Validation**: Check database for duplicate explanations (should be none)
 
-## v2.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
+## v3.26.1 - Query Logic Fix and UX Improvements 🐛 CRITICAL FIX
 
 ### Fixed
 - **Critical Query Bug**: Fixed model dataset performance categorization logic
@@ -787,7 +871,7 @@ To complete rebuttal tracking:
   - Added hover effects and cursor pointer styling
   - Direct navigation from analytics dashboard to specific puzzles
 
-## v2.26.0 - Dynamic Model Dataset Performance Analysis System ✨ MAJOR FEATURE
+## v3.26.0 - Dynamic Model Dataset Performance Analysis System ✨ MAJOR FEATURE
 
 ### Added
 - **Complete Model Dataset Performance System**: Dynamic analysis across ANY ARC dataset
@@ -827,7 +911,7 @@ To complete rebuttal tracking:
 
 ### September 24 2025
 
-## v2.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring
+## v3.24.5 - CRITICAL: Complete Cost Calculation Architecture Refactoring
 
 **🚨 BREAKING ARCHITECTURAL CHANGES**: Completely eliminated SRP/DRY violations in cost calculation system. All cost calculations now follow proper domain separation principles.
 
@@ -902,7 +986,7 @@ CREATE INDEX idx_explanations_cost_date ON explanations(created_at, estimated_co
 
 ---
 
-## v2.24.4 - CRITICAL: PuzzleOverview Data Source Fixes and Cost Architecture Issues
+## v3.24.4 - CRITICAL: PuzzleOverview Data Source Fixes and Cost Architecture Issues
 
 **CRITICAL FIXES**: Fixed multiple data source inconsistencies and architectural violations in PuzzleOverview.tsx and cost calculation system.
 
@@ -968,7 +1052,7 @@ CREATE INDEX idx_explanations_cost_date ON explanations(created_at, estimated_co
 
 ### September 23 2025
 
-## v2.24.3 - Documentation Updates
+## v3.24.3 - Documentation Updates
 
 Commented out all OpenRouter models temporarily, models.ts needs to be audited and only certain models should be enabled.
 
@@ -981,7 +1065,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 
 ### September 16 2025
 
-## v2.24.2 - CRITICAL FIX: Multi-Test Puzzle Validation and Storage System
+## v3.24.2 - CRITICAL FIX: Multi-Test Puzzle Validation and Storage System
 
 **CRITICAL FIX**: Restored completely broken multi-test puzzle validation and storage system that was fragmented during architectural refactoring.
 
@@ -1037,7 +1121,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 - Historical data integrity maintained - no changes to existing database entries
 - **IMMEDIATE**: New multi-test analysis will now save correctly to database
 
-## v2.24.1 - PuzzleBrowser Default Filter Optimization
+## v3.24.1 - PuzzleBrowser Default Filter Optimization
 
 **FEATURE**: Improved PuzzleBrowser user experience by defaulting to unexplained puzzles for analysis workflow.
 
@@ -1058,7 +1142,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 - Reduces cognitive load for finding actionable items in the puzzle database
 - Maintains backward compatibility with all existing filter and sort options
 
-## v2.24.0 - ELO Rating System for AI Explanation Quality Assessment
+## v3.24.0 - ELO Rating System for AI Explanation Quality Assessment
 
 **FEATURE**: Complete ELO rating system implementation for pairwise comparison of AI explanation quality.
 
@@ -1090,7 +1174,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 
 ### September 15 2025
 
-## v2.23.0 - 🚀 API Limits Removal for External Applications
+## v3.23.0 - 🚀 API Limits Removal for External Applications
 
 **MAJOR ENHANCEMENT**: Removed arbitrary API result limits to support external applications accessing comprehensive datasets.
 
@@ -1143,7 +1227,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 
 ### September 12 2025
 
-## v2.22.1 - 🏷️ Dataset Badge for PuzzleExaminer + Grid Rendering Fix
+## v3.22.1 - 🏷️ Dataset Badge for PuzzleExaminer + Grid Rendering Fix
 
 **ENHANCEMENT**: Added dataset source badges to PuzzleExaminer page showing which ARC dataset each puzzle comes from.
 
@@ -1169,7 +1253,7 @@ Previous BatchAnalysis was a flawed concept and implementation.
 
 ---
 
-## v2.22.0 - 🛠️ Debug Spam Elimination & User-Friendly Error Messaging
+## v3.22.0 - 🛠️ Debug Spam Elimination & User-Friendly Error Messaging
 
 **CRITICAL IMPROVEMENT**: Eliminated excessive console spam during puzzle analysis and implemented user-friendly error messages for model unavailability.
 
@@ -1209,7 +1293,7 @@ This eliminates debugging noise while ensuring users receive clear feedback when
 
 ### September 9 2025
 
-## v2.21.0 - 🚀 MAJOR UX: Optimistic UI Updates for Analysis Results
+## v3.21.0 - 🚀 MAJOR UX: Optimistic UI Updates for Analysis Results
 
 **BREAKTHROUGH IMPROVEMENT**: Analysis results now appear instantly when triggered, providing immediate feedback and real-time progress updates during analysis.
 
@@ -1254,7 +1338,7 @@ This eliminates debugging noise while ensuring users receive clear feedback when
 
 This represents a major leap forward in user experience, eliminating the previous "dead time" during analysis.
 
-## v2.20.6 - 🚨 CRITICAL FIX: Grid Data Sanitization to Prevent JSON Parsing Errors
+## v3.20.6 - 🚨 CRITICAL FIX: Grid Data Sanitization to Prevent JSON Parsing Errors
 
 **PROBLEM**: Database INSERT failures with "invalid input syntax for type json" when AI models introduce non-numeric characters in grid data.
 
@@ -1283,7 +1367,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - Verify mixed data type grids are automatically cleaned
 - Check console for sanitization warnings to debug AI model issues
 
-## v2.20.5 - 🚨 CRITICAL FIX: OpenRouter API Format Issue for Cohere and Grok Models
+## v3.20.5 - 🚨 CRITICAL FIX: OpenRouter API Format Issue for Cohere and Grok Models
 
 **PROBLEM**: Some OpenRouter models were failing with "Input required: specify 'prompt' or 'messages'" error.
 
@@ -1310,7 +1394,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - Verify other OpenRouter models still work correctly
 - Check console logs show "Using prompt format" vs "Using combined-prompt strategy"
 
-## v2.20.4 - 🚨 VALIDATION BOTTLENECK FIX: Add Missing Raw Response Fields to Repository INSERT
+## v3.20.4 - 🚨 VALIDATION BOTTLENECK FIX: Add Missing Raw Response Fields to Repository INSERT
 
 **CRITICAL DATA LOSS RESOLVED**: Repository INSERT was dropping expensive API data at the final database save step.
 
@@ -1342,7 +1426,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 **AUTHOR**: Claude (Final piece of systematic data loss fix)
 
-## v2.20.3 - 🎯 ACCURACY FIX: Convert Confidence 0 to 50 for Correct predictionAccuracyScore
+## v3.20.3 - 🎯 ACCURACY FIX: Convert Confidence 0 to 50 for Correct predictionAccuracyScore
 
 **ISSUE RESOLVED**: When AI models returned confidence = 0 (which should never happen), the `predictionAccuracyScore` calculation was dangerously incorrect.
 
@@ -1374,7 +1458,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 **AUTHOR**: Claude (Critical trustworthiness calculation fix)
 
-## v2.20.2 - 🚨 CRITICAL DATA LOSS FIX: Save Raw API Responses Before Parsing
+## v3.20.2 - 🚨 CRITICAL DATA LOSS FIX: Save Raw API Responses Before Parsing
 
 **REGRESSION RESOLVED**: GPT-5-chat-latest and other models were losing expensive API calls when JSON parsing failed.
 
@@ -1403,7 +1487,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 **AUTHOR**: Claude (Emergency fix for systematic data loss)
 
-## v2.20.1 - 🚨 CRITICAL DATABASE FIX: Eliminate Duplicate Initialization & Connection Timeouts
+## v3.20.1 - 🚨 CRITICAL DATABASE FIX: Eliminate Duplicate Initialization & Connection Timeouts
 
 **PROBLEM SOLVED**: Fixed critical database connection failures causing 500 errors on feedback endpoints with `ETIMEDOUT` to Railway PostgreSQL.
 
@@ -1430,7 +1514,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 **AUTHOR**: Claude & User collaborative debugging
 
-## v2.20.0 - 🔧 CRITICAL FIX: Robust Handling of Non-Compliant API Responses
+## v3.20.0 - 🔧 CRITICAL FIX: Robust Handling of Non-Compliant API Responses
 - **SYSTEMIC ISSUE RESOLVED**: Fixed recurring "Unexpected end of JSON input" errors for models like `grok-4` and `qwen/qwen3-235b-a22b-thinking-2507`.
 - **ROOT CAUSE**: The system prematurely attempted to parse API responses as pure JSON, failing when models returned mixed content (e.g., conversational text before the JSON block).
 - **ROBUST SOLUTION**:
@@ -1442,7 +1526,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 9 2025
 
-## v2.19.0 - 🔧 MAJOR FIX: Comprehensive Streaming & Large Response Handling
+## v3.19.0 - 🔧 MAJOR FIX: Comprehensive Streaming & Large Response Handling
 - **STREAMING RESPONSE ROBUSTNESS**: Complete overhaul of OpenRouter response handling for large puzzle analyses
 - **ROOT CAUSE RESOLUTION**: Fixed "Unexpected end of JSON input" errors caused by truncated/streaming responses from Grok models
 - **TECHNICAL IMPROVEMENTS**:
@@ -1456,7 +1540,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **IMPACT**: Enables successful analysis and database saving for large puzzle responses that previously failed
 - **TESTING**: User should verify large puzzle analyses with x-ai/grok models now work correctly
 
-## v2.18.0 - 🚨 CRITICAL FIX: Database Persistence & Grok Model API Failures
+## v3.18.0 - 🚨 CRITICAL FIX: Database Persistence & Grok Model API Failures
 - **CRITICAL DATABASE RESTORATION**: Fixed missing database persistence in puzzleAnalysisService causing silent data loss
 - **MAJOR BUG FIXES**:
   - **Database Saving**: All puzzle analyses now properly save to database via repositoryService.explanations.saveExplanation()
@@ -1468,7 +1552,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **RELIABILITY**: Non-fatal error handling ensures users receive results even if individual operations fail
 - **TESTING**: User should verify x-ai/grok models now save to database and handle API errors gracefully
 
-## v2.17.0 - 🔄 INFRASTRUCTURE: Grok Model Migration to OpenRouter
+## v3.17.0 - 🔄 INFRASTRUCTURE: Grok Model Migration to OpenRouter
 - **GROK PROVIDER MIGRATION**: All Grok models now use OpenRouter with x-ai/ namespace for improved reliability
 - **MODEL STANDARDIZATION**:
   - **Migrated Models**: `grok-4-0709` → `x-ai/grok-4`, `grok-3` → `x-ai/grok-3`, `grok-3-mini` → `x-ai/grok-3-mini`, `grok-3-mini-fast` → `x-ai/grok-3-mini-fast`
@@ -1484,7 +1568,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 8 2025
 
-## v2.16.0 - 🎯 MAJOR ENHANCEMENT: PuzzleDiscussion Rich Filtering & ARC 2 Eval Focus
+## v3.16.0 - 🎯 MAJOR ENHANCEMENT: PuzzleDiscussion Rich Filtering & ARC 2 Eval Focus
 - **COMPREHENSIVE BACKEND API EXTENSION**: Enhanced worst-performing puzzles API with advanced filtering and rich metrics
 - **FEATURES**:
   - **ARC Dataset Filtering**: Filter by ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy with ARC2-Eval quick access
@@ -1521,7 +1605,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 7 2025
 
-## v2.15.0 - 🔍 NEW SOLVER: GEPA Systematic Strategy Analysis
+## v3.15.0 - 🔍 NEW SOLVER: GEPA Systematic Strategy Analysis
 - **NEW SOLVER VARIATION**: Added GEPA (Systematic Strategy Analysis) as solver mode variant
 - **FEATURES**:
   - **Strategy Framework**: Implements proven ARC-AGI analysis strategies from GEPA methodology
@@ -1538,7 +1622,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 7 2025
 
-## v2.14.0 - 🔧 CRITICAL FIX: JSON Truncation Resolution
+## v3.14.0 - 🔧 CRITICAL FIX: JSON Truncation Resolution
 - **ROOT CAUSE IDENTIFIED**: 1% JSON truncation failures caused by hardcoded `maxTokensPerRequest` limits applied to unlimited providers
 - **COMPREHENSIVE FIX**: Removed all artificial token limits from non-Anthropic providers
 - **CHANGES**:
@@ -1557,7 +1641,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 6 2025
 
-## v2.13.0 - 🎯 MAJOR FEATURE: PuzzleOverview Leaderboard Dashboard Rebuild
+## v3.13.0 - 🎯 MAJOR FEATURE: PuzzleOverview Leaderboard Dashboard Rebuild
 - **TRANSFORMATION COMPLETE**: Rebuilt PuzzleOverview from complex filtering interface into data-rich model performance dashboard
 - **ARCHITECTURE CHANGES**:
   - **Code Reduction**: 461 → ~200 lines (56% reduction in component complexity)
@@ -1625,7 +1709,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 5 2025
 
-## v2.12.0 - 🌐 CORS: Removed All API Access Restrictions
+## v3.12.0 - 🌐 CORS: Removed All API Access Restrictions
 - **ISSUE RESOLVED**: Fixed CORS blocking preventing external apps from accessing the API
 - **CHANGES MADE**:
   - Main server CORS configuration simplified: removed origin whitelist, now allows all origins (`origin: true`)
@@ -1643,7 +1727,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 4 2025
 
-## v2.11.0 - ✨ ENHANCED: PuzzleDiscussion Advanced Filtering System (Task 1.1 COMPLETED) 🎯
+## v3.11.0 - ✨ ENHANCED: PuzzleDiscussion Advanced Filtering System (Task 1.1 COMPLETED) 🎯
 - **FEATURE**: Complete accuracy range filtering system implemented for PuzzleDiscussion page
 - **NEW CAPABILITIES**:
   - Dual-handle accuracy range slider (0-100%) with 5% increments for precise filtering
@@ -1676,7 +1760,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **RESEARCH VALUE**: Enables researchers to easily find completely unsolved puzzles and specific accuracy ranges
 - Author: Claude Code (implementing PuzzleDiscussionEnhancementPlan.md Task 1.1)
 
-## v2.10.9 - ✅ CONFIRMED FIX: [object Object] OpenAI Reasoning Corruption RESOLVED 🎯
+## v3.10.9 - ✅ CONFIRMED FIX: [object Object] OpenAI Reasoning Corruption RESOLVED 🎯
 - **STATUS**: ✅ **CONFIRMED WORKING** - User verified fix resolves the issue
 - **REAL ROOT CAUSE FOUND**: Issue was NOT in main parsing logic but in fallback extraction functions
 - **EXACT LOCATION**: `extractReasoningFromOutputBlocks()` line 717 and `extractTextFromOutputBlocks()` line 696
@@ -1695,7 +1779,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **CONFIDENCE**: ✅ **CONFIRMED** - User testing validates complete resolution
 - Author: Claude Code (after systematic analysis of ResponsesAPI.md + Ultra-thin Plan debugging)
 
-## v2.10.8 - CRITICAL FIX: Resolve OpenAI [object Object] Reasoning Corruption ⚡
+## v3.10.8 - CRITICAL FIX: Resolve OpenAI [object Object] Reasoning Corruption ⚡
 - **ROOT CAUSE IDENTIFIED**: OpenAI service `String(reasoningLog)` conversion produced "[object Object]" corruption
 - **TECHNICAL DISCOVERY**: After deep commit history analysis (August 23-Present), found corruption in `parseProviderResponse` line 415
 - **Primary Fix**: Replaced `String(reasoningLog)` with `JSON.stringify(reasoningLog, null, 2)` to preserve object structure
@@ -1706,7 +1790,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **TESTING REQUIRED**: Verify OpenAI o3-2025-04-16 shows readable reasoning instead of "[object Object]"
 - Author: Claude Code (after extensive commit forensics)
 
-## v2.10.7 - CRITICAL FIX: Resolve Persistent OpenRouter Parsing + [object Object] UI Corruption ✅
+## v3.10.7 - CRITICAL FIX: Resolve Persistent OpenRouter Parsing + [object Object] UI Corruption ✅
 - **DUAL BUG RESOLUTION**: Fixed two separate but related issues causing reasoning display problems
 - **OpenRouter Interface Mismatch Fix**:
   - Fixed `parseProviderResponse` method signature missing required `captureReasoning` parameter
@@ -1729,7 +1813,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 4 2025
 
-## v2.10.6 - FEATURE: Enhanced Puzzle Accuracy Filtering 
+## v3.10.6 - FEATURE: Enhanced Puzzle Accuracy Filtering 
 - **NEW FEATURE**: Added "Low Accuracy (<25%)" option to Prediction Accuracy filter dropdown
 - **Improvement**: Users can now filter puzzles showing poor AI performance (< 25% accuracy)
 - **Previous Issue**: Filter only showed binary correct/incorrect options (0% or 100%)
@@ -1750,7 +1834,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 2 2025
 
-## v2.10.5 - COMPLETE REASONING SOLUTION: All Providers Fixed ✅
+## v3.10.5 - COMPLETE REASONING SOLUTION: All Providers Fixed ✅
 - **BREAKTHROUGH**: Complete systematic fix for reasoning extraction across ALL AI providers
 - **Root Problem Solved**: Reasoning extraction regression affecting all Chat Completions + OpenAI database storage
 - **Result**: All providers (OpenAI, Anthropic, Gemini, DeepSeek, OpenRouter) now display structured reasoning
@@ -1801,7 +1885,7 @@ This represents a major leap forward in user experience, eliminating the previou
 **Files Changed**: `server/services/anthropic.ts`, `server/services/deepseek.ts`, `server/repositories/ExplanationRepository.ts`
 - Author: Claude Code
 
-## v2.10.4 - SURGICAL FIX: Anthropic & DeepSeek Reasoning Extraction ✅
+## v3.10.4 - SURGICAL FIX: Anthropic & DeepSeek Reasoning Extraction ✅
 - **SURGICAL APPROACH**: Fixed reasoning extraction without reverting BaseAIService architecture improvements
 - **Root Problem**: Chat Completions providers need schema enforcement to include `reasoningItems` in responses, but only OpenAI had structured output
 - **Anthropic Solution**: Implemented Tool Use API with schema-enforced structured output
@@ -1820,7 +1904,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **Files Changed**: `server/services/anthropic.ts`, `server/services/deepseek.ts`
 - Author: Claude Code
 
-## v2.10.3 - CRITICAL FIX: Gemini Reasoning Extraction from Thought Parts ✅
+## v3.10.3 - CRITICAL FIX: Gemini Reasoning Extraction from Thought Parts ✅
 - **REASONING EXTRACTION BREAKTHROUGH**: Implemented proper extraction of internal reasoning from Gemini's `thought: true` response parts
 - **Root Problem**: Gemini service was completely ignoring reasoning parts marked with `thought: true`, causing null/undetermined reasoning in debug logs
 - **Technical Deep Dive**:
@@ -1842,7 +1926,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### September 1 2025
 
-## v2.10.2 - FIX: Gemini Health Check API Authentication ✅
+## v3.10.2 - FIX: Gemini Health Check API Authentication ✅
 - **HEALTH CHECK FIX**: Resolved Gemini health check failures while models were working correctly
 - **Root Cause**: Health check system wasn't properly handling query-based authentication for Gemini API
 - **Issue Details**:
@@ -1856,7 +1940,7 @@ This represents a major leap forward in user experience, eliminating the previou
 - **Testing**: Gemini health checks should now pass while maintaining existing functionality
 - Author: Claude Code
 
-## v2.10.1 - CRITICAL FIX: Gemini and OpenRouter JSON Parsing Failures ✅
+## v3.10.1 - CRITICAL FIX: Gemini and OpenRouter JSON Parsing Failures ✅
 - **PARSING CRISIS RESOLVED**: Fixed widespread JSON parsing failures affecting Gemini and OpenRouter models after recent decomposition/refactor
 - **Root Issues Fixed**:
   - BaseAIService markdown sanitization logic was failing to strip `\```json` wrappers properly
@@ -1887,7 +1971,7 @@ This represents a major leap forward in user experience, eliminating the previou
 
 ### August 31 2025
 
-## v2.10.0 - State Management Consolidation: Context Providers & Custom Hooks (Phase 4) ✅
+## v3.0.0 - State Management Consolidation: Context Providers & Custom Hooks (Phase 4) ✅
 - **MAJOR FRONTEND REFACTOR**: Completed Phase 4 state management consolidation with centralized context providers and enhanced custom hooks
 - **Custom Hooks Architecture**:
   - `useAnalysisResult`: Consolidated single analysis state management with improved configuration handling
