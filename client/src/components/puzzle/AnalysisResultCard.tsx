@@ -90,6 +90,33 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
 
   const multiTestStats = useMemo(() => {
     if (!multiValidation || multiValidation.length === 0) {
+      // Fallback to database fields when multiValidation is not available
+      // This handles cases where old data was saved without detailed validation
+      if (result.hasMultiplePredictions && result.multiTestAverageAccuracy !== undefined) {
+        // Calculate from multiTestAverageAccuracy (0-1 range)
+        // If we have predicted grids, use their count as totalCount
+        const totalCount = predictedGrids?.length || expectedOutputGrids.length || 0;
+        
+        // Determine accuracy level from multiTestAllCorrect flag
+        let accuracyLevel = 'unknown';
+        if (result.multiTestAllCorrect === true) {
+          accuracyLevel = 'all_correct';
+        } else if (result.multiTestAllCorrect === false) {
+          // Check if ALL were incorrect by looking at average accuracy
+          if (result.multiTestAverageAccuracy === 0) {
+            accuracyLevel = 'all_incorrect';
+          } else {
+            accuracyLevel = 'some_incorrect';
+          }
+        }
+        
+        // Estimate correct count from average accuracy
+        const estimatedCorrectCount = result.multiTestAllCorrect === true ? totalCount : 
+                                      result.multiTestAverageAccuracy === 0 ? 0 :
+                                      Math.round((result.multiTestAverageAccuracy || 0) * totalCount);
+        
+        return { correctCount: estimatedCorrectCount, totalCount, accuracyLevel };
+      }
       return { correctCount: 0, totalCount: 0, accuracyLevel: 'unknown' };
     }
     const correctCount = multiValidation.filter((v: any) => v.isPredictionCorrect).length;
@@ -105,7 +132,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       }
     }
     return { correctCount, totalCount, accuracyLevel };
-  }, [multiValidation]);
+  }, [multiValidation, result.hasMultiplePredictions, result.multiTestAllCorrect, result.multiTestAverageAccuracy, predictedGrids, expectedOutputGrids]);
 
   const multiDiffMasks = useMemo(() => {
     if (!predictedGrids || predictedGrids.length === 0) {
