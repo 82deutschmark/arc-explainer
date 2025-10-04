@@ -1,10 +1,14 @@
 /**
+ * AnalysisResultCard.tsx
  *
- * Author: AI Agent using GPT-5-Codex
- * Date: 2025-10-02T21:47:10-04:00
- * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility, predicted grid metrics, feedback toggles, and Saturn integrations without duplicating logic from child components.
- * SRP/DRY check: Pass - single responsibility organizing child modules; reuses existing subcomponents and hooks with no duplicated logic.
- * shadcn/ui: Pass - leverages shared shadcn/ui Badge component; no custom UI replacements introduced.
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:50:00-04:00
+ * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility,
+ * predicted grid metrics, feedback toggles, and Saturn integrations. FIXED: Multi-test stats now
+ * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
+ * logic to rely on multiTestAllCorrect flag when detailed validation data is unavailable.
+ * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
+ * shadcn/ui: Pass - Uses shadcn/ui Badge component
  */
 
 import React, { useMemo, useState } from 'react';
@@ -92,30 +96,25 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
     if (!multiValidation || multiValidation.length === 0) {
       // Fallback to database fields when multiValidation is not available
       // This handles cases where old data was saved without detailed validation
-      if (result.hasMultiplePredictions && result.multiTestAverageAccuracy !== undefined) {
-        // Calculate from multiTestAverageAccuracy (0-1 range)
-        // If we have predicted grids, use their count as totalCount
+      if (result.hasMultiplePredictions) {
         const totalCount = predictedGrids?.length || expectedOutputGrids.length || 0;
         
-        // Determine accuracy level from multiTestAllCorrect flag
+        // Determine accuracy level ONLY from multiTestAllCorrect flag
+        // We cannot reliably estimate correctCount without detailed validation data
         let accuracyLevel = 'unknown';
+        let correctCount = 0;
+        
         if (result.multiTestAllCorrect === true) {
           accuracyLevel = 'all_correct';
+          correctCount = totalCount;
         } else if (result.multiTestAllCorrect === false) {
-          // Check if ALL were incorrect by looking at average accuracy
-          if (result.multiTestAverageAccuracy === 0) {
-            accuracyLevel = 'all_incorrect';
-          } else {
-            accuracyLevel = 'some_incorrect';
-          }
+          // When multiTestAllCorrect is false, we can't determine if it's "all" or "some" incorrect
+          // without the detailed multiValidation data, so we treat it as all incorrect
+          accuracyLevel = 'all_incorrect';
+          correctCount = 0;
         }
         
-        // Estimate correct count from average accuracy
-        const estimatedCorrectCount = result.multiTestAllCorrect === true ? totalCount : 
-                                      result.multiTestAverageAccuracy === 0 ? 0 :
-                                      Math.round((result.multiTestAverageAccuracy || 0) * totalCount);
-        
-        return { correctCount: estimatedCorrectCount, totalCount, accuracyLevel };
+        return { correctCount, totalCount, accuracyLevel };
       }
       return { correctCount: 0, totalCount: 0, accuracyLevel: 'unknown' };
     }
@@ -132,7 +131,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       }
     }
     return { correctCount, totalCount, accuracyLevel };
-  }, [multiValidation, result.hasMultiplePredictions, result.multiTestAllCorrect, result.multiTestAverageAccuracy, predictedGrids, expectedOutputGrids]);
+  }, [multiValidation, result.hasMultiplePredictions, result.multiTestAllCorrect, predictedGrids, expectedOutputGrids]);
 
   const multiDiffMasks = useMemo(() => {
     if (!predictedGrids || predictedGrids.length === 0) {
