@@ -59,7 +59,7 @@ export function useAnalysisResults({
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
   
   // GPT-5 reasoning parameters
-  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
+  const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
