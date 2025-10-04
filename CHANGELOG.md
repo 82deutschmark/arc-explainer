@@ -1,6 +1,16 @@
 ## [2025-10-03]
 
 ### Fixed
+- **Correctness Logic NOT Centralized** (CRITICAL)
+  - Found duplicated/incorrect logic in ExplanationResultsSection.tsx and AnalysisResultGrid.tsx
+  - Root cause: Components invented their own logic instead of using shared `determineCorrectness` utility
+  - ExplanationResultsSection.tsx was ONLY checking `isPredictionCorrect` (ignored multi-test)
+  - AnalysisResultGrid.tsx fallback was STILL using `multiTestAverageAccuracy` (calibration score)
+  - Solution: Both now use centralized logic from `shared/utils/correctness`
+  - Impact: ALL components now use same correctness determination logic
+  - Files: client/src/components/puzzle/ExplanationResultsSection.tsx, AnalysisResultGrid.tsx
+  - Commit: 358296d
+
 - **Multi-Test Accuracy Display** (Critical)
   - Fixed "0/2 correct" showing "Some Incorrect" instead of "Incorrect"
   - Root cause: multiTestStats fallback logic was using multiTestAverageAccuracy (calibration score) to estimate correctCount
