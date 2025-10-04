@@ -1,11 +1,12 @@
 /**
  * Correctness Utility
  *
- * Author: Claude Sonnet 4.5
- * Date: 2025-09-29
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T23:05:00-04:00
  * PURPOSE: Single source of truth for puzzle-solving correctness determination.
- * MATCHES THE WORKING LOGIC FROM AnalysisResultHeader.tsx (lines 110-133)
- * Uses simple nullish coalescing (??) for robust null/undefined handling.
+ * FIXED: Removed "Some Incorrect" label - now just shows "Incorrect" for all failed predictions.
+ * We cannot reliably distinguish "all incorrect" vs "some incorrect" without detailed validation data.
+ * When multiTestAllCorrect === false, it just means NOT all correct (could be 0/N or some failed).
  *
  * SRP/DRY check: Pass - Single responsibility: correctness determination only
  *
@@ -70,12 +71,15 @@ export function determineCorrectness(result: CorrectnessResult): CorrectnessStat
     };
   } else {
     // false, null, or undefined - all count as incorrect
+    // NOTE: We can't distinguish "all incorrect" vs "some incorrect" without detailed validation data
+    // When multiTestAllCorrect === false, it just means NOT all correct (could be 0/N or some failed)
+    // So we just show "Incorrect" for clarity
     return {
       isCorrect: false,
       isIncorrect: true,
       isUnknown: false,
       status: 'incorrect',
-      label: result.hasMultiplePredictions ? 'Some Incorrect' : 'Incorrect'
+      label: 'Incorrect'
     };
   }
 }
