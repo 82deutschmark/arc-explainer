@@ -1,13 +1,14 @@
 /**
  * PuzzleExaminer.tsx
  *
- * @author Claude Sonnet 4.5
- * @date 2025-09-29
+ * @author Cascade using Claude Sonnet 4.5
+ * @date 2025-10-03T23:35:00-04:00
  * @description This is the main page component for examining a single ARC puzzle.
  * It orchestrates the fetching of puzzle data and existing explanations from the database.
  * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
  * The component is designed around a database-first architecture, ensuring that the UI
  * always reflects the stored state, making puzzle pages static and shareable.
+ * ADDED: Deep linking support via ?highlight={explanationId} query parameter for direct links to specific explanations.
  */
 
 import React, { useState } from 'react';
@@ -57,6 +58,33 @@ export default function PuzzleExaminer() {
   React.useEffect(() => {
     document.title = taskId ? `ARC Puzzle ${taskId}` : 'ARC Puzzle Examiner';
   }, [taskId]);
+
+  // Handle highlight query parameter for deep linking
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const highlightId = params.get('highlight');
+    
+    if (highlightId) {
+      // Wait for DOM to render, then scroll to and highlight the explanation
+      const timeoutId = setTimeout(() => {
+        const element = document.getElementById(`explanation-${highlightId}`);
+        if (element) {
+          // Scroll to element with smooth behavior
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Add highlight effect
+          element.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          }, 3000);
+        }
+      }, 500); // Wait for explanations to load
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [explanations]);
 
   // Early return if no taskId
   if (!taskId) {
