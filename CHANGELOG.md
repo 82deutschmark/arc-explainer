@@ -18,7 +18,7 @@
     - Copy Link button uses clipboard API and toast notifications
     - Hidden in ELO mode (doesn't show for unsaved explanations)
   - Files: client/src/components/puzzle/AnalysisResultCard.tsx, AnalysisResultHeader.tsx, client/src/pages/PuzzleExaminer.tsx
-  - Commit: TBD
+  - Commit: 577ef99
 
 ### Fixed
 - **"Some Incorrect" Bug - Root Cause Fixed** (CRITICAL)
