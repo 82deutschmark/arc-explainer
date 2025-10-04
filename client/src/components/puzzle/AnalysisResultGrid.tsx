@@ -1,3 +1,17 @@
+/**
+ * AnalysisResultGrid.tsx
+ *
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T23:00:00-04:00
+ * PURPOSE: Displays predicted output grids alongside expected outputs for both single-test
+ * and multi-test puzzles. Shows correctness badges, grid comparisons, and diff highlighting.
+ * FIXED: Removed multiTestAverageAccuracy check in fallback logic - now uses ONLY multiTestAllCorrect flag.
+ * Displays "Incorrect" (not "Some Incorrect") when we can't determine exact count without validation data.
+ * Handles optimistic UI states with skeleton loaders during analysis/saving.
+ * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
+ * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ */
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -139,19 +153,17 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                     if (multiTestStats.totalCount > 0) {
                       switch (multiTestStats.accuracyLevel) {
                         case 'all_correct': return 'All Correct';
-                        case 'all_incorrect': return 'All Incorrect';
+                        case 'all_incorrect': return 'Incorrect';
                         case 'some_incorrect': return 'Some Incorrect';
                       }
                     }
-                    // Fallback when multiTestStats is empty
+                    // Fallback when multiTestStats is empty - use ONLY multiTestAllCorrect flag
                     if (result.multiTestAllCorrect ?? result.allPredictionsCorrect) {
                       return 'All Correct';
                     }
-                    // Check if all predictions were incorrect using average accuracy
-                    if (result.multiTestAverageAccuracy === 0) {
-                      return 'All Incorrect';
-                    }
-                    return 'Some Incorrect';
+                    // When multiTestAllCorrect is false, we can't distinguish "all" vs "some" incorrect
+                    // without detailed validation data, so just show "Incorrect"
+                    return 'Incorrect';
                   })()}
                 </Badge>
               )}

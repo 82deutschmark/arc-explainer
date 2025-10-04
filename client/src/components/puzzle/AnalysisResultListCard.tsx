@@ -1,11 +1,12 @@
 /**
  * AnalysisResultListCard.tsx
  *
- * Author: Claude Sonnet 4.5
- * Date: 2025-09-29
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:50:00-04:00
  * PURPOSE: Compact list version of AnalysisResultCard optimized for browsing multiple explanations.
  * Shows key information (model, confidence, accuracy, date) with optional "Start Debate" trigger.
- * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
+ * Uses shared correctness logic to match AccuracyRepository. FIXED: Removed trophy emoji from
+ * confidence display for cleaner UI.
  * SRP/DRY check: Pass - Reuses shared correctness utility, focused on list display concerns only
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
@@ -23,7 +24,6 @@ import {
   XCircle,
   Clock,
   AlertTriangle,
-  Trophy,
   ArrowRight,
   Link2
 } from 'lucide-react';
@@ -128,11 +128,10 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
                 </div>
               </div>
 
-              {/* Confidence and basic stats */}
+              {/* Confidence and basic stats -DONT SHOW CONFIDENCE!!! */}
               <div className="flex items-center gap-3 text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  <Trophy className="h-3 w-3" />
-                  {result.confidence}%
+                <span>
+                  
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />

@@ -180,7 +180,7 @@ export default function ModelDebate() {
 
       <CompactPuzzleDisplay
         trainExamples={task!.train}
-        testCase={task!.test[0]}
+        testCases={task!.test}
       />
 
       {/* Individual Debate or Explanations List */}
