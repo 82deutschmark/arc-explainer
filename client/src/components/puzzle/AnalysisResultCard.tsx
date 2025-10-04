@@ -2,11 +2,12 @@
  * AnalysisResultCard.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T22:50:00-04:00
+ * Date: 2025-10-03T23:35:00-04:00
  * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility,
  * predicted grid metrics, feedback toggles, and Saturn integrations. FIXED: Multi-test stats now
  * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
  * logic to rely on multiTestAllCorrect flag when detailed validation data is unavailable.
+ * ADDED: Deep linking support - each card has id="explanation-{id}" and data-explanation-id for direct URLs.
  * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
  * shadcn/ui: Pass - Uses shadcn/ui Badge component
  */
@@ -156,7 +157,11 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
 
   return (
-    <div className="border rounded-lg p-4 space-y-3">
+    <div 
+      id={result.id ? `explanation-${result.id}` : undefined}
+      className="border rounded-lg p-4 space-y-3 scroll-mt-20 transition-all"
+      data-explanation-id={result.id}
+    >
       <AnalysisResultHeader
         result={result}
         model={model}

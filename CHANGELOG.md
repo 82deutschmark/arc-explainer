@@ -1,5 +1,25 @@
 ## [2025-10-03]
 
+### Added
+- **Deep Linking to Specific Explanations** (Feature)
+  - Users can now share direct links to specific AI explanations
+  - URL format: `/puzzle/{puzzleId}?highlight={explanationId}`
+  - Example: `/puzzle/0934a4d8?highlight=20779` jumps directly to explanation #20779
+  - Features:
+    - Auto-scroll to highlighted explanation on page load
+    - Visual highlight effect (blue ring pulse for 3 seconds)
+    - Copy Link button on each AnalysisResultCard
+    - Toast notification when link copied to clipboard
+    - Works across all pages showing explanations (Examiner, Feedback, Debate)
+  - Implementation:
+    - Added `id="explanation-{id}"` and `data-explanation-id` attributes to AnalysisResultCard wrapper
+    - Added `scroll-mt-20` Tailwind class for proper scroll positioning
+    - Added query parameter handling in PuzzleExaminer with smooth scroll behavior
+    - Copy Link button uses clipboard API and toast notifications
+    - Hidden in ELO mode (doesn't show for unsaved explanations)
+  - Files: client/src/components/puzzle/AnalysisResultCard.tsx, AnalysisResultHeader.tsx, client/src/pages/PuzzleExaminer.tsx
+  - Commit: TBD
+
 ### Fixed
 - **"Some Incorrect" Bug - Root Cause Fixed** (CRITICAL)
   - THE BUG WAS IN THE SHARED UTILITY ITSELF - `shared/utils/correctness.ts`
@@ -162,6 +182,8 @@
 
 ## [2025-09-30]
 
+## v2.4.0 - HuggingFace Ingestion
+
 ### Added
 - **HuggingFace Dataset Ingestion** (`server/scripts/ingest-huggingface-dataset.ts`)
   - CLI script for ingesting external AI model predictions from HuggingFace datasets
@@ -176,6 +198,8 @@
   - Preserves raw HuggingFace data in provider_raw_response field
   - Extracts reasoning, token usage, cost, and timing data
   - Uses existing responseValidator and repositoryService patterns (SRP/DRY compliant)
+
+## v2.30.9 - Admin Features
 
 - **Model Management GUI** (`/model-config`)
   - Web-based interface for viewing and managing AI model configurations

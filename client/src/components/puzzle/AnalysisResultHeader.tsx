@@ -2,10 +2,11 @@
  * AnalysisResultHeader.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T22:30:00-04:00
+ * Date: 2025-10-03T23:35:00-04:00
  * PURPOSE: Displays header information for analysis result cards including model badges,
  * correctness status, timestamps, processing time, costs, and feedback summaries.
  * Handles ELO mode hiding and multi-test correctness determination.
+ * ADDED: Copy Link button for deep linking to specific explanations via query params.
  * SRP/DRY check: Pass - Single responsibility (header display), reuses utility functions
  * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
  */
@@ -14,9 +15,10 @@ import React from 'react';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning, Link2 } from 'lucide-react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
+import { useToast } from '@/hooks/use-toast';
 
 interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'result' | 'model'> {
   modelKey: string;
@@ -61,10 +63,24 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
   isSaturnResult,
   eloMode = false
 }) => {
+  const { toast } = useToast();
+  
   // Determine if challenge badge will be shown (for layout purposes)
   const isCorrect = result.multiTestAllCorrect ?? result.allPredictionsCorrect ?? result.isPredictionCorrect;
   const hasPrediction = !!(result.predictedOutputGrid || result.multiplePredictedOutputs);
   const showChallengeBadge = !eloMode && !isCorrect && hasPrediction && !!result.puzzleId;
+
+  // Copy direct link to this explanation
+  const handleCopyLink = () => {
+    if (!result.id || !result.puzzleId) return;
+    const url = `${window.location.origin}/puzzle/${result.puzzleId}?highlight=${result.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: 'Link copied!',
+        description: `Direct link to explanation #${result.id} copied to clipboard`,
+      });
+    });
+  };
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -241,11 +257,24 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         </div>
       )}
 
+      {result.id && result.puzzleId && !eloMode && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCopyLink}
+          className="h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+          title="Copy direct link to this explanation"
+        >
+          <Link2 className="h-3 w-3 mr-1" />
+          Copy Link
+        </Button>
+      )}
+
       <Button
         variant="ghost"
         size="sm"
         onClick={() => setShowRawDb(!showRawDb)}
-        className={`h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ${!showChallengeBadge ? 'ml-auto' : ''}`}
+        className={`h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ${!showChallengeBadge && !result.id ? 'ml-auto' : ''}`}
         title="Show the raw explanation record from the database"
       >
         {showRawDb ? (
