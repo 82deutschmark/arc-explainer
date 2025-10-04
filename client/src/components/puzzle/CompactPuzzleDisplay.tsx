@@ -2,12 +2,13 @@
  * CompactPuzzleDisplay.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-09-29T17:18:00-04:00
+ * Date: 2025-10-03T22:05:00-04:00
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
- * Shows TEST INPUT and correct output by default, with training examples collapsed.
+ * NOW SUPPORTS MULTIPLE TEST CASES for multi-test puzzles like 195c6913.
+ * Shows all test inputs and correct outputs, with training examples collapsed.
  * Uses shadcn/ui Collapsible component for training examples toggle.
  * Single responsibility: Puzzle visualization only - highly reusable across app.
- * SRP/DRY check: Pass - Focused only on puzzle display concerns, reuses PuzzleGrid
+ * SRP/DRY check: Pass - Focused only on puzzle display concerns, reuses TinyGrid
  * shadcn/ui: Pass - Uses shadcn/ui Collapsible, Card, Badge components
  */
 
@@ -27,7 +28,7 @@ import type { ARCExample } from '@shared/types';
 interface CompactPuzzleDisplayProps {
   // Core data
   trainExamples: ARCExample[];
-  testCase: ARCExample;
+  testCases: ARCExample[]; // Changed from single testCase to array
 
   // Configuration
   title?: string;
@@ -39,7 +40,7 @@ interface CompactPuzzleDisplayProps {
 
 export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   trainExamples,
-  testCase,
+  testCases,
   title = "Puzzle Overview",
   maxTrainingExamples = 4,
   showEmojis = false,
@@ -48,6 +49,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
 }) => {
   const [isTrainingOpen, setIsTrainingOpen] = useState(!defaultTrainingCollapsed);
   const displayedExamples = trainExamples.slice(0, maxTrainingExamples);
+  const isMultiTest = testCases.length > 1;
 
   return (
     <Card className="p-0">
@@ -102,21 +104,30 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Test Input and Correct Output - ALWAYS VISIBLE (RIGHT SIDE) */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div>
-              <div className="text-[9px] text-gray-600 mb-1">Input</div>
-              <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
-                <TinyGrid grid={testCase.input} />
+          {/* Test Cases - ALWAYS VISIBLE (RIGHT SIDE) */}
+          <div className="flex items-center gap-3 overflow-x-auto flex-shrink-0">
+            {testCases.map((testCase, index) => (
+              <div key={index} className="flex items-center gap-2 flex-shrink-0">
+                {isMultiTest && (
+                  <Badge variant="outline" className="text-[9px] px-1 py-0">
+                    Test {index + 1}
+                  </Badge>
+                )}
+                <div>
+                  <div className="text-[9px] text-gray-600 mb-1">Input</div>
+                  <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
+                    <TinyGrid grid={testCase.input} />
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400">→</div>
+                <div>
+                  <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
+                  <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
+                    <TinyGrid grid={testCase.output} />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="text-xs text-gray-400">→</div>
-            <div>
-              <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
-              <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
-                <TinyGrid grid={testCase.output} />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </CardContent>
