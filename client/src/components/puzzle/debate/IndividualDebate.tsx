@@ -2,10 +2,11 @@
  * IndividualDebate.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T21:55:00-04:00
+ * Date: 2025-10-03T22:40:00-04:00
  * PURPOSE: Full-width debate interface that properly displays large multi-test grids.
- * Removed restrictive 3-column layout that was constraining grid display for puzzles like 195c6913.
- * Now uses full-width layout with collapsible sidebar, allowing AnalysisResultCard to scale naturally.
+ * FIXED: Removed nested scroll box (overflow-y-auto with fixed height) that was constraining display.
+ * Now flows naturally with page scroll like PuzzleExaminer, allowing full visibility of all cards.
+ * Maintains sidebar for challenge controls while ensuring debate results display like PuzzleExaminer.
  * Single responsibility: Manage one debate session between AI models about a specific explanation.
  * SRP/DRY check: Pass - Single responsibility (debate UI), reuses AnalysisResultCard via wrapper components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
@@ -208,8 +209,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
             </CardHeader>
           </Card>
 
-          {/* Scrollable debate content - viewport-based height with overflow for large grids */}
-          <div className="space-y-2 h-[calc(100vh-280px)] overflow-y-auto overflow-x-auto">
+          {/* Debate content - flows naturally with page scroll like PuzzleExaminer */}
+          <div className="space-y-2">
             {debateMessages.map((message, index) => (
               message.messageType === 'original' ? (
                 <OriginalExplanationCard
