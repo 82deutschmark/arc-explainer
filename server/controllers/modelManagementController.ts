@@ -1,36 +1,34 @@
 /*
  * Author: Cascade using Deep Research Model
- * Date: 2025-09-30T16:35:00Z
+ * Date: 2025-10-03T20:55:00Z
  * PURPOSE: Backend controller for model management GUI operations
- *          Provides REST API endpoints for listing, adding, and removing AI models
+ *          Provides REST API endpoints for listing, adding, removing, toggling, and aliasing AI models
  * SRP/DRY check: Pass - Handles only model management HTTP operations
  * shadcn/ui: N/A - Backend controller
  */
 
 import { Request, Response } from 'express';
-import { MODELS } from '../config/models.js';
+import { ModelManagementService } from '../services/modelManagementService.js';
 import type { ModelConfig } from '@shared/types';
 
 /**
- * GET /api/models
- * List all configured AI models
+ * GET /api/model-management/list
+ * List all configured AI models with overrides applied
  */
 export async function listModels(req: Request, res: Response) {
   try {
-    // Return models with additional metadata for UI
-    const modelsWithStats = MODELS.map((model, index) => ({
+    const includeInactive = req.query.includeInactive === 'true';
+    const models = await ModelManagementService.getAllModels(includeInactive);
+
+    const modelsWithStats = models.map((model, index) => ({
       ...model,
-      index,
-      costPerMillion: {
-        input: model.cost.input,
-        output: model.cost.output
-      }
+      index
     }));
 
     res.json({
       models: modelsWithStats,
-      total: MODELS.length,
-      providers: [...new Set(MODELS.map(m => m.provider))],
+      total: models.length,
+      providers: [...new Set(models.map(m => m.provider))],
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -43,42 +41,12 @@ export async function listModels(req: Request, res: Response) {
 }
 
 /**
- * GET /api/models/stats
+ * GET /api/model-management/stats
  * Get statistics about configured models
  */
 export async function getModelStats(req: Request, res: Response) {
   try {
-    const stats = {
-      total: MODELS.length,
-      byProvider: {} as Record<string, number>,
-      byType: {
-        premium: MODELS.filter(m => m.premium).length,
-        free: MODELS.filter(m => !m.premium).length,
-        reasoning: MODELS.filter(m => m.isReasoning).length,
-        chat: MODELS.filter(m => !m.isReasoning).length
-      },
-      bySpeed: {
-        fast: MODELS.filter(m => m.responseTime.speed === 'fast').length,
-        moderate: MODELS.filter(m => m.responseTime.speed === 'moderate').length,
-        slow: MODELS.filter(m => m.responseTime.speed === 'slow').length
-      },
-      newest: MODELS
-        .filter(m => m.releaseDate)
-        .sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || ''))
-        .slice(0, 5)
-        .map(m => ({
-          key: m.key,
-          name: m.name,
-          releaseDate: m.releaseDate,
-          provider: m.provider
-        }))
-    };
-
-    // Count by provider
-    MODELS.forEach(model => {
-      stats.byProvider[model.provider] = (stats.byProvider[model.provider] || 0) + 1;
-    });
-
+    const stats = await ModelManagementService.getStats();
     res.json(stats);
   } catch (error) {
     console.error('Error getting model stats:', error);
@@ -112,8 +80,11 @@ export async function validateModel(req: Request, res: Response) {
     if (!modelConfig.responseTime?.estimate) errors.push('responseTime.estimate is required');
 
     // Check for duplicate key
-    if (modelConfig.key && MODELS.some(m => m.key === modelConfig.key)) {
-      errors.push(`A model with key "${modelConfig.key}" already exists`);
+    if (modelConfig.key) {
+      const existingModel = await ModelManagementService.getModelByKey(modelConfig.key);
+      if (existingModel && !existingModel.aliasFor) {
+        errors.push(`A model with key "${modelConfig.key}" already exists`);
+      }
     }
 
     // Validate provider
@@ -143,7 +114,7 @@ export async function validateModel(req: Request, res: Response) {
 }
 
 /**
- * GET /api/models/search
+ * GET /api/model-management/search
  * Search models by query string
  */
 export async function searchModels(req: Request, res: Response) {
@@ -152,11 +123,11 @@ export async function searchModels(req: Request, res: Response) {
     const provider = req.query.provider as string | undefined;
     const premium = req.query.premium === 'true' ? true : req.query.premium === 'false' ? false : undefined;
 
-    let filtered = MODELS;
+    let allModels = await ModelManagementService.getAllModels(true);
 
     // Filter by search query
     if (query) {
-      filtered = filtered.filter(m => 
+      allModels = allModels.filter(m => 
         m.name.toLowerCase().includes(query) ||
         m.key.toLowerCase().includes(query) ||
         m.provider.toLowerCase().includes(query)
@@ -165,23 +136,198 @@ export async function searchModels(req: Request, res: Response) {
 
     // Filter by provider
     if (provider) {
-      filtered = filtered.filter(m => m.provider === provider);
+      allModels = allModels.filter(m => m.provider === provider);
     }
 
     // Filter by premium
     if (premium !== undefined) {
-      filtered = filtered.filter(m => m.premium === premium);
+      allModels = allModels.filter(m => m.premium === premium);
     }
 
     res.json({
-      models: filtered,
-      total: filtered.length,
+      models: allModels,
+      total: allModels.length,
       query: { q: query, provider, premium }
     });
   } catch (error) {
     console.error('Error searching models:', error);
     res.status(500).json({ 
       error: 'Failed to search models',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/model-management/toggle-active
+ * Toggle active status for a model
+ */
+export async function toggleActive(req: Request, res: Response) {
+  try {
+    const { modelKey } = req.body;
+
+    if (!modelKey) {
+      return res.status(400).json({ error: 'modelKey is required' });
+    }
+
+    const updated = await ModelManagementService.toggleActive(modelKey);
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Model not found' });
+    }
+
+    res.json({
+      success: true,
+      model: updated,
+      message: `Model ${updated.isActive ? 'activated' : 'deactivated'} successfully`
+    });
+  } catch (error) {
+    console.error('Error toggling model:', error);
+    res.status(500).json({ 
+      error: 'Failed to toggle model',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/model-management/create-alias
+ * Create an alias for an existing model
+ */
+export async function createAlias(req: Request, res: Response) {
+  try {
+    const { aliasKey, targetKey, aliasName, notes } = req.body;
+
+    if (!aliasKey || !targetKey || !aliasName) {
+      return res.status(400).json({ 
+        error: 'aliasKey, targetKey, and aliasName are required' 
+      });
+    }
+
+    const aliasModel = await ModelManagementService.createAlias(
+      aliasKey,
+      targetKey,
+      aliasName,
+      notes
+    );
+
+    res.json({
+      success: true,
+      model: aliasModel,
+      message: 'Alias created successfully'
+    });
+  } catch (error) {
+    console.error('Error creating alias:', error);
+    res.status(400).json({ 
+      error: 'Failed to create alias',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * POST /api/model-management/add
+ * Add a new model configuration
+ */
+export async function addModel(req: Request, res: Response) {
+  try {
+    const modelConfig = req.body as ModelConfig;
+
+    const addedModel = await ModelManagementService.addModel(modelConfig);
+
+    res.json({
+      success: true,
+      model: addedModel,
+      message: 'Model added successfully'
+    });
+  } catch (error) {
+    console.error('Error adding model:', error);
+    res.status(400).json({ 
+      error: 'Failed to add model',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * PUT /api/model-management/notes
+ * Update model notes
+ */
+export async function updateNotes(req: Request, res: Response) {
+  try {
+    const { modelKey, notes } = req.body;
+
+    if (!modelKey) {
+      return res.status(400).json({ error: 'modelKey is required' });
+    }
+
+    const updated = await ModelManagementService.updateNotes(modelKey, notes || '');
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Model not found' });
+    }
+
+    res.json({
+      success: true,
+      model: updated,
+      message: 'Notes updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating notes:', error);
+    res.status(500).json({ 
+      error: 'Failed to update notes',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * DELETE /api/model-management/delete
+ * Delete a UI-added model
+ */
+export async function deleteModel(req: Request, res: Response) {
+  try {
+    const { modelKey } = req.body;
+
+    if (!modelKey) {
+      return res.status(400).json({ error: 'modelKey is required' });
+    }
+
+    const deleted = await ModelManagementService.deleteModel(modelKey);
+
+    if (!deleted) {
+      return res.status(404).json({ error: 'Model not found or cannot be deleted' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Model deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting model:', error);
+    res.status(400).json({ 
+      error: 'Failed to delete model',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+/**
+ * GET /api/model-management/openrouter-models
+ * Fetch available models from OpenRouter API
+ */
+export async function fetchOpenRouterModels(req: Request, res: Response) {
+  try {
+    // TODO: Implement OpenRouter API integration
+    // For now, return placeholder
+    res.json({
+      models: [],
+      message: 'OpenRouter integration coming soon'
+    });
+  } catch (error) {
+    console.error('Error fetching OpenRouter models:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch OpenRouter models',
       message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
