@@ -1,3 +1,45 @@
+## [2025-10-03]
+
+### Fixed
+- **Multi-Test Accuracy Display** (Critical)
+  - Fixed "0/2 correct" showing "Some Incorrect" instead of "Incorrect"
+  - Root cause: multiTestStats fallback logic was using multiTestAverageAccuracy (calibration score) to estimate correctCount
+  - Solution: Simplified logic to rely ONLY on multiTestAllCorrect boolean flag
+    - When multiTestAllCorrect === false → "Incorrect" with 0 correct
+    - When multiTestAllCorrect === true → "All Correct" with totalCount correct
+  - Removed unreliable estimation from multiTestAverageAccuracy field
+  - Files: client/src/components/puzzle/AnalysisResultCard.tsx
+  - Commits: fde0dd9, 356de4f
+
+- **Trustworthiness Badge Display**
+  - Restored trustworthiness badge (predictionAccuracyScore) to AnalysisResultCard
+  - Conditional display: shows only in non-ELO, non-debate, non-Saturn contexts
+  - Badge shows calibration score as "Trustworthiness: X%" with color coding
+  - Properly hidden in debate components and ELO mode as requested
+  - Files: client/src/components/puzzle/AnalysisResultContent.tsx
+  - Commit: 356de4f
+
+- **ModelDebate Nested Scroll Box** (UX)
+  - Removed nested scroll container in IndividualDebate.tsx
+  - Changed from `h-[calc(100vh-280px)] overflow-y-auto` to natural page flow
+  - Debate cards now display exactly like PuzzleExaminer results
+  - Eliminated scroll-within-scroll pattern for better UX
+  - Files: client/src/components/puzzle/debate/IndividualDebate.tsx
+  - Commit: 07d4cd6
+
+### Improved
+- **AnalysisResultListCard UI Cleanup**
+  - Removed trophy emoji from confidence display
+  - Changed from icon-based to simple "Confidence: X%" text
+  - Cleaner, less cluttered list view
+  - Files: client/src/components/puzzle/AnalysisResultListCard.tsx
+  - Commit: 356de4f
+
+- **Component File Headers**
+  - Added proper headers to AnalysisResultContent.tsx, AnalysisResultHeader.tsx, AnalysisResultGrid.tsx, AnalysisResultMetrics.tsx
+  - Updated headers to reflect recent fixes and changes
+  - Commit: fde0dd9
+
 ## [2025-10-01]
 
 ### Fixed
