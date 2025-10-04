@@ -1,15 +1,19 @@
 ## [2025-10-03]
 
 ### Fixed
-- **Correctness Logic NOT Centralized** (CRITICAL)
-  - Found duplicated/incorrect logic in ExplanationResultsSection.tsx and AnalysisResultGrid.tsx
-  - Root cause: Components invented their own logic instead of using shared `determineCorrectness` utility
-  - ExplanationResultsSection.tsx was ONLY checking `isPredictionCorrect` (ignored multi-test)
-  - AnalysisResultGrid.tsx fallback was STILL using `multiTestAverageAccuracy` (calibration score)
-  - Solution: Both now use centralized logic from `shared/utils/correctness`
-  - Impact: ALL components now use same correctness determination logic
-  - Files: client/src/components/puzzle/ExplanationResultsSection.tsx, AnalysisResultGrid.tsx
-  - Commit: 358296d
+- **"Some Incorrect" Bug - Root Cause Fixed** (CRITICAL)
+  - THE BUG WAS IN THE SHARED UTILITY ITSELF - `shared/utils/correctness.ts`
+  - Line 78 returned `'Some Incorrect'` for ALL multi-test failures, even 0/N correct
+  - Root cause chain:
+    1. Components invented their own logic (ExplanationResultsSection, AnalysisResultGrid) - FIXED in 358296d
+    2. Components used shared utility (ExplanationsList, AnalysisResultListCard) - BUG PROPAGATED
+    3. **The shared utility had the bug** - returning "Some Incorrect" when it should say "Incorrect"
+  - Logic error: `multiTestAllCorrect === false` means "NOT all correct" (could be 0/N or some failed)
+  - Without detailed validation data, cannot distinguish "all" vs "some" incorrect
+  - Solution: Removed hasMultiplePredictions check, now always returns "Incorrect" for failures
+  - Impact: Fixes bug in ALL components simultaneously (single source of truth)
+  - Files: shared/utils/correctness.ts, ExplanationResultsSection.tsx, AnalysisResultGrid.tsx
+  - Commits: 358296d (component fixes), 0cfbafa (root cause fix)
 
 - **Multi-Test Accuracy Display** (Critical)
   - Fixed "0/2 correct" showing "Some Incorrect" instead of "Incorrect"
