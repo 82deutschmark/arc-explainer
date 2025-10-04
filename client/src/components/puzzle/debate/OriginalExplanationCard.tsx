@@ -1,13 +1,13 @@
 /**
  * OriginalExplanationCard.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-09-30
- * PURPOSE: Dedicated component for displaying the original explanation in a debate.
- * This component wraps the AnalysisResultCard and adds context-specific styling and badges
- * to clearly identify this as the original explanation being debated.
- * SRP/DRY check: Pass - Single responsibility (display original explanation), reuses AnalysisResultCard
- * shadcn/ui: Pass - Uses shadcn/ui Card and Badge components
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T22:00:00-04:00
+ * PURPOSE: Wrapper component for displaying original explanation in debates.
+ * Removed width constraints and added overflow handling to properly display large multi-test grids.
+ * Wraps AnalysisResultCard which handles all grid scaling naturally via PuzzleGrid component.
+ * SRP/DRY check: Pass - Single responsibility (contextual wrapper), reuses AnalysisResultCard
+ * shadcn/ui: Pass - Uses shadcn/ui Card, Badge, Collapsible components
  */
 
 import React, { useState } from 'react';
@@ -53,7 +53,7 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
     : 'No pattern description available';
 
   return (
-    <Card className="border-2 border-blue-200 bg-blue-50/30">
+    <Card className="border-2 border-blue-200 bg-blue-50/30 overflow-visible">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="p-2 bg-blue-100/50">
           <CardTitle className="flex items-center gap-2 text-sm flex-wrap">
@@ -106,7 +106,7 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
         </CardHeader>
 
         <CollapsibleContent>
-          <CardContent className="p-2">
+          <CardContent className="p-2 overflow-x-auto">
             <AnalysisResultCard
               result={explanation}
               modelKey={explanation.modelName}

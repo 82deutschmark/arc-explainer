@@ -1,13 +1,13 @@
 /**
  * IndividualDebate.tsx
  *
- * Author: Cascade using GPT-4.1
- * Date: 2025-09-29T17:15:00-04:00
- * PURPOSE: Ultra-compact debate interface with 1/5 scale grids (20%), minimal padding/whitespace.
- * Fixed massive grid overlap and wasted space by reducing all padding from p-4 to p-2, 
- * shrinking grids from 50% to 20% scale, and reducing all text/icon sizes by ~40%.
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-03T21:55:00-04:00
+ * PURPOSE: Full-width debate interface that properly displays large multi-test grids.
+ * Removed restrictive 3-column layout that was constraining grid display for puzzles like 195c6913.
+ * Now uses full-width layout with collapsible sidebar, allowing AnalysisResultCard to scale naturally.
  * Single responsibility: Manage one debate session between AI models about a specific explanation.
- * SRP/DRY check: Pass - Single responsibility (debate UI), reuses DebateAnalysisResultCard
+ * SRP/DRY check: Pass - Single responsibility (debate UI), reuses AnalysisResultCard via wrapper components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
@@ -193,9 +193,10 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-        {/* Debate Messages */}
-        <div className="lg:col-span-2 space-y-2">
+      {/* Responsive grid layout - debate messages get more space */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-2">
+        {/* Debate Messages - takes 3/4 width on xl screens, full width on smaller */}
+        <div className="xl:col-span-3 space-y-2">
           {/* Header Card */}
           <Card>
             <CardHeader className="p-2">
@@ -207,8 +208,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
             </CardHeader>
           </Card>
 
-          {/* Scrollable debate content - viewport-based height */}
-          <div className="space-y-2 h-[calc(100vh-280px)] overflow-y-auto">
+          {/* Scrollable debate content - viewport-based height with overflow for large grids */}
+          <div className="space-y-2 h-[calc(100vh-280px)] overflow-y-auto overflow-x-auto">
             {debateMessages.map((message, index) => (
               message.messageType === 'original' ? (
                 <OriginalExplanationCard
@@ -234,7 +235,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
           </div>
         </div>
 
-        {/* Challenge Controls */}
+        {/* Challenge Controls - 1/4 width sidebar on xl screens */}
         <div className="space-y-2">
           <Card>
             <CardHeader className="p-2">
