@@ -16,11 +16,11 @@ import {
   Database,
   MessageCircle,
   Github,
-  Target,
   Trophy,
   CheckCircle,
   MessageSquare,
-  Info
+  Info,
+  Award
 } from 'lucide-react';
 
 interface NavItem {
@@ -42,6 +42,12 @@ const navigationItems: NavItem[] = [
     href: '/analytics',
     icon: Database,
     description: 'Model performance analytics and leaderboards'
+  },
+  {
+    title: 'Leaderboards',
+    href: '/leaderboards',
+    icon: Award,
+    description: 'Model performance rankings across accuracy, trustworthiness, and feedback'
   },
   {
     title: 'Puzzle DB',
@@ -72,12 +78,6 @@ const navigationItems: NavItem[] = [
     href: '/debate',
     icon: MessageSquare,
     description: 'Watch AI models challenge each other\'s explanations'
-  },
-  {
-    title: 'Kaggle Readiness',
-    href: '/kaggle-readiness',
-    icon: Target,
-    description: 'Validate technical readiness for machine learning competitions'
   },
   {
     title: 'About',
