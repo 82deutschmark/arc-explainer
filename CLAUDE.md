@@ -113,7 +113,7 @@ saturn_events - jsonb  // Only used by Saturn Visual Solver
 saturn_success - boolean  // Only used by Saturn Visual Solver
 predicted_output_grid - jsonb  // CRITICAL for the project!  This is the predicted output grid.
 is_prediction_correct - boolean  // This is evaluation 1 of 3 that should be used for `accuracy`!!!
-prediction_accuracy_score - double precision  // THIS IS THE `TRUSTWORTHINESS` SCORE
+trustworthiness_score - double precision  // THIS IS THE TRUSTWORTHINESS SCORE (how well AI confidence correlates with actual performance)
 provider_raw_response - jsonb
 reasoning_items - jsonb  // The structured, machine-readable version of the reasoning (e.g., an array of steps). This is safely stringified by the `ExplanationRepository` and stored as JSONB for use in complex UI or for detailed analysis.
 `temperature` - double precision  // should only be applied to certain models and providers and will not always be used

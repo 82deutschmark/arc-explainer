@@ -1,5 +1,29 @@
 ## [2025-10-05]
 
+## v3.5.3 - Analytics Cleanup: Documentation & SQL Normalization
+
+### Fixed
+- **Documentation Accuracy** (Critical)
+  - Corrected CLAUDE.md line 116: `prediction_accuracy_score` doesn't exist in database
+  - Actual column name is `trustworthiness_score` (FLOAT)
+  - Clarified distinction between accuracy (boolean correctness) vs trustworthiness (confidence reliability)
+  - Removed misleading `prediction_accuracy_score` references from repository comments
+
+### Enhanced
+- **SQL Normalization Consistency**
+  - Updated AccuracyRepository inline SQL to match `modelNormalizer.ts` logic
+  - Updated TrustworthinessRepository inline SQL to match `modelNormalizer.ts` logic
+  - Added sonoma-sky → grok-4-fast alias mapping to SQL CASE statements
+  - Added `-beta` and `-alpha` suffix handling (previously only had `:beta`, `:alpha`)
+  - Added comments linking SQL normalization to modelNormalizer.ts utility
+  - Ensures database aggregation matches application-level normalization
+
+### Context
+- **Repository Clarity**
+  - AccuracyRepository: Pure puzzle-solving correctness (boolean fields: is_prediction_correct, multi_test_all_correct)
+  - TrustworthinessRepository: Confidence reliability (computed metric combining confidence + correctness)
+  - Each repository has single, well-defined responsibility (SRP compliant)
+
 ## v3.5.2 - Model Name Normalization
 
 ### Fixed

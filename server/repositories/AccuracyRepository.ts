@@ -1,21 +1,21 @@
 /**
  * Accuracy Repository Implementation
- * prediction_accuracy_score
+ *
  * Handles PURE PUZZLE-SOLVING ACCURACY operations only.
  * Focuses exclusively on boolean correctness metrics without any trustworthiness filtering.
- * 
+ *
  * SCOPE: This repository handles ONE CONCEPT only:
  * - PURE ACCURACY (puzzle-solving correctness):
  *   - Whether an AI model actually solved the puzzle correctly (boolean)
  *   - Database field: is_prediction_correct (boolean) - single test correctness
- *   - Database field: multi_test_all_correct (boolean) - multi-test correctness... what if one is correct and the other two are wrong?!  HOW IS THAT CALCULATED?!?
+ *   - Database field: multi_test_all_correct (boolean) - multi-test correctness
  *   - Simple percentage: correct predictions / total attempts
  *   - Used for: Actual solver performance stats, accuracy leaderboards
- * 
+ *
  * KEY DISTINCTIONS:
- * - NO trustworthiness filtering (prediction_accuracy_score IS THE OLD DEPRECATED MISLEADING NAME!!!)
- * - NO confidence correlation analysis
- * - NO user feedback about explanation quality
+ * - NO trustworthiness filtering (trustworthiness_score is a separate metric!)
+ * - NO confidence correlation analysis (that's TrustworthinessRepository)
+ * - NO user feedback about explanation quality (that's FeedbackRepository)
  * - ONLY pure boolean correctness metrics
  * 
  * INCLUSION CRITERIA:
@@ -142,14 +142,19 @@ export class AccuracyRepository extends BaseRepository {
       `);
 
       // Get pure accuracy by model - NO trustworthiness or confidence filtering
-      // Use normalization in the GROUP BY to consolidate model variations
+      // IMPORTANT: SQL normalization must match utils/modelNormalizer.ts logic
       const modelAccuracy = await this.query(`
-        SELECT 
-          -- Use normalized model name for grouping but show original for reference
+        SELECT
+          -- Normalize model names to consolidate variants (matches modelNormalizer.ts)
           CASE
+            -- Remove version suffixes
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            -- Model aliases
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -192,10 +197,14 @@ export class AccuracyRepository extends BaseRepository {
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
           AND e.rebutting_explanation_id IS NULL
         GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -579,10 +588,14 @@ export class AccuracyRepository extends BaseRepository {
     try {
       const result = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -628,10 +641,14 @@ export class AccuracyRepository extends BaseRepository {
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
           AND e.rebutting_explanation_id IS NULL
         GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -712,10 +729,14 @@ export class AccuracyRepository extends BaseRepository {
       // Get model accuracy with minimum attempts filtering
       const modelAccuracy = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -756,10 +777,14 @@ export class AccuracyRepository extends BaseRepository {
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
           AND e.rebutting_explanation_id IS NULL
         GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -844,10 +869,14 @@ export class AccuracyRepository extends BaseRepository {
       // Get debate accuracy by model - ONLY rebuttals
       const modelAccuracy = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -890,10 +919,14 @@ export class AccuracyRepository extends BaseRepository {
           AND (e.predicted_output_grid IS NOT NULL OR e.multi_test_prediction_grids IS NOT NULL)
           AND e.rebutting_explanation_id IS NOT NULL
         GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name

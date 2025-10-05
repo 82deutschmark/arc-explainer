@@ -1,9 +1,10 @@
 /**
  * Trustworthiness Repository Implementation
- * prediction_accuracy_score was the previous INCORRECT metric name!!!  IT MAY STILL EXIST IN SOME PLACES!!!
- * trustworthiness_score is the NEW CORRECT metric name!!!
+ *
  * Handles AI CONFIDENCE RELIABILITY analysis operations only.
  * Focuses exclusively on how well AI confidence correlates with actual performance.
+ *
+ * Database field: trustworthiness_score (FLOAT) - measures how well AI confidence predicts correctness
  * 
  * SCOPE: This repository handles ONE CONCEPT only:
  * - TRUSTWORTHINESS (reliability of AI confidence claims):
@@ -164,10 +165,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get trustworthiness by model with normalization
       const modelTrustworthiness = await this.query(`
         SELECT 
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -183,11 +188,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0)
-        GROUP BY 
+        GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -325,10 +334,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // (which already factors in both correctness and confidence)
       const trustworthinessQuery = await this.query(`
         SELECT 
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -343,11 +356,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.confidence IS NOT NULL
           AND NOT (e.trustworthiness_score = 1.0 AND e.confidence = 0) -- Exclude corrupted perfect scores with 0 confidence
-        GROUP BY 
+        GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -359,10 +376,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get speed leaders (fastest processing times with decent trustworthiness)
       const speedQuery = await this.query(`
         SELECT 
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -374,11 +395,15 @@ export class TrustworthinessRepository extends BaseRepository {
         WHERE e.model_name IS NOT NULL 
           AND e.api_processing_time_ms IS NOT NULL
           AND e.trustworthiness_score IS NOT NULL
-        GROUP BY 
+        GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -390,10 +415,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get efficiency leaders (best cost and token efficiency relative to trustworthiness)
       const efficiencyQuery = await this.query(`
         SELECT 
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -419,11 +448,15 @@ export class TrustworthinessRepository extends BaseRepository {
           AND e.trustworthiness_score IS NOT NULL
           AND e.estimated_cost IS NOT NULL
           AND e.total_tokens IS NOT NULL
-        GROUP BY 
+        GROUP BY
+          -- Must match SELECT clause normalization (see modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -648,10 +681,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get trustworthiness by model with minimum attempts filtering
       const modelTrustworthiness = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -726,10 +763,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get trustworthiness leaders with minimum attempts filtering
       const trustworthinessQuery = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -760,10 +801,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get speed leaders with minimum attempts filtering
       const speedQuery = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -791,10 +836,14 @@ export class TrustworthinessRepository extends BaseRepository {
       // Get efficiency leaders with minimum attempts filtering
       const efficiencyQuery = await this.query(`
         SELECT
+          -- Normalize model names (matches modelNormalizer.ts)
           CASE
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
