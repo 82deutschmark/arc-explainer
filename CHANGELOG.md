@@ -3,6 +3,17 @@
 ## v3.5.1 - Default Reasoning Effort Update
 
 ### Changed
+- **CompactPuzzleDisplay Spacing** (UX Enhancement)
+  - Increased gaps between grids for better visual clarity
+  - Main container gap: gap-2 → gap-6 (between training and test sections)
+  - Training examples gap: gap-3 → gap-6 (between example pairs)
+  - Individual training example gap: gap-2 → gap-4 (between input/output)
+  - Test cases gap: gap-3 → gap-8 (between test cases)
+  - Individual test case gap: gap-2 → gap-4 (between input/output)
+  - Reduces visual clutter on ModelDebate page
+  - Files: client/src/components/puzzle/CompactPuzzleDisplay.tsx
+  - Author: Cascade using Sonnet 4
+
 - **ModelDebate Page Layout** (Enhancement)
   - Removed container margins, padding, and max-width constraints
   - Changed from `container mx-auto p-1 max-w-7xl` to `w-full`
@@ -10,7 +21,6 @@
   - Applied consistently across loading, error, and main interface states
   - Files: client/src/pages/ModelDebate.tsx
   - Author: Cascade using Sonnet 4
-  
 
 - **GPT-5 Reasoning Effort Default** (Enhancement)
   - Changed default `reasoningEffort` from `'low'` to `'high'` across frontend and backend
