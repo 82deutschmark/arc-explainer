@@ -29,7 +29,7 @@ const grok = new OpenAI({
 });
 
 export class GrokService extends BaseAIService {
-  protected provider = "Grok";
+  protected provider = "xAI";
   protected models = {
     "grok-4-0709": "grok-4-0709",
     "grok-4-fast": "grok-4-fast",
