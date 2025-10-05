@@ -1,11 +1,5 @@
-* Author: Codex using GPT-5-high
-* Date: 2025-10-05 00:00:00
-* PURPOSE: Update README for v3.5.1 with researcher-focused features, HuggingFace ingestion, admin/UI references, and minimal PowerShell notes.
-* SRP/DRY check: Pass — documentation-only change, no duplication introduced.
-* shadcn/ui: Pass — informational mentions only; no custom UI code in this file.
 
-
-# ARC-AGI Analysis Platform
+# ARC-AGI Explainer Platform
 
 **Version 3.5.1**
 **Last updated: October 05, 2025**
@@ -16,7 +10,7 @@ A professional research platform for analyzing Abstract Reasoning Corpus (ARC-AG
 
 This platform provides a robust suite of tools for ARC-AGI puzzle analysis, featuring multi-model AI evaluation, deep reasoning extraction, advanced performance analytics, and collaborative feedback systems. The architecture is engineered for stability and enterprise deployment, with PostgreSQL database integration and Docker containerization.
 
-## What’s New in v3.5.1
+## What's New in v3.5.1
 - Default GPT-5 reasoning settings now favor higher-quality outputs (reasoningEffort: high, reasoningVerbosity: high).
 - Deep link to a specific explanation: share `/puzzle/{puzzleId}?highlight={explanationId}` to jump and highlight.
 - Research-grade HuggingFace ingestion: import and validate external predictions with provenance and full run history.
