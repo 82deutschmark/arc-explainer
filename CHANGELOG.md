@@ -1,3 +1,16 @@
+## [2025-10-04]
+
+## v3.5.1 - Default Reasoning Effort Update
+
+### Changed
+- **GPT-5 Reasoning Effort Default** (Enhancement)
+  - Changed default `reasoningEffort` from `'low'` to `'high'` in useAnalysisResults hook
+  - Applies to all GPT-5 reasoning models across all pages (PuzzleExaminer, ModelDebate, etc.)
+  - Users can still manually override this setting on the ModelDebate page
+  - Ensures maximum reasoning quality by default for GPT-5 models
+  - Files: client/src/hooks/useAnalysisResults.ts (line 62)
+  - Author: Cascade using Sonnet 4
+
 ## [2025-10-03]
 
 ## v3.5.0 - Bug Fixes and Deep Linking
