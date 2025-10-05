@@ -1,16 +1,26 @@
 /**
  * FeedbackLeaderboard Component
- * 
- * Displays models ranked by user satisfaction (feedback ratings).  THIS IS INACCURATE AND SHOULD BE DEPRECATED
- * Feedback in this case is users assessing if the model's reply was helpful or not helpful, not their satisfaction with the model.
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-05
+ *
+ * Displays models ranked by user feedback (helpful vs not-helpful ratings).
  * Uses data from FeedbackRepository via /api/feedback/stats
+ *
+ * Key Features:
+ * - Shows most appreciated and most criticized models
+ * - Tooltips explaining feedback metrics
+ * - Sample size warnings for models with low feedback counts
+ *
+ * SRP and DRY check: Pass - Single responsibility for feedback display
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Tooltip, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ThumbsUp, ThumbsDown, Users, Heart, Star } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ThumbsUp, ThumbsDown, Users, Heart, Star, Info } from 'lucide-react';
 
 interface FeedbackModelStats {
   modelName: string;
@@ -173,12 +183,51 @@ export function FeedbackLeaderboard({
                       </div>
                     </div>
                   </div>
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}
-                  >
-                    {model.helpfulPercentage.toFixed(1)}%
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant="secondary"
+                            className={`text-xs font-medium cursor-help ${getSatisfactionColor(model.helpfulPercentage)}`}
+                          >
+                            {model.helpfulPercentage.toFixed(1)}%
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">
+                            <strong>Helpful Percentage</strong>
+                            <br />
+                            {model.helpfulCount} helpful / {model.feedbackCount} total ratings
+                            <br />
+                            = {model.helpfulPercentage.toFixed(1)}% helpful rate
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    {model.feedbackCount < 10 && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                              <Info className="h-3 w-3 mr-1" />
+                              Low sample
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">
+                              <strong>Low Sample Size Warning</strong>
+                              <br />
+                              Only {model.feedbackCount} feedback entries - percentage may not be reliable
+                              <br />
+                              Recommended: 10+ feedback entries for confidence
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -223,12 +272,51 @@ export function FeedbackLeaderboard({
                       </div>
                     </div>
                   </div>
-                  <Badge 
-                    variant="secondary" 
-                    className={`text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}
-                  >
-                    {model.helpfulPercentage.toFixed(1)}%
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant="secondary"
+                            className={`text-xs font-medium cursor-help ${getSatisfactionColor(model.helpfulPercentage)}`}
+                          >
+                            {model.helpfulPercentage.toFixed(1)}%
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">
+                            <strong>Helpful Percentage</strong>
+                            <br />
+                            {model.helpfulCount} helpful / {model.feedbackCount} total ratings
+                            <br />
+                            = {model.helpfulPercentage.toFixed(1)}% helpful rate
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    {model.feedbackCount < 10 && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                              <Info className="h-3 w-3 mr-1" />
+                              Low sample
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">
+                              <strong>Low Sample Size Warning</strong>
+                              <br />
+                              Only {model.feedbackCount} feedback entries - percentage may not be reliable
+                              <br />
+                              Recommended: 10+ feedback entries for confidence
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                 </div>
               );
             })}

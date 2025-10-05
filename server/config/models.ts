@@ -586,20 +586,20 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-07"
   },
   {
-    key: 'x-ai/grok-4-fast:free',
+    key: 'x-ai/grok-4-fast',
     name: 'Grok 4 Fast',
     color: 'bg-orange-500',
     premium: false,
-    cost: { input: '$0.00', output: '$0.00' },
+    cost: { input: '$0.20', output: '$0.40' },
     supportsTemperature: true,
     provider: 'OpenRouter',
     responseTime: { speed: 'moderate', estimate: '1-2 min' },
     isReasoning: true,
-    apiModelName: 'x-ai/grok-4-fast:free',
+    apiModelName: 'x-ai/grok-4-fast',
     modelType: 'openrouter',
     contextWindow: 128000,
-    maxOutputTokens: 32000,
-    releaseDate: "2025-07"
+    maxOutputTokens: 30000,
+    releaseDate: "2025-09"
   },
   {
     key: 'x-ai/grok-3',

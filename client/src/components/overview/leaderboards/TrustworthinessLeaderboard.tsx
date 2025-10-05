@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-25
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-05
  * PURPOSE: Enhanced TrustworthinessLeaderboard Component with overconfidence warnings for Model Failure Analysis
  *
  * Displays models ranked by trustworthiness (confidence reliability) with integrated overconfidence warnings.
@@ -13,16 +13,19 @@
  * - Highlights overconfident models with warning indicators
  * - Cross-references trustworthiness with overconfidence patterns
  * - Provides clear visual warnings for high-risk models
+ * - Tooltips explaining trustworthiness, processing time, and cost metrics
+ * - Sample size warnings for models with insufficient data
  *
  * SRP and DRY check: Pass - Single responsibility for trustworthiness display with overconfidence warnings
- * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Icons)
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Tooltip, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Shield, ShieldCheck, Clock, DollarSign, AlertTriangle, ShieldAlert, AlertCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Shield, ShieldCheck, Clock, DollarSign, AlertTriangle, ShieldAlert, AlertCircle, Info } from 'lucide-react';
 
 interface TrustworthinessLeader {
   modelName: string;
@@ -233,19 +236,74 @@ export function TrustworthinessLeaderboard({
                   </div>
                 </div>
                 <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}
-                  >
-                    {(model.avgTrustworthiness * 100).toFixed(1)}% trust
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs font-medium cursor-help ${getTrustworthinessColor(model.avgTrustworthiness)}`}
+                        >
+                          {(model.avgTrustworthiness * 100).toFixed(1)}% trust
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Trustworthiness Score</strong>
+                          <br />
+                          Measures how well AI confidence predicts actual correctness
+                          <br />
+                          Higher = AI confidence more reliable
+                          <br />
+                          Score: {(model.avgTrustworthiness * 100).toFixed(1)}%
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
                   {overconfidentData && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs font-medium bg-red-100 text-red-800 border-red-200"
-                    >
-                      {overconfidentData.overallAccuracy.toFixed(1)}% acc
-                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge
+                            variant="secondary"
+                            className="text-xs font-medium cursor-help bg-red-100 text-red-800 border-red-200"
+                          >
+                            {overconfidentData.overallAccuracy.toFixed(1)}% acc
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">
+                            <strong>Overall Accuracy</strong>
+                            <br />
+                            Percentage of puzzles solved correctly
+                            <br />
+                            This model has overconfidence issues!
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+
+                  {overconfidentData && overconfidentData.totalAttempts < 10 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                            <Info className="h-3 w-3 mr-1" />
+                            Low sample
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">
+                            <strong>Low Sample Size Warning</strong>
+                            <br />
+                            Only {overconfidentData.totalAttempts} attempts - statistics may not be reliable
+                            <br />
+                            Recommended: 10+ attempts for confidence
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   )}
                 </div>
               </div>

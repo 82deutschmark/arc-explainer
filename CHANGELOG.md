@@ -1,5 +1,57 @@
 ## [2025-10-05]
 
+## v3.5.4 - Enhanced Leaderboards with Data Quality Indicators
+
+### Added
+- **Dedicated Leaderboards Page** (`/leaderboards`)
+  - New standalone page for comprehensive model performance analysis
+  - Three leaderboards: Overconfident Models, Trustworthiness Leaders, Feedback Analysis
+  - Metrics explanation panel for user education
+  - Clean, focused interface without clutter
+  - Route added to App.tsx
+  - File: `client/src/pages/Leaderboards.tsx`
+
+- **Tooltip System for All Metrics**
+  - AccuracyLeaderboard: Tooltips for overconfidence rate, confidence, accuracy
+  - TrustworthinessLeaderboard: Tooltips for trustworthiness score, processing time, cost
+  - FeedbackLeaderboard: Tooltips for helpful percentage and feedback counts
+  - Uses shadcn/ui Tooltip component for consistent UX
+  - Hover over any metric badge to see detailed explanation
+
+- **Sample Size Warnings**
+  - Visual warnings for models with <10 attempts (yellow badge with Info icon)
+  - Prevents misleading conclusions from insufficient data
+  - Tooltip explains why sample size matters
+  - Applied across all three leaderboard components
+
+### Enhanced
+- **AccuracyLeaderboard Component**
+  - Added tooltips to all metric badges (overconfidence rate, avg confidence, accuracy)
+  - Sample size warnings for models with <10 attempts
+  - Improved visual hierarchy with `cursor-help` on interactive elements
+  - Updated header comments and documentation
+  - File: `client/src/components/overview/leaderboards/AccuracyLeaderboard.tsx`
+
+- **TrustworthinessLeaderboard Component**
+  - Added tooltips for trustworthiness score explaining confidence reliability
+  - Tooltips for accuracy badges on overconfident models
+  - Sample size warnings integrated with overconfident model detection
+  - Updated imports and documentation
+  - File: `client/src/components/overview/leaderboards/TrustworthinessLeaderboard.tsx`
+
+- **FeedbackLeaderboard Component**
+  - Added tooltips for helpful percentage badges in both sections
+  - Sample size warnings for models with <10 feedback entries
+  - Applied to both "Most Appreciated" and "Most Criticized" sections
+  - Improved component header documentation
+  - File: `client/src/components/overview/leaderboards/FeedbackLeaderboard.tsx`
+
+### Impact
+- **Data Quality Transparency**: Users can now see when statistics may be unreliable
+- **User Education**: Tooltips explain complex metrics without cluttering the UI
+- **Better Decision Making**: Sample size warnings prevent over-reliance on low-confidence data
+- **Dedicated Space**: Leaderboards have their own page, reducing AnalyticsOverview complexity
+
 ## v3.5.3 - Analytics Cleanup: Documentation & SQL Normalization
 
 ### Fixed
