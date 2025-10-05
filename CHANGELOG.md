@@ -1,3 +1,29 @@
+## [2025-10-05]
+
+## v3.5.2 - Model Name Normalization
+
+### Fixed
+- **Database Model Name Normalization** (Critical)
+  - Normalized 438 database records to remove version suffixes and consolidate model aliases
+  - Consolidated fragmented model statistics for accurate analytics
+  - Mappings applied:
+    - `x-ai/grok-4-fast:free` → `x-ai/grok-4-fast` (23 records)
+    - `openrouter/sonoma-sky-alpha` → `openrouter/sonoma-sky` → `x-ai/grok-4-fast` (64 records - sonoma-sky was actually grok-4-fast)
+    - `moonshotai/kimi-dev-72b:free` → `moonshotai/kimi-dev-72b` (153 records)
+    - `deepseek/deepseek-r1-0528:free` → `deepseek/deepseek-r1-0528` (112 records)
+    - `z-ai/glm-4.5-air:free` → `z-ai/glm-4.5` (22 records)
+  - Total: 87 records now consolidated under `x-ai/grok-4-fast` (23 + 64)
+  - Script: `server/scripts/normalize-model-names.ts`
+  - Author: Claude Code using Sonnet 4.5
+
+### Added
+- **Model Normalizer Enhancements**
+  - Added support for hyphen-style suffixes (`-alpha`, `-beta`)
+  - Previously only handled colon-style suffixes (`:alpha`, `:beta`, `:free`)
+  - Added model alias mapping: `openrouter/sonoma-sky` → `x-ai/grok-4-fast`
+  - Ensures consistent normalization across all repositories
+  - File: `server/utils/modelNormalizer.ts`
+
 ## [2025-10-04]
 
 ## v3.5.1 - Default Reasoning Effort Update
