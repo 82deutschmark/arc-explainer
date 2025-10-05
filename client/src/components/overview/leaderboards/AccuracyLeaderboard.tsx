@@ -381,12 +381,49 @@ export function AccuracyLeaderboard({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  className={`text-xs font-medium ${getAccuracyColor(model.accuracyPercentage)}`}
-                >
-                  {model.accuracyPercentage.toFixed(1)}%
-                </Badge>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs font-medium cursor-help ${getAccuracyColor(model.accuracyPercentage)}`}
+                      >
+                        {model.accuracyPercentage.toFixed(1)}%
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm">
+                        <strong>Accuracy Rate</strong>
+                        <br />
+                        {model.correctPredictions} correct / {model.totalAttempts} total attempts
+                        <br />
+                        = {model.accuracyPercentage.toFixed(1)}% success rate
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {model.totalAttempts < 10 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                          <Info className="h-3 w-3 mr-1" />
+                          Low sample
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Low Sample Size Warning</strong>
+                          <br />
+                          Only {model.totalAttempts} attempts - statistics may not be reliable
+                          <br />
+                          Recommended: 10+ attempts for confidence
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             </div>
           ))}
