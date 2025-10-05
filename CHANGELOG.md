@@ -3,6 +3,15 @@
 ## v3.5.1 - Default Reasoning Effort Update
 
 ### Changed
+- **ModelDebate Page Layout** (Enhancement)
+  - Removed container margins, padding, and max-width constraints
+  - Changed from `container mx-auto p-1 max-w-7xl` to `w-full`
+  - Explanation cards now use full horizontal width of the viewport
+  - Applied consistently across loading, error, and main interface states
+  - Files: client/src/pages/ModelDebate.tsx
+  - Author: Cascade using Sonnet 4
+  
+
 - **GPT-5 Reasoning Effort Default** (Enhancement)
   - Changed default `reasoningEffort` from `'low'` to `'high'` across frontend and backend
   - **Client-side**: useAnalysisResults hook now defaults to 'high' (line 62)

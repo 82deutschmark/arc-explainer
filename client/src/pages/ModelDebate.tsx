@@ -1,10 +1,11 @@
 /**
  * ModelDebate.tsx - REFACTORED
  *
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-29
+ * Author: Claude Code using Sonnet 4 (Updated by Cascade using Sonnet 4 on 2025-10-04)
+ * Date: 2025-09-29 (Layout update: 2025-10-04)
  * PURPOSE: Clean orchestration-only component for Model Debate page (< 100 lines).
  * Single responsibility: Component coordination and routing only.
+ * LAYOUT: Removed container margins and max-width constraints for full-width explanation cards
  * SRP/DRY check: Pass - Pure orchestration, delegates all concerns to focused components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  */
@@ -144,7 +145,7 @@ export default function ModelDebate() {
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="w-full">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -158,7 +159,7 @@ export default function ModelDebate() {
   // Error states
   if (taskError || (taskId && !task)) {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="w-full">
         <Alert>
           <AlertDescription>
             Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
@@ -175,7 +176,7 @@ export default function ModelDebate() {
 
   // Main debate interface
   return (
-    <div className="container mx-auto p-1 max-w-7xl space-y-1">
+    <div className="w-full space-y-1">
       <PuzzleDebateHeader taskId={taskId} />
 
       <CompactPuzzleDisplay
