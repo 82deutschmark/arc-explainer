@@ -1,6 +1,14 @@
+* Author: Codex using GPT-5-high
+* Date: 2025-10-05 00:00:00
+* PURPOSE: Update README for v3.5.1 with researcher-focused features, HuggingFace ingestion, admin/UI references, and minimal PowerShell notes.
+* SRP/DRY check: Pass ó documentation-only change, no duplication introduced.
+* shadcn/ui: Pass ó informational mentions only; no custom UI code in this file.
+
+
 # ARC-AGI Analysis Platform
 
-**Last updated: September 30, 2025**
+**Version 3.5.1**
+**Last updated: October 05, 2025**
 
 A professional research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models. Built for researchers, developers, and AI practitioners working on abstract reasoning and pattern recognition.
 
@@ -8,7 +16,22 @@ A professional research platform for analyzing Abstract Reasoning Corpus (ARC-AG
 
 This platform provides a robust suite of tools for ARC-AGI puzzle analysis, featuring multi-model AI evaluation, deep reasoning extraction, advanced performance analytics, and collaborative feedback systems. The architecture is engineered for stability and enterprise deployment, with PostgreSQL database integration and Docker containerization.
 
+## Whatís New in v3.5.1
+- Default GPT-5 reasoning settings now favor higher-quality outputs (reasoningEffort: high, reasoningVerbosity: high).
+- Deep link to a specific explanation: share `/puzzle/{puzzleId}?highlight={explanationId}` to jump and highlight.
+- Research-grade HuggingFace ingestion: import and validate external predictions with provenance and full run history.
+- Admin console additions: `/admin`, `/admin/models`, `/admin/ingest-hf` for dashboards, model management, and HF ingestion.
+- Multi-test accuracy display corrected; trustworthiness badge restored where appropriate.
+
 ## Key Features
+
+### HuggingFace Dataset Ingestion (Research)
+- Import high-quality public model predictions from HuggingFace for ARC/ARC-AGI datasets.
+- Admin UI: `/admin/ingest-hf` with preflight checks (dataset URL, token, DB), dry-run mode, and detailed summaries.
+- Provenance-first storage: raw provider payloads, accuracy stats, and cost/timing fields preserved.
+- Ingestion runs tracked in `ingestion_runs` with indexes for fast analytics.
+- See `docs/2025-10-01-Ingestion-Complete-Summary.md` and `docs/EXTERNAL_API.md`.
+
 
 ### ‚≠ê ELO Rating System
 - **Pairwise Comparison**: Anonymously compare and vote on the quality of two different AI explanations for the same puzzle.
@@ -72,6 +95,17 @@ git clone <repository-url>
 cd arc-explainer
 npm install
 ```
+
+> Windows PowerShell
+> Use the PowerShell equivalents on Windows:
+>
+> ```powershell
+> git clone <repository-url>
+> Set-Location arc-explainer
+> npm install
+> npm run test   # Starts the dev server (allow ~10s to warm up)
+> ```
+
 
 ### Environment Configuration
 
