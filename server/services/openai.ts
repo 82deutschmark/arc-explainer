@@ -155,12 +155,12 @@ export class OpenAIService extends BaseAIService {
       ...(isReasoningModel && {
         reasoning: isGPT5Model 
           ? { 
-              effort: serviceOpts.reasoningEffort || "medium",
+              effort: serviceOpts.reasoningEffort || "high",
               summary: serviceOpts.reasoningSummaryType || "detailed" 
             }
           : { summary: "detailed" },
         ...(isGPT5Model && {
-          text: { verbosity: serviceOpts.reasoningVerbosity || "medium" }
+          text: { verbosity: serviceOpts.reasoningVerbosity || "high" }
         })
       })
     };
@@ -227,7 +227,7 @@ export class OpenAIService extends BaseAIService {
     if (isReasoningModel) {
       if (isGPT5Model) {
         reasoningConfig = {
-          effort: serviceOpts.reasoningEffort || 'low',
+          effort: serviceOpts.reasoningEffort || 'high',
           summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || 'detailed'
         };
         textConfig = {
