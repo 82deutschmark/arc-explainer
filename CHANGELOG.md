@@ -4,11 +4,16 @@
 
 ### Changed
 - **GPT-5 Reasoning Effort Default** (Enhancement)
-  - Changed default `reasoningEffort` from `'low'` to `'high'` in useAnalysisResults hook
-  - Applies to all GPT-5 reasoning models across all pages (PuzzleExaminer, ModelDebate, etc.)
-  - Users can still manually override this setting on the ModelDebate page
+  - Changed default `reasoningEffort` from `'low'` to `'high'` across frontend and backend
+  - **Client-side**: useAnalysisResults hook now defaults to 'high' (line 62)
+  - **Server-side**: OpenAI service now defaults to 'high' for both prompt preview (line 158) and API calls (line 230)
+  - Also updated default `reasoningVerbosity` from 'medium' to 'high' for consistency (line 163)
+  - Applies to all GPT-5 reasoning models (gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07)
+  - Users can still manually override these settings in the UI
   - Ensures maximum reasoning quality by default for GPT-5 models
-  - Files: client/src/hooks/useAnalysisResults.ts (line 62)
+  - Files: 
+    - client/src/hooks/useAnalysisResults.ts (line 62)
+    - server/services/openai.ts (lines 158, 163, 230)
   - Author: Cascade using Sonnet 4
 
 ## [2025-10-03]
