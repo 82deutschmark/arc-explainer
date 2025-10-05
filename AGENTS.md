@@ -7,7 +7,7 @@ Purpose: To provide guidance to AI Agents when working with code in this reposit
 WE ARE ON WINDOWS!!!  USE POWERSHELL SYNTAX AND COMMANDS!!!
 
 This file provides guidance to AI Agents when working with code in this repository.
-Every file you create or edit should start with:
+Every file you create should start with:
  * 
  * Author: Your NAME  (Example: `Claude Code` using `Sonnet 4` or `Codex` using `GPT-5-high`)
  * Date: `timestamp`
