@@ -386,13 +386,26 @@ export function sanitizeGridData(gridData: any): number[][] | null {
           if (typeof cell.value === 'number') {
             extractedValue = cell.value;
           } else if (typeof cell.number === 'number') {
-            extractedValue = cell.number;  
+            extractedValue = cell.number;
           } else if (typeof cell.data === 'number') {
             extractedValue = cell.data;
           } else if (typeof cell.cell === 'number') {
             extractedValue = cell.cell;
-          } else if (Array.isArray(cell) && cell.length === 1 && typeof cell[0] === 'number') {
-            extractedValue = cell[0]; // Handle single-element arrays
+          } else if (Array.isArray(cell)) {
+            // Handle arrays as cells - this is a CRITICAL MALFORMATION from AI models
+            if (cell.length === 1 && typeof cell[0] === 'number') {
+              extractedValue = cell[0]; // Single-element array
+            } else if (cell.length > 1) {
+              // Multi-element array - CRITICAL ERROR from model misunderstanding grid structure
+              logger.error(`Grid cell at [${rowIndex}][${colIndex}] is array with ${cell.length} elements - this indicates model output malformation`, 'utilities');
+              logger.error(`Array content: ${JSON.stringify(cell).slice(0, 200)}`, 'utilities');
+              // Attempt recovery: find first valid integer in range 0-9
+              const firstValidInt = cell.find(v => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 9);
+              if (firstValidInt !== undefined) {
+                extractedValue = firstValidInt;
+                logger.warn(`Recovered value ${firstValidInt} from malformed array at [${rowIndex}][${colIndex}]`, 'utilities');
+              }
+            }
           }
           
           if (extractedValue !== null && Number.isInteger(extractedValue)) {
