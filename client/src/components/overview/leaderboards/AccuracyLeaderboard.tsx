@@ -221,7 +221,7 @@ export function AccuracyLeaderboard({
                       )}
                     </div>
                     <div className="text-xs text-gray-600">
-                      {model.totalAttempts} total • {model.totalOverconfidentAttempts} overconfident • {model.wrongOverconfidentPredictions} wrong
+                      {model.totalAttempts} total • {model.totalOverconfidentAttempts} overconfident • {model.wrongOverconfidentPredictions} incorrect
                     </div>
                   </div>
                 </div>
@@ -233,16 +233,16 @@ export function AccuracyLeaderboard({
                           variant="secondary"
                           className={`text-xs font-medium cursor-help ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}
                         >
-                          {model.overconfidenceRate.toFixed(1)}% wrong
+                          {model.overconfidenceRate.toFixed(1)}% overconf. incorrect
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="text-sm">
                           <strong>Overconfidence Rate</strong>
                           <br />
-                          {model.overconfidenceRate.toFixed(1)}% of high-confidence predictions (≥80%) were wrong
+                          {model.overconfidenceRate.toFixed(1)}% of high-confidence predictions (≥80%) were incorrect
                           <br />
-                          ({model.wrongOverconfidentPredictions} wrong / {model.totalOverconfidentAttempts} overconfident)
+                          ({model.wrongOverconfidentPredictions} incorrect / {model.totalOverconfidentAttempts} overconfident)
                         </p>
                       </TooltipContent>
                     </Tooltip>
