@@ -12,15 +12,14 @@
  * - Tooltips explaining trustworthiness score
  *
  * SRP and DRY check: Pass - Single responsibility for trustworthiness display
- * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Tooltip, Icons)
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Shield, ShieldCheck, Clock, DollarSign, AlertTriangle, ShieldAlert, AlertCircle, Info } from 'lucide-react';
+import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
 
 interface TrustworthinessLeader {
   modelName: string;
@@ -152,8 +151,7 @@ export function TrustworthinessLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-80">
-          <div className="space-y-2">
+        <div className="space-y-2">
           {allModels.map((model, index) => {
             return (
               <div
@@ -209,8 +207,7 @@ export function TrustworthinessLeaderboard({
               </div>
             );
           })}
-          </div>
-        </ScrollArea>
+        </div>
 
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">

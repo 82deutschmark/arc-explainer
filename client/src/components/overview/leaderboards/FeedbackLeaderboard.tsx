@@ -13,13 +13,12 @@
  * - Sample size warnings for models with low feedback counts
  *
  * SRP and DRY check: Pass - Single responsibility for feedback display
- * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, ScrollArea, Tooltip, Icons)
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ThumbsUp, ThumbsDown, Users, Heart, Star, Info } from 'lucide-react';
 
@@ -140,8 +139,7 @@ export function FeedbackLeaderboard({
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-80">
-          <div className="space-y-2">
+        <div className="space-y-2">
             {sortedModels.map((model, index) => {
               const volumeInfo = getVolumeIndicator(model.feedbackCount);
               const VolumeIcon = volumeInfo.icon;
@@ -224,9 +222,8 @@ export function FeedbackLeaderboard({
                 </div>
               );
             })}
-          </div>
-        </ScrollArea>
-        
+        </div>
+
         {/* Overall Stats */}
         <div className="pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
