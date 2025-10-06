@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
 
 import OpenAI from "openai";
+import { Agent, request } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
@@ -200,10 +201,19 @@ export class OpenRouterService extends BaseAIService {
           logger.service('OpenRouter', `Continuation request - step: ${continuationStep}, generation_id: ${generationId}`);
         }
         
-        // Make API call
+        // Make API call with extended timeouts for long-running models
         const startTime = Date.now();
-        
-        const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+
+        // Create custom agent with extended timeouts for long reasoning/complex model responses
+        // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
+        const agent = new Agent({
+          headersTimeout: 2700000,  // 45 minutes - wait for response headers
+          bodyTimeout: 2700000,      // 45 minutes - wait for response body
+          keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
+        });
+
+        // Make the API call using undici's request directly (supports dispatcher option)
+        const { statusCode, headers: responseHeaders, body: responseBody } = await request("https://openrouter.ai/api/v1/chat/completions", {
           method: 'POST',
           headers: {
               'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -211,10 +221,20 @@ export class OpenRouterService extends BaseAIService {
               "HTTP-Referer": getRefererUrl(),
               "X-Title": "ARC Explainer",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
+          dispatcher: agent  // Use custom agent with extended undici timeouts
         });
 
-        const responseText = await fetchResponse.text();
+        // Convert undici response to standard Response-like object
+        const responseText = await responseBody.text();
+        const fetchResponse = {
+          ok: statusCode >= 200 && statusCode < 300,
+          status: statusCode,
+          statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
+          text: async () => responseText,
+          json: async () => JSON.parse(responseText)
+        };
         const requestDuration = Date.now() - startTime;
 
         // FAIL-FAST: If the response is just whitespace, it's an empty response.

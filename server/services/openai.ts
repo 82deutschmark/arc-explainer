@@ -14,6 +14,7 @@
  */
 
 import OpenAI from "openai";
+import { Agent, request } from "undici";
 import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
 const DEFAULT_PROMPT_ID = 'solver';
@@ -471,16 +472,35 @@ export class OpenAIService extends BaseAIService {
         store: request.store !== false // Default to true unless explicitly set to false
       };
 
-      // Make the API call with 45-minute timeout
-      const response = await fetch('https://api.openai.com/v1/responses', {
+      // Create custom agent with extended timeouts for long reasoning model responses
+      // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
+      const agent = new Agent({
+        headersTimeout: 2700000,  // 45 minutes - wait for response headers
+        bodyTimeout: 2700000,      // 45 minutes - wait for response body
+        keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
+      });
+
+      // Make the API call using undici's request directly (supports dispatcher option)
+      const { statusCode, headers: responseHeaders, body: responseBody } = await request('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(2700000) // 45 minutes timeout
+        signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
+        dispatcher: agent  // Use custom agent with extended undici timeouts
       });
+
+      // Convert undici response to standard Response-like object
+      const responseText = await responseBody.text();
+      const response = {
+        ok: statusCode >= 200 && statusCode < 300,
+        status: statusCode,
+        statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
+        text: async () => responseText,
+        json: async () => JSON.parse(responseText)
+      };
 
       if (!response.ok) {
         const errorText = await response.text();
