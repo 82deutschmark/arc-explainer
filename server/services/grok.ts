@@ -24,7 +24,7 @@
  */
 
 import OpenAI from "openai";
-import { Agent } from "undici";
+import { Agent, request } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
@@ -446,8 +446,8 @@ export class GrokService extends BaseAIService {
         keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
       });
 
-      // Make the API call with extended timeouts via custom agent
-      const response = await fetch('https://api.x.ai/v1/responses', {
+      // Make the API call using undici's request directly (supports dispatcher option)
+      const { statusCode, headers: responseHeaders, body: responseBody } = await request('https://api.x.ai/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
@@ -457,6 +457,16 @@ export class GrokService extends BaseAIService {
         signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
         dispatcher: agent  // Use custom agent with extended undici timeouts
       });
+
+      // Convert undici response to standard Response-like object
+      const responseText = await responseBody.text();
+      const response = {
+        ok: statusCode >= 200 && statusCode < 300,
+        status: statusCode,
+        statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
+        text: async () => responseText,
+        json: async () => JSON.parse(responseText)
+      };
 
       if (!response.ok) {
         const errorText = await response.text();
