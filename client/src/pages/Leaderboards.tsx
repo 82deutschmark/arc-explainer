@@ -43,8 +43,8 @@ export default function Leaderboards() {
   // Error state
   if (hasAnyError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-full mx-auto">
           <div className="text-center py-16">
             <BarChart3 className="h-16 w-16 mx-auto mb-4 text-gray-400" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -66,8 +66,8 @@ export default function Leaderboards() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-full space-y-6">
 
         {/* Page Header */}
         <header className="text-center space-y-4 py-6">
