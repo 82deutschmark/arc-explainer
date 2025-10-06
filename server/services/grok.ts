@@ -24,6 +24,7 @@
  */
 
 import OpenAI from "openai";
+import { Agent } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
@@ -437,7 +438,15 @@ export class GrokService extends BaseAIService {
         store: request.store !== false // Default to true unless explicitly set to false
       };
 
-      // Make the API call with 45-minute timeout
+      // Create custom agent with extended timeouts for long Grok-4 responses (up to 45 min)
+      // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
+      const agent = new Agent({
+        headersTimeout: 2700000,  // 45 minutes - wait for response headers
+        bodyTimeout: 2700000,      // 45 minutes - wait for response body
+        keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
+      });
+
+      // Make the API call with extended timeouts via custom agent
       const response = await fetch('https://api.x.ai/v1/responses', {
         method: 'POST',
         headers: {
@@ -445,7 +454,8 @@ export class GrokService extends BaseAIService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(2700000) // 45 minutes timeout
+        signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
+        dispatcher: agent  // Use custom agent with extended undici timeouts
       });
 
       if (!response.ok) {
