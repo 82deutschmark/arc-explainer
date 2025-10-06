@@ -27,6 +27,7 @@
     "del": "node --import tsx server/scripts/delete-hf-now.ts"
   },
   "dependencies": {
+    "@ai-sdk/xai": "^2.0.23",
     "@anthropic-ai/sdk": "^0.56.0",
     "@google/genai": "^1.9.0",
     "@google/generative-ai": "^0.24.1",
