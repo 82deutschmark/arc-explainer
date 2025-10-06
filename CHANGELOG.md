@@ -80,9 +80,18 @@ curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
   -d '{"promptId": "solver", "previousResponseId": "resp_abc123"}'
 ```
 
+### Debate Mode Integration ⭐ NEW
+Model Debate system now uses conversation chaining automatically:
+- Each debate turn includes full context from previous turns
+- Models remember all previous arguments and rebuttals
+- No manual response ID management needed
+- Files: `client/src/pages/ModelDebate.tsx`, `client/src/hooks/debate/useDebateState.ts`, `client/src/hooks/useAnalysisResults.ts`
+
 ### Related Documentation
-- `docs/API_Conversation_Chaining.md` - Complete API usage guide
+- `docs/API_Conversation_Chaining.md` - Complete API usage guide with debate examples
+- `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation plan
 - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical analysis and implementation details
+- `CLAUDE.md` - Updated with conversation chaining architecture
 
 ---
 
