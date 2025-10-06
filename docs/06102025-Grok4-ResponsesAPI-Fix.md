@@ -279,6 +279,45 @@ Update endpoint documentation:
 5. Implement Phase 4 (testing)
 6. Commit and test in production
 
+## Additional Scripts Created (2025-10-06)
+
+### Grok-4-Fast-Reasoning Analysis Scripts
+
+Two new scripts have been created to facilitate batch analysis using the Grok-4-Fast-Reasoning model:
+
+1. **`scripts/grok-4-fast-reasoning-test.ts`** - Single puzzle test script
+   - Tests a single puzzle ID to verify integration
+   - Default puzzle: `00d62c1b`
+   - Usage: `npx ts-node scripts/grok-4-fast-reasoning-test.ts [puzzleId]`
+   - Purpose: Quick validation before running full batch
+
+2. **`scripts/grok-4-fast-reasoning.ts`** - Full batch analysis script
+   - Analyzes all puzzles in ARC 1 Eval (400 puzzles) or ARC 2 Eval (120 puzzles)
+   - Supports custom puzzle lists via file or command line
+   - Usage examples:
+     - `npx ts-node scripts/grok-4-fast-reasoning.ts --dataset arc1`
+     - `npx ts-node scripts/grok-4-fast-reasoning.ts --dataset arc2`
+     - `npx ts-node scripts/grok-4-fast-reasoning.ts 00d62c1b 00d7ad95`
+     - `npx ts-node scripts/grok-4-fast-reasoning.ts --file puzzle-ids.txt`
+
+**Key Implementation Details:**
+- Model: `grok-4-fast-reasoning` (from models.ts config)
+- Prompt: `solver` (standard puzzle-solving prompt)
+- Temperature: 0.2 (default)
+- Timeout: 10 minutes per puzzle (based on model's "moderate" speed estimate)
+- Concurrent execution with 2-second delays between triggers
+- **NO reasoning configuration parameters** (reasoningEffort, reasoningVerbosity, reasoningSummaryType)
+  - These are GPT-5 specific and not supported by Grok-4 models
+- Uses same API endpoints as other analysis scripts: `/api/puzzle/analyze` and `/api/puzzle/save-explained`
+
+**Differences from GPT-5 Script (`analyze-puzzles-by-id.ts`):**
+1. Removed `reasoningEffort`, `reasoningVerbosity`, `reasoningSummaryType` from request body
+2. Updated timeout to 10 minutes (vs 30 minutes for GPT-5)
+3. Model key: `grok-4-fast-reasoning` (vs `gpt-5-nano-2025-08-07`)
+4. Added dataset support for full ARC Eval sets (--dataset flag)
+
+These scripts follow the same patterns as existing analysis scripts for consistency and maintainability.
+
 ## Notes
 
 - Future grok-4 variants (e.g., grok-4.1, grok-4-turbo) will automatically work with grok.ts
