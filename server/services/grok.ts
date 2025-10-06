@@ -109,10 +109,10 @@ export class GrokService extends BaseAIService {
   getModelInfo(modelKey: string): ModelInfo {
     const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
     const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
-    
-    // Check if it's a reasoning model (Grok 4+ models have reasoning capabilities)
-    const isReasoning = modelName.includes('grok-4') || modelName.includes('grok-3');
-    
+
+    // Check if it's a reasoning model using modelConfig (respects grok-4-fast-non-reasoning)
+    const isReasoning = modelConfig?.isReasoning ?? false;
+
     // Grok4 supports structured output with limitations (no allOf, no minLength/maxLength, etc.)
     const supportsStructuredOutput = modelName.includes('grok-4');
     
