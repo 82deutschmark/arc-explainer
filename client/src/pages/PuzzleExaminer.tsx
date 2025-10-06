@@ -345,75 +345,51 @@ export default function PuzzleExaminer() {
         </div>
       </CollapsibleCard>
 
-      {/* AI Model Testing - Collapsed by default */}
+      {/* Prompt Style */}
       <CollapsibleCard
-        title="AI Model Analysis"
+        title="Prompt Style"
         icon={Brain}
         defaultOpen={false}
         headerDescription={
-          <>
-            <p className="text-sm text-gray-600">
-              Test how different AI models try to explain why this solution is correct
-            </p>
-            {isAnalyzing && currentModel && (
-              <div className="flex flex-col mt-2">
-                <div className="flex items-center gap-2 text-sm text-blue-600">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  Analyzing with {currentModel.name}...
-                </div>
-                {currentModel.responseTime && (
-                  <div className={`text-xs mt-1 ${currentModel.responseTime.speed === 'slow' ? 'text-red-600' : 
-                              currentModel.responseTime.speed === 'moderate' ? 'text-amber-600' : 
-                              'text-green-600'}`}>
-                    {currentModel.responseTime.speed === 'slow' ? '⏳' : 
-                     currentModel.responseTime.speed === 'moderate' ? '⌛' : '⚡'} 
-                    Expected response time: {currentModel.responseTime.estimate}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
+          <p className="text-sm text-gray-600">Configure how puzzles are presented to AI models</p>
         }
       >
-          {/* Prompt Picker */}
-          <PromptPicker
-            selectedPromptId={promptId}
-            onPromptChange={setPromptId}
-            customPrompt={customPrompt}
-            onCustomPromptChange={setCustomPrompt}
-            disabled={isAnalyzing}
-            sendAsEmojis={sendAsEmojis}
-            onSendAsEmojisChange={setSendAsEmojis}
-            omitAnswer={omitAnswer}
-            onOmitAnswerChange={setOmitAnswer}
-            // systemPromptMode removed - now using modular architecture Collapse this by default!!
-          />
+        <PromptPicker
+          selectedPromptId={promptId}
+          onPromptChange={setPromptId}
+          customPrompt={customPrompt}
+          onCustomPromptChange={setCustomPrompt}
+          disabled={isAnalyzing}
+          sendAsEmojis={sendAsEmojis}
+          onSendAsEmojisChange={setSendAsEmojis}
+          omitAnswer={omitAnswer}
+          onOmitAnswerChange={setOmitAnswer}
+        />
 
-          {/* Prompt Preview */}
-          <div className="mb-3 flex justify-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPromptPreview(true)}
-              disabled={isAnalyzing}
-              className="flex items-center gap-2"
-            >
-              <Eye className="h-4 w-4" />
-              Preview Prompt
-            </Button>
-          </div>
-      
-          
-          {/* Advanced Controls - Collapsed by default */}
-          <CollapsibleCard
-            title="Advanced Controls"
-            icon={Settings}
-            defaultOpen={false}
-            className="mb-4"
-            headerDescription={
-              <p className="text-sm text-gray-600">Fine-tune model behavior with advanced parameters</p>
-            }
+        {/* Prompt Preview */}
+        <div className="mb-3 flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPromptPreview(true)}
+            disabled={isAnalyzing}
+            className="flex items-center gap-2"
           >
+            <Eye className="h-4 w-4" />
+            Preview Prompt
+          </Button>
+        </div>
+      </CollapsibleCard>
+
+      {/* Advanced Controls */}
+      <CollapsibleCard
+        title="Advanced Controls"
+        icon={Settings}
+        defaultOpen={false}
+        headerDescription={
+          <p className="text-sm text-gray-600">Fine-tune model behavior with advanced parameters</p>
+        }
+      >
             {/* Temperature Control */}
             <div className="mb-2 p-2 bg-gray-50 border border-gray-200 rounded">
               <div className="flex items-center gap-3">
@@ -599,18 +575,17 @@ export default function PuzzleExaminer() {
                   </div>
                 </div>
               </div>
-            </CollapsibleCard>
+      </CollapsibleCard>
 
-          {/* Model Buttons - Collapsed by default */}
-          <CollapsibleCard
-            title="Model Selection"
-            icon={Rocket}
-            defaultOpen={false}
-            className="mb-4"
-            headerDescription={
-              <p className="text-sm text-gray-600">Choose which AI models to run analysis with</p>
-            }
-          >
+      {/* Model Selection */}
+      <CollapsibleCard
+        title="Model Selection"
+        icon={Rocket}
+        defaultOpen={true}
+        headerDescription={
+          <p className="text-sm text-gray-600">Choose which AI models to run analysis with</p>
+        }
+      >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
               {models?.map((model) => {
                 const isThisModelProcessing = processingModels.has(model.key);
@@ -627,42 +602,42 @@ export default function PuzzleExaminer() {
                   />
                 );
               })}
-            </div>
-          </CollapsibleCard>
+        </div>
+      </CollapsibleCard>
 
-          {/* Saturn Visual Solver */}
-          <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <h5 className="text-sm font-semibold text-indigo-800 flex items-center gap-2">
-                <Rocket className="h-4 w-4" />
-                Alternative Visual Solver
-              </h5>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href={`/puzzle/saturn/${taskId}`}>
-                <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
-                  <Rocket className="h-4 w-4" />
-                  Open Saturn Visual Solver
-                </Button>
-              </Link>
-              <div className="flex-1">
-                <p className="text-sm text-indigo-700 mb-1">
-                  Uses iterative visual analysis to solve puzzles step-by-step
-                </p>
-                <p className="text-xs text-indigo-600">
-                  💡 Powered by the open-source{' '}
-                  <a
-                    href="https://github.com/zoecarver/saturn-arc"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-medium hover:text-indigo-800"
-                  >
-                    Saturn ARC project by Zoe Carver
-                  </a>
-                </p>
-              </div>
-            </div>
+      {/* Saturn Visual Solver */}
+      <CollapsibleCard
+        title="Saturn Visual Solver"
+        icon={Rocket}
+        defaultOpen={false}
+        headerDescription={
+          <p className="text-sm text-gray-600">Alternative visual reasoning approach using iterative analysis</p>
+        }
+      >
+        <div className="flex items-center gap-4">
+          <Link href={`/puzzle/saturn/${taskId}`}>
+            <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
+              <Rocket className="h-4 w-4" />
+              Open Saturn Visual Solver
+            </Button>
+          </Link>
+          <div className="flex-1">
+            <p className="text-sm text-gray-700 mb-1">
+              Uses iterative visual analysis to solve puzzles step-by-step
+            </p>
+            <p className="text-xs text-gray-600">
+              💡 Powered by the open-source{' '}
+              <a
+                href="https://github.com/zoecarver/saturn-arc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-medium hover:text-indigo-800"
+              >
+                Saturn ARC project by Zoe Carver
+              </a>
+            </p>
           </div>
+        </div>
       </CollapsibleCard>
 
       {/* Analysis Results - THE FOCUS OF THE PAGE (separate from AI Model Testing) */}
