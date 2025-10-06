@@ -1,3 +1,26 @@
+## [2025-10-06]
+
+## v3.5.2 - Trustworthiness Leaderboard SQL Fix
+
+### Fixed
+- **SQL GROUP BY Mismatch in TrustworthinessRepository** (Critical)
+  - Fixed PostgreSQL error causing 500 status on `/api/puzzle/performance-stats` endpoint
+  - Root cause: GROUP BY clauses missing 3 model normalization rules that existed in SELECT
+  - Missing rules:
+    - `'%-beta'` suffix removal (e.g., `gpt-5-beta` → `gpt-5`)
+    - `'%-alpha'` suffix removal (e.g., `claude-alpha` → `claude`)
+    - `'openrouter/sonoma-sky%'` → `'x-ai/grok-4-fast'` mapping
+  - PostgreSQL requires exact matching between SELECT and GROUP BY CASE statements
+  - Affected queries in TrustworthinessRepository:
+    1. `getTrustworthinessStatsWithMinAttempts` (line 707)
+    2. `getRealPerformanceStatsWithMinAttempts` - trustworthiness leaders (line 788)
+    3. `getRealPerformanceStatsWithMinAttempts` - speed leaders (line 823)
+    4. `getRealPerformanceStatsWithMinAttempts` - efficiency leaders (line 878)
+  - Impact: Trustworthiness leaderboard now loads correctly with proper model name normalization
+  - Files: server/repositories/TrustworthinessRepository.ts
+  - Commit: eaf7f24
+  - Author: Claude Sonnet 4.5
+
 ## [2025-10-04]
 
 ## v3.5.1 - Default Reasoning Effort Update
