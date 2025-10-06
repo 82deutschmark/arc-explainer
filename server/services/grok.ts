@@ -411,7 +411,9 @@ export class GrokService extends BaseAIService {
 
     try {
       // Check if model supports structured JSON schema
-      const supportsStructuredOutput = !request.model.includes('grok-code-fast');
+      // Disable for ALL grok-4 models due to "Grammar is too complex" errors
+      const supportsStructuredOutput = !request.model.startsWith('grok-4') &&
+                                        !request.model.includes('grok-code-fast');
 
       // Prepare the request for xAI's Responses API
       const body = {
