@@ -709,6 +709,9 @@ export class TrustworthinessRepository extends BaseRepository {
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -790,6 +793,9 @@ export class TrustworthinessRepository extends BaseRepository {
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -825,6 +831,9 @@ export class TrustworthinessRepository extends BaseRepository {
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
@@ -874,6 +883,9 @@ export class TrustworthinessRepository extends BaseRepository {
             WHEN e.model_name LIKE '%:free' THEN REGEXP_REPLACE(e.model_name, ':free$', '')
             WHEN e.model_name LIKE '%:beta' THEN REGEXP_REPLACE(e.model_name, ':beta$', '')
             WHEN e.model_name LIKE '%:alpha' THEN REGEXP_REPLACE(e.model_name, ':alpha$', '')
+            WHEN e.model_name LIKE '%-beta' THEN REGEXP_REPLACE(e.model_name, '-beta$', '')
+            WHEN e.model_name LIKE '%-alpha' THEN REGEXP_REPLACE(e.model_name, '-alpha$', '')
+            WHEN e.model_name LIKE 'openrouter/sonoma-sky%' THEN 'x-ai/grok-4-fast'
             WHEN e.model_name = 'z-ai/glm-4.5-air:free' THEN 'z-ai/glm-4.5'
             WHEN e.model_name LIKE 'z-ai/glm-4.5-air%' THEN 'z-ai/glm-4.5'
             ELSE e.model_name
