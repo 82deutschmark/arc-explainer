@@ -6,7 +6,16 @@
  * endpoint (/v1/responses), following the same pattern as OpenAI's implementation.
  *
  * UPDATED: Now uses Responses API for advanced reasoning capabilities and structured output.
- * Supports all Grok models including grok-4, grok-4-fast, grok-3, grok-3-mini, and grok-code-fast-1.
+ * Supports ONLY Grok 4 models including grok-4, grok-4-fast, grok-4-fast-reasoning, grok-4-fast-non-reasoning
+ * 
+ * Other Grok models are routed through OpenRouter!
+ * 
+ * https://docs.x.ai/docs/models
+ * https://docs.x.ai/docs/guides/responses-api#returning-encrypted-thinking-content
+ * 
+ * 
+ * 
+ * 
  *
  * @author Claude Code using Sonnet 4.5
  * @date 2025-10-05
@@ -35,6 +44,8 @@ export class GrokService extends BaseAIService {
   protected models = {
     "grok-4": "grok-4",
     "grok-4-fast": "grok-4-fast",
+    "grok-4-fast-reasoning": "grok-4-fast-reasoning",
+    "grok-4-fast-non-reasoning": "grok-4-fast-non-reasoning",
   };
 
   async analyzePuzzleWithModel(
