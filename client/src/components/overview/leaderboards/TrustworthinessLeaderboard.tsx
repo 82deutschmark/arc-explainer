@@ -229,7 +229,7 @@ export function TrustworthinessLeaderboard({
                       </div>
                       {overconfidentData && (
                         <div className="text-red-600 font-medium">
-                          {overconfidentData.overconfidenceRate.toFixed(1)}% wrong
+                          {overconfidentData.overconfidenceRate.toFixed(1)}% overconf. incorrect
                         </div>
                       )}
                     </div>
