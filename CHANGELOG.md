@@ -1,3 +1,61 @@
+## [2025-10-06]
+
+## v3.6.0 - Grok-4 Responses API Integration + Model Routing Cleanup
+
+### Fixed
+- **xAI Grok-4 API Integration**
+  - Fixed invalid `reasoning` configuration being sent to grok-4 models (not supported per xAI docs)
+  - Removed attempt to extract `reasoning_content` (grok-4 doesn't expose reasoning)
+  - Cleaned up grok.ts to only handle Grok-4 variants (grok-4, grok-4-fast)
+  - File: `server/services/grok.ts`
+
+- **Model Routing Architecture**
+  - Moved Grok-3 models to OpenRouter (use Chat Completions API)
+  - Updated 4 model entries: x-ai/grok-3, x-ai/grok-3-mini, x-ai/grok-code-fast-1, x-ai/grok-3-mini-fast
+  - Clear separation: grok.ts = Grok-4 (Responses API), openrouter.ts = Grok-3 (Chat Completions)
+  - File: `server/config/models.ts`
+
+- **Trustworthiness Leaderboard Filtering**
+  - Applied minimum 20 attempts filter to trustworthiness leaderboard
+  - Ensures statistical significance in displayed rankings
+  - File: `server/controllers/puzzleController.ts`
+
+- **Leaderboards Page Layout**
+  - Removed padding and width constraints for full-viewport display
+  - Changed from `p-4 max-w-7xl` to full-width layout
+  - File: `client/src/pages/Leaderboards.tsx`
+
+### Enhanced
+- **Documentation Updates**
+  - Added comprehensive xAI/Grok API differences section in CLAUDE.md
+  - Documented Responses API vs Chat Completions API differences
+  - Explained grok-4 limitations (no reasoning_effort, no reasoning_content)
+  - Documented model routing logic for grok-4 vs grok-3
+  - Created detailed plan document: `docs/06102025-Grok4-ResponsesAPI-Fix.md`
+  - File: `CLAUDE.md`
+
+### Technical Details
+- **Grok-4 API Behavior** (per xAI docs):
+  - ❌ Does NOT support `reasoning_effort` parameter
+  - ❌ Does NOT return `reasoning_content` in responses
+  - ✅ Supports Responses API with structured JSON output
+  - ✅ Tracks reasoning tokens (but doesn't expose the reasoning itself)
+
+- **Model Separation Strategy**:
+  - Grok-4 models (grok-4, grok-4-fast) → Direct xAI API via grok.ts
+  - Grok-3 models (all variants) → OpenRouter via openrouter.ts
+  - Future grok-4 variants will automatically route to grok.ts
+
+### Files Modified
+- `server/services/grok.ts` - Removed grok-3 support, fixed reasoning config
+- `server/config/models.ts` - Updated grok-3 models to use OpenRouter
+- `server/controllers/puzzleController.ts` - Added min attempts filter
+- `client/src/pages/Leaderboards.tsx` - Full-width layout
+- `CLAUDE.md` - Updated API documentation
+- `docs/06102025-Grok4-ResponsesAPI-Fix.md` - Implementation plan
+
+---
+
 ## [2025-10-05]
 
 ## v3.5.4 - Enhanced Leaderboards with Data Quality Indicators

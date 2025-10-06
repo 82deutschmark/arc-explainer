@@ -30,13 +30,11 @@ const grok = new OpenAI({
 
 export class GrokService extends BaseAIService {
   protected provider = "xAI";
+  // Only Grok-4 variants support Responses API
+  // Grok-3 models use Chat Completions and are routed through OpenRouter
   protected models = {
-    "grok-4-0709": "grok-4-0709",
+    "grok-4": "grok-4",
     "grok-4-fast": "grok-4-fast",
-    "grok-3": "grok-3",
-    "grok-3-mini": "grok-3-mini",
-    "grok-code-fast-1": "grok-code-fast-1",
-    "grok-3-mini-fast": "grok-3-mini-fast",
   };
 
   async analyzePuzzleWithModel(
@@ -270,8 +268,12 @@ export class GrokService extends BaseAIService {
     // ALWAYS preserve raw response for debugging
     result._providerRawResponse = rawResponse;
 
-    // Extract reasoning log from API response
-    if (captureReasoning && response.output_reasoning?.summary) {
+    // IMPORTANT: grok-4 does NOT return reasoning_content per xAI documentation
+    // Only attempt reasoning extraction for future models that support it
+    // For now, grok-4 and grok-4-fast don't expose reasoning in the response
+    const supportsReasoning = false; // Set to true only when xAI adds reasoning support
+
+    if (captureReasoning && supportsReasoning && response.output_reasoning?.summary) {
       const summary = response.output_reasoning.summary;
 
       if (Array.isArray(summary)) {
@@ -294,8 +296,8 @@ export class GrokService extends BaseAIService {
       }
     }
 
-    // Extract reasoning items
-    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+    // Extract reasoning items (also skipped for grok-4)
+    if (supportsReasoning && response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
       reasoningItems = response.output_reasoning.items.map((item: any) => {
         if (typeof item === 'string') return item;
         if (item && typeof item === 'object' && item.text) return item.text;
@@ -375,22 +377,12 @@ export class GrokService extends BaseAIService {
     }
     messages.push({ role: "user", content: userMessage });
 
-    // Check if model supports reasoning (Grok 4+ models)
-    const isReasoningModel = modelName.includes('grok-4') || modelName.includes('grok-3');
-    const modelConfig = getModelConfig(modelKey);
-
-    let reasoningConfig = undefined;
-
-    if (isReasoningModel) {
-      reasoningConfig = {
-        summary: serviceOpts.reasoningSummary || 'detailed'
-      };
-    }
-
+    // IMPORTANT: grok-4 does NOT support reasoning config per xAI docs
+    // Don't send ANY reasoning configuration to grok-4 models
     const request = {
       model: modelName,
       input: messages,
-      reasoning: reasoningConfig,
+      // NO reasoning config - grok-4 doesn't support it
       previous_response_id: serviceOpts.previousResponseId,
       ...(modelSupportsTemperature(modelKey) && {
         temperature: temperature || 0.2
@@ -424,7 +416,7 @@ export class GrokService extends BaseAIService {
             }
           }
         }),
-        reasoning: request.reasoning,
+        // NO reasoning config for grok-4 (not supported per xAI docs)
         temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
         parallel_tool_calls: false,
         truncation: "auto",
