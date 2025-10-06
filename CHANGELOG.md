@@ -84,8 +84,18 @@ curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
 Model Debate system now uses conversation chaining automatically:
 - Each debate turn includes full context from previous turns
 - Models remember all previous arguments and rebuttals
+- **Provider-aware chaining**: Automatically detects OpenAI vs xAI models
+- Cross-provider debates start new chains (no context loss, just new conversation)
 - No manual response ID management needed
 - Files: `client/src/pages/ModelDebate.tsx`, `client/src/hooks/debate/useDebateState.ts`, `client/src/hooks/useAnalysisResults.ts`
+
+### Provider Compatibility ⚠️ IMPORTANT
+Conversation chaining is provider-specific:
+- ✅ OpenAI models (GPT-4, o4-mini, o3, o1) can chain with each other
+- ✅ xAI models (Grok-4, Grok-3) can chain with each other  
+- ⚠️ Cross-provider debates (GPT → Grok or Grok → GPT) start fresh conversations
+- Response IDs are not compatible across providers (OpenAI IDs ≠ xAI IDs)
+- System automatically handles this via provider detection in `useDebateState.extractProvider()`
 
 ### Related Documentation
 - `docs/API_Conversation_Chaining.md` - Complete API usage guide with debate examples

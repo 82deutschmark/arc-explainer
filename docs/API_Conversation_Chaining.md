@@ -97,16 +97,62 @@ Response IDs are automatically saved to: `explanations.provider_response_id`
 Query the most recent analysis to get the response ID for continuation.
 
 ---
-
 ## Error Handling
 
 ### Expired Response ID
 After 30 days, response IDs become invalid. Start a new conversation chain.
 
-### Cross-Provider Chains
-Response IDs are provider-specific. Only chain within same provider.
+### Cross-Provider Chains ⚠️ CRITICAL
+
+Response IDs are **provider-specific** and cannot be used across different providers:
+
+```json
+{
+  "success": false,
+  "error": "Invalid previous_response_id",
+  "message": "Response ID does not belong to this model/provider"
+}
+```
+
+**Why This Matters:**
+- OpenAI response IDs only work with OpenAI models
+- xAI (Grok) response IDs only work with xAI models
+- Passing an OpenAI ID to Grok will fail (and vice versa)
+
+**Model Debate Behavior:**
+The debate system automatically detects provider mismatches:
+- ✅ GPT-4 → GPT-5: Conversation continues (same provider)
+- ✅ Grok-4 → Grok-3: Conversation continues (same provider)
+- ⚠️ GPT-4 → Grok-4: New conversation starts (different providers)
+- ⚠️ Grok-4 → GPT-5: New conversation starts (different providers)
+
+**Implementation:**
+```typescript
+// useDebateState.ts
+const extractProvider = (modelKey: string): string => {
+  if (modelKey.includes('/')) return modelKey.split('/')[0];
+  // Legacy model detection for GPT/Grok
+  if (modelKey.includes('gpt') || modelKey.includes('o1')) return 'openai';
+  if (modelKey.includes('grok')) return 'xai';
+  return 'unknown';
+};
+
+const getLastResponseId = (challengerModelKey?: string) => {
+  const lastProvider = extractProvider(lastMessage.modelName);
+  const challengerProvider = extractProvider(challengerModelKey);
+  
+  // Only return ID if providers match
+  if (lastProvider === challengerProvider) {
+    return lastMessage.providerResponseId;
+  }
+  return undefined; // Cross-provider not supported
+};
+```
+
+**Solution:** Only chain requests within the same provider (OpenAI → OpenAI, xAI → xAI).
 
 ### Model Switching
+
 Best practice: Use same model for entire conversation chain.
 
 ---
@@ -115,9 +161,10 @@ Best practice: Use same model for entire conversation chain.
 
 1. Always check if providerResponseId exists before chaining
 2. Store response IDs for conversation management
-3. Use same model throughout a conversation chain
-4. Handle expired IDs gracefully by starting new chains
-5. Consider conversation length limits
+3. **Verify provider compatibility** before passing previousResponseId
+4. Use same model throughout a conversation chain for best results
+5. Handle expired IDs gracefully by starting new chains
+6. Consider conversation length limits
 
 ---
 
