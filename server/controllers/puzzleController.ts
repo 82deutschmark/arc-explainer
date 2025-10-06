@@ -74,7 +74,8 @@ export const puzzleController = {
       systemPromptMode: req.body.systemPromptMode || 'ARC',
       retryMode: req.body.retryMode || false,
       originalExplanation: req.body.originalExplanation, // For debate mode
-      customChallenge: req.body.customChallenge // For debate mode
+      customChallenge: req.body.customChallenge, // For debate mode
+      previousResponseId: req.body.previousResponseId // For conversation chaining
     };
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);

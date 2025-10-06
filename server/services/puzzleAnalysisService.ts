@@ -47,6 +47,7 @@ export interface AnalysisOptions {
   retryMode?: boolean;
   originalExplanation?: ExplanationData; // For debate mode
   customChallenge?: string; // For debate mode
+  previousResponseId?: string; // For conversation chaining
 }
 
 export interface RetryContext {
@@ -78,7 +79,8 @@ export class PuzzleAnalysisService {
       systemPromptMode = 'ARC',
       retryMode = false,
       originalExplanation,
-      customChallenge
+      customChallenge,
+      previousResponseId
     } = options;
 
     // Track server processing time
@@ -111,6 +113,8 @@ export class PuzzleAnalysisService {
     if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
     if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
     if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
+    // Conversation chaining support - pass through response ID for multi-turn analysis
+    if (previousResponseId) serviceOpts.previousResponseId = previousResponseId;
     
     // CRITICAL FIX: Correct parameter order to match BaseAIService interface
     // analyzePuzzleWithModel(task, modelKey, temperature, promptId, customPrompt, options, serviceOpts)
