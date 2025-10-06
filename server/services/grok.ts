@@ -24,7 +24,7 @@
  */
 
 import OpenAI from "openai";
-import { Agent, request } from "undici";
+import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { getDefaultPromptId } from "./promptBuilder.js";
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
@@ -391,7 +391,7 @@ export class GrokService extends BaseAIService {
 
     // IMPORTANT: grok-4 does NOT support reasoning config per xAI docs
     // Don't send ANY reasoning configuration to grok-4 models
-    const request = {
+    const requestData = {
       model: modelName,
       input: messages,
       // NO reasoning config - grok-4 doesn't support it
@@ -401,10 +401,10 @@ export class GrokService extends BaseAIService {
       }),
     };
 
-    return await this.callResponsesAPI(request, modelKey);
+    return await this.callResponsesAPI(requestData, modelKey);
   }
 
-  private async callResponsesAPI(request: any, modelKey: string): Promise<any> {
+  private async callResponsesAPI(requestData: any, modelKey: string): Promise<any> {
     const apiKey = process.env.GROK_API_KEY;
     if (!apiKey) {
       throw new Error("GROK_API_KEY not configured");
@@ -413,13 +413,13 @@ export class GrokService extends BaseAIService {
     try {
       // Check if model supports structured JSON schema
       // Disable for ALL grok-4 models due to "Grammar is too complex" errors
-      const supportsStructuredOutput = !request.model.startsWith('grok-4') &&
-                                        !request.model.includes('grok-code-fast');
+      const supportsStructuredOutput = !requestData.model.startsWith('grok-4') &&
+                                        !requestData.model.includes('grok-code-fast');
 
       // Prepare the request for xAI's Responses API
       const body = {
-        model: request.model,
-        input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }],
+        model: requestData.model,
+        input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
         ...(supportsStructuredOutput && {
           text: {
             format: {
@@ -431,11 +431,11 @@ export class GrokService extends BaseAIService {
           }
         }),
         // NO reasoning config for grok-4 (not supported per xAI docs)
-        temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
+        temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
         parallel_tool_calls: false,
         truncation: "auto",
-        previous_response_id: request.previous_response_id,
-        store: request.store !== false // Default to true unless explicitly set to false
+        previous_response_id: requestData.previous_response_id,
+        store: requestData.store !== false // Default to true unless explicitly set to false
       };
 
       // Create custom agent with extended timeouts for long Grok-4 responses (up to 45 min)
@@ -447,7 +447,7 @@ export class GrokService extends BaseAIService {
       });
 
       // Make the API call using undici's request directly (supports dispatcher option)
-      const { statusCode, headers: responseHeaders, body: responseBody } = await request('https://api.x.ai/v1/responses', {
+      const { statusCode, headers: responseHeaders, body: responseBody } = await undiciRequest('https://api.x.ai/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
