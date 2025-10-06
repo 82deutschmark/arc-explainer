@@ -293,7 +293,7 @@ app.get("*", (req, res) => {
 
 
 ### Endpoint difference
-All OpenAI models should be using Responses API, but OpenRouter and other providers still use Chat Completions.
+All OpenAI models (and the latest xAI Grok 4) should be using Responses API, but OpenRouter and other providers still use Chat Completions.
 Chat Completions: /v1/chat/completions
 
 Responses API: /v1/responses

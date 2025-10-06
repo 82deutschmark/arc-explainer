@@ -570,7 +570,7 @@ export const MODELS: ModelConfig[] = [
   },
   // xAI Grok Models (Direct API via Responses API)
   {
-    key: 'grok-4-0709',
+    key: 'grok-4',
     name: 'Grok 4',
     color: 'bg-gray-900',
     premium: true,
@@ -579,7 +579,7 @@ export const MODELS: ModelConfig[] = [
     provider: 'xAI',
     responseTime: { speed: 'slow', estimate: '3-5+ min' },
     isReasoning: true,
-    apiModelName: 'grok-4-0709',
+    apiModelName: 'grok-4',
     modelType: 'grok',
     contextWindow: 256000,
     maxOutputTokens: 31000,
