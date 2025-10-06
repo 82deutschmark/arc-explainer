@@ -1,5 +1,74 @@
 ## [2025-10-06]
 
+## v3.6.1 - Critical Variable Shadowing Fix + Responses API Chain Analysis
+
+### Fixed
+- **Variable Shadowing Bug in Responses API Services**
+  - Fixed `request is not a function` TypeError in Grok and OpenAI services
+  - Root cause: Imported `request` from undici, then shadowed with local variables/parameters
+  - Renamed import to `undiciRequest`, local vars to `requestData`
+  - Affected: grok.ts (lines 27, 394, 407, 450), openai.ts (lines 17, 245, 440, 484)
+  - Files: `server/services/grok.ts`, `server/services/openai.ts`
+
+- **OpenRouter Service Verified**
+  - Confirmed no variable shadowing bug (uses `request` directly without shadowing)
+  - Extended timeout implementation from commit 285d496 works correctly
+  - File: `server/services/openrouter.ts`
+
+### Added
+- **Comprehensive Responses API Chain Analysis**
+  - Researched OpenAI and xAI conversation chaining with `previous_response_id`
+  - Documented encrypted reasoning storage and 30-day retention
+  - Identified implementation gap: `providerResponseId` captured but not passed through
+  - Analysis shows database ready, API calls correct, but `buildStandardResponse()` missing field
+  - File: `docs/Responses_API_Chain_Storage_Analysis.md`
+
+### Technical Details
+
+**Variable Shadowing Bug:**
+```javascript
+// BEFORE (broken):
+import { request } from "undici";        // Import function
+const request = { model: ... };          // Shadow with object
+await request('https://...');            // TypeError: request is not a function
+
+// AFTER (fixed):
+import { request as undiciRequest } from "undici";  // Aliased import
+const requestData = { model: ... };                 // Different name
+await undiciRequest('https://...');                 // ✅ Works
+```
+
+**Chain Storage Gap Identified:**
+1. ✅ Database has `provider_response_id` column
+2. ✅ grok.ts and openai.ts capture `result.id` from API responses
+3. ✅ Repository saves `data.providerResponseId` to database
+4. ❌ **BROKEN:** `AIResponse` interface missing `providerResponseId` field
+5. ❌ **BROKEN:** `buildStandardResponse()` doesn't pass through `result.id`
+
+**Impact:** Response IDs are captured but lost before database insertion, preventing conversation chaining features.
+
+**Responses API Chain Features (from research):**
+- `previous_response_id` enables multi-turn conversations with context
+- `store: true` enables server-side state persistence (30-day retention)
+- Automatic access to previous reasoning items in follow-up requests
+- Supports conversation forking and branching workflows
+- OpenAI fully documented, xAI implementation unclear but structure matches
+
+### Files Modified
+- `server/services/grok.ts` - Fixed variable shadowing bug
+- `server/services/openai.ts` - Fixed variable shadowing bug
+- `docs/Responses_API_Chain_Storage_Analysis.md` - New comprehensive analysis
+
+### Next Steps
+To enable conversation chaining:
+1. Add `providerResponseId?: string | null` to `AIResponse` interface
+2. Update `buildStandardResponse()` to include `providerResponseId: result?.id || null`
+3. Test that `provider_response_id` saves correctly to database
+4. Add API parameter for `previousResponseId` in analysis requests
+5. Implement UI for viewing and managing response chains
+
+---
+
 ## v3.6.0 - Grok-4 Responses API Integration + Model Routing Cleanup
 
 ### Fixed
