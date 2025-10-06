@@ -255,8 +255,9 @@ export const puzzleController = {
    */
   async getRealPerformanceStats(req: Request, res: Response) {
     try {
-      // Get trustworthiness data (no longer includes cost data due to SRP separation)
-      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStats();
+      // Get trustworthiness data with minimum 20 attempts for statistical significance
+      // (no longer includes cost data due to SRP separation)
+      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStatsWithMinAttempts(20);
 
       // Get cost data from dedicated cost repository
       const costMap = await repositoryService.cost.getModelCostMap();
