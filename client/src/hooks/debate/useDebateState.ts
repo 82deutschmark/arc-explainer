@@ -68,11 +68,38 @@ export const useDebateState = () => {
     setDebateMessages(prev => [...prev, newMessage]);
   };
 
-  // Get the last response ID for conversation chaining
-  const getLastResponseId = (): string | undefined => {
+  // Extract provider from model key (e.g., "openai/o4-mini" -> "openai")
+  const extractProvider = (modelKey: string): string => {
+    if (modelKey.includes('/')) {
+      return modelKey.split('/')[0].toLowerCase();
+    }
+    // Handle legacy model keys without provider prefix
+    if (modelKey.toLowerCase().includes('gpt') || modelKey.toLowerCase().includes('o1') || modelKey.toLowerCase().includes('o3') || modelKey.toLowerCase().includes('o4')) {
+      return 'openai';
+    }
+    if (modelKey.toLowerCase().includes('grok')) {
+      return 'xai';
+    }
+    return 'unknown';
+  };
+
+  // Get the last response ID for conversation chaining (provider-aware)
+  // Only returns response ID if the challenger model is from the same provider
+  const getLastResponseId = (challengerModelKey?: string): string | undefined => {
     if (debateMessages.length === 0) return undefined;
+    if (!challengerModelKey) return undefined;
+    
     const lastMessage = debateMessages[debateMessages.length - 1];
-    return lastMessage.content.providerResponseId || undefined;
+    const lastMessageProvider = extractProvider(lastMessage.modelName);
+    const challengerProvider = extractProvider(challengerModelKey);
+    
+    // Only return response ID if providers match (OpenAI -> OpenAI, xAI -> xAI)
+    if (lastMessageProvider === challengerProvider && lastMessageProvider !== 'unknown') {
+      return lastMessage.content.providerResponseId || undefined;
+    }
+    
+    // Cross-provider conversation not supported
+    return undefined;
   };
 
   return {
@@ -94,6 +121,7 @@ export const useDebateState = () => {
     endDebate,
     resetDebate,
     addChallengeMessage,
-    getLastResponseId // NEW: For conversation chaining
+    getLastResponseId, // NEW: For conversation chaining (provider-aware)
+    extractProvider // Utility for provider detection
   };
 };

@@ -167,11 +167,20 @@ Body: {
 ```
 
 **Debate Mode Integration:**
-Model Debate system automatically chains conversations:
-- `useDebateState.getLastResponseId()` - Gets last response ID
+Model Debate system automatically chains conversations with provider awareness:
+- `useDebateState.getLastResponseId(challengerModelKey)` - Gets last response ID (provider-aware)
+- `useDebateState.extractProvider(modelKey)` - Detects provider (openai, xai, etc.)
 - `useAnalysisResults` - Passes previousResponseId automatically
-- Each debate turn builds on full conversation history
-- Models remember all previous arguments and rebuttals
+- **Provider compatibility check**: Only chains if same provider (OpenAI → OpenAI, xAI → xAI)
+- Cross-provider debates start new chains automatically
+- Each same-provider turn builds on full conversation history
+- Models remember all previous arguments and rebuttals within provider scope
+
+**Provider Limitations:**
+- OpenAI response IDs only work with OpenAI models (GPT-4, o4, o3, o1)
+- xAI response IDs only work with xAI models (Grok-4, Grok-3)
+- Cross-provider conversations not supported by underlying APIs
+- System gracefully handles mismatches by starting fresh conversations
 
 **Documentation:**
 - `docs/API_Conversation_Chaining.md` - Complete usage guide
