@@ -1,6 +1,6 @@
 ## [2025-10-06]
 
-## v3.6.2 - Fix Responses API Conversation Chaining (providerResponseId Pass-Through)
+## v3.6.2 - Responses API Conversation Chaining (Complete Implementation)
 
 ### Fixed
 - **Responses API Conversation Chaining Data Loss**
@@ -9,6 +9,21 @@
   - Root cause: Both grok.ts and openai.ts captured response.id, but buildStandardResponse() never included it in final AIResponse object
   - Impact: `provider_response_id` now properly saved to database for all analyses
   - Files: `server/services/base/BaseAIService.ts` (lines 62, 263)
+
+### Added
+- **API Endpoint Support for Conversation Chaining**
+  - Added `previousResponseId` parameter to `/api/puzzle/analyze/:taskId/:model` endpoint
+  - Enables multi-turn conversations with full context retention
+  - Pass-through implementation: Controller → AnalysisService → AI Service → API
+  - Files: 
+    - `server/controllers/puzzleController.ts` (line 78) - Request body extraction
+    - `server/services/puzzleAnalysisService.ts` (lines 50, 83, 117) - Service orchestration
+  
+- **Complete API Documentation**
+  - Created comprehensive conversation chaining guide
+  - Includes usage examples, error handling, best practices
+  - Documents provider support (OpenAI, xAI) and limitations
+  - File: `docs/API_Conversation_Chaining.md`
 
 ### Technical Details
 
@@ -39,14 +54,35 @@ providerResponseId: result?.id || null,
 **Conversation Chaining Features Now Available:**
 - Multi-turn puzzle analysis with full context
 - Automatic access to previous reasoning items
-- Server-side encrypted reasoning storage
+- Server-side encrypted reasoning storage (30 days)
 - Conversation branching and forking
+- Iterative puzzle refinement workflows
+- Enhanced debate mode with conversation history
 
 ### Files Modified
-- `server/services/base/BaseAIService.ts` - Added providerResponseId to interface and buildStandardResponse()
+- `server/services/base/BaseAIService.ts` - Added providerResponseId field and pass-through
+- `server/controllers/puzzleController.ts` - Added previousResponseId parameter
+- `server/services/puzzleAnalysisService.ts` - Added conversation chaining support
+- `docs/API_Conversation_Chaining.md` - NEW: Complete API documentation
+
+### API Usage Example
+```bash
+# Request 1: Initial analysis
+curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
+  -H "Content-Type: application/json" \
+  -d '{"promptId": "solver"}'
+
+# Response 1: {"providerResponseId": "resp_abc123"}
+
+# Request 2: Follow-up with context
+curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
+  -H "Content-Type: application/json" \
+  -d '{"promptId": "solver", "previousResponseId": "resp_abc123"}'
+```
 
 ### Related Documentation
-- `docs/Responses_API_Chain_Storage_Analysis.md` - Complete analysis and implementation guide
+- `docs/API_Conversation_Chaining.md` - Complete API usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical analysis and implementation details
 
 ---
 
