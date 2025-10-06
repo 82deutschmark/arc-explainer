@@ -145,6 +145,39 @@ Centralized prompt building system (`server/services/promptBuilder.ts`):
 - Custom prompt support for research workflows
 - Consistent behavior across all providers and OpenRouter (INCOMPLETE)
 
+### Responses API Conversation Chaining (v3.6.2+)
+**Feature**: Multi-turn conversations with full context retention  
+**Providers**: OpenAI (o-series), xAI (Grok-4)  
+**Database**: `provider_response_id` column stores response IDs  
+
+**How It Works:**
+1. Each AI response includes a unique `providerResponseId`
+2. Pass `previousResponseId` in next request to maintain context
+3. AI automatically accesses previous reasoning and responses
+4. 30-day server-side state retention (OpenAI/xAI)
+
+**API Usage:**
+```typescript
+POST /api/puzzle/analyze/:taskId/:model
+Body: {
+  previousResponseId: "resp_abc123", // From previous analysis
+  promptId: "solver",
+  temperature: 0.2
+}
+```
+
+**Debate Mode Integration:**
+Model Debate system automatically chains conversations:
+- `useDebateState.getLastResponseId()` - Gets last response ID
+- `useAnalysisResults` - Passes previousResponseId automatically
+- Each debate turn builds on full conversation history
+- Models remember all previous arguments and rebuttals
+
+**Documentation:**
+- `docs/API_Conversation_Chaining.md` - Complete usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical details
+- `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation
+
 ### External API Documentation
 For external integrations, see:
 - `docs/EXTERNAL_API.md` - Complete API endpoint reference for external applications

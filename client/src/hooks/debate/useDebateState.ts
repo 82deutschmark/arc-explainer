@@ -68,6 +68,13 @@ export const useDebateState = () => {
     setDebateMessages(prev => [...prev, newMessage]);
   };
 
+  // Get the last response ID for conversation chaining
+  const getLastResponseId = (): string | undefined => {
+    if (debateMessages.length === 0) return undefined;
+    const lastMessage = debateMessages[debateMessages.length - 1];
+    return lastMessage.content.providerResponseId || undefined;
+  };
+
   return {
     // State
     selectedExplanationId,
@@ -86,6 +93,7 @@ export const useDebateState = () => {
     startDebate,
     endDebate,
     resetDebate,
-    addChallengeMessage
+    addChallengeMessage,
+    getLastResponseId // NEW: For conversation chaining
   };
 };

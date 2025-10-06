@@ -121,17 +121,61 @@ Best practice: Use same model for entire conversation chain.
 
 ---
 
+## Debate Mode Integration
+
+Model Debate now uses conversation chaining for true multi-turn debates:
+
+### How It Works
+
+1. **Original Explanation**: First model analyzes puzzle (saves providerResponseId)
+2. **Challenge 1**: Second model challenges with previousResponseId from original
+3. **Challenge 2**: Next challenge includes previousResponseId from Challenge 1
+4. **Result**: Each model has full context from all previous turns
+
+### Code Flow
+
+```typescript
+// useDebateState tracks the conversation chain
+const getLastResponseId = () => {
+  const lastMessage = debateMessages[debateMessages.length - 1];
+  return lastMessage.content.providerResponseId;
+};
+
+// ModelDebate passes it to analysis hook
+const { ... } = useAnalysisResults({
+  previousResponseId: debateState.getLastResponseId()
+});
+
+// Each challenge includes the chain
+const payload = {
+  modelKey: challengerModel,
+  temperature,
+  // previousResponseId automatically included via hook
+};
+```
+
+### Benefits for Debates
+
+- **Coherent Arguments**: Models remember what was already said
+- **Direct Rebuttals**: Can reference specific points from previous turns
+- **No Repetition**: Models don't re-explain the same concepts
+- **Progressive Depth**: Each turn builds on accumulated understanding
+
+---
+
 ## Implementation Status
 
-- Backend: Fully implemented
-- Database: provider_response_id column ready
-- API: previousResponseId parameter supported
-- Frontend: UI implementation pending
+- ✅ Backend: Fully implemented
+- ✅ Database: provider_response_id column ready and saving
+- ✅ API: previousResponseId parameter supported
+- ✅ Frontend: Implemented in Model Debate system
+- ✅ Debate Mode: Full conversation chaining active
 
 ---
 
 ## Related Documentation
 
 - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical analysis
+- `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation plan
 - `CHANGELOG.md` v3.6.2 - Implementation details
 - OpenAI Docs: https://platform.openai.com/docs/guides/conversation-state
