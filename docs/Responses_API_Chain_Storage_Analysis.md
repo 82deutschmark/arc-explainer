@@ -414,7 +414,7 @@ For complex puzzles:
 - **Responses API Guide:** https://docs.x.ai/docs/guides/responses-api (403 blocked - may require auth)
 - **Grok-4 Documentation:** https://docs.x.ai/docs/models/grok-4-fast-reasoning
 
-**Note:** xAI documentation is less comprehensive than OpenAI's regarding `previous_response_id` functionality.
+**Note:** xAI documentation is less comprehensive than OpenAI's regarding `previous_response_id` functionality. They should function the same.
 
 ---
 
@@ -458,21 +458,21 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Questions for Further Investigation
 
-1. **Does xAI Grok actually support encrypted reasoning storage?**
-   - Official docs don't mention it, but API structure suggests yes
-   - Need to test with grok-4-fast-reasoning model
+1. **How do we show this to the user?**
+
 
 2. **What is the actual storage duration for xAI response chains?**
    - OpenAI: 30 days
-   - xAI: Unknown (documentation incomplete)
+   - xAI:  30 days
 
 3. **Can we chain across different models?**
    - e.g., grok-4 → o4-mini → grok-4-fast
-   - Likely NO, chains are provider-specific
+   - No - chains are provider-specific
 
 4. **How do we handle chain expiration?**
    - After 30 days, previous_response_id references become invalid
    - Need error handling for expired chain IDs
+      - Needs to be robust and user-friendly and just clear them.
 
 ---
 
