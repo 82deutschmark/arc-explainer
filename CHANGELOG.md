@@ -1,5 +1,55 @@
 ## [2025-10-06]
 
+## v3.6.2 - Fix Responses API Conversation Chaining (providerResponseId Pass-Through)
+
+### Fixed
+- **Responses API Conversation Chaining Data Loss**
+  - Added `providerResponseId` field to `AIResponse` interface
+  - Updated `buildStandardResponse()` to extract and pass through `result.id`
+  - Root cause: Both grok.ts and openai.ts captured response.id, but buildStandardResponse() never included it in final AIResponse object
+  - Impact: `provider_response_id` now properly saved to database for all analyses
+  - Files: `server/services/base/BaseAIService.ts` (lines 62, 263)
+
+### Technical Details
+
+**Problem:**
+```typescript
+// API Response → parsedResponse.id = result.id  ✅ (grok.ts:504, openai.ts:538)
+// parseProviderResponse() → returns result with .id  ✅
+// buildStandardResponse() → AIResponse object  ❌ Missing providerResponseId
+// Repository.create() → saves NULL to database  ❌
+```
+
+**Solution:**
+```typescript
+// 1. Added field to AIResponse interface (line 62):
+providerResponseId?: string | null;
+
+// 2. Extracted response.id in buildStandardResponse() (line 263):
+providerResponseId: result?.id || null,
+```
+
+**Impact:**
+- ✅ Enables conversation chaining via `previous_response_id` parameter
+- ✅ Supports iterative puzzle refinement workflows
+- ✅ Enables debate mode with full conversation context
+- ✅ Allows conversation forking for exploration workflows
+- ✅ Maintains 30-day server-side state for OpenAI/xAI models
+
+**Conversation Chaining Features Now Available:**
+- Multi-turn puzzle analysis with full context
+- Automatic access to previous reasoning items
+- Server-side encrypted reasoning storage
+- Conversation branching and forking
+
+### Files Modified
+- `server/services/base/BaseAIService.ts` - Added providerResponseId to interface and buildStandardResponse()
+
+### Related Documentation
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Complete analysis and implementation guide
+
+---
+
 ## v3.6.1 - Critical Variable Shadowing Fix + Responses API Chain Analysis
 
 ### Fixed
