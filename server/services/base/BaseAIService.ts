@@ -218,7 +218,8 @@ export abstract class BaseAIService {
     incompleteReason?: string,
     promptPackage?: PromptPackage,
     promptTemplateId?: string,
-    customPromptText?: string
+    customPromptText?: string,
+    responseId?: string
   ): AIResponse {
     const cost = this.calculateResponseCost(modelKey, tokenUsage);
     
@@ -259,8 +260,8 @@ export abstract class BaseAIService {
       userPromptUsed: promptPackage?.userPrompt || null,
       promptTemplateId: promptTemplateId || promptPackage?.selectedTemplate?.id || null,
       customPromptText: customPromptText || null,
-      // Responses API conversation chaining support - extract response ID
-      providerResponseId: result?.id || null,
+      // Responses API conversation chaining support - use passed responseId parameter
+      providerResponseId: responseId || null,
       // CRITICAL FIX: Don't spread result directly - preserve structured data for explanationService
       // Instead, extract only the analysis fields needed for the response
       patternDescription: result?.patternDescription,

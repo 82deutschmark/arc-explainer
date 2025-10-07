@@ -80,7 +80,7 @@ export class GrokService extends BaseAIService {
 
       // Parse response using provider-specific method
       // CRITICAL: Pass captureReasoning=true to enable reasoning extraction
-      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } =
+      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason, responseId } =
         this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Validate response completeness
@@ -214,6 +214,7 @@ export class GrokService extends BaseAIService {
     status?: string;
     incomplete?: boolean;
     incompleteReason?: string;
+    responseId?: string;
   } {
 
     let result: any = {};
@@ -374,7 +375,8 @@ export class GrokService extends BaseAIService {
       reasoningItems,
       status,
       incomplete,
-      incompleteReason
+      incompleteReason,
+      responseId: response.id || null
     };
   }
 

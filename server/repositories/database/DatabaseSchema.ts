@@ -256,6 +256,14 @@ export class DatabaseSchema {
       ADD COLUMN IF NOT EXISTS custom_prompt_text TEXT DEFAULT NULL;
     `);
 
+    // Migration: Add Responses API conversation chaining columns
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS provider_response_id TEXT DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS provider_raw_response JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS reasoning_items JSONB DEFAULT NULL;
+    `);
+
     // Migration: Add 'updated_at' to 'batch_analysis_sessions'
     await client.query(`ALTER TABLE batch_analysis_sessions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;`);
 
