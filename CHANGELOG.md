@@ -1,5 +1,108 @@
 ## [2025-10-07]
 
+## v3.7.1 - CRITICAL FIX + Live Activity Log with Validation Results
+
+### Fixed
+- **CRITICAL: formatResponse is not a function (500 errors on all batch endpoints)**
+  - **Problem:** batchController.ts called `formatResponse(data, msg, success)` as a function
+  - **Root Cause:** responseFormatter.ts exports an OBJECT with `formatResponse.success()` and `formatResponse.error()` methods
+  - **Impact:** ALL batch API endpoints returned 500 errors, batch analysis completely broken
+  - **Solution:** Fixed all 20+ incorrect calls in batchController.ts to use correct format
+  - Files: `server/controllers/batchController.ts`
+
+### Added
+- **Live Activity Log with Validation Results**
+  - **NEW:** Terminal-style activity log showing real-time batch analysis events
+  - **Validation Display:** Shows ✓ CORRECT or ✗ INCORRECT for each puzzle with processing time
+  - **Error Details:** Failed puzzles show specific error messages
+  - **Session Events:** Logs startup, pause, resume, completion with status
+  - **Color-Coded:** Info (blue), Success (green), Error (red), Warning (amber)
+  - **Auto-Scroll:** Automatically scrolls to latest activity
+  - Files: `client/src/components/batch/BatchActivityLog.tsx` (NEW)
+
+- **Backend Activity Logging Infrastructure**
+  - **NEW:** `ActivityLogEntry` interface (timestamp, type, message, puzzleId)
+  - **NEW:** `activityLog[]` array in `BatchSession` type
+  - **NEW:** `logActivity()` helper function with 200-entry limit
+  - **Logs Created For:**
+    - Session startup: Model, dataset, resume status
+    - Puzzle start: `⚡ Analyzing puzzle: 0934a4d8`
+    - Puzzle success: `✓ 0934a4d8: CORRECT (26s)` or `✗ 0934a4d8: INCORRECT (32s)`
+    - Puzzle failure: `❌ 0934a4d8: FAILED - Timeout error (45s)`
+    - Pause: `⏸️ Batch analysis paused at 15/120`
+    - Resume: `▶️ Batch analysis resumed from 15/120`
+    - Completion: `✅ Batch analysis completed - 95/120 successful`
+  - Files: `server/controllers/batchController.ts`
+
+- **"Now Analyzing" Real-Time Indicator**
+  - **NEW:** Blue pulsing alert banner showing current puzzle being analyzed
+  - Displays puzzle ID in monospace code block
+  - Appears above activity log during batch processing
+  - Files: `client/src/pages/ModelBrowser.tsx`
+
+- **Browser Console Logging**
+  - **NEW:** Detailed logging in browser DevTools console
+  - Logs every 2 seconds during batch run
+  - Shows: progress, successful/failed counts, percentage, current puzzle
+  - Format: `[BATCH] { progress: "15/120", successful: 12, failed: 3, ... }`
+  - Files: `client/src/hooks/useBatchAnalysis.ts`
+
+### Enhanced
+- **ModelBrowser UI Layout**
+  - Added "Now Analyzing" banner (blue, pulsing icon)
+  - Added "Live Activity Log" card (400px terminal-style display)
+  - Logs show during batch run, hidden when idle
+  - Files: `client/src/pages/ModelBrowser.tsx`
+
+- **Batch Status API Response**
+  - Now includes `activityLog[]` in GET /api/batch/status/:sessionId
+  - Frontend receives full activity history with each status poll
+  - Files: `server/controllers/batchController.ts`
+
+### Technical Details
+**Activity Log Format:**
+```typescript
+interface ActivityLogEntry {
+  timestamp: Date;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+  puzzleId?: string;
+}
+```
+
+**Terminal-Style UI:**
+- Background: `bg-gray-950` (dark terminal theme)
+- Font: Monospace for console feel
+- Timestamps: `[HH:MM:SS]` format
+- Auto-scroll: Scrolls to bottom on new entries
+- Limit: Last 200 entries kept in memory
+
+**Console Logging:**
+```javascript
+[BATCH] { progress: "15/120", successful: 12, failed: 3, status: "running", percentage: "13%" }
+[BATCH] ⚡ Currently analyzing: 0934a4d8
+[BATCH] Latest: ✓ 0934a4d8: CORRECT (26s)
+```
+
+### User Experience
+Users now see exactly what's happening:
+1. ✅ **Live Activity Feed** - Terminal-style log with validation results
+2. ✅ **Current Puzzle Indicator** - Pulsing banner showing active puzzle
+3. ✅ **Validation Results** - ✓ CORRECT or ✗ INCORRECT per puzzle
+4. ✅ **Error Details** - Specific error messages for failures
+5. ✅ **Performance Metrics** - Processing time per puzzle
+6. ✅ **Browser Console** - Detailed debugging in DevTools
+
+### Files Created
+- `client/src/components/batch/BatchActivityLog.tsx` - Activity log UI component
+
+### Files Modified
+- `server/controllers/batchController.ts` - Fixed formatResponse, added activity logging
+- `client/src/hooks/useBatchAnalysis.ts` - Added types, console logging
+- `client/src/pages/ModelBrowser.tsx` - Activity log + current puzzle indicator
+
+---
+
 ## v3.7.0 - Batch Analysis Web UI with Pause/Resume and Auto-Recovery
 
 ### Added
