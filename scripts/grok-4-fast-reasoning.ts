@@ -37,9 +37,9 @@ const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 // Grok-4-Fast-Reasoning model to use for analysis
 const GROK_MODEL = 'grok-4-fast-reasoning';
 
-// Timeout per puzzle in milliseconds (10 minutes for Grok-4-fast-reasoning - moderate speed)
-// Based on model config: responseTime: { speed: 'moderate', estimate: '1-2 min' }
-const PUZZLE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes (allowing buffer beyond estimate)
+// Timeout per puzzle in milliseconds (60 minutes for Grok-4-fast-reasoning)
+// Reasoning models can take 30-40+ minutes, need generous timeout
+const PUZZLE_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes (reasoning models can be slow)
 
 // Delay between triggering concurrent analyses
 const TRIGGER_DELAY_MS = 2000; // 2 seconds
