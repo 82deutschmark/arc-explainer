@@ -3,9 +3,10 @@
  * Date: 2025-10-07
  * PURPOSE: Batch analysis UI for running models against puzzle datasets with pause/resume.
  *          Provides model selection, dataset selection, and real-time progress tracking.
- *          Uses existing ExaminerControls and ExaminerProgress components.
+ *          MODERNIZED UI: Now uses ClickablePuzzleBadge grid, ToggleGroup filtering, and card-based
+ *          results display (like AnalyticsOverview). Reuses proven components for consistency.
  *
- * SRP and DRY check: Pass - Single responsibility: batch analysis UI orchestration
+ * SRP and DRY check: Pass - Reuses ClickablePuzzleBadge, ToggleGroup, BatchActivityLog
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
@@ -14,13 +15,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { Database, Sparkles, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Database, Sparkles, AlertCircle, Filter, CheckCircle, XCircle } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import ExaminerControls from '@/components/model-examiner/ExaminerControls';
 import ExaminerProgress from '@/components/model-examiner/ExaminerProgress';
-import { BatchResultsTable } from '@/components/batch/BatchResultsTable';
 import { BatchActivityLog } from '@/components/batch/BatchActivityLog';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
 
 // Model configurations for batch analysis
@@ -42,6 +46,7 @@ const DATASETS = [
 export default function ModelBrowser() {
   const [selectedModel, setSelectedModel] = useState<string>('grok-4-fast-reasoning');
   const [selectedDataset, setSelectedDataset] = useState<'arc1' | 'arc2'>('arc2');
+  const [correctnessFilter, setCorrectnessFilter] = useState<'all' | 'correct' | 'incorrect'>('all');
 
   const {
     sessionId,
@@ -83,6 +88,34 @@ export default function ModelBrowser() {
       eta: 0 // Could calculate from current progress if needed
     }
   } : null;
+
+  // Get completed results for display
+  const completedResults = React.useMemo(() =>
+    status?.results.filter(r => r.status === 'success' || r.status === 'failed') || []
+  , [status?.results]);
+
+  // Filter completed results by correctness
+  const filteredResults = React.useMemo(() => {
+    if (correctnessFilter === 'all') {
+      return completedResults;
+    }
+    return completedResults.filter(r => {
+      if (correctnessFilter === 'correct') {
+        return r.correct === true;
+      } else {
+        return r.correct === false || r.correct === null || r.correct === undefined;
+      }
+    });
+  }, [completedResults, correctnessFilter]);
+
+  // Calculate stats
+  const correctCount = React.useMemo(() =>
+    completedResults.filter(r => r.correct === true).length
+  , [completedResults]);
+
+  const incorrectCount = React.useMemo(() =>
+    completedResults.filter(r => r.correct === false).length
+  , [completedResults]);
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -214,17 +247,146 @@ export default function ModelBrowser() {
         </Card>
       )}
 
-      {/* Results Table */}
-      {status && status.results.length > 0 && (
+      {/* Results Section - Modern UI with badges and cards */}
+      {completedResults.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Analysis Results</CardTitle>
             <CardDescription>
-              Detailed results showing correct/incorrect predictions for each puzzle
+              Click any puzzle badge to view full analysis, or expand cards for details
             </CardDescription>
           </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Summary Grid */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-4 bg-green-50 rounded border border-green-200">
+                <div className="text-3xl font-bold text-green-700">{correctCount}</div>
+                <div className="text-sm text-green-600">Correct</div>
+              </div>
+              <div className="text-center p-4 bg-red-50 rounded border border-red-200">
+                <div className="text-3xl font-bold text-red-700">{incorrectCount}</div>
+                <div className="text-sm text-red-600">Incorrect</div>
+              </div>
+              <div className="text-center p-4 bg-blue-50 rounded border border-blue-200">
+                <div className="text-3xl font-bold text-blue-700">{completedResults.length}</div>
+                <div className="text-sm text-blue-600">Total</div>
+              </div>
+            </div>
+
+            {/* Clickable Puzzle Badge Grid */}
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Completed Puzzles (Click to View)</Label>
+              <div className="grid grid-cols-6 gap-2">
+                {completedResults.map(r => (
+                  <ClickablePuzzleBadge
+                    key={r.puzzleId}
+                    puzzleId={r.puzzleId}
+                    variant={r.correct ? 'success' : 'error'}
+                  />
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Detailed Results with Filtering */}
+      {completedResults.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Detailed Results</CardTitle>
+                <CardDescription>
+                  Filter and browse completed analyses
+                </CardDescription>
+              </div>
+
+              {/* Correctness Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <ToggleGroup
+                  type="single"
+                  value={correctnessFilter}
+                  onValueChange={(value) => setCorrectnessFilter(value as 'all' | 'correct' | 'incorrect' || 'all')}
+                  className="bg-white border border-gray-200 rounded-md"
+                >
+                  <ToggleGroupItem value="all" className="text-xs px-3 py-1">
+                    All ({completedResults.length})
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="correct" className="text-xs px-3 py-1 text-green-700 data-[state=on]:bg-green-100">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Correct ({correctCount})
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="incorrect" className="text-xs px-3 py-1 text-red-700 data-[state=on]:bg-red-100">
+                    <XCircle className="h-3 w-3 mr-1" />
+                    Incorrect ({incorrectCount})
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </div>
+          </CardHeader>
           <CardContent>
-            <BatchResultsTable results={status.results} />
+            <div className="space-y-2">
+              {filteredResults.map((result) => (
+                <Card key={result.puzzleId} className="hover:shadow-sm transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <ClickablePuzzleBadge
+                          puzzleId={result.puzzleId}
+                          variant={result.correct ? 'success' : 'error'}
+                          className="font-mono"
+                        />
+                        {result.correct ? (
+                          <div className="flex items-center gap-1 text-green-700">
+                            <CheckCircle className="h-4 w-4" />
+                            <span className="text-sm font-medium">Correct</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-red-700">
+                            <XCircle className="h-4 w-4" />
+                            <span className="text-sm font-medium">Incorrect</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        {result.processingTimeMs && (
+                          <span>{(result.processingTimeMs / 1000).toFixed(1)}s</span>
+                        )}
+                        {result.analysisId && (
+                          <Badge variant="outline" className="text-xs">
+                            Analysis #{result.analysisId}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    {result.error && (
+                      <div className="mt-2 text-xs text-red-600">
+                        Error: {result.error}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredResults.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Filter className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                <p>
+                  No {correctnessFilter === 'correct' ? 'correct' : 'incorrect'} results found.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => setCorrectnessFilter('all')}
+                >
+                  Show All Results
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
