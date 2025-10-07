@@ -16,7 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { MessageSquare, Filter, CheckCircle, XCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { MessageSquare, Filter, CheckCircle, XCircle, Brain, AlertTriangle, Sparkles } from 'lucide-react';
 
 // Reuse existing components
 import { AnalysisResultListCard } from '@/components/puzzle/AnalysisResultListCard';
@@ -42,6 +43,7 @@ interface ExplanationsListProps {
   showDebateButton?: boolean;
   title?: string;
   subtitle?: string;
+  pageContext?: 'debate' | 'discussion'; // New: Determines UI text and warnings
 }
 
 export const ExplanationsList: React.FC<ExplanationsListProps> = ({
@@ -52,9 +54,35 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
   onCorrectnessFilterChange,
   onStartDebate,
   showDebateButton = true,
-  title = "Explanations Available for Debate",
-  subtitle = "Browse existing explanations and start debates on incorrect ones"
+  title,
+  subtitle,
+  pageContext = 'debate' // Default to debate context for backward compatibility
 }) => {
+  // Context-specific defaults
+  const defaultTitle = pageContext === 'discussion'
+    ? "Select Analysis to Refine"
+    : "Explanations Available for Debate";
+
+  const defaultSubtitle = pageContext === 'discussion'
+    ? "Choose an explanation to refine through progressive reasoning with full memory"
+    : "Browse existing explanations and start debates on incorrect ones";
+
+  const displayTitle = title || defaultTitle;
+  const displaySubtitle = subtitle || defaultSubtitle;
+
+  // Helper: Identify reasoning models (same logic as PuzzleDiscussion)
+  const isReasoningModel = (modelName: string): boolean => {
+    const normalizedModel = modelName.toLowerCase();
+    return normalizedModel.includes('gpt-5') ||
+           normalizedModel.includes('o3') ||
+           normalizedModel.includes('o4') ||
+           normalizedModel.includes('grok-4');
+  };
+
+  // Check if any explanations use non-reasoning models (for discussion context)
+  const hasNonReasoningModels = pageContext === 'discussion' &&
+    explanations.some(e => !isReasoningModel(e.modelName));
+
   // Filter explanations based on correctness (use shared correctness logic!)
   const filteredExplanations = useMemo(() => {
     if (correctnessFilter === 'all') {
@@ -78,21 +106,63 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              {title}
-              <Badge variant="outline" className="ml-2">
-                {filteredExplanations.length} of {explanations.length}
-              </Badge>
-            </CardTitle>
-            <p className="text-sm text-gray-600 mt-1">
-              {subtitle}
-            </p>
-          </div>
+    <>
+      {/* Reasoning Persistence Alert (Discussion Context Only) */}
+      {pageContext === 'discussion' && (
+        <div className="mb-4 space-y-3">
+          <Alert className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300">
+            <Brain className="h-5 w-5 text-purple-600" />
+            <AlertDescription>
+              <div className="space-y-2">
+                <div className="font-semibold text-purple-900">
+                  <Sparkles className="h-4 w-4 inline mr-1" />
+                  Progressive Reasoning with Full Memory
+                </div>
+                <p className="text-sm text-purple-800">
+                  When you select an explanation below, the model will refine its own analysis across multiple turns.
+                  All reasoning tokens are stored server-side (30-day retention) and automatically retrieved
+                  on subsequent turns - no token cost for accessing previous reasoning.
+                </p>
+                <div className="flex gap-2 text-xs">
+                  <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                    Server-Side Storage
+                  </Badge>
+                  <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                    Full Context Retention
+                  </Badge>
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+
+          {hasNonReasoningModels && (
+            <Alert className="bg-amber-50 border-amber-300">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-900">
+                <strong>Model Compatibility:</strong> For best results with reasoning persistence,
+                use OpenAI GPT-5, o-series (o3, o4, o4-mini) or xAI Grok-4 models.
+                Other models in this list may not support server-side reasoning storage.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      )}
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                {displayTitle}
+                <Badge variant="outline" className="ml-2">
+                  {filteredExplanations.length} of {explanations.length}
+                </Badge>
+              </CardTitle>
+              <p className="text-sm text-gray-600 mt-1">
+                {displaySubtitle}
+              </p>
+            </div>
 
           {/* Correctness Filter - reused from PuzzleExaminer */}
           <div className="flex items-center gap-2">
@@ -171,5 +241,6 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
         )}
       </CardContent>
     </Card>
+    </>
   );
 };

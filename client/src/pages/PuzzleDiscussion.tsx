@@ -387,6 +387,7 @@ export default function PuzzleDiscussion() {
           correctnessFilter={debateState.correctnessFilter}
           onCorrectnessFilterChange={debateState.setCorrectnessFilter}
           onStartDebate={handleStartConversation}
+          pageContext="discussion"
         />
       ) : (
         <Card>
