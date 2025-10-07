@@ -15,7 +15,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { MessageSquare, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, ArrowRight, ChevronDown, ChevronUp, Brain } from 'lucide-react';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ARCExample, ModelConfig } from '@shared/types';
@@ -82,6 +82,29 @@ export const OriginalExplanationCard: React.FC<OriginalExplanationCardProps> = (
           <p className="text-xs text-gray-700 mt-2 line-clamp-2">
             {briefSummary}
           </p>
+
+          {/* Reasoning Token Display */}
+          {explanation.reasoningTokens && explanation.reasoningTokens > 0 && (
+            <div className="bg-purple-50 border border-purple-200 rounded p-3 mt-3">
+              <div className="flex items-center gap-2">
+                <Brain className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-semibold text-purple-900">
+                  Reasoning Tokens: {explanation.reasoningTokens.toLocaleString()}
+                </span>
+              </div>
+              <div className="mt-2">
+                <div className="w-full bg-purple-200 rounded-full h-2">
+                  <div
+                    className="bg-purple-600 h-2 rounded-full transition-all"
+                    style={{ width: `${Math.min((explanation.reasoningTokens / 100000) * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-purple-600 mt-1">
+                  Reasoning depth: {Math.round((explanation.reasoningTokens / 1000))}k tokens preserved on server
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Toggle button */}
           <CollapsibleTrigger asChild>

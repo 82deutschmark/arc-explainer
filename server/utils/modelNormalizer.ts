@@ -10,12 +10,12 @@
 
 /**
  * Normalize a model name to its base form for analytics consistency
- * 
+ *
  * Common normalizations:
  * - Remove :free suffixes (z-ai/glm-4.5-air:free → z-ai/glm-4.5-air)
- * - Remove :beta, :alpha suffixes
+ * - Remove :beta, :alpha, -beta, -alpha suffixes
  * - Handle version variations
- * 
+ *
  * @param modelName - The original model name from the database
  * @returns Normalized model name for analytics grouping
  */
@@ -27,14 +27,24 @@ export function normalizeModelName(modelName: string): string {
   let normalized = modelName.trim();
 
   // Remove common suffixes that don't affect the core model identity
+  // Handle both colon-style (:free) and hyphen-style (-alpha) suffixes
   normalized = normalized.replace(/:free$/, '');
   normalized = normalized.replace(/:beta$/, '');
   normalized = normalized.replace(/:alpha$/, '');
-  
-  // Handle specific GLM case: z-ai/glm-4.5-air:free → z-ai/glm-4.5
+  normalized = normalized.replace(/-beta$/, '');
+  normalized = normalized.replace(/-alpha$/, '');
+
+  // Handle specific model name aliases and variants
+
+  // GLM case: z-ai/glm-4.5-air:free → z-ai/glm-4.5
   // This maps the air variant to the base GLM 4.5 model
   if (normalized.startsWith('z-ai/glm-4.5-air')) {
     normalized = 'z-ai/glm-4.5';
+  }
+
+  // Sonoma-sky was actually grok-4-fast under a different name
+  if (normalized === 'openrouter/sonoma-sky' || normalized.startsWith('openrouter/sonoma-sky')) {
+    normalized = 'x-ai/grok-4-fast';
   }
 
   return normalized;

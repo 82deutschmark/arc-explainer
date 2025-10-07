@@ -14,6 +14,7 @@
  */
 
 import OpenAI from "openai";
+import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
 const DEFAULT_PROMPT_ID = 'solver';
@@ -241,7 +242,7 @@ export class OpenAIService extends BaseAIService {
     } else {
     }
 
-    const request = {
+    const requestData = {
       model: modelName,
       input: messages,
       reasoning: reasoningConfig,
@@ -255,7 +256,7 @@ export class OpenAIService extends BaseAIService {
     };
 
 
-    return await this.callResponsesAPI(request, modelKey);
+    return await this.callResponsesAPI(requestData, modelKey);
   }
 
   protected parseProviderResponse(
@@ -436,7 +437,7 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  private async callResponsesAPI(request: any, modelKey: string): Promise<any> {
+  private async callResponsesAPI(requestData: any, modelKey: string): Promise<any> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY not configured");
@@ -445,13 +446,13 @@ export class OpenAIService extends BaseAIService {
 
     try {
       // Check if model supports structured JSON schema
-      const supportsStructuredOutput = !request.model.includes('gpt-5-chat-latest') && 
-                                       !request.model.includes('gpt-5-nano');
-      
+      const supportsStructuredOutput = !requestData.model.includes('gpt-5-chat-latest') &&
+                                       !requestData.model.includes('gpt-5-nano');
+
       // Prepare the request for OpenAI's Responses API
       const body = {
-        model: request.model,
-        input: Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }],
+        model: requestData.model,
+        input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
         ...(supportsStructuredOutput && {
           text: {
             format: {
@@ -462,25 +463,44 @@ export class OpenAIService extends BaseAIService {
             }
           }
         }),
-        reasoning: request.reasoning,
-        temperature: modelSupportsTemperature(modelKey) ? request.temperature : undefined,
+        reasoning: requestData.reasoning,
+        temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
         top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
         parallel_tool_calls: false,
         truncation: "auto",
-        previous_response_id: request.previous_response_id,
-        store: request.store !== false // Default to true unless explicitly set to false
+        previous_response_id: requestData.previous_response_id,
+        store: requestData.store !== false // Default to true unless explicitly set to false
       };
 
-      // Make the API call with 45-minute timeout
-      const response = await fetch('https://api.openai.com/v1/responses', {
+      // Create custom agent with extended timeouts for long reasoning model responses
+      // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
+      const agent = new Agent({
+        headersTimeout: 2700000,  // 45 minutes - wait for response headers
+        bodyTimeout: 2700000,      // 45 minutes - wait for response body
+        keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
+      });
+
+      // Make the API call using undici's request directly (supports dispatcher option)
+      const { statusCode, headers: responseHeaders, body: responseBody } = await undiciRequest('https://api.openai.com/v1/responses', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(2700000) // 45 minutes timeout
+        signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
+        dispatcher: agent  // Use custom agent with extended undici timeouts
       });
+
+      // Convert undici response to standard Response-like object
+      const responseText = await responseBody.text();
+      const response = {
+        ok: statusCode >= 200 && statusCode < 300,
+        status: statusCode,
+        statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
+        text: async () => responseText,
+        json: async () => JSON.parse(responseText)
+      };
 
       if (!response.ok) {
         const errorText = await response.text();

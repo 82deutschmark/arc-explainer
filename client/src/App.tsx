@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import PuzzleExaminer from "@/pages/PuzzleExaminer";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import AnalyticsOverview from "@/pages/AnalyticsOverview";
+import Leaderboards from "@/pages/Leaderboards";
 import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import KaggleReadinessValidation from "@/pages/KaggleReadinessValidation";
@@ -31,6 +32,7 @@ function Router() {
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
+        <Route path="/leaderboards" component={Leaderboards} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />

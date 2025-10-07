@@ -41,8 +41,8 @@ export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: Do not use any special c
 
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 
-- For single test cases: 
-  * "predictedOutput": your solution grid (2D array)
+- For single test cases:
+  * "predictedOutput": your solution grid as a 2D array where each row is an array of single integers 0-9. Example format: [[0,1,2],[3,4,5]] NOT [[[0,1],[2,3]]]
 
 - For multiple test cases:
   * "multiplePredictedOutputs": true (must be first field)
@@ -68,7 +68,13 @@ export const JSON_OUTPUT_INSTRUCTIONS = [
  * Prediction field instructions - used by many modes including solver and explanation modes
  * SINGLE DEFINITION - eliminates massive duplication
  */
-export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: Provide the output grid(s) as the first field in the JSON response.` 
+export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: Provide the output grid(s) as the first field in the JSON response.
+
+GRID FORMAT CRITICAL: Each grid must be a 2D array where:
+- The outer array contains rows
+- Each row is an array of single integers (0-9)
+- Example CORRECT: [[0,1,2],[3,4,5]]
+- Example WRONG: [[[0,1],[2,3]]] or [[0],[1],[2]]` 
 
 /**
  * Common task patterns for different prompt types  THIS SEEMS LIKE EXCESSIVE OVERKILL

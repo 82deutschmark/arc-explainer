@@ -113,7 +113,7 @@ saturn_events - jsonb  // Only used by Saturn Visual Solver
 saturn_success - boolean  // Only used by Saturn Visual Solver
 predicted_output_grid - jsonb  // CRITICAL for the project!  This is the predicted output grid.
 is_prediction_correct - boolean  // This is evaluation 1 of 3 that should be used for `accuracy`!!!
-prediction_accuracy_score - double precision  // THIS IS THE `TRUSTWORTHINESS` SCORE
+trustworthiness_score - double precision  // THIS IS THE TRUSTWORTHINESS SCORE (how well AI confidence correlates with actual performance)
 provider_raw_response - jsonb
 reasoning_items - jsonb  // The structured, machine-readable version of the reasoning (e.g., an array of steps). This is safely stringified by the `ExplanationRepository` and stored as JSONB for use in complex UI or for detailed analysis.
 `temperature` - double precision  // should only be applied to certain models and providers and will not always be used
@@ -144,6 +144,63 @@ Centralized prompt building system (`server/services/promptBuilder.ts`):
 - Template-based prompts with dynamic selection
 - Custom prompt support for research workflows
 - Consistent behavior across all providers and OpenRouter (INCOMPLETE)
+
+### Responses API Conversation Chaining (v3.6.2+)
+**Feature**: Multi-turn conversations with full context retention  
+**Providers**: OpenAI (o-series), xAI (Grok-4)  
+**Database**: `provider_response_id` column stores response IDs  
+
+**How It Works:**
+1. Each AI response includes a unique `providerResponseId`
+2. Pass `previousResponseId` in next request to maintain context
+3. AI automatically accesses previous reasoning and responses
+4. 30-day server-side state retention (OpenAI/xAI)
+
+**API Usage:**
+```typescript
+POST /api/puzzle/analyze/:taskId/:model
+Body: {
+  previousResponseId: "resp_abc123", // From previous analysis
+  promptId: "solver",
+  temperature: 0.2
+}
+```
+
+**Debate Mode Integration:**
+Model Debate system automatically chains conversations with provider awareness:
+- `useDebateState.getLastResponseId(challengerModelKey)` - Gets last response ID (provider-aware)
+- `useDebateState.extractProvider(modelKey)` - Detects provider (openai, xai, etc.)
+- `useAnalysisResults` - Passes previousResponseId automatically
+- **Provider compatibility check**: Only chains if same provider (OpenAI → OpenAI, xAI → xAI)
+- Cross-provider debates start new chains automatically
+- Each same-provider turn builds on full conversation history
+- Models remember all previous arguments and rebuttals within provider scope
+
+**Provider Limitations:**
+- OpenAI response IDs only work with OpenAI models (GPT-4, o4, o3, o1)
+- xAI response IDs only work with xAI models (Grok-4, Grok-3)
+- Cross-provider conversations not supported by underlying APIs
+- System gracefully handles mismatches by starting fresh conversations
+
+**Documentation:**
+- `docs/API_Conversation_Chaining.md` - Complete usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical details
+- `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation
+
+**Self-Conversation Mode (PuzzleDiscussion):**
+Progressive reasoning refinement where one model refines its own analysis:
+- Same conversation chaining infrastructure as ModelDebate
+- Auto-locks to single model (Model A → Model A → Model A)
+- Each turn passes `previousResponseId` to maintain full reasoning context
+- Ideal for reasoning models (grok-4, o3, o4) to iteratively improve solutions
+- Reuses all ModelDebate components (IndividualDebate, ExplanationsList, RebuttalCard)
+- Access via `/discussion/:taskId` route
+
+**Use Cases:**
+- Deep-dive refinement with reasoning models
+- Iterative solution improvement
+- Progressive exploration of alternatives
+- Building progressively complex reasoning chains
 
 ### External API Documentation
 For external integrations, see:
@@ -292,53 +349,50 @@ app.get("*", (req, res) => {
 - **Template selection**: Supports solver, explanation, alien communication, educational, and custom modes
 
 
-### Endpoint difference
-All OpenAI models should be using Responses API, but OpenRouter and other providers still use Chat Completions.
-Chat Completions: /v1/chat/completions
+### Endpoint Differences
 
-Responses API: /v1/responses
+**Responses API** (`/v1/responses`):
+- **Used by**: OpenAI models (gpt-5, o3, o4) + xAI Grok-4 models (grok-4, grok-4-fast)
+- **Output location**: `output_text`, `output_parsed`, or `output[]` array
+- **Reasoning**:
+  - OpenAI: Available in `output_reasoning.summary` and `output_reasoning.items[]`
+  - xAI grok-4: **NOT available** (grok-4 does not expose reasoning per xAI docs)
+- **Token accounting**: Separate `reasoning_tokens` tracking
+- **Structured output**: JSON schema support via `text.format.json_schema`
 
-Output location
+**Chat Completions API** (`/v1/chat/completions`):
+- **Used by**: OpenRouter, Anthropic, Gemini, DeepSeek, xAI Grok-3 models (via OpenRouter)
+- **Output location**: `choices[0].message.content`
+- **Reasoning**:
+  - Grok-3-mini: Available in `choices[0].message.reasoning_content`
+  - Other models: Not available
+- **Token accounting**: Combined in `completion_tokens`
 
-Chat Completions: text lives in choices[0].message.content
+### Model Routing in aiServiceFactory
 
-Responses: visible answer lives in output_text or inside output[], reasoning lives in output_reasoning
+**Direct xAI API** (grok.ts):
+- `grok-4` → grokService (Responses API)
+- `grok-4-fast` → grokService (Responses API)
+- Future grok-4 variants will automatically route here
 
-Reasoning capture
+**Via OpenRouter** (openrouter.ts):
+- `x-ai/grok-3` → openrouterService (Chat Completions)
+- `x-ai/grok-3-mini` → openrouterService (Chat Completions)
+- `x-ai/grok-code-fast-1` → openrouterService (Chat Completions)
+- `x-ai/grok-3-mini-fast` → openrouterService (Chat Completions)
 
-Chat Completions: no structured reasoning, only free-form text if the model decides to include it
+### Important Notes on Grok Models
 
-Responses: dedicated output_reasoning.summary and output_reasoning.items[] fields
+**Grok-4 Limitations:**
+- ❌ Does NOT support `reasoning_effort` parameter
+- ❌ Does NOT return `reasoning_content` in responses
+- ✅ Supports Responses API with structured JSON output
+- ✅ Tracks reasoning tokens (but doesn't expose the reasoning itself)
 
-Token accounting
-
-Chat Completions: max_tokens controls the final answer only
-
-Responses: reasoning tokens and visible output tokens are separate; must set max_output_tokens or you risk only getting reasoning with no final text
-
-Streaming
-
-Chat Completions: stream only text deltas for choices[].delta.content
-
-Responses: streams both reasoning and output chunks, with separate message types (reasoning-summary, output_text, etc.)
-
-Chaining
-
-Chat Completions: manually manage conversation history
-
-Responses: use previous_response_id to continue reasoning chains without resending full history
-
-Parsing logic
-
-Chat Completions: simple—always look at choices[0].message.content
-
-Responses: must parse multiple top-level keys: output_text, output[], output_reasoning, response.id
-
-Failure modes
-
-Chat Completions: usually just truncates answer if token cap too small
-
-Responses: if misconfigured, you can get only reasoning and no visible reply, or nothing if your parser ignores output[]!!!  This might be where to start investigating.
+**Grok-3 Models:**
+- ✅ Support `reasoning_content` (grok-3-mini variants)
+- ✅ Use Chat Completions API only
+- ❌ Do NOT support Responses API
 
 ### Saturn Visual Solver Integration  (Can be ignored)
 - Python-based visual reasoning solver

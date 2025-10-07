@@ -33,6 +33,7 @@ interface UseAnalysisResultsProps {
   retryMode?: boolean; // Enhanced prompting for retry analysis
   originalExplanation?: any; // For debate mode
   customChallenge?: string; // For debate mode
+  previousResponseId?: string; // For conversation chaining
 }
 
 // Removed PendingAnalysis type - no longer using optimistic UI
@@ -45,6 +46,7 @@ export function useAnalysisResults({
   retryMode,
   originalExplanation,
   customChallenge,
+  previousResponseId,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
@@ -99,6 +101,8 @@ export function useAnalysisResults({
           // Debate mode context
           ...(originalExplanation ? { originalExplanation } : {}),
           ...(customChallenge ? { customChallenge } : {}),
+          // Conversation chaining support
+          ...(previousResponseId ? { previousResponseId } : {}),
           systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
           // GPT-5 reasoning parameters
           ...(effort ? { reasoningEffort: effort } : {}),

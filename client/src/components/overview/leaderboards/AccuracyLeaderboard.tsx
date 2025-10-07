@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-25
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-05
  * PURPOSE: Enhanced AccuracyLeaderboard Component for Model Failure Analysis
  *
  * Displays overconfident models - models with high confidence (≥80%) but poor accuracy (<50%).
@@ -12,15 +12,18 @@
  * - Shows overconfidence rates and risk levels
  * - Filters models with statistical significance (100+ attempts)
  * - Provides clear visual warnings for high-risk models
+ * - Tooltips explaining all metrics for user education
+ * - Sample size warnings for low-confidence statistics (<10 attempts)
  *
  * SRP and DRY check: Pass - Single responsibility for overconfident model display
- * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Icons)
+ * shadcn/ui: Pass - Uses shadcn/ui components (Card, Badge, Tooltip, Icons)
  */
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Shield, ShieldAlert, AlertCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertTriangle, Shield, ShieldAlert, AlertCircle, Info } from 'lucide-react';
 
 interface AccuracyStats {
   totalSolverAttempts: number;
@@ -218,29 +221,94 @@ export function AccuracyLeaderboard({
                       )}
                     </div>
                     <div className="text-xs text-gray-600">
-                      {model.totalAttempts} total • {model.totalOverconfidentAttempts} overconfident • {model.wrongOverconfidentPredictions} wrong
+                      {model.totalAttempts} total • {model.totalOverconfidentAttempts} overconfident • {model.wrongOverconfidentPredictions} incorrect
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-col sm:flex-row">
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs font-medium ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}
-                  >
-                    {model.overconfidenceRate.toFixed(1)}% wrong
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs font-medium ${getConfidenceColor(model.avgConfidence)}`}
-                  >
-                    {model.avgConfidence.toFixed(0)}% conf
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs font-medium ${getAccuracyColor(model.overallAccuracy)}`}
-                  >
-                    {model.overallAccuracy.toFixed(1)}% acc
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs font-medium cursor-help ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}
+                        >
+                          {model.overconfidenceRate.toFixed(1)}% overconf. incorrect
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Overconfidence Rate</strong>
+                          <br />
+                          {model.overconfidenceRate.toFixed(1)}% of high-confidence predictions (≥80%) were incorrect
+                          <br />
+                          ({model.wrongOverconfidentPredictions} incorrect / {model.totalOverconfidentAttempts} overconfident)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs font-medium cursor-help ${getConfidenceColor(model.avgConfidence)}`}
+                        >
+                          {model.avgConfidence.toFixed(0)}% conf
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Average Confidence</strong>
+                          <br />
+                          This model's average self-reported confidence across all attempts
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs font-medium cursor-help ${getAccuracyColor(model.overallAccuracy)}`}
+                        >
+                          {model.overallAccuracy.toFixed(1)}% acc
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Overall Accuracy</strong>
+                          <br />
+                          Percentage of puzzles solved correctly across all attempts
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {model.totalAttempts < 10 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                            <Info className="h-3 w-3 mr-1" />
+                            Low sample
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">
+                            <strong>Low Sample Size Warning</strong>
+                            <br />
+                            Only {model.totalAttempts} attempts - statistics may not be reliable
+                            <br />
+                            Recommended: 10+ attempts for confidence
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                 </div>
               </div>
             ))}
@@ -313,12 +381,49 @@ export function AccuracyLeaderboard({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge
-                  variant="secondary"
-                  className={`text-xs font-medium ${getAccuracyColor(model.accuracyPercentage)}`}
-                >
-                  {model.accuracyPercentage.toFixed(1)}%
-                </Badge>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs font-medium cursor-help ${getAccuracyColor(model.accuracyPercentage)}`}
+                      >
+                        {model.accuracyPercentage.toFixed(1)}%
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm">
+                        <strong>Accuracy Rate</strong>
+                        <br />
+                        {model.correctPredictions} correct / {model.totalAttempts} total attempts
+                        <br />
+                        = {model.accuracyPercentage.toFixed(1)}% success rate
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {model.totalAttempts < 10 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
+                          <Info className="h-3 w-3 mr-1" />
+                          Low sample
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          <strong>Low Sample Size Warning</strong>
+                          <br />
+                          Only {model.totalAttempts} attempts - statistics may not be reliable
+                          <br />
+                          Recommended: 10+ attempts for confidence
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             </div>
           ))}

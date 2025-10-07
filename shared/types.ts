@@ -559,7 +559,7 @@ export interface ModelConfig {
   apiModelName: string;
   modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
   contextWindow?: number;
-  maxOutputTokens?: number; // Only used for Anthropic models
+  maxOutputTokens?: number; // Only used for some models
   releaseDate?: string; // Release date in YYYY-MM format
   supportsFunctionCalling?: boolean;
   supportsSystemPrompts?: boolean;

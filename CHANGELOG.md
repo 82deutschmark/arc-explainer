@@ -1,3 +1,337 @@
+## [2025-10-06]
+
+## v3.6.2 - Responses API Conversation Chaining (Complete Implementation)
+
+### Fixed
+- **Responses API Conversation Chaining Data Loss**
+  - Added `providerResponseId` field to `AIResponse` interface
+  - Updated `buildStandardResponse()` to extract and pass through `result.id`
+  - Root cause: Both grok.ts and openai.ts captured response.id, but buildStandardResponse() never included it in final AIResponse object
+  - Impact: `provider_response_id` now properly saved to database for all analyses
+  - Files: `server/services/base/BaseAIService.ts` (lines 62, 263)
+
+### Added
+- **API Endpoint Support for Conversation Chaining**
+  - Added `previousResponseId` parameter to `/api/puzzle/analyze/:taskId/:model` endpoint
+  - Enables multi-turn conversations with full context retention
+  - Pass-through implementation: Controller → AnalysisService → AI Service → API
+  - Files: 
+    - `server/controllers/puzzleController.ts` (line 78) - Request body extraction
+    - `server/services/puzzleAnalysisService.ts` (lines 50, 83, 117) - Service orchestration
+  
+- **Complete API Documentation**
+  - Created comprehensive conversation chaining guide
+  - Includes usage examples, error handling, best practices
+  - Documents provider support (OpenAI, xAI) and limitations
+  - File: `docs/API_Conversation_Chaining.md`
+
+### Technical Details
+
+**Problem:**
+```typescript
+// API Response → parsedResponse.id = result.id  ✅ (grok.ts:504, openai.ts:538)
+// parseProviderResponse() → returns result with .id  ✅
+// buildStandardResponse() → AIResponse object  ❌ Missing providerResponseId
+// Repository.create() → saves NULL to database  ❌
+```
+
+**Solution:**
+```typescript
+// 1. Added field to AIResponse interface (line 62):
+providerResponseId?: string | null;
+
+// 2. Extracted response.id in buildStandardResponse() (line 263):
+providerResponseId: result?.id || null,
+```
+
+**Impact:**
+- ✅ Enables conversation chaining via `previous_response_id` parameter
+- ✅ Supports iterative puzzle refinement workflows
+- ✅ Enables debate mode with full conversation context
+- ✅ Allows conversation forking for exploration workflows
+- ✅ Maintains 30-day server-side state for OpenAI/xAI models
+
+**Conversation Chaining Features Now Available:**
+- Multi-turn puzzle analysis with full context
+- Automatic access to previous reasoning items
+- Server-side encrypted reasoning storage (30 days)
+- Conversation branching and forking
+- Iterative puzzle refinement workflows
+- Enhanced debate mode with conversation history
+
+### Files Modified
+- `server/services/base/BaseAIService.ts` - Added providerResponseId field and pass-through
+- `server/controllers/puzzleController.ts` - Added previousResponseId parameter
+- `server/services/puzzleAnalysisService.ts` - Added conversation chaining support
+- `docs/API_Conversation_Chaining.md` - NEW: Complete API documentation
+
+### API Usage Example
+```bash
+# Request 1: Initial analysis
+curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
+  -H "Content-Type: application/json" \
+  -d '{"promptId": "solver"}'
+
+# Response 1: {"providerResponseId": "resp_abc123"}
+
+# Request 2: Follow-up with context
+curl -X POST "/api/puzzle/analyze/00d62c1b/openai%2Fo4-mini" \
+  -H "Content-Type: application/json" \
+  -d '{"promptId": "solver", "previousResponseId": "resp_abc123"}'
+```
+
+### Debate Mode Integration ⭐ NEW
+Model Debate system now uses conversation chaining automatically:
+- Each debate turn includes full context from previous turns
+- Models remember all previous arguments and rebuttals
+- **Provider-aware chaining**: Automatically detects OpenAI vs xAI models
+- Cross-provider debates start new chains (no context loss, just new conversation)
+- No manual response ID management needed
+- Files: `client/src/pages/ModelDebate.tsx`, `client/src/hooks/debate/useDebateState.ts`, `client/src/hooks/useAnalysisResults.ts`
+
+### Provider Compatibility ⚠️ IMPORTANT
+Conversation chaining is provider-specific:
+- ✅ OpenAI models (GPT-4, o4-mini, o3, o1) can chain with each other
+- ✅ xAI models (Grok-4, Grok-3) can chain with each other  
+- ⚠️ Cross-provider debates (GPT → Grok or Grok → GPT) start fresh conversations
+- Response IDs are not compatible across providers (OpenAI IDs ≠ xAI IDs)
+- System automatically handles this via provider detection in `useDebateState.extractProvider()`
+
+### Related Documentation
+- `docs/API_Conversation_Chaining.md` - Complete API usage guide with debate examples
+- `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation plan
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical analysis and implementation details
+- `CLAUDE.md` - Updated with conversation chaining architecture
+
+---
+
+## v3.6.1 - Critical Variable Shadowing Fix + Responses API Chain Analysis
+
+### Fixed
+- **Variable Shadowing Bug in Responses API Services**
+  - Fixed `request is not a function` TypeError in Grok and OpenAI services
+  - Root cause: Imported `request` from undici, then shadowed with local variables/parameters
+  - Renamed import to `undiciRequest`, local vars to `requestData`
+  - Affected: grok.ts (lines 27, 394, 407, 450), openai.ts (lines 17, 245, 440, 484)
+  - Files: `server/services/grok.ts`, `server/services/openai.ts`
+
+- **OpenRouter Service Verified**
+  - Confirmed no variable shadowing bug (uses `request` directly without shadowing)
+  - Extended timeout implementation from commit 285d496 works correctly
+  - File: `server/services/openrouter.ts`
+
+### Added
+- **Comprehensive Responses API Chain Analysis**
+  - Researched OpenAI and xAI conversation chaining with `previous_response_id`
+  - Documented encrypted reasoning storage and 30-day retention
+  - Identified implementation gap: `providerResponseId` captured but not passed through
+  - Analysis shows database ready, API calls correct, but `buildStandardResponse()` missing field
+  - File: `docs/Responses_API_Chain_Storage_Analysis.md`
+
+### Technical Details
+
+**Variable Shadowing Bug:**
+```javascript
+// BEFORE (broken):
+import { request } from "undici";        // Import function
+const request = { model: ... };          // Shadow with object
+await request('https://...');            // TypeError: request is not a function
+
+// AFTER (fixed):
+import { request as undiciRequest } from "undici";  // Aliased import
+const requestData = { model: ... };                 // Different name
+await undiciRequest('https://...');                 // ✅ Works
+```
+
+**Chain Storage Gap Identified:**
+1. ✅ Database has `provider_response_id` column
+2. ✅ grok.ts and openai.ts capture `result.id` from API responses
+3. ✅ Repository saves `data.providerResponseId` to database
+4. ❌ **BROKEN:** `AIResponse` interface missing `providerResponseId` field
+5. ❌ **BROKEN:** `buildStandardResponse()` doesn't pass through `result.id`
+
+**Impact:** Response IDs are captured but lost before database insertion, preventing conversation chaining features.
+
+**Responses API Chain Features (from research):**
+- `previous_response_id` enables multi-turn conversations with context
+- `store: true` enables server-side state persistence (30-day retention)
+- Automatic access to previous reasoning items in follow-up requests
+- Supports conversation forking and branching workflows
+- OpenAI fully documented, xAI implementation unclear but structure matches
+
+### Files Modified
+- `server/services/grok.ts` - Fixed variable shadowing bug
+- `server/services/openai.ts` - Fixed variable shadowing bug
+- `docs/Responses_API_Chain_Storage_Analysis.md` - New comprehensive analysis
+
+### Next Steps
+To enable conversation chaining:
+1. Add `providerResponseId?: string | null` to `AIResponse` interface
+2. Update `buildStandardResponse()` to include `providerResponseId: result?.id || null`
+3. Test that `provider_response_id` saves correctly to database
+4. Add API parameter for `previousResponseId` in analysis requests
+5. Implement UI for viewing and managing response chains
+
+---
+
+## v3.6.0 - Grok-4 Responses API Integration + Model Routing Cleanup
+
+### Fixed
+- **xAI Grok-4 API Integration**
+  - Fixed invalid `reasoning` configuration being sent to grok-4 models (not supported per xAI docs)
+  - Removed attempt to extract `reasoning_content` (grok-4 doesn't expose reasoning)
+  - Cleaned up grok.ts to only handle Grok-4 variants (grok-4, grok-4-fast)
+  - File: `server/services/grok.ts`
+
+- **Model Routing Architecture**
+  - Moved Grok-3 models to OpenRouter (use Chat Completions API)
+  - Updated 4 model entries: x-ai/grok-3, x-ai/grok-3-mini, x-ai/grok-code-fast-1, x-ai/grok-3-mini-fast
+  - Clear separation: grok.ts = Grok-4 (Responses API), openrouter.ts = Grok-3 (Chat Completions)
+  - File: `server/config/models.ts`
+
+- **Trustworthiness Leaderboard Filtering**
+  - Applied minimum 20 attempts filter to trustworthiness leaderboard
+  - Ensures statistical significance in displayed rankings
+  - File: `server/controllers/puzzleController.ts`
+
+- **Leaderboards Page Layout**
+  - Removed padding and width constraints for full-viewport display
+  - Changed from `p-4 max-w-7xl` to full-width layout
+  - File: `client/src/pages/Leaderboards.tsx`
+
+### Enhanced
+- **Documentation Updates**
+  - Added comprehensive xAI/Grok API differences section in CLAUDE.md
+  - Documented Responses API vs Chat Completions API differences
+  - Explained grok-4 limitations (no reasoning_effort, no reasoning_content)
+  - Documented model routing logic for grok-4 vs grok-3
+  - Created detailed plan document: `docs/06102025-Grok4-ResponsesAPI-Fix.md`
+  - File: `CLAUDE.md`
+
+### Technical Details
+- **Grok-4 API Behavior** (per xAI docs):
+  - ❌ Does NOT support `reasoning_effort` parameter
+  - ❌ Does NOT return `reasoning_content` in responses
+  - ✅ Supports Responses API with structured JSON output
+  - ✅ Tracks reasoning tokens (but doesn't expose the reasoning itself)
+
+- **Model Separation Strategy**:
+  - Grok-4 models (grok-4, grok-4-fast) → Direct xAI API via grok.ts
+  - Grok-3 models (all variants) → OpenRouter via openrouter.ts
+  - Future grok-4 variants will automatically route to grok.ts
+
+### Files Modified
+- `server/services/grok.ts` - Removed grok-3 support, fixed reasoning config
+- `server/config/models.ts` - Updated grok-3 models to use OpenRouter
+- `server/controllers/puzzleController.ts` - Added min attempts filter
+- `client/src/pages/Leaderboards.tsx` - Full-width layout
+- `CLAUDE.md` - Updated API documentation
+- `docs/06102025-Grok4-ResponsesAPI-Fix.md` - Implementation plan
+
+---
+
+## [2025-10-05]
+
+## v3.5.4 - Enhanced Leaderboards with Data Quality Indicators
+
+### Added
+- **Dedicated Leaderboards Page** (`/leaderboards`)
+  - New standalone page for comprehensive model performance analysis
+  - Three leaderboards: Overconfident Models, Trustworthiness Leaders, Feedback Analysis
+  - Metrics explanation panel for user education
+  - Clean, focused interface without clutter
+  - Route added to App.tsx
+  - File: `client/src/pages/Leaderboards.tsx`
+
+- **Tooltip System for All Metrics**
+  - AccuracyLeaderboard: Tooltips for overconfidence rate, confidence, accuracy
+  - TrustworthinessLeaderboard: Tooltips for trustworthiness score, processing time, cost
+  - FeedbackLeaderboard: Tooltips for helpful percentage and feedback counts
+  - Uses shadcn/ui Tooltip component for consistent UX
+  - Hover over any metric badge to see detailed explanation
+
+- **Sample Size Warnings**
+  - Visual warnings for models with <10 attempts (yellow badge with Info icon)
+  - Prevents misleading conclusions from insufficient data
+  - Tooltip explains why sample size matters
+  - Applied across all three leaderboard components
+
+### Enhanced
+- **AccuracyLeaderboard Component**
+  - Added tooltips to all metric badges (overconfidence rate, avg confidence, accuracy)
+  - Sample size warnings for models with <10 attempts
+  - Improved visual hierarchy with `cursor-help` on interactive elements
+  - Updated header comments and documentation
+  - File: `client/src/components/overview/leaderboards/AccuracyLeaderboard.tsx`
+
+- **TrustworthinessLeaderboard Component**
+  - Added tooltips for trustworthiness score explaining confidence reliability
+  - Tooltips for accuracy badges on overconfident models
+  - Sample size warnings integrated with overconfident model detection
+  - Updated imports and documentation
+  - File: `client/src/components/overview/leaderboards/TrustworthinessLeaderboard.tsx`
+
+- **FeedbackLeaderboard Component**
+  - Added tooltips for helpful percentage badges in both sections
+  - Sample size warnings for models with <10 feedback entries
+  - Applied to both "Most Appreciated" and "Most Criticized" sections
+  - Improved component header documentation
+  - File: `client/src/components/overview/leaderboards/FeedbackLeaderboard.tsx`
+
+### Impact
+- **Data Quality Transparency**: Users can now see when statistics may be unreliable
+- **User Education**: Tooltips explain complex metrics without cluttering the UI
+- **Better Decision Making**: Sample size warnings prevent over-reliance on low-confidence data
+- **Dedicated Space**: Leaderboards have their own page, reducing AnalyticsOverview complexity
+
+## v3.5.3 - Analytics Cleanup: Documentation & SQL Normalization
+
+### Fixed
+- **Documentation Accuracy** (Critical)
+  - Corrected CLAUDE.md line 116: `prediction_accuracy_score` doesn't exist in database
+  - Actual column name is `trustworthiness_score` (FLOAT)
+  - Clarified distinction between accuracy (boolean correctness) vs trustworthiness (confidence reliability)
+  - Removed misleading `prediction_accuracy_score` references from repository comments
+
+### Enhanced
+- **SQL Normalization Consistency**
+  - Updated AccuracyRepository inline SQL to match `modelNormalizer.ts` logic
+  - Updated TrustworthinessRepository inline SQL to match `modelNormalizer.ts` logic
+  - Added sonoma-sky → grok-4-fast alias mapping to SQL CASE statements
+  - Added `-beta` and `-alpha` suffix handling (previously only had `:beta`, `:alpha`)
+  - Added comments linking SQL normalization to modelNormalizer.ts utility
+  - Ensures database aggregation matches application-level normalization
+
+### Context
+- **Repository Clarity**
+  - AccuracyRepository: Pure puzzle-solving correctness (boolean fields: is_prediction_correct, multi_test_all_correct)
+  - TrustworthinessRepository: Confidence reliability (computed metric combining confidence + correctness)
+  - Each repository has single, well-defined responsibility (SRP compliant)
+
+## v3.5.2 - Model Name Normalization
+
+### Fixed
+- **Database Model Name Normalization** (Critical)
+  - Normalized 438 database records to remove version suffixes and consolidate model aliases
+  - Consolidated fragmented model statistics for accurate analytics
+  - Mappings applied:
+    - `x-ai/grok-4-fast:free` → `x-ai/grok-4-fast` (23 records)
+    - `openrouter/sonoma-sky-alpha` → `openrouter/sonoma-sky` → `x-ai/grok-4-fast` (64 records - sonoma-sky was actually grok-4-fast)
+    - `moonshotai/kimi-dev-72b:free` → `moonshotai/kimi-dev-72b` (153 records)
+    - `deepseek/deepseek-r1-0528:free` → `deepseek/deepseek-r1-0528` (112 records)
+    - `z-ai/glm-4.5-air:free` → `z-ai/glm-4.5` (22 records)
+  - Total: 87 records now consolidated under `x-ai/grok-4-fast` (23 + 64)
+  - Script: `server/scripts/normalize-model-names.ts`
+  - Author: Claude Code using Sonnet 4.5
+
+### Added
+- **Model Normalizer Enhancements**
+  - Added support for hyphen-style suffixes (`-alpha`, `-beta`)
+  - Previously only handled colon-style suffixes (`:alpha`, `:beta`, `:free`)
+  - Added model alias mapping: `openrouter/sonoma-sky` → `x-ai/grok-4-fast`
+  - Ensures consistent normalization across all repositories
+  - File: `server/utils/modelNormalizer.ts`
+
 ## [2025-10-04]
 
 ## v3.5.1 - Default Reasoning Effort Update
