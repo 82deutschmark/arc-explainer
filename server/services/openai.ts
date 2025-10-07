@@ -72,7 +72,7 @@ export class OpenAIService extends BaseAIService {
       
       // Parse response using provider-specific method
       // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
-      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
+      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason, responseId } = 
         this.parseProviderResponse(response, modelKey, true, taskId);
 
       // Validate response completeness
@@ -96,7 +96,8 @@ export class OpenAIService extends BaseAIService {
         incompleteReason || completeness.suggestion,
         promptPackage,
         promptId,
-        customPrompt
+        customPrompt,
+        responseId
       );
 
 
@@ -272,6 +273,7 @@ export class OpenAIService extends BaseAIService {
     status?: string;
     incomplete?: boolean;
     incompleteReason?: string;
+    responseId?: string;
   } {
 
     let result: any = {};
@@ -433,7 +435,8 @@ export class OpenAIService extends BaseAIService {
       reasoningItems,
       status,
       incomplete,
-      incompleteReason
+      incompleteReason,
+      responseId: response.id || null
     };
   }
 
