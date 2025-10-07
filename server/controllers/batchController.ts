@@ -19,6 +19,13 @@ import path from 'path';
 import axios from 'axios';
 
 // Types
+interface ActivityLogEntry {
+  timestamp: Date;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+  puzzleId?: string;
+}
+
 interface BatchSession {
   id: string;
   modelName: string;
@@ -33,6 +40,7 @@ interface BatchSession {
     percentage: number;
   };
   results: BatchPuzzleResult[];
+  activityLog: ActivityLogEntry[];
   startedAt: Date;
   completedAt?: Date;
   currentIndex: number;
@@ -124,6 +132,28 @@ async function getPuzzlesNeedingAnalysis(
  */
 function generateSessionId(): string {
   return `batch-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+}
+
+/**
+ * Add activity log entry to session
+ */
+function logActivity(
+  session: BatchSession,
+  type: 'info' | 'success' | 'error' | 'warning',
+  message: string,
+  puzzleId?: string
+): void {
+  session.activityLog.push({
+    timestamp: new Date(),
+    type,
+    message,
+    puzzleId
+  });
+
+  // Keep only last 200 entries to prevent memory issues
+  if (session.activityLog.length > 200) {
+    session.activityLog = session.activityLog.slice(-200);
+  }
 }
 
 /**
@@ -220,6 +250,9 @@ async function processBatchQueue(sessionId: string, options: BatchStartRequest):
     session.results[resultIndex].status = 'analyzing';
     session.results[resultIndex].startedAt = new Date();
 
+    // Log activity: Starting analysis
+    logActivity(session, 'info', `⚡ Analyzing puzzle: ${puzzleId}`, puzzleId);
+
     // Analyze puzzle
     const startTime = Date.now();
     const result = await analyzeSinglePuzzle(puzzleId, session.modelName, {
@@ -228,6 +261,7 @@ async function processBatchQueue(sessionId: string, options: BatchStartRequest):
       systemPromptMode: options.systemPromptMode
     });
     const endTime = Date.now();
+    const timeSeconds = Math.round((endTime - startTime) / 1000);
 
     // Update result
     session.results[resultIndex] = {
@@ -239,6 +273,25 @@ async function processBatchQueue(sessionId: string, options: BatchStartRequest):
       analysisId: result.analysisId,
       completedAt: new Date()
     };
+
+    // Log activity: Result with validation
+    if (result.success) {
+      const validationIcon = result.correct ? '✓' : '✗';
+      const validationText = result.correct ? 'CORRECT' : 'INCORRECT';
+      logActivity(
+        session,
+        'success',
+        `${validationIcon} ${puzzleId}: ${validationText} (${timeSeconds}s)`,
+        puzzleId
+      );
+    } else {
+      logActivity(
+        session,
+        'error',
+        `❌ ${puzzleId}: FAILED - ${result.error || 'Unknown error'} (${timeSeconds}s)`,
+        puzzleId
+      );
+    }
 
     // Update progress
     session.progress.completed++;
@@ -257,6 +310,7 @@ async function processBatchQueue(sessionId: string, options: BatchStartRequest):
   if (session.currentIndex >= session.puzzleIds.length) {
     session.status = 'completed';
     session.completedAt = new Date();
+    logActivity(session, 'success', `✅ Batch analysis completed - ${session.progress.successful}/${session.progress.total} successful`);
     logger.info(`Batch session ${sessionId} completed`);
   }
 }
@@ -277,7 +331,7 @@ export async function startBatch(req: Request, res: Response): Promise<void> {
     } = req.body as BatchStartRequest;
 
     if (!modelName) {
-      res.status(400).json(formatResponse(null, 'Model name is required', false));
+      res.status(400).json(formatResponse.error('VALIDATION_ERROR', 'Model name is required'));
       return;
     }
 
@@ -288,7 +342,7 @@ export async function startBatch(req: Request, res: Response): Promise<void> {
     } else if (dataset === 'arc1' || dataset === 'arc2') {
       allPuzzleIds = getPuzzleIdsFromDataset(dataset);
     } else {
-      res.status(400).json(formatResponse(null, 'Invalid dataset or puzzle IDs', false));
+      res.status(400).json(formatResponse.error('VALIDATION_ERROR', 'Invalid dataset or puzzle IDs'));
       return;
     }
 
@@ -300,10 +354,10 @@ export async function startBatch(req: Request, res: Response): Promise<void> {
     );
 
     if (toAnalyze.length === 0) {
-      res.status(200).json(formatResponse({
+      res.status(200).json(formatResponse.success({
         message: 'All puzzles already analyzed',
         alreadyAnalyzed: alreadyAnalyzed.length
-      }, 'No puzzles need analysis', true));
+      }, 'No puzzles need analysis'));
       return;
     }
 
@@ -326,10 +380,20 @@ export async function startBatch(req: Request, res: Response): Promise<void> {
         puzzleId,
         status: 'pending'
       })),
+      activityLog: [],
       startedAt: new Date(),
       currentIndex: 0,
       isPaused: false
     };
+
+    // Log session startup
+    logActivity(session, 'info', `🚀 Starting batch analysis`);
+    logActivity(session, 'info', `Model: ${modelName}`);
+    logActivity(session, 'info', `Dataset: ${dataset} (${allPuzzleIds.length} puzzles)`);
+    if (resume && alreadyAnalyzed.length > 0) {
+      logActivity(session, 'info', `Resume mode: Skipping ${alreadyAnalyzed.length} already analyzed`);
+    }
+    logActivity(session, 'info', `Queue: ${toAnalyze.length} puzzles to analyze`);
 
     // Mark already analyzed puzzles as skipped in results (for reference)
     const skippedResults: BatchPuzzleResult[] = alreadyAnalyzed.map(puzzleId => ({
@@ -351,18 +415,18 @@ export async function startBatch(req: Request, res: Response): Promise<void> {
       session.status = 'failed';
     });
 
-    res.status(200).json(formatResponse({
+    res.status(200).json(formatResponse.success({
       sessionId,
       totalPuzzles: allPuzzleIds.length,
       toAnalyze: toAnalyze.length,
       alreadyAnalyzed: alreadyAnalyzed.length,
       skippedPuzzles: skippedResults,
       status: 'running'
-    }, 'Batch analysis started', true));
+    }, 'Batch analysis started'));
 
   } catch (error: any) {
     logger.error('Error starting batch analysis:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_START_ERROR', error.message));
   }
 }
 
@@ -375,25 +439,26 @@ export async function getBatchStatus(req: Request, res: Response): Promise<void>
     const session = activeSessions.get(sessionId);
 
     if (!session) {
-      res.status(404).json(formatResponse(null, 'Session not found', false));
+      res.status(404).json(formatResponse.error('NOT_FOUND', 'Session not found'));
       return;
     }
 
-    res.status(200).json(formatResponse({
+    res.status(200).json(formatResponse.success({
       sessionId: session.id,
       modelName: session.modelName,
       dataset: session.dataset,
       status: session.status,
       progress: session.progress,
       results: session.results,
+      activityLog: session.activityLog,
       startedAt: session.startedAt,
       completedAt: session.completedAt,
       isPaused: session.isPaused
-    }, 'Session status retrieved', true));
+    }, 'Session status retrieved'));
 
   } catch (error: any) {
     logger.error('Error getting batch status:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_STATUS_ERROR', error.message));
   }
 }
 
@@ -406,21 +471,23 @@ export async function pauseBatch(req: Request, res: Response): Promise<void> {
     const session = activeSessions.get(sessionId);
 
     if (!session) {
-      res.status(404).json(formatResponse(null, 'Session not found', false));
+      res.status(404).json(formatResponse.error('NOT_FOUND', 'Session not found'));
       return;
     }
 
     session.isPaused = true;
     session.status = 'paused';
 
-    res.status(200).json(formatResponse({
+    logActivity(session, 'warning', `⏸️  Batch analysis paused at ${session.progress.completed}/${session.progress.total}`);
+
+    res.status(200).json(formatResponse.success({
       sessionId,
       status: 'paused'
-    }, 'Batch analysis paused', true));
+    }, 'Batch analysis paused'));
 
   } catch (error: any) {
     logger.error('Error pausing batch:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_PAUSE_ERROR', error.message));
   }
 }
 
@@ -433,17 +500,19 @@ export async function resumeBatch(req: Request, res: Response): Promise<void> {
     const session = activeSessions.get(sessionId);
 
     if (!session) {
-      res.status(404).json(formatResponse(null, 'Session not found', false));
+      res.status(404).json(formatResponse.error('NOT_FOUND', 'Session not found'));
       return;
     }
 
     if (!session.isPaused) {
-      res.status(400).json(formatResponse(null, 'Session is not paused', false));
+      res.status(400).json(formatResponse.error('INVALID_STATE', 'Session is not paused'));
       return;
     }
 
     session.isPaused = false;
     session.status = 'running';
+
+    logActivity(session, 'info', `▶️  Batch analysis resumed from ${session.progress.completed}/${session.progress.total}`);
 
     // Resume processing
     const options: BatchStartRequest = {
@@ -459,14 +528,14 @@ export async function resumeBatch(req: Request, res: Response): Promise<void> {
       session.status = 'failed';
     });
 
-    res.status(200).json(formatResponse({
+    res.status(200).json(formatResponse.success({
       sessionId,
       status: 'running'
-    }, 'Batch analysis resumed', true));
+    }, 'Batch analysis resumed'));
 
   } catch (error: any) {
     logger.error('Error resuming batch:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_RESUME_ERROR', error.message));
   }
 }
 
@@ -479,7 +548,7 @@ export async function getBatchResults(req: Request, res: Response): Promise<void
     const session = activeSessions.get(sessionId);
 
     if (!session) {
-      res.status(404).json(formatResponse(null, 'Session not found', false));
+      res.status(404).json(formatResponse.error('NOT_FOUND', 'Session not found'));
       return;
     }
 
@@ -493,7 +562,7 @@ export async function getBatchResults(req: Request, res: Response): Promise<void
       analysisId: result.analysisId
     }));
 
-    res.status(200).json(formatResponse({
+    res.status(200).json(formatResponse.success({
       sessionId,
       modelName: session.modelName,
       dataset: session.dataset,
@@ -501,11 +570,11 @@ export async function getBatchResults(req: Request, res: Response): Promise<void
       results,
       startedAt: session.startedAt,
       completedAt: session.completedAt
-    }, 'Batch results retrieved', true));
+    }, 'Batch results retrieved'));
 
   } catch (error: any) {
     logger.error('Error getting batch results:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_RESULTS_ERROR', error.message));
   }
 }
 
@@ -524,11 +593,11 @@ export async function listSessions(req: Request, res: Response): Promise<void> {
       completedAt: session.completedAt
     }));
 
-    res.status(200).json(formatResponse(sessions, 'Sessions retrieved', true));
+    res.status(200).json(formatResponse.success(sessions, 'Sessions retrieved'));
 
   } catch (error: any) {
     logger.error('Error listing sessions:', error);
-    res.status(500).json(formatResponse(null, error.message, false));
+    res.status(500).json(formatResponse.error('BATCH_LIST_ERROR', error.message));
   }
 }
 

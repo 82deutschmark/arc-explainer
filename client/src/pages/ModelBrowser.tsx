@@ -20,6 +20,7 @@ import { Database, Sparkles, AlertCircle } from 'lucide-react';
 import ExaminerControls from '@/components/model-examiner/ExaminerControls';
 import ExaminerProgress from '@/components/model-examiner/ExaminerProgress';
 import { BatchResultsTable } from '@/components/batch/BatchResultsTable';
+import { BatchActivityLog } from '@/components/batch/BatchActivityLog';
 import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
 
 // Model configurations for batch analysis
@@ -180,6 +181,37 @@ export default function ModelBrowser() {
           selectedModel={selectedModel}
           dataset={selectedDataset}
         />
+      )}
+
+      {/* Current Puzzle Indicator */}
+      {isRunning && status && status.results.find(r => r.status === 'analyzing') && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <Sparkles className="h-4 w-4 text-blue-600 animate-pulse" />
+          <AlertDescription className="flex items-center gap-2">
+            <strong>Now analyzing:</strong>
+            <code className="font-mono text-sm bg-blue-100 px-2 py-1 rounded">
+              {status.results.find(r => r.status === 'analyzing')?.puzzleId}
+            </code>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Activity Log */}
+      {isRunning && status && status.activityLog && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Live Activity Log</CardTitle>
+            <CardDescription>
+              Real-time updates showing puzzle analysis progress and validation results
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BatchActivityLog
+              activityLog={status.activityLog}
+              currentPuzzle={status.results.find(r => r.status === 'analyzing')?.puzzleId}
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Results Table */}
