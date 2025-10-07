@@ -92,7 +92,7 @@ export function useStartBatch() {
 /**
  * Hook for getting batch status with auto-refresh
  */
-export function useBatchStatus(sessionId: string | null, autoRefresh: boolean = true) {
+export function useBatchStatus(sessionId: string | null, autoRefresh: boolean = false) {
   return useQuery({
     queryKey: ['batch-status', sessionId],
     queryFn: async () => {
@@ -230,7 +230,7 @@ export function useBatchSessions() {
  */
 export function useBatchAnalysis() {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const startBatch = useStartBatch();
   const { data: status, isLoading: statusLoading } = useBatchStatus(sessionId, autoRefresh);
@@ -248,7 +248,7 @@ export function useBatchAnalysis() {
   // Console logging for debugging
   useEffect(() => {
     if (status) {
-      console.log('[BATCH]', {
+      // console.log('[BATCH]', {
         progress: `${status.progress.completed}/${status.progress.total}`,
         successful: status.progress.successful,
         failed: status.progress.failed,
@@ -259,13 +259,13 @@ export function useBatchAnalysis() {
       // Log current puzzle being analyzed
       const currentPuzzle = status.results.find(r => r.status === 'analyzing');
       if (currentPuzzle) {
-        console.log('[BATCH] ⚡ Currently analyzing:', currentPuzzle.puzzleId);
+        // console.log('[BATCH] ⚡ Currently analyzing:', currentPuzzle.puzzleId);
       }
 
       // Log last activity entry
       if (status.activityLog && status.activityLog.length > 0) {
         const lastActivity = status.activityLog[status.activityLog.length - 1];
-        console.log('[BATCH] Latest:', lastActivity.message);
+        // console.log('[BATCH] Latest:', lastActivity.message);
       }
     }
   }, [status]);
