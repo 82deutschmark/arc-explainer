@@ -325,7 +325,7 @@ export class GrokService extends BaseAIService {
           continue;
         }
 
-        throw new Error(`xAI Responses API error: ${response.statusCode} ${response.statusMessage ?? ""} - ${responseText}`);
+        throw new Error(`xAI Responses API error: ${response.statusCode} - ${responseText}`);
       } catch (error) {
         lastError = error;
         if (this.isTransientNetworkError(error) && attempt <= maxRetries) {
