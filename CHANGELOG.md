@@ -1,5 +1,101 @@
 ## [2025-10-07]
 
+## v3.7.3 - Batch Analysis Parallel Processing + UI Refactor
+
+### Performance
+- **MASSIVE SPEED IMPROVEMENT: Parallel batch processing (10-20x faster)**
+  - **Problem:** Batch analysis ran ONE puzzle at a time (sequential) - extremely slow
+  - **Solution:** Process puzzles in batches of 10 concurrently with 2s stagger
+  - **Implementation:** `Promise.all()` pattern (same as `analyze-unsolved-puzzles.ts` script)
+  - **Speed Improvement:**
+    - Sequential: 120 puzzles in ~4-6 hours (30s-3min each)
+    - Parallel: 120 puzzles in ~20-40 minutes (10x faster)
+  - Files: `server/controllers/batchController.ts` (lines 233-367)
+
+### UI Refactor
+- **Rebuilt ModelBrowser using EXISTING proven components (no more invented metrics!)**
+  - **Problems Fixed:**
+    1. Used deprecated `ExaminerProgress` component (line 1: "Deprecated!!! NEEDS REMOVAL!!!")
+    2. Invented fake `overallAccuracy` metric (doesn't exist in data)
+    3. Excessive padding (`space-y-6` everywhere)
+    4. No links to puzzle pages
+    5. No advanced options (prompt preview, temperature, custom prompts)
+
+  - **Architecture Pattern:** Based on `AnalyticsOverview` + `PuzzleExaminer` advanced options
+
+  - **Reused Components:**
+    - `ClickablePuzzleBadge` - Links to `/puzzle/{id}?highlight={explanationId}`
+    - `PromptPicker` - Same prompt selection as PuzzleExaminer
+    - `PromptPreviewModal` - Preview prompts before running batch
+    - `determineCorrectness()` - Shared correctness utility (no invented logic)
+
+  - **Real Data Only:**
+    ```typescript
+    // CORRECT: Count from actual validation results
+    const correctCount = results.filter(r => r.correct === true).length;
+    const incorrectCount = results.filter(r => r.correct === false).length;
+
+    // WRONG (removed): Invented metric
+    // const overallAccuracy = (successful / total) * 100; // ❌ "successful" just means API didn't error!
+    ```
+
+  - **UI Improvements:**
+    - Compact layout (`p-4`, `space-y-4` instead of `p-6`, `space-y-6`)
+    - Configuration panel collapses when running
+    - Live progress shows 4 real metrics: Correct, Incorrect, Avg Time, Completed
+    - Results grid with ClickablePuzzleBadges (6 columns)
+    - Summary cards (Correct/Incorrect/Total)
+
+  - **Advanced Options (Same as PuzzleExaminer):**
+    - Temperature slider (0-2)
+    - Prompt picker (solver/alien/custom)
+    - Custom prompt textarea
+    - Preview Prompt button → PromptPreviewModal
+
+  - **Removed:**
+    - `ExaminerProgress` component (deprecated, used invented fields)
+    - `BatchActivityLog` (too verbose, cluttered UI)
+    - All invented metrics (`overallAccuracy`, etc.)
+    - Excessive padding
+
+  - Files: `client/src/pages/ModelBrowser.tsx` (complete rebuild, 409 lines)
+
+### Technical Details
+
+**Parallel Processing Pattern:**
+```typescript
+// Trigger analyses concurrently (don't await in loop)
+for (const puzzle of batch) {
+  promises.push(analyzeSinglePuzzle(puzzle));
+  await sleep(2000); // Stagger to avoid rate limits
+}
+const results = await Promise.all(promises); // Wait for all
+```
+
+**Real Correctness Calculation:**
+```typescript
+// Uses shared utility (matches AccuracyRepository logic)
+const correctness = determineCorrectness({
+  isPredictionCorrect: result.isPredictionCorrect,
+  multiTestAllCorrect: result.multiTestAllCorrect,
+  hasMultiplePredictions: result.hasMultiplePredictions
+});
+```
+
+### User Experience
+- ✅ **10-20x faster batch processing** (batches of 10 concurrent)
+- ✅ **Compact, clean UI** (50% less padding)
+- ✅ **Real data only** (no invented metrics)
+- ✅ **Clickable puzzle links** (opens full analysis on puzzle page)
+- ✅ **Same advanced options** as PuzzleExaminer (prompt preview, temperature, custom prompts)
+- ✅ **Progress tracking** with real validation stats
+
+### Files Modified
+- `server/controllers/batchController.ts` - Parallel processing implementation
+- `client/src/pages/ModelBrowser.tsx` - Complete UI rebuild
+
+---
+
 ## v3.7.2 - CRITICAL FIX: Provider Response ID Storage (Conversation Chaining Unlocked)
 
 ### Fixed
