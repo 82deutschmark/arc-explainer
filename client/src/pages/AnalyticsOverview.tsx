@@ -52,22 +52,22 @@ export default function AnalyticsOverview() {
     }));
   }, [availableDatasets]);
 
-  // Prefer ARC1 evaluation dataset by default; fall back to first available directory
+  // Prefer ARC2 evaluation dataset by default; fall back to first available directory
   React.useEffect(() => {
     if (datasetOptions.length > 0 && !selectedDataset) {
-      const arc1EvalDataset = datasetOptions.find(option => option.name === 'evaluation');
-      setSelectedDataset((arc1EvalDataset ?? datasetOptions[0]).name);
+      const arc2EvalDataset = datasetOptions.find(option => option.name === 'evaluation2');
+      setSelectedDataset((arc2EvalDataset ?? datasetOptions[0]).name);
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select Claude 4.5 Sonnet model if available, fallback to first model
+  // Auto-select Grok 4 Fast Reasoning model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const targetModel = 'claude-sonnet-4-5-20250929-thinking-32k-attempt2';
-      const claude45 = availableModels.includes(targetModel) 
+      const targetModel = 'grok-4-fast-reasoning';
+      const grok4 = availableModels.includes(targetModel) 
         ? targetModel 
-        : availableModels.find(m => m.includes('claude-sonnet-4-5-20250929-thinking-32k-attempt2'));
-      setSelectedModelForDataset(claude45 || availableModels[0]);
+        : availableModels.find(m => m.includes('grok-4-fast-reasoning'));
+      setSelectedModelForDataset(grok4 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
