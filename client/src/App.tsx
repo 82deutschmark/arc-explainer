@@ -31,6 +31,7 @@ function Router() {
         <Route path="/" component={PuzzleBrowser} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/discussion" component={PuzzleDiscussion} />
+        <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/leaderboards" component={Leaderboards} />
 
