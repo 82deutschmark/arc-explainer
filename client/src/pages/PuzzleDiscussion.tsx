@@ -5,8 +5,11 @@
  * Date: 2025-10-06
  * PURPOSE: Progressive reasoning refinement through AI self-conversation.
  * One model refines its own analysis across multiple turns with full context chaining.
- * Mirrors ModelDebate structure but auto-locks to single model conversing with itself.
- * SRP/DRY check: Pass - Reuses all ModelDebate components (IndividualDebate, ExplanationsList, etc.)
+ * Builds on ModelDebate structure but auto-locks to single model conversing with itself.
+ *  - Model is shown its previous analysis and told it is incorrect and asked to try again.
+ *  - Human user has option to enter additional text
+ *  - Needs same transparency and better UI to show what step the model is on
+ * SRP/DRY check: 
  * shadcn/ui: Pass - Uses shadcn/ui components via reused components
  */
 
