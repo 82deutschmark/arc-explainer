@@ -21,6 +21,13 @@ interface BatchStartRequest {
   systemPromptMode?: string;
 }
 
+interface ActivityLogEntry {
+  timestamp: Date | string;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+  puzzleId?: string;
+}
+
 interface BatchPuzzleResult {
   puzzleId: string;
   status: 'pending' | 'analyzing' | 'success' | 'failed' | 'skipped';
@@ -45,6 +52,7 @@ interface BatchStatus {
   status: 'running' | 'paused' | 'completed' | 'failed';
   progress: BatchProgress;
   results: BatchPuzzleResult[];
+  activityLog: ActivityLogEntry[];
   startedAt: string;
   completedAt?: string;
   isPaused: boolean;
@@ -236,6 +244,31 @@ export function useBatchAnalysis() {
       setAutoRefresh(false);
     }
   }, [status?.status]);
+
+  // Console logging for debugging
+  useEffect(() => {
+    if (status) {
+      console.log('[BATCH]', {
+        progress: `${status.progress.completed}/${status.progress.total}`,
+        successful: status.progress.successful,
+        failed: status.progress.failed,
+        status: status.status,
+        percentage: `${status.progress.percentage}%`
+      });
+
+      // Log current puzzle being analyzed
+      const currentPuzzle = status.results.find(r => r.status === 'analyzing');
+      if (currentPuzzle) {
+        console.log('[BATCH] ⚡ Currently analyzing:', currentPuzzle.puzzleId);
+      }
+
+      // Log last activity entry
+      if (status.activityLog && status.activityLog.length > 0) {
+        const lastActivity = status.activityLog[status.activityLog.length - 1];
+        console.log('[BATCH] Latest:', lastActivity.message);
+      }
+    }
+  }, [status]);
 
   const handleStart = async (request: BatchStartRequest) => {
     const result = await startBatch.mutateAsync(request);
