@@ -31,11 +31,18 @@ import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import { MODELS as MODEL_CONFIGS, getApiModelName, getModelConfig, modelSupportsTemperature } from "../config/models/index.js";
 import { jsonParser } from '../utils/JsonParser.js';
-import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
+import { GROK_JSON_SCHEMA } from "./schemas/grokJsonSchema.js";
 
 const grok = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
   baseURL: "https://api.x.ai/v1",
+});
+
+// Add shared undici Agent singleton for xAI requests (prevents per-request socket churn)
+const XAI_SHARED_AGENT = new Agent({
+  headersTimeout: 2700000,  // 45 minutes - wait for response headers
+  bodyTimeout: 2700000,      // 45 minutes - wait for response body
+  keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
 });
 
 export class GrokService extends BaseAIService {
@@ -114,7 +121,7 @@ export class GrokService extends BaseAIService {
     // Check if it's a reasoning model using modelConfig (respects grok-4-fast-non-reasoning)
     const isReasoning = modelConfig?.isReasoning ?? false;
 
-    // Grok4 supports structured output with limitations (no allOf, no minLength/maxLength, etc.)
+    // Grok-4 supports structured output via Responses API (response_format.json_schema)
     const supportsStructuredOutput = modelName.includes('grok-4');
     
     return {
@@ -413,20 +420,18 @@ export class GrokService extends BaseAIService {
     try {
       // Check if model supports structured JSON schema
       // Disable for ALL grok-4 models due to "Grammar is too complex" errors
-      const supportsStructuredOutput = !requestData.model.startsWith('grok-4') &&
-                                        !requestData.model.includes('grok-code-fast');
+      // Enable structured outputs for Grok-4 variants; we'll gracefully fallback on grammar errors
+      const supportsStructuredOutput = requestData.model.startsWith('grok-4');
 
       // Prepare the request for xAI's Responses API
-      const body = {
+      let body: any = {
         model: requestData.model,
         input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
         ...(supportsStructuredOutput && {
-          text: {
-            format: {
-              type: "json_schema",
-              name: ARC_JSON_SCHEMA.name,
-              strict: ARC_JSON_SCHEMA.strict,
-              schema: ARC_JSON_SCHEMA.schema
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              schema: GROK_JSON_SCHEMA.schema
             }
           }
         }),
@@ -438,85 +443,118 @@ export class GrokService extends BaseAIService {
         store: requestData.store !== false // Default to true unless explicitly set to false
       };
 
-      // Create custom agent with extended timeouts for long Grok-4 responses (up to 45 min)
-      // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
-      const agent = new Agent({
-        headersTimeout: 2700000,  // 45 minutes - wait for response headers
-        bodyTimeout: 2700000,      // 45 minutes - wait for response body
-        keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
-      });
+      // Minimal retry/backoff with jitter for transient errors
+      const maxRetries = Math.max(0, Number(process.env.XAI_MAX_RETRIES || 2));
+      const baseDelayMs = Math.max(200, Number(process.env.XAI_RETRY_BASE_DELAY_MS || 2000));
 
-      // Make the API call using undici's request directly (supports dispatcher option)
-      const { statusCode, headers: responseHeaders, body: responseBody } = await undiciRequest('https://api.x.ai/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
-        dispatcher: agent  // Use custom agent with extended undici timeouts
-      });
+      let attempt = 0;
+      let lastError: any = null;
 
-      // Convert undici response to standard Response-like object
-      const responseText = await responseBody.text();
-      const response = {
-        ok: statusCode >= 200 && statusCode < 300,
-        status: statusCode,
-        statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
-        text: async () => responseText,
-        json: async () => JSON.parse(responseText)
-      };
+      while (attempt <= maxRetries) {
+        attempt++;
+        try {
+          const { statusCode, headers: responseHeaders, body: responseBody } = await undiciRequest('https://api.x.ai/v1/responses', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
+            dispatcher: XAI_SHARED_AGENT  // Use shared agent with extended undici timeouts
+          });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[${this.provider}] API Error:`, {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorText
-        });
-        throw new Error(`xAI Responses API error: ${response.status} ${response.statusText} - ${errorText}`);
+          const responseText = await responseBody.text();
+          const response = {
+            ok: statusCode >= 200 && statusCode < 300,
+            status: statusCode,
+            statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
+            text: async () => responseText,
+            json: async () => JSON.parse(responseText)
+          };
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            // One-shot graceful fallback: disable schema if grammar/schema error is reported (400/422/503)
+            const grammarError = /grammar|schema/i.test(errorText);
+            if (body && body.response_format && (statusCode === 400 || statusCode === 422 || statusCode === 503) && grammarError) {
+              console.warn(`[${this.provider}] Disabling structured output due to grammar/schema error and retrying without schema (attempt ${attempt}/${maxRetries + 1})`);
+              delete (body as any).response_format;
+              const jitter1 = Math.floor(Math.random() * 300);
+              await new Promise(r => setTimeout(r, baseDelayMs + jitter1));
+              // Retry immediately without consuming a retry slot beyond this attempt
+              continue;
+            }
+
+            const shouldRetry = (statusCode === 429) || (statusCode >= 500 && statusCode <= 599);
+            console.error(`[${this.provider}] API Error (attempt ${attempt}/${maxRetries + 1}):`, {
+              status: response.status,
+              statusText: response.statusText,
+              error: errorText
+            });
+            if (shouldRetry && attempt <= maxRetries) {
+              const jitter2 = Math.floor(Math.random() * 300);
+              await new Promise(r => setTimeout(r, baseDelayMs + jitter2));
+              continue;
+            }
+            throw new Error(`xAI Responses API error: ${response.status} ${response.statusText} - ${errorText}`);
+          }
+
+          const result = await response.json();
+
+          // Extract token usage from xAI Responses API response
+          let tokenUsage: TokenUsage = { input: 0, output: 0 };
+          let cost: any = undefined;
+
+          if (result.usage) {
+            const inputTokens = result.usage.input_tokens ?? 0;
+            const outputTokens = result.usage.output_tokens ?? 0;
+            const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
+
+            tokenUsage = {
+              input: inputTokens,
+              output: outputTokens,
+              reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
+            };
+
+            // Calculate cost using inherited method
+            cost = this.calculateResponseCost(modelKey, tokenUsage);
+          }
+
+          // Enhanced response parsing with incomplete status handling
+          const parsedResponse = {
+            id: result.id,
+            status: result.status,
+            incomplete_details: result.incomplete_details,
+            output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
+            output_parsed: result.output_parsed,
+            output_reasoning: {
+              summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
+              items: result.output_reasoning?.items || []
+            },
+            raw_response: result,
+            usage: result.usage,
+            tokenUsage,
+            cost
+          };
+
+          return parsedResponse;
+        } catch (err: any) {
+          lastError = err;
+          const msg = String(err?.message || err);
+          const transient = /ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN/i.test(msg);
+          if (transient && attempt <= maxRetries) {
+            const jitter = Math.floor(Math.random() * 300);
+            await new Promise(r => setTimeout(r, baseDelayMs + jitter));
+            continue;
+          }
+          // Non-retryable or out of retries
+          throw err;
+        }
       }
 
-      const result = await response.json();
-
-      // Extract token usage from xAI Responses API response
-      let tokenUsage: TokenUsage = { input: 0, output: 0 };
-      let cost: any = undefined;
-
-      if (result.usage) {
-        const inputTokens = result.usage.input_tokens ?? 0;
-        const outputTokens = result.usage.output_tokens ?? 0;
-        const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
-
-        tokenUsage = {
-          input: inputTokens,
-          output: outputTokens,
-          reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
-        };
-
-        // Calculate cost using inherited method
-        cost = this.calculateResponseCost(modelKey, tokenUsage);
-      }
-
-      // Enhanced response parsing with incomplete status handling
-      const parsedResponse = {
-        id: result.id,
-        status: result.status,
-        incomplete_details: result.incomplete_details,
-        output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
-        output_parsed: result.output_parsed,
-        output_reasoning: {
-          summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
-          items: result.output_reasoning?.items || []
-        },
-        raw_response: result,
-        usage: result.usage,
-        tokenUsage,
-        cost
-      };
-
-      return parsedResponse;
+      // Exhausted retries
+      throw lastError || new Error('xAI Responses API failed after retries');
 
     } catch (error) {
       console.error(`[${this.provider}] Error calling Responses API:`, error);

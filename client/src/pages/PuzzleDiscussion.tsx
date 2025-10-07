@@ -206,7 +206,7 @@ export default function PuzzleDiscussion() {
     }
   };
 
-  // Filter explanations to only show eligible ones (less than 30 days old, reasoning models, has provider response ID)
+  // Filter explanations to only show eligible ones (has provider response ID + within 30-day retention window)
   const filteredEligibleExplanations = useMemo(() => {
     if (!explanations) return [];
     
@@ -214,14 +214,11 @@ export default function PuzzleDiscussion() {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
     return explanations.filter(exp => {
-      // Must be less than 30 days old
+      // Must be less than 30 days old (provider retention window)
       const createdAt = new Date(exp.createdAt);
       if (createdAt < thirtyDaysAgo) return false;
       
-      // Must be from reasoning model
-      if (!isReasoningModel(exp.modelName)) return false;
-      
-      // Must have provider response ID
+      // Must have provider response ID (required for conversation chaining)
       if (!exp.providerResponseId) return false;
       
       return true;
@@ -281,7 +278,6 @@ export default function PuzzleDiscussion() {
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
               Refine AI analyses through multi-turn conversations with full server-side reasoning retention (30 days).
-              Supports OpenAI GPT-5, o-series, and xAI Grok-4 models.
             </p>
             
             {/* Search Box */}
@@ -472,11 +468,10 @@ export default function PuzzleDiscussion() {
               <p className="text-sm">
                 This puzzle has {explanations.length} explanation{explanations.length > 1 ? 's' : ''}, but none are eligible for discussion.
               </p>
-              <p className="text-sm">Eligible explanations must be:</p>
+              <p className="text-sm">Eligible explanations must:</p>
               <ul className="list-disc list-inside text-sm space-y-1 ml-2">
-                <li>Less than 30 days old</li>
-                <li>From reasoning models (GPT-5, o-series, Grok-4)</li>
-                <li>Successfully saved with provider response ID</li>
+                <li>Be less than 30 days old (provider retention window)</li>
+                <li>Have a provider response ID (for conversation chaining)</li>
               </ul>
               <Link href={`/puzzle/${taskId}`}>
                 <Button variant="outline" size="sm" className="mt-2">

@@ -11,6 +11,8 @@
 The OpenAI and xAI Responses API provides stateful conversation management through `previous_response_id` and `store` parameters. Our implementation **partially supports** this feature but has a **critical gap**: we capture `response.id` from API responses but **do not pass it through** to the database via `BaseAIService.buildStandardResponse()`.
 
 ### Status
+
+Update (Oct 6–7, 2025): The previously noted pass‑through gap is resolved. `AIResponse` now includes `providerResponseId`, `BaseAIService.buildStandardResponse()` maps provider `result.id` into that field, and the repository persists it to `explanations.provider_response_id`.
 - ✅ Database schema ready (`provider_response_id TEXT` column exists)
 - ✅ API calls capture `result.id` from responses (grok.ts:504, openai.ts:538)
 - ✅ Repository saves `providerResponseId` (ExplanationRepository.ts:95)
