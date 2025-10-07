@@ -10,8 +10,8 @@
  * shadcn/ui: Pass - Uses shadcn/ui components via reused components
  */
 
-import React, { useEffect } from 'react';
-import { useParams, Link } from 'wouter';
+import React, { useEffect, useMemo } from 'react';
+import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,6 +65,14 @@ const getProviderName = (modelName: string): string => {
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
   const { toast } = useToast();
+  const [location] = useLocation();
+
+  // Parse ?select=123 query parameter for auto-selection
+  const selectId = useMemo(() => {
+    const params = new URLSearchParams(location.split('?')[1]);
+    const id = params.get('select');
+    return id ? parseInt(id, 10) : null;
+  }, [location]);
 
   // Page title
   useEffect(() => {
@@ -181,6 +189,17 @@ export default function PuzzleDiscussion() {
       debateState.setChallengerModel(explanation.modelName);
     }
   };
+
+  // Auto-start conversation when ?select= parameter is present
+  useEffect(() => {
+    if (selectId && explanations && !debateState.isDebateActive) {
+      const explanation = explanations.find(e => e.id === selectId);
+      if (explanation) {
+        console.log(`[PuzzleDiscussion] Auto-selecting explanation #${selectId} from URL parameter`);
+        handleStartConversation(selectId);
+      }
+    }
+  }, [selectId, explanations, debateState.isDebateActive]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {
