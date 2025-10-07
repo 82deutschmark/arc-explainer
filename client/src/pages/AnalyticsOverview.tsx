@@ -19,6 +19,7 @@ import {
 
 // Import existing components
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
+import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
@@ -285,6 +286,22 @@ export default function AnalyticsOverview() {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Most Difficult Puzzles Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Most Difficult Puzzles
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Puzzles with the lowest LLM accuracy rates - these are the hardest challenges for AI models
+            </p>
+          </CardHeader>
+          <CardContent>
+            <DifficultPuzzlesSection />
           </CardContent>
         </Card>
 
