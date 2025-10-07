@@ -27,6 +27,7 @@
     "del": "node --import tsx server/scripts/delete-hf-now.ts"
   },
   "dependencies": {
+    "@ai-sdk/xai": "^2.0.23",
     "@anthropic-ai/sdk": "^0.56.0",
     "@google/genai": "^1.9.0",
     "@google/generative-ai": "^0.24.1",
@@ -98,6 +99,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tw-animate-css": "^1.2.5",
+    "undici": "^7.16.0",
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
     "ws": "^8.18.0",

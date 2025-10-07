@@ -58,6 +58,8 @@ export interface AIResponse {
   userPromptUsed?: string | null;
   promptTemplateId?: string | null;
   customPromptText?: string | null;
+  // Responses API conversation chaining support
+  providerResponseId?: string | null;
   [key: string]: any; // Allow additional provider-specific fields
 }
 
@@ -257,6 +259,8 @@ export abstract class BaseAIService {
       userPromptUsed: promptPackage?.userPrompt || null,
       promptTemplateId: promptTemplateId || promptPackage?.selectedTemplate?.id || null,
       customPromptText: customPromptText || null,
+      // Responses API conversation chaining support - extract response ID
+      providerResponseId: result?.id || null,
       // CRITICAL FIX: Don't spread result directly - preserve structured data for explanationService
       // Instead, extract only the analysis fields needed for the response
       patternDescription: result?.patternDescription,

@@ -71,7 +71,8 @@ export default function ModelDebate() {
     refetchExplanations,
     omitAnswer: false,
     originalExplanation: selectedExplanation,
-    customChallenge: debateState.customChallenge
+    customChallenge: debateState.customChallenge,
+    previousResponseId: debateState.getLastResponseId(debateState.challengerModel) // Provider-aware chaining
   });
 
   // Set promptId to 'debate' when debate mode is active
@@ -93,6 +94,14 @@ export default function ModelDebate() {
       // Set prompt to debate mode for backend prompt generation
       setPromptId('debate');
 
+      // Get last response ID for conversation chaining (provider-aware)
+      const lastResponseId = debateState.getLastResponseId(debateState.challengerModel);
+      
+      // Get provider information for logging
+      const lastMessage = debateState.debateMessages[debateState.debateMessages.length - 1];
+      const lastProvider = lastMessage ? debateState.extractProvider(lastMessage.modelName) : 'none';
+      const challengerProvider = debateState.extractProvider(debateState.challengerModel);
+
       // Build mutation payload
       const payload: any = {
         modelKey: debateState.challengerModel,
@@ -106,6 +115,15 @@ export default function ModelDebate() {
           reasoningSummaryType
         } : {})
       };
+
+      // Log conversation chain status for debugging
+      if (lastResponseId) {
+        console.log(`[Debate Chaining] ✅ Continuing ${challengerProvider} conversation with response ID: ${lastResponseId}`);
+      } else if (lastProvider !== challengerProvider && lastProvider !== 'none') {
+        console.log(`[Debate Chaining] ⚠️ Cross-provider debate detected (${lastProvider} → ${challengerProvider}). Starting new conversation chain (no context).`);
+      } else {
+        console.log('[Debate Chaining] Starting new conversation (no previous response ID)');
+      }
 
       // Call mutation and wait for result
       const savedData = await analyzeAndSaveMutation.mutateAsync(payload);

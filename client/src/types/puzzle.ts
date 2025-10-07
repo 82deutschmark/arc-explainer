@@ -96,6 +96,7 @@ export interface ExplanationData {
   reasoningLog?: string | null; // Step-by-step reasoning from AI models
   reasoningItems?: string[] | null; // Structured reasoning steps from OpenAI Responses API
   hasReasoningLog?: boolean; // Whether reasoning log is available
+  providerResponseId?: string | null; // Response ID from AI provider for conversation chaining
   apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
   // Saturn-specific fields
   saturnSuccess?: boolean | null; // Whether Saturn solver successfully solved the puzzle

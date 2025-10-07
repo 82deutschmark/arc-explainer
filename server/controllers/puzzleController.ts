@@ -74,7 +74,8 @@ export const puzzleController = {
       systemPromptMode: req.body.systemPromptMode || 'ARC',
       retryMode: req.body.retryMode || false,
       originalExplanation: req.body.originalExplanation, // For debate mode
-      customChallenge: req.body.customChallenge // For debate mode
+      customChallenge: req.body.customChallenge, // For debate mode
+      previousResponseId: req.body.previousResponseId // For conversation chaining
     };
     
     const result = await puzzleAnalysisService.analyzePuzzle(taskId, model, options);
@@ -255,8 +256,9 @@ export const puzzleController = {
    */
   async getRealPerformanceStats(req: Request, res: Response) {
     try {
-      // Get trustworthiness data (no longer includes cost data due to SRP separation)
-      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStats();
+      // Get trustworthiness data with minimum 20 attempts for statistical significance
+      // (no longer includes cost data due to SRP separation)
+      const performanceStats = await repositoryService.trustworthiness.getRealPerformanceStatsWithMinAttempts(20);
 
       // Get cost data from dedicated cost repository
       const costMap = await repositoryService.cost.getModelCostMap();
