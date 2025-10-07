@@ -1,762 +1,324 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'wouter';
-import { useWorstPerformingPuzzles } from '@/hooks/usePuzzle';
+/**
+ * PuzzleDiscussion.tsx - AI Self-Conversation Interface
+ *
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-06
+ * PURPOSE: Progressive reasoning refinement through AI self-conversation.
+ * One model refines its own analysis across multiple turns with full context chaining.
+ * Mirrors ModelDebate structure but auto-locks to single model conversing with itself.
+ * SRP/DRY check: Pass - Reuses all ModelDebate components (IndividualDebate, ExplanationsList, etc.)
+ * shadcn/ui: Pass - Uses shadcn/ui components via reused components
+ */
+
+import React, { useEffect } from 'react';
+import { useParams, Link } from 'wouter';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Grid3X3, Eye, RefreshCw, AlertTriangle, MessageSquare, Target, TrendingDown, Github, Clock, DollarSign, Zap, BarChart3, Filter } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { MessageSquare, Plus, Loader2, Sparkles } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+// Reuse ModelDebate components - same UI, same flow
+import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
+import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
+import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
+import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
+
+import { usePuzzle } from '@/hooks/usePuzzle';
+import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
+import { useAnalysisResults } from '@/hooks/useAnalysisResults';
+import { useModels } from '@/hooks/useModels';
+import { useDebateState } from '@/hooks/debate/useDebateState';
+
+// Utility: Identify models that support server-side reasoning persistence
+// OpenAI o-series (o3, o4, o4-mini) and xAI Grok-4 models support Responses API
+const isReasoningModel = (modelName: string): boolean => {
+  const normalizedModel = modelName.toLowerCase();
+  // OpenAI o-series models
+  if (normalizedModel.includes('o3') || normalizedModel.includes('o4')) {
+    return true;
+  }
+  // xAI Grok-4 models (NOT grok-3)
+  if (normalizedModel.includes('grok-4')) {
+    return true;
+  }
+  return false;
+};
+
+// Get human-readable provider name from model key
+const getProviderName = (modelName: string): string => {
+  const normalizedModel = modelName.toLowerCase();
+  if (normalizedModel.includes('gpt') || normalizedModel.includes('o1') || normalizedModel.includes('o3') || normalizedModel.includes('o4')) {
+    return 'OpenAI';
+  }
+  if (normalizedModel.includes('grok')) {
+    return 'xAI';
+  }
+  return 'Unknown';
+};
 
 export default function PuzzleDiscussion() {
-  const [selectedLimit, setSelectedLimit] = useState<number>(50);
-  const [sortBy, setSortBy] = useState<string>('accuracy');
-  const [compactView, setCompactView] = useState<boolean>(false);
-  const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
-  const [zeroAccuracyOnly, setZeroAccuracyOnly] = useState<boolean>(false);
-  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'all'>('all');
-  const [multiTestFilter, setMultiTestFilter] = useState<'single' | 'multi' | 'all'>('all');
-  const [showRichMetrics, setShowRichMetrics] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [location, setLocation] = useLocation();
-  
-  // Set page title
-  React.useEffect(() => {
-    document.title = 'ARC Puzzle Discussion - Lowest Accuracy Puzzles';
-  }, []);
+  const { taskId } = useParams<{ taskId?: string }>();
+  const { toast } = useToast();
 
-  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(
-    selectedLimit, 
-    sortBy, 
-    accuracyRange[0], 
-    accuracyRange[1], 
-    zeroAccuracyOnly,
-    selectedSource === 'all' ? undefined : selectedSource,
-    multiTestFilter === 'all' ? undefined : multiTestFilter,
-    showRichMetrics
-  );
+  // Page title
+  useEffect(() => {
+    document.title = taskId ? `AI Self-Conversation - Puzzle ${taskId}` : 'AI Self-Conversation';
+  }, [taskId]);
 
-  // Filter puzzles based on search query (matching Browser page functionality)
-  const filteredPuzzles = React.useMemo(() => {
-    if (!puzzles) return [];
-    if (!searchQuery.trim()) return puzzles;
-    return puzzles.filter((puzzle: any) => puzzle.id.includes(searchQuery.trim()));
-  }, [puzzles, searchQuery]);
+  // Data hooks (same as ModelDebate)
+  const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
+  const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
+  const { data: models } = useModels();
 
-  // Handle puzzle search by ID (matching Browser page functionality)
-  const handleSearch = React.useCallback(() => {
-    if (filteredPuzzles.length === 1 && searchQuery.trim() === filteredPuzzles[0].id) {
-      setLocation(`/puzzle/${filteredPuzzles[0].id}`);
+  // State management (reuse useDebateState)
+  const debateState = useDebateState();
+
+  const selectedExplanation = explanations?.find(e => e.id === debateState.selectedExplanationId);
+
+  // Analysis hook for refinement generation (same as ModelDebate)
+  const {
+    analyzeAndSaveMutation,
+    processingModels,
+    analyzerErrors,
+    promptId,
+    setPromptId,
+    temperature,
+    isGPT5ReasoningModel,
+    reasoningEffort,
+    reasoningVerbosity,
+    reasoningSummaryType,
+    topP,
+    candidateCount,
+    thinkingBudget
+  } = useAnalysisResults({
+    taskId: taskId || '',
+    refetchExplanations,
+    omitAnswer: false,
+    originalExplanation: selectedExplanation,
+    customChallenge: debateState.customChallenge,
+    previousResponseId: debateState.getLastResponseId(debateState.challengerModel)
+  });
+
+  // Set promptId when active (same as ModelDebate)
+  useEffect(() => {
+    if (debateState.isDebateActive && selectedExplanation) {
+      setPromptId('debate');
+    } else {
+      setPromptId('solver');
     }
-    // If the search query is a full puzzle ID that doesn't exist in the current list, try navigating anyway
-    else if (searchQuery.trim().length > 0 && filteredPuzzles.length === 0) {
-      const potentialPuzzleId = searchQuery.trim();
-      // Basic validation for what a puzzle ID might look like
-      if (potentialPuzzleId.length > 5 && !potentialPuzzleId.includes(' ')) {
-        setLocation(`/puzzle/${potentialPuzzleId}`);
+  }, [debateState.isDebateActive, selectedExplanation, setPromptId]);
+
+  // Generate refinement (same logic as ModelDebate's handleGenerateChallenge)
+  const handleGenerateRefinement = async () => {
+    if (!debateState.challengerModel || !debateState.selectedExplanationId || !taskId) return;
+    if (!selectedExplanation) return;
+
+    try {
+      setPromptId('debate');
+      const lastResponseId = debateState.getLastResponseId(debateState.challengerModel);
+
+      const lastMessage = debateState.debateMessages[debateState.debateMessages.length - 1];
+      const lastProvider = lastMessage ? debateState.extractProvider(lastMessage.modelName) : 'none';
+      const challengerProvider = debateState.extractProvider(debateState.challengerModel);
+
+      const payload: any = {
+        modelKey: debateState.challengerModel,
+        temperature,
+        topP,
+        candidateCount,
+        thinkingBudget,
+        ...(isGPT5ReasoningModel(debateState.challengerModel) ? {
+          reasoningEffort,
+          reasoningVerbosity,
+          reasoningSummaryType
+        } : {})
+      };
+
+      if (lastResponseId) {
+        console.log(`[Self-Conversation] ✅ Continuing ${challengerProvider} conversation with response ID: ${lastResponseId}`);
+      } else {
+        console.log('[Self-Conversation] Starting new conversation');
       }
-    }
-  }, [searchQuery, filteredPuzzles, setLocation]);
 
-  if (error) {
+      const savedData = await analyzeAndSaveMutation.mutateAsync(payload);
+      await refetchExplanations();
+
+      const newExplanationData = savedData?.explanations?.[debateState.challengerModel];
+
+      if (newExplanationData) {
+        debateState.addChallengeMessage(newExplanationData);
+        toast({
+          title: "Analysis Refined!",
+          description: `${models?.find(m => m.key === debateState.challengerModel)?.name || debateState.challengerModel} has refined its analysis.`,
+        });
+      } else {
+        throw new Error("Failed to retrieve refinement");
+      }
+
+      debateState.setCustomChallenge('');
+    } catch (error) {
+      console.error('Refinement error:', error);
+      toast({
+        title: "Refinement Failed",
+        description: error instanceof Error ? error.message : "Failed to generate refinement.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // KEY DIFFERENCE: Auto-lock challenger to same model
+  const handleStartConversation = (explanationId: number) => {
+    const explanation = explanations?.find(e => e.id === explanationId);
+    if (explanation) {
+      debateState.startDebate(explanation);
+      // AUTO-LOCK: Same model refines itself
+      debateState.setChallengerModel(explanation.modelName);
+    }
+  };
+
+  // Loading states
+  if (isLoadingTask || isLoadingExplanations) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
-          <Alert className="border-red-500 bg-red-50">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Failed to load worst-performing puzzles. Please check your connection and try again.
-            </AlertDescription>
-          </Alert>
+      <div className="w-full">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading puzzle and explanations...</span>
+          </div>
         </div>
       </div>
     );
   }
 
-  const formatAccuracy = (accuracy: number) => {
-    return Math.round(accuracy * 100) + '%';
-  };
+  // Error states
+  if (taskError || (taskId && !task)) {
+    return (
+      <div className="w-full">
+        <Alert>
+          <AlertDescription>
+            Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
-  const getAccuracyBadgeColor = (accuracy: number) => {
-    if (accuracy === 0) return 'bg-red-100 text-red-800';
-    if (accuracy < 0.3) return 'bg-orange-100 text-orange-800';
-    if (accuracy < 0.6) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-blue-100 text-blue-800';
-  };
-
-  const getConfidenceBadgeColor = (confidence: number) => {
-    if (confidence < 0.1) return 'bg-red-100 text-red-800 border-red-200';
-    if (confidence < 0.25) return 'bg-orange-100 text-orange-800 border-orange-200';
-    if (confidence < 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-green-100 text-green-800 border-green-200';
-  };
-
-  const formatConfidence = (confidence: number) => {
-    return Math.round(confidence * 100) + '%';
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-red-900 to-orange-800 bg-clip-text text-transparent">
-                Most Difficult Puzzles
-              </h1>
-              <p className="text-lg text-slate-600 mt-2">
-                Puzzles with the Lowest LLM Accuracy Rates
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Grid3X3 className="h-4 w-4" />
-                  Browse All
-                </Button>
-              </Link>
-              <Link href="/analytics">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Grid3X3 className="h-4 w-4" />
-                  Analytics
-                </Button>
-              </Link>
-              <a
-                href="https://github.com/82deutschmark/arc-explainer"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Github className="h-4 w-4" />
-                  <span className="hidden sm:inline">Open Source</span>
-                </Button>
-              </a>
-            </div>
-          </div>
-
-          {/* Mission Statement */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-sm text-slate-600 max-w-4xl mx-auto">
-            <div className="flex items-start gap-3">
-              <MessageSquare className="h-5 w-5 text-orange-600 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-slate-800 mb-2">Most Challenging Puzzles</h3>
-                <p>
-                  This page shows puzzles where LLMs have the most difficulty - sorted by lowest accuracy rates. 
-                  These are the hardest puzzles for AI models to solve correctly, with 0% accuracy puzzles at the top.
-                </p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Controls */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Filter className="h-5 w-5 text-red-600" />
-              Advanced Filters & Sorting
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                <div className="w-full md:flex-1 space-y-2">
-                  <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
-                  <div className="relative">
-                    <Input
-                      id="puzzleSearch"
-                      placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setSearchError(null);
-                      }}
-                      className="pr-24"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                    />
-                  </div>
-                  {searchError && (
-                    <p className="text-sm text-red-500">{searchError}</p>
-                  )}
-                </div>
-                <Button 
-                  onClick={handleSearch}
-                  className="min-w-[120px]"
-                >
-                  Search
-                </Button>
-              </div>
-            </div>
-
-            {/* First row - existing controls */}
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2">
-                <label htmlFor="limit-select" className="text-sm font-medium">
-                  Show hardest:
-                </label>
-                <select
-                  id="limit-select"
-                  value={selectedLimit}
-                  onChange={(e) => setSelectedLimit(parseInt(e.target.value))}
-                  className="px-3 py-2 border border-gray-200 rounded-md text-sm"
-                >
-                  <option value={25}>25 puzzles</option>
-                  <option value={50}>50 puzzles</option>
-                  <option value={75}>75 puzzles</option>
-                  <option value={100}>100 puzzles</option>
-                  <option value={150}>150 puzzles</option>
-                  <option value={200}>200 puzzles</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor="sort-select" className="text-sm font-medium">
-                  Sort by:
-                </label>
-                <select
-                  id="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-200 rounded-md text-sm"
-                >
-                  <option value="accuracy">Lowest Accuracy</option>
-                  <option value="confidence">Lowest Confidence (1-25%)</option>
-                  <option value="feedback">Most Negative Feedback</option>
-                  <option value="cost">Highest Cost</option>
-                  <option value="processing_time">Slowest Processing</option>
-                  <option value="composite">Composite Difficulty</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <label htmlFor="compact-toggle" className="text-sm font-medium">
-                  Compact view:
-                </label>
-                <input
-                  id="compact-toggle"
-                  type="checkbox"
-                  checked={compactView}
-                  onChange={(e) => setCompactView(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300"
-                />
-                <span className="text-xs text-gray-500">{compactView ? 'On' : 'Off'}</span>
-              </div>
-            </div>
-
-            {/* Second row - source and test type filtering */}
-            <div className="border-t pt-4">
-              <div className="flex items-center gap-6 flex-wrap">
-                {/* Source filtering */}
-                <div className="flex items-center gap-2">
-                  <label htmlFor="source-select" className="text-sm font-medium">
-                    ARC Dataset:
-                  </label>
-                  <select
-                    id="source-select"
-                    value={selectedSource}
-                    onChange={(e) => setSelectedSource(e.target.value as any)}
-                    className="px-3 py-2 border border-gray-200 rounded-md text-sm"
-                  >
-                    <option value="all">All Datasets</option>
-                    <option value="ARC2-Eval">ARC 2 Evaluation</option>
-                    <option value="ARC2">ARC 2 Training</option>
-                    <option value="ARC1-Eval">ARC 1 Evaluation</option>
-                    <option value="ARC1">ARC 1 Training</option>
-                    <option value="ARC-Heavy">ARC Heavy</option>
-                  </select>
-                  {selectedSource === 'ARC2-Eval' && (
-                    <Badge className="text-xs bg-green-100 text-green-800 border-green-200">
-                      Focus Dataset
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Multi-test filtering */}
-                <div className="flex items-center gap-2">
-                  <label htmlFor="multitest-select" className="text-sm font-medium">
-                    Test Cases:
-                  </label>
-                  <select
-                    id="multitest-select"
-                    value={multiTestFilter}
-                    onChange={(e) => setMultiTestFilter(e.target.value as any)}
-                    className="px-3 py-2 border border-gray-200 rounded-md text-sm"
-                  >
-                    <option value="all">All Types</option>
-                    <option value="single">Single Test Only</option>
-                    <option value="multi">Multi-Test Only</option>
-                  </select>
-                </div>
-
-                {/* Rich metrics toggle */}
-                <div className="flex items-center gap-2">
-                  <input
-                    id="rich-metrics-toggle"
-                    type="checkbox"
-                    checked={showRichMetrics}
-                    onChange={(e) => setShowRichMetrics(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <label htmlFor="rich-metrics-toggle" className="text-sm font-medium text-blue-700">
-                    Show Rich Metrics
-                  </label>
-                  {showRichMetrics && (
-                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                      Active
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Third row - accuracy filtering */}
-            <div className="border-t pt-4">
-              <div className="flex items-center gap-6 flex-wrap">
-                {/* Zero accuracy quick filter */}
-                <div className="flex items-center gap-2">
-                  <input
-                    id="zero-accuracy-toggle"
-                    type="checkbox"
-                    checked={zeroAccuracyOnly}
-                    onChange={(e) => setZeroAccuracyOnly(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <label htmlFor="zero-accuracy-toggle" className="text-sm font-medium text-red-700">
-                    Only Unsolved (0%)
-                  </label>
-                  {zeroAccuracyOnly && (
-                    <Badge variant="destructive" className="text-xs">
-                      Active
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Accuracy range slider */}
-                {!zeroAccuracyOnly && (
-                  <div className="flex items-center gap-4 flex-1 min-w-80">
-                    <label className="text-sm font-medium whitespace-nowrap">
-                      Accuracy Range:
-                    </label>
-                    <div className="flex-1">
-                      <Slider
-                        value={accuracyRange}
-                        onValueChange={(value) => setAccuracyRange(value as [number, number])}
-                        max={100}
-                        min={0}
-                        step={5}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>{accuracyRange[0]}%</span>
-                        <span>{accuracyRange[1]}%</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Preset accuracy buttons and dataset shortcuts */}
-              <div className="flex items-center gap-4 mt-3 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Quick accuracy:</span>
-                  {!zeroAccuracyOnly && (
-                    <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([0, 0])}
-                    className="text-xs h-7"
-                  >
-                    0%
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([0, 10])}
-                    className="text-xs h-7"
-                  >
-                    0-10%
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([10, 30])}
-                    className="text-xs h-7"
-                  >
-                    10-30%
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([30, 50])}
-                    className="text-xs h-7"
-                  >
-                    30-50%
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([50, 100])}
-                    className="text-xs h-7"
-                  >
-                    50%+
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setAccuracyRange([0, 100])}
-                    className="text-xs h-7"
-                  >
-                    All
-                  </Button>
-                    </>
-                  )}
-                </div>
-
-                {/* Dataset quick filters */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Quick datasets:</span>
-                  <Button
-                    variant={selectedSource === 'ARC2-Eval' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedSource('ARC2-Eval')}
-                    className="text-xs h-7"
-                  >
-                    ARC 2 Eval
-                  </Button>
-                  <Button
-                    variant={selectedSource === 'ARC2' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedSource('ARC2')}
-                    className="text-xs h-7"
-                  >
-                    ARC 2
-                  </Button>
-                  <Button
-                    variant={selectedSource === 'all' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedSource('all')}
-                    className="text-xs h-7"
-                  >
-                    All
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Stats Summary */}
-        {!isLoading && puzzles.length > 0 && (selectedSource !== 'all' || multiTestFilter !== 'all' || showRichMetrics) && (
-          <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-slate-800">
-                <BarChart3 className="h-5 w-5 text-indigo-600" />
-                Filter Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                {selectedSource !== 'all' && (
-                  <div className="bg-white/70 rounded p-3 text-center">
-                    <div className="font-semibold text-green-700">{selectedSource}</div>
-                    <div className="text-xs text-gray-600">Dataset Focus</div>
-                  </div>
-                )}
-                {multiTestFilter !== 'all' && (
-                  <div className="bg-white/70 rounded p-3 text-center">
-                    <div className="font-semibold text-purple-700">{multiTestFilter === 'multi' ? 'Multi-Test' : 'Single-Test'}</div>
-                    <div className="text-xs text-gray-600">Test Type</div>
-                  </div>
-                )}
-                {showRichMetrics && puzzles.length > 0 && (
-                  <>
-                    <div className="bg-white/70 rounded p-3 text-center">
-                      <div className="font-semibold text-blue-700">
-                        {Math.round(puzzles.reduce((total: number, p: any) => {
-                          const tokens = p.performanceData?.avgTotalTokens || 0;
-                          const count = p.performanceData?.totalExplanations || 1;
-                          return total + (tokens * count);
-                        }, 0) / puzzles.reduce((sum: number, p: any) => sum + (p.performanceData?.totalExplanations || 1), 0)).toLocaleString()}
-                      </div>
-                      <div className="text-xs text-gray-600">Avg Tokens</div>
-                    </div>
-                    <div className="bg-white/70 rounded p-3 text-center">
-                      <div className="font-semibold text-orange-700">
-                        ${(puzzles.reduce((total: number, p: any) => {
-                          const cost = p.performanceData?.avgCost || 0;
-                          const count = p.performanceData?.totalExplanations || 1;
-                          return total + (cost * count);
-                        }, 0) / puzzles.reduce((sum: number, p: any) => sum + (p.performanceData?.totalExplanations || 1), 0)).toFixed(4)}
-                      </div>
-                      <div className="text-xs text-gray-600">Avg Cost</div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Results */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800 flex flex-wrap items-center gap-2">
-              Most Difficult Puzzles
-              {!isLoading && (
-                <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                  {searchQuery.trim() ? `${filteredPuzzles.length} of ${total}` : `${total} found`}
-                </Badge>
-              )}
-              {selectedSource !== 'all' && (
-                <Badge className="bg-green-100 text-green-800 border-green-200">
-                  {selectedSource.replace('-', ' ')}
-                </Badge>
-              )}
-              {multiTestFilter !== 'all' && (
-                <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-                  {multiTestFilter === 'multi' ? 'Multi-test only' : 'Single-test only'}
-                </Badge>
-              )}
-              {showRichMetrics && (
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                  Rich metrics
-                </Badge>
-              )}
-              {zeroAccuracyOnly && (
-                <Badge className="bg-red-100 text-red-800 border-red-200">
-                  0% accuracy only
-                </Badge>
-              )}
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Puzzles with lowest LLM accuracy rates - sorted by {sortBy === 'composite' ? 'composite difficulty' : sortBy}
-              {selectedSource === 'ARC2-Eval' && (
-                <span className="text-green-700 font-medium"> • Focus: ARC 2 Evaluation Dataset</span>
-              )}
-            </p>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-                <p>Loading most difficult puzzles...</p>
-              </div>
-            ) : filteredPuzzles.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No analyzed puzzles found.</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Run some AI analyses first!
-                </p>
-              </div>
-            ) : (
-              <div className={`grid gap-4 ${
-                compactView 
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
-                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-              }`}>
-                {filteredPuzzles.map((puzzle: any) => (
-                  <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02] border-l-4 border-l-red-400">
-                    <CardContent className={compactView ? "p-3" : "p-4"}>
-                      <div className={compactView ? "space-y-2" : "space-y-3"}>
-                        <div className="flex items-center justify-between">
-                          <code className="text-sm font-mono bg-red-100 px-2 py-1 rounded text-red-800">
-                            {puzzle.id}
-                          </code>
-                          <div className="text-xs flex items-center gap-1">
-                            <Grid3X3 className="h-3 w-3" /> 
-                            {puzzle.maxGridSize ? `${puzzle.maxGridSize}x${puzzle.maxGridSize}` : 'Unknown'}
-                            {puzzle.source && (
-                              <Badge variant="outline" className={`text-xs ${
-                                puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
-                                puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
-                                puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
-                                puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
-                                'bg-gray-50 text-gray-700'
-                              }`}>
-                                {puzzle.source?.replace('-Eval', ' Eval')}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Difficulty Metrics */}
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-red-500" />
-                            <span className="text-sm font-medium text-red-700">LLM Difficulty</span>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-1">
-                            <Badge variant="outline" className={`text-xs ${getAccuracyBadgeColor(puzzle.performanceData?.avgAccuracy || 0)}`}>
-                              {formatAccuracy(puzzle.performanceData?.avgAccuracy || 0)} accuracy
-                            </Badge>
-                            {puzzle.performanceData?.wrongCount > 0 && (
-                              <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
-                                {puzzle.performanceData.wrongCount} wrong
-                              </Badge>
-                            )}
-                            {puzzle.performanceData?.negativeFeedback > 0 && (
-                              <Badge variant="outline" className="bg-pink-50 text-pink-700 text-xs flex items-center gap-1">
-                                <MessageSquare className="h-3 w-3" />
-                                {puzzle.performanceData.negativeFeedback} negative
-                              </Badge>
-                            )}
-                            {puzzle.performanceData?.lowestNonZeroConfidence !== undefined && (
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs ${getConfidenceBadgeColor(puzzle.performanceData.lowestNonZeroConfidence)}`}
-                                title="Lowest non-zero confidence score across all attempts"
-                              >
-                                {formatConfidence(puzzle.performanceData.lowestNonZeroConfidence)} confidence
-                              </Badge>
-                            )}
-                            {/* Multi-test indicator */}
-                            {showRichMetrics && puzzle.performanceData?.multiTestCount > 0 && (
-                              <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
-                                {puzzle.performanceData.multiTestCount} multi-test
-                              </Badge>
-                            )}
-                            {showRichMetrics && puzzle.performanceData?.singleTestCount > 0 && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
-                                {puzzle.performanceData.singleTestCount} single-test
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-1 text-sm text-gray-600">
-                          <div className="flex justify-between">
-                            <span>Total Analyses:</span>
-                            <span className="font-medium">{puzzle.performanceData?.totalExplanations || 0}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Total Feedback:</span>
-                            <span className="font-medium">{puzzle.performanceData?.totalFeedback || 0}</span>
-                          </div>
-                          {puzzle.performanceData?.latestAnalysis && (
-                            <div className="flex justify-between">
-                              <span>Latest:</span>
-                              <span className="font-medium text-xs">
-                                {new Date(puzzle.performanceData.latestAnalysis).toLocaleDateString()}
-                              </span>
-                            </div>
-                          )}
-                          
-                          {/* Rich metrics display */}
-                          {showRichMetrics && (
-                            <>
-                              {puzzle.performanceData?.avgCost > 0 && (
-                                <div className="flex justify-between items-center">
-                                  <span className="flex items-center gap-1">
-                                    <DollarSign className="h-3 w-3 text-green-600" />
-                                    Avg Cost:
-                                  </span>
-                                  <span className="font-medium text-xs">${(puzzle.performanceData.avgCost).toFixed(4)}</span>
-                                </div>
-                              )}
-                              {puzzle.performanceData?.avgProcessingTime > 0 && (
-                                <div className="flex justify-between items-center">
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3 text-blue-600" />
-                                    Processing:
-                                  </span>
-                                  <span className="font-medium text-xs">{(puzzle.performanceData.avgProcessingTime / 1000).toFixed(1)}s</span>
-                                </div>
-                              )}
-                              {puzzle.performanceData?.avgTotalTokens > 0 && (
-                                <div className="flex justify-between items-center">
-                                  <span className="flex items-center gap-1">
-                                    <Zap className="h-3 w-3 text-orange-600" />
-                                    Tokens:
-                                  </span>
-                                  <span className="font-medium text-xs">{Math.round(puzzle.performanceData.avgTotalTokens).toLocaleString()}</span>
-                                </div>
-                              )}
-                              {puzzle.performanceData?.modelsAttempted?.length > 0 && (
-                                <div className="flex justify-between items-center">
-                                  <span className="flex items-center gap-1">
-                                    <Target className="h-3 w-3 text-purple-600" />
-                                    Models:
-                                  </span>
-                                  <span className="font-medium text-xs" title={puzzle.performanceData.modelsAttempted.join(', ')}>
-                                    {puzzle.performanceData.modelsAttempted.length} tried
-                                  </span>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2">
-                          <Button asChild size="sm" className="flex-1 bg-red-600 hover:bg-red-700">
-                            <Link href={`/examine/${puzzle.id}`}>
-                              <Eye className="h-4 w-4 mr-1" />
-                              Analyze Puzzle
-                            </Link>
-                          </Button>
-                          <Button asChild size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                            <Link href={`/puzzle/${puzzle.id}/view`}>
-                              <MessageSquare className="h-4 w-4 mr-1" />
-                              View Database
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Instructions */}
-        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+  // No taskId - show instructions
+  if (!taskId) {
+    return (
+      <div className="w-full space-y-4">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <RefreshCw className="h-5 w-5 text-orange-600" />
-              Understanding Puzzle Difficulty
+              <Sparkles className="h-6 w-6" />
+              AI Self-Conversation
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <p className="font-semibold text-slate-800 mb-2">📊 Accuracy Scoring</p>
-                <ul className="space-y-1 text-slate-600">
-                  <li>• <strong>0% Accuracy:</strong> No LLM got it right</li>
-                  <li>• <strong>Low Accuracy (&lt;30%):</strong> Very few correct predictions</li>
-                  <li>• <strong>Low Confidence (1-25%):</strong> LLMs very unsure of their answers</li>
-                  <li>• <strong>Negative Feedback:</strong> Human reviewers found issues</li>
-                </ul>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-800 mb-2">🔍 Analysis Options</p>
-                <ul className="space-y-1 text-slate-600">
-                  <li>• Click "Analyze Puzzle" to run AI analysis</li>
-                  <li>• Click "View Database" to see all LLM attempts</li>
-                  <li>• Try different models on challenging puzzles</li>
-                  <li>• Compare results across different approaches</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="bg-white/70 rounded p-3 mt-4">
-              <p className="font-medium text-orange-800">
-                💡 These puzzles represent the current frontier of AI reasoning ability. 
-                0% accuracy puzzles are completely unsolved by current LLMs.
+          <CardContent>
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Watch an AI model progressively refine its own analysis through multiple turns,
+                building on previous reasoning with full context retention.
               </p>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-900 mb-2">How it works:</h3>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+                  <li>Generate an initial analysis for any puzzle</li>
+                  <li>Click "Start Debate" to begin self-conversation</li>
+                  <li>The AI refines its own analysis iteratively</li>
+                  <li>Each turn includes full context via response chaining</li>
+                  <li>Add custom prompts to guide refinement direction</li>
+                </ol>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h3 className="font-semibold text-amber-900 mb-2">Best with reasoning models:</h3>
+                <ul className="list-disc list-inside space-y-1 text-sm text-amber-800">
+                  <li>OpenAI: o3, o4, o4-mini (reasoning exposed)</li>
+                  <li>xAI: grok-4, grok-4-fast (reasoning exposed)</li>
+                  <li>Other models work but reasoning may not be visible</li>
+                </ul>
+              </div>
+
+              <div className="text-center pt-4">
+                <p className="text-sm text-muted-foreground mb-3">Enter a puzzle ID to begin:</p>
+                <PuzzleDebateHeader />
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
+    );
+  }
+
+  // Main interface (same structure as ModelDebate)
+  return (
+    <div className="w-full space-y-1">
+      <PuzzleDebateHeader taskId={taskId} />
+
+      <CompactPuzzleDisplay
+        trainExamples={task!.train}
+        testCases={task!.test}
+      />
+
+      {debateState.isDebateActive && explanations ? (
+        (() => {
+          const selectedExplanation = explanations.find(e => e.id === debateState.selectedExplanationId);
+          if (!selectedExplanation) {
+            return (
+              <Alert>
+                <AlertDescription>
+                  Selected explanation not found. <Button variant="link" onClick={debateState.endDebate}>Return to list</Button>
+                </AlertDescription>
+              </Alert>
+            );
+          }
+          return (
+            <IndividualDebate
+              originalExplanation={selectedExplanation}
+              debateMessages={debateState.debateMessages}
+              taskId={taskId}
+              testCases={task!.test}
+              models={models}
+              task={task}
+              challengerModel={debateState.challengerModel}
+              customChallenge={debateState.customChallenge}
+              processingModels={processingModels}
+              analyzerErrors={analyzerErrors}
+              onBackToList={debateState.endDebate}
+              onResetDebate={debateState.resetDebate}
+              onChallengerModelChange={debateState.setChallengerModel}
+              onCustomChallengeChange={debateState.setCustomChallenge}
+              onGenerateChallenge={handleGenerateRefinement}
+            />
+          );
+        })()
+      ) : explanations && explanations.length > 0 ? (
+        <ExplanationsList
+          explanations={explanations}
+          models={models}
+          testCases={task!.test}
+          correctnessFilter={debateState.correctnessFilter}
+          onCorrectnessFilterChange={debateState.setCorrectnessFilter}
+          onStartDebate={handleStartConversation}
+        />
+      ) : (
+        <Card>
+          <CardContent className="text-center py-8">
+            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500 mb-4">No explanations for this puzzle yet.</p>
+            <p className="text-sm text-gray-400 mb-4">Generate an AI explanation first, then start a self-conversation.</p>
+            <Link href={`/puzzle/${taskId}`}>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Generate First Explanation
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
