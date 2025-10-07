@@ -106,8 +106,20 @@ async function testAnalyzePuzzle(puzzleId: string): Promise<void> {
 
     const analysisData = analysisResponse.data.data;
     console.log('✅ Analysis API call successful!');
-    console.log(`   - Pattern Description: ${analysisData.patternDescription?.substring(0, 100)}...`);
-    console.log(`   - Solving Strategy: ${analysisData.solvingStrategy?.substring(0, 100)}...`);
+    console.log(`   - Pattern Description: ${(() => {
+      const desc = analysisData.patternDescription;
+      if (typeof desc === 'string') {
+        return desc.substring(0, 100) + '...';
+      }
+      return String(desc || 'N/A');
+    })()}`);
+    console.log(`   - Solving Strategy: ${(() => {
+      const strategy = analysisData.solvingStrategy;
+      if (typeof strategy === 'string') {
+        return strategy.substring(0, 100) + '...';
+      }
+      return String(strategy || 'N/A');
+    })()}`);
     console.log(`   - Confidence: ${analysisData.confidence || 'N/A'}`);
     console.log(`   - Has Prediction: ${analysisData.predictedOutput ? 'Yes' : 'No'}`);
 

@@ -187,6 +187,21 @@ Model Debate system automatically chains conversations with provider awareness:
 - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical details
 - `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation
 
+**Self-Conversation Mode (PuzzleDiscussion):**
+Progressive reasoning refinement where one model refines its own analysis:
+- Same conversation chaining infrastructure as ModelDebate
+- Auto-locks to single model (Model A → Model A → Model A)
+- Each turn passes `previousResponseId` to maintain full reasoning context
+- Ideal for reasoning models (grok-4, o3, o4) to iteratively improve solutions
+- Reuses all ModelDebate components (IndividualDebate, ExplanationsList, RebuttalCard)
+- Access via `/discussion/:taskId` route
+
+**Use Cases:**
+- Deep-dive refinement with reasoning models
+- Iterative solution improvement
+- Progressive exploration of alternatives
+- Building progressively complex reasoning chains
+
 ### External API Documentation
 For external integrations, see:
 - `docs/EXTERNAL_API.md` - Complete API endpoint reference for external applications
