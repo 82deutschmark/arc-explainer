@@ -22,6 +22,7 @@ import { saturnController } from "./controllers/saturnController";
 import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
+import { batchController } from './controllers/batchController.ts';
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -166,7 +167,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
   
   // Batch analysis routes
-  
+  app.post("/api/batch/start", asyncHandler(batchController.startBatch));
+  app.get("/api/batch/status/:sessionId", asyncHandler(batchController.getBatchStatus));
+  app.post("/api/batch/pause/:sessionId", asyncHandler(batchController.pauseBatch));
+  app.post("/api/batch/resume/:sessionId", asyncHandler(batchController.resumeBatch));
+  app.get("/api/batch/results/:sessionId", asyncHandler(batchController.getBatchResults));
+  app.get("/api/batch/sessions", asyncHandler(batchController.listSessions));
+
   // Admin routes
   app.use("/api/admin", adminController);
 
