@@ -15,10 +15,11 @@ import React from 'react';
 import { Link } from 'wouter';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning, Link2 } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning, Link2, Brain } from 'lucide-react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 import { useToast } from '@/hooks/use-toast';
+import type { ExplanationData } from '@/types/puzzle';
 
 interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'result' | 'model'> {
   modelKey: string;
@@ -48,6 +49,40 @@ const formatTokens = (tokens: number): string => {
   } else {
     return tokens.toString();
   }
+};
+
+// Check if model supports reasoning persistence (server-side reasoning storage)
+const isReasoningModel = (modelName: string): boolean => {
+  const normalized = modelName.toLowerCase();
+  return normalized.includes('gpt-5') ||
+         normalized.includes('o3') ||
+         normalized.includes('o4') ||
+         normalized.includes('grok-4');
+};
+
+// Check if explanation is eligible for progressive reasoning refinement
+// Must meet ALL criteria: reasoning model, valid response ID, recent, within retention window
+const canRefineAnalysis = (result: ExplanationData): boolean => {
+  // Must be a reasoning model
+  if (!isReasoningModel(result.modelName)) return false;
+
+  // Must have a provider response ID (conversation chaining support)
+  if (!result.providerResponseId) return false;
+
+  // Must be created after Oct 6, 2025 (when feature was implemented)
+  const createdDate = new Date(result.createdAt);
+  const implementationDate = new Date('2025-10-06T00:00:00Z');
+  if (createdDate < implementationDate) return false;
+
+  // Must be within 30-day retention window (provider-side storage limit)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  if (createdDate < thirtyDaysAgo) return false;
+
+  // Must have puzzle ID and explanation ID for linking
+  if (!result.puzzleId || !result.id) return false;
+
+  return true;
 };
 
 export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
@@ -164,6 +199,19 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
                 className="flex items-center gap-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 cursor-pointer ml-auto transition-colors">
                 <MessageSquareWarning className="h-3 w-3" />
                 <span className="text-xs font-medium">Get a second opinion!</span>
+              </Badge>
+            </Link>
+          )}
+
+          {/* Refine This Analysis badge - only for eligible reasoning models */}
+          {canRefineAnalysis(result) && (
+            <Link href={`/discussion/${result.puzzleId}?select=${result.id}`}>
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700 hover:from-purple-100 hover:to-blue-100 cursor-pointer transition-all"
+                title="Progressive reasoning with server-side memory (30-day retention)">
+                <Brain className="h-3 w-3" />
+                <span className="text-xs font-medium">Refine This Analysis</span>
               </Badge>
             </Link>
           )}
