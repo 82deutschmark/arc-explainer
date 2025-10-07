@@ -1,5 +1,120 @@
 ## [2025-10-06]
 
+## v3.6.3 - PuzzleDiscussion Feature Discoverability & UI Enhancements
+
+### Added
+- **"Refine This Analysis" Badge in AnalysisResultHeader**
+  - Purple/blue gradient badge appears next to "Get a second opinion!" badge
+  - Links directly to `/discussion/:puzzleId?select=:explanationId`
+  - Auto-starts progressive reasoning conversation with selected explanation
+  - Strict eligibility checks ensure badge only shows when feature will work:
+    * Must be reasoning model (GPT-5, o-series, Grok-4)
+    * Must have `providerResponseId` in database
+    * Must be created after Oct 6, 2025 (implementation date)
+    * Must be within 30-day provider retention window
+    * Prevents confusion from expired or unsupported analyses
+  - Files: `client/src/components/puzzle/AnalysisResultHeader.tsx`
+
+- **Auto-Selection Query Parameter Support**
+  - PuzzleDiscussion now supports `?select=:explanationId` URL parameter
+  - Automatically starts conversation when explanation ID provided
+  - Enables direct deep-linking to specific explanations from other pages
+  - Console logging for debugging auto-selection behavior
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Enhanced
+- **PuzzleDiscussion Welcome Screen**
+  - Completely redesigned to emphasize server-side reasoning persistence
+  - Prominent callout explaining 30-day reasoning token retention
+  - Visual token growth examples (Turn 1: 45k → Turn 2: accesses 45k, etc.)
+  - Cost savings explanation (no re-sending reasoning tokens)
+  - Provider requirements clearly stated (GPT-5, o-series, Grok-4)
+  - Updated button text: "Refine Analysis" instead of "Ask other LLM"
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **ExplanationsList Context Awareness**
+  - Added `pageContext` prop ('debate' | 'discussion')
+  - Context-aware UI text for PuzzleDiscussion vs ModelDebate:
+    * Discussion: "Select Analysis to Refine" + reasoning persistence explanation
+    * Debate: "Explanations Available for Debate" (unchanged)
+  - Reasoning persistence alert box (discussion context only):
+    * Explains server-side storage and full context retention
+    * Shows provider compatibility warnings for non-reasoning models
+    * Displays before user selects explanation
+  - Auto-detects non-reasoning models and shows compatibility warning
+  - Files: `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Reasoning Token Metrics Display**
+  - Added reasoning token display to RebuttalCard component
+  - Added reasoning token display to OriginalExplanationCard component
+  - Shows per-turn reasoning tokens with visual progress bar (0-100k scale)
+  - Displays cumulative reasoning token count across conversation
+  - Purple-themed UI matching reasoning persistence branding
+  - Files: `client/src/components/puzzle/debate/RebuttalCard.tsx`, `client/src/components/puzzle/debate/OriginalExplanationCard.tsx`
+
+- **IndividualDebate Component Customization**
+  - Added `challengeButtonText` prop for context-specific button labels
+  - PuzzleDiscussion: "Refine Analysis" button
+  - ModelDebate: "Generate Challenge" button (default)
+  - Files: `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+- **Active Conversation Status Alerts**
+  - Shows reasoning chain status when conversation is active
+  - Displays total accessible reasoning tokens
+  - Provider badges (OpenAI/xAI) with 30-day retention indicator
+  - Turn count and provider information
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Fixed
+- **Missing Context in ExplanationsList**
+  - PuzzleDiscussion users previously saw confusing ModelDebate language
+  - "Start Debate" button now says "Start Refinement" in discussion context
+  - Reasoning persistence feature no longer hidden until after selection
+
+### Technical Details
+
+**Helper Functions Added:**
+```typescript
+// AnalysisResultHeader.tsx
+isReasoningModel(modelName: string): boolean
+canRefineAnalysis(result: ExplanationData): boolean
+
+// PuzzleDiscussion.tsx
+isReasoningModel(modelName: string): boolean
+getProviderName(modelName: string): string
+```
+
+**Eligibility Logic:**
+Badge shows ONLY when ALL criteria met:
+1. Model is GPT-5, o-series (o3, o4, o4-mini), or Grok-4
+2. Has `providerResponseId` stored in database
+3. Created after Oct 6, 2025 00:00:00 UTC
+4. Created within last 30 days
+5. Has both puzzle ID and explanation ID
+
+**URL Parameter Format:**
+```
+/discussion/:puzzleId?select=:explanationId
+Example: /discussion/42a15761?select=123
+```
+
+### Impact
+- **Discoverability**: Users can now find PuzzleDiscussion from PuzzleExaminer
+- **Education**: Clear explanations of reasoning persistence before use
+- **Safety**: Strict checks prevent badge from showing for incompatible analyses
+- **UX**: Auto-selection eliminates extra navigation step
+- **Clarity**: Distinct UI language for discussion vs debate contexts
+
+### Files Modified
+- `client/src/components/puzzle/AnalysisResultHeader.tsx` - Badge + eligibility checks
+- `client/src/components/puzzle/debate/ExplanationsList.tsx` - Context awareness
+- `client/src/components/puzzle/debate/RebuttalCard.tsx` - Reasoning metrics
+- `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` - Reasoning metrics
+- `client/src/components/puzzle/debate/IndividualDebate.tsx` - Button customization
+- `client/src/pages/PuzzleDiscussion.tsx` - Welcome screen + auto-selection + status alerts
+
+---
+
 ## v3.6.2 - Responses API Conversation Chaining (Complete Implementation)
 
 ### Fixed
