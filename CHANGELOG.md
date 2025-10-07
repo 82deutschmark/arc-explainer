@@ -1,3 +1,179 @@
+## [2025-10-07]
+
+## v3.7.0 - Batch Analysis Web UI with Pause/Resume and Auto-Recovery
+
+### Added
+- **Batch Analysis Web UI** (Complete Redesign)
+  - **NEW PAGE:** `/models` - Full-featured batch analysis interface
+  - Model selector: Grok-4 variants, OpenAI o-series, GPT-5
+  - Dataset selector: ARC-1 Eval (400 puzzles), ARC-2 Eval (120 puzzles)
+  - Real-time progress tracking with 2-second auto-refresh
+  - Pause/resume/cancel controls for long-running batches
+  - Results table showing ✓ correct / ✗ incorrect per puzzle
+  - Files: `client/src/pages/ModelBrowser.tsx` (replaced stub)
+
+- **Backend Batch Controller**
+  - **NEW:** `server/controllers/batchController.ts`
+  - In-memory session management (Map-based, production could use Redis)
+  - Auto-resume capability: Queries database to skip already-analyzed puzzles
+  - Pause/resume/cancel controls with session persistence
+  - Real-time progress tracking with per-puzzle results
+  - Error isolation: Failed puzzles logged but don't abort batch
+  - Background processing with async queue
+
+- **API Endpoints**
+  - `POST /api/batch/start` - Start batch analysis
+  - `GET /api/batch/status/:sessionId` - Real-time status polling
+  - `POST /api/batch/pause/:sessionId` - Pause execution
+  - `POST /api/batch/resume/:sessionId` - Resume from pause
+  - `GET /api/batch/results/:sessionId` - Detailed results
+  - `GET /api/batch/sessions` - List all active sessions
+  - Files: `server/routes.ts` (added batch routes)
+
+- **React Hooks for Batch Management**
+  - **NEW:** `client/src/hooks/useBatchAnalysis.ts`
+  - TanStack Query hooks for all batch operations
+  - Auto-refresh every 2 seconds during execution
+  - Stops auto-refresh when batch completes/fails
+  - Combined workflow hook: `useBatchAnalysis()` for full lifecycle
+
+- **Batch Results Table Component**
+  - **NEW:** `client/src/components/batch/BatchResultsTable.tsx`
+  - shadcn/ui Table with visual indicators
+  - Status icons: ✓ Correct, ✗ Incorrect, ⏱ Pending, ⚡ Analyzing, ⊖ Skipped
+  - Processing time per puzzle
+  - Error messages for failed analyses
+  - Analysis ID tracking for database reference
+
+### Enhanced
+- **Component Reuse**
+  - Integrated existing `ExaminerControls.tsx` for pause/resume buttons
+  - Integrated existing `ExaminerProgress.tsx` for progress bar display
+  - Removed "DEPRECATED" markers (components now actively used)
+
+### Technical Details
+**Auto-Resume Logic:**
+```typescript
+// Queries database for existing model analyses
+const explanations = await repositoryService.explanation.getExplanationsForPuzzle(puzzleId);
+const hasAnalysis = explanations.some(exp => exp.modelName === modelName);
+// Skips puzzles already analyzed, only processes new ones
+```
+
+**Session Management:**
+- In-memory Map storage (sessions lost on server restart)
+- Alternative: Old `BatchAnalysisRepository.ts` uses database (not currently used)
+- Production could use Redis for distributed session management
+
+**Recovery Features:**
+- Auto-resume: Re-running same model+dataset skips completed puzzles
+- Pause capability: Stop mid-run, resume from exact position
+- Error isolation: Failed puzzles don't abort batch
+- Session tracking: Unique session ID for monitoring
+
+### Files Created
+- `server/controllers/batchController.ts` - Batch orchestration
+- `client/src/pages/ModelBrowser.tsx` - UI (replaced stub)
+- `client/src/hooks/useBatchAnalysis.ts` - React hooks
+- `client/src/components/batch/BatchResultsTable.tsx` - Results display
+
+### Files Modified
+- `server/routes.ts` - Added 6 batch endpoints
+
+---
+
+## v3.6.5 - Grok-4 Structured Outputs with Graceful Fallback
+
+### Added
+- **Grok-4 Structured JSON Schema**
+  - **NEW:** `server/services/schemas/grokJsonSchema.ts`
+  - Minimal schema avoiding unsupported constraints (no minLength/maxLength/minItems/maxItems)
+  - Shallow nesting to prevent grammar errors
+  - Fields: `multiplePredictedOutputs`, `predictedOutput`, `confidence`, etc.
+  - `additionalProperties: false` for strict validation
+
+- **Structured Output Support in Grok Service**
+  - Request structured outputs via `response_format.json_schema`
+  - Graceful fallback: Detects grammar/schema errors (400/422/503)
+  - Retries once without schema on error, then continues
+  - Robust parsing: `output_parsed` → `output_text` → `output[]` blocks
+  - Full token accounting with `reasoning_tokens` tracking
+  - Files: `server/services/grok.ts`
+
+- **Batch Script Enhancements**
+  - **NEW FLAGS:**
+    - `--limit N` or `-n N`: Restrict run to first N puzzles (smoke testing)
+    - `--tail N`: Take last N puzzles (useful for testing end of dataset)
+  - Concurrency control via `XAI_MAX_CONCURRENCY` env (default: 2)
+  - Improved error messages and progress reporting
+  - Updated scripts:
+    - `scripts/grok-4-fast-reasoning.ts`
+    - `scripts/grok-4-fast-non-reasoning.ts`
+    - `scripts/grok-4.ts`
+
+### Fixed
+- **Critical: Missing providerResponseId Mapping**
+  - **Problem:** Backend returned `providerResponseId` but frontend never mapped it
+  - **Impact:** ALL explanations appeared ineligible for conversation chaining
+  - **Solution:** Added `providerResponseId` mapping in `useExplanation` hook
+  - Files: `client/src/hooks/useExplanation.ts`
+
+- **PuzzleDiscussion Minor UI Improvements**
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Import Path Correction**
+  - Fixed import path in `server/controllers/discussionController.ts`
+
+### Documentation
+- **NEW:** `docs/2025-10-07-grok4-structured-outputs-enable-arc2-batch.md`
+  - Complete guide for Grok-4 structured outputs
+  - Request shape, schema contents, fallback behavior
+  - Batch run settings and operational notes
+  - Resume mode instructions
+
+- **NEW:** `docs/2025-10-07-plan-docs-responses-api-audit.md`
+  - Response API audit planning document
+
+- **NEW:** `docs/06102025-PuzzleDiscussion-Complete-Redesign-Summary.md`
+  - PuzzleDiscussion redesign summary
+
+- **Updated:** Multiple docs with Grok-4 structured outputs info
+  - `docs/EXTERNAL_API.md`
+  - `docs/HOOKS_REFERENCE.md`
+  - `docs/DEVELOPER_GUIDE.md`
+  - `docs/xAI-API.md`
+  - `docs/Analytics_Database_Architecture.md`
+  - `docs/Analysis_Data_Flow_Trace.md`
+  - `docs/Responses_API_Chain_Storage_Analysis.md`
+  - `knowledge.md`
+  - `CLAUDE.md`
+  - `README.md`
+
+### Cleanup
+- **Deleted:** `debug-chars.js` - Removed debug file
+
+### Technical Details
+**Structured Output Request:**
+```typescript
+body.response_format = {
+  type: "json_schema",
+  json_schema: { schema: GROK_JSON_SCHEMA.schema }
+};
+// No name/strict parameters (xAI-specific)
+```
+
+**Fallback Behavior:**
+```typescript
+// Detect grammar/schema errors
+if (error.status in [400, 422, 503] && /grammar|schema/i.test(errorBody)) {
+  logger.warn('Disabling structured output due to grammar/schema error');
+  delete body.response_format;
+  // Retry once without schema
+}
+```
+
+---
+
 ## [2025-10-06]
 
 ## v3.6.4 - PuzzleDiscussion Page Complete Redesign
