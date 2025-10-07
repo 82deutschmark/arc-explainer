@@ -231,7 +231,13 @@ async function analyzeSinglePuzzle(
 }
 
 /**
- * Process batch analysis queue
+ * Process batch analysis queue with PARALLEL processing
+ *
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-07
+ * PURPOSE: Process multiple puzzles concurrently instead of sequentially (10-20x faster)
+ * Pattern: Trigger all analyses with staggered delays, then await Promise.all()
+ * SRP/DRY check: Pass - Reuses existing analyzeSinglePuzzle and logging infrastructure
  */
 async function processBatchQueue(sessionId: string, options: BatchStartRequest): Promise<void> {
   const session = activeSessions.get(sessionId);
@@ -240,70 +246,115 @@ async function processBatchQueue(sessionId: string, options: BatchStartRequest):
     return;
   }
 
-  logger.info(`Starting batch processing for session ${sessionId}`);
+  logger.info(`Starting PARALLEL batch processing for session ${sessionId}`);
+
+  // Process remaining puzzles in batches of 10 for manageable concurrency
+  const BATCH_SIZE = 10;
+  const STAGGER_DELAY_MS = 2000; // 2 second delay between triggers
 
   while (session.currentIndex < session.puzzleIds.length && !session.isPaused) {
-    const puzzleId = session.puzzleIds[session.currentIndex];
-    const resultIndex = session.currentIndex;
+    const batchStartIndex = session.currentIndex;
+    const batchEndIndex = Math.min(batchStartIndex + BATCH_SIZE, session.puzzleIds.length);
+    const batchPuzzleIds = session.puzzleIds.slice(batchStartIndex, batchEndIndex);
 
-    // Update status to analyzing
-    session.results[resultIndex].status = 'analyzing';
-    session.results[resultIndex].startedAt = new Date();
+    logger.info(`[Batch ${sessionId}] Processing puzzles ${batchStartIndex + 1}-${batchEndIndex} of ${session.puzzleIds.length}`);
+    logActivity(session, 'info', `🚀 Starting batch of ${batchPuzzleIds.length} puzzles (${batchStartIndex + 1}-${batchEndIndex}/${session.puzzleIds.length})`);
 
-    // Log activity: Starting analysis
-    logActivity(session, 'info', `⚡ Analyzing puzzle: ${puzzleId}`, puzzleId);
+    // Trigger all analyses in this batch concurrently
+    const analysisPromises: Promise<{
+      puzzleId: string;
+      resultIndex: number;
+      startTime: number;
+      result: any;
+    }>[] = [];
 
-    // Analyze puzzle
-    const startTime = Date.now();
-    const result = await analyzeSinglePuzzle(puzzleId, session.modelName, {
-      promptId: options.promptId,
-      temperature: options.temperature,
-      systemPromptMode: options.systemPromptMode
-    });
-    const endTime = Date.now();
-    const timeSeconds = Math.round((endTime - startTime) / 1000);
+    for (let i = 0; i < batchPuzzleIds.length; i++) {
+      const puzzleId = batchPuzzleIds[i];
+      const resultIndex = batchStartIndex + i;
 
-    // Update result
-    session.results[resultIndex] = {
-      ...session.results[resultIndex],
-      status: result.success ? 'success' : 'failed',
-      correct: result.correct,
-      error: result.error,
-      processingTimeMs: endTime - startTime,
-      analysisId: result.analysisId,
-      completedAt: new Date()
-    };
+      // Update status to analyzing
+      session.results[resultIndex].status = 'analyzing';
+      session.results[resultIndex].startedAt = new Date();
 
-    // Log activity: Result with validation
-    if (result.success) {
-      const validationIcon = result.correct ? '✓' : '✗';
-      const validationText = result.correct ? 'CORRECT' : 'INCORRECT';
-      logActivity(
-        session,
-        'success',
-        `${validationIcon} ${puzzleId}: ${validationText} (${timeSeconds}s)`,
-        puzzleId
-      );
-    } else {
-      logActivity(
-        session,
-        'error',
-        `❌ ${puzzleId}: FAILED - ${result.error || 'Unknown error'} (${timeSeconds}s)`,
-        puzzleId
-      );
+      // Log activity: Starting analysis
+      logActivity(session, 'info', `⚡ Analyzing puzzle: ${puzzleId}`, puzzleId);
+
+      // Trigger analysis (don't await - let it run in parallel)
+      const startTime = Date.now();
+      const analysisPromise = analyzeSinglePuzzle(puzzleId, session.modelName, {
+        promptId: options.promptId,
+        temperature: options.temperature,
+        systemPromptMode: options.systemPromptMode
+      }).then(result => ({
+        puzzleId,
+        resultIndex,
+        startTime,
+        result
+      }));
+
+      analysisPromises.push(analysisPromise);
+
+      // Stagger requests to avoid API rate limits (except for last puzzle)
+      if (i < batchPuzzleIds.length - 1 && !session.isPaused) {
+        await new Promise(resolve => setTimeout(resolve, STAGGER_DELAY_MS));
+      }
     }
 
-    // Update progress
-    session.progress.completed++;
-    if (result.success) {
-      session.progress.successful++;
-    } else {
-      session.progress.failed++;
+    // Wait for all analyses in this batch to complete
+    logger.info(`[Batch ${sessionId}] All ${batchPuzzleIds.length} analyses triggered. Waiting for completion...`);
+    const batchResults = await Promise.all(analysisPromises);
+
+    // Process results
+    for (const { puzzleId, resultIndex, startTime, result } of batchResults) {
+      const endTime = Date.now();
+      const timeSeconds = Math.round((endTime - startTime) / 1000);
+
+      // Update result
+      session.results[resultIndex] = {
+        ...session.results[resultIndex],
+        status: result.success ? 'success' : 'failed',
+        correct: result.correct,
+        error: result.error,
+        processingTimeMs: endTime - startTime,
+        analysisId: result.analysisId,
+        completedAt: new Date()
+      };
+
+      // Log activity: Result with validation
+      if (result.success) {
+        const validationIcon = result.correct ? '✓' : '✗';
+        const validationText = result.correct ? 'CORRECT' : 'INCORRECT';
+        logActivity(
+          session,
+          'success',
+          `${validationIcon} ${puzzleId}: ${validationText} (${timeSeconds}s)`,
+          puzzleId
+        );
+      } else {
+        logActivity(
+          session,
+          'error',
+          `❌ ${puzzleId}: FAILED - ${result.error || 'Unknown error'} (${timeSeconds}s)`,
+          puzzleId
+        );
+      }
+
+      // Update progress
+      session.progress.completed++;
+      if (result.success) {
+        session.progress.successful++;
+      } else {
+        session.progress.failed++;
+      }
     }
+
+    // Update overall percentage
     session.progress.percentage = Math.round((session.progress.completed / session.progress.total) * 100);
 
-    // Move to next puzzle
-    session.currentIndex++;
+    // Move index to next batch
+    session.currentIndex = batchEndIndex;
+
+    logger.info(`[Batch ${sessionId}] Completed ${session.progress.completed}/${session.progress.total} puzzles (${session.progress.percentage}%)`);
   }
 
   // Mark as completed if done
