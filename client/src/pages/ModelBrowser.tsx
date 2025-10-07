@@ -23,9 +23,8 @@ import { Database, Sparkles, AlertCircle, Filter, CheckCircle, XCircle } from 'l
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import ExaminerControls from '@/components/model-examiner/ExaminerControls';
 import ExaminerProgress from '@/components/model-examiner/ExaminerProgress';
-import { BatchActivityLog } from '@/components/batch/BatchActivityLog';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
-import { useBatchAnalysis } from '@/hooks/useBatchAnalysis';
+import { useDirectBatchAnalysis } from '@/hooks/useDirectBatchAnalysis';
 
 // Model configurations for batch analysis
 const BATCH_MODELS = [
@@ -49,50 +48,47 @@ export default function ModelBrowser() {
   const [correctnessFilter, setCorrectnessFilter] = useState<'all' | 'correct' | 'incorrect'>('all');
 
   const {
-    sessionId,
-    status,
-    results,
-    isLoading,
-    isPaused,
     isRunning,
+    isPaused,
+    progress,
+    results,
     handleStart,
     handlePause,
     handleResume,
     handleCancel
-  } = useBatchAnalysis();
+  } = useDirectBatchAnalysis();
 
   const handleStartBatch = async () => {
     try {
       await handleStart({
         modelName: selectedModel,
         dataset: selectedDataset,
-        resume: true, // Always use resume mode
         promptId: 'solver',
         temperature: 0.2,
-        systemPromptMode: 'ARC'
+        concurrency: 2 // Like script default
       });
     } catch (error) {
       console.error('Failed to start batch:', error);
     }
   };
 
-  // Transform status for ExaminerProgress component
-  const progressData = status ? {
-    progress: status.progress,
-    status: status.status,
+  // Transform for ExaminerProgress component
+  const progressData = progress.total > 0 ? {
+    progress,
+    status: isRunning ? 'running' : 'completed',
     stats: {
-      overallAccuracy: status.progress.total > 0
-        ? Math.round((status.progress.successful / status.progress.total) * 100)
+      overallAccuracy: progress.total > 0
+        ? Math.round((progress.successful / progress.total) * 100)
         : 0,
-      averageProcessingTime: 0, // Could calculate from results if needed
-      eta: 0 // Could calculate from current progress if needed
+      averageProcessingTime: 0,
+      eta: 0
     }
   } : null;
 
   // Get completed results for display
   const completedResults = React.useMemo(() =>
-    status?.results.filter(r => r.status === 'success' || r.status === 'failed') || []
-  , [status?.results]);
+    results.filter(r => r.status === 'success' || r.status === 'failed')
+  , [results]);
 
   // Filter completed results by correctness
   const filteredResults = React.useMemo(() => {
@@ -198,7 +194,7 @@ export default function ModelBrowser() {
       <ExaminerControls
         isPaused={isPaused}
         isRunning={isRunning}
-        isLoading={isLoading}
+        isLoading={false}
         progress={progressData}
         handleStart={handleStartBatch}
         handlePause={handlePause}
@@ -217,34 +213,16 @@ export default function ModelBrowser() {
       )}
 
       {/* Current Puzzle Indicator */}
-      {isRunning && status && status.results.find(r => r.status === 'analyzing') && (
+      {isRunning && results.find(r => r.status === 'analyzing') && (
         <Alert className="bg-blue-50 border-blue-200">
           <Sparkles className="h-4 w-4 text-blue-600 animate-pulse" />
           <AlertDescription className="flex items-center gap-2">
             <strong>Now analyzing:</strong>
             <code className="font-mono text-sm bg-blue-100 px-2 py-1 rounded">
-              {status.results.find(r => r.status === 'analyzing')?.puzzleId}
+              {results.find(r => r.status === 'analyzing')?.puzzleId}
             </code>
           </AlertDescription>
         </Alert>
-      )}
-
-      {/* Activity Log */}
-      {isRunning && status && status.activityLog && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Live Activity Log</CardTitle>
-            <CardDescription>
-              Real-time updates showing puzzle analysis progress and validation results
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <BatchActivityLog
-              activityLog={status.activityLog}
-              currentPuzzle={status.results.find(r => r.status === 'analyzing')?.puzzleId}
-            />
-          </CardContent>
-        </Card>
       )}
 
       {/* Results Section - Modern UI with badges and cards */}
@@ -389,15 +367,6 @@ export default function ModelBrowser() {
             )}
           </CardContent>
         </Card>
-      )}
-
-      {/* Session Info */}
-      {sessionId && (
-        <Alert>
-          <AlertDescription>
-            <span className="font-mono text-sm">Session ID: {sessionId}</span>
-          </AlertDescription>
-        </Alert>
       )}
     </div>
   );
