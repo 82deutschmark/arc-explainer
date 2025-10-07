@@ -15,7 +15,8 @@ import { useParams, Link } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Plus, Loader2, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MessageSquare, Plus, Loader2, Sparkles, AlertTriangle, Brain, Link2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Reuse ModelDebate components - same UI, same flow
@@ -31,9 +32,13 @@ import { useModels } from '@/hooks/useModels';
 import { useDebateState } from '@/hooks/debate/useDebateState';
 
 // Utility: Identify models that support server-side reasoning persistence
-// OpenAI o-series (o3, o4, o4-mini) and xAI Grok-4 models support Responses API
+// OpenAI GPT-5, o-series (o3, o4, o4-mini) and xAI Grok-4 models support Responses API
 const isReasoningModel = (modelName: string): boolean => {
   const normalizedModel = modelName.toLowerCase();
+  // OpenAI GPT-5 models
+  if (normalizedModel.includes('gpt-5')) {
+    return true;
+  }
   // OpenAI o-series models
   if (normalizedModel.includes('o3') || normalizedModel.includes('o4')) {
     return true;
@@ -211,35 +216,62 @@ export default function PuzzleDiscussion() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6" />
-              AI Self-Conversation
+              <Brain className="h-6 w-6 text-purple-600" />
+              Progressive Reasoning with Full Memory
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-muted-foreground">
-                Watch an AI model progressively refine its own analysis through multiple turns,
-                building on previous reasoning with full context retention.
-              </p>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">How it works:</h3>
-                <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
-                  <li>Generate an initial analysis for any puzzle</li>
-                  <li>Click "Start Debate" to begin self-conversation</li>
-                  <li>The AI refines its own analysis iteratively</li>
-                  <li>Each turn includes full context via response chaining</li>
-                  <li>Add custom prompts to guide refinement direction</li>
-                </ol>
+              {/* Primary Feature Callout */}
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg p-6">
+                <h3 className="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5" />
+                  Server-Side Reasoning Persistence
+                </h3>
+                <div className="space-y-3 text-sm text-purple-800">
+                  <p className="font-semibold">
+                    This is NOT just self-conversation - it's progressive reasoning with full memory!
+                  </p>
+                  <ul className="list-disc list-inside space-y-2">
+                    <li><strong>Turn 1:</strong> Model generates 45,000 reasoning tokens → stored on provider's servers</li>
+                    <li><strong>Turn 2:</strong> Provider retrieves ALL 45k tokens → model refines based on complete reasoning</li>
+                    <li><strong>Turn 3:</strong> Provider retrieves ALL previous reasoning → progressive depth building</li>
+                  </ul>
+                  <div className="bg-white/70 rounded p-3 mt-3">
+                    <p className="font-semibold text-purple-900">Why this matters:</p>
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li>No token cost for re-sending reasoning (saved on provider servers)</li>
+                      <li>No context limit issues (server-side storage)</li>
+                      <li>30-day encrypted retention (OpenAI/xAI)</li>
+                      <li>True progressive reasoning depth</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h3 className="font-semibold text-amber-900 mb-2">Best with reasoning models:</h3>
-                <ul className="list-disc list-inside space-y-1 text-sm text-amber-800">
-                  <li>OpenAI: o3, o4, o4-mini (reasoning exposed)</li>
-                  <li>xAI: grok-4, grok-4-fast (reasoning exposed)</li>
-                  <li>Other models work but reasoning may not be visible</li>
-                </ul>
+              {/* Provider Requirements */}
+              <Alert className="bg-amber-50 border-amber-300">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-900">
+                  <strong>Provider Requirement:</strong> Only works with OpenAI GPT-5, o-series (o3, o4, o4-mini)
+                  and xAI Grok-4 models. Other models won't have reasoning persistence.
+                </AlertDescription>
+              </Alert>
+
+              {/* How it Works */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-900 mb-2">How Reasoning Persistence Works:</h3>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
+                  <li>Generate initial analysis - reasoning tokens stored on provider servers</li>
+                  <li>Click "Refine Analysis" - provider retrieves ALL previous reasoning</li>
+                  <li>Model refines based on complete reasoning history</li>
+                  <li>Each turn builds deeper reasoning chains</li>
+                  <li>No token cost for retrieving previous reasoning</li>
+                </ol>
+                <p className="text-xs text-blue-700 mt-3">
+                  <strong>Technical:</strong> Uses Responses API <code className="bg-blue-100 px-1 rounded">previous_response_id</code> parameter
+                  to maintain server-side conversation state with encrypted reasoning storage.
+                </p>
               </div>
 
               <div className="text-center pt-4">
@@ -275,24 +307,76 @@ export default function PuzzleDiscussion() {
               </Alert>
             );
           }
+
+          // Calculate total reasoning tokens from all messages
+          const totalReasoningTokens = debateState.debateMessages.reduce(
+            (sum, msg) => sum + (msg.content.reasoningTokens || 0),
+            0
+          );
+
+          // Get provider name from challenger model
+          const provider = getProviderName(debateState.challengerModel);
+
           return (
-            <IndividualDebate
-              originalExplanation={selectedExplanation}
-              debateMessages={debateState.debateMessages}
-              taskId={taskId}
-              testCases={task!.test}
-              models={models}
-              task={task}
-              challengerModel={debateState.challengerModel}
-              customChallenge={debateState.customChallenge}
-              processingModels={processingModels}
-              analyzerErrors={analyzerErrors}
-              onBackToList={debateState.endDebate}
-              onResetDebate={debateState.resetDebate}
-              onChallengerModelChange={debateState.setChallengerModel}
-              onCustomChallengeChange={debateState.setCustomChallenge}
-              onGenerateChallenge={handleGenerateRefinement}
-            />
+            <>
+              {/* Model Selection Warning for Non-Reasoning Models */}
+              {selectedExplanation && !isReasoningModel(selectedExplanation.modelName) && (
+                <Alert className="bg-amber-50 border-amber-300">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <AlertDescription className="text-amber-900">
+                    <strong>Limited Reasoning Persistence:</strong> This model ({selectedExplanation.modelName})
+                    may not fully support server-side reasoning storage. For best results, use OpenAI GPT-5, o-series
+                    (o3, o4, o4-mini) or xAI Grok-4 models.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Conversation Status Alert */}
+              {debateState.debateMessages.length > 0 && (
+                <Alert className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300">
+                  <Link2 className="h-4 w-4 text-purple-600" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <div className="font-semibold text-purple-900">
+                        <Brain className="h-4 w-4 inline mr-1" />
+                        Reasoning Chain Active: {debateState.debateMessages.length} turns
+                      </div>
+                      <p className="text-sm text-purple-800">
+                        Model has access to {totalReasoningTokens > 0 ? `${totalReasoningTokens.toLocaleString()}+` : 'all'} reasoning tokens from previous turns.
+                        All reasoning is retrieved automatically from {provider} servers.
+                      </p>
+                      <div className="flex gap-2 text-xs">
+                        <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                          {provider.toUpperCase()} Persisted
+                        </Badge>
+                        <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                          30-day retention
+                        </Badge>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <IndividualDebate
+                originalExplanation={selectedExplanation}
+                debateMessages={debateState.debateMessages}
+                taskId={taskId}
+                testCases={task!.test}
+                models={models}
+                task={task}
+                challengerModel={debateState.challengerModel}
+                customChallenge={debateState.customChallenge}
+                processingModels={processingModels}
+                analyzerErrors={analyzerErrors}
+                onBackToList={debateState.endDebate}
+                onResetDebate={debateState.resetDebate}
+                onChallengerModelChange={debateState.setChallengerModel}
+                onCustomChallengeChange={debateState.setCustomChallenge}
+                onGenerateChallenge={handleGenerateRefinement}
+                challengeButtonText="Refine Analysis"
+              />
+            </>
           );
         })()
       ) : explanations && explanations.length > 0 ? (

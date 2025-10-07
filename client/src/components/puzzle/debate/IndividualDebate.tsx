@@ -74,6 +74,9 @@ interface IndividualDebateProps {
   onChallengerModelChange: (model: string) => void;
   onCustomChallengeChange: (challenge: string) => void;
   onGenerateChallenge: () => void;
+
+  // UI Customization
+  challengeButtonText?: string; // Custom text for the challenge button (e.g., "Refine Analysis" for self-conversation)
 }
 
 export const IndividualDebate: React.FC<IndividualDebateProps> = ({
@@ -91,7 +94,8 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   onResetDebate,
   onChallengerModelChange,
   onCustomChallengeChange,
-  onGenerateChallenge
+  onGenerateChallenge,
+  challengeButtonText = 'Generate Challenge' // Default for ModelDebate
 }) => {
   const [showPromptPreview, setShowPromptPreview] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -211,8 +215,13 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
 
           {/* Debate content - flows naturally with page scroll like PuzzleExaminer */}
           <div className="space-y-2">
-            {debateMessages.map((message, index) => (
-              message.messageType === 'original' ? (
+            {debateMessages.map((message, index) => {
+              // Calculate cumulative reasoning tokens up to this point
+              const cumulativeReasoningTokens = debateMessages
+                .slice(0, index + 1)
+                .reduce((sum, msg) => sum + (msg.content.reasoningTokens || 0), 0);
+
+              return message.messageType === 'original' ? (
                 <OriginalExplanationCard
                   key={message.id}
                   explanation={message.content}
@@ -228,9 +237,10 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                   testCases={testCases}
                   timestamp={message.timestamp}
                   rebuttalNumber={debateMessages.slice(0, index).filter(m => m.messageType === 'challenge').length + 1}
+                  cumulativeReasoningTokens={cumulativeReasoningTokens}
                 />
-              )
-            ))}
+              );
+            })}
             {/* Anchor for auto-scroll to bottom */}
             <div ref={messagesEndRef} />
           </div>
@@ -301,7 +311,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 ) : (
                   <>
                     <Send className="h-3 w-3 mr-1" />
-                    Ask other LLM
+                    {challengeButtonText}
                   </>
                 )}
               </Button>
