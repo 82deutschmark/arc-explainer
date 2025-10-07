@@ -3,6 +3,16 @@
 ## v3.6.3 - PuzzleDiscussion Feature Discoverability & UI Enhancements
 
 ### Added
+- **DifficultPuzzlesSection Component**
+  - Extracted 'Most Difficult Puzzles' functionality from PuzzleDiscussion
+  - Created dedicated reusable component (687 lines)
+  - Added to AnalyticsOverview page where it properly belongs
+  - Maintains all filtering/sorting logic from original implementation
+  - Fixes SRP violation: PuzzleDiscussion should be for conversations, not analytics
+  - Users can now find worst-performing puzzles in the analytics dashboard
+  - Files: `client/src/components/analytics/DifficultPuzzlesSection.tsx`, `client/src/pages/AnalyticsOverview.tsx`
+
+### Added
 - **"Refine This Analysis" Badge in AnalysisResultHeader**
   - Purple/blue gradient badge appears next to "Get a second opinion!" badge
   - Links directly to `/discussion/:puzzleId?select=:explanationId`
