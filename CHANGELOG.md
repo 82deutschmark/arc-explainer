@@ -1,5 +1,114 @@
 ## [2025-10-06]
 
+## v3.6.4 - PuzzleDiscussion Page Complete Redesign
+
+### Fixed
+- **PuzzleDiscussion Landing Page Disaster** (Critical)
+  - **Problem:** Landing page had 60+ lines of explanatory text instead of search functionality
+  - **Solution:** Complete redesign focusing on action, not explanation
+
+### Added
+- **Backend API for Eligible Explanations**
+  - **NEW:** `GET /api/discussion/eligible` endpoint
+  - Filters explanations server-side for discussion eligibility:
+    - Less than 30 days old (`created_at >= NOW() - INTERVAL '30 days'`)
+    - From reasoning models (GPT-5, o-series, Grok-4)
+    - Has `provider_response_id` (required for conversation chaining)
+  - Returns: puzzle ID, model name, provider, age, eligibility status
+  - Files: `server/controllers/discussionController.ts`, `server/routes.ts`
+
+- **Frontend Hook for Eligible Explanations**
+  - **NEW:** `client/src/hooks/useEligibleExplanations.ts`
+  - Fetches and caches eligible explanations from API
+  - Supports pagination and automatic refetching
+  - File: `client/src/hooks/useEligibleExplanations.ts`
+
+### Enhanced
+- **PuzzleDiscussion Landing Page Redesign**
+  - **Before:** Walls of explanatory text (60+ lines)
+  - **After:** Clean, action-focused interface:
+    - Simple search box: "Enter puzzle ID to begin..."
+    - Table showing recent eligible analyses (puzzle ID, model, provider, age)
+    - Direct "Refine" buttons linking to `/discussion/:puzzleId?select=:id`
+    - No overwhelming explanations - focuses on getting users to action
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **PuzzleDiscussion Puzzle Page Filtering**
+  - Added client-side filtering for eligible explanations only
+  - Shows clear warning when explanations exist but none are eligible
+  - Criteria displayed clearly: age < 30 days, reasoning models only, has provider_response_id
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Component Button Text Customization**
+  - **Enhanced:** `client/src/components/puzzle/AnalysisResultListCard.tsx`
+  - Added `debateButtonText` prop for context-appropriate button text
+  - Default: "Start Debate" (debate context), "Start Refinement" (discussion context)
+  - Files: `client/src/components/puzzle/AnalysisResultListCard.tsx`, `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Reduced Explanatory Text in Components**
+  - **Reduced:** `client/src/components/puzzle/debate/ExplanationsList.tsx`
+  - Condensed 40-line explanation into 1 concise alert
+  - Kept only essential information about reasoning persistence
+  - Files: `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Improved Placeholder Text**
+  - **Fixed:** `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx`
+  - Changed from "Enter puzzle ID to start debate..." to neutral "Enter puzzle ID..."
+  - Files: `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx`
+
+### Technical Details
+
+**Eligibility Criteria (Server-side filtering):**
+```sql
+WHERE created_at >= NOW() - INTERVAL '30 days'
+  AND provider_response_id IS NOT NULL
+  AND (
+    LOWER(model_name) LIKE '%gpt-5%'
+    OR LOWER(model_name) LIKE '%o3%'
+    OR LOWER(model_name) LIKE '%o4%'
+    OR LOWER(model_name) LIKE '%grok-4%'
+  )
+```
+
+**Landing Page Structure:**
+```typescript
+// Before: 60+ lines of explanatory text
+// After: Action-focused interface
+<Card> // Search box
+<Card> // Recent eligible table with direct links
+```
+
+**Client-side Filtering:**
+```typescript
+// Only show explanations that are eligible for discussion
+const filteredEligibleExplanations = explanations.filter(exp => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  return new Date(exp.createdAt) >= thirtyDaysAgo
+    && isReasoningModel(exp.modelName)
+    && exp.providerResponseId;
+});
+```
+
+### Impact
+- **UX Revolution:** Landing page now focuses on search and recent eligible analyses instead of overwhelming text
+- **Clarity:** Users can immediately see what analyses are eligible for discussion
+- **Efficiency:** Direct navigation to eligible puzzles with one click
+- **Maintainability:** Server-side filtering reduces client-side complexity
+- **Scalability:** API supports pagination for large datasets
+
+### Files Created
+- `server/controllers/discussionController.ts` - NEW: Discussion eligibility API
+- `client/src/hooks/useEligibleExplanations.ts` - NEW: Hook for fetching eligible explanations
+
+### Files Modified
+- `server/routes.ts` - Added discussion API endpoint
+- `client/src/pages/PuzzleDiscussion.tsx` - Complete redesign (landing + puzzle pages)
+- `client/src/components/puzzle/AnalysisResultListCard.tsx` - Added button text customization
+- `client/src/components/puzzle/debate/ExplanationsList.tsx` - Reduced text, context-aware buttons
+- `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx` - Improved placeholder text
+
+---
+
 ## v3.6.3 - PuzzleDiscussion Feature Discoverability & UI Enhancements
 
 ### Added

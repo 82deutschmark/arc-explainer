@@ -109,43 +109,15 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
     <>
       {/* Reasoning Persistence Alert (Discussion Context Only) */}
       {pageContext === 'discussion' && (
-        <div className="mb-4 space-y-3">
-          <Alert className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300">
-            <Brain className="h-5 w-5 text-purple-600" />
-            <AlertDescription>
-              <div className="space-y-2">
-                <div className="font-semibold text-purple-900">
-                  <Sparkles className="h-4 w-4 inline mr-1" />
-                  Progressive Reasoning with Full Memory
-                </div>
-                <p className="text-sm text-purple-800">
-                  When you select an explanation below, the model will refine its own analysis across multiple turns.
-                  All reasoning tokens are stored server-side (30-day retention) and automatically retrieved
-                  on subsequent turns - no token cost for accessing previous reasoning.
-                </p>
-                <div className="flex gap-2 text-xs">
-                  <Badge variant="outline" className="bg-purple-100 text-purple-800">
-                    Server-Side Storage
-                  </Badge>
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                    Full Context Retention
-                  </Badge>
-                </div>
-              </div>
-            </AlertDescription>
-          </Alert>
-
-          {hasNonReasoningModels && (
-            <Alert className="bg-amber-50 border-amber-300">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-900">
-                <strong>Model Compatibility:</strong> For best results with reasoning persistence,
-                use OpenAI GPT-5, o-series (o3, o4, o4-mini) or xAI Grok-4 models.
-                Other models in this list may not support server-side reasoning storage.
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
+        <Alert className="mb-4 bg-purple-50 border-purple-300">
+          <Brain className="h-4 w-4 text-purple-600" />
+          <AlertDescription className="text-sm text-purple-900">
+            Selected analysis will be refined through progressive reasoning with full server-side memory (30-day retention).
+            {hasNonReasoningModels && (
+              <strong className="block mt-1 text-amber-800">⚠️ Some models may not support reasoning persistence.</strong>
+            )}
+          </AlertDescription>
+        </Alert>
       )}
 
       <Card>
@@ -210,6 +182,7 @@ export const ExplanationsList: React.FC<ExplanationsListProps> = ({
                 testCases={testCases}
                 onStartDebate={onStartDebate}
                 showDebateButton={showDebateButton}
+                debateButtonText={pageContext === 'discussion' ? 'Start Refinement' : 'Start Debate'}
                 compact={true}
               />
             ))}

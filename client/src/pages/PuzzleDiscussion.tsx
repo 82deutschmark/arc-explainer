@@ -10,13 +10,15 @@
  * shadcn/ui: Pass - Uses shadcn/ui components via reused components
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Plus, Loader2, Sparkles, AlertTriangle, Brain, Link2 } from 'lucide-react';
+import { MessageSquare, Plus, Loader2, Sparkles, AlertTriangle, Brain, Link2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Reuse ModelDebate components - same UI, same flow
@@ -30,6 +32,7 @@ import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { useDebateState } from '@/hooks/debate/useDebateState';
+import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
 
 // Utility: Identify models that support server-side reasoning persistence
 // OpenAI GPT-5, o-series (o3, o4, o4-mini) and xAI Grok-4 models support Responses API
@@ -65,7 +68,8 @@ const getProviderName = (modelName: string): string => {
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
   const { toast } = useToast();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  const [searchPuzzleId, setSearchPuzzleId] = useState('');
 
   // Parse ?select=123 query parameter for auto-selection
   const selectId = useMemo(() => {
@@ -83,6 +87,10 @@ export default function PuzzleDiscussion() {
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
+  
+  // Fetch eligible explanations for landing page
+  const { data: eligibleData, isLoading: isLoadingEligible } = useEligibleExplanations(20, 0);
+  const eligibleExplanations = eligibleData?.explanations || [];
 
   // State management (reuse useDebateState)
   const debateState = useDebateState();
@@ -180,6 +188,14 @@ export default function PuzzleDiscussion() {
     }
   };
 
+  // Search handler
+  const handlePuzzleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchPuzzleId.trim()) {
+      navigate(`/discussion/${searchPuzzleId.trim()}`);
+    }
+  };
+
   // KEY DIFFERENCE: Auto-lock challenger to same model
   const handleStartConversation = (explanationId: number) => {
     const explanation = explanations?.find(e => e.id === explanationId);
@@ -189,6 +205,28 @@ export default function PuzzleDiscussion() {
       debateState.setChallengerModel(explanation.modelName);
     }
   };
+
+  // Filter explanations to only show eligible ones (less than 30 days old, reasoning models, has provider response ID)
+  const filteredEligibleExplanations = useMemo(() => {
+    if (!explanations) return [];
+    
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    return explanations.filter(exp => {
+      // Must be less than 30 days old
+      const createdAt = new Date(exp.createdAt);
+      if (createdAt < thirtyDaysAgo) return false;
+      
+      // Must be from reasoning model
+      if (!isReasoningModel(exp.modelName)) return false;
+      
+      // Must have provider response ID
+      if (!exp.providerResponseId) return false;
+      
+      return true;
+    });
+  }, [explanations]);
 
   // Auto-start conversation when ?select= parameter is present
   useEffect(() => {
@@ -228,76 +266,93 @@ export default function PuzzleDiscussion() {
     );
   }
 
-  // No taskId - show instructions
+  // No taskId - show search and recent eligible explanations
   if (!taskId) {
     return (
       <div className="w-full space-y-4">
+        {/* Search Card */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-purple-600" />
-              Progressive Reasoning with Full Memory
+              Progressive Reasoning
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {/* Primary Feature Callout */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg p-6">
-                <h3 className="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2">
-                  <Sparkles className="h-5 w-5" />
-                  Server-Side Reasoning Persistence
-                </h3>
-                <div className="space-y-3 text-sm text-purple-800">
-                  <p className="font-semibold">
-                    This is NOT just self-conversation - it's progressive reasoning with full memory!
-                  </p>
-                  <ul className="list-disc list-inside space-y-2">
-                    <li><strong>Turn 1:</strong> Model generates 45,000 reasoning tokens → stored on provider's servers</li>
-                    <li><strong>Turn 2:</strong> Provider retrieves ALL 45k tokens → model refines based on complete reasoning</li>
-                    <li><strong>Turn 3:</strong> Provider retrieves ALL previous reasoning → progressive depth building</li>
-                  </ul>
-                  <div className="bg-white/70 rounded p-3 mt-3">
-                    <p className="font-semibold text-purple-900">Why this matters:</p>
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>No token cost for re-sending reasoning (saved on provider servers)</li>
-                      <li>No context limit issues (server-side storage)</li>
-                      <li>30-day encrypted retention (OpenAI/xAI)</li>
-                      <li>True progressive reasoning depth</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Refine AI analyses through multi-turn conversations with full server-side reasoning retention (30 days).
+              Supports OpenAI GPT-5, o-series, and xAI Grok-4 models.
+            </p>
+            
+            {/* Search Box */}
+            <form onSubmit={handlePuzzleSearch} className="flex gap-2">
+              <Input
+                placeholder="Enter puzzle ID to begin..."
+                value={searchPuzzleId}
+                onChange={(e) => setSearchPuzzleId(e.target.value)}
+              />
+              <Button type="submit" disabled={!searchPuzzleId.trim()}>
+                <Search className="h-4 w-4 mr-2" />
+                Go
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-              {/* Provider Requirements */}
-              <Alert className="bg-amber-50 border-amber-300">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <AlertDescription className="text-amber-900">
-                  <strong>Provider Requirement:</strong> Only works with OpenAI GPT-5, o-series (o3, o4, o4-mini)
-                  and xAI Grok-4 models. Other models won't have reasoning persistence.
-                </AlertDescription>
-              </Alert>
-
-              {/* How it Works */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">How Reasoning Persistence Works:</h3>
-                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                  <li>Generate initial analysis - reasoning tokens stored on provider servers</li>
-                  <li>Click "Refine Analysis" - provider retrieves ALL previous reasoning</li>
-                  <li>Model refines based on complete reasoning history</li>
-                  <li>Each turn builds deeper reasoning chains</li>
-                  <li>No token cost for retrieving previous reasoning</li>
-                </ol>
-                <p className="text-xs text-blue-700 mt-3">
-                  <strong>Technical:</strong> Uses Responses API <code className="bg-blue-100 px-1 rounded">previous_response_id</code> parameter
-                  to maintain server-side conversation state with encrypted reasoning storage.
-                </p>
+        {/* Recent Eligible Explanations Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Eligible Analyses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoadingEligible ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
-
-              <div className="text-center pt-4">
-                <p className="text-sm text-muted-foreground mb-3">Enter a puzzle ID to begin:</p>
-                <PuzzleDebateHeader />
-              </div>
-            </div>
+            ) : eligibleExplanations.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Puzzle ID</TableHead>
+                    <TableHead>Model</TableHead>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {eligibleExplanations.map(exp => (
+                    <TableRow key={exp.id}>
+                      <TableCell>
+                        <Link href={`/discussion/${exp.puzzleId}`} className="text-blue-600 hover:underline font-mono">
+                          {exp.puzzleId}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-sm">{exp.modelName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{exp.provider.toUpperCase()}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{exp.daysOld}d ago</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => navigate(`/discussion/${exp.puzzleId}?select=${exp.id}`)}
+                        >
+                          Refine
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No eligible analyses found. Generate new analyses from reasoning models (GPT-5, o-series, Grok-4).
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -398,9 +453,9 @@ export default function PuzzleDiscussion() {
             </>
           );
         })()
-      ) : explanations && explanations.length > 0 ? (
+      ) : filteredEligibleExplanations.length > 0 ? (
         <ExplanationsList
-          explanations={explanations}
+          explanations={filteredEligibleExplanations}
           models={models}
           testCases={task!.test}
           correctnessFilter={debateState.correctnessFilter}
@@ -408,6 +463,29 @@ export default function PuzzleDiscussion() {
           onStartDebate={handleStartConversation}
           pageContext="discussion"
         />
+      ) : explanations && explanations.length > 0 ? (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <div className="space-y-2">
+              <p className="font-semibold">No eligible analyses for discussion</p>
+              <p className="text-sm">
+                This puzzle has {explanations.length} explanation{explanations.length > 1 ? 's' : ''}, but none are eligible for discussion.
+              </p>
+              <p className="text-sm">Eligible explanations must be:</p>
+              <ul className="list-disc list-inside text-sm space-y-1 ml-2">
+                <li>Less than 30 days old</li>
+                <li>From reasoning models (GPT-5, o-series, Grok-4)</li>
+                <li>Successfully saved with provider response ID</li>
+              </ul>
+              <Link href={`/puzzle/${taskId}`}>
+                <Button variant="outline" size="sm" className="mt-2">
+                  Generate New Analysis
+                </Button>
+              </Link>
+            </div>
+          </AlertDescription>
+        </Alert>
       ) : (
         <Card>
           <CardContent className="text-center py-8">
