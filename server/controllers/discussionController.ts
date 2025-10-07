@@ -16,8 +16,7 @@ import { repositoryService } from '../repositories/RepositoryService.js';
  * Returns recent explanations eligible for discussion (conversation chaining)
  * 
  * Eligibility criteria:
- * - Created within last 30 days
- * - From reasoning models (GPT-5, o-series, Grok-4)
+ * - Created within last 30 days (provider retention window)
  * - Has provider_response_id (required for chaining)
  */
 export async function getEligibleExplanations(req: Request, res: Response) {
@@ -41,12 +40,6 @@ export async function getEligibleExplanations(req: Request, res: Response) {
       WHERE 
         created_at >= NOW() - INTERVAL '30 days'
         AND provider_response_id IS NOT NULL
-        AND (
-          LOWER(model_name) LIKE '%gpt-5%'
-          OR LOWER(model_name) LIKE '%o3%'
-          OR LOWER(model_name) LIKE '%o4%'
-          OR LOWER(model_name) LIKE '%grok-4%'
-        )
       ORDER BY created_at DESC
       LIMIT $1 OFFSET $2
     `;

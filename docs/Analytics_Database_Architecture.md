@@ -54,6 +54,23 @@ All analytics derive from the central `explanations` table. Key fields for analy
 - `created_at` (timestamp) - When analysis was performed
 - `puzzle_id` (varchar) - Which puzzle was analyzed
 
+### Conversation Chaining & Prompt Traceability
+- `provider_response_id` (text) - Responses API conversation ID used for chaining
+- `system_prompt_used` (text) - Stored system prompt used for the analysis
+- `user_prompt_used` (text) - Stored user prompt used for the analysis
+- `prompt_template_id` (varchar) - Prompt template identifier (for analytics and provenance)
+- `custom_prompt_text` (text) - Custom free‑form prompt text when provided
+
+Recommended indexes:
+```sql
+CREATE INDEX IF NOT EXISTS idx_explanations_provider_response_id
+  ON explanations(provider_response_id) WHERE provider_response_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_explanations_prompt_template
+  ON explanations(prompt_template_id) WHERE prompt_template_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_explanations_custom_prompt_hash
+  ON explanations(MD5(custom_prompt_text)) WHERE custom_prompt_text IS NOT NULL;
+```
+
 ## Repository Architecture: Domain Separation
 
 ### 1. AccuracyRepository - Pure Puzzle-Solving Correctness

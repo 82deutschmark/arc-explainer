@@ -218,6 +218,27 @@ Frontend components query and display debate chains:
    - Participant count displayed with Link2 icon
 4. **Caching**: 30-second stale time to reduce API calls
 
+## Conversation Chaining (Responses API)
+
+Added October 6–7, 2025
+
+Conversation chaining lets supported providers (OpenAI o‑series/GPT‑5, xAI Grok‑4) maintain context across multiple analyses without resending the entire history.
+
+Frontend Flow
+- Latest explanation rows expose `providerResponseId`
+- When triggering a follow‑up analysis, include `previousResponseId` in the analyze payload
+- Hooks/pages using discussion context (e.g., PuzzleDiscussion) can surface eligible explanations via `useEligibleExplanations()`
+
+Backend Flow
+1. `puzzleController.analyze` reads `previousResponseId` from the request body
+2. `puzzleAnalysisService.analyzePuzzle` passes it as `serviceOpts.previousResponseId`
+3. Provider services map this to `previous_response_id` for the Responses API request
+4. Provider returns a new response `id` which is surfaced as `providerResponseId` and stored with the explanation record (`explanations.provider_response_id`)
+
+Provider Notes
+- Chains are provider‑scoped; do not use an OpenAI ID with xAI, or vice versa
+- Retention typically ~30 days when `store: true`; new requests still consume tokens
+
 ### Key Differences from Standard Analysis
 
 | Aspect | Standard Analysis | Debate Mode Analysis |

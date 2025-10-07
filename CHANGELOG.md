@@ -7,12 +7,24 @@
   - **Problem:** Landing page had 60+ lines of explanatory text instead of search functionality
   - **Solution:** Complete redesign focusing on action, not explanation
 
+- **Overly Restrictive Eligibility Filtering** (Critical)
+  - **Problem:** Required reasoning models (GPT-5, o-series, Grok-4) in addition to provider_response_id
+  - **Solution:** Simplified to ONLY check: has provider_response_id + within 30-day retention window
+  - **Rationale:** Any model with a provider_response_id can use conversation chaining if the provider supports it
+  - Impact: Opens conversation chaining to all models that saved response IDs, not just reasoning models
+
+- **Missing providerResponseId Field Mapping** (Critical)
+  - **Problem:** Backend returned `providerResponseId` but frontend `useExplanation` hook didn't map it
+  - **Impact:** ALL explanations appeared ineligible because frontend never saw the provider response ID
+  - **Solution:** Added `providerResponseId: (raw as any).providerResponseId` mapping in useExplanation hook
+  - **Root Cause:** Field was added to backend but never added to frontend data transformation
+  - Files: `client/src/hooks/useExplanation.ts`
+
 ### Added
 - **Backend API for Eligible Explanations**
   - **NEW:** `GET /api/discussion/eligible` endpoint
   - Filters explanations server-side for discussion eligibility:
     - Less than 30 days old (`created_at >= NOW() - INTERVAL '30 days'`)
-    - From reasoning models (GPT-5, o-series, Grok-4)
     - Has `provider_response_id` (required for conversation chaining)
   - Returns: puzzle ID, model name, provider, age, eligibility status
   - Files: `server/controllers/discussionController.ts`, `server/routes.ts`
@@ -62,13 +74,12 @@
 ```sql
 WHERE created_at >= NOW() - INTERVAL '30 days'
   AND provider_response_id IS NOT NULL
-  AND (
-    LOWER(model_name) LIKE '%gpt-5%'
-    OR LOWER(model_name) LIKE '%o3%'
-    OR LOWER(model_name) LIKE '%o4%'
-    OR LOWER(model_name) LIKE '%grok-4%'
-  )
 ```
+
+**Simplified Logic:**
+- Originally required: reasoning model + provider_response_id + age < 30 days
+- Now requires: provider_response_id + age < 30 days
+- Rationale: Any model that saved a response ID can use conversation chaining
 
 **Landing Page Structure:**
 ```typescript
@@ -84,8 +95,7 @@ WHERE created_at >= NOW() - INTERVAL '30 days'
 const filteredEligibleExplanations = explanations.filter(exp => {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   return new Date(exp.createdAt) >= thirtyDaysAgo
-    && isReasoningModel(exp.modelName)
-    && exp.providerResponseId;
+    && exp.providerResponseId; // Only 2 checks now!
 });
 ```
 
@@ -95,6 +105,7 @@ const filteredEligibleExplanations = explanations.filter(exp => {
 - **Efficiency:** Direct navigation to eligible puzzles with one click
 - **Maintainability:** Server-side filtering reduces client-side complexity
 - **Scalability:** API supports pagination for large datasets
+- **Feature Accessibility:** Simplified filtering makes conversation chaining available to ALL models with response IDs, not just reasoning models
 
 ### Files Created
 - `server/controllers/discussionController.ts` - NEW: Discussion eligibility API
@@ -461,6 +472,28 @@ To enable conversation chaining:
 - `client/src/pages/Leaderboards.tsx` - Full-width layout
 - `CLAUDE.md` - Updated API documentation
 - `docs/06102025-Grok4-ResponsesAPI-Fix.md` - Implementation plan
+
+---
+
+## v3.6.4 - 2025-10-07 — Grok‑4 Structured Outputs + Batch Stability
+
+- Enable xAI Grok‑4/Grok‑4‑fast structured outputs using Responses API `response_format.json_schema`.
+  - New minimal schema: `server/services/schemas/grokJsonSchema.ts` (shallow nesting, arrays-of-arrays of integers, no minLength/minItems/allOf, additionalProperties:false).
+  - GrokService now sends `response_format.json_schema` for Grok‑4 variants and reads `output_parsed` when present.
+  - One‑shot graceful fallback: on provider grammar/schema error (400/422/503), retry once without schema; still parse JSON from text.
+- Transport hardening for xAI:
+  - Shared undici Agent + bounded retries with jitter for 429/5xx/transient network errors.
+- Batch script improvements for safe runs on ARC2‑eval:
+  - Concurrency‑capped worker pool (default `XAI_MAX_CONCURRENCY=2`) across Grok scripts.
+  - `scripts/grok-4-fast-reasoning.ts`: add `--tail N` and `--limit N` to easily smoke‑test subsets; respects env `XAI_MAX_RETRIES`, `XAI_RETRY_BASE_DELAY_MS`.
+- Docs + knowledge
+  - Added `docs/2025-10-07-grok4-structured-outputs-enable-arc2-batch.md` (request shape, schema constraints, fallback, run settings).
+  - Appended Grok‑4 structured outputs ops notes to `knowledge.md`.
+- Validation (smoke test)
+  - Ran last 10 ARC2‑eval tasks via `grok-4-fast-reasoning` with `--tail 10`.
+  - Concurrency=2, retries=2. All completed successfully; `output_parsed` consumed when available; fallback path verified clean.
+- Notes
+  - No breaking changes. Existing parsing fallbacks preserved. OpenAI and other providers unaffected.
 
 ---
 

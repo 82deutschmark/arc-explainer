@@ -23,7 +23,7 @@ This document describes the public APIs that external applications rely on. Thes
 
 - `POST /api/puzzle/analyze/:taskId/:model` - Analyze puzzle with specific AI model
   - **Params**: `taskId` (string), `model` (string) - Model name
-  - **Body**: Analysis configuration options (see Debate Mode below for debate-specific options)
+  - **Body**: Analysis configuration options (see Debate Mode below for debate-specific options). For conversation chaining via the Responses API, include `previousResponseId` to continue a prior analysis.
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
   - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
@@ -132,6 +132,80 @@ DEPRECATED BATCH ENDPOINTS (never worked correctly):
   - **Database**: Joins on `rebutting_explanation_id` foreign key
   - **Returns 404**: If explanation is not a rebuttal or parent doesn't exist
 
+### Conversation Chaining (Responses API) ✨ NEW! (October 2025)
+
+Multi-turn conversations with full context retention using provider-native conversation chaining.
+
+#### How It Works
+1. Each AI analysis returns a `providerResponseId` in the response
+2. Pass `previousResponseId` in the next analysis request to maintain context
+3. Provider automatically retrieves ALL previous reasoning and responses (server-side)
+4. No token cost for accessing previous reasoning (30-day retention)
+
+#### Supported Providers
+- **OpenAI**: o-series models (o3, o4, o4-mini) and GPT-5
+- **xAI**: Grok-4 models
+- **Provider Compatibility**: Response IDs only work within the same provider
+  - OpenAI ID → OpenAI models ✅
+  - xAI ID → xAI models ✅  
+  - Cross-provider chaining ❌ (will start new conversation)
+
+#### API Usage
+```typescript
+// Request 1: Initial analysis
+POST /api/puzzle/analyze/00d62c1b/openai%2Fo4-mini
+Body: { "promptId": "solver" }
+Response: { "providerResponseId": "resp_abc123", ... }
+
+// Request 2: Follow-up with full context
+POST /api/puzzle/analyze/00d62c1b/openai%2Fo4-mini
+Body: { 
+  "promptId": "solver",
+  "previousResponseId": "resp_abc123"  // Maintains context
+}
+Response: { "providerResponseId": "resp_def456", ... }
+```
+
+#### Database Storage
+- **Column**: `provider_response_id` (text) in `explanations` table
+- **Frontend Field**: `providerResponseId` in `ExplanationData` type
+- **Mapping**: Automatically handled by `useExplanation` hook
+
+#### Get Eligible Explanations for Discussion
+- `GET /api/discussion/eligible` - Get recent explanations eligible for conversation chaining
+  - **Query params**: `limit` (default 20), `offset` (default 0)
+  - **Eligibility Criteria**:
+    - Has `provider_response_id` in database
+    - Created within last 30 days (provider retention window)
+    - **NO model type restrictions** - any model with response ID is eligible
+  - **Response**: Array of eligible explanations with metadata
+    ```json
+    {
+      "explanations": [
+        {
+          "id": 29432,
+          "puzzleId": "e8dc4411",
+          "modelName": "openai/o4-mini",
+          "provider": "openai",
+          "createdAt": "2025-10-06T12:00:00Z",
+          "daysOld": 3,
+          "hasProviderResponseId": true,
+          "confidence": 85,
+          "isCorrect": true
+        }
+      ],
+      "total": 1,
+      "limit": 20,
+      "offset": 0
+    }
+    ```
+  - **Use case**: PuzzleDiscussion landing page shows recent eligible analyses
+  - **Limits**: Server-side pagination with configurable limit
+
+#### Documentation
+- `docs/API_Conversation_Chaining.md` - Complete usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical implementation details
+
 ### User Feedback  VERY IMPORTANT!!
 - `POST /api/feedback` - Submit user feedback on explanations
   - **Limits**: No limits
@@ -234,6 +308,36 @@ DEPRECATED BATCH ENDPOINTS (never worked correctly):
 - `POST /api/prompt-preview` - Preview AI prompt before analysis
 - `POST /api/prompt/preview/:provider/:taskId` - Preview prompt for specific provider
 
+## Conversation Chaining (Responses API)
+
+Multi‑turn conversations with provider‑managed context retention using response IDs.
+
+- Each analysis returns `providerResponseId` in the payload
+- Subsequent requests may include `previousResponseId` to continue the chain
+- Supported: OpenAI o‑series/GPT‑5 and xAI Grok‑4 (same‑provider chains only)
+- Retention typically 30 days (when `store: true`); new requests still consume tokens
+
+Example request body:
+```json
+{
+  "promptId": "solver",
+  "temperature": 0.2,
+  "previousResponseId": "resp_abc123"
+}
+```
+
+Storage and indexing:
+```sql
+-- Stored on each explanation row
+provider_response_id TEXT DEFAULT NULL;
+
+-- Recommended indexes
+CREATE INDEX IF NOT EXISTS idx_explanations_provider_response_id
+  ON explanations(provider_response_id) WHERE provider_response_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_explanations_created_recent
+  ON explanations(created_at DESC);
+```
+
 ## Administrative Endpoints
 
 ### Health and Recovery
@@ -301,7 +405,7 @@ interface ModelAccuracyRanking {
   modelName: string;
   totalAttempts: number;
   correctPredictions: number;
-  accuracyPercent age: number;
+  accuracyPercentage: number;
   singleTestAttempts: number;
   singleCorrectPredictions: number;
   singleTestAccuracy: number;

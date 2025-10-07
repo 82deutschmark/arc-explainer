@@ -70,6 +70,8 @@ export function useExplanations(puzzleId: string | null) {
           helpfulVotes: raw.helpful_votes,
           notHelpfulVotes: raw.not_helpful_votes,
           explanationId: raw.id, // Ensure explanationId is mapped
+          // Map conversation chaining field
+          providerResponseId: (raw as any).providerResponseId,
           // Map multi-test database field names to frontend field names
           multiplePredictedOutputs: (raw as any).multiplePredictedOutputs,
           multiTestResults: (raw as any).multiTestResults,
