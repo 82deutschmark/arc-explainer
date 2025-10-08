@@ -1,5 +1,77 @@
 ## [2025-10-08]
 
+## v3.7.9 - Fix CompactPuzzleDisplay Adaptive Layout for Multi-Test Puzzles
+
+### Summary
+Fixed CompactPuzzleDisplay layout disasters caused by hardcoded assumptions. Now adapts elegantly to 1, 2, or 3+ test cases with dynamic grid sizing and layout direction.
+
+### Problem
+**Multiple hardcoded assumptions breaking multi-test puzzles:**
+1. Badge appeared INLINE with grids (floating in middle of row)
+2. Hardcoded `w-32 h-32` (128px) grids - no adaptation
+3. Horizontal-only layout with `gap-12` - forced 1150px+ width for 3 tests
+4. No layout adaptation for different test counts
+
+**Example failure:** Puzzle `1ae2feb7` (3 tests) = 6 grids × 128px = horizontal overflow disaster!
+
+### Fixed - Adaptive Layout System
+
+**Dynamic Grid Sizing:**
+- Added `getGridSizeClass()` function that adapts to test count:
+  - **1 test:** `w-48 h-48` (192px) - single test has space, show large
+  - **2 tests:** `w-32 h-32` (128px) - medium, fits side-by-side
+  - **3+ tests:** `w-24 h-24` (96px) - compact, allows vertical stack
+
+**Adaptive Layout Direction:**
+- **1-2 tests:** `flex-row flex-wrap gap-8` - horizontal layout
+- **3+ tests:** `flex-col gap-3` - vertical stack (prevents overflow)
+
+**Fixed Badge Placement:**
+- Before (BAD): `[Badge] [Input] → [Output]` ← Badge floating inline!
+- After (GOOD): Badge appears ABOVE row with proper label
+
+**Restructured Test Case Container:**
+- Each test case is `flex-col` wrapper
+- Badge moved above row (not inline)
+- Input/Output pair in nested `flex-row`
+- Proper semantic HTML structure
+- Reduced gaps: `gap-12` → `gap-4` (vertical) / `gap-8` (horizontal)
+
+### Benefits
+- ✅ No horizontal overflow with 3+ tests
+- ✅ Badge placement fixed (above row, not inline)
+- ✅ Scales to ANY number of test cases (1-10+)
+- ✅ Adaptive sizing based on test count
+- ✅ Clean semantic HTML structure
+- ✅ No hardcoded assumptions
+
+### Files Changed
+- `client/src/components/puzzle/CompactPuzzleDisplay.tsx`
+  - Lines 64-80: Added adaptive sizing and layout logic
+  - Lines 135-166: Restructured test case container with conditional layout
+
+### Testing Instructions
+1. **Single test puzzle** (most common):
+   - Should show large grids (192px)
+   - Horizontal layout
+   - No "Test 1" badge
+
+2. **Dual test puzzle**:
+   - Should show medium grids (128px)
+   - Horizontal layout side-by-side
+   - "Test 1" and "Test 2" labels above rows
+
+3. **Triple+ test puzzle (e.g., 1ae2feb7)**:
+   - Should show small grids (96px)
+   - Vertical stack layout
+   - "Test 1", "Test 2", "Test 3" labels above rows
+   - **NO horizontal overflow!**
+
+### Documentation
+- `docs/2025-10-08-CompactPuzzleDisplay-RobustLayout.md` - Complete implementation plan
+
+---
+
 ## v3.7.8.1 - CRITICAL FIX: Make Advanced Controls Editable + Shrink by 80%
 
 ### Summary
