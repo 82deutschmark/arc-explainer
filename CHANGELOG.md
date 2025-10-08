@@ -1,3 +1,20 @@
+## [2025-10-08]
+
+## v3.7.4 - ModelBrowser mirrors AnalyticsOverview + Click-to-Analyze
+
+### Changed
+- ModelBrowser now mirrors AnalyticsOverview UI using shadcn/ui; displays one model’s performance across a dataset (Correct / Incorrect / Not Attempted).
+- Clicking a PuzzleID badge in Not Attempted triggers analyze+save with the selected model using the solver prompt. The badge animates (pulse) while in-flight, and the lists refresh on completion.
+
+### Technical
+- Added optional refreshKey to useModelDatasetPerformance to allow on-demand refetch after analysis completes. No behavior change to existing consumers.
+
+### Files Modified
+- client/src/pages/ModelBrowser.tsx
+- client/src/hooks/useModelDatasetPerformance.ts
+
+---
+
 ## [2025-10-07]
 
 ## v3.7.3 - Batch Analysis Parallel Processing + UI Refactor
