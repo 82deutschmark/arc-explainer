@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Loader2, AlertTriangle, Search, Sparkles } from 'lucide-react';
+import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
@@ -47,7 +47,7 @@ export default function PuzzleDiscussion() {
 
   // Page title
   useEffect(() => {
-    document.title = taskId ? `Progressive Reasoning - Puzzle ${taskId}` : 'Progressive Reasoning';
+    document.title = taskId ? `Discussion - Puzzle ${taskId}` : 'Discussion';
   }, [taskId]);
 
   // Data hooks
@@ -251,6 +251,16 @@ export default function PuzzleDiscussion() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Responses API Explainer */}
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-sm text-blue-900">
+            <strong>How it works:</strong> The Responses API outperforms Chat Completions in multi-turn conversations by maintaining stateful persistence, automatically remembering prior encrypted reasoning traces (via{' '}
+            <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">reasoning.encrypted_content</code>
+            ). This enables coherent, context-aware responses without manually appending full message histories, reducing token waste and errors. Chat Completions treats each call as stateless.
+          </AlertDescription>
+        </Alert>
 
         {/* Recent Eligible Explanations */}
         <Card>
