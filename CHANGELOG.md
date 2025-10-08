@@ -1,5 +1,50 @@
 ## [2025-10-08]
 
+## v3.7.5 - Fixed Hardcoded Localhost URLs (Production Breaking Bug)
+
+### Critical Bug Fix
+- **Fixed hardcoded `http://localhost:5000` URLs in batchController.ts that broke production deployments**
+  - **Problem:** Internal API calls used hardcoded localhost URLs (lines 182, 204)
+  - **Impact:** Batch analysis completely broken in production (Railway, Vercel, etc.)
+  - **Root Cause:** Server-to-server API calls couldn't reach themselves in non-localhost environments
+  - **Solution:** Created `getInternalApiBaseUrl()` helper that reads from environment variables
+    - Uses `INTERNAL_API_HOST` env var (defaults to 'localhost')
+    - Uses `PORT` env var (defaults to '5000')
+    - Works in both development and production
+
+### Technical Details
+```typescript
+// NEW: Environment-aware base URL helper
+function getInternalApiBaseUrl(): string {
+  const port = process.env.PORT || '5000';
+  const host = process.env.INTERNAL_API_HOST || 'localhost';
+  return `http://${host}:${port}`;
+}
+
+// BEFORE (broken in production):
+const apiUrl = `http://localhost:5000/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+
+// AFTER (works everywhere):
+const baseUrl = getInternalApiBaseUrl();
+const apiUrl = `${baseUrl}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+```
+
+### Additional Fixes
+- Fixed pre-existing TypeScript errors in batchController.ts
+  - Fixed `repositoryService.explanation` → `repositoryService.explanations`
+  - Added proper error type annotations (`error: unknown`)
+  - Fixed parameter type annotations
+
+### Clarification
+- **ModelBrowser.tsx is NOT the problem** - it correctly uses relative URLs (`/api/puzzle/...`)
+- The Vite dev proxy (`vite.config.ts` line 55-61) handles frontend-to-backend correctly
+- The bug was backend-to-backend (batchController calling its own API)
+
+### Files Modified
+- `server/controllers/batchController.ts` - Added getInternalApiBaseUrl() helper, fixed hardcoded URLs
+
+---
+
 ## v3.7.4 - ModelBrowser mirrors AnalyticsOverview + Click-to-Analyze
 
 ### Changed
