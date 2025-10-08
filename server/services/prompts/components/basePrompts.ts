@@ -90,9 +90,10 @@ Analyze training examples, identify the transformation patterns,
 and predict the correct output for the test case. Some puzzles have multiple test cases.`,
 
   debate: `TASK: You are correcting the explanation of another AI model. Another AI model from a competitor has already provided an incorrect explanation for this very simple visual reasoning puzzle that even a child could solve. 
-Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`
+Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`,
 
-  discussion: `Your previous soultion and explanation were incorrect. Try again by first thinking harder with different reasoning and a better explanation.`
+  discussion: `TASK: You are refining your own previous analysis. Your previous solution and explanation were incorrect or incomplete. 
+Try again using different reasoning approaches. What new insights can you discover? What patterns did you miss before?`
 
 
 } as const;
@@ -150,8 +151,20 @@ Your challenge response must:
 4. **Justify your approach**: Explain why your analysis is better than the original
 
 
-Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`
+Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`,
 
+  discussion: `SELF-REFINEMENT INSTRUCTIONS:
 
-  discussion: `Your previous soultion and explanation were incorrect. Try again with different reasoning and a better explanation.`
+You will be shown:
+1. Your previous analysis attempt (pattern description, strategy, hints)
+2. Whether your prediction was correct or incorrect
+3. Optional human guidance on what to reconsider
+
+Your refined response must:
+1. **Self-critique**: Identify what you got wrong or missed in your previous attempt
+2. **Fresh perspective**: Apply different reasoning strategies you didn't try before
+3. **New solution**: Predict the output with improved reasoning
+4. **Explain improvements**: Show how your new analysis addresses previous gaps
+
+Be thorough in reconsidering your assumptions. Your goal is to demonstrate learning and improved problem-solving through iterative refinement.`
 } as const;

@@ -25,7 +25,6 @@ import { MessageSquare, Plus, Loader2, Sparkles, AlertTriangle, Brain, Link2, Se
 import { useToast } from '@/hooks/use-toast';
 
 // Reuse ModelDebate components - same UI, same flow
-import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
 import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
@@ -124,10 +123,10 @@ export default function PuzzleDiscussion() {
     previousResponseId: debateState.getLastResponseId(debateState.challengerModel)
   });
 
-  // Set promptId when active (same as ModelDebate)
+  // Set promptId to 'discussion' when active for AI self-refinement
   useEffect(() => {
     if (debateState.isDebateActive && selectedExplanation) {
-      setPromptId('debate');
+      setPromptId('discussion');
     } else {
       setPromptId('solver');
     }
@@ -139,7 +138,7 @@ export default function PuzzleDiscussion() {
     if (!selectedExplanation) return;
 
     try {
-      setPromptId('debate');
+      setPromptId('discussion');
       const lastResponseId = debateState.getLastResponseId(debateState.challengerModel);
 
       const lastMessage = debateState.debateMessages[debateState.debateMessages.length - 1];
@@ -360,8 +359,17 @@ export default function PuzzleDiscussion() {
 
   // Main interface (same structure as ModelDebate)
   return (
-    <div className="w-full space-y-1">
-      <PuzzleDebateHeader taskId={taskId} />
+    <div className="w-full space-y-4">
+      {/* Simple header with puzzle ID badge */}
+      {taskId && (
+        <div className="flex items-center gap-3">
+          <Brain className="h-6 w-6 text-purple-600" />
+          <h1 className="text-2xl font-bold">Progressive Reasoning</h1>
+          <Badge variant="outline" className="text-sm">
+            Puzzle {taskId}
+          </Badge>
+        </div>
+      )}
 
       <CompactPuzzleDisplay
         trainExamples={task!.train}
