@@ -23,6 +23,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 
 // Reuse existing components
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { PredictionCard, PredictionIteration } from '@/components/puzzle/PredictionCard';
 
 // Types
 import type { ARCExample } from '@shared/types';
@@ -31,6 +32,10 @@ interface CompactPuzzleDisplayProps {
   // Core data
   trainExamples: ARCExample[];
   testCases: ARCExample[]; // Changed from single testCase to array
+
+  // Predictions timeline (NEW)
+  predictions?: PredictionIteration[];
+  showPredictions?: boolean;
 
   // Configuration
   title?: string;
@@ -43,6 +48,8 @@ interface CompactPuzzleDisplayProps {
 export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   trainExamples,
   testCases,
+  predictions,
+  showPredictions = false,
   title = "Puzzle Overview",
   maxTrainingExamples = 4,
   showEmojis = false,
@@ -52,6 +59,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   const [isTrainingOpen, setIsTrainingOpen] = useState(!defaultTrainingCollapsed);
   const displayedExamples = trainExamples.slice(0, maxTrainingExamples);
   const isMultiTest = testCases.length > 1;
+  const hasPredictions = showPredictions && predictions && predictions.length > 0;
 
   return (
     <Card className="p-0">
@@ -88,11 +96,11 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 {displayedExamples.map((example, index) => (
                   <div key={index} className="flex items-center gap-6 min-w-fit">
                     <div className="text-[9px] text-gray-500">{index + 1}.</div>
-                    <div className="w-16 h-16 border border-white/30 p-0.5 bg-gray-900/5">
+                    <div className="min-w-[4rem] max-w-[12rem] aspect-square border border-white/30 p-0.5 bg-gray-900/5">
                       <TinyGrid grid={example.input} />
                     </div>
                     <div className="text-[9px] text-gray-400">→</div>
-                    <div className="w-16 h-16 border border-white/30 p-0.5 bg-gray-900/5">
+                    <div className="min-w-[4rem] max-w-[12rem] aspect-square border border-white/30 p-0.5 bg-gray-900/5">
                       <TinyGrid grid={example.output} />
                     </div>
                   </div>
@@ -106,7 +114,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Test Cases - ALWAYS VISIBLE (RIGHT SIDE) */}
+          {/* Test Cases - ALWAYS VISIBLE (RIGHT SIDE) - DYNAMIC SIZING */}
           <div className="flex flex-wrap items-center gap-12 min-w-fit">
             {testCases.map((testCase, index) => (
               <div key={index} className="flex items-center gap-6 min-w-fit">
@@ -117,14 +125,14 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 )}
                 <div>
                   <div className="text-[9px] text-gray-600 mb-1">Input</div>
-                  <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
+                  <div className="min-w-[6rem] max-w-[20rem] aspect-square border border-white/40 p-1 bg-gray-900/5">
                     <TinyGrid grid={testCase.input} />
                   </div>
                 </div>
                 <div className="text-xs text-gray-400">→</div>
                 <div>
                   <div className="text-[9px] text-green-700 font-medium mb-1">Correct</div>
-                  <div className="w-32 h-32 border border-white/40 p-1 bg-gray-900/5">
+                  <div className="min-w-[6rem] max-w-[20rem] aspect-square border-2 border-green-500 p-1 bg-green-50/20">
                     <TinyGrid grid={testCase.output} />
                   </div>
                 </div>
@@ -132,6 +140,27 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             ))}
           </div>
         </div>
+
+        {/* Prediction Timeline - VERTICAL (NEW) */}
+        {hasPredictions && (
+          <div className="w-full border-t border-purple-300 pt-2 mt-3">
+            <div className="text-[9px] font-semibold text-purple-700 mb-1 flex items-center gap-1">
+              <span>Prediction Evolution</span>
+              <Badge variant="outline" className="text-[8px] px-1 py-0">
+                {predictions!.length} iteration{predictions!.length > 1 ? 's' : ''}
+              </Badge>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {predictions!.map((pred, index) => (
+                <PredictionCard
+                  key={index}
+                  prediction={pred}
+                  isLatest={index === predictions!.length - 1}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
