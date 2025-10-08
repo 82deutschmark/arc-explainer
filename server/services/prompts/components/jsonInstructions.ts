@@ -62,7 +62,7 @@ export const JSON_FIELDS = {
   optional: [
     'solvingStrategy: Domain-specific language to solve the puzzle',
     'patternDescription: Transformation rules (2-3 short imperatives)',
-    'hints: Array of 3 pseudo-code algorithms you considered',
+    'hints: Array of 3 simple hints so even a child could understand how to solve the puzzle',
     'confidence: Your certainty level (1-100)'
   ],
   
