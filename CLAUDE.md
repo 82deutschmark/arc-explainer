@@ -79,7 +79,7 @@ Use `npm run test` to build and start the dev server and wait 10 seconds for it 
 - **Routing**: Wouter (lightweight client-side routing)
 - **State Management**: TanStack Query for server state
 - **UI Components**: shadcn/ui + TailwindCSS
-- **Key Pages**: PuzzleBrowser, PuzzleExaminer, ModelDebate (v2.30.0+), AnalyticsOverview, EloLeaderboard
+- **Key Pages**: PuzzleBrowser, PuzzleExaminer, ModelDebate (v2.30.0+), PuzzleDiscussion (v3.6.3+), AnalyticsOverview, EloLeaderboard, Leaderboards
 
 ### Backend Architecture (Express + TypeScript)
 - **Server**: Express.js with ESM modules
@@ -149,6 +149,7 @@ Centralized prompt building system (`server/services/promptBuilder.ts`):
 **Feature**: Multi-turn conversations with full context retention  
 **Providers**: OpenAI (o-series), xAI (Grok-4)  
 **Database**: `provider_response_id` column stores response IDs  
+**Frontend Mapping**: `providerResponseId` field in `ExplanationData` type (mapped in `useExplanation` hook)
 
 **How It Works:**
 1. Each AI response includes a unique `providerResponseId`
@@ -187,14 +188,19 @@ Model Debate system automatically chains conversations with provider awareness:
 - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical details
 - `docs/Debate_Conversation_Chaining_Plan.md` - Debate implementation
 
-**Self-Conversation Mode (PuzzleDiscussion):**
+**Self-Conversation Mode (PuzzleDiscussion) - Updated v3.6.4:**
 Progressive reasoning refinement where one model refines its own analysis:
 - Same conversation chaining infrastructure as ModelDebate
 - Auto-locks to single model (Model A → Model A → Model A)
 - Each turn passes `previousResponseId` to maintain full reasoning context
-- Ideal for reasoning models (grok-4, o3, o4) to iteratively improve solutions
+- **Eligibility Criteria (Simplified):**
+  - Has `provider_response_id` in database
+  - Created within last 30 days (provider retention window)
+  - **NO model type restrictions** - any model with a response ID can use chaining
 - Reuses all ModelDebate components (IndividualDebate, ExplanationsList, RebuttalCard)
 - Access via `/discussion/:taskId` route
+- **Landing page**: Search box + table of recent eligible analyses with direct "Refine" links
+- **NEW API**: `GET /api/discussion/eligible` - server-side filtered eligible explanations
 
 **Use Cases:**
 - Deep-dive refinement with reasoning models
@@ -313,6 +319,7 @@ ARC-AGI datasets loaded in priority order:
 2. ARC2 (training2)  
 3. ARC1-Eval (evaluation)
 4. ARC1 (training)
+5. ARC-Heavy (synthetic)
 Abstraction and Reasoning Corpus for Artificial General Intelligence v2 (ARC-AGI-2)
 
 "ARC can be seen as a general artificial intelligence benchmark, as a program synthesis benchmark, or as a psychometric intelligence test. It is targeted at both humans and artificially intelligent systems that aim at emulating a human-like form of general fluid intelligence."

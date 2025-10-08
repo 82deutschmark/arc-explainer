@@ -2,25 +2,9 @@
  * Author: Cascade using Claude Sonnet 4.5
  * Date: 2025-10-06
  * PURPOSE: Analyze ARC Eval puzzles using Grok-4 model via external API endpoints.
- *          This script is adapted for the base Grok-4 model which can be very slow (3-5+ minutes per puzzle).
- *          Key differences from fast variants: Much longer timeout (30 minutes) due to slow response times.
+ *          This script targets the base Grok-4 model which is slow; add concurrency cap to keep runs stable.
  *
  * SRP and DRY check: Pass - This script handles API requests for puzzle analysis with proper error handling and progress tracking
- *
- * USAGE:
- * 1. Analyze all ARC 1 Eval puzzles (400 puzzles):
- *    node --import tsx scripts/grok-4.ts --dataset arc1
- *
- * 2. Analyze all ARC 2 Eval puzzles (120 puzzles):
- *    node --import tsx scripts/grok-4.ts --dataset arc2
- *
- * 3. Analyze specific puzzle IDs:
- *    node --import tsx scripts/grok-4.ts 00d62c1b 00d7ad95 00da1a24
- *
- * 4. Or pass a text file containing one puzzle ID per line:
- *    node --import tsx scripts/grok-4.ts --file puzzle-ids.txt
- *
- * The script will analyze each puzzle and save the results to the database.
  */
 
 import axios from 'axios';
@@ -43,6 +27,9 @@ const PUZZLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 // Delay between triggering concurrent analyses
 const TRIGGER_DELAY_MS = 2000; // 2 seconds
+
+// NEW: Concurrency cap (align with xAI provider limits). Override via env XAI_MAX_CONCURRENCY.
+const MAX_CONCURRENCY = Math.max(1, Number(process.env.XAI_MAX_CONCURRENCY || 2));
 
 interface AnalysisRequest {
   temperature: number;
@@ -210,7 +197,7 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
 }
 
 /**
- * Analyze all puzzles concurrently with small delays between triggers
+ * Analyze all puzzles using a small worker pool (concurrency-limited)
  */
 async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<AnalysisResult[]> {
   if (puzzleIds.length === 0) {
@@ -218,34 +205,37 @@ async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<Analy
     return [];
   }
 
-  console.log(`\n🚀 Triggering ${puzzleIds.length} concurrent analyses...`);
+  console.log(`\n🚀 Queueing ${puzzleIds.length} analyses with concurrency = ${MAX_CONCURRENCY}...`);
   console.log('='.repeat(80));
 
-  const results: AnalysisResult[] = [];
-  const analysisPromises: Promise<AnalysisResult>[] = [];
+  const results: AnalysisResult[] = new Array(puzzleIds.length);
+  let index = 0;
 
-  // Trigger all analyses concurrently with small delays
-  for (let i = 0; i < puzzleIds.length; i++) {
-    const puzzleId = puzzleIds[i];
-
-    // Trigger analysis immediately
-    const analysisPromise = analyzePuzzle(puzzleId);
-    analysisPromises.push(analysisPromise);
-
-    // Small delay between triggers
-    if (i < puzzleIds.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, TRIGGER_DELAY_MS));
+  async function worker(workerId: number) {
+    while (true) {
+      const current = index++;
+      if (current >= puzzleIds.length) break;
+      const puzzleId = puzzleIds[current];
+      try {
+        const res = await analyzePuzzle(puzzleId);
+        results[current] = res;
+      } catch (e: any) {
+        results[current] = { puzzleId, success: false, error: String(e?.message || e) };
+      }
+      // small pacing delay between triggers to avoid burst
+      if (current < puzzleIds.length - 1) {
+        await new Promise(r => setTimeout(r, TRIGGER_DELAY_MS));
+      }
     }
   }
 
-  console.log(`\n✅ All ${puzzleIds.length} analyses triggered! Waiting for completion...\n`);
-
-  // Wait for all analyses to complete
-  const allResults = await Promise.all(analysisPromises);
+  // Start a small pool
+  const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, puzzleIds.length) }, (_, i) => worker(i));
+  await Promise.all(workers);
 
   // Count successes and failures
-  const successful = allResults.filter(r => r.success).length;
-  const failed = allResults.filter(r => !r.success).length;
+  const successful = results.filter(r => r?.success).length;
+  const failed = results.filter(r => r && !r.success).length;
 
   console.log(`📊 CONCURRENT ANALYSIS COMPLETE:`);
   console.log(`   Total puzzles: ${puzzleIds.length}`);
@@ -253,13 +243,13 @@ async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<Analy
   console.log(`   Failed: ${failed} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
 
   if (successful > 0) {
-    const avgTime = allResults
-      .filter(r => r.success && r.responseTime)
-      .reduce((sum, r) => sum + (r.responseTime || 0), 0) / successful;
+    const avgTime = results
+      .filter(r => r && r.success && r.responseTime)
+      .reduce((sum, r) => sum + (r!.responseTime || 0), 0) / successful;
     console.log(`   Average response time: ${Math.round(avgTime)}s`);
   }
 
-  return allResults;
+  return results;
 }
 
 /**

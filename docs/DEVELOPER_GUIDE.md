@@ -1,6 +1,6 @@
 # ARC Explainer Developer Onboarding Guide
 
-*Last Updated: September 30, 2025*
+*Last Updated: October 6, 2025*
 
 Welcome to the ARC Explainer project! This guide is designed to help new developers understand the project's architecture, locate key files, and contribute effectively. Our goal is to reuse existing components and maintain a clear, modular structure.
 
@@ -21,6 +21,23 @@ The application now includes AI-vs-AI debate functionality with parent-child reb
   - `GET /api/explanations/:id/original` - Get parent explanation
   - `GET /api/puzzle/:puzzleId/explanations?correctness=incorrect` - Filter debatable explanations
 - **Status**: 100% Complete (v2.30.8) - Backend, UI, and navigation fully implemented
+
+### 🆕 NEW: Conversation Chaining & PuzzleDiscussion (October 2025) ✅ COMPLETE
+The application now supports multi-turn conversations with full context retention using provider-native Responses API:
+- **PuzzleDiscussion Page**: Progressive reasoning where one model refines its own analysis across multiple turns
+- **Conversation Chaining**: Pass `previousResponseId` to maintain full conversation context (30-day retention)
+- **Supported Providers**: OpenAI (o-series, GPT-5), xAI (Grok-4)
+- **Server-Side Storage**: No token cost for accessing previous reasoning (stored on provider servers)
+- **Eligibility API**: `GET /api/discussion/eligible` - Get recent explanations eligible for chaining
+- **Simplified Criteria**: Only requires `provider_response_id` + within 30 days (no model type restrictions)
+- **Frontend Mapping**: `providerResponseId` field automatically mapped in `useExplanation` hook
+- **Landing Page**: Search box + table showing recent eligible analyses with direct "Refine" buttons
+- **Auto-Selection**: Supports `?select=:explanationId` URL parameter for deep-linking
+- **Database**: `provider_response_id` column in `explanations` table stores response IDs
+- **API Documentation**:
+  - `docs/API_Conversation_Chaining.md` - Complete usage guide
+  - `docs/Responses_API_Chain_Storage_Analysis.md` - Technical implementation
+- **Status**: 100% Complete (v3.6.4) - Backend, frontend, and UI fully implemented
 
 ### Model Dataset Performance Analysis (September 2025)
 The application includes dynamic model performance analysis across ANY ARC dataset:

@@ -1,4 +1,747 @@
+## [2025-10-08]
+
+## v3.7.5 - Fixed Hardcoded Localhost URLs (Production Breaking Bug)
+
+### Critical Bug Fix
+- **Fixed hardcoded `http://localhost:5000` URLs in batchController.ts that broke production deployments**
+  - **Problem:** Internal API calls used hardcoded localhost URLs (lines 182, 204)
+  - **Impact:** Batch analysis completely broken in production (Railway, Vercel, etc.)
+  - **Root Cause:** Server-to-server API calls couldn't reach themselves in non-localhost environments
+  - **Solution:** Created `getInternalApiBaseUrl()` helper that reads from environment variables
+    - Uses `INTERNAL_API_HOST` env var (defaults to 'localhost')
+    - Uses `PORT` env var (defaults to '5000')
+    - Works in both development and production
+
+### Technical Details
+```typescript
+// NEW: Environment-aware base URL helper
+function getInternalApiBaseUrl(): string {
+  const port = process.env.PORT || '5000';
+  const host = process.env.INTERNAL_API_HOST || 'localhost';
+  return `http://${host}:${port}`;
+}
+
+// BEFORE (broken in production):
+const apiUrl = `http://localhost:5000/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+
+// AFTER (works everywhere):
+const baseUrl = getInternalApiBaseUrl();
+const apiUrl = `${baseUrl}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+```
+
+### Additional Fixes
+- Fixed pre-existing TypeScript errors in batchController.ts
+  - Fixed `repositoryService.explanation` → `repositoryService.explanations`
+  - Added proper error type annotations (`error: unknown`)
+  - Fixed parameter type annotations
+
+### Clarification
+- **ModelBrowser.tsx is NOT the problem** - it correctly uses relative URLs (`/api/puzzle/...`)
+- The Vite dev proxy (`vite.config.ts` line 55-61) handles frontend-to-backend correctly
+- The bug was backend-to-backend (batchController calling its own API)
+
+### Files Modified
+- `server/controllers/batchController.ts` - Added getInternalApiBaseUrl() helper, fixed hardcoded URLs
+
+---
+
+## v3.7.4 - ModelBrowser mirrors AnalyticsOverview + Click-to-Analyze
+
+### Changed
+- ModelBrowser now mirrors AnalyticsOverview UI using shadcn/ui; displays one model’s performance across a dataset (Correct / Incorrect / Not Attempted).
+- Clicking a PuzzleID badge in Not Attempted triggers analyze+save with the selected model using the solver prompt. The badge animates (pulse) while in-flight, and the lists refresh on completion.
+
+### Technical
+- Added optional refreshKey to useModelDatasetPerformance to allow on-demand refetch after analysis completes. No behavior change to existing consumers.
+
+### Files Modified
+- client/src/pages/ModelBrowser.tsx
+- client/src/hooks/useModelDatasetPerformance.ts
+
+---
+
+## [2025-10-07]
+
+## v3.7.3 - Batch Analysis Parallel Processing + UI Refactor
+
+### Performance
+- **MASSIVE SPEED IMPROVEMENT: Parallel batch processing (10-20x faster)**
+  - **Problem:** Batch analysis ran ONE puzzle at a time (sequential) - extremely slow
+  - **Solution:** Process puzzles in batches of 10 concurrently with 2s stagger
+  - **Implementation:** `Promise.all()` pattern (same as `analyze-unsolved-puzzles.ts` script)
+  - **Speed Improvement:**
+    - Sequential: 120 puzzles in ~4-6 hours (30s-3min each)
+    - Parallel: 120 puzzles in ~20-40 minutes (10x faster)
+  - Files: `server/controllers/batchController.ts` (lines 233-367)
+
+### UI Refactor
+- **Rebuilt ModelBrowser using EXISTING proven components (no more invented metrics!)**
+  - **Problems Fixed:**
+    1. Used deprecated `ExaminerProgress` component (line 1: "Deprecated!!! NEEDS REMOVAL!!!")
+    2. Invented fake `overallAccuracy` metric (doesn't exist in data)
+    3. Excessive padding (`space-y-6` everywhere)
+    4. No links to puzzle pages
+    5. No advanced options (prompt preview, temperature, custom prompts)
+
+  - **Architecture Pattern:** Based on `AnalyticsOverview` + `PuzzleExaminer` advanced options
+
+  - **Reused Components:**
+    - `ClickablePuzzleBadge` - Links to `/puzzle/{id}?highlight={explanationId}`
+    - `PromptPicker` - Same prompt selection as PuzzleExaminer
+    - `PromptPreviewModal` - Preview prompts before running batch
+    - `determineCorrectness()` - Shared correctness utility (no invented logic)
+
+  - **Real Data Only:**
+    ```typescript
+    // CORRECT: Count from actual validation results
+    const correctCount = results.filter(r => r.correct === true).length;
+    const incorrectCount = results.filter(r => r.correct === false).length;
+
+    // WRONG (removed): Invented metric
+    // const overallAccuracy = (successful / total) * 100; // ❌ "successful" just means API didn't error!
+    ```
+
+  - **UI Improvements:**
+    - Compact layout (`p-4`, `space-y-4` instead of `p-6`, `space-y-6`)
+    - Configuration panel collapses when running
+    - Live progress shows 4 real metrics: Correct, Incorrect, Avg Time, Completed
+    - Results grid with ClickablePuzzleBadges (6 columns)
+    - Summary cards (Correct/Incorrect/Total)
+
+  - **Advanced Options (Same as PuzzleExaminer):**
+    - Temperature slider (0-2)
+    - Prompt picker (solver/alien/custom)
+    - Custom prompt textarea
+    - Preview Prompt button → PromptPreviewModal
+
+  - **Removed:**
+    - `ExaminerProgress` component (deprecated, used invented fields)
+    - `BatchActivityLog` (too verbose, cluttered UI)
+    - All invented metrics (`overallAccuracy`, etc.)
+    - Excessive padding
+
+  - Files: `client/src/pages/ModelBrowser.tsx` (complete rebuild, 409 lines)
+
+### Technical Details
+
+**Parallel Processing Pattern:**
+```typescript
+// Trigger analyses concurrently (don't await in loop)
+for (const puzzle of batch) {
+  promises.push(analyzeSinglePuzzle(puzzle));
+  await sleep(2000); // Stagger to avoid rate limits
+}
+const results = await Promise.all(promises); // Wait for all
+```
+
+**Real Correctness Calculation:**
+```typescript
+// Uses shared utility (matches AccuracyRepository logic)
+const correctness = determineCorrectness({
+  isPredictionCorrect: result.isPredictionCorrect,
+  multiTestAllCorrect: result.multiTestAllCorrect,
+  hasMultiplePredictions: result.hasMultiplePredictions
+});
+```
+
+### User Experience
+- ✅ **10-20x faster batch processing** (batches of 10 concurrent)
+- ✅ **Compact, clean UI** (50% less padding)
+- ✅ **Real data only** (no invented metrics)
+- ✅ **Clickable puzzle links** (opens full analysis on puzzle page)
+- ✅ **Same advanced options** as PuzzleExaminer (prompt preview, temperature, custom prompts)
+- ✅ **Progress tracking** with real validation stats
+
+### Files Modified
+- `server/controllers/batchController.ts` - Parallel processing implementation
+- `client/src/pages/ModelBrowser.tsx` - Complete UI rebuild
+
+---
+
+## v3.7.2 - CRITICAL FIX: Provider Response ID Storage (Conversation Chaining Unlocked)
+
+### Fixed
+- **CRITICAL: providerResponseId never saved to database (ALL conversation features broken)**
+  - **Problem:** ALL 29,609+ database records had NULL `provider_response_id` field
+  - **Root Cause:** `explanationService.transformRawExplanation()` mapped 35+ fields but completely omitted `providerResponseId` at line 84
+  - **Impact:**
+    - PuzzleDiscussion page showed 0 eligible analyses (30-day retention broken)
+    - Conversation chaining never worked (no context maintained)
+    - Model Debate couldn't maintain reasoning across turns
+    - Batch analysis resume couldn't filter already-analyzed puzzles
+  - **Data Flow Failure Point:**
+    1. ✅ openai.ts/grok.ts: Captured `response.id` from API correctly
+    2. ✅ parseProviderResponse(): Returned `responseId` correctly
+    3. ✅ buildStandardResponse(): Set `providerResponseId` correctly
+    4. ✅ AIResponse object: Had `providerResponseId` field correctly
+    5. ❌ **transformRawExplanation(): NEVER MAPPED providerResponseId** ← BUG WAS HERE
+    6. ❌ Database: Saved NULL every time
+  - **Solution:** Added line 84 in `explanationService.ts` to map `providerResponseId` from sourceData/analysisData
+  - **Verification:** Tested with grok-4-fast-reasoning and gpt-5-2025-08-07, both now save response IDs correctly
+  - Files: `server/services/explanationService.ts:84`
+
+### Verified Working
+- ✅ **Database Storage:** New analyses save response IDs (OpenAI format: `resp_...`, xAI format: `uuid_region`)
+- ✅ **PuzzleDiscussion Eligibility:** `/api/discussion/eligible` returns analyses with response IDs
+- ✅ **Conversation Chaining:** Tested "refine analysis" feature - maintains full context
+- ✅ **Chain Retrieval:** `/api/explanations/:id/chain` returns full conversation history
+- ✅ **30-Day Retention:** Records created within 30 days with response IDs are eligible
+
+### Response ID Formats
+- **OpenAI (GPT-5, o3, o4):** `resp_060ac21c27a4943c0068e57a2a25dc819593ee79a2dae7b29d`
+- **xAI (Grok-4, Grok-4-Fast):** `4f313883-b0b2-21fa-72b0-0f4fec701fc4_us-east-1`
+
+### Testing Instructions
+1. Server restart required to load fix (dev server must rebuild)
+2. Run test analysis with any OpenAI or xAI model using Responses API
+3. Verify database: `node scripts/check-provider-response-ids.js`
+4. Check PuzzleDiscussion page shows eligible analyses
+5. Test conversation chaining by clicking "Refine" on eligible analysis
+
+### Files Modified
+- `server/services/explanationService.ts` - Added providerResponseId mapping at line 84
+
+### Files Created
+- `docs/07102025-ACTUAL-ROOT-CAUSE-FIX.md` - Complete analysis documentation
+- `scripts/check-provider-response-ids.js` - Verification tool for response ID storage
+
+### Migration Notes
+- **Old Records (before server restart):** Still have NULL response IDs (cannot be fixed retroactively)
+- **New Records (after fix):** All OpenAI and xAI models save response IDs correctly
+- **Historical Data:** 29,609 records created before 2025-10-07 are ineligible for conversation features
+
+### Dependencies Unlocked
+This fix enables ALL conversation-dependent features:
+- 🎯 PuzzleDiscussion self-refinement (model refines its own analysis)
+- 🎯 Model Debate conversation chaining (maintains context across turns)
+- 🎯 Batch analysis resume (identifies already-analyzed puzzles)
+- 🎯 30-day conversation retention (matches OpenAI/xAI limits)
+
+---
+
+## v3.7.1 - CRITICAL FIX + Live Activity Log with Validation Results
+
+### Fixed
+- **CRITICAL: formatResponse is not a function (500 errors on all batch endpoints)**
+  - **Problem:** batchController.ts called `formatResponse(data, msg, success)` as a function
+  - **Root Cause:** responseFormatter.ts exports an OBJECT with `formatResponse.success()` and `formatResponse.error()` methods
+  - **Impact:** ALL batch API endpoints returned 500 errors, batch analysis completely broken
+  - **Solution:** Fixed all 20+ incorrect calls in batchController.ts to use correct format
+  - Files: `server/controllers/batchController.ts`
+
+### Added
+- **Live Activity Log with Validation Results**
+  - **NEW:** Terminal-style activity log showing real-time batch analysis events
+  - **Validation Display:** Shows ✓ CORRECT or ✗ INCORRECT for each puzzle with processing time
+  - **Error Details:** Failed puzzles show specific error messages
+  - **Session Events:** Logs startup, pause, resume, completion with status
+  - **Color-Coded:** Info (blue), Success (green), Error (red), Warning (amber)
+  - **Auto-Scroll:** Automatically scrolls to latest activity
+  - Files: `client/src/components/batch/BatchActivityLog.tsx` (NEW)
+
+- **Backend Activity Logging Infrastructure**
+  - **NEW:** `ActivityLogEntry` interface (timestamp, type, message, puzzleId)
+  - **NEW:** `activityLog[]` array in `BatchSession` type
+  - **NEW:** `logActivity()` helper function with 200-entry limit
+  - **Logs Created For:**
+    - Session startup: Model, dataset, resume status
+    - Puzzle start: `⚡ Analyzing puzzle: 0934a4d8`
+    - Puzzle success: `✓ 0934a4d8: CORRECT (26s)` or `✗ 0934a4d8: INCORRECT (32s)`
+    - Puzzle failure: `❌ 0934a4d8: FAILED - Timeout error (45s)`
+    - Pause: `⏸️ Batch analysis paused at 15/120`
+    - Resume: `▶️ Batch analysis resumed from 15/120`
+    - Completion: `✅ Batch analysis completed - 95/120 successful`
+  - Files: `server/controllers/batchController.ts`
+
+- **"Now Analyzing" Real-Time Indicator**
+  - **NEW:** Blue pulsing alert banner showing current puzzle being analyzed
+  - Displays puzzle ID in monospace code block
+  - Appears above activity log during batch processing
+  - Files: `client/src/pages/ModelBrowser.tsx`
+
+- **Browser Console Logging**
+  - **NEW:** Detailed logging in browser DevTools console
+  - Logs every 2 seconds during batch run
+  - Shows: progress, successful/failed counts, percentage, current puzzle
+  - Format: `[BATCH] { progress: "15/120", successful: 12, failed: 3, ... }`
+  - Files: `client/src/hooks/useBatchAnalysis.ts`
+
+### Enhanced
+- **ModelBrowser UI Layout**
+  - Added "Now Analyzing" banner (blue, pulsing icon)
+  - Added "Live Activity Log" card (400px terminal-style display)
+  - Logs show during batch run, hidden when idle
+  - Files: `client/src/pages/ModelBrowser.tsx`
+
+- **Batch Status API Response**
+  - Now includes `activityLog[]` in GET /api/batch/status/:sessionId
+  - Frontend receives full activity history with each status poll
+  - Files: `server/controllers/batchController.ts`
+
+### Technical Details
+**Activity Log Format:**
+```typescript
+interface ActivityLogEntry {
+  timestamp: Date;
+  type: 'info' | 'success' | 'error' | 'warning';
+  message: string;
+  puzzleId?: string;
+}
+```
+
+**Terminal-Style UI:**
+- Background: `bg-gray-950` (dark terminal theme)
+- Font: Monospace for console feel
+- Timestamps: `[HH:MM:SS]` format
+- Auto-scroll: Scrolls to bottom on new entries
+- Limit: Last 200 entries kept in memory
+
+**Console Logging:**
+```javascript
+[BATCH] { progress: "15/120", successful: 12, failed: 3, status: "running", percentage: "13%" }
+[BATCH] ⚡ Currently analyzing: 0934a4d8
+[BATCH] Latest: ✓ 0934a4d8: CORRECT (26s)
+```
+
+### User Experience
+Users now see exactly what's happening:
+1. ✅ **Live Activity Feed** - Terminal-style log with validation results
+2. ✅ **Current Puzzle Indicator** - Pulsing banner showing active puzzle
+3. ✅ **Validation Results** - ✓ CORRECT or ✗ INCORRECT per puzzle
+4. ✅ **Error Details** - Specific error messages for failures
+5. ✅ **Performance Metrics** - Processing time per puzzle
+6. ✅ **Browser Console** - Detailed debugging in DevTools
+
+### Files Created
+- `client/src/components/batch/BatchActivityLog.tsx` - Activity log UI component
+
+### Files Modified
+- `server/controllers/batchController.ts` - Fixed formatResponse, added activity logging
+- `client/src/hooks/useBatchAnalysis.ts` - Added types, console logging
+- `client/src/pages/ModelBrowser.tsx` - Activity log + current puzzle indicator
+
+---
+
+## v3.7.0 - Batch Analysis Web UI with Pause/Resume and Auto-Recovery
+
+### Added
+- **Batch Analysis Web UI** (Complete Redesign)
+  - **NEW PAGE:** `/models` - Full-featured batch analysis interface
+  - Model selector: Grok-4 variants, OpenAI o-series, GPT-5
+  - Dataset selector: ARC-1 Eval (400 puzzles), ARC-2 Eval (120 puzzles)
+  - Real-time progress tracking with 2-second auto-refresh
+  - Pause/resume/cancel controls for long-running batches
+  - Results table showing ✓ correct / ✗ incorrect per puzzle
+  - Files: `client/src/pages/ModelBrowser.tsx` (replaced stub)
+
+- **Backend Batch Controller**
+  - **NEW:** `server/controllers/batchController.ts`
+  - In-memory session management (Map-based, production could use Redis)
+  - Auto-resume capability: Queries database to skip already-analyzed puzzles
+  - Pause/resume/cancel controls with session persistence
+  - Real-time progress tracking with per-puzzle results
+  - Error isolation: Failed puzzles logged but don't abort batch
+  - Background processing with async queue
+
+- **API Endpoints**
+  - `POST /api/batch/start` - Start batch analysis
+  - `GET /api/batch/status/:sessionId` - Real-time status polling
+  - `POST /api/batch/pause/:sessionId` - Pause execution
+  - `POST /api/batch/resume/:sessionId` - Resume from pause
+  - `GET /api/batch/results/:sessionId` - Detailed results
+  - `GET /api/batch/sessions` - List all active sessions
+  - Files: `server/routes.ts` (added batch routes)
+
+- **React Hooks for Batch Management**
+  - **NEW:** `client/src/hooks/useBatchAnalysis.ts`
+  - TanStack Query hooks for all batch operations
+  - Auto-refresh every 2 seconds during execution
+  - Stops auto-refresh when batch completes/fails
+  - Combined workflow hook: `useBatchAnalysis()` for full lifecycle
+
+- **Batch Results Table Component**
+  - **NEW:** `client/src/components/batch/BatchResultsTable.tsx`
+  - shadcn/ui Table with visual indicators
+  - Status icons: ✓ Correct, ✗ Incorrect, ⏱ Pending, ⚡ Analyzing, ⊖ Skipped
+  - Processing time per puzzle
+  - Error messages for failed analyses
+  - Analysis ID tracking for database reference
+
+### Enhanced
+- **Component Reuse**
+  - Integrated existing `ExaminerControls.tsx` for pause/resume buttons
+  - Integrated existing `ExaminerProgress.tsx` for progress bar display
+  - Removed "DEPRECATED" markers (components now actively used)
+
+### Technical Details
+**Auto-Resume Logic:**
+```typescript
+// Queries database for existing model analyses
+const explanations = await repositoryService.explanation.getExplanationsForPuzzle(puzzleId);
+const hasAnalysis = explanations.some(exp => exp.modelName === modelName);
+// Skips puzzles already analyzed, only processes new ones
+```
+
+**Session Management:**
+- In-memory Map storage (sessions lost on server restart)
+- Alternative: Old `BatchAnalysisRepository.ts` uses database (not currently used)
+- Production could use Redis for distributed session management
+
+**Recovery Features:**
+- Auto-resume: Re-running same model+dataset skips completed puzzles
+- Pause capability: Stop mid-run, resume from exact position
+- Error isolation: Failed puzzles don't abort batch
+- Session tracking: Unique session ID for monitoring
+
+### Files Created
+- `server/controllers/batchController.ts` - Batch orchestration
+- `client/src/pages/ModelBrowser.tsx` - UI (replaced stub)
+- `client/src/hooks/useBatchAnalysis.ts` - React hooks
+- `client/src/components/batch/BatchResultsTable.tsx` - Results display
+
+### Files Modified
+- `server/routes.ts` - Added 6 batch endpoints
+
+---
+
+## v3.6.5 - Grok-4 Structured Outputs with Graceful Fallback
+
+### Added
+- **Grok-4 Structured JSON Schema**
+  - **NEW:** `server/services/schemas/grokJsonSchema.ts`
+  - Minimal schema avoiding unsupported constraints (no minLength/maxLength/minItems/maxItems)
+  - Shallow nesting to prevent grammar errors
+  - Fields: `multiplePredictedOutputs`, `predictedOutput`, `confidence`, etc.
+  - `additionalProperties: false` for strict validation
+
+- **Structured Output Support in Grok Service**
+  - Request structured outputs via `response_format.json_schema`
+  - Graceful fallback: Detects grammar/schema errors (400/422/503)
+  - Retries once without schema on error, then continues
+  - Robust parsing: `output_parsed` → `output_text` → `output[]` blocks
+  - Full token accounting with `reasoning_tokens` tracking
+  - Files: `server/services/grok.ts`
+
+- **Batch Script Enhancements**
+  - **NEW FLAGS:**
+    - `--limit N` or `-n N`: Restrict run to first N puzzles (smoke testing)
+    - `--tail N`: Take last N puzzles (useful for testing end of dataset)
+  - Concurrency control via `XAI_MAX_CONCURRENCY` env (default: 2)
+  - Improved error messages and progress reporting
+  - Updated scripts:
+    - `scripts/grok-4-fast-reasoning.ts`
+    - `scripts/grok-4-fast-non-reasoning.ts`
+    - `scripts/grok-4.ts`
+
+### Fixed
+- **Critical: Missing providerResponseId Mapping**
+  - **Problem:** Backend returned `providerResponseId` but frontend never mapped it
+  - **Impact:** ALL explanations appeared ineligible for conversation chaining
+  - **Solution:** Added `providerResponseId` mapping in `useExplanation` hook
+  - Files: `client/src/hooks/useExplanation.ts`
+
+- **PuzzleDiscussion Minor UI Improvements**
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Import Path Correction**
+  - Fixed import path in `server/controllers/discussionController.ts`
+
+### Documentation
+- **NEW:** `docs/2025-10-07-grok4-structured-outputs-enable-arc2-batch.md`
+  - Complete guide for Grok-4 structured outputs
+  - Request shape, schema contents, fallback behavior
+  - Batch run settings and operational notes
+  - Resume mode instructions
+
+- **NEW:** `docs/2025-10-07-plan-docs-responses-api-audit.md`
+  - Response API audit planning document
+
+- **NEW:** `docs/06102025-PuzzleDiscussion-Complete-Redesign-Summary.md`
+  - PuzzleDiscussion redesign summary
+
+- **Updated:** Multiple docs with Grok-4 structured outputs info
+  - `docs/EXTERNAL_API.md`
+  - `docs/HOOKS_REFERENCE.md`
+  - `docs/DEVELOPER_GUIDE.md`
+  - `docs/xAI-API.md`
+  - `docs/Analytics_Database_Architecture.md`
+  - `docs/Analysis_Data_Flow_Trace.md`
+  - `docs/Responses_API_Chain_Storage_Analysis.md`
+  - `knowledge.md`
+  - `CLAUDE.md`
+  - `README.md`
+
+### Cleanup
+- **Deleted:** `debug-chars.js` - Removed debug file
+
+### Technical Details
+**Structured Output Request:**
+```typescript
+body.response_format = {
+  type: "json_schema",
+  json_schema: { schema: GROK_JSON_SCHEMA.schema }
+};
+// No name/strict parameters (xAI-specific)
+```
+
+**Fallback Behavior:**
+```typescript
+// Detect grammar/schema errors
+if (error.status in [400, 422, 503] && /grammar|schema/i.test(errorBody)) {
+  logger.warn('Disabling structured output due to grammar/schema error');
+  delete body.response_format;
+  // Retry once without schema
+}
+```
+
+---
+
 ## [2025-10-06]
+
+## v3.6.4 - PuzzleDiscussion Page Complete Redesign
+
+### Fixed
+- **PuzzleDiscussion Landing Page Disaster** (Critical)
+  - **Problem:** Landing page had 60+ lines of explanatory text instead of search functionality
+  - **Solution:** Complete redesign focusing on action, not explanation
+
+- **Overly Restrictive Eligibility Filtering** (Critical)
+  - **Problem:** Required reasoning models (GPT-5, o-series, Grok-4) in addition to provider_response_id
+  - **Solution:** Simplified to ONLY check: has provider_response_id + within 30-day retention window
+  - **Rationale:** Any model with a provider_response_id can use conversation chaining if the provider supports it
+  - Impact: Opens conversation chaining to all models that saved response IDs, not just reasoning models
+
+- **Missing providerResponseId Field Mapping** (Critical)
+  - **Problem:** Backend returned `providerResponseId` but frontend `useExplanation` hook didn't map it
+  - **Impact:** ALL explanations appeared ineligible because frontend never saw the provider response ID
+  - **Solution:** Added `providerResponseId: (raw as any).providerResponseId` mapping in useExplanation hook
+  - **Root Cause:** Field was added to backend but never added to frontend data transformation
+  - Files: `client/src/hooks/useExplanation.ts`
+
+### Added
+- **Backend API for Eligible Explanations**
+  - **NEW:** `GET /api/discussion/eligible` endpoint
+  - Filters explanations server-side for discussion eligibility:
+    - Less than 30 days old (`created_at >= NOW() - INTERVAL '30 days'`)
+    - Has `provider_response_id` (required for conversation chaining)
+  - Returns: puzzle ID, model name, provider, age, eligibility status
+  - Files: `server/controllers/discussionController.ts`, `server/routes.ts`
+
+- **Frontend Hook for Eligible Explanations**
+  - **NEW:** `client/src/hooks/useEligibleExplanations.ts`
+  - Fetches and caches eligible explanations from API
+  - Supports pagination and automatic refetching
+  - File: `client/src/hooks/useEligibleExplanations.ts`
+
+### Enhanced
+- **PuzzleDiscussion Landing Page Redesign**
+  - **Before:** Walls of explanatory text (60+ lines)
+  - **After:** Clean, action-focused interface:
+    - Simple search box: "Enter puzzle ID to begin..."
+    - Table showing recent eligible analyses (puzzle ID, model, provider, age)
+    - Direct "Refine" buttons linking to `/discussion/:puzzleId?select=:id`
+    - No overwhelming explanations - focuses on getting users to action
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **PuzzleDiscussion Puzzle Page Filtering**
+  - Added client-side filtering for eligible explanations only
+  - Shows clear warning when explanations exist but none are eligible
+  - Criteria displayed clearly: age < 30 days, reasoning models only, has provider_response_id
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Component Button Text Customization**
+  - **Enhanced:** `client/src/components/puzzle/AnalysisResultListCard.tsx`
+  - Added `debateButtonText` prop for context-appropriate button text
+  - Default: "Start Debate" (debate context), "Start Refinement" (discussion context)
+  - Files: `client/src/components/puzzle/AnalysisResultListCard.tsx`, `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Reduced Explanatory Text in Components**
+  - **Reduced:** `client/src/components/puzzle/debate/ExplanationsList.tsx`
+  - Condensed 40-line explanation into 1 concise alert
+  - Kept only essential information about reasoning persistence
+  - Files: `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Improved Placeholder Text**
+  - **Fixed:** `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx`
+  - Changed from "Enter puzzle ID to start debate..." to neutral "Enter puzzle ID..."
+  - Files: `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx`
+
+### Technical Details
+
+**Eligibility Criteria (Server-side filtering):**
+```sql
+WHERE created_at >= NOW() - INTERVAL '30 days'
+  AND provider_response_id IS NOT NULL
+```
+
+**Simplified Logic:**
+- Originally required: reasoning model + provider_response_id + age < 30 days
+- Now requires: provider_response_id + age < 30 days
+- Rationale: Any model that saved a response ID can use conversation chaining
+
+**Landing Page Structure:**
+```typescript
+// Before: 60+ lines of explanatory text
+// After: Action-focused interface
+<Card> // Search box
+<Card> // Recent eligible table with direct links
+```
+
+**Client-side Filtering:**
+```typescript
+// Only show explanations that are eligible for discussion
+const filteredEligibleExplanations = explanations.filter(exp => {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  return new Date(exp.createdAt) >= thirtyDaysAgo
+    && exp.providerResponseId; // Only 2 checks now!
+});
+```
+
+### Impact
+- **UX Revolution:** Landing page now focuses on search and recent eligible analyses instead of overwhelming text
+- **Clarity:** Users can immediately see what analyses are eligible for discussion
+- **Efficiency:** Direct navigation to eligible puzzles with one click
+- **Maintainability:** Server-side filtering reduces client-side complexity
+- **Scalability:** API supports pagination for large datasets
+- **Feature Accessibility:** Simplified filtering makes conversation chaining available to ALL models with response IDs, not just reasoning models
+
+### Files Created
+- `server/controllers/discussionController.ts` - NEW: Discussion eligibility API
+- `client/src/hooks/useEligibleExplanations.ts` - NEW: Hook for fetching eligible explanations
+
+### Files Modified
+- `server/routes.ts` - Added discussion API endpoint
+- `client/src/pages/PuzzleDiscussion.tsx` - Complete redesign (landing + puzzle pages)
+- `client/src/components/puzzle/AnalysisResultListCard.tsx` - Added button text customization
+- `client/src/components/puzzle/debate/ExplanationsList.tsx` - Reduced text, context-aware buttons
+- `client/src/components/puzzle/debate/PuzzleDebateHeader.tsx` - Improved placeholder text
+
+---
+
+## v3.6.3 - PuzzleDiscussion Feature Discoverability & UI Enhancements
+
+### Added
+- **DifficultPuzzlesSection Component**
+  - Extracted 'Most Difficult Puzzles' functionality from PuzzleDiscussion
+  - Created dedicated reusable component (687 lines)
+  - Added to AnalyticsOverview page where it properly belongs
+  - Maintains all filtering/sorting logic from original implementation
+  - Fixes SRP violation: PuzzleDiscussion should be for conversations, not analytics
+  - Users can now find worst-performing puzzles in the analytics dashboard
+  - Files: `client/src/components/analytics/DifficultPuzzlesSection.tsx`, `client/src/pages/AnalyticsOverview.tsx`
+
+### Added
+- **"Refine This Analysis" Badge in AnalysisResultHeader**
+  - Purple/blue gradient badge appears next to "Get a second opinion!" badge
+  - Links directly to `/discussion/:puzzleId?select=:explanationId`
+  - Auto-starts progressive reasoning conversation with selected explanation
+  - Strict eligibility checks ensure badge only shows when feature will work:
+    * Must be reasoning model (GPT-5, o-series, Grok-4)
+    * Must have `providerResponseId` in database
+    * Must be created after Oct 6, 2025 (implementation date)
+    * Must be within 30-day provider retention window
+    * Prevents confusion from expired or unsupported analyses
+  - Files: `client/src/components/puzzle/AnalysisResultHeader.tsx`
+
+- **Auto-Selection Query Parameter Support**
+  - PuzzleDiscussion now supports `?select=:explanationId` URL parameter
+  - Automatically starts conversation when explanation ID provided
+  - Enables direct deep-linking to specific explanations from other pages
+  - Console logging for debugging auto-selection behavior
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Enhanced
+- **PuzzleDiscussion Welcome Screen**
+  - Completely redesigned to emphasize server-side reasoning persistence
+  - Prominent callout explaining 30-day reasoning token retention
+  - Visual token growth examples (Turn 1: 45k → Turn 2: accesses 45k, etc.)
+  - Cost savings explanation (no re-sending reasoning tokens)
+  - Provider requirements clearly stated (GPT-5, o-series, Grok-4)
+  - Updated button text: "Refine Analysis" instead of "Ask other LLM"
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **ExplanationsList Context Awareness**
+  - Added `pageContext` prop ('debate' | 'discussion')
+  - Context-aware UI text for PuzzleDiscussion vs ModelDebate:
+    * Discussion: "Select Analysis to Refine" + reasoning persistence explanation
+    * Debate: "Explanations Available for Debate" (unchanged)
+  - Reasoning persistence alert box (discussion context only):
+    * Explains server-side storage and full context retention
+    * Shows provider compatibility warnings for non-reasoning models
+    * Displays before user selects explanation
+  - Auto-detects non-reasoning models and shows compatibility warning
+  - Files: `client/src/components/puzzle/debate/ExplanationsList.tsx`
+
+- **Reasoning Token Metrics Display**
+  - Added reasoning token display to RebuttalCard component
+  - Added reasoning token display to OriginalExplanationCard component
+  - Shows per-turn reasoning tokens with visual progress bar (0-100k scale)
+  - Displays cumulative reasoning token count across conversation
+  - Purple-themed UI matching reasoning persistence branding
+  - Files: `client/src/components/puzzle/debate/RebuttalCard.tsx`, `client/src/components/puzzle/debate/OriginalExplanationCard.tsx`
+
+- **IndividualDebate Component Customization**
+  - Added `challengeButtonText` prop for context-specific button labels
+  - PuzzleDiscussion: "Refine Analysis" button
+  - ModelDebate: "Generate Challenge" button (default)
+  - Files: `client/src/components/puzzle/debate/IndividualDebate.tsx`
+
+- **Active Conversation Status Alerts**
+  - Shows reasoning chain status when conversation is active
+  - Displays total accessible reasoning tokens
+  - Provider badges (OpenAI/xAI) with 30-day retention indicator
+  - Turn count and provider information
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Fixed
+- **Missing Context in ExplanationsList**
+  - PuzzleDiscussion users previously saw confusing ModelDebate language
+  - "Start Debate" button now says "Start Refinement" in discussion context
+  - Reasoning persistence feature no longer hidden until after selection
+
+### Technical Details
+
+**Helper Functions Added:**
+```typescript
+// AnalysisResultHeader.tsx
+isReasoningModel(modelName: string): boolean
+canRefineAnalysis(result: ExplanationData): boolean
+
+// PuzzleDiscussion.tsx
+isReasoningModel(modelName: string): boolean
+getProviderName(modelName: string): string
+```
+
+**Eligibility Logic:**
+Badge shows ONLY when ALL criteria met:
+1. Model is GPT-5, o-series (o3, o4, o4-mini), or Grok-4
+2. Has `providerResponseId` stored in database
+3. Created after Oct 6, 2025 00:00:00 UTC
+4. Created within last 30 days
+5. Has both puzzle ID and explanation ID
+
+**URL Parameter Format:**
+```
+/discussion/:puzzleId?select=:explanationId
+Example: /discussion/42a15761?select=123
+```
+
+### Impact
+- **Discoverability**: Users can now find PuzzleDiscussion from PuzzleExaminer
+- **Education**: Clear explanations of reasoning persistence before use
+- **Safety**: Strict checks prevent badge from showing for incompatible analyses
+- **UX**: Auto-selection eliminates extra navigation step
+- **Clarity**: Distinct UI language for discussion vs debate contexts
+
+### Files Modified
+- `client/src/components/puzzle/AnalysisResultHeader.tsx` - Badge + eligibility checks
+- `client/src/components/puzzle/debate/ExplanationsList.tsx` - Context awareness
+- `client/src/components/puzzle/debate/RebuttalCard.tsx` - Reasoning metrics
+- `client/src/components/puzzle/debate/OriginalExplanationCard.tsx` - Reasoning metrics
+- `client/src/components/puzzle/debate/IndividualDebate.tsx` - Button customization
+- `client/src/pages/PuzzleDiscussion.tsx` - Welcome screen + auto-selection + status alerts
+
+---
 
 ## v3.6.2 - Responses API Conversation Chaining (Complete Implementation)
 
@@ -227,6 +970,28 @@ To enable conversation chaining:
 - `client/src/pages/Leaderboards.tsx` - Full-width layout
 - `CLAUDE.md` - Updated API documentation
 - `docs/06102025-Grok4-ResponsesAPI-Fix.md` - Implementation plan
+
+---
+
+## v3.6.4 - 2025-10-07 — Grok‑4 Structured Outputs + Batch Stability
+
+- Enable xAI Grok‑4/Grok‑4‑fast structured outputs using Responses API `response_format.json_schema`.
+  - New minimal schema: `server/services/schemas/grokJsonSchema.ts` (shallow nesting, arrays-of-arrays of integers, no minLength/minItems/allOf, additionalProperties:false).
+  - GrokService now sends `response_format.json_schema` for Grok‑4 variants and reads `output_parsed` when present.
+  - One‑shot graceful fallback: on provider grammar/schema error (400/422/503), retry once without schema; still parse JSON from text.
+- Transport hardening for xAI:
+  - Shared undici Agent + bounded retries with jitter for 429/5xx/transient network errors.
+- Batch script improvements for safe runs on ARC2‑eval:
+  - Concurrency‑capped worker pool (default `XAI_MAX_CONCURRENCY=2`) across Grok scripts.
+  - `scripts/grok-4-fast-reasoning.ts`: add `--tail N` and `--limit N` to easily smoke‑test subsets; respects env `XAI_MAX_RETRIES`, `XAI_RETRY_BASE_DELAY_MS`.
+- Docs + knowledge
+  - Added `docs/2025-10-07-grok4-structured-outputs-enable-arc2-batch.md` (request shape, schema constraints, fallback, run settings).
+  - Appended Grok‑4 structured outputs ops notes to `knowledge.md`.
+- Validation (smoke test)
+  - Ran last 10 ARC2‑eval tasks via `grok-4-fast-reasoning` with `--tail 10`.
+  - Concurrency=2, retries=2. All completed successfully; `output_parsed` consumed when available; fallback path verified clean.
+- Notes
+  - No breaking changes. Existing parsing fallbacks preserved. OpenAI and other providers unaffected.
 
 ---
 

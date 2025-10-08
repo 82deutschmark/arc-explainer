@@ -1,71 +1,43 @@
 /**
- * PuzzleDiscussion.tsx - AI Self-Conversation Interface
+ * PuzzleDiscussion.tsx - AI Progressive Reasoning Interface
  *
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-06
+ * Date: 2025-10-07
  * PURPOSE: Progressive reasoning refinement through AI self-conversation.
- * One model refines its own analysis across multiple turns with full context chaining.
- * Mirrors ModelDebate structure but auto-locks to single model conversing with itself.
- * SRP/DRY check: Pass - Reuses all ModelDebate components (IndividualDebate, ExplanationsList, etc.)
- * shadcn/ui: Pass - Uses shadcn/ui components via reused components
+ * One model refines its own analysis across multiple iterations with full context chaining.
+ * Uses dedicated refinement components (NOT debate components).
+ * SRP/DRY check: Pass - Orchestration only, delegates to refinement-specific components
+ * shadcn/ui: Pass - Uses shadcn/ui components via refinement components
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MessageSquare, Plus, Loader2, Sparkles, AlertTriangle, Brain, Link2 } from 'lucide-react';
+import { Brain, Loader2, AlertTriangle, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Reuse ModelDebate components - same UI, same flow
-import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
+// Refinement-specific components (NO debate components)
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
-import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
-import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
+import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
+import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
-import { useDebateState } from '@/hooks/debate/useDebateState';
-
-// Utility: Identify models that support server-side reasoning persistence
-// OpenAI GPT-5, o-series (o3, o4, o4-mini) and xAI Grok-4 models support Responses API
-const isReasoningModel = (modelName: string): boolean => {
-  const normalizedModel = modelName.toLowerCase();
-  // OpenAI GPT-5 models
-  if (normalizedModel.includes('gpt-5')) {
-    return true;
-  }
-  // OpenAI o-series models
-  if (normalizedModel.includes('o3') || normalizedModel.includes('o4')) {
-    return true;
-  }
-  // xAI Grok-4 models (NOT grok-3)
-  if (normalizedModel.includes('grok-4')) {
-    return true;
-  }
-  return false;
-};
-
-// Get human-readable provider name from model key
-const getProviderName = (modelName: string): string => {
-  const normalizedModel = modelName.toLowerCase();
-  if (normalizedModel.includes('gpt') || normalizedModel.includes('o1') || normalizedModel.includes('o3') || normalizedModel.includes('o4')) {
-    return 'OpenAI';
-  }
-  if (normalizedModel.includes('grok')) {
-    return 'xAI';
-  }
-  return 'Unknown';
-};
+import { useRefinementState } from '@/hooks/refinement/useRefinementState';
+import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
 
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
   const { toast } = useToast();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+  const [searchPuzzleId, setSearchPuzzleId] = useState('');
 
   // Parse ?select=123 query parameter for auto-selection
   const selectId = useMemo(() => {
@@ -76,20 +48,24 @@ export default function PuzzleDiscussion() {
 
   // Page title
   useEffect(() => {
-    document.title = taskId ? `AI Self-Conversation - Puzzle ${taskId}` : 'AI Self-Conversation';
+    document.title = taskId ? `Progressive Reasoning - Puzzle ${taskId}` : 'Progressive Reasoning';
   }, [taskId]);
 
-  // Data hooks (same as ModelDebate)
+  // Data hooks
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 
-  // State management (reuse useDebateState)
-  const debateState = useDebateState();
+  // Fetch eligible explanations for landing page
+  const { data: eligibleData, isLoading: isLoadingEligible } = useEligibleExplanations(20, 0);
+  const eligibleExplanations = eligibleData?.explanations || [];
 
-  const selectedExplanation = explanations?.find(e => e.id === debateState.selectedExplanationId);
+  // Refinement state management (NOT debate state)
+  const refinementState = useRefinementState();
 
-  // Analysis hook for refinement generation (same as ModelDebate)
+  const selectedExplanation = explanations?.find(e => e.id === refinementState.originalExplanationId);
+
+  // Analysis hook for refinement generation
   const {
     analyzeAndSaveMutation,
     processingModels,
@@ -109,39 +85,35 @@ export default function PuzzleDiscussion() {
     refetchExplanations,
     omitAnswer: false,
     originalExplanation: selectedExplanation,
-    customChallenge: debateState.customChallenge,
-    previousResponseId: debateState.getLastResponseId(debateState.challengerModel)
+    customChallenge: refinementState.userGuidance,
+    previousResponseId: refinementState.getLastResponseId() // Single-model chaining
   });
 
-  // Set promptId when active (same as ModelDebate)
+  // Set promptId to 'discussion' when active for AI self-refinement
   useEffect(() => {
-    if (debateState.isDebateActive && selectedExplanation) {
-      setPromptId('debate');
+    if (refinementState.isRefinementActive && selectedExplanation) {
+      setPromptId('discussion');
     } else {
       setPromptId('solver');
     }
-  }, [debateState.isDebateActive, selectedExplanation, setPromptId]);
+  }, [refinementState.isRefinementActive, selectedExplanation, setPromptId]);
 
-  // Generate refinement (same logic as ModelDebate's handleGenerateChallenge)
+  // Generate refinement iteration
   const handleGenerateRefinement = async () => {
-    if (!debateState.challengerModel || !debateState.selectedExplanationId || !taskId) return;
+    if (!refinementState.activeModel || !refinementState.originalExplanationId || !taskId) return;
     if (!selectedExplanation) return;
 
     try {
-      setPromptId('debate');
-      const lastResponseId = debateState.getLastResponseId(debateState.challengerModel);
-
-      const lastMessage = debateState.debateMessages[debateState.debateMessages.length - 1];
-      const lastProvider = lastMessage ? debateState.extractProvider(lastMessage.modelName) : 'none';
-      const challengerProvider = debateState.extractProvider(debateState.challengerModel);
+      setPromptId('discussion');
+      const lastResponseId = refinementState.getLastResponseId();
 
       const payload: any = {
-        modelKey: debateState.challengerModel,
+        modelKey: refinementState.activeModel,
         temperature,
         topP,
         candidateCount,
         thinkingBudget,
-        ...(isGPT5ReasoningModel(debateState.challengerModel) ? {
+        ...(isGPT5ReasoningModel(refinementState.activeModel) ? {
           reasoningEffort,
           reasoningVerbosity,
           reasoningSummaryType
@@ -149,27 +121,27 @@ export default function PuzzleDiscussion() {
       };
 
       if (lastResponseId) {
-        console.log(`[Self-Conversation] ✅ Continuing ${challengerProvider} conversation with response ID: ${lastResponseId}`);
+        console.log(`[Refinement] ✅ Continuing conversation with response ID: ${lastResponseId}`);
       } else {
-        console.log('[Self-Conversation] Starting new conversation');
+        console.log('[Refinement] Starting new conversation');
       }
 
       const savedData = await analyzeAndSaveMutation.mutateAsync(payload);
       await refetchExplanations();
 
-      const newExplanationData = savedData?.explanations?.[debateState.challengerModel];
+      const newExplanationData = savedData?.explanations?.[refinementState.activeModel];
 
       if (newExplanationData) {
-        debateState.addChallengeMessage(newExplanationData);
+        refinementState.addIteration(newExplanationData);
         toast({
           title: "Analysis Refined!",
-          description: `${models?.find(m => m.key === debateState.challengerModel)?.name || debateState.challengerModel} has refined its analysis.`,
+          description: `Iteration #${refinementState.currentIteration + 1} completed.`,
         });
       } else {
         throw new Error("Failed to retrieve refinement");
       }
 
-      debateState.setCustomChallenge('');
+      refinementState.setUserGuidance('');
     } catch (error) {
       console.error('Refinement error:', error);
       toast({
@@ -180,26 +152,47 @@ export default function PuzzleDiscussion() {
     }
   };
 
-  // KEY DIFFERENCE: Auto-lock challenger to same model
-  const handleStartConversation = (explanationId: number) => {
-    const explanation = explanations?.find(e => e.id === explanationId);
-    if (explanation) {
-      debateState.startDebate(explanation);
-      // AUTO-LOCK: Same model refines itself
-      debateState.setChallengerModel(explanation.modelName);
+  // Search handler
+  const handlePuzzleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchPuzzleId.trim()) {
+      navigate(`/discussion/${searchPuzzleId.trim()}`);
     }
   };
 
-  // Auto-start conversation when ?select= parameter is present
+  // Start refinement (auto-locks to same model)
+  const handleStartRefinement = (explanationId: number) => {
+    const explanation = explanations?.find(e => e.id === explanationId);
+    if (explanation) {
+      refinementState.startRefinement(explanation);
+    }
+  };
+
+  // Filter explanations to only show eligible ones (has provider response ID + within 30-day retention window)
+  const filteredEligibleExplanations = useMemo(() => {
+    if (!explanations) return [];
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    return explanations.filter(exp => {
+      const createdAt = new Date(exp.createdAt);
+      if (createdAt < thirtyDaysAgo) return false;
+      if (!exp.providerResponseId) return false;
+      return true;
+    });
+  }, [explanations]);
+
+  // Auto-start refinement when ?select= parameter is present
   useEffect(() => {
-    if (selectId && explanations && !debateState.isDebateActive) {
+    if (selectId && explanations && !refinementState.isRefinementActive) {
       const explanation = explanations.find(e => e.id === selectId);
       if (explanation) {
         console.log(`[PuzzleDiscussion] Auto-selecting explanation #${selectId} from URL parameter`);
-        handleStartConversation(selectId);
+        handleStartRefinement(selectId);
       }
     }
-  }, [selectId, explanations, debateState.isDebateActive]);
+  }, [selectId, explanations, refinementState.isRefinementActive]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {
@@ -228,195 +221,187 @@ export default function PuzzleDiscussion() {
     );
   }
 
-  // No taskId - show instructions
+  // No taskId - show search and recent eligible explanations
   if (!taskId) {
     return (
       <div className="w-full space-y-4">
-        <Card>
+        {/* Search Card */}
+        <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-purple-600" />
-              Progressive Reasoning with Full Memory
+              Progressive Reasoning
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {/* Primary Feature Callout */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg p-6">
-                <h3 className="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2">
-                  <Sparkles className="h-5 w-5" />
-                  Server-Side Reasoning Persistence
-                </h3>
-                <div className="space-y-3 text-sm text-purple-800">
-                  <p className="font-semibold">
-                    This is NOT just self-conversation - it's progressive reasoning with full memory!
-                  </p>
-                  <ul className="list-disc list-inside space-y-2">
-                    <li><strong>Turn 1:</strong> Model generates 45,000 reasoning tokens → stored on provider's servers</li>
-                    <li><strong>Turn 2:</strong> Provider retrieves ALL 45k tokens → model refines based on complete reasoning</li>
-                    <li><strong>Turn 3:</strong> Provider retrieves ALL previous reasoning → progressive depth building</li>
-                  </ul>
-                  <div className="bg-white/70 rounded p-3 mt-3">
-                    <p className="font-semibold text-purple-900">Why this matters:</p>
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>No token cost for re-sending reasoning (saved on provider servers)</li>
-                      <li>No context limit issues (server-side storage)</li>
-                      <li>30-day encrypted retention (OpenAI/xAI)</li>
-                      <li>True progressive reasoning depth</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Refine AI analyses through multi-turn conversations with full server-side reasoning retention (30 days).
+            </p>
 
-              {/* Provider Requirements */}
-              <Alert className="bg-amber-50 border-amber-300">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <AlertDescription className="text-amber-900">
-                  <strong>Provider Requirement:</strong> Only works with OpenAI GPT-5, o-series (o3, o4, o4-mini)
-                  and xAI Grok-4 models. Other models won't have reasoning persistence.
-                </AlertDescription>
-              </Alert>
+            {/* Search Box */}
+            <form onSubmit={handlePuzzleSearch} className="flex gap-2">
+              <Input
+                placeholder="Enter puzzle ID to begin..."
+                value={searchPuzzleId}
+                onChange={(e) => setSearchPuzzleId(e.target.value)}
+              />
+              <Button type="submit" disabled={!searchPuzzleId.trim()}>
+                <Search className="h-4 w-4 mr-2" />
+                Go
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
-              {/* How it Works */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">How Reasoning Persistence Works:</h3>
-                <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                  <li>Generate initial analysis - reasoning tokens stored on provider servers</li>
-                  <li>Click "Refine Analysis" - provider retrieves ALL previous reasoning</li>
-                  <li>Model refines based on complete reasoning history</li>
-                  <li>Each turn builds deeper reasoning chains</li>
-                  <li>No token cost for retrieving previous reasoning</li>
-                </ol>
-                <p className="text-xs text-blue-700 mt-3">
-                  <strong>Technical:</strong> Uses Responses API <code className="bg-blue-100 px-1 rounded">previous_response_id</code> parameter
-                  to maintain server-side conversation state with encrypted reasoning storage.
-                </p>
+        {/* Recent Eligible Explanations Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Eligible Analyses</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoadingEligible ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
-
-              <div className="text-center pt-4">
-                <p className="text-sm text-muted-foreground mb-3">Enter a puzzle ID to begin:</p>
-                <PuzzleDebateHeader />
-              </div>
-            </div>
+            ) : eligibleExplanations.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Puzzle ID</TableHead>
+                    <TableHead>Model</TableHead>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {eligibleExplanations.map(exp => (
+                    <TableRow key={exp.id}>
+                      <TableCell>
+                        <Link href={`/discussion/${exp.puzzleId}`} className="text-blue-600 hover:underline font-mono">
+                          {exp.puzzleId}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-sm">{exp.modelName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{exp.provider.toUpperCase()}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{exp.daysOld}d ago</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => navigate(`/discussion/${exp.puzzleId}?select=${exp.id}`)}
+                        >
+                          Refine
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No eligible analyses found. Generate new analyses from reasoning models (GPT-5, o-series, Grok-4).
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Main interface (same structure as ModelDebate)
+  // Main interface
   return (
-    <div className="w-full space-y-1">
-      <PuzzleDebateHeader taskId={taskId} />
+    <div className="w-full space-y-4">
+      {/* Simple header with puzzle ID badge */}
+      {taskId && (
+        <div className="flex items-center gap-3">
+          <Brain className="h-6 w-6 text-purple-600" />
+          <h1 className="text-2xl font-bold">Progressive Reasoning</h1>
+          <Badge variant="outline" className="text-sm">
+            Puzzle {taskId}
+          </Badge>
+        </div>
+      )}
 
       <CompactPuzzleDisplay
         trainExamples={task!.train}
         testCases={task!.test}
       />
 
-      {debateState.isDebateActive && explanations ? (
+      {refinementState.isRefinementActive && explanations ? (
         (() => {
-          const selectedExplanation = explanations.find(e => e.id === debateState.selectedExplanationId);
+          const selectedExplanation = explanations.find(e => e.id === refinementState.originalExplanationId);
           if (!selectedExplanation) {
             return (
               <Alert>
                 <AlertDescription>
-                  Selected explanation not found. <Button variant="link" onClick={debateState.endDebate}>Return to list</Button>
+                  Selected explanation not found. <Button variant="link" onClick={refinementState.endRefinement}>Return to list</Button>
                 </AlertDescription>
               </Alert>
             );
           }
 
-          // Calculate total reasoning tokens from all messages
-          const totalReasoningTokens = debateState.debateMessages.reduce(
-            (sum, msg) => sum + (msg.content.reasoningTokens || 0),
-            0
-          );
-
-          // Get provider name from challenger model
-          const provider = getProviderName(debateState.challengerModel);
-
           return (
-            <>
-              {/* Model Selection Warning for Non-Reasoning Models */}
-              {selectedExplanation && !isReasoningModel(selectedExplanation.modelName) && (
-                <Alert className="bg-amber-50 border-amber-300">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <AlertDescription className="text-amber-900">
-                    <strong>Limited Reasoning Persistence:</strong> This model ({selectedExplanation.modelName})
-                    may not fully support server-side reasoning storage. For best results, use OpenAI GPT-5, o-series
-                    (o3, o4, o4-mini) or xAI Grok-4 models.
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {/* Conversation Status Alert */}
-              {debateState.debateMessages.length > 0 && (
-                <Alert className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300">
-                  <Link2 className="h-4 w-4 text-purple-600" />
-                  <AlertDescription>
-                    <div className="space-y-2">
-                      <div className="font-semibold text-purple-900">
-                        <Brain className="h-4 w-4 inline mr-1" />
-                        Reasoning Chain Active: {debateState.debateMessages.length} turns
-                      </div>
-                      <p className="text-sm text-purple-800">
-                        Model has access to {totalReasoningTokens > 0 ? `${totalReasoningTokens.toLocaleString()}+` : 'all'} reasoning tokens from previous turns.
-                        All reasoning is retrieved automatically from {provider} servers.
-                      </p>
-                      <div className="flex gap-2 text-xs">
-                        <Badge variant="outline" className="bg-purple-100 text-purple-800">
-                          {provider.toUpperCase()} Persisted
-                        </Badge>
-                        <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                          30-day retention
-                        </Badge>
-                      </div>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <IndividualDebate
-                originalExplanation={selectedExplanation}
-                debateMessages={debateState.debateMessages}
-                taskId={taskId}
-                testCases={task!.test}
-                models={models}
-                task={task}
-                challengerModel={debateState.challengerModel}
-                customChallenge={debateState.customChallenge}
-                processingModels={processingModels}
-                analyzerErrors={analyzerErrors}
-                onBackToList={debateState.endDebate}
-                onResetDebate={debateState.resetDebate}
-                onChallengerModelChange={debateState.setChallengerModel}
-                onCustomChallengeChange={debateState.setCustomChallenge}
-                onGenerateChallenge={handleGenerateRefinement}
-                challengeButtonText="Refine Analysis"
-              />
-            </>
+            <RefinementThread
+              originalExplanation={selectedExplanation}
+              iterations={refinementState.iterations}
+              taskId={taskId}
+              testCases={task!.test}
+              models={models}
+              activeModel={refinementState.activeModel}
+              userGuidance={refinementState.userGuidance}
+              isProcessing={processingModels.has(refinementState.activeModel)}
+              error={analyzerErrors.get(refinementState.activeModel) || null}
+              onBackToList={refinementState.endRefinement}
+              onResetRefinement={refinementState.resetRefinement}
+              onUserGuidanceChange={refinementState.setUserGuidance}
+              onContinueRefinement={handleGenerateRefinement}
+            />
           );
         })()
-      ) : explanations && explanations.length > 0 ? (
-        <ExplanationsList
-          explanations={explanations}
+      ) : filteredEligibleExplanations.length > 0 ? (
+        <AnalysisSelector
+          explanations={filteredEligibleExplanations}
           models={models}
           testCases={task!.test}
-          correctnessFilter={debateState.correctnessFilter}
-          onCorrectnessFilterChange={debateState.setCorrectnessFilter}
-          onStartDebate={handleStartConversation}
-          pageContext="discussion"
+          correctnessFilter={refinementState.correctnessFilter}
+          onCorrectnessFilterChange={refinementState.setCorrectnessFilter}
+          onStartRefinement={handleStartRefinement}
         />
+      ) : explanations && explanations.length > 0 ? (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <div className="space-y-2">
+              <p className="font-semibold">No eligible analyses for refinement</p>
+              <p className="text-sm">
+                This puzzle has {explanations.length} explanation{explanations.length > 1 ? 's' : ''}, but none are eligible for refinement.
+              </p>
+              <p className="text-sm">Eligible explanations must:</p>
+              <ul className="list-disc list-inside text-sm space-y-1 ml-2">
+                <li>Be less than 30 days old (provider retention window)</li>
+                <li>Have a provider response ID (for conversation chaining)</li>
+              </ul>
+              <Link href={`/puzzle/${taskId}`}>
+                <Button variant="outline" size="sm" className="mt-2">
+                  Generate New Analysis
+                </Button>
+              </Link>
+            </div>
+          </AlertDescription>
+        </Alert>
       ) : (
         <Card>
           <CardContent className="text-center py-8">
-            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Brain className="h-12 w-12 mx-auto mb-4 text-purple-400" />
             <p className="text-gray-500 mb-4">No explanations for this puzzle yet.</p>
-            <p className="text-sm text-gray-400 mb-4">Generate an AI explanation first, then start a self-conversation.</p>
+            <p className="text-sm text-gray-400 mb-4">Generate an AI explanation first, then refine it here.</p>
             <Link href={`/puzzle/${taskId}`}>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
+              <Button className="bg-gradient-to-r from-purple-600 to-blue-600">
                 Generate First Explanation
               </Button>
             </Link>

@@ -53,7 +53,8 @@ interface UseAvailableDatasetsResult {
 /**
  * Hook for fetching model performance on ANY dataset - completely dynamic!
  */
-export function useModelDatasetPerformance(modelName: string | null, datasetName: string | null): UseModelDatasetPerformanceResult {
+// Update: add optional refreshKey so callers can force a refetch without changing model/dataset
+export function useModelDatasetPerformance(modelName: string | null, datasetName: string | null, refreshKey: number = 0): UseModelDatasetPerformanceResult {
   const [performance, setPerformance] = useState<ModelDatasetPerformance | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +109,8 @@ export function useModelDatasetPerformance(modelName: string | null, datasetName
     }
 
     fetchPerformance();
-  }, [modelName, datasetName]);
+    // Add refreshKey to dependencies so callers can refetch on demand
+  }, [modelName, datasetName, refreshKey]);
 
   return { performance, loading, error };
 }

@@ -76,6 +76,12 @@ function transformRawExplanation(sourceData: any, modelKey: string) {
     userPromptUsed: analysisData.userPromptUsed ?? sourceData.userPromptUsed ?? null,
     promptTemplateId: analysisData.promptTemplateId ?? sourceData.promptTemplateId ?? null,
     customPromptText: analysisData.customPromptText ?? sourceData.customPromptText ?? null,
+    // CRITICAL FIX: Map providerResponseId for conversation chaining
+    // Author: Cascade using Sonnet 4.5
+    // Date: 2025-10-07
+    // PURPOSE: Fix missing providerResponseId mapping that caused ALL records to save NULL
+    // This field is required for PuzzleDiscussion conversation chaining feature
+    providerResponseId: analysisData.providerResponseId ?? sourceData.providerResponseId ?? null,
     rebuttingExplanationId: analysisData.rebuttingExplanationId ?? sourceData.rebuttingExplanationId ?? null,
   };
 }

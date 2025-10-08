@@ -171,10 +171,12 @@ CREATE TABLE explanations (
     multi_test_average_accuracy NUMERIC,
     -- AI & Prompt Metadata
     model_name TEXT,
-    provider_raw_response JSONB, -- Stores the complete, unaltered API response
+    provider_response_id TEXT,    -- Responses API conversation ID for chaining
+    provider_raw_response JSONB,  -- Stores the complete, unaltered API response
     system_prompt_used TEXT,
     user_prompt_used TEXT,
     prompt_template_id TEXT,
+    custom_prompt_text TEXT,
     -- Reasoning & Timings
     reasoning_log TEXT,
     has_reasoning_log BOOLEAN,
