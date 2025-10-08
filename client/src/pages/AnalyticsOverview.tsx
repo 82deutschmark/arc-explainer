@@ -12,9 +12,12 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import {
   BarChart3,
-  Database
+  Database,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 // Import existing components
@@ -39,6 +42,9 @@ export default function AnalyticsOverview() {
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
   const [selectedDataset, setSelectedDataset] = useState<string>('');
+
+  // Collapsible sections state
+  const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
 
   // Fetch available models, datasets, and model dataset performance
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
@@ -291,17 +297,33 @@ export default function AnalyticsOverview() {
         {/* Most Difficult Puzzles Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Most Difficult Puzzles
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Most Difficult Puzzles
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDifficultPuzzlesCollapsed(!isDifficultPuzzlesCollapsed)}
+                className="h-8 w-8 p-0"
+              >
+                {isDifficultPuzzlesCollapsed ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronUp className="h-4 w-4" />
+                )}
+              </Button>
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Puzzles with the lowest LLM accuracy rates - these are the hardest challenges for AI models
             </p>
           </CardHeader>
-          <CardContent>
-            <DifficultPuzzlesSection />
-          </CardContent>
+          {!isDifficultPuzzlesCollapsed && (
+            <CardContent>
+              <DifficultPuzzlesSection />
+            </CardContent>
+          )}
         </Card>
 
       </div>
