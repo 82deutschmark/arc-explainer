@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
+import { PredictionIteration } from '@/components/puzzle/PredictionCard';
 import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
@@ -31,6 +32,7 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { useRefinementState } from '@/hooks/refinement/useRefinementState';
 import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
+import { determineCorrectness } from '@shared/utils/correctness';
 
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
@@ -344,6 +346,22 @@ export default function PuzzleDiscussion() {
       <CompactPuzzleDisplay
         trainExamples={task!.train}
         testCases={task!.test}
+        predictions={refinementState.isRefinementActive && refinementState.iterations.length > 0
+          ? refinementState.iterations.map(iter => ({
+              grid: iter.content.predictedOutput || iter.content.multiplePredictedOutputs?.[0] || [[0]],
+              iterationNumber: iter.iterationNumber,
+              isCorrect: determineCorrectness({
+                modelName: iter.content.modelName,
+                isPredictionCorrect: iter.content.isPredictionCorrect,
+                multiTestAllCorrect: iter.content.multiTestAllCorrect,
+                hasMultiplePredictions: iter.content.hasMultiplePredictions
+              }).isCorrect,
+              modelName: iter.content.modelName,
+              timestamp: iter.timestamp
+            } as PredictionIteration))
+          : undefined
+        }
+        showPredictions={refinementState.isRefinementActive}
       />
 
       {refinementState.isRefinementActive && explanations ? (

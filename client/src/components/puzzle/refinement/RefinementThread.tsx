@@ -141,80 +141,62 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
     : originalExplanation.isPredictionCorrect === true;
 
   return (
-    <div className="space-y-3">
-      {/* Compact Header with Controls */}
+    <div className="space-y-1">
+      {/* Ultra-Compact Header */}
       <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardContent className="p-2 space-y-2">
+        <CardContent className="p-1 space-y-0.5">
           {/* Title Row */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-purple-100">
-                <Brain className="h-5 w-5 text-purple-600" />
-              </div>
+            <div className="flex items-center gap-1">
+              <Brain className="h-3 w-3 text-purple-600" />
               <div>
-                <h2 className="text-xl font-semibold">Reasoning Evolution</h2>
-                <p className="text-xs text-gray-600">
-                  {iterations.length} stage{iterations.length !== 1 ? 's' : ''} • Progressive refinement
+                <h2 className="text-sm font-semibold">Reasoning Evolution</h2>
+                <p className="text-[9px] text-gray-600">
+                  {iterations.length} stage{iterations.length !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
                 onClick={onResetRefinement}
                 disabled={iterations.length <= 1 || isProcessing}
-                className="text-xs"
+                className="text-[9px] h-5 px-2 py-0"
               >
-                <RotateCcw className="h-3 w-3 mr-1.5" />
+                <RotateCcw className="h-2.5 w-2.5 mr-1" />
                 Reset
               </Button>
-              <Button variant="outline" size="sm" onClick={onBackToList}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
+              <Button variant="outline" onClick={onBackToList} className="text-[9px] h-5 px-2 py-0">
+                <ArrowLeft className="h-2.5 w-2.5 mr-1" />
                 Back
               </Button>
             </div>
           </div>
 
-          {/* Active Model & Stats Row */}
-          <div className="pt-3 border-t border-purple-200">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {/* Stats Row - Ultra Compact */}
+          <div className="pt-0.5 border-t border-purple-200">
+            <div className="grid grid-cols-3 gap-1 text-[8px]">
               {/* Active Model */}
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Brain className="h-4 w-4 text-purple-600" />
-                  <span className="text-xs font-medium text-gray-700">Active Model</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-purple-100 text-purple-900 border-purple-300 font-mono text-xs">
-                    {modelDisplayName}
-                  </Badge>
-                  <span className="text-xs text-gray-600">Locked</span>
-                </div>
+              <div className="flex items-center gap-0.5">
+                <Brain className="h-2.5 w-2.5 text-purple-600" />
+                <Badge variant="outline" className="bg-purple-100 text-purple-900 border-purple-300 font-mono text-[8px] px-1 py-0">
+                  {modelDisplayName}
+                </Badge>
               </div>
 
-              {/* Stats */}
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-blue-600" />
-                  <span className="text-xs font-medium text-gray-700">Total Reasoning</span>
-                </div>
-                <div className="text-sm font-semibold text-blue-900">
-                  {totalReasoningTokens.toLocaleString()} tokens
-                </div>
-                <p className="text-[10px] text-gray-500">
-                  Reasoning depth: 60k tokens preserved on server
-                </p>
+              {/* Total Reasoning */}
+              <div className="flex items-center gap-0.5">
+                <Sparkles className="h-2.5 w-2.5 text-blue-600" />
+                <span className="text-[8px] font-semibold text-blue-900">
+                  {totalReasoningTokens.toLocaleString()}t
+                </span>
               </div>
 
               {/* Current Iteration */}
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-purple-600" />
-                  <span className="text-xs font-medium text-gray-700">Current Iteration</span>
-                </div>
-                <Badge variant="secondary" className="text-sm font-mono">
+              <div className="flex items-center gap-0.5">
+                <TrendingUp className="h-2.5 w-2.5 text-purple-600" />
+                <Badge variant="secondary" className="text-[8px] font-mono px-1 py-0">
                   #{iterations.length - 1}
                 </Badge>
               </div>
