@@ -276,6 +276,17 @@ export default function PuzzleExaminer() {
               </SelectContent>
             </Select>
           )}
+
+          {/* Saturn Visual Solver Button */}
+          <Link href={`/puzzle/saturn/${taskId}`}>
+            <Button
+              size="sm"
+              className="transition-all duration-300 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25 border-2 border-indigo-400/50 text-white font-semibold"
+            >
+              <Rocket className="h-4 w-4 mr-2" />
+              🪐 Saturn Solver
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -602,41 +613,6 @@ export default function PuzzleExaminer() {
                   />
                 );
               })}
-        </div>
-      </CollapsibleCard>
-
-      {/* Saturn Visual Solver */}
-      <CollapsibleCard
-        title="Saturn Visual Solver"
-        icon={Rocket}
-        defaultOpen={false}
-        headerDescription={
-          <p className="text-sm text-gray-600">Alternative visual reasoning approach using iterative analysis</p>
-        }
-      >
-        <div className="flex items-center gap-4">
-          <Link href={`/puzzle/saturn/${taskId}`}>
-            <Button size="default" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700">
-              <Rocket className="h-4 w-4" />
-              Open Saturn Visual Solver
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <p className="text-sm text-gray-700 mb-1">
-              Uses iterative visual analysis to solve puzzles step-by-step
-            </p>
-            <p className="text-xs text-gray-600">
-              💡 Powered by the open-source{' '}
-              <a
-                href="https://github.com/zoecarver/saturn-arc"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline font-medium hover:text-indigo-800"
-              >
-                Saturn ARC project by Zoe Carver
-              </a>
-            </p>
-          </div>
         </div>
       </CollapsibleCard>
 
