@@ -348,7 +348,7 @@ export default function PuzzleDiscussion() {
         testCases={task!.test}
         predictions={refinementState.isRefinementActive && refinementState.iterations.length > 0
           ? refinementState.iterations.map(iter => ({
-              grid: iter.content.predictedOutput || iter.content.multiplePredictedOutputs?.[0] || [[0]],
+              grid: iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]],
               iterationNumber: iter.iterationNumber,
               isCorrect: determineCorrectness({
                 modelName: iter.content.modelName,
