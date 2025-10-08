@@ -30,7 +30,8 @@
 import { 
   buildCustomPrompt,
   buildSystemPrompt,
-  buildDebatePrompt
+  buildDebatePrompt,
+  buildDiscussionPrompt
 } from './components/promptBuilder.js';
 import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePrompts.js';
 
@@ -50,6 +51,7 @@ export const SYSTEM_PROMPT_MAP = {
   educationalApproach: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational }),
   gepa: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa }),
   debate: () => buildDebatePrompt(), // Uses special builder with debate instructions FIRST
+  discussion: () => buildDiscussionPrompt(), // Uses special builder for AI self-refinement
   custom: () => buildCustomPrompt()
 } as const;
 

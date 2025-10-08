@@ -108,6 +108,18 @@ export function buildDebatePrompt(): string {
 }
 
 /**
+ * Build discussion prompt for AI self-refinement
+ * Similar to debate but focused on self-critique and iterative improvement
+ */
+export function buildDiscussionPrompt(): string {
+  return buildSystemPrompt({
+    basePrompt: ADDITIONAL_INSTRUCTIONS.discussion, // Self-refinement instructions FIRST
+    taskDescription: TASK_DESCRIPTIONS.discussion,
+    additionalInstructions: BASE_SYSTEM_PROMPT // ARC rules come AFTER discussion context
+  });
+}
+
+/**
  * Build custom prompt with minimal JSON enforcement
  * Used for custom prompts to ensure structured output while preserving flexibility
  * Note: Reasoning instructions are handled at the service level based on model capabilities
