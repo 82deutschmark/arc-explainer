@@ -18,6 +18,16 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 
+/**
+ * Get the internal API base URL for server-to-server calls
+ * Uses environment variables to work in both development and production
+ */
+function getInternalApiBaseUrl(): string {
+  const port = process.env.PORT || '5000';
+  const host = process.env.INTERNAL_API_HOST || 'localhost';
+  return `http://${host}:${port}`;
+}
+
 // Types
 interface ActivityLogEntry {
   timestamp: Date;
@@ -84,8 +94,8 @@ function getPuzzleIdsFromDataset(dataset: 'arc1' | 'arc2'): string[] {
     return files
       .filter(file => file.endsWith('.json'))
       .map(file => file.replace('.json', ''));
-  } catch (error) {
-    logger.error(`Error reading dataset directory ${fullPath}:`, error);
+  } catch (error: unknown) {
+    logger.error(`Error reading dataset directory ${fullPath}:`, String(error));
     throw new Error(`Failed to read dataset ${dataset}`);
   }
 }
@@ -108,8 +118,8 @@ async function getPuzzlesNeedingAnalysis(
   // Check each puzzle in the database
   for (const puzzleId of allPuzzleIds) {
     try {
-      const explanations = await repositoryService.explanation.getExplanationsForPuzzle(puzzleId);
-      const hasAnalysis = explanations.some(exp => exp.modelName === modelName);
+      const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
+      const hasAnalysis = explanations.some((exp: any) => exp.modelName === modelName);
 
       if (hasAnalysis) {
         alreadyAnalyzed.push(puzzleId);
@@ -169,6 +179,9 @@ async function analyzeSinglePuzzle(
   }
 ): Promise<{ success: boolean; correct?: boolean; error?: string; analysisId?: number }> {
   try {
+    // Get internal API base URL once (environment-aware)
+    const baseUrl = getInternalApiBaseUrl();
+    
     const requestBody = {
       temperature: options.temperature ?? 0.2,
       promptId: options.promptId ?? 'solver',
@@ -179,7 +192,7 @@ async function analyzeSinglePuzzle(
 
     // Use internal API call
     const encodedModelKey = encodeURIComponent(modelName);
-    const apiUrl = `http://localhost:5000/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
+    const apiUrl = `${baseUrl}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`;
 
     const analysisResponse = await axios.post(apiUrl, requestBody, {
       timeout: 10 * 60 * 1000, // 10 minutes
@@ -201,7 +214,7 @@ async function analyzeSinglePuzzle(
     };
 
     const saveResponse = await axios.post(
-      `http://localhost:5000/api/puzzle/save-explained/${puzzleId}`,
+      `${baseUrl}/api/puzzle/save-explained/${puzzleId}`,
       { explanations: explanationToSave },
       { timeout: 30000, headers: { 'Content-Type': 'application/json' } }
     );
