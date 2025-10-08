@@ -124,7 +124,8 @@ export class GrokService extends BaseAIService {
     const structuredPreview = this.supportsStructuredOutput(modelKey);
     const previewTemperature = modelSupportsTemperature(modelKey) ? DEFAULT_TEMPERATURE : undefined;
 
-    const messages = this.buildMessages(promptPackage);
+    // For preview, assume initial (no continuation in preview)
+    const messages = this.buildMessages(promptPackage, false);
 
     const messageFormat: Record<string, unknown> = {
       model: modelName,
@@ -235,7 +236,10 @@ export class GrokService extends BaseAIService {
       throw new Error("GROK_API_KEY is not configured");
     }
 
-    const messages = this.buildMessages(promptPackage);
+    // CRITICAL FIX: If continuing conversation, ONLY send new message
+    // API retrieves full context from previous_response_id
+    const isContinuation = !!serviceOpts.previousResponseId;
+    const messages = this.buildMessages(promptPackage, isContinuation);
 
     const requestPayload: Record<string, unknown> = {
       model: getApiModelName(modelKey),
@@ -260,12 +264,31 @@ export class GrokService extends BaseAIService {
     return this.callResponsesApiWithRetry(requestPayload, apiKey, modelKey, taskId);
   }
 
-  private buildMessages(promptPackage: PromptPackage): Array<{ role: string; content: string }> {
+  /**
+   * Build messages array for Responses API
+   * CRITICAL: If continuation, ONLY send new user message
+   * The API retrieves full context from previous_response_id
+   */
+  private buildMessages(
+    promptPackage: PromptPackage,
+    isContinuation: boolean = false
+  ): Array<{ role: string; content: string }> {
     const messages: Array<{ role: string; content: string }> = [];
-    if (promptPackage.systemPrompt) {
-      messages.push({ role: "system", content: promptPackage.systemPrompt });
+    
+    if (isContinuation) {
+      // Continuation: API loads context from previous_response_id
+      // ONLY send the new message
+      console.log('[Grok] 🔄 Continuation mode - sending ONLY new user message');
+      messages.push({ role: "user", content: promptPackage.userPrompt });
+    } else {
+      // Initial: Send full conversation
+      console.log('[Grok] 📄 Initial mode - sending system + user messages');
+      if (promptPackage.systemPrompt) {
+        messages.push({ role: "system", content: promptPackage.systemPrompt });
+      }
+      messages.push({ role: "user", content: promptPackage.userPrompt });
     }
-    messages.push({ role: "user", content: promptPackage.userPrompt });
+    
     return messages;
   }
 
