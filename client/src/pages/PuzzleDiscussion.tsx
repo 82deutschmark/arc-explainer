@@ -362,10 +362,17 @@ export default function PuzzleDiscussion() {
               taskId={taskId}
               testCases={task!.test}
               models={models}
+              task={task!}
               activeModel={refinementState.activeModel}
               userGuidance={refinementState.userGuidance}
               isProcessing={processingModels.has(refinementState.activeModel)}
               error={analyzerErrors.get(refinementState.activeModel) || null}
+              temperature={temperature}
+              reasoningEffort={reasoningEffort}
+              reasoningVerbosity={reasoningVerbosity}
+              reasoningSummaryType={reasoningSummaryType}
+              isGPT5ReasoningModel={isGPT5ReasoningModel}
+              promptId={promptId}
               onBackToList={refinementState.endRefinement}
               onResetRefinement={refinementState.resetRefinement}
               onUserGuidanceChange={refinementState.setUserGuidance}
