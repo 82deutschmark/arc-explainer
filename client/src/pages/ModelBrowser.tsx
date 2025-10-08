@@ -22,8 +22,7 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   training: 'ARC1-Train',
   evaluation2: 'ARC2-Eval',
   training2: 'ARC2-Train',
-  'arc-heavy': 'ARC-Heavy',
-  explained: 'Explained'
+  'arc-heavy': 'ARC-Heavy'
 };
 
 type DatasetOption = DatasetInfo & { displayName: string };
