@@ -1,5 +1,89 @@
 ## [2025-10-08]
 
+## v3.7.8 - PuzzleDiscussion UI Enhancements (Advanced Controls)
+
+### Summary
+Enhanced PuzzleDiscussion "Refine this" interface by adding Advanced Controls section with temperature/reasoning controls and Prompt Preview modal, matching PuzzleExaminer functionality while reducing wasted space.
+
+### Enhanced - RefinementThread Component
+- **Advanced Controls Section**
+  - Temperature slider (view-only) for models that support it (Grok, etc.)
+  - GPT-5 Reasoning controls (effort/verbosity/summary) for GPT-5 models
+  - Prompt Preview button (always visible) to see exact prompts
+  - Intelligent conditional rendering based on model capabilities:
+    - `showTemperature`: `model.supportsTemperature && !isGPT5ReasoningModel`
+    - `showReasoning`: `isGPT5ReasoningModel(activeModel)`
+  - Files: `client/src/components/puzzle/refinement/RefinementThread.tsx`
+
+- **UI/UX Improvements**
+  - Reduced header padding from `p-3` to `p-2` for space efficiency
+  - Compact control layout with smaller text (`text-xs`, `text-[10px]`)
+  - Controls marked as "view only" (configured in PuzzleExaminer)
+  - Clean grid layout matching PuzzleExaminer's Advanced Controls design
+
+- **PromptPreviewModal Integration**
+  - Full modal with system/user prompt preview
+  - Copy-to-clipboard functionality for both sections
+  - Token estimation and character counts
+  - Passes `originalExplanation` and `userGuidance` as debate context
+  - Files: `client/src/components/PromptPreviewModal.tsx` (reused)
+
+### Changed - PuzzleDiscussion Props
+- **New Props Passed to RefinementThread**
+  - `temperature` - Current temperature setting
+  - `reasoningEffort`, `reasoningVerbosity`, `reasoningSummaryType` - GPT-5 parameters
+  - `isGPT5ReasoningModel` - Model type detection function
+  - `task` - Full ARCTask for PromptPreviewModal
+  - `promptId` - Current prompt template ID
+  - All values already available from `useAnalysisResults` hook (no new state needed)
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Benefits
+- ✅ **Consistency:** Same controls across PuzzleExaminer and PuzzleDiscussion
+- ✅ **Transparency:** Users can preview prompts before sending
+- ✅ **Visibility:** Users can see current temperature/reasoning settings
+- ✅ **Control:** Future enhancement to allow in-modal control adjustments
+- ✅ **Elegance:** Conditional rendering keeps UI clean (only shows relevant controls)
+- ✅ **Space Efficiency:** Reduced padding maximizes usable screen space
+- ✅ **DRY Compliance:** Reuses existing components (PromptPreviewModal, Slider, Select)
+- ✅ **SRP Compliance:** RefinementThread coordinates, PromptPreviewModal handles preview logic
+
+### Testing Instructions
+**IMPORTANT:** Test with different model types to verify conditional rendering:
+
+1. **Grok Models (Temperature Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:grokExplanationId
+   Expected: Advanced Controls section shows temperature slider
+   ```
+
+2. **GPT-5 Models (Reasoning Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:gpt5ExplanationId
+   Expected: Advanced Controls section shows 3-column reasoning controls grid
+   ```
+
+3. **Other Models (Temperature Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:otherModelId
+   Expected: Advanced Controls section shows temperature slider (if model.supportsTemperature)
+   ```
+
+4. **Prompt Preview (All Models):**
+   ```
+   Click "Preview Prompt" button
+   Expected: Modal opens showing system/user prompts with copy buttons
+   Verify: originalExplanation and userGuidance are included in preview
+   ```
+
+5. **Visual Verification:**
+   - Header padding reduced (less wasted space at top)
+   - Advanced Controls section appears ABOVE user guidance textarea
+   - Controls are disabled/view-only
+   - Layout matches PuzzleExaminer's Advanced Controls design
+
+---
+
 ## v3.7.7 - Responses API & Conversation Chaining Complete Implementation
 
 ### Summary
