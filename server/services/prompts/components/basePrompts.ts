@@ -25,11 +25,14 @@ ARC-AGI puzzles consist of:
 
 /**
  * JSON output enforcement instructions with answer-first requirement
+ * @deprecated Use jsonInstructions.ts module instead - eliminates redundancy
  * SINGLE DEFINITION - used by all system prompts
  */
 export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: Do not use any special characters or formatting that might break JSON parsers.`;
 
-
+/**
+ * @deprecated Use buildJsonInstructions() from jsonInstructions.ts instead
+ */
 export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
 
 - For single test cases:
@@ -57,6 +60,7 @@ export const JSON_OUTPUT_INSTRUCTIONS = [
 
 /**
  * Prediction field instructions - used by many modes including solver and explanation modes
+ * @deprecated Use buildJsonInstructions() from jsonInstructions.ts instead - now consolidated
  * SINGLE DEFINITION - eliminates massive duplication
  */
 export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: Provide the output grid(s) as the first field in the JSON response.

@@ -24,6 +24,9 @@
 import { ARCTask, PROMPT_TEMPLATES, PromptTemplate } from "../../shared/types.js";
 import { getSystemPrompt, isAlienCommunicationMode, isSolverMode } from "./prompts/systemPrompts.js";
 import { buildUserPromptForTemplate, UserPromptOptions } from "./prompts/userTemplates.js";
+import { determinePromptContext, shouldUseContinuationPrompt } from "./prompts/PromptContext.js";
+import { buildDiscussionContinuation, buildDebateContinuation, buildSolverContinuation } from "./prompts/components/continuationPrompts.js";
+import type { ServiceOptions } from "./base/BaseAIService.js";
 
 /**
  * Enhanced PromptOptions with new architecture support
@@ -58,12 +61,14 @@ export interface PromptPackage {
 
 /**
  * Main prompt building function - orchestrates all components
+ * Now supports context-aware continuation prompts for Discussion mode
  */
 export function buildAnalysisPrompt(
   task: ARCTask,
   promptId: string = "solver",
   customPrompt?: string,
-  options: PromptOptions = {}
+  options: PromptOptions = {},
+  serviceOpts: ServiceOptions = {} // NEW: Added to detect continuation state
 ): PromptPackage {
   console.log(`[PromptBuilder] Building prompt for template: ${promptId}`);
   
@@ -78,6 +83,15 @@ export function buildAnalysisPrompt(
     originalExplanation,
     customChallenge
   } = options;
+  
+  // PHASE 1-2: Context-aware prompt detection
+  const promptContext = determinePromptContext(promptId, options, serviceOpts, task, customPrompt);
+  const useContinuation = shouldUseContinuationPrompt(promptContext);
+  
+  if (useContinuation) {
+    console.log(`[PromptBuilder] 🔄 CONTINUATION DETECTED - Using optimized prompt for ${promptId} mode`);
+    console.log(`[PromptBuilder] previousResponseId: ${serviceOpts.previousResponseId}`);
+  }
 
   // Determine prompt characteristics
   const isCustom = promptId === 'custom' || (customPrompt && typeof customPrompt === 'string' && customPrompt.trim());
@@ -87,7 +101,59 @@ export function buildAnalysisPrompt(
   
   console.log(`[PromptBuilder] Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
 
-  // Build system prompt
+  // PHASE 1-2: Use continuation prompt if this is a continuation turn
+  if (useContinuation) {
+    let continuationPrompt: string;
+    let iterationCount = 1; // Default iteration
+    
+    // Try to infer iteration count from context (could be enhanced in Phase 3)
+    // For now, just use a simple continuation prompt
+    
+    switch (promptId) {
+      case 'discussion':
+        continuationPrompt = buildDiscussionContinuation(iterationCount, customChallenge);
+        break;
+      
+      case 'debate':
+        continuationPrompt = buildDebateContinuation(iterationCount, customChallenge);
+        break;
+      
+      case 'solver':
+      case 'explanation':
+        continuationPrompt = buildSolverContinuation(iterationCount);
+        break;
+      
+      default:
+        // Generic fallback
+        continuationPrompt = `Continue your analysis in the same JSON format.`;
+    }
+    
+    // Build user prompt (same as usual - still need puzzle data)
+    const userPromptOptions: UserPromptOptions = {
+      emojiSetKey,
+      omitAnswer
+    };
+    
+    const userPrompt = buildUserPromptForTemplate(
+      task,
+      promptId,
+      userPromptOptions,
+      originalExplanation,
+      customChallenge
+    );
+    
+    // Return continuation package (much shorter system prompt!)
+    return {
+      systemPrompt: continuationPrompt,
+      userPrompt,
+      selectedTemplate,
+      isAlienMode: isAlien,
+      isSolver,
+      templateName: selectedTemplate?.name
+    };
+  }
+
+  // Build system prompt (FULL VERSION - only for initial turns now)
   let systemPrompt: string;
 
   if (systemPromptMode === 'None') {
@@ -251,6 +317,7 @@ function buildLegacyPrompt(
 
 /**
  * Backwards compatibility function - returns old format
+ * PHASE 1-2: Pass empty serviceOpts to maintain compatibility
  */
 export function buildAnalysisPromptLegacy(
   task: ARCTask,
@@ -261,7 +328,7 @@ export function buildAnalysisPromptLegacy(
   const promptPackage = buildAnalysisPrompt(task, promptId, customPrompt, { 
     ...options, 
     systemPromptMode: 'None' 
-  });
+  }, {} as ServiceOptions); // Pass empty serviceOpts for legacy mode
   
   return {
     prompt: promptPackage.userPrompt,

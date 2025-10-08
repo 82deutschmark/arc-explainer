@@ -155,6 +155,7 @@ export abstract class BaseAIService {
 
   /**
    * Build prompt package using centralized prompt builder
+   * PHASE 1-2: Now passes serviceOpts to enable continuation detection
    */
   protected buildPromptPackage(
     task: ARCTask,
@@ -169,7 +170,8 @@ export abstract class BaseAIService {
       ? buildCustomPrompt() 
       : getSystemPrompt(promptId);
 
-    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options);
+    // PHASE 1-2: Pass serviceOpts to enable context-aware continuation prompts
+    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts);
 
     return promptPackage;
   }
