@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import {
   Grid3X3,
   Database,
-  MessageCircle,
+  Brain,
   Github,
   Trophy,
   CheckCircle,
@@ -56,10 +56,10 @@ const navigationItems: NavItem[] = [
     description: 'Individual puzzles with DB record counts and difficulty analysis'
   },
   {
-    title: 'Discussion',
+    title: 'Progressive Reasoning',
     href: '/discussion',
-    icon: MessageCircle,
-    description: 'Community discussion and analysis insights'
+    icon: Brain,
+    description: 'Refine AI analyses through iterative self-conversation'
   },
   {
     title: 'ELO Arena',
