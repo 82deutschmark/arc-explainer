@@ -11,21 +11,25 @@
  * shadcn/ui: Pass - Uses shadcn/ui Card, Badge, Button, Alert components
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Brain, ArrowLeft, Sparkles, TrendingUp, Send, Loader2, RotateCcw } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Brain, ArrowLeft, Sparkles, TrendingUp, Send, Loader2, RotateCcw, Eye, Settings } from 'lucide-react';
 
 // Reuse existing components
 import { OriginalExplanationCard } from '@/components/puzzle/debate/OriginalExplanationCard';
 import { IterationCard } from './IterationCard';
+import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 // Types
 import type { ExplanationData } from '@/types/puzzle';
-import type { ARCExample, ModelConfig } from '@shared/types';
+import type { ARCExample, ModelConfig, ARCTask } from '@shared/types';
 
 interface RefinementIteration {
   id: string;
@@ -41,12 +45,27 @@ interface RefinementThreadProps {
   taskId: string;
   testCases: ARCExample[];
   models?: ModelConfig[];
+  task: ARCTask;
 
   // State
   activeModel: string;
   userGuidance: string;
   isProcessing: boolean;
   error?: Error | null;
+
+  // Temperature control
+  temperature: number;
+
+  // GPT-5 reasoning controls
+  reasoningEffort: 'minimal' | 'low' | 'medium' | 'high';
+  reasoningVerbosity: 'low' | 'medium' | 'high';
+  reasoningSummaryType: 'auto' | 'detailed';
+
+  // Model type detection
+  isGPT5ReasoningModel: (modelKey: string) => boolean;
+
+  // Prompt configuration
+  promptId: string;
 
   // Actions
   onBackToList: () => void;
@@ -61,16 +80,24 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
   taskId,
   testCases,
   models,
+  task,
   activeModel,
   userGuidance,
   isProcessing,
   error,
+  temperature,
+  reasoningEffort,
+  reasoningVerbosity,
+  reasoningSummaryType,
+  isGPT5ReasoningModel,
+  promptId,
   onBackToList,
   onResetRefinement,
   onUserGuidanceChange,
   onContinueRefinement
 }) => {
   const threadEndRef = useRef<HTMLDivElement>(null);
+  const [showPromptPreview, setShowPromptPreview] = useState(false);
 
   // Auto-scroll to newest iteration when thread updates
   useEffect(() => {
@@ -89,8 +116,13 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
     0
   );
 
-  // Get model display name
-  const modelDisplayName = models?.find(m => m.key === activeModel)?.name || activeModel;
+  // Get model display name and config
+  const currentModel = models?.find(m => m.key === activeModel);
+  const modelDisplayName = currentModel?.name || activeModel;
+
+  // Model capability detection
+  const showTemperature = currentModel?.supportsTemperature && !isGPT5ReasoningModel(activeModel);
+  const showReasoning = isGPT5ReasoningModel(activeModel);
 
   // Determine if original was correct
   const hasMultiTest = originalExplanation.hasMultiplePredictions &&
@@ -104,7 +136,7 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
     <div className="space-y-3">
       {/* Compact Header with Controls */}
       <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardContent className="p-3 space-y-3">
+        <CardContent className="p-2 space-y-2">
           {/* Title Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -181,8 +213,120 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
             </div>
           </div>
 
+          {/* Advanced Controls Section */}
+          {(showTemperature || showReasoning) && (
+            <div className="pt-2 border-t border-purple-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Settings className="h-4 w-4 text-purple-600" />
+                <span className="text-xs font-medium text-gray-700">Advanced Controls</span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                {/* Temperature Control - Show for models that support it (Grok, etc.) */}
+                {showTemperature && (
+                  <div className="p-2 bg-gray-50 border border-gray-200 rounded">
+                    <div className="flex items-center gap-3">
+                      <Label htmlFor="temperature" className="text-xs font-medium whitespace-nowrap">
+                        Temperature: {temperature}
+                      </Label>
+                      <div className="flex-1 max-w-xs">
+                        <Slider
+                          id="temperature"
+                          min={0.1}
+                          max={2.0}
+                          step={0.05}
+                          value={[temperature]}
+                          disabled={true}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="text-[10px] text-gray-600 flex-shrink-0">
+                        Controls creativity (view only)
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* GPT-5 Reasoning Parameters */}
+                {showReasoning && (
+                  <div className="p-2 bg-blue-50 border border-blue-200 rounded">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      {/* Effort Control */}
+                      <div>
+                        <Label htmlFor="reasoning-effort" className="text-xs font-medium text-blue-700">
+                          Effort: {reasoningEffort}
+                        </Label>
+                        <Select value={reasoningEffort} disabled={true}>
+                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="minimal">Minimal</SelectItem>
+                            <SelectItem value="low">Low</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Verbosity Control */}
+                      <div>
+                        <Label htmlFor="reasoning-verbosity" className="text-xs font-medium text-blue-700">
+                          Verbosity: {reasoningVerbosity}
+                        </Label>
+                        <Select value={reasoningVerbosity} disabled={true}>
+                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">Low</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Summary Control */}
+                      <div>
+                        <Label htmlFor="reasoning-summary" className="text-xs font-medium text-blue-700">
+                          Summary: {reasoningSummaryType}
+                        </Label>
+                        <Select value={reasoningSummaryType} disabled={true}>
+                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="auto">Auto</SelectItem>
+                            <SelectItem value="detailed">Detailed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-blue-600 mt-1">
+                      View only - configured in PuzzleExaminer
+                    </p>
+                  </div>
+                )}
+
+                {/* Prompt Preview Button - Always visible */}
+                <div className="flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPromptPreview(true)}
+                    disabled={isProcessing}
+                    className="flex items-center gap-2 h-8 text-xs"
+                  >
+                    <Eye className="h-3 w-3" />
+                    Preview Prompt
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Continue Refinement Controls */}
-          <div className="pt-3 border-t border-purple-200">
+          <div className="pt-2 border-t border-purple-200">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-end">
               {/* User Guidance Input */}
               <div className="lg:col-span-2">
@@ -267,6 +411,19 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
         {/* Anchor for auto-scroll to bottom */}
         <div ref={threadEndRef} />
       </div>
+
+      {/* Prompt Preview Modal */}
+      <PromptPreviewModal
+        isOpen={showPromptPreview}
+        onClose={() => setShowPromptPreview(false)}
+        task={task}
+        taskId={taskId}
+        promptId={promptId}
+        options={{
+          originalExplanation: originalExplanation,
+          customChallenge: userGuidance
+        }}
+      />
     </div>
   );
 };
