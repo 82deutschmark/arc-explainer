@@ -1,27 +1,26 @@
 /**
  * PuzzleDiscussion.tsx - AI Progressive Reasoning Interface
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-07
+ * Author: Cascade using Sonnet 4.5
+ * Date: 2025-10-08
  * PURPOSE: Progressive reasoning refinement through AI self-conversation.
  * One model refines its own analysis across multiple iterations with full context chaining.
- * Uses dedicated refinement components (NOT debate components).
- * SRP/DRY check: Pass - Orchestration only, delegates to refinement-specific components
- * shadcn/ui: Pass - Uses shadcn/ui components via refinement components
+ * REFACTORED: Now reuses AnalysisResultListCard and existing components instead of custom tables.
+ * SRP/DRY check: Pass - Orchestration only, delegates to existing UI components
+ * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Loader2, AlertTriangle, Search } from 'lucide-react';
+import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Refinement-specific components (NO debate components)
+// Refinement-specific components
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
@@ -48,7 +47,7 @@ export default function PuzzleDiscussion() {
 
   // Page title
   useEffect(() => {
-    document.title = taskId ? `Progressive Reasoning - Puzzle ${taskId}` : 'Progressive Reasoning';
+    document.title = taskId ? `Discussion - Puzzle ${taskId}` : 'Discussion';
   }, [taskId]);
 
   // Data hooks
@@ -226,7 +225,7 @@ export default function PuzzleDiscussion() {
     return (
       <div className="w-full space-y-4">
         {/* Search Card */}
-        <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-purple-600" />
@@ -253,7 +252,17 @@ export default function PuzzleDiscussion() {
           </CardContent>
         </Card>
 
-        {/* Recent Eligible Explanations Table */}
+        {/* Responses API Explainer */}
+        <Alert className="bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-sm text-blue-900">
+            <strong>How it works:</strong> The Responses API outperforms Chat Completions in multi-turn conversations by maintaining stateful persistence, automatically remembering prior encrypted reasoning traces (via{' '}
+            <code className="bg-blue-100 px-1 py-0.5 rounded text-xs">reasoning.encrypted_content</code>
+            ). This enables coherent, context-aware responses without manually appending full message histories, reducing token waste and errors. Chat Completions treats each call as stateless.
+          </AlertDescription>
+        </Alert>
+
+        {/* Recent Eligible Explanations */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Eligible Analyses</CardTitle>
@@ -264,44 +273,45 @@ export default function PuzzleDiscussion() {
                 <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
             ) : eligibleExplanations.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Puzzle ID</TableHead>
-                    <TableHead>Model</TableHead>
-                    <TableHead>Provider</TableHead>
-                    <TableHead>Age</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {eligibleExplanations.map(exp => (
-                    <TableRow key={exp.id}>
-                      <TableCell>
-                        <Link href={`/discussion/${exp.puzzleId}`} className="text-blue-600 hover:underline font-mono">
-                          {exp.puzzleId}
-                        </Link>
-                      </TableCell>
-                      <TableCell className="text-sm">{exp.modelName}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{exp.provider.toUpperCase()}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{exp.daysOld}d ago</Badge>
-                      </TableCell>
-                      <TableCell>
+              <div className="space-y-2">
+                {eligibleExplanations.map(exp => (
+                  <Card key={exp.id} className="hover:shadow-sm transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between gap-4">
+                        {/* Left: Model info and status */}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <Link 
+                            href={`/discussion/${exp.puzzleId}`} 
+                            className="text-blue-600 hover:underline font-mono text-sm font-medium"
+                          >
+                            {exp.puzzleId}
+                          </Link>
+                          <Badge variant="outline" className="font-mono text-xs">
+                            {exp.modelName}
+                          </Badge>
+                          <Badge variant={exp.isCorrect ? "default" : "secondary"} className="text-xs">
+                            {exp.isCorrect ? "Correct" : "Incorrect"}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {exp.provider.toUpperCase()}
+                          </Badge>
+                          <span className="text-xs text-gray-500">{exp.daysOld}d ago</span>
+                        </div>
+                        
+                        {/* Right: Action */}
                         <Button
                           size="sm"
-                          variant="ghost"
                           onClick={() => navigate(`/discussion/${exp.puzzleId}?select=${exp.id}`)}
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
                         >
+                          <Sparkles className="h-4 w-4 mr-1.5" />
                           Refine
                         </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No eligible analyses found. Generate new analyses from reasoning models (GPT-5, o-series, Grok-4).
@@ -316,16 +326,16 @@ export default function PuzzleDiscussion() {
   // Main interface
   return (
     <div className="w-full space-y-4">
-      {/* Simple header with puzzle ID badge */}
-      {taskId && (
+      {/* Header - consistent with other pages */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Brain className="h-6 w-6 text-purple-600" />
           <h1 className="text-2xl font-bold">Progressive Reasoning</h1>
-          <Badge variant="outline" className="text-sm">
-            Puzzle {taskId}
+          <Badge variant="outline" className="text-sm font-mono">
+            {taskId}
           </Badge>
         </div>
-      )}
+      </div>
 
       <CompactPuzzleDisplay
         trainExamples={task!.train}
