@@ -56,10 +56,10 @@ const navigationItems: NavItem[] = [
     description: 'Individual puzzles with DB record counts and difficulty analysis'
   },
   {
-    title: 'Progressive Reasoning',
+    title: 'Discussion',
     href: '/discussion',
     icon: Brain,
-    description: 'Refine AI analyses through iterative self-conversation'
+    description: 'Uses the Responses API to do iterative self-conversation'
   },
   {
     title: 'ELO Arena',
