@@ -1,12 +1,22 @@
 /**
- * Composable prompt builder - eliminates all duplication
- * Single function builds all system prompts from reusable components
+ * server/services/prompts/components/promptBuilder.ts
  * 
- * This replaces the massive duplication in systemPrompts.ts with a clean,
- * maintainable architecture where prompts are composed from base components.
+ * Author: Cascade (Claude Sonnet 4)
+ * Date: 2025-10-08 (Cleaned up)
  * 
- * @author Claude Code  
- * @date September 1, 2025
+ * PURPOSE:
+ * Composable prompt builder providing core buildSystemPrompt() function
+ * and specialized builders for debate/discussion/custom modes.
+ * 
+ * CLEANUP HISTORY (Oct 8, 2025):
+ * - Removed unused convenience functions (buildSolverPrompt, etc.)
+ * - Kept only actively-used builders (buildDebatePrompt, buildDiscussionPrompt, buildCustomPrompt)
+ * - Reduced file from 135 lines to ~105 lines
+ * 
+ * SRP/DRY Check: PASS
+ * - Single responsibility: System prompt composition
+ * - Composes from basePrompts.ts and jsonInstructions.ts
+ * - Used by systemPrompts.ts to build all mode-specific prompts
  */
 
 import { 
@@ -58,39 +68,6 @@ export function buildSystemPrompt(config: PromptConfig): string {
   ]
   .filter(section => section.trim().length > 0)
   .join('\n\n');
-}
-
-/**
- * Quick builder functions for each prompt type
- * These provide convenient shortcuts while maintaining the composable architecture
- */
-
-export function buildSolverPrompt(): string {
-  return buildSystemPrompt({
-    taskDescription: TASK_DESCRIPTIONS.solver,
-    additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver
-  });
-}
-
-export function buildExplanationPrompt(): string {
-  return buildSystemPrompt({
-    taskDescription: TASK_DESCRIPTIONS.explanation,
-    additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation
-  });
-}
-
-export function buildAlienCommunicationPrompt(): string {
-  return buildSystemPrompt({
-    taskDescription: TASK_DESCRIPTIONS.alienCommunication,
-    additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication
-  });
-}
-
-export function buildEducationalPrompt(): string {
-  return buildSystemPrompt({
-    taskDescription: TASK_DESCRIPTIONS.educational,
-    additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational
-  });
 }
 
 /**
