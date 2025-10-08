@@ -34,6 +34,7 @@ interface AnalysisResultListCardProps extends AnalysisResultCardProps {
   onStartDebate?: (explanationId: number) => void;
   showDebateButton?: boolean;
   debateButtonText?: string; // Custom text for debate button (default: "Start Debate")
+  actionButton?: React.ReactNode; // Custom action button (overrides debate button)
   compact?: boolean;
 }
 
@@ -45,6 +46,7 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   onStartDebate,
   showDebateButton = true,
   debateButtonText = 'Start Debate',
+  actionButton,
   compact = true,
   eloMode = false
 }) => {
@@ -144,16 +146,21 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
 
             {/* Right side: Actions */}
             <div className="flex items-center gap-2">
-              {showDebateButton && canDebate && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleDebateClick}
-                  className="text-xs"
-                >
-                  <MessageSquare className="h-3 w-3 mr-1" />
-                  {debateButtonText}
-                </Button>
+              {/* Show custom action button if provided, otherwise show debate button */}
+              {actionButton ? (
+                actionButton
+              ) : (
+                showDebateButton && canDebate && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleDebateClick}
+                    className="text-xs"
+                  >
+                    <MessageSquare className="h-3 w-3 mr-1" />
+                    {debateButtonText}
+                  </Button>
+                )
               )}
 
               <Button
@@ -206,16 +213,21 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {showDebateButton && canDebate && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleDebateClick}
-              className="text-xs"
-            >
-              <MessageSquare className="h-3 w-3 mr-1" />
-              {debateButtonText}
-            </Button>
+          {/* Show custom action button if provided, otherwise show debate button */}
+          {actionButton ? (
+            actionButton
+          ) : (
+            showDebateButton && canDebate && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleDebateClick}
+                className="text-xs"
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                {debateButtonText}
+              </Button>
+            )
           )}
 
           <Button

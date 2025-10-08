@@ -15,13 +15,13 @@ import React, { useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Brain, ArrowLeft, Sparkles, TrendingUp } from 'lucide-react';
+import { Brain, ArrowLeft, Sparkles, TrendingUp, Send, Loader2, RotateCcw } from 'lucide-react';
 
 // Reuse existing components
 import { OriginalExplanationCard } from '@/components/puzzle/debate/OriginalExplanationCard';
 import { IterationCard } from './IterationCard';
-import { RefinementControls } from './RefinementControls';
 
 // Types
 import type { ExplanationData } from '@/types/puzzle';
@@ -102,133 +102,170 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
 
   return (
     <div className="space-y-3">
-      {/* Refinement Header */}
+      {/* Compact Header with Controls */}
       <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardContent className="p-3">
+        <CardContent className="p-3 space-y-3">
+          {/* Title Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-full bg-purple-100">
                 <Brain className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  Progressive Reasoning: {modelDisplayName}
-                  {!isOriginalCorrect && (
-                    <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800">
-                      Refining Solution
-                    </Badge>
-                  )}
-                  {isOriginalCorrect && (
-                    <Badge variant="default" className="text-xs bg-green-600">
-                      ✓ Correct (Exploring Alternatives)
-                    </Badge>
-                  )}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Model refines its own analysis through iterative reasoning
+                <h2 className="text-xl font-semibold">Reasoning Evolution</h2>
+                <p className="text-xs text-gray-600">
+                  {iterations.length} stage{iterations.length !== 1 ? 's' : ''} • Progressive refinement
                 </p>
               </div>
             </div>
 
-            <Button variant="outline" size="sm" onClick={onBackToList}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to List
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onResetRefinement}
+                disabled={iterations.length <= 1 || isProcessing}
+                className="text-xs"
+              >
+                <RotateCcw className="h-3 w-3 mr-1.5" />
+                Reset
+              </Button>
+              <Button variant="outline" size="sm" onClick={onBackToList}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+            </div>
           </div>
 
-          {/* Progress indicator */}
-          {refinementIterations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-purple-200">
-              <div className="flex items-center gap-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-purple-600" />
-                <span className="font-medium text-purple-900">
-                  {refinementIterations.length} iteration{refinementIterations.length !== 1 ? 's' : ''} completed
-                </span>
-                {totalReasoningTokens > 0 && (
-                  <>
-                    <span className="text-gray-400">•</span>
-                    <Sparkles className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-900 font-medium">
-                      {totalReasoningTokens.toLocaleString()} reasoning tokens preserved
-                    </span>
-                  </>
-                )}
+          {/* Active Model & Stats Row */}
+          <div className="pt-3 border-t border-purple-200">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              {/* Active Model */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Brain className="h-4 w-4 text-purple-600" />
+                  <span className="text-xs font-medium text-gray-700">Active Model</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-purple-100 text-purple-900 border-purple-300 font-mono text-xs">
+                    {modelDisplayName}
+                  </Badge>
+                  <span className="text-xs text-gray-600">Locked</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-600" />
+                  <span className="text-xs font-medium text-gray-700">Total Reasoning</span>
+                </div>
+                <div className="text-sm font-semibold text-blue-900">
+                  {totalReasoningTokens.toLocaleString()} tokens
+                </div>
+                <p className="text-[10px] text-gray-500">
+                  Reasoning depth: 60k tokens preserved on server
+                </p>
+              </div>
+
+              {/* Current Iteration */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-purple-600" />
+                  <span className="text-xs font-medium text-gray-700">Current Iteration</span>
+                </div>
+                <Badge variant="secondary" className="text-sm font-mono">
+                  #{iterations.length - 1}
+                </Badge>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Continue Refinement Controls */}
+          <div className="pt-3 border-t border-purple-200">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-end">
+              {/* User Guidance Input */}
+              <div className="lg:col-span-2">
+                <label className="text-xs font-medium mb-1.5 block text-gray-700">
+                  User Guidance (Optional)
+                </label>
+                <Textarea
+                  value={userGuidance}
+                  onChange={(e) => onUserGuidanceChange(e.target.value)}
+                  placeholder="Leave blank for the model to refine based on its own analysis"
+                  rows={2}
+                  className="text-xs resize-none"
+                />
+              </div>
+
+              {/* Continue Button */}
+              <div>
+                <Button
+                  onClick={onContinueRefinement}
+                  disabled={isProcessing}
+                  className="w-full h-[72px] text-sm bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Refining...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Continue Refinement
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <Alert variant="destructive" className="mt-3 py-2">
+                <AlertDescription className="text-xs">
+                  {error.message}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
         </CardContent>
       </Card>
 
-      {/* Responsive grid layout - thread gets more space */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-3">
-        {/* Refinement Thread - takes 3/4 width on xl screens, full width on smaller */}
-        <div className="xl:col-span-3 space-y-3">
-          {/* Thread Header Card */}
-          <Card className="border-purple-200">
-            <CardHeader className="p-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Brain className="h-4 w-4 text-purple-600" />
-                Reasoning Evolution
-                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-800">
-                  {iterations.length} stage{iterations.length !== 1 ? 's' : ''}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          {/* Thread content - flows naturally with page scroll */}
-          <div className="space-y-3">
-            {/* Original Analysis */}
-            {originalIteration && (
-              <OriginalExplanationCard
-                explanation={originalIteration.content}
-                models={models}
-                testCases={testCases}
-                timestamp={originalIteration.timestamp}
-              />
-            )}
-
-            {/* Refinement Iterations */}
-            {refinementIterations.map((iteration, index) => {
-              // Calculate cumulative reasoning tokens up to this point
-              const cumulativeReasoningTokens = iterations
-                .slice(0, iterations.indexOf(iteration) + 1)
-                .reduce((sum, iter) => sum + (iter.content.reasoningTokens || 0), 0);
-
-              return (
-                <IterationCard
-                  key={iteration.id}
-                  explanation={iteration.content}
-                  models={models}
-                  testCases={testCases}
-                  timestamp={iteration.timestamp}
-                  iterationNumber={iteration.iterationNumber}
-                  cumulativeReasoningTokens={cumulativeReasoningTokens}
-                />
-              );
-            })}
-
-            {/* Anchor for auto-scroll to bottom */}
-            <div ref={threadEndRef} />
-          </div>
-        </div>
-
-        {/* Refinement Controls - 1/4 width sidebar on xl screens */}
-        <div>
-          <RefinementControls
-            activeModel={activeModel}
-            modelDisplayName={modelDisplayName}
-            userGuidance={userGuidance}
-            onUserGuidanceChange={onUserGuidanceChange}
-            currentIteration={iterations.length - 1}
-            isProcessing={isProcessing}
-            error={error}
-            totalReasoningTokens={totalReasoningTokens}
-            onContinueRefinement={onContinueRefinement}
-            onReset={onResetRefinement}
-            onBackToList={onBackToList}
+      {/* Thread content - full width */}
+      <div className="space-y-3">
+        {/* Original Analysis */}
+        {originalIteration && (
+          <OriginalExplanationCard
+            explanation={originalIteration.content}
+            models={models}
+            testCases={testCases}
+            timestamp={originalIteration.timestamp}
           />
-        </div>
+        )}
+
+        {/* Refinement Iterations */}
+        {refinementIterations.map((iteration, index) => {
+          // Calculate cumulative reasoning tokens up to this point
+          const cumulativeReasoningTokens = iterations
+            .slice(0, iterations.indexOf(iteration) + 1)
+            .reduce((sum, iter) => sum + (iter.content.reasoningTokens || 0), 0);
+
+          return (
+            <IterationCard
+              key={iteration.id}
+              explanation={iteration.content}
+              models={models}
+              testCases={testCases}
+              timestamp={iteration.timestamp}
+              iterationNumber={iteration.iterationNumber}
+              cumulativeReasoningTokens={cumulativeReasoningTokens}
+            />
+          );
+        })}
+
+        {/* Anchor for auto-scroll to bottom */}
+        <div ref={threadEndRef} />
       </div>
     </div>
   );
