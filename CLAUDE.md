@@ -440,3 +440,501 @@ A "pair" is a dictionary with two fields:
 A "grid" is a rectangular matrix (list of lists) of integers between 0 and 9 (inclusive). The smallest possible grid size is 1x1 and the largest is 30x30.
 
 When looking at a task, a test-taker has access to inputs & outputs of the demonstration pairs, plus the input(s) of the test pair(s). The goal is to construct the output grid(s) corresponding to the test input grid(s), using 3 trials for each test input. "Constructing the output grid" involves picking the height and width of the output grid, then filling each cell in the grid with a symbol (integer between 0 and 9, which are visualized as colors). Only exact solutions (all cells match the expected answer) can be said to be correct.
+
+---
+
+## Complete Database Schema Reference
+
+### Explanations Table (Complete SQL Schema)
+
+```sql
+CREATE TABLE explanations (
+    id SERIAL PRIMARY KEY,
+    puzzle_id TEXT NOT NULL,
+    
+    -- Core Analysis Fields
+    pattern_description TEXT,
+    solving_strategy TEXT,
+    hints TEXT[],
+    confidence INTEGER,
+    
+    -- Prediction & Accuracy Fields
+    predicted_output_grid JSONB,
+    is_prediction_correct BOOLEAN,
+    trustworthiness_score DOUBLE PRECISION,
+    
+    -- Multi-Test Prediction Fields
+    has_multiple_predictions BOOLEAN,
+    multiple_predicted_outputs JSONB,
+    multi_test_results JSONB,
+    multi_test_all_correct BOOLEAN,
+    multi_test_average_accuracy DOUBLE PRECISION,
+    multi_test_prediction_grids JSONB,
+    
+    -- AI & Prompt Metadata
+    model_name VARCHAR(100),
+    provider_response_id TEXT,          -- Responses API conversation ID for chaining (v3.6.2+)
+    provider_raw_response JSONB,        -- Complete unaltered API response
+    system_prompt_used TEXT,
+    user_prompt_used TEXT,
+    prompt_template_id TEXT,
+    custom_prompt_text TEXT,
+    
+    -- Reasoning & Thinking Process
+    reasoning_log TEXT,                 -- Human-readable reasoning summary
+    has_reasoning_log BOOLEAN,
+    reasoning_items JSONB,              -- Structured reasoning steps
+    
+    -- API Processing Metrics
+    api_processing_time_ms INTEGER,
+    
+    -- Token Usage & Cost
+    input_tokens INTEGER,
+    output_tokens INTEGER,
+    reasoning_tokens INTEGER,
+    total_tokens INTEGER,
+    estimated_cost NUMERIC,
+    
+    -- GPT-5 Specific Parameters
+    temperature DOUBLE PRECISION,
+    reasoning_effort TEXT,              -- minimal, low, medium, high
+    reasoning_verbosity TEXT,           -- low, medium, high
+    reasoning_summary_type TEXT,        -- auto, none, detailed
+    
+    -- Saturn Visual Solver Fields (Python integration)
+    saturn_images JSONB,
+    saturn_log JSONB,
+    saturn_events JSONB,
+    saturn_success BOOLEAN,
+    
+    -- Alien Communication Mode Fields
+    alien_meaning TEXT,
+    alien_meaning_confidence INTEGER,
+    
+    -- Debate & Rebuttal Tracking (v2.30.7+)
+    rebutting_explanation_id INTEGER REFERENCES explanations(id) ON DELETE SET NULL,
+    
+    -- Timestamps
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for Performance
+CREATE INDEX idx_explanations_puzzle_id ON explanations(puzzle_id);
+CREATE INDEX idx_explanations_model_name ON explanations(model_name);
+CREATE INDEX idx_explanations_rebutting_explanation_id ON explanations(rebutting_explanation_id);
+CREATE INDEX idx_explanations_provider_response_id ON explanations(provider_response_id) WHERE provider_response_id IS NOT NULL;
+CREATE INDEX idx_explanations_created_at ON explanations(created_at);
+```
+
+### Feedback Table
+
+```sql
+CREATE TABLE feedback (
+    id SERIAL PRIMARY KEY,
+    explanation_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    vote_type VARCHAR(20) NOT NULL CHECK (vote_type IN ('helpful', 'not_helpful')),
+    comment TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_feedback_explanation_id ON feedback(explanation_id);
+CREATE INDEX idx_feedback_vote_type ON feedback(vote_type);
+```
+
+### ELO Rating System Tables (v2.30.0+)
+
+```sql
+CREATE TABLE elo_ratings (
+    id SERIAL PRIMARY KEY,
+    explanation_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    current_rating INTEGER NOT NULL DEFAULT 1500,
+    games_played INTEGER NOT NULL DEFAULT 0,
+    wins INTEGER NOT NULL DEFAULT 0,
+    losses INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(explanation_id)
+);
+
+CREATE TABLE elo_comparisons (
+    id SERIAL PRIMARY KEY,
+    explanation_a_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    explanation_b_id INTEGER NOT NULL REFERENCES explanations(id) ON DELETE CASCADE,
+    winner_id INTEGER REFERENCES explanations(id) ON DELETE CASCADE,
+    session_id TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(explanation_a_id, explanation_b_id, session_id)
+);
+
+CREATE INDEX idx_elo_ratings_current_rating ON elo_ratings(current_rating DESC);
+CREATE INDEX idx_elo_comparisons_session_id ON elo_comparisons(session_id);
+```
+
+### Ingestion Runs Table (v3.4.1+)
+
+```sql
+CREATE TABLE ingestion_runs (
+    id SERIAL PRIMARY KEY,
+    dataset_name TEXT NOT NULL,
+    base_url TEXT NOT NULL,
+    source TEXT NOT NULL,              -- 'ARC1', 'ARC2', etc.
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    completed_at TIMESTAMPTZ,
+    total_puzzles INTEGER DEFAULT 0,
+    successful INTEGER DEFAULT 0,
+    failed INTEGER DEFAULT 0,
+    skipped INTEGER DEFAULT 0,
+    duration_ms INTEGER,
+    accuracy_percentage DOUBLE PRECISION,
+    dry_run BOOLEAN DEFAULT FALSE,
+    error_log TEXT
+);
+
+CREATE INDEX idx_ingestion_runs_dataset_name ON ingestion_runs(dataset_name);
+CREATE INDEX idx_ingestion_runs_started_at ON ingestion_runs(started_at DESC);
+```
+
+---
+
+## Complete API Endpoint Reference
+
+### Puzzle Analysis Endpoints
+
+```http
+POST /api/puzzle/analyze/:puzzleId/:modelKey
+Content-Type: application/json
+
+{
+    "temperature": 0.2,                    // Optional: 0-2 for supported models
+    "promptId": "solver",                  // "solver", "alien", "educational", or "custom"
+    "customPrompt": "Your prompt...",      // Required if promptId="custom"
+    "reasoningEffort": "high",             // GPT-5 only: "minimal", "low", "medium", "high"
+    "reasoningVerbosity": "high",          // GPT-5 only: "low", "medium", "high"
+    "reasoningSummaryType": "detailed",    // GPT-5 only: "auto", "none", "detailed"
+    "previousResponseId": "resp_abc123",   // Conversation chaining (v3.6.2+)
+    "originalExplanation": {...},          // For debate/challenge mode
+    "customChallenge": "Focus on edges"    // Optional debate guidance
+}
+
+Response:
+{
+    "id": 12345,
+    "puzzleId": "0934a4d8",
+    "modelName": "gpt-5-2025-08-07",
+    "providerResponseId": "resp_...",      // For conversation chaining
+    "patternDescription": "...",
+    "solvingStrategy": "...",
+    "hints": ["...", "..."],
+    "confidence": 85,
+    "predictedOutput": [[0,1,2], ...],
+    "isPredictionCorrect": true,
+    "reasoningLog": "...",
+    "inputTokens": 1500,
+    "outputTokens": 800,
+    "reasoningTokens": 45000,
+    "totalTokens": 47300,
+    "estimatedCost": 0.15,
+    "apiProcessingTime": 28500
+}
+```
+
+```http
+GET /api/puzzle/:puzzleId
+Returns complete puzzle data including train/test pairs
+
+GET /api/puzzle/:puzzleId/explanations
+Returns all AI analyses for a specific puzzle
+```
+
+### Batch Analysis Endpoints (v3.7.0+)
+
+```http
+POST /api/batch/start
+Content-Type: application/json
+
+{
+    "modelKey": "gpt-4",
+    "datasetKey": "arc2-eval",             // "arc2-eval", "arc1-eval", etc.
+    "temperature": 0.2,
+    "reasoningEffort": "medium",
+    "resume": true                          // Skip already-analyzed puzzles
+}
+
+Response:
+{
+    "sessionId": "uuid-here",
+    "status": "running",
+    "puzzleCount": 120
+}
+
+GET /api/batch/status/:sessionId
+Real-time batch progress (polls every 2 seconds)
+
+Response:
+{
+    "sessionId": "...",
+    "status": "running",                    // "running", "paused", "completed", "failed"
+    "progress": "45/120",
+    "successful": 42,
+    "failed": 3,
+    "currentPuzzle": "0934a4d8",
+    "results": [
+        { "puzzleId": "...", "status": "correct", "processingTime": 26000, ... }
+    ],
+    "activityLog": [...]                    // Live terminal-style log (v3.7.1+)
+}
+
+POST /api/batch/pause/:sessionId
+Pause running batch
+
+POST /api/batch/resume/:sessionId  
+Resume paused batch
+
+GET /api/batch/results/:sessionId
+Detailed results after completion
+
+GET /api/batch/sessions
+List all active batch sessions
+```
+
+### Prompt Preview Endpoints
+
+```http
+POST /api/prompt/preview/:provider/:puzzleId
+Content-Type: application/json
+
+{
+    "promptId": "solver",
+    "customPrompt": "...",
+    "emojiSetKey": "animals",              // Optional: emoji palette
+    "omitAnswer": false                    // Optional: hide solution from prompt
+}
+
+Response:
+{
+    "systemPrompt": "...",
+    "userPrompt": "...",
+    "provider": "openai"
+}
+```
+
+### Data Retrieval Endpoints
+
+```http
+GET /api/puzzles
+List all available puzzles with metadata
+
+GET /api/overview?limit=50&offset=0&source=ARC2&hasMultipleTests=true
+Paginated puzzle overview with filtering
+
+Query Parameters:
+- limit: Results per page (default: 50, max: 1000)
+- offset: Page offset
+- source: Filter by ARC dataset
+- hasMultipleTests: Filter multi-test puzzles
+- sortBy: "cost", "processingTime", "difficulty"
+- sortOrder: "asc", "desc"
+```
+
+### Analytics & Leaderboard Endpoints
+
+```http
+GET /api/feedback/accuracy-stats?minAttempts=20
+Pure accuracy leaderboard data
+
+GET /api/puzzle/performance-stats?minAttempts=20  
+Trustworthiness metrics (confidence reliability)
+
+GET /api/feedback/stats
+User feedback statistics
+
+GET /api/metrics/comprehensive-dashboard
+Combined analytics for dashboards
+
+GET /api/cost/model-costs
+Cost analysis per model
+```
+
+### Debate & Conversation Endpoints
+
+```http
+GET /api/explanations/:id/chain
+Get full rebuttal chain for a debate
+
+Response:
+{
+    "chain": [
+        { "id": 1, "modelName": "gpt-4", ... },
+        { "id": 2, "modelName": "claude-3.5", "rebuttingExplanationId": 1, ... },
+        { "id": 3, "modelName": "gpt-4", "rebuttingExplanationId": 2, ... }
+    ]
+}
+
+GET /api/explanations/:id/original
+Get parent explanation of a rebuttal
+```
+
+### PuzzleDiscussion Endpoints (v3.6.4+)
+
+```http
+GET /api/discussion/eligible
+Get explanations eligible for conversation chaining
+
+Query Parameters:
+- page: Page number (default: 1)
+- limit: Results per page (default: 20)
+
+Response:
+{
+    "explanations": [
+        {
+            "id": 12345,
+            "puzzleId": "0934a4d8",
+            "modelName": "gpt-5-2025-08-07",
+            "provider": "openai",
+            "providerResponseId": "resp_...",
+            "createdAt": "2025-10-07T...",
+            "ageInDays": 1,
+            "eligible": true
+        }
+    ],
+    "total": 150
+}
+
+Eligibility Criteria:
+- Has provider_response_id in database
+- Created within last 30 days (provider retention window)
+- No model type restrictions (any model that saves response IDs)
+```
+
+### ELO Comparison Endpoints (v2.30.0+)
+
+```http
+GET /api/elo/comparison_pair?puzzleId=0934a4d8
+Get a random pair of explanations for blind comparison
+
+POST /api/elo/submit_comparison
+Content-Type: application/json
+
+{
+    "explanationAId": 123,
+    "explanationBId": 456,
+    "winnerId": 123,
+    "sessionId": "uuid"
+}
+
+GET /api/elo/leaderboard?minGames=10
+Get ELO ratings leaderboard
+```
+
+---
+
+## Deployment Guide
+
+### Railway Deployment
+
+1. **Connect Repository**
+   - Link GitHub repository to Railway project
+   - Railway auto-detects Node.js and PostgreSQL requirements
+
+2. **Environment Variables**
+   ```bash
+   NODE_ENV=production
+   DATABASE_URL=postgresql://...  # Auto-provided by Railway
+   
+   # AI Provider Keys (at least one required)
+   OPENAI_API_KEY=sk-...
+   ANTHROPIC_API_KEY=sk-ant-...
+   GEMINI_API_KEY=...
+   GROK_API_KEY=xai-...
+   DEEPSEEK_API_KEY=...
+   OPENROUTER_API_KEY=sk-or-...
+   
+   # HuggingFace (optional, for ingestion)
+   HF_TOKEN=hf_...
+   
+   # Production Settings
+   PORT=5000                      # Railway auto-assigns
+   INTERNAL_API_HOST=localhost    # For batch analysis
+   ```
+
+3. **Deploy**
+   - Push to main branch → automatic deployment
+   - Railway runs `npm run build` and `npm start`
+   - Database migrations run automatically on startup
+
+### Docker Deployment
+
+```dockerfile
+# Build
+docker build -t arc-explainer .
+
+# Run with environment variables
+docker run -p 5000:5000 \
+  -e DATABASE_URL=postgresql://... \
+  -e OPENAI_API_KEY=... \
+  --env-file .env \
+  arc-explainer
+
+# With Docker Compose
+docker-compose up -d
+```
+
+**Dockerfile highlights:**
+- Multi-stage build for optimized size
+- Python runtime included for Saturn Visual Solver
+- Health check on `/api/health` endpoint
+- Automatic database migration on startup
+
+### Environment Variables Reference
+
+```bash
+# Required (at least one AI provider)
+OPENAI_API_KEY=          # OpenAI GPT-4, GPT-5, o-series
+ANTHROPIC_API_KEY=       # Claude models
+GEMINI_API_KEY=          # Google Gemini models
+GROK_API_KEY=            # xAI Grok-4 direct API
+DEEPSEEK_API_KEY=        # DeepSeek reasoning models
+OPENROUTER_API_KEY=      # 100+ models via OpenRouter
+
+# Database (optional - uses in-memory if not provided)
+DATABASE_URL=            # PostgreSQL connection string
+
+# Optional Features
+HF_TOKEN=                # HuggingFace dataset ingestion
+PORT=                    # Server port (default: 5000)
+NODE_ENV=                # "development" or "production"
+INTERNAL_API_HOST=       # For batch analysis (default: localhost)
+
+# Rate Limiting (Grok-4 batch scripts)
+XAI_MAX_CONCURRENCY=     # Concurrent requests (default: 2)
+XAI_MAX_RETRIES=         # Retry attempts (default: 3)
+XAI_RETRY_BASE_DELAY_MS= # Retry delay (default: 2000)
+```
+
+---
+
+## Performance Optimization Tips
+
+### Database Indexing
+All critical indexes are created automatically. For custom analytics queries, consider adding:
+```sql
+CREATE INDEX idx_custom ON explanations(your_field) WHERE your_condition;
+```
+
+### Batch Analysis Performance
+- **Parallel Processing:** v3.7.3+ runs 10 puzzles concurrently (10-20x faster)
+- **Resume Mode:** Automatically skips already-analyzed puzzles
+- **Rate Limiting:** Configurable via `XAI_MAX_CONCURRENCY` env var
+- **Staggered Requests:** 2-second delay between concurrent batch starts
+
+### API Response Caching
+- TanStack Query caches all GET requests client-side
+- Status endpoints refresh every 2 seconds during batch runs
+- Leaderboards cache for 5 minutes
+
+### Cost Optimization
+- Use `temperature=0` for deterministic, cheaper responses
+- GPT-5 `reasoningEffort="low"` reduces reasoning tokens
+- Batch analysis more cost-effective than individual analyses
+- Monitor costs via `/api/cost/model-costs` endpoint
