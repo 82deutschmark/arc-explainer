@@ -1,13 +1,14 @@
 /**
  * CompactPuzzleDisplay.tsx
  *
- * Author: Cascade using Claude Sonnet 4.5 (Updated by Cascade using Sonnet 4 on 2025-10-04)
- * Date: 2025-10-03T22:05:00-04:00 (Spacing update: 2025-10-04T21:38:12-04:00)
+ * Author: Cascade using Claude Sonnet 4 on 2025-10-07
+ * Date: 2025-10-07T21:12:05-04:00
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
  * NOW SUPPORTS MULTIPLE TEST CASES for multi-test puzzles like 195c6913.
  * Shows all test inputs and correct outputs, with training examples collapsed.
  * Uses shadcn/ui Collapsible component for training examples toggle.
- * SPACING: Increased gaps between grids for better visual clarity (gap-10/gap-12 between sections, gap-6/gap-8 within sections)
+ * DESIGN FIX: Removed internal overflow-x-auto scrollbars (major UX violation).
+ * Content now flows naturally, letting page-level scrolling handle overflow.
  * Single responsibility: Puzzle visualization only - highly reusable across app.
  * SRP/DRY check: Pass - Focused only on puzzle display concerns, reuses TinyGrid
  * shadcn/ui: Pass - Uses shadcn/ui Collapsible, Card, Badge components
@@ -62,9 +63,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
         </CardHeader>
       )}
       <CardContent className="p-1">
-        <div className="flex items-start gap-10">
+        <div className="flex flex-wrap items-start gap-10">
           {/* Training Examples - COLLAPSIBLE (LEFT SIDE) */}
-          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen} className="flex-shrink-0">
+          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen} className="min-w-fit">
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="p-1 h-auto hover:bg-gray-100">
                 <div className="flex items-center">
@@ -83,9 +84,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="flex gap-8 overflow-x-auto p-1">
+              <div className="flex flex-wrap gap-8 p-1">
                 {displayedExamples.map((example, index) => (
-                  <div key={index} className="flex items-center gap-6 flex-shrink-0">
+                  <div key={index} className="flex items-center gap-6 min-w-fit">
                     <div className="text-[9px] text-gray-500">{index + 1}.</div>
                     <div className="w-16 h-16 border border-white/30 p-0.5 bg-gray-900/5">
                       <TinyGrid grid={example.input} />
@@ -97,7 +98,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                   </div>
                 ))}
                 {trainExamples.length > maxTrainingExamples && (
-                  <div className="text-[9px] text-gray-500 flex-shrink-0">
+                  <div className="text-[9px] text-gray-500 min-w-fit">
                     +{trainExamples.length - maxTrainingExamples}
                   </div>
                 )}
@@ -106,9 +107,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </Collapsible>
 
           {/* Test Cases - ALWAYS VISIBLE (RIGHT SIDE) */}
-          <div className="flex items-center gap-12 overflow-x-auto flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-12 min-w-fit">
             {testCases.map((testCase, index) => (
-              <div key={index} className="flex items-center gap-6 flex-shrink-0">
+              <div key={index} className="flex items-center gap-6 min-w-fit">
                 {isMultiTest && (
                   <Badge variant="outline" className="text-[9px] px-1 py-0">
                     Test {index + 1}
