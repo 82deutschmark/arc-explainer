@@ -143,8 +143,8 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                   </span>
                 )}
 
-                {/* Input → Output row */}
-                <div className="flex items-center gap-4">
+                {/* Input → Output row with proper spacing */}
+                <div className={`flex items-center ${testCases.length > 2 ? 'gap-8' : 'gap-10'}`}>
                   <div>
                     <div className="text-[9px] text-gray-600 mb-1">Input</div>
                     <div className={`${gridSizeClass} border border-white/40 p-1 bg-gray-900/5`}>
@@ -152,7 +152,14 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                     </div>
                   </div>
 
-                  <div className="text-xs text-gray-400">→</div>
+                  {/* Visual separator - adaptive based on layout */}
+                  {testCases.length > 2 ? (
+                    <div className="text-xs text-gray-400">→</div>
+                  ) : (
+                    <div className="flex items-center px-2">
+                      <div className="w-px h-24 bg-gray-300"></div>
+                    </div>
+                  )}
 
                   <div>
                     <div className="text-[9px] text-gray-600 mb-1">Output</div>
