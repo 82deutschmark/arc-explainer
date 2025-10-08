@@ -1,5 +1,138 @@
 ## [2025-10-08]
 
+## v3.7.7 - Responses API & Conversation Chaining Complete Implementation
+
+### Summary
+**MAJOR MILESTONE:** Full Responses API conversation chaining now fully operational across OpenAI (GPT-5, o-series) and xAI (Grok-4) models. Fixed critical data flow bugs preventing `provider_response_id` storage and retrieval, enabling multi-turn conversations with server-side reasoning persistence.
+
+### Fixed - Critical Data Flow Chain
+- **Complete providerResponseId Pipeline Restoration**
+  - **Root Cause Analysis:** Identified and fixed 3-stage data loss in provider response ID flow
+  - **Stage 1 - API Response Capture:** ✅ Both `grok.ts` and `openai.ts` correctly captured `response.id`
+  - **Stage 2 - Service Layer:** ✅ `parseProviderResponse()` correctly returned response ID
+  - **Stage 3 - Transform Layer:** ❌ **BUG FIXED** - `explanationService.transformRawExplanation()` never mapped `providerResponseId` field
+  - **Stage 4 - Database:** ❌ **BUG FIXED** - All 29,609+ records had NULL `provider_response_id`
+  - **Solution:** Added `providerResponseId` mapping at `explanationService.ts:84`
+  - **Verification:** Tested with grok-4-fast-reasoning and gpt-5-2025-08-07, both now save response IDs correctly
+
+- **Frontend Response ID Mapping** (v3.6.4 follow-up fix)
+  - **Problem:** Backend returned `providerResponseId` but frontend `useExplanation` hook didn't map it
+  - **Impact:** ALL explanations appeared ineligible for conversation chaining in UI
+  - **Solution:** Added `providerResponseId: (raw as any).providerResponseId` mapping in `useExplanation` hook
+  - **Files:** `client/src/hooks/useExplanation.ts`
+
+- **Grok-4-Fast Responses API Stability**
+  - Verified structured output support with graceful schema fallback
+  - Fixed concurrent processing issues in batch analysis
+  - Confirmed reasoning token tracking (even though xAI doesn't expose reasoning content)
+  - All Grok-4 variants now use Responses API correctly
+
+### Enhanced - PuzzleDiscussion Feature
+- **Server-Side Eligibility Filtering**
+  - **NEW API:** `GET /api/discussion/eligible` - Returns pre-filtered eligible explanations
+  - **Simplified Criteria:** Only checks `has provider_response_id + within 30 days` (removed model type restrictions)
+  - **Impact:** Opens conversation chaining to ALL models that saved response IDs, not just reasoning models
+  - Files: `server/controllers/discussionController.ts`, `server/routes.ts`
+
+- **Landing Page Redesign**
+  - **Before:** 60+ lines of overwhelming explanatory text
+  - **After:** Clean action-focused interface:
+    - Simple search box with auto-complete
+    - Table of recent eligible analyses with direct "Refine" links
+    - One-click navigation to `/discussion/:puzzleId?select=:id`
+  - **Removed:** Walls of text explaining features (now in tooltips/help)
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Auto-Selection Deep Linking**
+  - URL format: `/discussion/:puzzleId?select=:explanationId`
+  - Automatically starts conversation when explanation ID provided
+  - Console logging for debugging auto-selection behavior
+  - Enables direct navigation from "Refine This Analysis" badges
+
+- **"Refine This Analysis" Badge Discovery** (PuzzleExaminer Integration)
+  - Purple/blue gradient badge in `AnalysisResultHeader`
+  - Links directly to PuzzleDiscussion with auto-selection
+  - **Strict Eligibility Checks:**
+    - Has `providerResponseId` in database
+    - Created within 30-day provider retention window
+    - Created after Oct 6, 2025 (implementation date)
+  - Files: `client/src/components/puzzle/AnalysisResultHeader.tsx`
+
+### Verified Working - End-to-End Flow
+1. ✅ **API Response Capture:** Grok-4 and GPT-5 return response IDs
+   - OpenAI format: `resp_060ac21c27a4943c0068e57a2a25dc819593ee79a2dae7b29d`
+   - xAI format: `4f313883-b0b2-21fa-72b0-0f4fec701fc4_us-east-1`
+
+2. ✅ **Database Storage:** `provider_response_id` column populated correctly
+   - Verified with `scripts/check-provider-response-ids.js`
+   - All new analyses (post-fix) save response IDs
+
+3. ✅ **Frontend Retrieval:** `useExplanation` hook maps `providerResponseId` field
+   - PuzzleDiscussion eligibility filter works
+   - Badge visibility logic works
+
+4. ✅ **Conversation Chaining:** Multi-turn conversations maintain full context
+   - Server-side reasoning persistence (30-day retention)
+   - Progressive refinement workflows operational
+   - Provider-aware chaining (OpenAI ↔ OpenAI, xAI ↔ xAI)
+
+5. ✅ **PuzzleDiscussion UI:** Complete workflow functional
+   - Eligible analyses display correctly
+   - Auto-selection from deep links works
+   - Refine badge appears on eligible explanations
+   - Conversation context maintained across turns
+
+### Response ID Formats
+- **OpenAI (GPT-5, o3, o4):** `resp_[40-char-hex]`
+- **xAI (Grok-4, Grok-4-Fast):** `[uuid]_[region]`
+
+### Files Modified
+- `server/services/explanationService.ts` - Added providerResponseId mapping (line 84)
+- `client/src/hooks/useExplanation.ts` - Added providerResponseId field mapping
+- `server/controllers/discussionController.ts` - NEW: Eligibility API endpoint
+- `client/src/pages/PuzzleDiscussion.tsx` - Landing page redesign + auto-selection
+- `client/src/components/puzzle/AnalysisResultHeader.tsx` - Refine badge + eligibility checks
+
+### Files Created
+- `scripts/check-provider-response-ids.js` - Verification tool for response ID storage
+- `docs/07102025-ACTUAL-ROOT-CAUSE-FIX.md` - Complete root cause analysis
+- `client/src/hooks/useEligibleExplanations.ts` - NEW: Hook for eligible explanations API
+
+### Migration Notes
+- **Historical Data:** 29,609 records created before 2025-10-07 have NULL response IDs (cannot be fixed retroactively)
+- **New Records:** All analyses after server restart save response IDs correctly
+- **Feature Availability:** Only new analyses (with response IDs) can use conversation features
+
+### Impact - Features Now Unlocked 🎉
+- ✅ **PuzzleDiscussion Self-Refinement** - Model refines its own analysis with full context
+- ✅ **Model Debate Conversation Chaining** - Maintains reasoning across debate turns (provider-aware)
+- ✅ **30-Day Reasoning Persistence** - Server-side encrypted storage (OpenAI/xAI)
+- ✅ **Progressive Reasoning** - Each turn builds on full conversation history
+- ✅ **Response Chain Retrieval** - `/api/explanations/:id/chain` returns full history
+- ✅ **Conversation Forking** - Branch conversations for exploration workflows
+
+### Technical Documentation
+- `docs/API_Conversation_Chaining.md` - Complete API usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical implementation details
+- `docs/07102025-ACTUAL-ROOT-CAUSE-FIX.md` - Root cause analysis and fix verification
+- `CLAUDE.md` - Updated with conversation chaining architecture (lines 148-210)
+
+---
+
+## v3.7.6 - ModelBrowser UI Improvements
+
+### Enhanced
+- **ModelBrowser mirrors AnalyticsOverview UI** using shadcn/ui
+  - Displays one model's performance across a dataset (Correct / Incorrect / Not Attempted)
+  - Click-to-analyze: Clicking a PuzzleID badge in "Not Attempted" triggers analysis+save with solver prompt
+  - Badge animates (pulse) while in-flight, lists refresh on completion
+  - Added optional `refreshKey` to `useModelDatasetPerformance` for on-demand refetch
+  - Files: `client/src/pages/ModelBrowser.tsx`, `client/src/hooks/useModelDatasetPerformance.ts`
+
+---
+
+## [2025-10-07]
+
 ## v3.7.5 - Fixed Hardcoded Localhost URLs (Production Breaking Bug)
 
 ### Critical Bug Fix
