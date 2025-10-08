@@ -611,7 +611,7 @@ Content-Type: application/json
     "reasoningEffort": "high",             // GPT-5 only: "minimal", "low", "medium", "high"
     "reasoningVerbosity": "high",          // GPT-5 only: "low", "medium", "high"
     "reasoningSummaryType": "detailed",    // GPT-5 only: "auto", "none", "detailed"
-    "previousResponseId": "resp_abc123",   // Conversation chaining (v3.6.2+)
+    "previousResponseId": "resp_abc123",   // Conversation chaining (v3.6.2+)  
     "originalExplanation": {...},          // For debate/challenge mode
     "customChallenge": "Focus on edges"    // Optional debate guidance
 }
@@ -646,56 +646,8 @@ GET /api/puzzle/:puzzleId/explanations
 Returns all AI analyses for a specific puzzle
 ```
 
-### Batch Analysis Endpoints (v3.7.0+)
-
-```http
-POST /api/batch/start
-Content-Type: application/json
-
-{
-    "modelKey": "gpt-4",
-    "datasetKey": "arc2-eval",             // "arc2-eval", "arc1-eval", etc.
-    "temperature": 0.2,
-    "reasoningEffort": "medium",
-    "resume": true                          // Skip already-analyzed puzzles
-}
-
-Response:
-{
-    "sessionId": "uuid-here",
-    "status": "running",
-    "puzzleCount": 120
-}
-
-GET /api/batch/status/:sessionId
-Real-time batch progress (polls every 2 seconds)
-
-Response:
-{
-    "sessionId": "...",
-    "status": "running",                    // "running", "paused", "completed", "failed"
-    "progress": "45/120",
-    "successful": 42,
-    "failed": 3,
-    "currentPuzzle": "0934a4d8",
-    "results": [
-        { "puzzleId": "...", "status": "correct", "processingTime": 26000, ... }
-    ],
-    "activityLog": [...]                    // Live terminal-style log (v3.7.1+)
-}
-
-POST /api/batch/pause/:sessionId
-Pause running batch
-
-POST /api/batch/resume/:sessionId  
-Resume paused batch
-
-GET /api/batch/results/:sessionId
-Detailed results after completion
-
-GET /api/batch/sessions
-List all active batch sessions
-```
+### Batch Analysis Endpoints (v3.7.0+)  THESE WERE FLAWED AND OVERCOMPLICATED!!! 
+  - We dont need to be keeping such explicit track of "batches" we just want to make the API calls quickly!
 
 ### Prompt Preview Endpoints
 
@@ -755,7 +707,7 @@ GET /api/cost/model-costs
 Cost analysis per model
 ```
 
-### Debate & Conversation Endpoints
+### Debate Endpoints
 
 ```http
 GET /api/explanations/:id/chain
@@ -764,9 +716,9 @@ Get full rebuttal chain for a debate
 Response:
 {
     "chain": [
-        { "id": 1, "modelName": "gpt-4", ... },
+        { "id": 1, "modelName": "gpt-4.1", ... },
         { "id": 2, "modelName": "claude-3.5", "rebuttingExplanationId": 1, ... },
-        { "id": 3, "modelName": "gpt-4", "rebuttingExplanationId": 2, ... }
+        { "id": 3, "modelName": "gpt-5-2025-08-07", "rebuttingExplanationId": 2, ... }
     ]
 }
 
@@ -779,6 +731,7 @@ Get parent explanation of a rebuttal
 ```http
 GET /api/discussion/eligible
 Get explanations eligible for conversation chaining
+THIS MEANS only explanations that have a provider_response_id in the database!!!
 
 Query Parameters:
 - page: Page number (default: 1)
@@ -833,33 +786,15 @@ Get ELO ratings leaderboard
 
 ### Railway Deployment
 
-1. **Connect Repository**
-   - Link GitHub repository to Railway project
+GitHub repository is already linked to Railway project
    - Railway auto-detects Node.js and PostgreSQL requirements
 
 2. **Environment Variables**
-   ```bash
-   NODE_ENV=production
-   DATABASE_URL=postgresql://...  # Auto-provided by Railway
-   
-   # AI Provider Keys (at least one required)
-   OPENAI_API_KEY=sk-...
-   ANTHROPIC_API_KEY=sk-ant-...
-   GEMINI_API_KEY=...
-   GROK_API_KEY=xai-...
-   DEEPSEEK_API_KEY=...
-   OPENROUTER_API_KEY=sk-or-...
-   
-   # HuggingFace (optional, for ingestion)
-   HF_TOKEN=hf_...
-   
-   # Production Settings
-   PORT=5000                      # Railway auto-assigns
-   INTERNAL_API_HOST=localhost    # For batch analysis
-   ```
+   Present in .env file and on Railway
 
 3. **Deploy**
-   - Push to main branch → automatic deployment
+   - Push or merge to main branch → automatic deployment to production
+   - Push or merge to current branch → automatic deployment to staging
    - Railway runs `npm run build` and `npm start`
    - Database migrations run automatically on startup
 
@@ -927,14 +862,3 @@ CREATE INDEX idx_custom ON explanations(your_field) WHERE your_condition;
 - **Resume Mode:** Automatically skips already-analyzed puzzles
 - **Rate Limiting:** Configurable via `XAI_MAX_CONCURRENCY` env var
 - **Staggered Requests:** 2-second delay between concurrent batch starts
-
-### API Response Caching
-- TanStack Query caches all GET requests client-side
-- Status endpoints refresh every 2 seconds during batch runs
-- Leaderboards cache for 5 minutes
-
-### Cost Optimization
-- Use `temperature=0` for deterministic, cheaper responses
-- GPT-5 `reasoningEffort="low"` reduces reasoning tokens
-- Batch analysis more cost-effective than individual analyses
-- Monitor costs via `/api/cost/model-costs` endpoint
