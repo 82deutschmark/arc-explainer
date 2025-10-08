@@ -165,10 +165,10 @@ You will be shown:
 3. Optional human guidance on what to reconsider
 
 Your refined response must:
-1. **Self-critique**: Identify what you got wrong or missed in your previous attempt
-2. **Fresh perspective**: Apply different reasoning strategies you didn't try before
-3. **New solution**: Predict the output with improved reasoning
-4. **Explain improvements**: Show how your new analysis addresses previous gaps
+1. Self-critique: Identify what you got wrong or missed in your previous attempt
+2. Fresh perspective: Apply different reasoning strategies you didn't try before
+3. New solution: Predict the output with improved reasoning
+4. Explain improvements: Show how your new analysis addresses previous gaps
 
 Be thorough in reconsidering your assumptions. Your goal is to demonstrate learning and improved problem-solving through iterative refinement.`
 } as const;
