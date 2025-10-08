@@ -728,36 +728,14 @@ Get parent explanation of a rebuttal
 
 ### PuzzleDiscussion Endpoints (v3.6.4+)
 
-```http
 GET /api/discussion/eligible
 Get explanations eligible for conversation chaining
 THIS MEANS only explanations that have a provider_response_id in the database!!!
 
-Query Parameters:
-- page: Page number (default: 1)
-- limit: Results per page (default: 20)
-
-Response:
-{
-    "explanations": [
-        {
-            "id": 12345,
-            "puzzleId": "0934a4d8",
-            "modelName": "gpt-5-2025-08-07",
-            "provider": "openai",
-            "providerResponseId": "resp_...",
-            "createdAt": "2025-10-07T...",
-            "ageInDays": 1,
-            "eligible": true
-        }
-    ],
-    "total": 150
-}
-
 Eligibility Criteria:
 - Has provider_response_id in database
 - Created within last 30 days (provider retention window)
-- No model type restrictions (any model that saves response IDs)
+
 ```
 
 ### ELO Comparison Endpoints (v2.30.0+)
@@ -821,33 +799,6 @@ docker-compose up -d
 - Health check on `/api/health` endpoint
 - Automatic database migration on startup
 
-### Environment Variables Reference
-
-```bash
-# Required (at least one AI provider)
-OPENAI_API_KEY=          # OpenAI GPT-4, GPT-5, o-series
-ANTHROPIC_API_KEY=       # Claude models
-GEMINI_API_KEY=          # Google Gemini models
-GROK_API_KEY=            # xAI Grok-4 direct API
-DEEPSEEK_API_KEY=        # DeepSeek reasoning models
-OPENROUTER_API_KEY=      # 100+ models via OpenRouter
-
-# Database (optional - uses in-memory if not provided)
-DATABASE_URL=            # PostgreSQL connection string
-
-# Optional Features
-HF_TOKEN=                # HuggingFace dataset ingestion
-PORT=                    # Server port (default: 5000)
-NODE_ENV=                # "development" or "production"
-INTERNAL_API_HOST=       # For batch analysis (default: localhost)
-
-# Rate Limiting (Grok-4 batch scripts)
-XAI_MAX_CONCURRENCY=     # Concurrent requests (default: 2)
-XAI_MAX_RETRIES=         # Retry attempts (default: 3)
-XAI_RETRY_BASE_DELAY_MS= # Retry delay (default: 2000)
-```
-
----
 
 ## Performance Optimization Tips
 
@@ -856,9 +807,3 @@ All critical indexes are created automatically. For custom analytics queries, co
 ```sql
 CREATE INDEX idx_custom ON explanations(your_field) WHERE your_condition;
 ```
-
-### Batch Analysis Performance
-- **Parallel Processing:** v3.7.3+ runs 10 puzzles concurrently (10-20x faster)
-- **Resume Mode:** Automatically skips already-analyzed puzzles
-- **Rate Limiting:** Configurable via `XAI_MAX_CONCURRENCY` env var
-- **Staggered Requests:** 2-second delay between concurrent batch starts
