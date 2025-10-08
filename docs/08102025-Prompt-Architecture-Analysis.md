@@ -11,6 +11,35 @@ Your other assistant's critique has merit, but it's **partially outdated**. The 
 
 ---
 
+## 🎯 Quick Reference: Your Top 2 Concerns
+
+### 1️⃣ **ARC-AGI Explanation Redundancy**
+**Repeated 4 times** in `basePrompts.ts`:
+- Lines 21-23: `BASE_SYSTEM_PROMPT`
+- Lines 74-76: `TASK_DESCRIPTIONS.solver`
+- Lines 78-80: `TASK_DESCRIPTIONS.explanation`
+- Lines 88-90: `TASK_DESCRIPTIONS.gepa`
+
+**Impact:** Changing ARC-AGI format requires updating 4 locations.  
+**See:** Section "🚨 2. ARC-AGI Explanation Redundancy" below for full details.
+
+### 2️⃣ **JSON Enforcement Redundancy**
+**Repeated 4 times** across 2 files:
+- `basePrompts.ts` line 30: `JSON_HEADER`
+- `basePrompts.ts` lines 33-47: `JSON_FIELDS_INSTRUCTIONS`
+- `basePrompts.ts` lines 62-68: `PREDICTION_FIELD_INSTRUCTIONS` 
+- `promptBuilder.ts` lines 128-131: `buildCustomPrompt()`
+
+**Grid format example appears 3 times:**
+- Line 36: `[[0,1,2],[3,4,5]] NOT [[[0,1],[2,3]]]`
+- Line 67: `Example CORRECT: [[0,1,2],[3,4,5]]`
+- Line 68: `Example WRONG: [[[0,1],[2,3]]]`
+
+**Impact:** JSON rules scattered across codebase, hard to maintain consistently.  
+**See:** Section "🚨 3. JSON Enforcement Redundancy" below for full details and fix.
+
+---
+
 ## Current Architecture (How Prompts Actually Flow)
 
 ### 1. **Entry Points** (Where Analysis Starts)
@@ -130,12 +159,149 @@ export const ADDITIONAL_INSTRUCTIONS = { ... }; // 4. Mode extensions
 - Update grid format? Touch multiple constants
 - No clear "what lives where" pattern
 
-### 2. **Redundant Documentation**
-Lines 21-24, 74-76, 79-80 all explain "ARC-AGI puzzles consist of training examples..."
+---
 
-**Problem:** If ARC-AGI format changes, you must update 3+ places.
+### 🚨 2. **ARC-AGI Explanation Redundancy (YOUR TOP CONCERN)**
 
-### 3. **Mode Definitions Not Extensible**
+**Appears in 4 places:**
+
+#### **Location 1: BASE_SYSTEM_PROMPT (lines 21-23)**
+```typescript
+export const BASE_SYSTEM_PROMPT = `You are an expert at explaining and solving ARC-AGI puzzles. 
+Your job is to provide the correct output grid(s) for the test case(s) and explain in simple terms how a human would solve the puzzle.
+
+ARC-AGI puzzles consist of:
+- Training examples showing input→output transformations  
+- Test cases where you predict the transformation based on what you learned from the training examples
+`;
+```
+
+#### **Location 2: TASK_DESCRIPTIONS.solver (lines 74-76)**
+```typescript
+solver: `TASK: Each puzzle has training which are the examples to learn from. 
+Analyze training examples, identify the transformation patterns, 
+and predict the correct output for the test case. Some puzzles have multiple test cases.`,
+```
+
+#### **Location 3: TASK_DESCRIPTIONS.explanation (lines 78-80)**
+```typescript
+explanation: `TASK: Each puzzle has training which are the examples to learn from. 
+Analyze training examples, identify the transformation patterns, 
+and explain the correct output for the test case. Some puzzles have multiple test cases.`,
+```
+
+#### **Location 4: TASK_DESCRIPTIONS.gepa (lines 88-90)**
+```typescript
+gepa: `TASK: Each puzzle has training sets which are the examples to learn from.
+Analyze training examples, identify the transformation patterns,
+and predict the correct output for the test case. Some puzzles have multiple test cases.`,
+```
+
+**🔴 THE PROBLEM:**
+The concept "puzzles have training examples to learn from, then test cases to predict" is repeated **4 times** with only minor wording variations. If the ARC-AGI format changes, you must update all 4 locations.
+
+**✅ THE FIX:**
+Extract to single constant:
+```typescript
+const ARC_STRUCTURE_EXPLANATION = `Each puzzle has training examples (input→output pairs to learn from) and test cases (where you predict outputs based on learned patterns).`;
+```
+
+Then reference it:
+```typescript
+solver: `TASK: ${ARC_STRUCTURE_EXPLANATION} Predict the correct output for the test case.`,
+```
+
+---
+
+### 🚨 3. **JSON Enforcement Redundancy (YOUR TOP CONCERN)**
+
+**Appears in 4 different locations across 2 files:**
+
+#### **Location 1: JSON_HEADER (basePrompts.ts line 30)**
+```typescript
+export const JSON_HEADER = `JSON STRUCTURE REQUIREMENT: Do not use any special characters or formatting that might break JSON parsers.`;
+```
+
+#### **Location 2: JSON_FIELDS_INSTRUCTIONS (basePrompts.ts lines 33-47)**
+```typescript
+export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in the structured JSON fields:
+
+- For single test cases:
+  * "predictedOutput": your solution grid as a 2D array where each row is an array of single integers 0-9. Example format: [[0,1,2],[3,4,5]] NOT [[[0,1],[2,3]]]
+
+- For multiple test cases:
+  * "predictedOutput1": first solution grid
+  * "predictedOutput2": second solution grid
+  * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
+  * 
+Optional fields:
+- solvingStrategy: Create a domain specific language to solve the puzzle
+- patternDescription: The transformation rules you identified that transform the input into the output, simply stated as 2 or 3 short imperatives for a human to apply.
+- hints: Array of strings. Three short python pseudo-code algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
+- confidence: Your certainty level (1-100)`
+```
+
+#### **Location 3: PREDICTION_FIELD_INSTRUCTIONS (basePrompts.ts lines 62-68)**
+```typescript
+export const PREDICTION_FIELD_INSTRUCTIONS = `PREDICTION FIELDS REQUIREMENT: Provide the output grid(s) as the first field in the JSON response.
+
+GRID FORMAT CRITICAL: Each grid must be a 2D array where:
+- The outer array contains rows
+- Each row is an array of single integers (0-9)
+- Example CORRECT: [[0,1,2],[3,4,5]]
+- Example WRONG: [[[0,1],[2,3]]] or [[0],[1],[2]]`
+```
+
+#### **Location 4: buildCustomPrompt() (promptBuilder.ts lines 128-131)**
+```typescript
+export function buildCustomPrompt(): string {
+  const jsonInstructions = [
+    `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.`,
+    `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`
+  ].join('\n\n');
+  // ...
+}
+```
+
+**🔴 THE PROBLEM:**
+Grid format rules appear **3 times**:
+- Line 36: `[[0,1,2],[3,4,5]] NOT [[[0,1],[2,3]]]`
+- Line 67: `Example CORRECT: [[0,1,2],[3,4,5]]`
+- Line 68: `Example WRONG: [[[0,1],[2,3]]] or [[0],[1],[2]]`
+
+JSON structure warnings appear **3 times**:
+- Line 30: "Do not use special characters..."
+- Line 129: "Return only valid JSON. No markdown..."
+- Line 130: "The predictedOutput...must be THE FIRST field..."
+
+**✅ THE FIX:**
+Create single `jsonValidation.ts` module:
+```typescript
+export const JSON_VALIDATION = {
+  structure: {
+    warning: `Return only valid JSON. No markdown, code blocks, or special characters.`,
+    answerFirst: `The predictedOutput field must be THE FIRST field.`
+  },
+  
+  gridFormat: {
+    description: `Each grid must be a 2D array where outer array contains rows, each row is array of integers 0-9`,
+    exampleCorrect: `[[0,1,2],[3,4,5]]`,
+    examplesWrong: [`[[[0,1],[2,3]]]`, `[[0],[1],[2]]`]
+  },
+  
+  fields: {
+    single: `"predictedOutput": 2D grid array`,
+    multi: `"predictedOutput1", "predictedOutput2", "predictedOutput3"`,
+    optional: `"solvingStrategy", "patternDescription", "hints", "confidence"`
+  }
+};
+```
+
+Then import and compose as needed, instead of copy-pasting.
+
+---
+
+### 4. **Mode Definitions Not Extensible**
 ```typescript
 export const TASK_DESCRIPTIONS = {
   solver: `...`,
@@ -149,17 +315,6 @@ export const TASK_DESCRIPTIONS = {
 ```
 
 **Problem:** Adding a new AI experiment (e.g., "socratic method") requires editing base constants.
-
-### 4. **Duplicate JSON Enforcement**
-```typescript
-// Appears in 3 places:
-- JSON_HEADER (line 30)
-- JSON_FIELDS_INSTRUCTIONS (line 33-47)
-- PREDICTION_FIELD_INSTRUCTIONS (line 62-68)
-- buildCustomPrompt() in promptBuilder.ts (lines 128-131)
-```
-
-**Problem:** JSON requirements scattered across codebase.
 
 ---
 
