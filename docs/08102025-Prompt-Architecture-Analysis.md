@@ -508,9 +508,61 @@ Then refactor using the plan above.
 
 ---
 
+## ⚡ UPDATE: Deeper Systemic Analysis Available
+
+**See:** `08102025-Prompt-System-Systemic-Analysis.md` for comprehensive ultra-deep analysis.
+
+After tracing the entire architecture including Responses API integration, I discovered the **real systemic issue**: Your prompt system has **context blindness**. It doesn't know:
+
+1. **Conversation state**: Is this a first turn or continuation? (Responses API `previousResponseId`)
+2. **Mode structure needs**: Debate requires inverted order, not hardcoded 5-part assembly
+3. **Provider differences**: OpenAI has chaining, Anthropic doesn't
+4. **What the LLM already knows**: Repeating instructions on continuation turns wastes tokens
+
+### Key Discoveries:
+
+#### 🔴 Responses API Context Ignored
+```typescript
+// OpenAI/Grok API includes this:
+previous_response_id: serviceOpts.previousResponseId
+
+// But prompts are IDENTICAL on continuation turns!
+// Wastes 600+ tokens repeating grid examples and ARC explanations
+```
+
+#### 🔴 Hardcoded Assembly Order
+```typescript
+// Every mode gets this rigid structure:
+[basePrompt, taskDescription, jsonInstructions, predictionInstructions, additionalInstructions]
+
+// Even debate mode, which hacks around it by swapping basePrompt/additionalInstructions
+// Still gets jsonInstructions injected in the middle!
+```
+
+#### 🔴 Provider-Agnostic = Provider-Inefficient
+- **OpenAI/Grok**: Support chaining, but we don't leverage it
+- **Anthropic**: No chaining support, but we pretend it does
+
+### The Real Fix: Context-Aware Prompt System
+
+**Not just:** "Clean up basePrompts.ts"  
+**Actually:** "Make the system know what it's doing"
+
+See the systemic analysis for:
+- PromptContext interface (detects conversation state, mode, provider)
+- AssemblyPatterns registry (different structures for different contexts)
+- ModeRegistry (replaces TASK_DESCRIPTIONS/ADDITIONAL_INSTRUCTIONS overlap)
+- Context-aware builder (70% token savings on continuation turns)
+
+**Effort:** 6-9 hours for full implementation, 3-5 hours for quick win (Phases 1-2)
+
+---
+
 ## Conclusion
 
 Your prompt system is **functional but not perfect**. It follows 70% of your AGENTS.md principles but violates SRP in one key file.
+
+**However**, the deeper systemic analysis reveals the redundancy issues are **symptoms of a larger problem**: context blindness. The system mechanically assembles prompts without understanding conversation state, wasting tokens and confusing LLMs on continuation turns.
 
 **Action Plan:**
 1. ✅ **Do nothing now** (system works)

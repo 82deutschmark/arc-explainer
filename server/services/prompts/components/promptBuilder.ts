@@ -11,12 +11,10 @@
 
 import { 
   BASE_SYSTEM_PROMPT, 
-  JSON_HEADER,
-  JSON_FIELDS_INSTRUCTIONS,
-  PREDICTION_FIELD_INSTRUCTIONS,
   TASK_DESCRIPTIONS,
   ADDITIONAL_INSTRUCTIONS
 } from './basePrompts.js';
+import { buildJsonInstructions, buildMinimalJsonInstructions } from './jsonInstructions.js';
 
 /**
  * Configuration for building system prompts
@@ -43,19 +41,19 @@ export function buildSystemPrompt(config: PromptConfig): string {
   const {
     basePrompt = BASE_SYSTEM_PROMPT,
     taskDescription,
-    predictionInstructions = PREDICTION_FIELD_INSTRUCTIONS,
+    predictionInstructions, // Now optional - use consolidated JSON instructions if not provided
     additionalInstructions = ''
   } = config;
 
-  // Construct JSON instructions without reasoning (handled at service level)
-  const jsonInstructions = [JSON_HEADER, JSON_FIELDS_INSTRUCTIONS].join('\n\n');
+  // Use consolidated JSON instructions (eliminates redundancy)
+  // Only use predictionInstructions if explicitly provided (for backwards compatibility)
+  const jsonInstructions = predictionInstructions || buildJsonInstructions(true, false);
 
   // Compose all sections, filtering out empty ones
   return [
     basePrompt,
     taskDescription,
     jsonInstructions,
-    predictionInstructions,
     additionalInstructions
   ]
   .filter(section => section.trim().length > 0)
@@ -125,10 +123,8 @@ export function buildDiscussionPrompt(): string {
  * Note: Reasoning instructions are handled at the service level based on model capabilities
  */
 export function buildCustomPrompt(): string {
-  const jsonInstructions = [
-    `CRITICAL: Return only valid JSON. No markdown formatting. No code blocks. No extra text.`,
-    `JSON STRUCTURE REQUIREMENT: The predictedOutput or multiplePredictedOutputs field must be THE FIRST field in your JSON response.`
-  ].join('\n\n');
+  // Use consolidated minimal JSON instructions (eliminates redundancy)
+  const jsonInstructions = buildMinimalJsonInstructions();
 
   return buildSystemPrompt({
     basePrompt: `You are an expert at analyzing ARC-AGI puzzles.\nThe user will provide custom analysis instructions.`,
