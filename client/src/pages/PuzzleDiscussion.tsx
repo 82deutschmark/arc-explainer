@@ -72,10 +72,14 @@ export default function PuzzleDiscussion() {
     promptId,
     setPromptId,
     temperature,
+    setTemperature,
     isGPT5ReasoningModel,
     reasoningEffort,
+    setReasoningEffort,
     reasoningVerbosity,
+    setReasoningVerbosity,
     reasoningSummaryType,
+    setReasoningSummaryType,
     topP,
     candidateCount,
     thinkingBudget
@@ -368,9 +372,13 @@ export default function PuzzleDiscussion() {
               isProcessing={processingModels.has(refinementState.activeModel)}
               error={analyzerErrors.get(refinementState.activeModel) || null}
               temperature={temperature}
+              setTemperature={setTemperature}
               reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
               reasoningVerbosity={reasoningVerbosity}
+              setReasoningVerbosity={setReasoningVerbosity}
               reasoningSummaryType={reasoningSummaryType}
+              setReasoningSummaryType={setReasoningSummaryType}
               isGPT5ReasoningModel={isGPT5ReasoningModel}
               promptId={promptId}
               onBackToList={refinementState.endRefinement}
