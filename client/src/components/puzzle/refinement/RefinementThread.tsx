@@ -55,11 +55,15 @@ interface RefinementThreadProps {
 
   // Temperature control
   temperature: number;
+  setTemperature: (value: number) => void;
 
   // GPT-5 reasoning controls
   reasoningEffort: 'minimal' | 'low' | 'medium' | 'high';
+  setReasoningEffort: (value: 'minimal' | 'low' | 'medium' | 'high') => void;
   reasoningVerbosity: 'low' | 'medium' | 'high';
+  setReasoningVerbosity: (value: 'low' | 'medium' | 'high') => void;
   reasoningSummaryType: 'auto' | 'detailed';
+  setReasoningSummaryType: (value: 'auto' | 'detailed') => void;
 
   // Model type detection
   isGPT5ReasoningModel: (modelKey: string) => boolean;
@@ -86,9 +90,13 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
   isProcessing,
   error,
   temperature,
+  setTemperature,
   reasoningEffort,
+  setReasoningEffort,
   reasoningVerbosity,
+  setReasoningVerbosity,
   reasoningSummaryType,
+  setReasoningSummaryType,
   isGPT5ReasoningModel,
   promptId,
   onBackToList,
@@ -213,51 +221,48 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
             </div>
           </div>
 
-          {/* Advanced Controls Section */}
+          {/* Advanced Controls Section - COMPACT */}
           {(showTemperature || showReasoning) && (
-            <div className="pt-2 border-t border-purple-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Settings className="h-4 w-4 text-purple-600" />
-                <span className="text-xs font-medium text-gray-700">Advanced Controls</span>
+            <div className="pt-1 border-t border-purple-200">
+              <div className="flex items-center gap-1 mb-0.5">
+                <Settings className="h-3 w-3 text-purple-600" />
+                <span className="text-[9px] font-medium text-gray-700">Advanced</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-2">
-                {/* Temperature Control - Show for models that support it (Grok, etc.) */}
+              <div className="grid grid-cols-1 gap-0.5">
+                {/* Temperature Control - EDITABLE */}
                 {showTemperature && (
-                  <div className="p-2 bg-gray-50 border border-gray-200 rounded">
-                    <div className="flex items-center gap-3">
-                      <Label htmlFor="temperature" className="text-xs font-medium whitespace-nowrap">
-                        Temperature: {temperature}
+                  <div className="p-1 bg-gray-50 border border-gray-200 rounded">
+                    <div className="flex items-center gap-1.5">
+                      <Label htmlFor="temperature" className="text-[8px] font-medium whitespace-nowrap">
+                        Temp: {temperature.toFixed(2)}
                       </Label>
-                      <div className="flex-1 max-w-xs">
+                      <div className="flex-1 max-w-[200px]">
                         <Slider
                           id="temperature"
                           min={0.1}
                           max={2.0}
                           step={0.05}
                           value={[temperature]}
-                          disabled={true}
-                          className="w-full"
+                          onValueChange={(value) => setTemperature(value[0])}
+                          className="w-full h-3"
                         />
-                      </div>
-                      <div className="text-[10px] text-gray-600 flex-shrink-0">
-                        Controls creativity (view only)
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* GPT-5 Reasoning Parameters */}
+                {/* GPT-5 Reasoning Parameters - EDITABLE */}
                 {showReasoning && (
-                  <div className="p-2 bg-blue-50 border border-blue-200 rounded">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      {/* Effort Control */}
+                  <div className="p-1 bg-blue-50 border border-blue-200 rounded">
+                    <div className="grid grid-cols-3 gap-1">
+                      {/* Effort */}
                       <div>
-                        <Label htmlFor="reasoning-effort" className="text-xs font-medium text-blue-700">
-                          Effort: {reasoningEffort}
+                        <Label htmlFor="reasoning-effort" className="text-[8px] font-medium text-blue-700">
+                          Effort
                         </Label>
-                        <Select value={reasoningEffort} disabled={true}>
-                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                        <Select value={reasoningEffort} onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}>
+                          <SelectTrigger className="w-full h-5 text-[8px] px-1">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -269,13 +274,13 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                         </Select>
                       </div>
 
-                      {/* Verbosity Control */}
+                      {/* Verbosity */}
                       <div>
-                        <Label htmlFor="reasoning-verbosity" className="text-xs font-medium text-blue-700">
-                          Verbosity: {reasoningVerbosity}
+                        <Label htmlFor="reasoning-verbosity" className="text-[8px] font-medium text-blue-700">
+                          Verbosity
                         </Label>
-                        <Select value={reasoningVerbosity} disabled={true}>
-                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                        <Select value={reasoningVerbosity} onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}>
+                          <SelectTrigger className="w-full h-5 text-[8px] px-1">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -286,13 +291,13 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                         </Select>
                       </div>
 
-                      {/* Summary Control */}
+                      {/* Summary */}
                       <div>
-                        <Label htmlFor="reasoning-summary" className="text-xs font-medium text-blue-700">
-                          Summary: {reasoningSummaryType}
+                        <Label htmlFor="reasoning-summary" className="text-[8px] font-medium text-blue-700">
+                          Summary
                         </Label>
-                        <Select value={reasoningSummaryType} disabled={true}>
-                          <SelectTrigger className="w-full mt-1 h-8 text-xs">
+                        <Select value={reasoningSummaryType} onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}>
+                          <SelectTrigger className="w-full h-5 text-[8px] px-1">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -302,23 +307,20 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                         </Select>
                       </div>
                     </div>
-                    <p className="text-[10px] text-blue-600 mt-1">
-                      View only - configured in PuzzleExaminer
-                    </p>
                   </div>
                 )}
 
-                {/* Prompt Preview Button - Always visible */}
+                {/* Prompt Preview Button - COMPACT */}
                 <div className="flex justify-center">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowPromptPreview(true)}
                     disabled={isProcessing}
-                    className="flex items-center gap-2 h-8 text-xs"
+                    className="flex items-center gap-0.5 h-5 text-[8px] px-2 py-0"
                   >
-                    <Eye className="h-3 w-3" />
-                    Preview Prompt
+                    <Eye className="h-2.5 w-2.5" />
+                    Preview
                   </Button>
                 </div>
               </div>
