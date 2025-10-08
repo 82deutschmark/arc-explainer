@@ -75,7 +75,7 @@ Each request includes the full context of all previous turns.
 
 ## Provider Support
 
-### OpenAI (o-series models)
+### OpenAI (o-series models and GPT-5 models)
 - Full support for previous_response_id
 - 30-day state retention
 - Documented officially

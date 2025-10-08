@@ -33,6 +33,7 @@ import type { AnalysisResultCardProps } from '@/types/puzzle';
 interface AnalysisResultListCardProps extends AnalysisResultCardProps {
   onStartDebate?: (explanationId: number) => void;
   showDebateButton?: boolean;
+  debateButtonText?: string; // Custom text for debate button (default: "Start Debate")
   compact?: boolean;
 }
 
@@ -43,6 +44,7 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
   testCases,
   onStartDebate,
   showDebateButton = true,
+  debateButtonText = 'Start Debate',
   compact = true,
   eloMode = false
 }) => {
@@ -150,7 +152,7 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
                   className="text-xs"
                 >
                   <MessageSquare className="h-3 w-3 mr-1" />
-                  Start Debate
+                  {debateButtonText}
                 </Button>
               )}
 
@@ -212,7 +214,7 @@ export const AnalysisResultListCard: React.FC<AnalysisResultListCardProps> = ({
               className="text-xs"
             >
               <MessageSquare className="h-3 w-3 mr-1" />
-              Start Debate
+              {debateButtonText}
             </Button>
           )}
 

@@ -1,131 +1,112 @@
 /**
- * @file server/services/grok.ts
- * @description xAI Grok Service for ARC Puzzle Analysis using Responses API
  *
- * This service provides direct integration with the xAI Grok API using the Responses API
- * endpoint (/v1/responses), following the same pattern as OpenAI's implementation.
- *
- * UPDATED: Now uses Responses API for advanced reasoning capabilities and structured output.
- * Supports ONLY Grok 4 models including grok-4, grok-4-fast, grok-4-fast-reasoning, grok-4-fast-non-reasoning
- * 
- * Other Grok models are routed through OpenRouter!
- * 
- * https://docs.x.ai/docs/models
- * https://docs.x.ai/docs/guides/responses-api#returning-encrypted-thinking-content
- * 
- * 
- * 
- * 
- *
- * @author Claude Code using Sonnet 4.5
- * @date 2025-10-05
- * @assessed_by Gemini 2.5 Pro
- * @assessed_on 2025-09-09
+ * Author: Codex using GPT-5-high
+ * Date: 2025-10-07T14:21:27-04:00
+ * PURPOSE: Production Grok service integrating xAI Responses API for ARC analysis; handles prompt construction, transport, JSON parsing, retry/fallbacks, and conversation chaining while deferring reasoning capture because Grok-4 variants do not expose it. Touches BaseAIService utilities, model config, and schema helpers.
+ * SRP/DRY check: Pass - Single-responsibility provider wrapper; reuses BaseAIService and shared schema utilities after reviewing server/services.
+ * shadcn/ui: Pass - Backend provider integration with no UI components.
  */
-
-import OpenAI from "openai";
 import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
-import { getDefaultPromptId } from "./promptBuilder.js";
-import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
+import { GROK_JSON_SCHEMA } from "./schemas/grokJsonSchema.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { MODELS as MODEL_CONFIGS, getApiModelName, getModelConfig, modelSupportsTemperature } from "../config/models/index.js";
-import { jsonParser } from '../utils/JsonParser.js';
-import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
+import { getDefaultPromptId, PromptOptions, PromptPackage } from "./promptBuilder.js";
+import { getApiModelName, getModelConfig, modelSupportsTemperature } from "../config/models/index.js";
+import { logger } from "../utils/logger.js";
 
-const grok = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: "https://api.x.ai/v1",
+const GROK_RESPONSES_ENDPOINT = "https://api.x.ai/v1/responses";
+const DEFAULT_TEMPERATURE = 0.2;
+const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_RETRY_BASE_DELAY_MS = 2000;
+const RESPONSE_TIMEOUT_MS = 45 * 60 * 1000;
+
+const XAI_SHARED_AGENT = new Agent({
+  headersTimeout: RESPONSE_TIMEOUT_MS,
+  bodyTimeout: RESPONSE_TIMEOUT_MS,
+  keepAliveTimeout: RESPONSE_TIMEOUT_MS + 5 * 60 * 1000
 });
 
 export class GrokService extends BaseAIService {
   protected provider = "xAI";
-  // Only Grok-4 variants support Responses API
-  // Grok-3 models use Chat Completions and are routed through OpenRouter
-  protected models = {
+
+  protected models: Record<string, string> = {
     "grok-4": "grok-4",
     "grok-4-fast": "grok-4-fast",
     "grok-4-fast-reasoning": "grok-4-fast-reasoning",
-    "grok-4-fast-non-reasoning": "grok-4-fast-non-reasoning",
+    "grok-4-fast-non-reasoning": "grok-4-fast-non-reasoning"
   };
 
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
     taskId: string,
-    temperature: number = 0.2,
+    temperature: number = DEFAULT_TEMPERATURE,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    const modelName = getApiModelName(modelKey);
-
-    // Build prompt package using inherited method
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    const appliedTemperature = typeof temperature === "number" ? temperature : DEFAULT_TEMPERATURE;
 
-    // Log analysis start using inherited method
-    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
+    this.logAnalysisStart(modelKey, appliedTemperature, promptPackage.userPrompt.length, serviceOpts);
 
     try {
-      // Call provider-specific API (now using Responses API)
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
-
-      // Parse response using provider-specific method
-      // CRITICAL: Pass captureReasoning=true to enable reasoning extraction
-      const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } =
-        this.parseProviderResponse(response, modelKey, true, taskId);
-
-      // Validate response completeness
-      const completeness = this.validateResponseCompleteness(response, modelKey);
-      if (!completeness.isComplete) {
-        console.warn(`[${this.provider}] Incomplete response detected for ${modelKey}:`, completeness.suggestion);
-      }
-
-      // Build standard response using inherited method
-      const finalResponse = this.buildStandardResponse(
+      const providerResponse = await this.callProviderAPI(
+        promptPackage,
         modelKey,
-        temperature,
+        appliedTemperature,
+        serviceOpts,
+        taskId
+      );
+
+      const {
+        result,
+        tokenUsage,
+        reasoningLog,
+        reasoningItems,
+        status,
+        incomplete,
+        incompleteReason,
+        responseId
+      } = this.parseProviderResponse(providerResponse, modelKey, false, taskId);
+
+      return this.buildStandardResponse(
+        modelKey,
+        appliedTemperature,
         result,
         tokenUsage,
         serviceOpts,
         reasoningLog,
-        !!reasoningLog,
+        false,
         reasoningItems,
-        status || (completeness.isComplete ? 'complete' : 'incomplete'),
-        !completeness.isComplete,
-        incompleteReason || completeness.suggestion,
+        status,
+        incomplete,
+        incompleteReason,
         promptPackage,
         promptId,
-        customPrompt
+        customPrompt,
+        responseId
       );
-
-      return finalResponse;
-
     } catch (error) {
       this.handleAnalysisError(error, modelKey, task);
+      throw error;
     }
   }
 
   getModelInfo(modelKey: string): ModelInfo {
-    const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
-    const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
+    const modelConfig = getModelConfig(modelKey);
+    const modelName = getApiModelName(modelKey);
 
-    // Check if it's a reasoning model using modelConfig (respects grok-4-fast-non-reasoning)
-    const isReasoning = modelConfig?.isReasoning ?? false;
-
-    // Grok4 supports structured output with limitations (no allOf, no minLength/maxLength, etc.)
-    const supportsStructuredOutput = modelName.includes('grok-4');
-    
     return {
       name: modelName,
-      isReasoning,
+      isReasoning: false,
       supportsTemperature: modelSupportsTemperature(modelKey),
       contextWindow: modelConfig?.contextWindow,
-      supportsFunctionCalling: true,
+      supportsFunctionCalling: false,
       supportsSystemPrompts: true,
-      supportsStructuredOutput,
-      supportsVision: modelName.includes('vision') || modelName.includes('beta') // Vision models
+      supportsStructuredOutput: this.supportsStructuredOutput(modelKey),
+      supportsVision: modelConfig?.supportsVision ?? false
     };
   }
 
@@ -137,42 +118,31 @@ export class GrokService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
-    const modelName = this.models[modelKey as keyof typeof this.models] || modelKey;
+    const modelName = getApiModelName(modelKey);
     const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
-    
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
-    const systemPromptMode = serviceOpts.systemPromptMode || 'ARC';
+    const systemPromptMode = serviceOpts.systemPromptMode || "ARC";
+    const structuredPreview = this.supportsStructuredOutput(modelKey);
+    const previewTemperature = modelSupportsTemperature(modelKey) ? DEFAULT_TEMPERATURE : undefined;
 
-    // Create message array for Grok API (same as OpenAI format)
-    const messages: any[] = [];
-    if (systemMessage && systemPromptMode === 'ARC') {
-      messages.push({ role: "system", content: systemMessage });
-    }
-    messages.push({ 
-      role: "user", 
-      content: systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`
-    });
+    const messages = this.buildMessages(promptPackage);
 
-    // Build message format for Grok API
-    const messageFormat: any = {
+    const messageFormat: Record<string, unknown> = {
       model: modelName,
-      messages
+      input: messages,
+      previous_response_id: serviceOpts.previousResponseId,
+      store: serviceOpts.store ?? true,
+      ...(structuredPreview && {
+        response_format: {
+          type: "json_schema",
+          json_schema: GROK_JSON_SCHEMA.schema
+        }
+      }),
+      ...(previewTemperature !== undefined && { temperature: previewTemperature })
     };
 
-    const providerSpecificNotes = [
-      "Uses xAI API with OpenAI SDK compatibility",
-      "Base URL: https://api.x.ai/v1",
-      systemPromptMode === 'ARC' 
-        ? "System Prompt Mode: {ARC} - Using system message role"
-        : "System Prompt Mode: {None} - All content in user message",
-      "JSON extraction via regex parsing",
-      modelName.includes('grok-4') || modelName.includes('grok-3') 
-        ? "Reasoning model - may provide built-in reasoning logs" 
-        : "Standard model"
-    ];
-
-    const previewText = systemPromptMode === 'ARC' ? userMessage : `${systemMessage}\n\n${userMessage}`;
+    const previewText = promptPackage.systemPrompt
+      ? `${promptPackage.systemPrompt}\n\n${promptPackage.userPrompt}`
+      : promptPackage.userPrompt;
 
     return {
       provider: this.provider,
@@ -187,18 +157,17 @@ export class GrokService extends BaseAIService {
       },
       promptStats: {
         characterCount: previewText.length,
-        wordCount: previewText.split(/\s+/).length,
-        lineCount: previewText.split('\n').length
-      },
-      providerSpecificNotes: providerSpecificNotes.join('; ')
+        wordCount: previewText.split(/\s+/).filter(Boolean).length,
+        lineCount: previewText.split("\n").length
+      }
     };
   }
 
   protected parseProviderResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean,
-    puzzleId?: string
+    _captureReasoning: boolean,
+    _puzzleId?: string
   ): {
     result: any;
     tokenUsage: TokenUsage;
@@ -207,167 +176,50 @@ export class GrokService extends BaseAIService {
     status?: string;
     incomplete?: boolean;
     incompleteReason?: string;
+    responseId?: string;
   } {
+    let resultPayload: any = {};
 
-    let result: any = {};
-    let reasoningLog = null;
-    let reasoningItems: any[] = [];
-
-    // CRITICAL: Always preserve raw response FIRST, then attempt parsing
-    const rawResponse = response.raw_response || response;
-
-    // Parse response from Responses API format (similar to OpenAI)
-    if (response.output_parsed) {
-      result = response.output_parsed;
-    } else if (response.output_text) {
-      // Use jsonParser to handle markdown-wrapped JSON
-      const parseResult = this.extractJsonFromResponse(response.output_text, modelKey);
-      if (parseResult._parsingFailed) {
-        console.error(`[${this.provider}] JSON parsing failed for ${modelKey}, preserving raw response`);
-        result = {
-          _rawResponse: response.output_text,
-          _parseError: parseResult._parseError,
-          _parsingFailed: true,
-          _parseMethod: parseResult._parseMethod || 'jsonParser'
-        };
+    if (response.output_parsed && typeof response.output_parsed === "object") {
+      resultPayload = { ...response.output_parsed };
+    } else if (typeof response.output_text === "string" && response.output_text.trim().length > 0) {
+      resultPayload = this.extractJsonFromResponse(response.output_text, modelKey);
+    } else if (Array.isArray(response.output) && response.output.length > 0) {
+      const fallbackText = this.extractTextFromOutputBlocks(response.output);
+      if (fallbackText) {
+        resultPayload = this.extractJsonFromResponse(fallbackText, modelKey);
       } else {
-        result = parseResult;
-        // Remove internal parsing flags from successful parse
-        delete result._rawResponse;
-        delete result._parseError;
-        delete result._parsingFailed;
-        delete result._parseMethod;
-      }
-    } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
-      // Parse structured data from output array
-      const outputBlock = response.output[0];
-      if (outputBlock.type === 'text' && outputBlock.text) {
-        const parseResult = this.extractJsonFromResponse(outputBlock.text, modelKey);
-        if (parseResult._parsingFailed) {
-          console.error(`[${this.provider}] JSON parsing failed for output block text, preserving raw response`);
-          result = {
-            _rawResponse: outputBlock.text,
-            _parseError: parseResult._parseError,
-            _parsingFailed: true,
-            _parseMethod: parseResult._parseMethod || 'jsonParser'
-          };
-        } else {
-          result = parseResult;
-          delete result._rawResponse;
-          delete result._parseError;
-          delete result._parsingFailed;
-          delete result._parseMethod;
-        }
-      } else {
-        console.error(`[${this.provider}] Unexpected output format:`, outputBlock);
-        result = {
-          _rawResponse: JSON.stringify(outputBlock),
-          _parseError: 'Unexpected output block format',
+        resultPayload = {
+          _rawResponse: JSON.stringify(response.output),
+          _parseError: "No text content found in output blocks",
           _parsingFailed: true,
-          _parseMethod: 'fallback'
+          _parseMethod: "fallback"
         };
       }
     } else {
-      console.error(`[${this.provider}] No structured output found in response`);
-      result = {
-        _rawResponse: JSON.stringify(rawResponse),
-        _parseError: 'No structured output found',
+      resultPayload = {
+        _rawResponse: JSON.stringify(response.raw_response ?? response),
+        _parseError: "No structured output provided",
         _parsingFailed: true,
-        _parseMethod: 'fallback'
+        _parseMethod: "fallback"
       };
     }
 
-    // ALWAYS preserve raw response for debugging
-    result._providerRawResponse = rawResponse;
-
-    // IMPORTANT: grok-4 does NOT return reasoning_content per xAI documentation
-    // Only attempt reasoning extraction for future models that support it
-    // For now, grok-4 and grok-4-fast don't expose reasoning in the response
-    const supportsReasoning = false; // Set to true only when xAI adds reasoning support
-
-    if (captureReasoning && supportsReasoning && response.output_reasoning?.summary) {
-      const summary = response.output_reasoning.summary;
-
-      if (Array.isArray(summary)) {
-        reasoningLog = summary.map((s: any) => {
-          if (typeof s === 'string') return s;
-          if (s && typeof s === 'object' && s.text) return s.text;
-          if (s && typeof s === 'object' && s.content) return s.content;
-          return typeof s === 'object' ? JSON.stringify(s) : String(s);
-        }).filter(Boolean).join('\n\n');
-      } else if (typeof summary === 'string') {
-        reasoningLog = summary;
-      } else if (summary && typeof summary === 'object') {
-        if (summary.text) {
-          reasoningLog = summary.text;
-        } else if (summary.content) {
-          reasoningLog = summary.content;
-        } else {
-          reasoningLog = JSON.stringify(summary, null, 2);
-        }
-      }
+    if (typeof resultPayload === "object" && resultPayload !== null) {
+      resultPayload._providerRawResponse = response.raw_response;
     }
 
-    // Extract reasoning items (also skipped for grok-4)
-    if (supportsReasoning && response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-      reasoningItems = response.output_reasoning.items.map((item: any) => {
-        if (typeof item === 'string') return item;
-        if (item && typeof item === 'object' && item.text) return item.text;
-        return JSON.stringify(item);
-      });
-    } else {
-      reasoningItems = [];
-    }
-
-    // Validate reasoning data types
-    if (reasoningLog && typeof reasoningLog !== 'string') {
-      console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
-      try {
-        reasoningLog = JSON.stringify(reasoningLog, null, 2);
-        console.log(`[${this.provider}] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
-      } catch (error) {
-        console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
-        reasoningLog = null;
-      }
-    }
-
-    if (reasoningItems && !Array.isArray(reasoningItems)) {
-      console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
-      reasoningItems = [];
-    }
-
-    // Fallback: If reasoningLog is empty but we have reasoningItems, create a readable log
-    if (!reasoningLog && reasoningItems && reasoningItems.length > 0) {
-      reasoningLog = reasoningItems
-        .filter(item => item && typeof item === 'string' && item.trim().length > 0)
-        .map((item, index) => `Step ${index + 1}: ${item}`)
-        .join('\n\n');
-
-      if (!reasoningLog || reasoningLog.length === 0) {
-        reasoningLog = null;
-      }
-    }
-
-    // Extract token usage
-    const tokenUsage: TokenUsage = {
-      input: response.tokenUsage?.input || 0,
-      output: response.tokenUsage?.output || 0,
-      reasoning: response.tokenUsage?.reasoning
-    };
-
-    // Check for incomplete responses
-    const status = response.status;
-    const incomplete = status === 'incomplete';
-    const incompleteReason = response.incomplete_details?.reason;
+    const tokenUsage: TokenUsage = response.tokenUsage ?? { input: 0, output: 0 };
 
     return {
-      result,
+      result: resultPayload,
       tokenUsage,
-      reasoningLog,
-      reasoningItems,
-      status,
-      incomplete,
-      incompleteReason
+      reasoningLog: null,
+      reasoningItems: [],
+      status: response.status,
+      incomplete: response.status === "incomplete" || Boolean(response.incomplete_details?.reason),
+      incompleteReason: response.incomplete_details?.reason,
+      responseId: response.id ?? null
     };
   }
 
@@ -378,257 +230,194 @@ export class GrokService extends BaseAIService {
     serviceOpts: ServiceOptions,
     taskId?: string
   ): Promise<any> {
-    const modelName = getApiModelName(modelKey);
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
-
-    // Build message array
-    const messages: any[] = [];
-    if (systemMessage) {
-      messages.push({ role: "system", content: systemMessage });
-    }
-    messages.push({ role: "user", content: userMessage });
-
-    // IMPORTANT: grok-4 does NOT support reasoning config per xAI docs
-    // Don't send ANY reasoning configuration to grok-4 models
-    const requestData = {
-      model: modelName,
-      input: messages,
-      // NO reasoning config - grok-4 doesn't support it
-      previous_response_id: serviceOpts.previousResponseId,
-      ...(modelSupportsTemperature(modelKey) && {
-        temperature: temperature || 0.2
-      }),
-    };
-
-    return await this.callResponsesAPI(requestData, modelKey);
-  }
-
-  private async callResponsesAPI(requestData: any, modelKey: string): Promise<any> {
     const apiKey = process.env.GROK_API_KEY;
     if (!apiKey) {
-      throw new Error("GROK_API_KEY not configured");
+      throw new Error("GROK_API_KEY is not configured");
     }
 
-    try {
-      // Check if model supports structured JSON schema
-      // Disable for ALL grok-4 models due to "Grammar is too complex" errors
-      const supportsStructuredOutput = !requestData.model.startsWith('grok-4') &&
-                                        !requestData.model.includes('grok-code-fast');
+    const messages = this.buildMessages(promptPackage);
 
-      // Prepare the request for xAI's Responses API
-      const body = {
-        model: requestData.model,
-        input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
-        ...(supportsStructuredOutput && {
-          text: {
-            format: {
-              type: "json_schema",
-              name: ARC_JSON_SCHEMA.name,
-              strict: ARC_JSON_SCHEMA.strict,
-              schema: ARC_JSON_SCHEMA.schema
-            }
-          }
-        }),
-        // NO reasoning config for grok-4 (not supported per xAI docs)
-        temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
-        parallel_tool_calls: false,
-        truncation: "auto",
-        previous_response_id: requestData.previous_response_id,
-        store: requestData.store !== false // Default to true unless explicitly set to false
+    const requestPayload: Record<string, unknown> = {
+      model: getApiModelName(modelKey),
+      input: messages,
+      store: serviceOpts.store ?? true,
+      parallel_tool_calls: false,
+      truncation: "auto",
+      previous_response_id: serviceOpts.previousResponseId,
+      ...(modelSupportsTemperature(modelKey) && { temperature }),
+      ...(typeof serviceOpts.maxOutputTokens === "number" && serviceOpts.maxOutputTokens > 0
+        ? { max_output_tokens: serviceOpts.maxOutputTokens }
+        : {})
+    };
+
+    if (this.supportsStructuredOutput(modelKey)) {
+      requestPayload.response_format = {
+        type: "json_schema",
+        json_schema: GROK_JSON_SCHEMA.schema
       };
+    }
 
-      // Create custom agent with extended timeouts for long Grok-4 responses (up to 45 min)
-      // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
-      const agent = new Agent({
-        headersTimeout: 2700000,  // 45 minutes - wait for response headers
-        bodyTimeout: 2700000,      // 45 minutes - wait for response body
-        keepAliveTimeout: 3000000  // 50 minutes - keep connection alive
-      });
+    return this.callResponsesApiWithRetry(requestPayload, apiKey, modelKey, taskId);
+  }
 
-      // Make the API call using undici's request directly (supports dispatcher option)
-      const { statusCode, headers: responseHeaders, body: responseBody } = await undiciRequest('https://api.x.ai/v1/responses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
-        dispatcher: agent  // Use custom agent with extended undici timeouts
-      });
+  private buildMessages(promptPackage: PromptPackage): Array<{ role: string; content: string }> {
+    const messages: Array<{ role: string; content: string }> = [];
+    if (promptPackage.systemPrompt) {
+      messages.push({ role: "system", content: promptPackage.systemPrompt });
+    }
+    messages.push({ role: "user", content: promptPackage.userPrompt });
+    return messages;
+  }
 
-      // Convert undici response to standard Response-like object
-      const responseText = await responseBody.text();
-      const response = {
-        ok: statusCode >= 200 && statusCode < 300,
-        status: statusCode,
-        statusText: statusCode === 200 ? 'OK' : statusCode === 503 ? 'Service Unavailable' : 'Error',
-        text: async () => responseText,
-        json: async () => JSON.parse(responseText)
-      };
+  private supportsStructuredOutput(modelKey: string): boolean {
+    const modelName = getApiModelName(modelKey);
+    return modelName.startsWith("grok-4");
+  }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[${this.provider}] API Error:`, {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorText
+  private async callResponsesApiWithRetry(
+    payload: Record<string, unknown>,
+    apiKey: string,
+    modelKey: string,
+    taskId?: string
+  ): Promise<any> {
+    const maxRetries = Math.max(0, Number(process.env.XAI_MAX_RETRIES ?? DEFAULT_MAX_RETRIES));
+    const baseDelayMs = Math.max(200, Number(process.env.XAI_RETRY_BASE_DELAY_MS ?? DEFAULT_RETRY_BASE_DELAY_MS));
+
+    let attempt = 0;
+    let lastError: unknown = null;
+    let bodyForRetry: any = { ...payload };
+
+    while (attempt <= maxRetries) {
+      attempt += 1;
+      try {
+        const response = await undiciRequest(GROK_RESPONSES_ENDPOINT, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bodyForRetry),
+          dispatcher: XAI_SHARED_AGENT,
+          signal: AbortSignal.timeout(RESPONSE_TIMEOUT_MS)
         });
-        throw new Error(`xAI Responses API error: ${response.status} ${response.statusText} - ${errorText}`);
+
+        const responseText = await response.body.text();
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          const parsed = JSON.parse(responseText);
+          return this.enhanceProviderResponse(parsed, modelKey, taskId);
+        }
+
+        const shouldRetry = this.shouldRetryStatus(response.statusCode);
+        const grammarError = this.isGrammarError(responseText);
+
+        if (grammarError && bodyForRetry.response_format) {
+          logger.service(this.provider, `Disabling structured output for ${modelKey} after grammar error (attempt ${attempt})`);
+          const { response_format, ...rest } = bodyForRetry;
+          bodyForRetry = rest;
+          await this.delayWithJitter(baseDelayMs);
+          continue;
+        }
+
+        if (shouldRetry && attempt <= maxRetries) {
+          logger.service(this.provider, `Retrying Grok request (status ${response.statusCode}) for ${modelKey}, attempt ${attempt}/${maxRetries + 1}`);
+          await this.delayWithJitter(baseDelayMs);
+          continue;
+        }
+
+        throw new Error(`xAI Responses API error: ${response.statusCode} - ${responseText}`);
+      } catch (error) {
+        lastError = error;
+        if (this.isTransientNetworkError(error) && attempt <= maxRetries) {
+          logger.service(this.provider, `Transient Grok error (attempt ${attempt}/${maxRetries + 1}) - retrying`, "warn");
+          await this.delayWithJitter(baseDelayMs);
+          continue;
+        }
+        throw error;
       }
-
-      const result = await response.json();
-
-      // Extract token usage from xAI Responses API response
-      let tokenUsage: TokenUsage = { input: 0, output: 0 };
-      let cost: any = undefined;
-
-      if (result.usage) {
-        const inputTokens = result.usage.input_tokens ?? 0;
-        const outputTokens = result.usage.output_tokens ?? 0;
-        const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
-
-        tokenUsage = {
-          input: inputTokens,
-          output: outputTokens,
-          reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
-        };
-
-        // Calculate cost using inherited method
-        cost = this.calculateResponseCost(modelKey, tokenUsage);
-      }
-
-      // Enhanced response parsing with incomplete status handling
-      const parsedResponse = {
-        id: result.id,
-        status: result.status,
-        incomplete_details: result.incomplete_details,
-        output_text: result.output_text || this.extractTextFromOutputBlocks(result.output),
-        output_parsed: result.output_parsed,
-        output_reasoning: {
-          summary: result.output_reasoning?.summary || this.extractReasoningFromOutputBlocks(result.output),
-          items: result.output_reasoning?.items || []
-        },
-        raw_response: result,
-        usage: result.usage,
-        tokenUsage,
-        cost
-      };
-
-      return parsedResponse;
-
-    } catch (error) {
-      console.error(`[${this.provider}] Error calling Responses API:`, error);
-      throw error;
     }
+
+    throw (lastError instanceof Error ? lastError : new Error("xAI Responses API failed after retries"));
+  }
+
+  private enhanceProviderResponse(raw: any, modelKey: string, taskId?: string) {
+    const tokenUsage = this.extractTokenUsage(raw, modelKey, taskId);
+
+    return {
+      id: raw.id,
+      status: raw.status,
+      incomplete_details: raw.incomplete_details,
+      output_text: raw.output_text ?? this.extractTextFromOutputBlocks(raw.output),
+      output_parsed: raw.output_parsed,
+      output: raw.output,
+      raw_response: raw,
+      tokenUsage
+    };
+  }
+
+  private extractTokenUsage(raw: any, modelKey: string, taskId?: string): TokenUsage {
+    const usage = raw?.usage ?? {};
+    const inputTokens = usage.input_tokens ?? 0;
+    const outputTokens = usage.output_tokens ?? 0;
+    const reasoningTokens = usage.output_tokens_details?.reasoning_tokens;
+
+    if ((!inputTokens && !outputTokens) && taskId) {
+      logger.service(this.provider, `Token usage missing for ${modelKey} (task ${taskId})`, "warn");
+    }
+
+    return {
+      input: inputTokens,
+      output: outputTokens,
+      reasoning: reasoningTokens && reasoningTokens > 0 ? reasoningTokens : undefined
+    };
+  }
+
+  private shouldRetryStatus(statusCode: number): boolean {
+    if (statusCode === 429) {
+      return true;
+    }
+    return statusCode >= 500 && statusCode < 600;
+  }
+
+  private isGrammarError(responseText: string): boolean {
+    return /grammar|schema/i.test(responseText);
+  }
+
+  private isTransientNetworkError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /(ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN|ECONNREFUSED)/i.test(message);
+  }
+
+  private async delayWithJitter(baseDelayMs: number): Promise<void> {
+    const jitter = Math.floor(Math.random() * 300);
+    await new Promise(resolve => setTimeout(resolve, baseDelayMs + jitter));
   }
 
   private extractTextFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) {
-      return '';
+      return "";
     }
 
-    // Look for Assistant blocks first
-    const assistantBlock = output.find(block =>
-      block.type === 'Assistant' || block.role === 'assistant'
-    );
-
-    if (assistantBlock) {
-      if (Array.isArray(assistantBlock.content)) {
-        const textContent = assistantBlock.content.find((c: any) =>
-          c.type === 'text' || c.type === 'output_text'
-        );
-        if (textContent?.text) return textContent.text;
-      }
-      if (typeof assistantBlock.content === 'string') return assistantBlock.content;
-      if (assistantBlock.text) return assistantBlock.text;
-    }
-
-    // Look for other message blocks
     for (const block of output) {
-      if (block.type === 'message' && block.content) {
-        if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) =>
-            c.type === 'text' || c.type === 'output_text'
-          );
-          if (textContent?.text) return textContent.text;
-        }
-        if (typeof block.content === 'string') return block.content;
+      if (typeof block?.text === "string" && block.text.trim().length > 0) {
+        return block.text;
       }
 
-      if (block.type === 'text' && block.text) return block.text;
+      if (Array.isArray(block?.content)) {
+        const textEntry = block.content.find((c: any) => typeof c?.text === "string");
+        if (textEntry?.text) {
+          return textEntry.text;
+        }
+      }
+
+      if (typeof block?.content === "string" && block.content.trim().length > 0) {
+        return block.content;
+      }
     }
 
-    // Fallback: join all text-like content
-    return output
-      .filter(block => block.content || block.text)
-      .map(block => {
-        if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) =>
-            c.type === 'text' || c.type === 'output_text'
-          );
-          return textContent?.text || '';
-        }
-
-        const candidates = [block.content, block.text];
-        for (const candidate of candidates) {
-          if (typeof candidate === 'string') {
-            return candidate;
-          } else if (candidate && typeof candidate === 'object') {
-            if (candidate.text) return candidate.text;
-            if (candidate.content) return candidate.content;
-            if (candidate.message) return candidate.message;
-            return JSON.stringify(candidate);
-          }
-        }
-        return '';
-      })
-      .filter(Boolean)
-      .join('\n');
+    return "";
   }
-
-  private extractReasoningFromOutputBlocks(output: any[]): string {
-    if (!Array.isArray(output)) return '';
-
-    const reasoningBlocks = output.filter(block =>
-      block.type === 'reasoning' ||
-      block.type === 'Reasoning' ||
-      (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
-    );
-
-    const reasoningText = reasoningBlocks
-      .map(block => {
-        if (Array.isArray(block.content)) {
-          const textContent = block.content.find((c: any) => c.type === 'text');
-          return textContent?.text || '';
-        }
-
-        const candidates = [block.content, block.text, block.summary];
-        for (const candidate of candidates) {
-          if (typeof candidate === 'string') {
-            return candidate;
-          } else if (candidate && typeof candidate === 'object') {
-            if (candidate.text) return candidate.text;
-            if (candidate.content) return candidate.content;
-            if (candidate.message) return candidate.message;
-            return JSON.stringify(candidate);
-          }
-        }
-        return '';
-      })
-      .filter(Boolean)
-      .join('\n');
-
-    if (!reasoningText ||
-        reasoningText.toLowerCase().includes('empty reasoning') ||
-        reasoningText.trim() === '') {
-      return '';
-    }
-
-    return reasoningText;
-  }
-
 }
 
 export const grokService = new GrokService();
+

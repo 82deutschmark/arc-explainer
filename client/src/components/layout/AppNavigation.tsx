@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import {
   Grid3X3,
   Database,
-  MessageCircle,
+  Brain,
   Github,
   Trophy,
   CheckCircle,
@@ -58,8 +58,8 @@ const navigationItems: NavItem[] = [
   {
     title: 'Discussion',
     href: '/discussion',
-    icon: MessageCircle,
-    description: 'Community discussion and analysis insights'
+    icon: Brain,
+    description: 'Uses the Responses API to do iterative self-conversation'
   },
   {
     title: 'ELO Arena',

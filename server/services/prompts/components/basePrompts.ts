@@ -15,22 +15,13 @@
  * Base system prompt that establishes the AI's role and core behavior
  * SINGLE DEFINITION - used by all system prompts
  */
-export const BASE_SYSTEM_PROMPT = `You are an expert at analyzing ARC-AGI puzzles. 
-Your job is to understand transformation patterns and provide clear, structured analysis.
+export const BASE_SYSTEM_PROMPT = `You are an expert at explaining and solving ARC-AGI puzzles. 
+Your job is to provide the correct output grid(s) for the test case(s) and explain in simple terms how a human would solve the puzzle.
 
 ARC-AGI puzzles consist of:
 - Training examples showing input→output transformations  
 - Test cases where you predict the transformation based on what you learned from the training examples
-
-Key transformation types include:
-- Geometric: rotation, reflection, translation, scaling
-- Pattern: completion, extension, repetition, sequences
-- Logical: AND/OR/XOR/NOT operations, conditionals
-- Grid: splitting, merging, overlay, subtraction
-- Object: counting, sorting, filtering, grouping
-- Color: replacement, mapping, counting, patterns
-- Shape: detection, transformation, completion, generation
-- Spatial: adjacency, containment, alignment, distances`;
+`;
 
 /**
  * JSON output enforcement instructions with answer-first requirement
@@ -45,11 +36,11 @@ export const JSON_FIELDS_INSTRUCTIONS = `Put all your analysis and insights in t
   * "predictedOutput": your solution grid as a 2D array where each row is an array of single integers 0-9. Example format: [[0,1,2],[3,4,5]] NOT [[[0,1],[2,3]]]
 
 - For multiple test cases:
-  * "multiplePredictedOutputs": true (must be first field)
-  * "predictedOutput": [] (empty array)
   * "predictedOutput1": first solution grid
   * "predictedOutput2": second solution grid
   * "predictedOutput3": third solution grid (or [] if only 2 predictions needed)
+  * 
+Optional fields:
 - solvingStrategy: Create a domain specific language to solve the puzzle
 - patternDescription: The transformation rules you identified that transform the input into the output, simply stated as 2 or 3 short imperatives for a human to apply.
 - hints: Array of strings. Three short python pseudo-code algorithms you considered for solving the puzzle. For each of the three pseudo-code algorithms you considered, provide one string describing the algorithm and why you accepted/rejected it. Start with the best algorithm. 
@@ -99,7 +90,12 @@ Analyze training examples, identify the transformation patterns,
 and predict the correct output for the test case. Some puzzles have multiple test cases.`,
 
   debate: `TASK: You are correcting the explanation of another AI model. Another AI model from a competitor has already provided an incorrect explanation for this very simple visual reasoning puzzle that even a child could solve. 
-Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`
+Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`,
+
+  discussion: `TASK: You are refining your own previous analysis. Your previous solution and explanation were incorrect or incomplete. 
+Try again using different reasoning approaches. What new insights can you discover? What patterns did you miss before?`
+
+
 } as const;
 
 /**
@@ -155,5 +151,20 @@ Your challenge response must:
 4. **Justify your approach**: Explain why your analysis is better than the original
 
 
-Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`
+Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`,
+
+  discussion: `SELF-REFINEMENT INSTRUCTIONS:
+
+You will be shown:
+1. Your previous analysis attempt (pattern description, strategy, hints)
+2. Whether your prediction was correct or incorrect
+3. Optional human guidance on what to reconsider
+
+Your refined response must:
+1. **Self-critique**: Identify what you got wrong or missed in your previous attempt
+2. **Fresh perspective**: Apply different reasoning strategies you didn't try before
+3. **New solution**: Predict the output with improved reasoning
+4. **Explain improvements**: Show how your new analysis addresses previous gaps
+
+Be thorough in reconsidering your assumptions. Your goal is to demonstrate learning and improved problem-solving through iterative refinement.`
 } as const;

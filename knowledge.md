@@ -47,3 +47,17 @@ PRESENT IN .env
 
 - WebSocket issues: Saturn solver streaming can conflict
 - Database: Auto-creates tables on startup if PostgreSQL configured
+
+## xAI Grok-4 Structured Outputs (Oct 7, 2025)
+- Enabled via Responses API using `response_format.json_schema` (not `text.format`).
+- Minimal schema in `server/services/schemas/grokJsonSchema.ts`:
+  - required: `multiplePredictedOutputs`, `predictedOutput`
+  - optional: `predictedOutput1/2/3`, `confidence`
+  - arrays-of-arrays of integers; shallow nesting; `additionalProperties: false`
+  - Avoid unsupported constraints: no `minLength/maxLength`, no `minItems/maxItems`, no `allOf`.
+- Fallback: on grammar/schema error (400/422/503), auto-retry once without schema; parsing still succeeds via `output_text`.
+- Batch run settings: `XAI_MAX_CONCURRENCY=2`, `XAI_MAX_RETRIES=2`, `XAI_RETRY_BASE_DELAY_MS=2000`.
+- Entry points:
+  - Service: `server/services/grok.ts` (uses `response_format.json_schema`, shared agent, bounded retries)
+  - Schema: `server/services/schemas/grokJsonSchema.ts`
+  - Scripts: `scripts/grok-4-fast-reasoning.ts` (ARC2-eval), also `grok-4-fast-non-reasoning.ts`, `grok-4.ts`

@@ -119,6 +119,33 @@ const ExplanationViewer = ({ puzzleId }: { puzzleId: string }) => {
 - `GET /api/puzzle/:puzzleId/explanations`
 - `POST /api/puzzle/save-explained/:puzzleId`
 
+### useEligibleExplanations — NEW!
+Fetches recent explanations eligible for Responses API conversation chaining (created within 30 days and with a stored `providerResponseId`).
+
+```typescript
+import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
+
+const DiscussionPicker = () => {
+  const { data, isLoading, error } = useEligibleExplanations(20, 0);
+
+  if (isLoading) return <div>Loading…</div>;
+  if (error) return <div>Error loading eligible explanations</div>;
+
+  return (
+    <ul>
+      {(data?.explanations ?? []).map((e) => (
+        <li key={e.id}>
+          {e.puzzleId} · {e.modelName} · {e.provider} · {e.daysOld}d
+        </li>
+      ))}
+    </ul>
+  );
+};
+```
+
+API Endpoints Used:
+- `GET /api/discussion/eligible`
+
 ### useFeedback
 Handles user feedback submission and retrieval.
 
@@ -307,6 +334,9 @@ const AnalysisHistory = () => {
   return <div>/* Render results table */</div>;
 };
 ```
+
+Conversation chaining (Responses API):
+- To continue an earlier analysis with full context, include `previousResponseId` from the latest explanation in your analyze payload. The backend maps this to `previous_response_id` for supported providers (OpenAI o‑series/GPT‑5, xAI Grok‑4).
 
 ### useModelConfiguration
 Manages AI model configuration and settings.
