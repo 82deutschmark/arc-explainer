@@ -208,12 +208,24 @@ export class OpenAIService extends BaseAIService {
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
 
-    // Build message array
+    // CRITICAL FIX: If continuing conversation, ONLY send new message
+    // API retrieves full context from previous_response_id
+    const isContinuation = !!serviceOpts.previousResponseId;
     const messages: any[] = [];
-    if (systemMessage) {
-      messages.push({ role: "system", content: systemMessage });
+    
+    if (isContinuation) {
+      // Continuation: API loads context from previous_response_id
+      // ONLY send the new message
+      console.log('[OpenAI] 🔄 Continuation mode - sending ONLY new user message');
+      messages.push({ role: "user", content: userMessage });
+    } else {
+      // Initial: Send full conversation
+      console.log('[OpenAI] 📄 Initial mode - sending system + user messages');
+      if (systemMessage) {
+        messages.push({ role: "system", content: systemMessage });
+      }
+      messages.push({ role: "user", content: userMessage });
     }
-    messages.push({ role: "user", content: userMessage });
 
     // Build reasoning config based on model type
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
