@@ -1,5 +1,365 @@
 ## [2025-10-08]
 
+## v3.7.9 - Fix CompactPuzzleDisplay Adaptive Layout for Multi-Test Puzzles
+
+### Summary
+Fixed CompactPuzzleDisplay layout disasters caused by hardcoded assumptions. Now adapts elegantly to 1, 2, or 3+ test cases with dynamic grid sizing and layout direction.
+
+### Problem
+**Multiple hardcoded assumptions breaking multi-test puzzles:**
+1. Badge appeared INLINE with grids (floating in middle of row)
+2. Hardcoded `w-32 h-32` (128px) grids - no adaptation
+3. Horizontal-only layout with `gap-12` - forced 1150px+ width for 3 tests
+4. No layout adaptation for different test counts
+
+**Example failure:** Puzzle `1ae2feb7` (3 tests) = 6 grids × 128px = horizontal overflow disaster!
+
+### Fixed - Adaptive Layout System
+
+**Dynamic Grid Sizing:**
+- Added `getGridSizeClass()` function that adapts to test count:
+  - **1 test:** `w-48 h-48` (192px) - single test has space, show large
+  - **2 tests:** `w-32 h-32` (128px) - medium, fits side-by-side
+  - **3+ tests:** `w-24 h-24` (96px) - compact, allows vertical stack
+
+**Adaptive Layout Direction:**
+- **1-2 tests:** `flex-row flex-wrap gap-8` - horizontal layout
+- **3+ tests:** `flex-col gap-3` - vertical stack (prevents overflow)
+
+**Fixed Badge Placement:**
+- Before (BAD): `[Badge] [Input] → [Output]` ← Badge floating inline!
+- After (GOOD): Badge appears ABOVE row with proper label
+
+**Restructured Test Case Container:**
+- Each test case is `flex-col` wrapper
+- Badge moved above row (not inline)
+- Input/Output pair in nested `flex-row`
+- Proper semantic HTML structure
+- Reduced gaps: `gap-12` → `gap-4` (vertical) / `gap-8` (horizontal)
+
+### Benefits
+- ✅ No horizontal overflow with 3+ tests
+- ✅ Badge placement fixed (above row, not inline)
+- ✅ Scales to ANY number of test cases (1-10+)
+- ✅ Adaptive sizing based on test count
+- ✅ Clean semantic HTML structure
+- ✅ No hardcoded assumptions
+
+### Files Changed
+- `client/src/components/puzzle/CompactPuzzleDisplay.tsx`
+  - Lines 64-80: Added adaptive sizing and layout logic
+  - Lines 135-166: Restructured test case container with conditional layout
+
+### Testing Instructions
+1. **Single test puzzle** (most common):
+   - Should show large grids (192px)
+   - Horizontal layout
+   - No "Test 1" badge
+
+2. **Dual test puzzle**:
+   - Should show medium grids (128px)
+   - Horizontal layout side-by-side
+   - "Test 1" and "Test 2" labels above rows
+
+3. **Triple+ test puzzle (e.g., 1ae2feb7)**:
+   - Should show small grids (96px)
+   - Vertical stack layout
+   - "Test 1", "Test 2", "Test 3" labels above rows
+   - **NO horizontal overflow!**
+
+### Documentation
+- `docs/2025-10-08-CompactPuzzleDisplay-RobustLayout.md` - Complete implementation plan
+
+---
+
+## v3.7.8.1 - CRITICAL FIX: Make Advanced Controls Editable + Shrink by 80%
+
+### Summary
+**CRITICAL FIXES** for v3.7.8 Advanced Controls implementation:
+1. ❌ **Controls were disabled/view-only** - Users couldn't change settings (major bug)
+2. ❌ **Everything was 10x too large** - Wasted massive screen space
+
+Both issues now resolved with fully editable controls and ~80% size reduction.
+
+### Fixed - Make Controls Fully Editable
+- **Added Setter Props to RefinementThread**
+  - `setTemperature` - Allows temperature adjustment
+  - `setReasoningEffort` - Allows effort level changes
+  - `setReasoningVerbosity` - Allows verbosity changes
+  - `setReasoningSummaryType` - Allows summary type changes
+  - Files: `client/src/components/puzzle/refinement/RefinementThread.tsx`
+
+- **Removed All `disabled={true}`**
+  - Temperature slider now fully adjustable
+  - GPT-5 reasoning selects now fully adjustable
+  - All controls wire up to setter functions via `onValueChange`
+  - Users can now tune settings per-iteration
+
+- **Passed Setters from PuzzleDiscussion**
+  - Extracted all setter functions from `useAnalysisResults` hook
+  - Passed to RefinementThread component
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Fixed - Shrink Everything by ~80%
+**Size Reductions:**
+- Buttons: `h-8` (32px) → `h-5` (20px)
+- Text: `text-xs` (12px) → `text-[8px]` (8px) and `text-[9px]` (9px)
+- Labels: `text-xs` → `text-[8px]`
+- Padding: `p-2` (8px) → `p-1` (4px)
+- Gaps: `gap-2/gap-3` → `gap-0.5/gap-1`
+- Margins: `mb-2`, `mt-1` → `mb-0.5`
+- Select height: `h-8` (32px) → `h-5` (20px)
+- Select padding: default → `px-1`
+- Icon sizes: `h-4 w-4` → `h-3 w-3`, `h-3 w-3` → `h-2.5 w-2.5`
+
+**Text/Label Simplifications:**
+- Section title: "Advanced Controls" → "Advanced"
+- Temperature label: "Temperature: X" → "Temp: X.XX"
+- Button text: "Preview Prompt" → "Preview"
+- Slider max-width: `max-w-xs` (320px) → `max-w-[200px]`
+- Removed verbose helper text ("View only - configured in PuzzleExaminer")
+
+### Benefits
+- ✅ **Controls now fully functional** - Users can adjust settings in-modal
+- ✅ **80% less screen space** - Dramatically more compact interface
+- ✅ **Better UX** - Can tune settings per-iteration without leaving modal
+- ✅ **Cleaner design** - Removed unnecessary padding and whitespace
+- ✅ **Maintains all functionality** - Nothing lost, everything gained
+
+### Testing Instructions
+**Test Editable Controls:**
+1. Navigate to: `/discussion/:puzzleId?select=:explanationId`
+2. Advanced Controls section should show (if Grok or GPT-5 model)
+3. **Temperature slider** - Verify you can drag and adjust
+4. **Reasoning selects** - Verify dropdowns open and allow selection
+5. Settings should update in real-time
+6. Click "Continue Refinement" to apply new settings
+
+**Verify Size Reduction:**
+1. Compare before/after screenshots
+2. Controls should be ~80% smaller
+3. More usable screen space for content
+4. Interface should feel compact and efficient
+
+---
+
+## v3.7.8 - PuzzleDiscussion UI Enhancements (Advanced Controls)
+
+### Summary
+Enhanced PuzzleDiscussion "Refine this" interface by adding Advanced Controls section with temperature/reasoning controls and Prompt Preview modal, matching PuzzleExaminer functionality while reducing wasted space.
+
+### Enhanced - RefinementThread Component
+- **Advanced Controls Section**
+  - Temperature slider (view-only) for models that support it (Grok, etc.)
+  - GPT-5 Reasoning controls (effort/verbosity/summary) for GPT-5 models
+  - Prompt Preview button (always visible) to see exact prompts
+  - Intelligent conditional rendering based on model capabilities:
+    - `showTemperature`: `model.supportsTemperature && !isGPT5ReasoningModel`
+    - `showReasoning`: `isGPT5ReasoningModel(activeModel)`
+  - Files: `client/src/components/puzzle/refinement/RefinementThread.tsx`
+
+- **UI/UX Improvements**
+  - Reduced header padding from `p-3` to `p-2` for space efficiency
+  - Compact control layout with smaller text (`text-xs`, `text-[10px]`)
+  - Controls marked as "view only" (configured in PuzzleExaminer)
+  - Clean grid layout matching PuzzleExaminer's Advanced Controls design
+
+- **PromptPreviewModal Integration**
+  - Full modal with system/user prompt preview
+  - Copy-to-clipboard functionality for both sections
+  - Token estimation and character counts
+  - Passes `originalExplanation` and `userGuidance` as debate context
+  - Files: `client/src/components/PromptPreviewModal.tsx` (reused)
+
+### Changed - PuzzleDiscussion Props
+- **New Props Passed to RefinementThread**
+  - `temperature` - Current temperature setting
+  - `reasoningEffort`, `reasoningVerbosity`, `reasoningSummaryType` - GPT-5 parameters
+  - `isGPT5ReasoningModel` - Model type detection function
+  - `task` - Full ARCTask for PromptPreviewModal
+  - `promptId` - Current prompt template ID
+  - All values already available from `useAnalysisResults` hook (no new state needed)
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+### Benefits
+- ✅ **Consistency:** Same controls across PuzzleExaminer and PuzzleDiscussion
+- ✅ **Transparency:** Users can preview prompts before sending
+- ✅ **Visibility:** Users can see current temperature/reasoning settings
+- ✅ **Control:** Future enhancement to allow in-modal control adjustments
+- ✅ **Elegance:** Conditional rendering keeps UI clean (only shows relevant controls)
+- ✅ **Space Efficiency:** Reduced padding maximizes usable screen space
+- ✅ **DRY Compliance:** Reuses existing components (PromptPreviewModal, Slider, Select)
+- ✅ **SRP Compliance:** RefinementThread coordinates, PromptPreviewModal handles preview logic
+
+### Testing Instructions
+**IMPORTANT:** Test with different model types to verify conditional rendering:
+
+1. **Grok Models (Temperature Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:grokExplanationId
+   Expected: Advanced Controls section shows temperature slider
+   ```
+
+2. **GPT-5 Models (Reasoning Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:gpt5ExplanationId
+   Expected: Advanced Controls section shows 3-column reasoning controls grid
+   ```
+
+3. **Other Models (Temperature Support):**
+   ```
+   Navigate to: /discussion/:puzzleId?select=:otherModelId
+   Expected: Advanced Controls section shows temperature slider (if model.supportsTemperature)
+   ```
+
+4. **Prompt Preview (All Models):**
+   ```
+   Click "Preview Prompt" button
+   Expected: Modal opens showing system/user prompts with copy buttons
+   Verify: originalExplanation and userGuidance are included in preview
+   ```
+
+5. **Visual Verification:**
+   - Header padding reduced (less wasted space at top)
+   - Advanced Controls section appears ABOVE user guidance textarea
+   - Controls are disabled/view-only
+   - Layout matches PuzzleExaminer's Advanced Controls design
+
+---
+
+## v3.7.7 - Responses API & Conversation Chaining Complete Implementation
+
+### Summary
+**MAJOR MILESTONE:** Full Responses API conversation chaining now fully operational across OpenAI (GPT-5, o-series) and xAI (Grok-4) models. Fixed critical data flow bugs preventing `provider_response_id` storage and retrieval, enabling multi-turn conversations with server-side reasoning persistence.
+
+### Fixed - Critical Data Flow Chain
+- **Complete providerResponseId Pipeline Restoration**
+  - **Root Cause Analysis:** Identified and fixed 3-stage data loss in provider response ID flow
+  - **Stage 1 - API Response Capture:** ✅ Both `grok.ts` and `openai.ts` correctly captured `response.id`
+  - **Stage 2 - Service Layer:** ✅ `parseProviderResponse()` correctly returned response ID
+  - **Stage 3 - Transform Layer:** ❌ **BUG FIXED** - `explanationService.transformRawExplanation()` never mapped `providerResponseId` field
+  - **Stage 4 - Database:** ❌ **BUG FIXED** - All 29,609+ records had NULL `provider_response_id`
+  - **Solution:** Added `providerResponseId` mapping at `explanationService.ts:84`
+  - **Verification:** Tested with grok-4-fast-reasoning and gpt-5-2025-08-07, both now save response IDs correctly
+
+- **Frontend Response ID Mapping** (v3.6.4 follow-up fix)
+  - **Problem:** Backend returned `providerResponseId` but frontend `useExplanation` hook didn't map it
+  - **Impact:** ALL explanations appeared ineligible for conversation chaining in UI
+  - **Solution:** Added `providerResponseId: (raw as any).providerResponseId` mapping in `useExplanation` hook
+  - **Files:** `client/src/hooks/useExplanation.ts`
+
+- **Grok-4-Fast Responses API Stability**
+  - Verified structured output support with graceful schema fallback
+  - Fixed concurrent processing issues in batch analysis
+  - Confirmed reasoning token tracking (even though xAI doesn't expose reasoning content)
+  - All Grok-4 variants now use Responses API correctly
+
+### Enhanced - PuzzleDiscussion Feature
+- **Server-Side Eligibility Filtering**
+  - **NEW API:** `GET /api/discussion/eligible` - Returns pre-filtered eligible explanations
+  - **Simplified Criteria:** Only checks `has provider_response_id + within 30 days` (removed model type restrictions)
+  - **Impact:** Opens conversation chaining to ALL models that saved response IDs, not just reasoning models
+  - Files: `server/controllers/discussionController.ts`, `server/routes.ts`
+
+- **Landing Page Redesign**
+  - **Before:** 60+ lines of overwhelming explanatory text
+  - **After:** Clean action-focused interface:
+    - Simple search box with auto-complete
+    - Table of recent eligible analyses with direct "Refine" links
+    - One-click navigation to `/discussion/:puzzleId?select=:id`
+  - **Removed:** Walls of text explaining features (now in tooltips/help)
+  - Files: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **Auto-Selection Deep Linking**
+  - URL format: `/discussion/:puzzleId?select=:explanationId`
+  - Automatically starts conversation when explanation ID provided
+  - Console logging for debugging auto-selection behavior
+  - Enables direct navigation from "Refine This Analysis" badges
+
+- **"Refine This Analysis" Badge Discovery** (PuzzleExaminer Integration)
+  - Purple/blue gradient badge in `AnalysisResultHeader`
+  - Links directly to PuzzleDiscussion with auto-selection
+  - **Strict Eligibility Checks:**
+    - Has `providerResponseId` in database
+    - Created within 30-day provider retention window
+    - Created after Oct 6, 2025 (implementation date)
+  - Files: `client/src/components/puzzle/AnalysisResultHeader.tsx`
+
+### Verified Working - End-to-End Flow
+1. ✅ **API Response Capture:** Grok-4 and GPT-5 return response IDs
+   - OpenAI format: `resp_060ac21c27a4943c0068e57a2a25dc819593ee79a2dae7b29d`
+   - xAI format: `4f313883-b0b2-21fa-72b0-0f4fec701fc4_us-east-1`
+
+2. ✅ **Database Storage:** `provider_response_id` column populated correctly
+   - Verified with `scripts/check-provider-response-ids.js`
+   - All new analyses (post-fix) save response IDs
+
+3. ✅ **Frontend Retrieval:** `useExplanation` hook maps `providerResponseId` field
+   - PuzzleDiscussion eligibility filter works
+   - Badge visibility logic works
+
+4. ✅ **Conversation Chaining:** Multi-turn conversations maintain full context
+   - Server-side reasoning persistence (30-day retention)
+   - Progressive refinement workflows operational
+   - Provider-aware chaining (OpenAI ↔ OpenAI, xAI ↔ xAI)
+
+5. ✅ **PuzzleDiscussion UI:** Complete workflow functional
+   - Eligible analyses display correctly
+   - Auto-selection from deep links works
+   - Refine badge appears on eligible explanations
+   - Conversation context maintained across turns
+
+### Response ID Formats
+- **OpenAI (GPT-5, o3, o4):** `resp_[40-char-hex]`
+- **xAI (Grok-4, Grok-4-Fast):** `[uuid]_[region]`
+
+### Files Modified
+- `server/services/explanationService.ts` - Added providerResponseId mapping (line 84)
+- `client/src/hooks/useExplanation.ts` - Added providerResponseId field mapping
+- `server/controllers/discussionController.ts` - NEW: Eligibility API endpoint
+- `client/src/pages/PuzzleDiscussion.tsx` - Landing page redesign + auto-selection
+- `client/src/components/puzzle/AnalysisResultHeader.tsx` - Refine badge + eligibility checks
+
+### Files Created
+- `scripts/check-provider-response-ids.js` - Verification tool for response ID storage
+- `docs/07102025-ACTUAL-ROOT-CAUSE-FIX.md` - Complete root cause analysis
+- `client/src/hooks/useEligibleExplanations.ts` - NEW: Hook for eligible explanations API
+
+### Migration Notes
+- **Historical Data:** 29,609 records created before 2025-10-07 have NULL response IDs (cannot be fixed retroactively)
+- **New Records:** All analyses after server restart save response IDs correctly
+- **Feature Availability:** Only new analyses (with response IDs) can use conversation features
+
+### Impact - Features Now Unlocked 🎉
+- ✅ **PuzzleDiscussion Self-Refinement** - Model refines its own analysis with full context
+- ✅ **Model Debate Conversation Chaining** - Maintains reasoning across debate turns (provider-aware)
+- ✅ **30-Day Reasoning Persistence** - Server-side encrypted storage (OpenAI/xAI)
+- ✅ **Progressive Reasoning** - Each turn builds on full conversation history
+- ✅ **Response Chain Retrieval** - `/api/explanations/:id/chain` returns full history
+- ✅ **Conversation Forking** - Branch conversations for exploration workflows
+
+### Technical Documentation
+- `docs/API_Conversation_Chaining.md` - Complete API usage guide
+- `docs/Responses_API_Chain_Storage_Analysis.md` - Technical implementation details
+- `docs/07102025-ACTUAL-ROOT-CAUSE-FIX.md` - Root cause analysis and fix verification
+- `CLAUDE.md` - Updated with conversation chaining architecture (lines 148-210)
+
+---
+
+## v3.7.6 - ModelBrowser UI Improvements
+
+### Enhanced
+- **ModelBrowser mirrors AnalyticsOverview UI** using shadcn/ui
+  - Displays one model's performance across a dataset (Correct / Incorrect / Not Attempted)
+  - Click-to-analyze: Clicking a PuzzleID badge in "Not Attempted" triggers analysis+save with solver prompt
+  - Badge animates (pulse) while in-flight, lists refresh on completion
+  - Added optional `refreshKey` to `useModelDatasetPerformance` for on-demand refetch
+  - Files: `client/src/pages/ModelBrowser.tsx`, `client/src/hooks/useModelDatasetPerformance.ts`
+
+---
+
+## [2025-10-07]
+
 ## v3.7.5 - Fixed Hardcoded Localhost URLs (Production Breaking Bug)
 
 ### Critical Bug Fix

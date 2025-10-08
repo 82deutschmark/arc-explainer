@@ -134,133 +134,100 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
   const wasIncorrect = !isExplicitlyCorrect;
 
   return (
-    <div className="space-y-2">
-      {/* Debate Header with Back Button */}
-      <Card>
-        <CardContent className="p-2">
+    <div className="space-y-3">
+      {/* Compact Header with Controls */}
+      <Card className={wasIncorrect ? 'border-red-200 bg-gradient-to-r from-red-50 to-orange-50' : 'border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50'}>
+        <CardContent className="p-3 space-y-3">
+          {/* Title Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-full ${wasIncorrect ? 'bg-red-100' : 'bg-blue-100'}`}>
                 <MessageSquare className={`h-5 w-5 ${wasIncorrect ? 'text-red-600' : 'text-blue-600'}`} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  Debating: {originalExplanation.modelName}
-                  {wasIncorrect && (
-                    <Badge variant="destructive" className="text-xs">
-                      {(hasMultiTest ? originalExplanation.multiTestAllCorrect : originalExplanation.isPredictionCorrect) === false
-                        ? 'Incorrect Prediction'
-                        : 'Available for Debate'}
-                    </Badge>
-                  )}
-                  {originalExplanation.rebuttingExplanationId && (
-                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                      <ArrowRight className="h-3 w-3" />
-                      Rebuttal
-                    </Badge>
-                  )}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Challenge this explanation with a better AI analysis
+                <h2 className="text-xl font-semibold">AI Model Debate</h2>
+                <p className="text-xs text-gray-600">
+                  {debateMessages.length} participant{debateMessages.length !== 1 ? 's' : ''} • Challenge and refine
                 </p>
               </div>
             </div>
 
-            <Button variant="outline" size="sm" onClick={onBackToList}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to List
-            </Button>
-          </div>
-          
-          {/* Rebuttal Chain Breadcrumb */}
-          {rebuttalChain && rebuttalChain.length > 1 && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
-                <Link2 className="h-3 w-3" />
-                <span className="font-medium">Debate Chain:</span>
-                {rebuttalChain.map((exp: any, idx: number) => (
-                  <React.Fragment key={exp.id}>
-                    {idx > 0 && <ArrowRight className="h-3 w-3 text-gray-400" />}
-                    <Badge 
-                      variant={exp.id === originalExplanation.id ? "default" : "outline"}
-                      className="text-xs cursor-pointer hover:bg-gray-100"
-                    >
-                      {exp.modelName}
-                    </Badge>
-                  </React.Fragment>
-                ))}
-              </div>
-              <p className="text-[10px] text-gray-500 mt-1">
-                {rebuttalChain.length} models in this debate thread
-              </p>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onResetDebate}
+                disabled={debateMessages.length <= 1}
+                className="text-xs"
+              >
+                <RotateCcw className="h-3 w-3 mr-1.5" />
+                Reset
+              </Button>
+              <Link href={`/elo/${taskId}`}>
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Trophy className="h-3 w-3 mr-1.5" />
+                  ELO Mode
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={onBackToList}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Responsive grid layout - debate messages get more space */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-2">
-        {/* Debate Messages - takes 3/4 width on xl screens, full width on smaller */}
-        <div className="xl:col-span-3 space-y-2">
-          {/* Header Card */}
-          <Card>
-            <CardHeader className="p-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <MessageSquare className="h-4 w-4" />
-                AI Model Debate
-                <Badge variant="outline" className="text-xs">{debateMessages.length} participants</Badge>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          {/* Debate content - flows naturally with page scroll like PuzzleExaminer */}
-          <div className="space-y-2">
-            {debateMessages.map((message, index) => {
-              // Calculate cumulative reasoning tokens up to this point
-              const cumulativeReasoningTokens = debateMessages
-                .slice(0, index + 1)
-                .reduce((sum, msg) => sum + (msg.content.reasoningTokens || 0), 0);
-
-              return message.messageType === 'original' ? (
-                <OriginalExplanationCard
-                  key={message.id}
-                  explanation={message.content}
-                  models={models}
-                  testCases={testCases}
-                  timestamp={message.timestamp}
-                />
-              ) : (
-                <RebuttalCard
-                  key={message.id}
-                  explanation={message.content}
-                  models={models}
-                  testCases={testCases}
-                  timestamp={message.timestamp}
-                  rebuttalNumber={debateMessages.slice(0, index).filter(m => m.messageType === 'challenge').length + 1}
-                  cumulativeReasoningTokens={cumulativeReasoningTokens}
-                />
-              );
-            })}
-            {/* Anchor for auto-scroll to bottom */}
-            <div ref={messagesEndRef} />
           </div>
-        </div>
 
-        {/* Challenge Controls - 1/4 width sidebar on xl screens */}
-        <div className="space-y-2">
-          <Card>
-            <CardHeader className="p-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Plus className="h-4 w-4" />
-                Add Challenge
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 p-2">
-              <div>
-                <label className="text-xs font-medium mb-1 block">Challenger Model</label>
+          {/* Original Explanation Info Row */}
+          <div className="pt-3 border-t border-gray-300">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-gray-700">Original Analysis:</span>
+              <Badge variant="outline" className="font-mono text-xs">
+                {originalExplanation.modelName}
+              </Badge>
+              {wasIncorrect && (
+                <Badge variant="destructive" className="text-xs">
+                  {(hasMultiTest ? originalExplanation.multiTestAllCorrect : originalExplanation.isPredictionCorrect) === false
+                    ? 'Incorrect Prediction'
+                    : 'Available for Debate'}
+                </Badge>
+              )}
+              {originalExplanation.rebuttingExplanationId && (
+                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                  <ArrowRight className="h-3 w-3" />
+                  Rebuttal
+                </Badge>
+              )}
+              
+              {/* Rebuttal Chain Breadcrumb */}
+              {rebuttalChain && rebuttalChain.length > 1 && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <Link2 className="h-3 w-3 text-gray-600" />
+                  <span className="text-xs text-gray-600">Chain:</span>
+                  {rebuttalChain.map((exp: any, idx: number) => (
+                    <React.Fragment key={exp.id}>
+                      {idx > 0 && <ArrowRight className="h-3 w-3 text-gray-400" />}
+                      <Badge 
+                        variant={exp.id === originalExplanation.id ? "default" : "outline"}
+                        className="text-xs cursor-pointer hover:bg-gray-100"
+                      >
+                        {exp.modelName}
+                      </Badge>
+                    </React.Fragment>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Challenge Controls Row */}
+          <div className="pt-3 border-t border-gray-300">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+              {/* Challenger Model Selection - 3 cols */}
+              <div className="lg:col-span-3">
+                <label className="text-xs font-medium mb-1.5 block text-gray-700">Challenger Model</label>
                 <Select value={challengerModel} onValueChange={onChallengerModelChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a model to challenge..." />
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Choose model..." />
                   </SelectTrigger>
                   <SelectContent>
                     {models?.map((model) => (
@@ -272,98 +239,94 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
                 </Select>
               </div>
 
-              <div>
-                <label className="text-xs font-medium mb-1 block">
+              {/* Custom Challenge Input - 6 cols */}
+              <div className="lg:col-span-6">
+                <label className="text-xs font-medium mb-1.5 block text-gray-700">
                   Custom Challenge Focus (Optional)
                 </label>
                 <Textarea
                   value={customChallenge}
                   onChange={(e) => onCustomChallengeChange(e.target.value)}
-                  placeholder="Guide the challenger's focus..."
+                  placeholder="Leave blank for general challenge"
                   rows={2}
-                  className="text-xs"
+                  className="text-xs resize-none"
                 />
               </div>
 
-              {/* Preview Prompt Button */}
-              <Button
-                variant="outline"
-                onClick={handlePreviewPrompt}
-                disabled={!challengerModel}
-                className="w-full h-8 text-xs"
-                size="sm"
-              >
-                <Eye className="h-3 w-3 mr-1" />
-                Preview Challenge Prompt
-              </Button>
-
-              <Button
-                onClick={onGenerateChallenge}
-                disabled={!challengerModel || processingModels.has(challengerModel)}
-                className="w-full h-8 text-xs"
-                size="sm"
-              >
-                {processingModels.has(challengerModel) ? (
-                  <>
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Send className="h-3 w-3 mr-1" />
-                    {challengeButtonText}
-                  </>
-                )}
-              </Button>
-
-              {analyzerErrors.has(challengerModel) && (
-                <Alert>
-                  <AlertDescription>
-                    {analyzerErrors.get(challengerModel)?.message}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader className="p-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Plus className="h-3 w-3" />
-                Debate Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1 p-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full h-7 text-xs"
-                onClick={onBackToList}
-              >
-                <ArrowLeft className="h-3 w-3 mr-1" />
-                Choose Different
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full h-7 text-xs"
-                onClick={onResetDebate}
-              >
-                <RotateCcw className="h-3 w-3 mr-1" />
-                Reset Debate
-              </Button>
-
-              <Link href={`/elo/${taskId}`}>
-                <Button variant="outline" size="sm" className="w-full h-7 text-xs">
-                  <Trophy className="h-3 w-3 mr-1" />
-                  ELO Mode
+              {/* Action Buttons - 3 cols */}
+              <div className="lg:col-span-3 grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handlePreviewPrompt}
+                  disabled={!challengerModel}
+                  className="h-[72px] text-xs"
+                  size="sm"
+                >
+                  <Eye className="h-3 w-3 mr-1" />
+                  Preview
                 </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+                <Button
+                  onClick={onGenerateChallenge}
+                  disabled={!challengerModel || processingModels.has(challengerModel)}
+                  className="h-[72px] text-sm bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
+                >
+                  {processingModels.has(challengerModel) ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-1" />
+                      {challengeButtonText}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {analyzerErrors.has(challengerModel) && (
+              <Alert variant="destructive" className="mt-3 py-2">
+                <AlertDescription className="text-xs">
+                  {analyzerErrors.get(challengerModel)?.message}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Debate content - full width */}
+      <div className="space-y-3">
+        {debateMessages.map((message, index) => {
+          // Calculate cumulative reasoning tokens up to this point
+          const cumulativeReasoningTokens = debateMessages
+            .slice(0, index + 1)
+            .reduce((sum, msg) => sum + (msg.content.reasoningTokens || 0), 0);
+
+          return message.messageType === 'original' ? (
+            <OriginalExplanationCard
+              key={message.id}
+              explanation={message.content}
+              models={models}
+              testCases={testCases}
+              timestamp={message.timestamp}
+            />
+          ) : (
+            <RebuttalCard
+              key={message.id}
+              explanation={message.content}
+              models={models}
+              testCases={testCases}
+              timestamp={message.timestamp}
+              rebuttalNumber={debateMessages.slice(0, index).filter(m => m.messageType === 'challenge').length + 1}
+              cumulativeReasoningTokens={cumulativeReasoningTokens}
+            />
+          );
+        })}
+        {/* Anchor for auto-scroll to bottom */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Prompt Preview Modal */}

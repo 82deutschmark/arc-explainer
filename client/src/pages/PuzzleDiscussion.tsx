@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
+import { PredictionIteration } from '@/components/puzzle/PredictionCard';
 import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
@@ -31,6 +32,7 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { useRefinementState } from '@/hooks/refinement/useRefinementState';
 import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
+import { determineCorrectness } from '@shared/utils/correctness';
 
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
@@ -72,10 +74,14 @@ export default function PuzzleDiscussion() {
     promptId,
     setPromptId,
     temperature,
+    setTemperature,
     isGPT5ReasoningModel,
     reasoningEffort,
+    setReasoningEffort,
     reasoningVerbosity,
+    setReasoningVerbosity,
     reasoningSummaryType,
+    setReasoningSummaryType,
     topP,
     candidateCount,
     thinkingBudget
@@ -340,6 +346,22 @@ export default function PuzzleDiscussion() {
       <CompactPuzzleDisplay
         trainExamples={task!.train}
         testCases={task!.test}
+        predictions={refinementState.isRefinementActive && refinementState.iterations.length > 0
+          ? refinementState.iterations.map(iter => ({
+              grid: iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]],
+              iterationNumber: iter.iterationNumber,
+              isCorrect: determineCorrectness({
+                modelName: iter.content.modelName,
+                isPredictionCorrect: iter.content.isPredictionCorrect,
+                multiTestAllCorrect: iter.content.multiTestAllCorrect,
+                hasMultiplePredictions: iter.content.hasMultiplePredictions
+              }).isCorrect,
+              modelName: iter.content.modelName,
+              timestamp: iter.timestamp
+            } as PredictionIteration))
+          : undefined
+        }
+        showPredictions={refinementState.isRefinementActive}
       />
 
       {refinementState.isRefinementActive && explanations ? (
@@ -362,10 +384,21 @@ export default function PuzzleDiscussion() {
               taskId={taskId}
               testCases={task!.test}
               models={models}
+              task={task!}
               activeModel={refinementState.activeModel}
               userGuidance={refinementState.userGuidance}
               isProcessing={processingModels.has(refinementState.activeModel)}
               error={analyzerErrors.get(refinementState.activeModel) || null}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              reasoningVerbosity={reasoningVerbosity}
+              setReasoningVerbosity={setReasoningVerbosity}
+              reasoningSummaryType={reasoningSummaryType}
+              setReasoningSummaryType={setReasoningSummaryType}
+              isGPT5ReasoningModel={isGPT5ReasoningModel}
+              promptId={promptId}
               onBackToList={refinementState.endRefinement}
               onResetRefinement={refinementState.resetRefinement}
               onUserGuidanceChange={refinementState.setUserGuidance}
