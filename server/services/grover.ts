@@ -19,7 +19,7 @@ import { getApiModelName, getModelConfig } from "../config/models/index.js";
 export class GroverService extends BaseAIService {
   protected provider = "Grover";
   protected models: Record<string, string> = {
-    "grover-grok-4-fast": "grok-4-fast",
+    "grover-grok-4-fast-reasoning": "grok-4-fast-reasoning",
     "grover-gpt-5": "gpt-5-2025-08-07",
   };
 

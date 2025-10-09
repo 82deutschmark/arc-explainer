@@ -307,6 +307,86 @@ export class PythonBridge {
       child.stdin.end();
     });
   }
+
+  /**
+   * Generate grid visualizations via Python subprocess
+   * @param grids - Array of 2D grids to visualize
+   * @param taskId - Task identifier for file naming
+   * @param cellSize - Size of each cell in pixels (default: 30)
+   * @returns Object with imagePaths and base64Images arrays
+   */
+  async runGridVisualization(
+    grids: number[][][],
+    taskId: string,
+    cellSize: number = 30
+  ): Promise<{ imagePaths: string[]; base64Images: string[] }> {
+    return new Promise((resolve, reject) => {
+      const pythonBin = this.resolvePythonBin();
+      const visualizerPath = path.join(process.cwd(), 'server', 'python', 'grid_visualizer.py');
+
+      const spawnOpts: SpawnOptions = {
+        cwd: path.dirname(visualizerPath),
+        stdio: ['pipe', 'pipe', 'pipe'],
+      };
+
+      const child = spawn(pythonBin, [visualizerPath], spawnOpts);
+
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        return reject(new Error('Python process streams not available for grid visualization'));
+      }
+
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      let stdoutData = '';
+      let stderrData = '';
+
+      child.stdout.on('data', (chunk) => {
+        stdoutData += chunk;
+      });
+
+      child.stderr.on('data', (chunk) => {
+        stderrData += chunk;
+      });
+
+      child.on('close', (code) => {
+        if (code !== 0) {
+          return reject(new Error(`Grid visualization failed (exit code ${code}): ${stderrData}`));
+        }
+
+        try {
+          const trimmed = stdoutData.trim();
+          if (!trimmed) {
+            return reject(new Error('No output from grid visualizer'));
+          }
+
+          const result = JSON.parse(trimmed);
+
+          if (result.type === 'visualization_complete') {
+            resolve({
+              imagePaths: result.imagePaths || [],
+              base64Images: result.base64Images || []
+            });
+          } else if (result.type === 'error') {
+            reject(new Error(`Visualization error: ${result.message}`));
+          } else {
+            reject(new Error(`Unexpected response type: ${result.type}`));
+          }
+        } catch (err) {
+          reject(new Error(`Failed to parse visualizer output: ${err}. Output: ${stdoutData.substring(0, 200)}`));
+        }
+      });
+
+      child.on('error', (err) => {
+        reject(new Error(`Failed to spawn grid visualizer: ${err.message}`));
+      });
+
+      // Send payload
+      const payload = JSON.stringify({ grids, taskId, cellSize });
+      child.stdin.write(payload);
+      child.stdin.end();
+    });
+  }
 }
 
 export const pythonBridge = new PythonBridge();

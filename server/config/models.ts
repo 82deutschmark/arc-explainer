@@ -789,4 +789,38 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2025-09"
   },
 
+  // Grover Iterative Solver Models (wraps underlying models with iterative execution)
+  {
+    key: 'grover-grok-4-fast-reasoning',
+    name: 'Grover (Grok 4 Fast Reasoning)',
+    color: 'bg-lime-600',
+    premium: false,
+    cost: { input: '$0.20', output: '$0.40' },
+    supportsTemperature: true,
+    provider: 'Grover',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    isReasoning: true,
+    apiModelName: 'grover-grok-4-fast-reasoning',
+    modelType: 'grover',
+    contextWindow: 128000,
+    maxOutputTokens: 30000,
+    releaseDate: "2025-10"
+  },
+  {
+    key: 'grover-gpt-5',
+    name: 'Grover (GPT-5)',
+    color: 'bg-lime-700',
+    premium: true,
+    cost: { input: '$1.25', output: '$10.00' },
+    supportsTemperature: false,
+    provider: 'Grover',
+    responseTime: { speed: 'slow', estimate: '5-10 min' },
+    isReasoning: true,
+    apiModelName: 'grover-gpt-5',
+    modelType: 'grover',
+    contextWindow: 400000,
+    maxOutputTokens: 30000,
+    releaseDate: "2025-10"
+  },
+
 ];

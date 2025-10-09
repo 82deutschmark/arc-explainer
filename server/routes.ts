@@ -19,6 +19,7 @@ import { explanationController } from "./controllers/explanationController";
 import { feedbackController } from "./controllers/feedbackController";
 import { promptController } from "./controllers/promptController";
 import { saturnController } from "./controllers/saturnController";
+import { groverController } from "./controllers/groverController.js";
 import adminController, * as adminControllerFns from './controllers/adminController.js';
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
@@ -165,7 +166,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
-  
+
+  // Grover iterative solver routes
+  app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
+
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
   app.get("/api/batch/status/:sessionId", asyncHandler(batchController.getBatchStatus));
