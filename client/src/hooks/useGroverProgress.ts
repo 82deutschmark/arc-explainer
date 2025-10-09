@@ -122,7 +122,12 @@ export function useGroverProgress(taskId: string | undefined) {
       const sock = new WebSocket(wsUrl);
       wsRef.current = sock;
 
+      sock.onopen = () => {
+        console.log('[GROVER] WebSocket CONNECTED to:', wsUrl);
+      };
+
       sock.onmessage = (evt) => {
+        console.log('[GROVER] Received message:', evt.data.substring(0, 200));
         try {
           const payload = JSON.parse(evt.data);
           const data = payload?.data;
@@ -223,7 +228,7 @@ export function useGroverProgress(taskId: string | undefined) {
       };
 
       sock.onclose = (evt) => {
-        console.log('[GROVER] WebSocket closed');
+        console.log('[GROVER] WebSocket CLOSED - Code:', evt.code, 'Reason:', evt.reason || 'none');
         setState((prev) => {
           if (prev.status !== 'running') return prev;
           const reason = evt.reason || 'Grover progress connection closed unexpectedly';
