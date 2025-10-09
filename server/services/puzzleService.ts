@@ -20,7 +20,7 @@ interface PuzzleFilters {
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
   prioritizeExplained?: boolean;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   multiTestFilter?: 'single' | 'multi';
 }
 

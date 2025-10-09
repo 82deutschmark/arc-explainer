@@ -418,8 +418,8 @@ export const puzzleController = {
         minAccuracy: minAccuracy ? parseFloat(minAccuracy as string) : undefined,
         maxAccuracy: maxAccuracy ? parseFloat(maxAccuracy as string) : undefined,
         zeroAccuracyOnly: zeroAccuracyOnly === 'true',
-        source: source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source as string) 
-          ? source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' 
+        source: source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy', 'ConceptARC'].includes(source as string) 
+          ? source as 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC'
           : undefined,
         multiTestFilter: multiTestFilter && ['single', 'multi'].includes(multiTestFilter as string)
           ? multiTestFilter as 'single' | 'multi'

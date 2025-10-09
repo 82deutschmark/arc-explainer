@@ -32,7 +32,8 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   training: 'ARC1-Train',
   evaluation2: 'ARC2-Eval',
   training2: 'ARC2-Train',
-  'arc-heavy': 'ARC-Heavy'
+  'arc-heavy': 'ARC-Heavy',
+  'concept-arc': 'ConceptARC'
 };
 
 type DatasetOption = DatasetInfo & { displayName: string };
@@ -330,7 +331,6 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
-
 
 
 

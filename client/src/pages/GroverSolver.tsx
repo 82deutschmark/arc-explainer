@@ -217,27 +217,15 @@ export default function GroverSolver() {
         </div>
       )}
 
-      {/* Live Activity Stream - MOVED TO TOP for visibility */}
-      {(isRunning || state.logLines && state.logLines.length > 0) && (
-        <div className="mb-3">
-          <LiveActivityStream
-            logs={state.logLines || []}
-            maxHeight="400px"
-          />
-        </div>
-      )}
-
-      {/* Two Column Layout - Iterations + Visualizations */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3">
-        {/* Left Column - Iteration Cards (narrower) */}
-        <div className="lg:col-span-3 space-y-0">
-          {/* Render all iterations (completed, active, and queued) */}
+      {/* Three Column Layout - Compact & Side-by-Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 mb-3">
+        {/* LEFT: Iteration Cards - 50% width */}
+        <div className="lg:col-span-6 space-y-0">
           {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
             const iterNum = idx + 1;
             const iterData = state.iterations?.find(it => it.iteration === idx);
             const isActive = isRunning && state.iteration === iterNum;
             
-            // Calculate best overall score up to this point
             const bestOverall = state.iterations
               ?.filter(it => it.iteration < idx)
               .reduce((max, it) => Math.max(max, it.best?.score || 0), 0) || 0;
@@ -259,9 +247,22 @@ export default function GroverSolver() {
           })}
         </div>
 
-        {/* Right Column - Visualizations */}
-        <div className="lg:col-span-2 space-y-3">
-          {/* Search Visualization */}
+        {/* MIDDLE: Live Activity Stream - 25% width, compact */}
+        <div className="lg:col-span-3">
+          {(isRunning || (state.logLines && state.logLines.length > 0)) ? (
+            <LiveActivityStream
+              logs={state.logLines || []}
+              maxHeight="500px"
+            />
+          ) : (
+            <Card className="h-32 flex items-center justify-center text-gray-400 text-sm">
+              Start analysis to see live progress
+            </Card>
+          )}
+        </div>
+
+        {/* RIGHT: Visualizations - 25% width */}
+        <div className="lg:col-span-3 space-y-3">
           {state.iterations && state.iterations.length > 0 && (
             <SearchVisualization 
               iterations={state.iterations}
@@ -269,7 +270,6 @@ export default function GroverSolver() {
             />
           )}
 
-          {/* Conversation Chain */}
           <ConversationChainViewer
             hasChain={isRunning || isDone}
             iterationCount={state.iterations?.length || 0}

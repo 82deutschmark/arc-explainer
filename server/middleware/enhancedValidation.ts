@@ -178,7 +178,7 @@ export class EnhancedValidation {
       dataset: {
         required: true,
         type: 'string',
-        enum: ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy', 'All']
+        enum: ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy', 'ConceptARC', 'All']
       },
       promptId: {
         type: 'string',
