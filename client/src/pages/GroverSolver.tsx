@@ -219,9 +219,14 @@ export default function GroverSolver() {
         />
       </div>
 
-      {/* Info */}
-      <div className="text-xs text-gray-500 text-center py-2">
-        Grover: Iterative code generation with execution feedback. <Link href={`/puzzle/${taskId}`} className="underline">View puzzle details</Link>
+      {/* Attribution & Info */}
+      <div className="text-xs text-gray-500 text-center py-3 space-y-1">
+        <div>
+          <strong>Grover Algorithm</strong> by <a href="https://github.com/zoecarver/grover-arc" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">Zoe Carver</a>
+        </div>
+        <div>
+          Iterative code generation with quantum-inspired amplitude amplification • <Link href={`/puzzle/${taskId}`} className="underline">View puzzle</Link>
+        </div>
       </div>
     </div>
   );

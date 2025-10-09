@@ -15,6 +15,35 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronUp, CheckCircle2, Loader2, Clock } from 'lucide-react';
 import type { GroverIteration } from '@/hooks/useGroverProgress';
 
+// Iteration strategies from Grover algorithm (credit: Zoe Carver)
+const ITERATION_STRATEGIES: Record<number, { title: string; description: string; details: string }> = {
+  1: {
+    title: 'Initial Exploration',
+    description: 'Generate 3-5 diverse program attempts to explore solution space',
+    details: 'First iteration establishes baseline. Programs executed on training samples and graded 0-10. Best attempts positioned LAST in context for maximum attention weight.'
+  },
+  2: {
+    title: 'Visual Analysis',
+    description: 'Include visual analysis with images to guide pattern recognition',
+    details: 'Adds image-based analysis to help model see visual patterns. Context now saturated with iteration 1 results. High-scoring programs from iteration 1 influence this generation.'
+  },
+  3: {
+    title: 'Color Normalization',
+    description: 'Use color-normalized problem representations',
+    details: 'Provides alternative color mappings to break anchoring on specific colors. Context-free attempts with different seeds encourage exploration of new solution paths.'
+  },
+  4: {
+    title: 'Full Visual Context',
+    description: 'Include all training images and test input images directly',
+    details: 'Maximum visual information provided. Model sees actual grids as images. Context saturated with best attempts from all previous iterations.'
+  },
+  5: {
+    title: 'Context Refinement',
+    description: 'Full context after removing low-scoring attempts',
+    details: 'Final iteration with pruned context. Only highest-quality attempts remain. Model makes final refinement based on accumulated knowledge.'
+  }
+};
+
 interface IterationCardProps {
   iteration: number;
   data?: GroverIteration;
@@ -95,18 +124,27 @@ export function IterationCard({
           </div>
         </div>
         
-        {/* Active iteration details */}
-        {isActive && (
-          <div className="mt-2 text-xs text-gray-600">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Phase:</span>
-              <span>{phase || 'Initializing...'}</span>
+        {/* Strategy explanation - ALWAYS show */}
+        <div className="mt-2">
+          {ITERATION_STRATEGIES[iteration] && (
+            <div className="bg-blue-50 p-2 rounded">
+              <div className="text-xs font-semibold text-blue-900">
+                {ITERATION_STRATEGIES[iteration].title}
+              </div>
+              <div className="text-xs text-blue-800 mt-1">
+                {ITERATION_STRATEGIES[iteration].description}
+              </div>
+              <div className="text-xs text-blue-700 mt-1 leading-relaxed">
+                {ITERATION_STRATEGIES[iteration].details}
+              </div>
             </div>
-            {message && (
-              <div className="mt-1 text-gray-500">{message}</div>
-            )}
-          </div>
-        )}
+          )}
+          {isActive && message && (
+            <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
+              <span className="font-medium">Current: </span>{message}
+            </div>
+          )}
+        </div>
       </CardHeader>
 
       {/* Expandable content for completed iterations */}
