@@ -563,6 +563,7 @@ export interface ModelConfig {
   releaseDate?: string; // Release date in YYYY-MM format
   supportsFunctionCalling?: boolean;
   supportsSystemPrompts?: boolean;
+  supportsStructuredOutput?: boolean;
   supportsVision?: boolean;
   requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
   
