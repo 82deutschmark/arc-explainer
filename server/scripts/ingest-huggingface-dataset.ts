@@ -230,12 +230,23 @@ async function validateAndEnrichAggregatedAttempt(
       multiResponse,
       expectedOutputs,
       'external-huggingface',
-      undefined // No confidence for external data
+      0 // External data has no confidence - use 0 for pure correctness scoring
     );
     
     if (config.verbose) {
-      console.log(`   📊 Multi-test: ${validationResult.multiTestAllCorrect ? 'All correct ✓' : 'Some incorrect ✗'}`);
-      console.log(`   📈 Average accuracy: ${(validationResult.multiTestAverageAccuracy * 100).toFixed(1)}%`);
+      // Determine correctness label based on actual results
+      const numCorrect = validationResult.multiTestResults.filter((r: any) => r.isPredictionCorrect).length;
+      const numTotal = validationResult.multiTestResults.length;
+      let correctnessLabel: string;
+      if (numCorrect === numTotal) {
+        correctnessLabel = 'All correct ✓';
+      } else if (numCorrect === 0) {
+        correctnessLabel = 'All incorrect ✗';
+      } else {
+        correctnessLabel = `Partially correct (${numCorrect}/${numTotal}) ⚠️`;
+      }
+      console.log(`   📊 Multi-test: ${correctnessLabel}`);
+      console.log(`   📈 Correctness rate: ${numCorrect}/${numTotal} (${((numCorrect / numTotal) * 100).toFixed(1)}%)`);
     }
   } else {
     // Single-test validation
@@ -243,12 +254,12 @@ async function validateAndEnrichAggregatedAttempt(
       { predictedOutput: predictedGrids[0] },
       expectedOutputs[0],
       'external-huggingface',
-      undefined
+      0 // External data has no confidence - use 0 for pure correctness scoring
     );
 
     if (config.verbose) {
       console.log(`   📊 Single-test: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
-      console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
+      console.log(`   📈 Correctness: ${validationResult.isPredictionCorrect ? '100.0' : '0.0'}%`);
     }
   }
   
