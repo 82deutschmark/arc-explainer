@@ -1,5 +1,28 @@
 ## [2025-10-09]
 
+### Work In Progress
+- **Grover Prediction Persistence** - Fixing systematic null prediction issue (INCOMPLETE)
+  - **Problem Identified**: Grover solver results never include predicted grids in database
+    - Root cause: Best program only executed on training inputs during iterations
+    - Never run on test inputs to generate actual predictions for database
+    - Results in NULL `predicted_output_grid`, `multi_test_prediction_grids`, all correctness fields
+    - Excludes Grover from analytics, leaderboards, accuracy calculations
+  - **Two Validation Systems Clarified**:
+    1. **Internal Iterative Validation** (Training-Time): LLM grades programs 0-10 on training data to guide search
+    2. **Final Solver Validation** (Test-Time): Standard correctness checking against test outputs for database
+  - **Progress (Steps 1-2 of 5)**:
+    - ✅ Extended `grover_executor.py` to support test execution mode (accepts `mode: "test"`)
+    - ✅ Added `pythonBridge.runGroverTestExecution()` to run single program on test inputs
+    - ✅ Modified `buildGroverResponse()` to execute best program on test inputs and populate predictions
+    - ✅ Added support for both single-test and multi-test prediction generation
+  - **Remaining Work**:
+    - ⏳ Add validation calls (validateSolverResponse/Multi) in groverService
+    - ⏳ Route through validation pipeline in groverController
+    - ⏳ Test end-to-end with real Grover run and verify database fields
+  - **Status**: Work paused to clarify validation architecture. Do not deploy until complete.
+  - **Files Modified**: `server/python/grover_executor.py`, `server/services/pythonBridge.ts`, `server/services/grover.ts`
+  - **Commit**: ac833eb (WIP: Add Grover test execution capability)
+
 ### Fixed
 - **Ingestion Runs Schema** - Fixed NOT NULL constraint violation
   - `completed_at` and `duration_ms` now allow NULL for in-progress ingestion runs
