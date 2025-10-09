@@ -326,6 +326,98 @@ export class PythonBridge {
   }
 
   /**
+   * Execute a single Grover program on test inputs to generate predictions
+   * @param program - Python code string defining transform() function
+   * @param testInputs - Test input grids to generate predictions for
+   * @returns Array of predicted output grids (or null for errors)
+   */
+  async runGroverTestExecution(
+    program: string,
+    testInputs: number[][][]
+  ): Promise<{ outputs: (number[][] | null)[]; error: string | null }> {
+    return new Promise((resolve, reject) => {
+      const pythonBin = this.resolvePythonBin();
+      const executorPath = path.join(process.cwd(), 'server', 'python', 'grover_executor.py');
+
+      const spawnOpts: SpawnOptions = {
+        cwd: path.dirname(executorPath),
+        stdio: ['pipe', 'pipe', 'pipe'],
+      };
+
+      const child = spawn(pythonBin, [executorPath], spawnOpts);
+
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        return reject(new Error('Python process streams not available'));
+      }
+
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      let stdoutData = '';
+      let stderrData = '';
+
+      child.stdout.on('data', (chunk) => {
+        stdoutData += chunk;
+      });
+
+      child.stderr.on('data', (chunk) => {
+        stderrData += chunk;
+      });
+
+      child.on('close', (code) => {
+        if (code !== 0) {
+          let errorDetail = stderrData.trim();
+          try {
+            const errorJson = JSON.parse(stderrData);
+            if (errorJson.message) {
+              errorDetail = errorJson.message;
+            }
+          } catch {
+            // Not JSON, use raw stderr
+          }
+          
+          return reject(new Error(`Python test executor failed (exit code ${code}): ${errorDetail}`));
+        }
+
+        try {
+          const lines = stdoutData.trim().split('\n');
+          if (lines.length === 0) {
+            return reject(new Error('Python test executor produced no output'));
+          }
+          
+          const lastLine = lines[lines.length - 1];
+          const result = JSON.parse(lastLine);
+
+          if (result.type === 'test_execution_result') {
+            resolve({ outputs: result.outputs, error: result.error });
+          } else if (result.type === 'error') {
+            reject(new Error(`Python test execution error: ${result.message}`));
+          } else {
+            reject(new Error(`Unexpected Python response type: ${result.type}`));
+          }
+        } catch (err) {
+          const parseError = err instanceof Error ? err.message : String(err);
+          const preview = stdoutData.substring(0, 200);
+          reject(new Error(`Failed to parse Python test executor output: ${parseError}\nOutput preview: ${preview}`));
+        }
+      });
+
+      child.on('error', (err) => {
+        reject(err);
+      });
+
+      // Send test execution payload (different structure than training)
+      const payload = JSON.stringify({ 
+        mode: 'test',
+        program, 
+        test_inputs: testInputs 
+      });
+      child.stdin.write(payload);
+      child.stdin.end();
+    });
+  }
+
+  /**
    * Generate grid visualizations via Python subprocess
    * @param grids - Array of 2D grids to visualize
    * @param taskId - Task identifier for file naming

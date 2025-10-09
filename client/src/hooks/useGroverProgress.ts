@@ -134,9 +134,59 @@ export function useGroverProgress(taskId: string | undefined) {
             const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
             
             // Capture ALL messages (not just specific phases)
-            if (msg) {
-              nextLogs.push(msg);
+            if (msg && !nextLogs.includes(msg)) {
+              const timestamp = new Date().toLocaleTimeString();
+              nextLogs.push(`[${timestamp}] ${msg}`);
               if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+            }
+
+            // CRITICAL: Show prompt payload when sent
+            if (data.promptPreview && data.phase === 'prompt_ready') {
+              const timestamp = new Date().toLocaleTimeString();
+              nextLogs.push(`[${timestamp}] ━━━━━━━━━━ PROMPT PAYLOAD (${data.promptLength || data.promptPreview.length} chars) ━━━━━━━━━━`);
+              nextLogs.push(data.promptPreview);
+              nextLogs.push(`[${timestamp}] ━━━━━━━━━━ END PROMPT ━━━━━━━━━━`);
+              if (data.conversationChain) {
+                nextLogs.push(`[${timestamp}] 🔗 Conversation Chain: ${data.conversationChain}`);
+              }
+            }
+
+            // Show token usage when response received
+            if (data.tokenUsage && data.phase === 'response_received') {
+              const timestamp = new Date().toLocaleTimeString();
+              nextLogs.push(`[${timestamp}] 📊 Token Usage: Input=${data.tokenUsage.input} Output=${data.tokenUsage.output} Total=${data.tokenUsage.total}`);
+              if (data.responseId) {
+                nextLogs.push(`[${timestamp}] 🆔 Response ID: ${data.responseId}`);
+              }
+            }
+
+            // Show programs extracted
+            if (data.programsExtracted && Array.isArray(data.programsExtracted)) {
+              const timestamp = new Date().toLocaleTimeString();
+              nextLogs.push(`[${timestamp}] 📝 Extracted ${data.programsExtracted.length} programs:`);
+              data.programsExtracted.forEach((prog: any, idx: number) => {
+                nextLogs.push(`[${timestamp}]   Program ${idx + 1}: ${prog.lines} lines`);
+              });
+            }
+
+            // Show execution summary
+            if (data.executionSummary) {
+              const timestamp = new Date().toLocaleTimeString();
+              const sum = data.executionSummary;
+              nextLogs.push(`[${timestamp}] 🐍 Execution Results: ${sum.successful}/${sum.total} successful, ${sum.failed} failed`);
+              if (sum.scores && sum.scores.length > 0) {
+                const scores = sum.scores.map((s: number) => s.toFixed(1)).join(', ');
+                nextLogs.push(`[${timestamp}]    Scores: [${scores}]`);
+              }
+            }
+
+            // Also capture phase changes as log entries
+            if (data.phase && data.phase !== prev.phase && data.phase !== 'prompt_ready' && data.phase !== 'response_received') {
+              const phaseMsg = `Phase: ${data.phase}`;
+              if (!nextLogs.includes(phaseMsg)) {
+                const timestamp = new Date().toLocaleTimeString();
+                nextLogs.push(`[${timestamp}] ${phaseMsg}`);
+              }
             }
 
             // Accumulate iterations

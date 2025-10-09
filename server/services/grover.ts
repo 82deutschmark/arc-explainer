@@ -8,7 +8,7 @@
  * shadcn/ui: Pass - Backend service, no UI components
  */
 
-import { ARCTask } from "../../shared/types.js";
+import { ARCTask, ARCExample } from "../../shared/types.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import type { PromptOptions } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
@@ -288,13 +288,13 @@ export class GroverService extends BaseAIService {
       throw error;
     }
 
-    // Build final response
-    return this.buildGroverResponse(
+    // Build final response with test predictions
+    return await this.buildGroverResponse(
       modelKey,
       temperature,
       iterations,
       bestProgram,
-      task.test[0]?.input || [],
+      task.test,
       serviceOpts
     );
   }
@@ -512,28 +512,54 @@ Error: ${r.error || "Incorrect output"}
 Generate new programs that build on successful patterns and avoid failures.`;
   }
 
-  private buildGroverResponse(
+  private async buildGroverResponse(
     modelKey: string,
     temperature: number,
     iterations: any[],
     bestProgram: string | null,
-    testInput: number[][],
+    testExamples: ARCExample[],
     serviceOpts: any
-  ): AIResponse {
-    // Execute best program on test input
-    let predictedOutput = null;
-    if (bestProgram) {
-      try {
-        const namespace: any = {};
-        // Note: In production, this would go through Python sandbox too
-        // For now, just store the program
-      } catch (e) {
-        logger.service(this.provider, `Failed to execute best program: ${e}`, 'warn');
-      }
-    }
-
+  ): Promise<AIResponse> {
     const lastIteration = iterations[iterations.length - 1];
     const finalScore = lastIteration?.best?.score || 0;
+    
+    // Execute best program on test inputs to generate predictions
+    let predictedOutput = null;
+    let multiplePredictedOutputs: (number[][] | null)[] | null = null;
+    let hasMultiplePredictions = false;
+
+    if (bestProgram && testExamples.length > 0) {
+      try {
+        const testInputs = testExamples.map(ex => ex.input);
+        logger.service(this.provider, `Executing best program on ${testInputs.length} test input(s)...`);
+        
+        const executionResult = await pythonBridge.runGroverTestExecution(bestProgram, testInputs);
+        
+        if (executionResult.error) {
+          logger.service(this.provider, `Test execution error: ${executionResult.error}`, 'warn');
+          // Leave predictions as null if execution failed
+        } else if (executionResult.outputs && executionResult.outputs.length > 0) {
+          if (testInputs.length === 1) {
+            // Single test: use predictedOutput
+            predictedOutput = executionResult.outputs[0];
+            logger.service(this.provider, `✅ Generated prediction for single test`);
+          } else {
+            // Multiple tests: use multiplePredictedOutputs
+            hasMultiplePredictions = true;
+            multiplePredictedOutputs = executionResult.outputs;
+            // Also set numbered fields for validation compatibility
+            (executionResult.outputs as (number[][] | null)[]).forEach((output, idx) => {
+              (serviceOpts as any)[`predictedOutput${idx + 1}`] = output;
+            });
+            logger.service(this.provider, `✅ Generated ${multiplePredictedOutputs.length} predictions for multi-test puzzle`);
+          }
+        }
+      } catch (e) {
+        const errorMsg = e instanceof Error ? e.message : String(e);
+        logger.service(this.provider, `Failed to execute best program on test inputs: ${errorMsg}`, 'warn');
+        // Leave predictions as null if execution failed
+      }
+    }
 
     // Build final response with all required fields
     const finalResponse: AIResponse = {
@@ -547,9 +573,11 @@ Generate new programs that build on successful patterns and avoid failures.`;
       solvingStrategy: bestProgram || "No successful program found",
       hints: [`Final score: ${finalScore.toFixed(1)}/10`, `Iterations: ${iterations.length}`],
       confidence: Math.round((finalScore / 10) * 100),
-      // Prediction fields
+      // Prediction fields (CRITICAL: populated from test execution)
       predictedOutput: predictedOutput,
       predictedOutputGrid: predictedOutput,
+      hasMultiplePredictions,
+      multiplePredictedOutputs,
       // Reasoning fields
       reasoningLog: null,
       hasReasoningLog: true,
