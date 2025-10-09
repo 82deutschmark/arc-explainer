@@ -16,31 +16,37 @@ import { ChevronDown, ChevronUp, CheckCircle2, Loader2, Clock } from 'lucide-rea
 import type { GroverIteration } from '@/hooks/useGroverProgress';
 
 // Iteration strategies from Grover algorithm (credit: Zoe Carver)
-const ITERATION_STRATEGIES: Record<number, { title: string; description: string; details: string }> = {
+// Based on quantum search: oracle (execution) + diffusion (context reordering) = amplitude amplification
+const ITERATION_STRATEGIES: Record<number, { title: string; description: string; details: string; oracle: string }> = {
   1: {
-    title: 'Initial Exploration',
-    description: 'Generate 3-5 diverse program attempts to explore solution space',
-    details: 'First iteration establishes baseline. Programs executed on training samples and graded 0-10. Best attempts positioned LAST in context for maximum attention weight.'
+    title: '🔍 Initial Exploration (Baseline)',
+    description: 'Generate 3-5 diverse programs to establish superposition across solution space',
+    details: 'Programs executed on training samples and graded 0-10 by LLM. Attempts sorted by score with BEST positioned LAST in context for maximum attention weight. Failed attempts kept to show dead ends.',
+    oracle: 'Oracle: Python execution on training examples marks which attempts are closer to correct'
   },
   2: {
-    title: 'Visual Analysis',
-    description: 'Include visual analysis with images to guide pattern recognition',
-    details: 'Adds image-based analysis to help model see visual patterns. Context now saturated with iteration 1 results. High-scoring programs from iteration 1 influence this generation.'
+    title: '🖼️ Visual Analysis (Productive Entropy)',
+    description: 'Add image-based analysis while keeping context-free attempts',
+    details: 'Visual analysis helps some problems (e3721c99, 58f5dbd5, 8f215267) but can anchor model to wrong paths if incorrect. Context-free attempts with different seeds allow exploration without constraints. Context saturated with iteration 1 results.',
+    oracle: 'Diffusion: Grading creates fitness landscape. Attention flows toward high-scoring patterns'
   },
   3: {
-    title: 'Color Normalization',
-    description: 'Use color-normalized problem representations',
-    details: 'Provides alternative color mappings to break anchoring on specific colors. Context-free attempts with different seeds encourage exploration of new solution paths.'
+    title: '🎨 Color Normalization (Break Anchoring)',
+    description: 'Alternative color mappings to prevent fixation on specific colors',
+    details: 'Provides color-normalized representations. Context-free attempts continue to explore untainted solution paths. Accumulated context from iterations 1-2 guides generation while allowing divergence.',
+    oracle: 'Amplitude Amplification: Probability mass concentrates on promising solution patterns'
   },
   4: {
-    title: 'Full Visual Context',
-    description: 'Include all training images and test input images directly',
-    details: 'Maximum visual information provided. Model sees actual grids as images. Context saturated with best attempts from all previous iterations.'
+    title: '📊 Full Visual Context (Maximum Information)',
+    description: 'All training images + test input images provided directly to LLM',
+    details: 'Maximum visual information. Model sees actual grids as images. Context saturated with best attempts from ALL previous iterations. Failed solutions help model avoid repeating mistakes.',
+    oracle: 'Context Saturation: More relevant context = more productive attention connections'
   },
   5: {
-    title: 'Context Refinement',
-    description: 'Full context after removing low-scoring attempts',
-    details: 'Final iteration with pruned context. Only highest-quality attempts remain. Model makes final refinement based on accumulated knowledge.'
+    title: '✨ Context Refinement (Convergence)',
+    description: 'Pruned context with only highest-quality attempts',
+    details: 'Low-scoring attempts removed. Only best programs remain, positioned last for maximum influence. Model converges on solution through accumulated feedback. Early exit if 10/10 scores achieved.',
+    oracle: 'Final Amplification: Probability mass concentrated on correct solution region'
   }
 };
 
@@ -127,21 +133,24 @@ export function IterationCard({
         {/* Strategy explanation - ALWAYS show */}
         <div className="mt-2">
           {ITERATION_STRATEGIES[iteration] && (
-            <div className="bg-blue-50 p-2 rounded">
-              <div className="text-xs font-semibold text-blue-900">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200">
+              <div className="text-xs font-bold text-blue-900 mb-1">
                 {ITERATION_STRATEGIES[iteration].title}
               </div>
-              <div className="text-xs text-blue-800 mt-1">
+              <div className="text-xs text-blue-800 font-medium mb-1.5">
                 {ITERATION_STRATEGIES[iteration].description}
               </div>
-              <div className="text-xs text-blue-700 mt-1 leading-relaxed">
+              <div className="text-xs text-blue-700 leading-relaxed mb-1.5">
                 {ITERATION_STRATEGIES[iteration].details}
+              </div>
+              <div className="text-xs text-purple-700 italic bg-purple-50/50 p-1.5 rounded border-l-2 border-purple-400">
+                {ITERATION_STRATEGIES[iteration].oracle}
               </div>
             </div>
           )}
           {isActive && message && (
-            <div className="mt-2 text-xs text-gray-600 bg-gray-50 p-2 rounded">
-              <span className="font-medium">Current: </span>{message}
+            <div className="mt-2 text-xs text-gray-700 bg-yellow-50 p-2 rounded border border-yellow-200">
+              <span className="font-semibold">⏳ Current: </span>{message}
             </div>
           )}
         </div>
