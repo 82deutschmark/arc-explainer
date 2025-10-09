@@ -235,6 +235,78 @@ export class PythonBridge {
       });
     });
   }
+
+  /**
+   * Execute Grover-generated programs in Python sandbox
+   * @param programs - Array of Python code strings
+   * @param trainingInputs - Training input grids
+   * @returns Execution results with scores
+   */
+  async runGroverExecution(
+    programs: string[],
+    trainingInputs: number[][][]
+  ): Promise<{ results: any[] }> {
+    return new Promise((resolve, reject) => {
+      const pythonBin = this.resolvePythonBin();
+      const executorPath = path.join(process.cwd(), 'server', 'python', 'grover_executor.py');
+
+      const spawnOpts: SpawnOptions = {
+        cwd: path.dirname(executorPath),
+        stdio: ['pipe', 'pipe', 'pipe'],
+      };
+
+      const child = spawn(pythonBin, [executorPath], spawnOpts);
+
+      if (!child.stdout || !child.stderr || !child.stdin) {
+        return reject(new Error('Python process streams not available'));
+      }
+
+      child.stdout.setEncoding('utf8');
+      child.stderr.setEncoding('utf8');
+
+      let stdoutData = '';
+      let stderrData = '';
+
+      child.stdout.on('data', (chunk) => {
+        stdoutData += chunk;
+      });
+
+      child.stderr.on('data', (chunk) => {
+        stderrData += chunk;
+      });
+
+      child.on('close', (code) => {
+        if (code !== 0) {
+          return reject(new Error(`Grover executor failed: ${stderrData}`));
+        }
+
+        try {
+          const lines = stdoutData.trim().split('\n');
+          const lastLine = lines[lines.length - 1];
+          const result = JSON.parse(lastLine);
+
+          if (result.type === 'execution_results') {
+            resolve({ results: result.results });
+          } else if (result.type === 'error') {
+            reject(new Error(result.message));
+          } else {
+            reject(new Error(`Unexpected response: ${lastLine}`));
+          }
+        } catch (err) {
+          reject(new Error(`Failed to parse Grover executor output: ${err}`));
+        }
+      });
+
+      child.on('error', (err) => {
+        reject(err);
+      });
+
+      // Send payload
+      const payload = JSON.stringify({ programs, training_inputs: trainingInputs });
+      child.stdin.write(payload);
+      child.stdin.end();
+    });
+  }
 }
 
 export const pythonBridge = new PythonBridge();
