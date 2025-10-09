@@ -1,27 +1,33 @@
 ## [2025-10-09]
 
-### Version 3.9.3 - Grover Prediction Persistence Fix
-- **FIXED: Grover solver predictions now persist to database correctly**
-  - **Root Cause**: Best program only executed on training inputs during iterative search, never on test inputs
-  - **Impact**: All Grover results saved with NULL predictions, excluded from analytics/leaderboards
-  - **Solution Implemented**:
-    1. Extended `grover_executor.py` to support dual-mode execution (training + test)
-    2. Added `pythonBridge.runGroverTestExecution()` for test-time prediction generation
-    3. Modified `buildGroverResponse()` to execute best program on test inputs after iterations complete
-    4. Added final solver validation (validateSolverResponse/Multi) to compute correctness metrics
-    5. Integrated with existing explanationService persistence pipeline
-  - **Two Validation Systems**:
-    - **Training-Time**: LLM grades programs 0-10 on training data during search (optimization metric)
-    - **Test-Time**: Binary correctness check on test data for database (evaluation metric)
-  - **Database Fields Now Populated**:
+### Work In Progress - Version 3.9.3
+- **Grover Prediction Persistence** - Fixing systematic null prediction issue (IN PROGRESS - NOT TESTED)
+  - **Problem Identified**: Grover solver results never include predicted grids in database
+    - Root cause: Best program only executed on training inputs during iterative search, never on test inputs
+    - Never run on test inputs to generate actual predictions for database
+    - Results in NULL `predicted_output_grid`, `multi_test_prediction_grids`, all correctness fields
+    - Excludes Grover from analytics, leaderboards, accuracy calculations
+  - **Two Validation Systems Clarified**:
+    1. **Internal Iterative Validation** (Training-Time): LLM grades programs 0-10 on training data to guide search (optimization metric)
+    2. **Final Solver Validation** (Test-Time): Binary correctness checking against test outputs for database (evaluation metric)
+  - **Implementation Progress (Steps 1-5 of 5)**:
+    - Step 1: Extended `grover_executor.py` to support dual-mode execution (accepts `mode: "test"` parameter)
+    - Step 2: Added `pythonBridge.runGroverTestExecution()` to run single program on test inputs
+    - Step 3: Modified `buildGroverResponse()` to execute best program on test inputs and populate prediction fields
+    - Step 4: Added validation calls (validateSolverResponse/Multi) to compute correctness metrics after predictions generated
+    - Step 5: **NOT TESTED** - Need E2E verification with real Grover run to verify database fields actually populate
+  - **Code Changes Made**:
+    - `server/python/grover_executor.py`: Added mode parameter, test execution path
+    - `server/services/pythonBridge.ts`: New `runGroverTestExecution()` method
+    - `server/services/grover.ts`: Import validation functions, execute on test inputs, call validators, populate response fields
+  - **Documentation**: Added `docs/2025-10-09-grover-validation-architecture.md` explaining dual validation system
+  - **Database Fields Expected to Populate** (UNVERIFIED):
     - Single-test: `predicted_output_grid`, `is_prediction_correct`, `prediction_accuracy_score`
     - Multi-test: `has_multiple_predictions`, `multi_test_prediction_grids`, `multi_test_all_correct`, `multi_test_average_accuracy`
-  - **Files Modified**: 
-    - `server/python/grover_executor.py` (dual-mode execution support)
-    - `server/services/pythonBridge.ts` (test execution bridge method)
-    - `server/services/grover.ts` (test prediction + validation integration)
-  - **Documentation**: Added `docs/2025-10-09-grover-validation-architecture.md` explaining dual validation system
-  - **Commits**: ac833eb (test execution), 84b6de5 (docs), [final commit]
+  - **Status**: Implementation complete but **ZERO E2E TESTING**. Following E2E Assessment findings - need to actually run Grover and verify database before declaring complete.
+  - **Risk**: Per `docs/09102025-Grover-E2E-Assessment.md`, 3 critical bugs were found during that session without testing. This implementation adds more untested code on top of partially tested code.
+  - **Next Steps**: Run Grover solver on test puzzle, check database fields, verify predictions are correct, verify validation metrics computed correctly
+  - **Commits**: ac833eb (test execution infrastructure), 84b6de5 (docs + changelog), [uncommitted validation integration]
 
 ### Version 3.9.1
 
