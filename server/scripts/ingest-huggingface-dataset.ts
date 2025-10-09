@@ -437,7 +437,9 @@ async function processPuzzle(
     ];
     
     let totalSaved = 0;
-    let totalCorrect = 0;
+    let totalCorrect = 0; // Count of attempts where ALL predictions were correct
+    let totalPredictionsMade = 0; // Total individual predictions across all attempts
+    let totalPredictionsCorrect = 0; // Total correct individual predictions
     
     for (const { attemptNumber, predictions } of attemptGroups) {
       if (predictions.length === 0) {
@@ -491,6 +493,17 @@ async function processPuzzle(
         if (isCorrect) {
           totalCorrect++;
         }
+        
+        // Track individual prediction correctness for aggregate summary
+        if (isMultiTest && enrichedData.multiTestResults) {
+          const numTests = enrichedData.multiTestResults.length;
+          const numCorrect = enrichedData.multiTestResults.filter((r: any) => r.isPredictionCorrect).length;
+          totalPredictionsMade += numTests;
+          totalPredictionsCorrect += numCorrect;
+        } else if (!isMultiTest) {
+          totalPredictionsMade += 1;
+          totalPredictionsCorrect += (enrichedData.isPredictionCorrect ? 1 : 0);
+        }
 
         progress.successDetails.push({
           puzzleId: `${puzzleId}-attempt${attemptNumber}`,
@@ -503,10 +516,32 @@ async function processPuzzle(
       }
     }
     
-    // Summary
+    // Summary - show both attempt-level and prediction-level correctness
     if (totalSaved > 0) {
-      const statusIcon = totalCorrect === 2 ? '✅' : totalCorrect > 0 ? '⚠️' : '❌';
-      console.log(`${statusIcon} ${puzzleId} - Saved ${totalSaved}/2 attempts (${totalCorrect} correct)`);
+      const allAttemptsCorrect = totalCorrect === 2;
+      const someAttemptsCorrect = totalCorrect > 0 && totalCorrect < 2;
+      const noAttemptsCorrect = totalCorrect === 0;
+      
+      let statusIcon: string;
+      let attemptSummary: string;
+      
+      if (allAttemptsCorrect) {
+        statusIcon = '✅';
+        attemptSummary = 'both attempts fully correct';
+      } else if (someAttemptsCorrect) {
+        statusIcon = '⚠️';
+        attemptSummary = `${totalCorrect} attempt fully correct`;
+      } else {
+        statusIcon = '❌';
+        attemptSummary = 'no attempts fully correct';
+      }
+      
+      // Show aggregate prediction correctness
+      const predictionPercentage = totalPredictionsMade > 0 
+        ? ((totalPredictionsCorrect / totalPredictionsMade) * 100).toFixed(1)
+        : '0.0';
+      
+      console.log(`${statusIcon} ${puzzleId} - Saved ${totalSaved}/2 attempts | Predictions: ${totalPredictionsCorrect}/${totalPredictionsMade} correct (${predictionPercentage}%)`);
     }
     
   } catch (error: any) {
