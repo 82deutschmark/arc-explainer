@@ -148,33 +148,74 @@ export default function GroverSolver() {
         </div>
       </div>
 
-      {/* Compact Status Bar */}
-      <div className="mb-2 p-2 bg-gray-50 rounded border flex items-center justify-between text-xs">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            {isRunning && <Loader2 className="h-3 w-3 animate-spin" />}
+      {/* Visual Status Panel */}
+      {isRunning && (
+        <Card className="mb-3 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold text-blue-800">{state.iteration || 0}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-bold text-blue-900">
+                    {state.phase === 'prompt_ready' && '📤 Sending Prompt'}
+                    {state.phase === 'waiting_llm' && '⏳ Waiting for AI Response'}
+                    {state.phase === 'response_received' && '✅ Response Received'}
+                    {state.phase === 'programs_extracted' && '📝 Extracting Programs'}
+                    {state.phase === 'execution' && '🐍 Executing Programs'}
+                    {state.phase === 'iteration_complete' && '🎯 Iteration Complete'}
+                    {!state.phase && 'Processing...'}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      Iteration {state.iteration}/{state.totalIterations || 5}
+                    </Badge>
+                    {state.bestScore !== undefined && (
+                      <Badge className="bg-green-600 text-xs">
+                        Best: {state.bestScore.toFixed(1)}/10
+                      </Badge>
+                    )}
+                    {startTime && (
+                      <Badge variant="outline" className="text-xs">{getElapsedTime()}</Badge>
+                    )}
+                  </div>
+                </div>
+                {state.message && (
+                  <p className="text-sm text-gray-700 mb-2">{state.message}</p>
+                )}
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 transition-all duration-500 ease-out"
+                    style={{ width: `${((state.iteration || 0) / (state.totalIterations || 5)) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Compact Status Bar (when not running) */}
+      {!isRunning && (
+        <div className="mb-2 p-2 bg-gray-50 rounded border flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3">
             <Badge variant={isDone ? 'default' : hasError ? 'destructive' : 'secondary'} className="text-xs py-0">
               {state.status}
             </Badge>
+            {state.bestScore !== undefined && (
+              <Badge variant="default" className="bg-green-600 text-xs py-0">
+                Best: {state.bestScore.toFixed(1)}/10
+              </Badge>
+            )}
           </div>
-          {state.iteration !== undefined && (
-            <span className="text-gray-600 text-xs">
-              Iter: <strong>{state.iteration}/{state.totalIterations || 5}</strong>
-            </span>
-          )}
-          {state.bestScore !== undefined && (
-            <Badge variant="default" className="bg-green-600 text-xs py-0">
-              {state.bestScore.toFixed(1)}/10
-            </Badge>
-          )}
-          {startTime && (
-            <Badge variant="outline" className="text-xs py-0">{getElapsedTime()}</Badge>
-          )}
         </div>
-        {state.message && (
-          <span className="text-gray-600 text-xs max-w-md truncate">{state.message}</span>
-        )}
-      </div>
+      )}
 
       {/* Iteration Timeline */}
       <div className="mb-3 space-y-0">
@@ -206,42 +247,31 @@ export default function GroverSolver() {
         })}
       </div>
 
-      {/* Search Visualization */}
-      {state.iterations && state.iterations.length > 0 && (
-        <div className="mb-3">
-          <SearchVisualization 
-            iterations={state.iterations}
-            currentIteration={state.iteration}
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
+        {/* Left Column - Visualizations */}
+        <div className="lg:col-span-2 space-y-3">
+          {/* Search Visualization */}
+          {state.iterations && state.iterations.length > 0 && (
+            <SearchVisualization 
+              iterations={state.iterations}
+              currentIteration={state.iteration}
+            />
+          )}
+
+          {/* Conversation Chain */}
+          <ConversationChainViewer
+            hasChain={isRunning || isDone}
+            iterationCount={state.iterations?.length || 0}
           />
         </div>
-      )}
 
-      {/* Conversation Chain */}
-      <div className="mb-3">
-        <ConversationChainViewer
-          hasChain={isRunning || isDone}
-          iterationCount={state.iterations?.length || 0}
-        />
-      </div>
-
-      {/* Live Activity Stream */}
-      <div className="mb-3">
-        <LiveActivityStream
-          logs={state.logLines || []}
-          maxHeight="200px"
-        />
-      </div>
-
-      {/* Attribution & Info */}
-      <div className="text-xs text-gray-500 text-center py-3 border-t">
-        <div className="mb-1">
-          <strong>Quantum-Inspired Iterative Search</strong> • 38% success rate on ARC-AGI-2
-        </div>
-        <div className="text-[11px]">
-          Program synthesis with oracle-driven amplitude amplification • Context saturation • $0.24/problem
-        </div>
-        <div className="mt-1">
-          <Link href={`/puzzle/${taskId}`} className="underline hover:text-blue-600">View puzzle details</Link>
+        {/* Right Column - Live Activity */}
+        <div className="lg:col-span-1">
+          <LiveActivityStream
+            logs={state.logLines || []}
+            maxHeight="600px"
+          />
         </div>
       </div>
     </div>

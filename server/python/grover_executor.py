@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Author: Sonnet 4.5
-Date: 2025-10-08
+Author: Cascade using Sonnet 4.5
+Date: 2025-10-09
 PURPOSE: Grover code execution sandbox - executes LLM-generated Python code safely.
-Reads stdin: {"programs": [...], "training_inputs": [...]}
+Supports two modes:
+  1. Training mode: {"programs": [...], "training_inputs": [...]}
+  2. Test mode: {"mode": "test", "program": "...", "test_inputs": [...]}
 Writes stdout: NDJSON events with execution results
 SRP/DRY check: Pass - Single responsibility (safe code execution only)
 """
@@ -103,22 +105,47 @@ def main():
     """Main entry point - reads stdin, executes, writes stdout"""
     try:
         payload = json.loads(sys.stdin.read())
-        programs = payload.get('programs', [])
-        training_inputs = payload.get('training_inputs', [])
+        mode = payload.get('mode', 'training')
+        
+        if mode == 'test':
+            # Test execution mode: single program on test inputs
+            program = payload.get('program', '')
+            test_inputs = payload.get('test_inputs', [])
+            
+            if not program:
+                raise ValueError("Test mode requires 'program' field")
+            if not test_inputs:
+                raise ValueError("Test mode requires 'test_inputs' field")
+            
+            result = execute_program(program, test_inputs)
+            
+            # Output test execution result
+            sys.stdout.write(json.dumps({
+                "type": "test_execution_result", 
+                "outputs": result["outputs"],
+                "error": result["error"]
+            }) + "\n")
+            sys.stdout.flush()
+            return 0
+            
+        else:
+            # Training mode: multiple programs on training inputs
+            programs = payload.get('programs', [])
+            training_inputs = payload.get('training_inputs', [])
 
-        results = []
-        for idx, code in enumerate(programs):
-            result = execute_program(code, training_inputs)
-            results.append({
-                "programIdx": idx,
-                "code": code,
-                **result
-            })
+            results = []
+            for idx, code in enumerate(programs):
+                result = execute_program(code, training_inputs)
+                results.append({
+                    "programIdx": idx,
+                    "code": code,
+                    **result
+                })
 
-        # Output NDJSON
-        sys.stdout.write(json.dumps({"type": "execution_results", "results": results}) + "\n")
-        sys.stdout.flush()
-        return 0
+            # Output NDJSON
+            sys.stdout.write(json.dumps({"type": "execution_results", "results": results}) + "\n")
+            sys.stdout.flush()
+            return 0
 
     except Exception as e:
         sys.stderr.write(json.dumps({"type": "error", "message": str(e)}) + "\n")
