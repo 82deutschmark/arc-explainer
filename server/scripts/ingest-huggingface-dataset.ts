@@ -230,7 +230,7 @@ async function validateAndEnrichAggregatedAttempt(
       multiResponse,
       expectedOutputs,
       'external-huggingface',
-      0 // External data has no confidence - use 0 for pure correctness scoring
+      null // External data has NO confidence - calculate pure correctness rate (not trustworthiness)
     );
     
     if (config.verbose) {
@@ -254,7 +254,7 @@ async function validateAndEnrichAggregatedAttempt(
       { predictedOutput: predictedGrids[0] },
       expectedOutputs[0],
       'external-huggingface',
-      0 // External data has no confidence - use 0 for pure correctness scoring
+      null // External data has NO confidence - calculate pure correctness (not trustworthiness)
     );
 
     if (config.verbose) {

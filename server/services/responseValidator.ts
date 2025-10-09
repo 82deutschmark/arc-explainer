@@ -391,14 +391,32 @@ function gridsAreEqual(grid1: number[][], grid2: number[][]): boolean {
 }
 
 /**
- * Calculates prediction accuracy score based on correctness and confidence
- * Rewards honest uncertainty and penalizes overconfidence
+ * Calculates TRUSTWORTHINESS based on correctness and confidence
  * 
- * Perfect Calibration: 0% confidence + wrong = 100% confidence + correct = 1.0 score
- * Honest Low Confidence: Low confidence + wrong gets rewarded
- * Dangerous Overconfidence: 95%+ confidence + wrong gets heavily penalized
+ * ⚠️ CRITICAL: This is NOT accuracy! This is a confidence calibration metric.
+ * Only use for internal AI predictions WITH confidence scores.
+ * For external data WITHOUT confidence, use pure correctness (0 or 1).
+ * 
+ * Rewards honest uncertainty and penalizes overconfidence:
+ * - Perfect Calibration: 0% confidence + wrong = 100% confidence + correct = 1.0 score
+ * - Honest Low Confidence: Low confidence + wrong gets rewarded  
+ * - Dangerous Overconfidence: 95%+ confidence + wrong gets heavily penalized
+ * 
+ * @param isCorrect - Whether the prediction was correct
+ * @param confidence - Confidence level (1-100). Use null for external data.
+ * @param hasConfidence - Whether confidence data is available (false for external/HF data)
+ * @returns Trustworthiness score (0-1) or pure correctness if no confidence
  */
-function calculateAccuracyScore(isCorrect: boolean, confidence: number): number {
+function calculateTrustworthinessScore(
+  isCorrect: boolean, 
+  confidence: number | null,
+  hasConfidence: boolean = true
+): number {
+  // For external data without confidence, return pure correctness
+  if (!hasConfidence || confidence === null) {
+    return isCorrect ? 1.0 : 0.0;
+  }
+  
   // Normalize confidence to 0-1 range
   const normalizedConfidence = Math.max(0, Math.min(100, confidence)) / 100;
   
@@ -417,12 +435,21 @@ function calculateAccuracyScore(isCorrect: boolean, confidence: number): number 
 /**
  * Main validation function for solver mode responses
  * Works directly with arcJsonSchema.ts structure - no parsing needed
+ * 
+ * ⚠️ CRITICAL: For external data without confidence (e.g., HuggingFace), pass confidence=null
+ * This will calculate pure correctness (0 or 1) instead of trustworthiness.
+ * 
+ * @param response - AI response with predicted output
+ * @param correctAnswer - Expected correct output
+ * @param promptId - Prompt identifier
+ * @param confidence - Confidence level (1-100) or null for external data
+ * @returns ValidationResult with correctness and trustworthiness/correctness score
  */
 export function validateSolverResponse(
   response: any,
   correctAnswer: number[][],
   promptId: string,
-  confidence: number = 50
+  confidence: number | null = 50
 ): ValidationResult {
   // Validate solver mode responses AND custom prompts that may be attempting to solve
   // Custom prompts often ask AI to predict answers, so they should be validated too
@@ -443,7 +470,11 @@ export function validateSolverResponse(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
+  // For external data, confidence will be null
+  const actualConfidence = typeof analysisData.confidence === 'number' 
+    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+    : confidence;
+  const hasConfidence = actualConfidence !== null;
 
   // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
   const predictedGrid = analysisData.predictedOutput;
@@ -452,7 +483,7 @@ export function validateSolverResponse(
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
-      predictionAccuracyScore: calculateAccuracyScore(false, actualConfidence),
+      predictionAccuracyScore: calculateTrustworthinessScore(false, actualConfidence, hasConfidence),
       extractionMethod: 'no_predicted_output'
     };
   }
@@ -460,7 +491,7 @@ export function validateSolverResponse(
   // Validate dimensions and correctness
   const dimensionsMatch = validateGridDimensions(predictedGrid, correctAnswer);
   const isCorrect = dimensionsMatch && gridsAreEqual(predictedGrid, correctAnswer);
-  const accuracyScore = calculateAccuracyScore(isCorrect, actualConfidence);
+  const accuracyScore = calculateTrustworthinessScore(isCorrect, actualConfidence, hasConfidence);
 
   return {
     predictedGrid,
@@ -473,12 +504,21 @@ export function validateSolverResponse(
 /**
  * Multi-test validation for solver responses  
  * Works directly with arcJsonSchema.ts structure - no parsing needed
+ * 
+ * ⚠️ CRITICAL: For external data without confidence (e.g., HuggingFace), pass confidence=null
+ * This will calculate pure correctness rate instead of trustworthiness.
+ * 
+ * @param response - AI response with predicted outputs
+ * @param correctAnswers - Expected correct outputs for all test cases
+ * @param promptId - Prompt identifier
+ * @param confidence - Confidence level (1-100) or null for external data
+ * @returns MultiValidationResult with correctness and trustworthiness/correctness scores
  */
 export function validateSolverResponseMulti(
   response: any,
   correctAnswers: number[][][],
   promptId: string,
-  confidence: number = 50
+  confidence: number | null = 50
 ): MultiValidationResult {
   // EMERGENCY DEBUG: Log the exact structure being passed to validator
   if (process.env.VALIDATOR_DEBUG === 'true') {
@@ -509,7 +549,11 @@ export function validateSolverResponseMulti(
   const analysisData = response.result || response;
 
   // Use clean confidence from arcJsonSchema response or nested structure
-  const actualConfidence = typeof analysisData.confidence === 'number' ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) : confidence;
+  // For external data, confidence will be null
+  const actualConfidence = typeof analysisData.confidence === 'number' 
+    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+    : confidence;
+  const hasConfidence = actualConfidence !== null;
 
   // CRITICAL FIX: Extract grids from _rawResponse where they actually exist
   const rawResponse = response._rawResponse || response._providerRawResponse || {};
@@ -533,7 +577,7 @@ export function validateSolverResponseMulti(
     const predicted = predictedGrids[i];
 
     if (!predicted || !Array.isArray(predicted)) {
-      const score = calculateAccuracyScore(false, actualConfidence);
+      const score = calculateTrustworthinessScore(false, actualConfidence, hasConfidence);
       itemResults.push({
         index: i,
         predictedGrid: null,
@@ -549,7 +593,7 @@ export function validateSolverResponseMulti(
 
     const dimensionsMatch = validateGridDimensions(predicted, expected);
     const isCorrect = dimensionsMatch && gridsAreEqual(predicted, expected);
-    const score = calculateAccuracyScore(isCorrect, actualConfidence);
+    const score = calculateTrustworthinessScore(isCorrect, actualConfidence, hasConfidence);
     
     itemResults.push({
       index: i,
@@ -563,17 +607,19 @@ export function validateSolverResponseMulti(
     if (!isCorrect) allCorrect = false;
   }
 
-  const averageAccuracyScore = itemResults.length ? totalScore / itemResults.length : 0;
+  const averageScore = itemResults.length ? totalScore / itemResults.length : 0;
 
   // Return database-compatible field names for direct storage
   // CRITICAL FIX: Field names now match ExplanationRepository database schema
+  // NOTE: multiTestAverageAccuracy contains TRUSTWORTHINESS for internal predictions (with confidence)
+  //       or pure CORRECTNESS RATE for external data (without confidence)
   return {
     hasMultiplePredictions: true,                    // This is a multi-test case
     multiplePredictedOutputs: predictedGrids,        // All prediction grids
     multiTestResults: itemResults,                   // Detailed validation results per test
     multiTestAllCorrect: allCorrect,                 // Overall correctness flag
-    multiTestAverageAccuracy: averageAccuracyScore,  // Average accuracy score
+    multiTestAverageAccuracy: averageScore,          // TRUSTWORTHINESS (with confidence) or CORRECTNESS RATE (without)
     multiTestPredictionGrids: predictedGrids,        // Grid storage (same as multiplePredictedOutputs for consistency)
     extractionMethodSummary: 'arcJsonSchema_clean'  // Debug/logging info
   };
-}
+}

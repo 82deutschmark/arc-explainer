@@ -16,7 +16,7 @@
 - **HuggingFace Ingestion Display Bugs** - Fixed misleading accuracy reporting
   - **Problem 1**: "Average accuracy: 50.0%" shown for ALL incorrect predictions
     - Root cause: Passing `undefined` confidence defaulted to 50, creating hallucinated scores
-    - Fixed by passing `confidence: 0` for external data (pure correctness, no confidence weighting)
+    - Fixed by passing `confidence: null` for external data (pure correctness, no confidence weighting)
   - **Problem 2**: "Multi-test: Some incorrect" shown even when ALL predictions wrong
     - Root cause: Binary logic couldn't distinguish "all wrong" vs "some wrong"
     - Fixed by counting actual correct/incorrect predictions and showing accurate labels:
@@ -25,6 +25,18 @@
       - "Partially correct (N/M) ⚠️" for mixed results
   - Now displays "Correctness rate: N/M (X%)" instead of misleading "Average accuracy"
   - Single-test now shows "Correctness: 100.0% or 0.0%" instead of confusing accuracy scores
+
+- **CRITICAL: Trustworthiness vs Accuracy Confusion** - Fixed systemic conceptual error
+  - **Root Issue**: `calculateAccuracyScore()` was misnamed - it calculates TRUSTWORTHINESS (confidence calibration), NOT accuracy
+  - **Impact**: `multiTestAverageAccuracy` field stores trustworthiness for internal predictions, correctness rate for external data
+  - **Changes**:
+    - Renamed `calculateAccuracyScore()` → `calculateTrustworthinessScore()`
+    - Added `hasConfidence` parameter to distinguish internal AI (with confidence) vs external HF data (without)
+    - For external data (confidence=null): Returns pure correctness (0.0 or 1.0)
+    - For internal AI predictions: Returns trustworthiness score based on confidence calibration
+    - Updated both `validateSolverResponse()` and `validateSolverResponseMulti()` to accept `confidence: number | null`
+  - **Files Modified**: `server/services/responseValidator.ts`, `server/scripts/ingest-huggingface-dataset.ts`
+  - **Note**: Database field `multi_test_average_accuracy` is misnamed - contains trustworthiness OR correctness depending on data source
 
 ## v3.9.0 - Saturn Architectural Fix COMPLETE
 
