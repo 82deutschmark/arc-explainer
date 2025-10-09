@@ -1,5 +1,107 @@
 ## [2025-10-08]
 
+## v3.8.2 - Progressive Reasoning Fixes & GPT-5 Family Support
+
+### Fixed
+- **CRITICAL: Corrected Time Estimates** (Documentation Bug)
+  - Previous docs incorrectly stated "20-24 hours" for progressive reasoning
+  - **Reality**: All puzzles run in PARALLEL with staggered starts
+  - **Actual time**: ~20-30 minutes for 115 puzzles (not hours!)
+  - Rate limits are about requests/second, NOT concurrent execution
+  - Pattern: Fire all 115 requests with 1s stagger (takes 2 minutes), then wait for all to complete
+  - Files: `docs/08102025-Progressive-Reasoning-Workflow.md`, `scripts/README.md`
+
+- **Stagger Delay Adjustment**
+  - Changed `PUZZLE_STAGGER_MS` from `0` to `1000` (1 second)
+  - Prevents rate limit burst by spacing request starts
+  - Doesn't affect parallelism - all still run simultaneously
+  - File: `scripts/grok-4-progressive-reasoning.ts`
+
+### Added
+- **GPT-5 Model Family Support** (get-unsolved-puzzles.ts only)
+  - When fetching unsolved puzzles for ANY GPT-5 model, checks ALL variants
+  - Puzzle is "solved" if ANY GPT-5 variant (regular/mini/nano/chat) solved it
+  - Prevents wasted API calls on puzzles already solved by sibling models
+  - **Example Results:**
+    - Total: 120 ARC2-Eval puzzles
+    - Solved by ANY GPT-5 variant: 6 (gpt-5: 3, gpt-5-mini: 3)
+    - Unsolved by ALL variants: 114
+  - **Usage:**
+    ```bash
+    node --import tsx scripts/get-unsolved-puzzles.ts --model gpt-5-nano-2025-08-07
+    # Automatically checks all 4 GPT-5 variants
+    # Only outputs puzzles unsolved by ALL
+    ```
+  - **Model Family Members:**
+    - `gpt-5-2025-08-07` (main reasoning model)
+    - `gpt-5-mini-2025-08-07` (smaller)
+    - `gpt-5-nano-2025-08-07` (smallest)
+    - `gpt-5-chat-latest` (chat model)
+  - **Non-GPT-5 models**: Still use single-model filtering (no change)
+  - File: `scripts/get-unsolved-puzzles.ts`
+
+### Test Execution (October 8, 2025)
+**Running in Production:**
+- ✅ **Grok-4-fast-reasoning**: 115 puzzles, 2 iterations each (230 total API calls)
+- ✅ **GPT-5-nano**: 114 puzzles (family-filtered), 2 iterations each (228 total API calls)
+- Both running concurrently in background
+- Expected completion: ~20-30 minutes
+- Total API calls: 458 analyses across 229 unique puzzles
+
+### Technical Details
+**Parallel Execution Pattern:**
+```typescript
+// WRONG UNDERSTANDING (previous docs):
+// "Run 115 puzzles sequentially = 115 × 22 min = 42 hours"
+
+// CORRECT IMPLEMENTATION (always was this way):
+for (let i = 0; i < 115; i++) {
+  setTimeout(() => analyzePuzzle(i), i * 1000);  // Stagger starts by 1s
+}
+await Promise.all(allPuzzles);  // Wait for ALL to complete in parallel
+
+// Actual timeline:
+// t=0-115s: Fire off all 115 puzzles (1 per second)
+// t=115s-30min: Wait for all to complete (longest puzzle wins)
+// Total: ~20-30 minutes
+```
+
+**GPT-5 Family Filtering Logic:**
+```typescript
+// Fetch performance for all GPT-5 variants
+const allPerformances = await Promise.all([
+  fetch('gpt-5-2025-08-07'),
+  fetch('gpt-5-mini-2025-08-07'),
+  fetch('gpt-5-nano-2025-08-07'),
+  fetch('gpt-5-chat-latest')
+]);
+
+// Merge: puzzle solved if ANY variant solved it
+const solvedByFamily = new Set();
+allPerformances.forEach(p => p.correct.forEach(id => solvedByFamily.add(id)));
+
+// Only include puzzles unsolved by ALL
+const unsolved = allPuzzles.filter(id => !solvedByFamily.has(id));
+```
+
+### Benefits
+- ✅ **Accurate Expectations**: Users know progressive reasoning takes minutes, not hours
+- ✅ **Cost Savings (GPT-5)**: Family filter prevents redundant API calls on already-solved puzzles
+- ✅ **Rate Limit Protection**: 1s stagger prevents burst limit errors
+- ✅ **Efficient Testing**: Both models can run simultaneously without conflicts
+
+### Files Modified
+- `scripts/grok-4-progressive-reasoning.ts` - Fixed stagger delay (0 → 1000ms)
+- `scripts/get-unsolved-puzzles.ts` - Added GPT-5 family support
+- `scripts/gpt5-nano-unsolved-arc2.txt` - Regenerated with family filter (114 puzzles)
+
+### Next Steps
+- Monitor both runs via Analytics Dashboard: http://localhost:5173/analytics
+- Check improvement rates after completion (~30 min)
+- Compare Grok-4 vs GPT-5-nano progressive reasoning effectiveness
+
+---
+
 ## v3.8.1 - Progressive Reasoning Workflow Automation
 
 ### Summary

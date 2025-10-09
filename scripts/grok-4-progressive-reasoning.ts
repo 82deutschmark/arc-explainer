@@ -28,8 +28,8 @@ dotenv.config();
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const GROK_MODEL = 'grok-4-fast-reasoning'; // Use Grok-4-Fast-Reasoning model
 const PUZZLE_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes per iteration
-const ITERATION_DELAY_MS = 1000; // 1 second between iterations (as requested)
-const PUZZLE_STAGGER_MS = 0; // Start all puzzles immediately (no staggering)
+const ITERATION_DELAY_MS = 1000; // 1 second between iterations
+const PUZZLE_STAGGER_MS = 1000; // 1 second stagger between starting puzzles (rate limit protection)
 
 // Configuration for ARC2 dataset
 const DATASET = 'arc2'; // Use ARC2 evaluation dataset
