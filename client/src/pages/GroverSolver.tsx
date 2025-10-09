@@ -217,39 +217,49 @@ export default function GroverSolver() {
         </div>
       )}
 
-      {/* Iteration Timeline */}
-      <div className="mb-3 space-y-0">
-        {/* Render all iterations (completed, active, and queued) */}
-        {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
-          const iterNum = idx + 1;
-          const iterData = state.iterations?.find(it => it.iteration === idx);
-          const isActive = isRunning && state.iteration === iterNum;
-          
-          // Calculate best overall score up to this point
-          const bestOverall = state.iterations
-            ?.filter(it => it.iteration < idx)
-            .reduce((max, it) => Math.max(max, it.best?.score || 0), 0) || 0;
-          
-          return (
-            <IterationCard
-              key={iterNum}
-              iteration={iterNum}
-              data={iterData}
-              isActive={isActive}
-              phase={isActive ? state.phase : undefined}
-              message={isActive ? state.message : undefined}
-              bestOverall={bestOverall > 0 ? bestOverall : undefined}
-              promptPreview={isActive ? state.promptPreview : undefined}
-              conversationChain={isActive ? state.conversationChain : undefined}
-              tokenUsage={isActive ? state.tokenUsage : undefined}
-            />
-          );
-        })}
-      </div>
+      {/* Live Activity Stream - MOVED TO TOP for visibility */}
+      {(isRunning || state.logLines && state.logLines.length > 0) && (
+        <div className="mb-3">
+          <LiveActivityStream
+            logs={state.logLines || []}
+            maxHeight="400px"
+          />
+        </div>
+      )}
 
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
-        {/* Left Column - Visualizations */}
+      {/* Two Column Layout - Iterations + Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-3">
+        {/* Left Column - Iteration Cards (narrower) */}
+        <div className="lg:col-span-3 space-y-0">
+          {/* Render all iterations (completed, active, and queued) */}
+          {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
+            const iterNum = idx + 1;
+            const iterData = state.iterations?.find(it => it.iteration === idx);
+            const isActive = isRunning && state.iteration === iterNum;
+            
+            // Calculate best overall score up to this point
+            const bestOverall = state.iterations
+              ?.filter(it => it.iteration < idx)
+              .reduce((max, it) => Math.max(max, it.best?.score || 0), 0) || 0;
+            
+            return (
+              <IterationCard
+                key={iterNum}
+                iteration={iterNum}
+                data={iterData}
+                isActive={isActive}
+                phase={isActive ? state.phase : undefined}
+                message={isActive ? state.message : undefined}
+                bestOverall={bestOverall > 0 ? bestOverall : undefined}
+                promptPreview={isActive ? state.promptPreview : undefined}
+                conversationChain={isActive ? state.conversationChain : undefined}
+                tokenUsage={isActive ? state.tokenUsage : undefined}
+              />
+            );
+          })}
+        </div>
+
+        {/* Right Column - Visualizations */}
         <div className="lg:col-span-2 space-y-3">
           {/* Search Visualization */}
           {state.iterations && state.iterations.length > 0 && (
@@ -263,14 +273,6 @@ export default function GroverSolver() {
           <ConversationChainViewer
             hasChain={isRunning || isDone}
             iterationCount={state.iterations?.length || 0}
-          />
-        </div>
-
-        {/* Right Column - Live Activity */}
-        <div className="lg:col-span-1">
-          <LiveActivityStream
-            logs={state.logLines || []}
-            maxHeight="600px"
           />
         </div>
       </div>

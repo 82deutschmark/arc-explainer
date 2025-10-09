@@ -1,5 +1,7 @@
 # ARC-Heavy Dataset Integration Reference
 
+NEW!!!
+https://github.com/neoneye/arc-dataset-collection/tree/main/dataset/ConceptARC
 *Created: September 2, 2025*  
 *Author: Claude Code*  
 
