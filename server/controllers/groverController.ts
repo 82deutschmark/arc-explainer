@@ -13,6 +13,7 @@ import { formatResponse } from '../utils/responseFormatter.js';
 import { groverService } from '../services/grover.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { broadcast } from '../services/wsService.js';
+import { setSessionContext } from '../utils/broadcastLogger.js';
 import { randomUUID } from 'crypto';
 
 export const groverController = {
@@ -41,16 +42,18 @@ export const groverController = {
     };
 
     // Start async Grover analysis (non-blocking)
-    setImmediate(async () => {
-      try {
-        // Broadcast initial status
-        broadcast(sessionId, {
-          status: 'running',
-          phase: 'initializing',
-          message: 'Starting Grover analysis...'
-        });
+    // CRITICAL: Wrap entire operation in setSessionContext so ALL logs broadcast to browser
+    setImmediate(() => {
+      setSessionContext(sessionId, async () => {
+        try {
+          // Broadcast initial status
+          broadcast(sessionId, {
+            status: 'running',
+            phase: 'initializing',
+            message: 'Starting Grover analysis...'
+          });
 
-        const result = await groverService.analyzePuzzleWithModel(
+          const result = await groverService.analyzePuzzleWithModel(
           task,
           modelKey,
           taskId,
@@ -110,6 +113,9 @@ export const groverController = {
           error: err instanceof Error ? err.message : String(err)
         });
       }
+      }).catch((err) => {
+        console.error('[Grover] Session context error:', err);
+      });
     });
 
     // Return session info immediately

@@ -27,6 +27,7 @@ import { buildUserPromptForTemplate, UserPromptOptions } from "./prompts/userTem
 import { determinePromptContext, shouldUseContinuationPrompt } from "./prompts/PromptContext.js";
 import { buildDiscussionContinuation, buildDebateContinuation, buildSolverContinuation } from "./prompts/components/continuationPrompts.js";
 import type { ServiceOptions } from "./base/BaseAIService.js";
+import { logger } from "../utils/broadcastLogger.js";
 
 /**
  * Enhanced PromptOptions with new architecture support
@@ -42,13 +43,12 @@ export interface PromptOptions {
   thinkingBudget?: number; // Gemini thinking budget: -1 = dynamic, 0 = disabled, >0 = specific tokens
   retryMode?: boolean; // Enhanced prompting for retry analysis
   previousAnalysis?: any; // Previous failed analysis data
-  badFeedback?: any[]; // Bad feedback entries for context
   originalExplanation?: any; // For debate mode: the original explanation to challenge
   customChallenge?: string; // For debate mode: human guidance on what to focus on
 }
 
 /**
- * Complete prompt package for AI services
+ * Result package from prompt building
  */
 export interface PromptPackage {
   systemPrompt: string;
@@ -70,7 +70,7 @@ export function buildAnalysisPrompt(
   options: PromptOptions = {},
   serviceOpts: ServiceOptions = {} // NEW: Added to detect continuation state
 ): PromptPackage {
-  console.log(`[PromptBuilder] Building prompt for template: ${promptId}`);
+  logger.service('PromptBuilder', `Building prompt for template: ${promptId}`);
   
   const {
     emojiSetKey,
@@ -88,19 +88,19 @@ export function buildAnalysisPrompt(
   const promptContext = determinePromptContext(promptId, options, serviceOpts, task, customPrompt);
   const useContinuation = shouldUseContinuationPrompt(promptContext);
   
-  console.log(`[PromptBuilder] ========== CONVERSATION CONTEXT ==========`);
-  console.log(`[PromptBuilder] Mode: ${promptId}`);
-  console.log(`[PromptBuilder] State: ${promptContext.conversationState}`);
-  console.log(`[PromptBuilder] Previous Response ID: ${serviceOpts.previousResponseId || 'NONE (Initial)'}`);
-  console.log(`[PromptBuilder] Continuation: ${useContinuation ? '✅ YES' : '❌ NO'}`);
+  logger.service('PromptBuilder', '========== CONVERSATION CONTEXT ==========');
+  logger.service('PromptBuilder', `Mode: ${promptId}`);
+  logger.service('PromptBuilder', `State: ${promptContext.conversationState}`);
+  logger.service('PromptBuilder', `Previous Response ID: ${serviceOpts.previousResponseId || 'NONE (Initial)'}`);
+  logger.service('PromptBuilder', `Continuation: ${useContinuation ? '✅ YES' : '❌ NO'}`);
   
   if (useContinuation) {
-    console.log(`[PromptBuilder] 🔄 CONTINUING CONVERSATION - API will retrieve server-side context & reasoning`);
-    console.log(`[PromptBuilder] Purpose: Enable progressive refinement with full conversation history`);
+    logger.service('PromptBuilder', '🔄 CONTINUING CONVERSATION - API will retrieve server-side context & reasoning');
+    logger.service('PromptBuilder', 'Purpose: Enable progressive refinement with full conversation history');
   } else {
-    console.log(`[PromptBuilder] 📄 INITIAL TURN - Starting new conversation thread`);
+    logger.service('PromptBuilder', '📄 INITIAL TURN - Starting new conversation thread');
   }
-  console.log(`[PromptBuilder] ===============================================`);
+  logger.service('PromptBuilder', '===============================================');
 
   // Determine prompt characteristics
   const isCustom = promptId === 'custom' || (customPrompt && typeof customPrompt === 'string' && customPrompt.trim());
@@ -108,7 +108,7 @@ export function buildAnalysisPrompt(
   const isSolver = isSolverMode(promptId);
   const selectedTemplate = isCustom ? null : (PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation);
   
-  console.log(`[PromptBuilder] Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
+  logger.service('PromptBuilder', `Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
 
   // PHASE 1-2: Use continuation prompt if this is a continuation turn
   if (useContinuation) {
@@ -172,11 +172,11 @@ export function buildAnalysisPrompt(
     // New ARC mode: structured system prompt
     if (isCustom && customPrompt && customPrompt.trim()) {
       // Custom prompt mode - use user's custom text directly as system prompt (NO additional text)
-      console.log(`[PromptBuilder] Using custom text as system prompt: ${customPrompt.trim().substring(0, 100)}...`);
+      logger.service('PromptBuilder', `Using custom text as system prompt: ${customPrompt.trim().substring(0, 100)}...`);
       systemPrompt = customPrompt.trim();
     } else if (isCustom) {
       // Custom prompt mode without text - use NO system prompt (minimal)
-      console.log(`[PromptBuilder] No custom text provided, using minimal system prompt`);
+      logger.service('PromptBuilder', 'No custom text provided, using minimal system prompt');
       systemPrompt = "Provide your prediction for the correct Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules at place in the examples that led to your prediction. ";
     } else {
       systemPrompt = getSystemPrompt(promptId);
@@ -271,8 +271,8 @@ export function buildAnalysisPrompt(
     userPrompt = buildUserPromptForTemplate(task, promptId, userPromptOptions, customPromptForUser, originalExplanation, customChallenge);
   }
 
-  console.log(`[PromptBuilder] Generated system prompt: ${systemPrompt.length} chars`);
-  console.log(`[PromptBuilder] Generated user prompt: ${userPrompt.length} chars`);
+  logger.service('PromptBuilder', `Generated system prompt: ${systemPrompt.length} chars`);
+  logger.service('PromptBuilder', `Generated user prompt: ${userPrompt.length} chars`);
 
   return {
     systemPrompt,
@@ -294,7 +294,7 @@ function buildLegacyPrompt(
   customPrompt?: string,
   options: PromptOptions = {}
 ): { prompt: string; selectedTemplate: PromptTemplate | null } {
-  console.log(`[PromptBuilder] Using legacy prompt mode`);
+  logger.service('PromptBuilder', 'Using legacy prompt mode');
   
   // This would use the old promptBuilder logic
   // For now, return a simplified version
