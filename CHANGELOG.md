@@ -1,5 +1,73 @@
 ## [2025-10-08]
 
+## v3.8.3 - Grover-ARC Integration Planning
+
+### Added
+- **Comprehensive Grover-ARC Integration Plan** (`docs/08102025-Grover-Integration-Plan.md`)
+  - Complete audit of Saturn solver architecture (identified isolation issues)
+  - Analysis of Grover-ARC's quantum-inspired amplitude amplification algorithm
+  - Hybrid architecture design: TypeScript orchestration + Python execution sandbox
+  - 3-week implementation plan with 7 phases and detailed task breakdowns
+  - Database schema extensions for iteration tracking
+  - Comparison: Saturn (isolated) vs Grover (integrated) approaches
+
+### Architecture Decisions
+- **Multi-Provider Support**: Grover will use existing grok.ts/openai.ts services (not direct API calls)
+- **Conversation Chaining**: Leverage `previousResponseId` across iterations for context retention
+- **Python Sandbox Only**: Python used exclusively for safe code execution, NOT LLM orchestration
+- **BaseAIService Extension**: Full integration with existing service infrastructure
+- **Cost Tracking**: Per-iteration cost accumulation via RepositoryService
+
+### Key Insights from Saturn Audit
+- **Problem Identified**: Saturn bypasses entire TypeScript service layer (direct Python → OpenAI)
+- **Provider Lock-in**: Hardcoded to OpenAI, can't use grok-4-fast or other providers
+- **No Conversation Chaining**: Doesn't leverage 3 months of Responses API infrastructure work
+- **Lesson for Grover**: Use TypeScript for orchestration, Python ONLY for execution
+
+### Grover Algorithm Overview
+- **Iterative Code Generation**: Generates Python programs (not grids) to solve puzzles
+- **Oracle Execution**: Runs programs on training examples for validation
+- **Numerical Grading**: 0-10 scoring system for fitness ranking
+- **Context Saturation**: Keeps top 5 performers + bottom 3 failures (teach what NOT to do)
+- **Amplitude Amplification**: Iteratively shifts probability mass toward correct solutions
+
+### Implementation Phases (3 Weeks)
+1. **Week 1, Days 1-2**: Git submodule import, Python venv isolation, standalone test
+2. **Week 1, Day 3**: Database schema extensions (grover_iterations, iteration_count, etc.)
+3. **Week 1, Days 4-5**: Python execution sandbox with AST validation and timeouts
+4. **Week 2, Days 1-3**: TypeScript orchestration layer (groverService.ts, groverOrchestrator.ts)
+5. **Week 2, Day 4**: API controller and routes
+6. **Week 2, Day 5 - Week 3, Days 1-2**: Frontend UI (iteration viewer, code diff, charts)
+7. **Week 3, Days 3-5**: Analytics integration, leaderboards, debate mode, documentation
+
+### Database Schema Extensions
+```sql
+ALTER TABLE explanations ADD COLUMN:
+- grover_iterations JSONB          -- Full iteration history
+- grover_best_program TEXT         -- Final winning code
+- grover_execution_log JSONB       -- Oracle results
+- iteration_count INTEGER          -- Total iterations used
+- amplification_factor DOUBLE PRECISION  -- Score improvement ratio
+```
+
+### Success Metrics
+- ✅ Multi-provider support (grok-4-fast, GPT-5, Claude)
+- ✅ Conversation chaining across iterations
+- ✅ Per-iteration cost tracking
+- ✅ Full integration with debate/ELO features
+- 🎯 Target: 70%+ accuracy on ARC-AGI-2 eval set
+- 🎯 Amplification: >2x score improvement over iterations
+
+### Next Steps
+1. Execute Phase 1: Import grover-arc as git submodule
+2. Test standalone Grover execution
+3. Begin TypeScript orchestration layer implementation
+
+### Files Added
+- `docs/08102025-Grover-Integration-Plan.md` - Complete integration blueprint
+
+---
+
 ## v3.8.2 - Progressive Reasoning Fixes & GPT-5 Family Support
 
 ### Fixed
