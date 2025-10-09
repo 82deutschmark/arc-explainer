@@ -62,7 +62,7 @@ export const JSON_FIELDS = {
   optional: [
     'solvingStrategy: Domain-specific language to solve the puzzle',
     'patternDescription: Transformation rules (2-3 short imperatives)',
-    'hints: Array of 3 pseudo-code algorithms you considered',
+    'hints: Array of 3 simple hints so even a child could understand how to solve the puzzle',
     'confidence: Your certainty level (1-100)'
   ],
   
@@ -95,14 +95,20 @@ export function buildJsonInstructions(
   ];
   
   if (includeExamples) {
-    parts.push(`- ${GRID_FORMAT.description}`);
-    parts.push(`  * ${isMultiTest ? 'Multi-test' : 'Single-test'}: "${isMultiTest ? JSON_FIELDS.prediction.multi[0] : JSON_FIELDS.prediction.single}": ${GRID_FORMAT.exampleCorrect}`);
-    if (isMultiTest) {
-      parts.push(`  * Also provide: "${JSON_FIELDS.prediction.multi[1]}", "${JSON_FIELDS.prediction.multi[2]}" (if needed)`);
-    }
+    parts.push(`- Grid format: 2D array where outer array contains rows, each row is array of integers 0-9`);
+    
+    // CRITICAL: Explain both single and multi-test scenarios
+    parts.push(`- If puzzle has ONE test case:`);
+    parts.push(`  Use field "predictedOutput" with your grid: ${GRID_FORMAT.exampleCorrect}`);
+    parts.push(`- If puzzle has MULTIPLE test cases (2 or 3):`);
+    parts.push(`  Use fields "predictedOutput1", "predictedOutput2", "predictedOutput3"`);
+    parts.push(`  Provide a grid for EACH test case you see in the puzzle`);
   }
   
   parts.push(`- Optional fields: ${JSON_FIELDS.optional.map(f => f.split(':')[0]).join(', ')}`);
+  
+  // Enhanced: Add strict JSON enforcement for problematic models
+  parts.push(`CRITICAL: Return ONLY valid JSON with no additional text, explanations, or formatting after the closing brace.`);
   
   return parts.join('\n');
 }
@@ -114,6 +120,7 @@ export function buildJsonInstructions(
 export function buildMinimalJsonInstructions(): string {
   return [
     JSON_STRUCTURE.toInstruction(),
-    `Grid format: ${GRID_FORMAT.exampleCorrect}`
+    `Grid format: ${GRID_FORMAT.exampleCorrect}`,
+    `IMPORTANT: Return ONLY valid JSON. Do not add explanatory text, comments, or markdown formatting after the JSON.`
   ].join('\n');
 }
