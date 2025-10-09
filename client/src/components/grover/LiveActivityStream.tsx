@@ -22,6 +22,18 @@ interface LiveActivityStreamProps {
 export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivityStreamProps) {
   const [isPaused, setIsPaused] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  
+  // Show compact placeholder if no logs
+  if (!logs || logs.length === 0) {
+    return (
+      <Card className="h-24 flex items-center justify-center border-gray-300">
+        <div className="text-center text-gray-400 text-xs">
+          <Terminal className="h-6 w-6 mx-auto mb-1 opacity-40" />
+          <p>Waiting for activity...</p>
+        </div>
+      </Card>
+    );
+  }
 
   // Auto-scroll unless paused
   React.useEffect(() => {
@@ -50,42 +62,37 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `grover-logs-${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   return (
-    <Card className="border-2 border-green-300">
-      <CardHeader className="pb-2 pt-3 px-3 bg-gradient-to-r from-green-50 to-blue-50">
+    <Card className="border border-blue-300">
+      <CardHeader className="py-2 px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-1.5 text-sm font-bold text-green-900">
-            <Terminal className="h-4 w-4" />
-            Live Activity Stream
-            {logs.length > 0 && (
-              <Badge variant="outline" className="ml-2 text-xs">
-                {logs.length} events
-              </Badge>
-            )}
+          <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
+            <Terminal className="h-3.5 w-3.5" />
+            Activity
+            <Badge variant="secondary" className="text-[10px] px-1">{logs.length}</Badge>
           </CardTitle>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0"
+          <div className="flex items-center gap-0.5">
+            <Button 
+              variant="ghost" 
+              size="sm" 
               onClick={() => setIsPaused(!isPaused)}
-              title={isPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
+              className="h-5 w-5 p-0"
+              title={isPaused ? "Resume" : "Pause"}
             >
-              {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+              {isPaused ? <Play className="h-2.5 w-2.5" /> : <Pause className="h-2.5 w-2.5" />}
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0"
+            <Button 
+              variant="ghost" 
+              size="sm" 
               onClick={exportLogs}
-              title="Export logs"
+              className="h-5 w-5 p-0"
+              title="Export"
             >
-              <Download className="h-3.5 w-3.5" />
+              <Download className="h-2.5 w-2.5" />
             </Button>
           </div>
         </div>
@@ -99,7 +106,7 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
         <ScrollArea className="w-full" style={{ height: maxHeight }}>
           <div
             ref={scrollRef}
-            className="bg-gray-900 p-3 font-mono text-xs leading-relaxed"
+            className="font-mono text-[10px] leading-tight bg-gray-900 text-gray-100 p-2 overflow-auto whitespace-pre-wrap break-words"
             style={{ fontFamily: 'Consolas, Monaco, "Courier New", monospace' }}
           >
             {logs.length === 0 ? (

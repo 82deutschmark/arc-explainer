@@ -77,7 +77,7 @@ export function usePuzzleList(filters?: {
   difficulty?: 'easy' | 'medium' | 'hard';
   gridSizeConsistent?: boolean;
   prioritizeUnexplained?: boolean;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   multiTestFilter?: 'single' | 'multi';
 }) {
   const queryParams = new URLSearchParams();
@@ -127,7 +127,7 @@ export function useWorstPerformingPuzzles(
   minAccuracy?: number,
   maxAccuracy?: number,
   zeroAccuracyOnly?: boolean,
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy',
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC',
   multiTestFilter?: 'single' | 'multi',
   includeRichMetrics?: boolean
 ) {

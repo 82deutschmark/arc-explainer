@@ -89,7 +89,7 @@ export interface IngestionConfig {
   verbose: boolean;
   forceOverwrite: boolean;
   skipDuplicates: boolean;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   limit?: number;
   delay: number;
   stopOnError: boolean;
@@ -563,7 +563,7 @@ async function processPuzzle(
 /**
  * Auto-detect ARC source from HuggingFace dataset URL
  */
-function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | undefined {
+function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC' | undefined {
   const url = baseUrl.toLowerCase();
 
   // arcprize/arc_agi_v1_public_eval → ARC1-Eval
@@ -581,6 +581,10 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
   // arcprize/arc_agi_v2_training → ARC2
   if (url.includes('arc_agi_v2') && (url.includes('train') || url.includes('training'))) {
     return 'ARC2';
+  }
+  // conceptarc dataset mirrors neoneye ConceptARC naming
+  if (url.includes('conceptarc') || url.includes('concept-arc') || url.includes('concept_arc')) {
+    return 'ConceptARC';
   }
 
   return undefined;
@@ -785,10 +789,10 @@ function parseArgs(): IngestionConfig {
       config.baseUrl = args[++i];
     } else if (arg === '--source' && i + 1 < args.length) {
       const source = args[++i];
-      if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
+      if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy', 'ConceptARC'].includes(source)) {
         config.source = source as any;
       } else {
-        console.error(`Invalid source: ${source}. Must be one of: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy`);
+        console.error(`Invalid source: ${source}. Must be one of: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy, ConceptARC`);
         process.exit(1);
       }
     } else if (arg === '--limit' && i + 1 < args.length) {
@@ -838,7 +842,7 @@ OPTIONS:
                            V2 uses: /resolve/refs/heads/main (newer HF format)
                            (default: arcprize/arc_agi_v1_public_eval/resolve/main)
   --source <source>        Override auto-detected ARC source
-                           Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
+                           Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy, ConceptARC
                            (Auto-detected from arcprize/* URLs)
   --limit <N>              Only process first N puzzles (useful for testing)
   --delay <ms>             Delay in milliseconds between requests (default: 100)

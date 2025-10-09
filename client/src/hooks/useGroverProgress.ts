@@ -138,8 +138,9 @@ export function useGroverProgress(taskId: string | undefined) {
             let nextLogs = prev.logLines ? [...prev.logLines] : [];
             const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
             
-            // Capture ALL messages (not just specific phases)
-            if (msg && !nextLogs.includes(msg)) {
+            // Capture ALL messages - ALWAYS ADD (no deduplication check)
+            // Each message has a unique timestamp, so duplicates are fine
+            if (msg) {
               const timestamp = new Date().toLocaleTimeString();
               nextLogs.push(`[${timestamp}] ${msg}`);
               if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
@@ -212,11 +213,13 @@ export function useGroverProgress(taskId: string | undefined) {
         }
       };
 
-      sock.onerror = (event) => {
-        console.error('[GROVER] WebSocket error:', event);
+      sock.onerror = (evt: Event) => {
+        console.error('[GROVER] WebSocket ERROR - Failed to connect or unexpected error');
+        console.error('  URL attempted:', wsUrl);
+        console.error('  Event:', evt);
         setState((prev) => {
           if (prev.status !== 'running') return prev;
-          const nextLogs = [...(prev.logLines ?? []), 'WebSocket connection error'];
+          const nextLogs = [...(prev.logLines ?? []), `WebSocket connection error: ${evt.type}`];
           return {
             ...prev,
             status: 'error',

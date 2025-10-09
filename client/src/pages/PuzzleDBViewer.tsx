@@ -358,6 +358,7 @@ export default function PuzzleDBViewer() {
                   <SelectItem value="evaluation">Evaluation (400)</SelectItem>
                   <SelectItem value="evaluation2">Evaluation2 (120)</SelectItem>
                   <SelectItem value="arc-heavy">ARC-Heavy (300)</SelectItem>
+                  <SelectItem value="ConceptARC">ConceptARC</SelectItem>
                 </SelectContent>
               </Select>
             </div>

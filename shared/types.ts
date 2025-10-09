@@ -18,7 +18,7 @@
 export interface ARCTask {
   train: ARCExample[];
   test: ARCExample[];
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
 }
 
 export interface ARCExample {
@@ -35,7 +35,7 @@ export interface PuzzleMetadata {
   outputSize: [number, number];
   hasExplanation?: boolean;
   description?: string;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   importSource?: string; // Track which import/dataset this came from
   importDate?: Date;     // When it was imported
 }

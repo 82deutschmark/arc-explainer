@@ -16,7 +16,7 @@ export default function PuzzleDiscussion() {
   const [compactView, setCompactView] = useState<boolean>(false);
   const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
   const [zeroAccuracyOnly, setZeroAccuracyOnly] = useState<boolean>(false);
-  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'all'>('all');
+  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC' | 'all'>('all');
   const [multiTestFilter, setMultiTestFilter] = useState<'single' | 'multi' | 'all'>('all');
   const [showRichMetrics, setShowRichMetrics] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -269,6 +269,7 @@ export default function PuzzleDiscussion() {
                     <option value="ARC1-Eval">ARC 1 Evaluation</option>
                     <option value="ARC1">ARC 1 Training</option>
                     <option value="ARC-Heavy">ARC Heavy</option>
+                    <option value="ConceptARC">ConceptARC</option>
                   </select>
                   {selectedSource === 'ARC2-Eval' && (
                     <Badge className="text-xs bg-green-100 text-green-800 border-green-200">

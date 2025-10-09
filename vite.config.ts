@@ -48,6 +48,9 @@ export default defineConfig(async (): Promise<import('vite').UserConfig> => {
       strictPort: true,
     },
     server: {
+      hmr: {
+        overlay: false, // Suppress HMR error overlay when accessing via backend (localhost:5000)
+      },
       fs: {
         strict: true,
         deny: ["**/.*"],
