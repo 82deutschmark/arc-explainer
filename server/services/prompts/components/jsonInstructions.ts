@@ -107,6 +107,9 @@ export function buildJsonInstructions(
   
   parts.push(`- Optional fields: ${JSON_FIELDS.optional.map(f => f.split(':')[0]).join(', ')}`);
   
+  // Enhanced: Add strict JSON enforcement for problematic models
+  parts.push(`CRITICAL: Return ONLY valid JSON with no additional text, explanations, or formatting after the closing brace.`);
+  
   return parts.join('\n');
 }
 
@@ -117,6 +120,7 @@ export function buildJsonInstructions(
 export function buildMinimalJsonInstructions(): string {
   return [
     JSON_STRUCTURE.toInstruction(),
-    `Grid format: ${GRID_FORMAT.exampleCorrect}`
+    `Grid format: ${GRID_FORMAT.exampleCorrect}`,
+    `IMPORTANT: Return ONLY valid JSON. Do not add explanatory text, comments, or markdown formatting after the JSON.`
   ].join('\n');
 }
