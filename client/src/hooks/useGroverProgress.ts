@@ -50,6 +50,19 @@ export interface GroverProgressState {
   bestProgram?: string;
   bestScore?: number;
   logLines?: string[];
+  promptPreview?: string;
+  conversationChain?: string | null;
+  tokenUsage?: {
+    input: number;
+    output: number;
+    total: number;
+  };
+  executionSummary?: {
+    total: number;
+    successful: number;
+    failed: number;
+    scores: number[];
+  };
 }
 
 export function useGroverProgress(taskId: string | undefined) {

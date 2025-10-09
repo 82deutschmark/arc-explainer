@@ -17,11 +17,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Terminal } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useGroverProgress } from '@/hooks/useGroverProgress';
 import GroverModelSelect, { type GroverModelKey } from '@/components/grover/GroverModelSelect';
 import { IterationCard } from '@/components/grover/IterationCard';
+import { LiveActivityStream } from '@/components/grover/LiveActivityStream';
+import { SearchVisualization } from '@/components/grover/SearchVisualization';
+import { ConversationChainViewer } from '@/components/grover/ConversationChainViewer';
 
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -29,7 +32,6 @@ export default function GroverSolver() {
   const { state, start, sessionId } = useGroverProgress(taskId);
   const [model, setModel] = React.useState<GroverModelKey>('grover-gpt-5-nano');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
-  const logRef = React.useRef<HTMLDivElement | null>(null);
 
   // Set page title
   React.useEffect(() => {
@@ -39,14 +41,6 @@ export default function GroverSolver() {
   const isRunning = state.status === 'running';
   const isDone = state.status === 'completed';
   const hasError = state.status === 'error';
-
-  // Auto-scroll log
-  React.useEffect(() => {
-    const el = logRef.current;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
-    }
-  }, [state.logLines]);
 
   // Track start time
   React.useEffect(() => {
@@ -196,30 +190,31 @@ export default function GroverSolver() {
         })}
       </div>
 
-      {/* Console Log - Compact */}
-      <Card className="mb-3">
-        <CardHeader className="pb-1 pt-2 px-3">
-          <CardTitle className="flex items-center gap-1.5 text-xs font-semibold">
-            <Terminal className="h-3 w-3" />
-            Console
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div 
-            ref={logRef}
-            className="bg-black text-green-400 p-2 font-mono text-xs leading-tight h-[200px] overflow-y-auto whitespace-pre-wrap"
-            style={{ fontFamily: 'Consolas, Monaco, "Courier New", monospace' }}
-          >
-            {state.logLines && state.logLines.length > 0 ? (
-              state.logLines.map((line, idx) => (
-                <div key={idx} className="hover:bg-gray-900">{line}</div>
-              ))
-            ) : (
-              <div className="text-gray-600">Waiting...</div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Search Visualization */}
+      {state.iterations && state.iterations.length > 0 && (
+        <div className="mb-3">
+          <SearchVisualization 
+            iterations={state.iterations}
+            currentIteration={state.iteration}
+          />
+        </div>
+      )}
+
+      {/* Conversation Chain */}
+      <div className="mb-3">
+        <ConversationChainViewer
+          hasChain={isRunning || isDone}
+          iterationCount={state.iterations?.length || 0}
+        />
+      </div>
+
+      {/* Live Activity Stream */}
+      <div className="mb-3">
+        <LiveActivityStream
+          logs={state.logLines || []}
+          maxHeight="200px"
+        />
+      </div>
 
       {/* Info */}
       <div className="text-xs text-gray-500 text-center py-2">
