@@ -135,7 +135,7 @@ export class JsonParser {
   }
 
   /**
-   * Strategy 1: Direct JSON.parse attempt
+   * Strategy 1: Direct JSON.parse attempt with enhanced error handling
    */
   private attemptDirectParse<T>(
     input: string, 
@@ -153,11 +153,29 @@ export class JsonParser {
       };
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Unknown parsing error';
-      
+
+      // Enhanced: If error suggests extra content after JSON, try to extract just the JSON part
+      if (errorMsg.includes('after JSON') || errorMsg.includes('position')) {
+        const extractedJson = this.extractJsonFromMixedContent(input);
+        if (extractedJson) {
+          try {
+            const parsed = JSON.parse(extractedJson) as T;
+            return {
+              success: true,
+              data: parsed,
+              method: 'mixed_content_extraction',
+              rawInput: preserveRawInput ? input : undefined
+            };
+          } catch (extractError) {
+            // Extraction failed, continue with original error
+          }
+        }
+      }
+
       if (logErrors && fieldName) {
         console.warn(`[JsonParser] Direct parse failed for ${fieldName}: ${errorMsg}`);
       }
-      
+
       return {
         success: false,
         error: errorMsg,
@@ -246,7 +264,7 @@ export class JsonParser {
       return { success: false, error: 'No opening brace found' };
     }
 
-    const extracted = this.extractCompleteJsonObject(input, braceStart);
+    const extracted = this.extractJsonFromMixedContent(input);
     if (extracted) {
       const result = this.attemptDirectParse<T>(extracted, false, false);
       if (result.success) {
@@ -265,49 +283,58 @@ export class JsonParser {
   }
 
   /**
-   * Extract complete JSON object using brace matching (from Grok service)
+   * Extract JSON from mixed content (JSON followed by explanatory text)
+   * Handles cases like: {"key": "value"} followed by explanation text
    */
-  private extractCompleteJsonObject(text: string, startPos: number): string | null {
-    let braceCount = 0;
-    let endPos = startPos;
-    let inString = false;
-    let escapeNext = false;
+  private extractJsonFromMixedContent(input: string): string | null {
+    try {
+      // Try to find the end of the JSON object by counting braces
+      let braceCount = 0;
+      let inString = false;
+      let escapeNext = false;
+      let jsonEnd = -1;
 
-    for (let i = startPos; i < text.length; i++) {
-      const char = text[i];
-      
-      if (escapeNext) {
-        escapeNext = false;
-        continue;
-      }
-      
-      if (char === '\\') {
-        escapeNext = true;
-        continue;
-      }
-      
-      if (char === '"') {
-        inString = !inString;
-        continue;
-      }
-      
-      if (!inString) {
-        if (char === '{') {
-          braceCount++;
-        } else if (char === '}') {
-          braceCount--;
-          if (braceCount === 0) {
-            endPos = i;
-            break;
+      for (let i = 0; i < input.length; i++) {
+        const char = input[i];
+
+        if (escapeNext) {
+          escapeNext = false;
+          continue;
+        }
+
+        if (char === '\\') {
+          escapeNext = true;
+          continue;
+        }
+
+        if (char === '"') {
+          inString = !inString;
+          continue;
+        }
+
+        if (!inString) {
+          if (char === '{') {
+            braceCount++;
+          } else if (char === '}') {
+            braceCount--;
+            if (braceCount === 0) {
+              jsonEnd = i;
+              break;
+            }
           }
         }
       }
+
+      if (jsonEnd > 0) {
+        const jsonPart = input.substring(0, jsonEnd + 1);
+        // Verify it's valid JSON
+        JSON.parse(jsonPart);
+        return jsonPart;
+      }
+    } catch (error) {
+      // If extraction fails, return null
     }
-    
-    if (braceCount === 0 && endPos > startPos) {
-      return text.substring(startPos, endPos + 1);
-    }
-    
+
     return null;
   }
 
