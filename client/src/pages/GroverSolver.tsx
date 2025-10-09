@@ -142,53 +142,33 @@ export default function GroverSolver() {
         </div>
       </div>
 
-      {/* Status Card */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              {isRunning && <Loader2 className="h-4 w-4 animate-spin" />}
-              Status
-            </span>
-            {startTime && (
-              <Badge variant="outline">{getElapsedTime()}</Badge>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="font-medium">Status:</span>
-              <Badge variant={isDone ? 'default' : hasError ? 'destructive' : 'secondary'}>
-                {state.status}
-              </Badge>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Phase:</span>
-              <span className="text-sm">{state.phase || 'Idle'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Iteration:</span>
-              <span className="text-sm">
-                {state.iteration !== undefined ? `${state.iteration}/${state.totalIterations || 5}` : '-'}
-              </span>
-            </div>
-            {state.bestScore !== undefined && (
-              <div className="flex justify-between">
-                <span className="font-medium">Best Score:</span>
-                <Badge variant="default" className="bg-green-600">
-                  {state.bestScore.toFixed(1)}/10
-                </Badge>
-              </div>
-            )}
-            {state.message && (
-              <div className="mt-2 p-2 bg-gray-100 rounded text-sm">
-                {state.message}
-              </div>
-            )}
+      {/* Compact Status Bar */}
+      <div className="mb-4 p-3 bg-gray-50 rounded-lg border flex items-center justify-between text-sm">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {isRunning && <Loader2 className="h-4 w-4 animate-spin" />}
+            <Badge variant={isDone ? 'default' : hasError ? 'destructive' : 'secondary'}>
+              {state.status}
+            </Badge>
           </div>
-        </CardContent>
-      </Card>
+          {state.iteration !== undefined && (
+            <span className="text-gray-600">
+              Iteration: <strong>{state.iteration}/{state.totalIterations || 5}</strong>
+            </span>
+          )}
+          {state.bestScore !== undefined && (
+            <Badge variant="default" className="bg-green-600">
+              Best: {state.bestScore.toFixed(1)}/10
+            </Badge>
+          )}
+          {startTime && (
+            <Badge variant="outline">{getElapsedTime()}</Badge>
+          )}
+        </div>
+        {state.message && (
+          <span className="text-gray-600 text-xs max-w-md truncate">{state.message}</span>
+        )}
+      </div>
 
       {/* Iteration Results */}
       {state.iterations && state.iterations.length > 0 && (
@@ -246,25 +226,26 @@ export default function GroverSolver() {
         </Card>
       )}
 
-      {/* Console Log */}
+      {/* Console Log - Prominent */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Terminal className="h-5 w-5" />
-            Console Log
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Terminal className="h-4 w-4" />
+            Live Console Output
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div 
             ref={logRef}
-            className="bg-gray-900 text-gray-100 p-4 rounded font-mono text-sm max-h-96 overflow-y-auto"
+            className="bg-black text-green-400 p-3 font-mono text-xs leading-relaxed h-[400px] overflow-y-auto whitespace-pre-wrap"
+            style={{ fontFamily: 'Consolas, Monaco, "Courier New", monospace' }}
           >
             {state.logLines && state.logLines.length > 0 ? (
               state.logLines.map((line, idx) => (
-                <div key={idx}>{line}</div>
+                <div key={idx} className="hover:bg-gray-900">{line}</div>
               ))
             ) : (
-              <div className="text-gray-500">No logs yet...</div>
+              <div className="text-gray-600">Waiting for analysis to start...</div>
             )}
           </div>
         </CardContent>
