@@ -88,22 +88,19 @@ export function buildAnalysisPrompt(
   const promptContext = determinePromptContext(promptId, options, serviceOpts, task, customPrompt);
   const useContinuation = shouldUseContinuationPrompt(promptContext);
   
-  console.log(`[PromptBuilder] ========== PROMPT CONTEXT ANALYSIS ==========`);
+  console.log(`[PromptBuilder] ========== CONVERSATION CONTEXT ==========`);
   console.log(`[PromptBuilder] Mode: ${promptId}`);
-  console.log(`[PromptBuilder] Conversation State: ${promptContext.conversationState}`);
-  console.log(`[PromptBuilder] Previous Response ID: ${serviceOpts.previousResponseId || 'NONE (First iteration)'}`);
-  console.log(`[PromptBuilder] Use Continuation: ${useContinuation ? '✅ YES' : '❌ NO'}`);
-  console.log(`[PromptBuilder] ================================================`);
+  console.log(`[PromptBuilder] State: ${promptContext.conversationState}`);
+  console.log(`[PromptBuilder] Previous Response ID: ${serviceOpts.previousResponseId || 'NONE (Initial)'}`);
+  console.log(`[PromptBuilder] Continuation: ${useContinuation ? '✅ YES' : '❌ NO'}`);
   
   if (useContinuation) {
-    console.log(`[PromptBuilder] 🔄 CONTINUATION DETECTED - Using optimized prompt for ${promptId} mode`);
-    console.log(`[PromptBuilder] Token savings: ~600 tokens (70% reduction)`);
+    console.log(`[PromptBuilder] 🔄 CONTINUING CONVERSATION - API will retrieve server-side context & reasoning`);
+    console.log(`[PromptBuilder] Purpose: Enable progressive refinement with full conversation history`);
   } else {
-    console.log(`[PromptBuilder] 📄 INITIAL PROMPT - Using full prompt for ${promptId} mode`);
-    if (!serviceOpts.previousResponseId) {
-      console.log(`[PromptBuilder] Reason: First iteration (no previousResponseId)`);
-    }
+    console.log(`[PromptBuilder] 📄 INITIAL TURN - Starting new conversation thread`);
   }
+  console.log(`[PromptBuilder] ===============================================`);
 
   // Determine prompt characteristics
   const isCustom = promptId === 'custom' || (customPrompt && typeof customPrompt === 'string' && customPrompt.trim());
