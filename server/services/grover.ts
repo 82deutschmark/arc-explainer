@@ -40,7 +40,14 @@ export class GroverService extends BaseAIService {
     const underlyingModel = this.models[modelKey];
     const sessionId = serviceOpts.sessionId;
 
-    logger.service(this.provider, `Starting Grover analysis with ${underlyingModel} (${maxIterations} iterations)`);
+    logger.service(this.provider, `🚀 Starting Grover analysis - Puzzle: ${taskId}, Model: ${underlyingModel}, Iterations: ${maxIterations}`);
+
+    // Validate model key
+    if (!this.models[modelKey]) {
+      const error = `Invalid Grover model key: ${modelKey}. Available: ${Object.keys(this.models).join(', ')}`;
+      logger.service(this.provider, `❌ ${error}`, 'error');
+      throw new Error(error);
+    }
 
     // Get underlying service (grok, openai, etc.)
     const underlyingService = aiServiceFactory.getService(underlyingModel);
@@ -78,16 +85,17 @@ export class GroverService extends BaseAIService {
     sendProgress({
       phase: 'initializing',
       iteration: 0,
-      message: `Starting Grover analysis with ${underlyingModel}`
+      message: `🔄 Initializing Grover solver with ${underlyingModel} for ${maxIterations} iterations`
     });
 
-    for (let i = 0; i < maxIterations; i++) {
-      logger.service(this.provider, `Iteration ${i + 1}/${maxIterations}`);
-      sendProgress({
-        phase: 'iteration_start',
-        iteration: i + 1,
-        message: `Beginning iteration ${i + 1}/${maxIterations}`
-      });
+    try {
+      for (let i = 0; i < maxIterations; i++) {
+        logger.service(this.provider, `🔁 Iteration ${i + 1}/${maxIterations}`);
+        sendProgress({
+          phase: 'iteration_start',
+          iteration: i + 1,
+          message: `🔁 Starting iteration ${i + 1}/${maxIterations} - Generating candidate programs...`
+        });
 
       // 1. Generate programs via underlying service (Responses API!)
       const codeGenPrompt = this.buildCodeGenPrompt(context, i);
@@ -112,38 +120,64 @@ export class GroverService extends BaseAIService {
       sendProgress({
         phase: 'code_generation',
         iteration: i + 1,
-        message: `Generated candidate programs with ${underlyingModel}`
+        message: `✅ Code generation complete - Extracting programs...`
       });
 
       // 2. Extract programs from LLM response
       const programs = this.extractPrograms(llmResponse);
 
       if (programs.length === 0) {
-        logger.service(this.provider, `No programs generated in iteration ${i + 1}`, 'warn');
+        const warning = `⚠️ Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
+        logger.service(this.provider, warning, 'warn');
         sendProgress({
-          phase: 'iteration',
+          phase: 'extraction_failed',
           iteration: i + 1,
-          message: `Iteration ${i + 1} produced no programs`
+          message: warning,
+          details: 'The LLM response did not contain properly formatted Python code blocks.'
         });
         continue;
       }
 
-      // 3. Execute programs in Python sandbox
-      const executionResults = await this.executeProgramsSandbox(programs, task.train);
+      logger.service(this.provider, `📝 Found ${programs.length} program(s) to execute`);
       sendProgress({
-        phase: 'execution',
+        phase: 'programs_extracted',
         iteration: i + 1,
-        message: `Executed ${programs.length} program(s) on training examples`
+        message: `📝 Extracted ${programs.length} program(s) - Executing on training data...`
       });
+
+      // 3. Execute programs in Python sandbox
+      let executionResults;
+      try {
+        executionResults = await this.executeProgramsSandbox(programs, task.train);
+        sendProgress({
+          phase: 'execution',
+          iteration: i + 1,
+          message: `🐍 Executed ${programs.length} program(s) on ${task.train.length} training examples`
+        });
+      } catch (execError) {
+        const errorMsg = execError instanceof Error ? execError.message : String(execError);
+        logger.service(this.provider, `❌ Python execution failed: ${errorMsg}`, 'error');
+        sendProgress({
+          phase: 'execution_error',
+          iteration: i + 1,
+          message: `❌ Execution failed: ${errorMsg}`,
+          details: 'Python sandbox rejected the code or encountered a runtime error.'
+        });
+        throw new Error(`Python execution failed in iteration ${i + 1}: ${errorMsg}`);
+      }
 
       // 4. Grade results
       const graded = this.gradeExecutions(executionResults, task.train);
 
       // 5. Track best program
       const iterationBest = graded[0]; // Already sorted by score
+      const previousBest = bestScore;
       if (iterationBest && iterationBest.score > bestScore) {
         bestScore = iterationBest.score;
         bestProgram = iterationBest.code;
+        logger.service(this.provider, `🎯 New best score: ${bestScore.toFixed(1)}/10 (improved from ${previousBest.toFixed(1)})`);
+      } else if (iterationBest) {
+        logger.service(this.provider, `📊 Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
       }
 
       // 6. Track iteration
@@ -155,25 +189,50 @@ export class GroverService extends BaseAIService {
         timestamp: Date.now()
       });
 
+      const currentBest = iterationBest?.score ?? 0;
+      const emoji = currentBest >= 10 ? '🎉' : currentBest >= 7 ? '🎯' : currentBest >= 5 ? '📈' : '📊';
       sendProgress({
-        phase: 'iteration',
+        phase: 'iteration_complete',
         iteration: i + 1,
-        message: `Iteration ${i + 1} best score: ${(iterationBest?.score ?? 0).toFixed(1)}/10`
+        message: `${emoji} Iteration ${i + 1} complete - Best: ${currentBest.toFixed(1)}/10 | Overall best: ${bestScore.toFixed(1)}/10`,
+        iterationBest: currentBest,
+        overallBest: bestScore
       });
 
       // 7. Build amplified context for next iteration
       context = this.amplifyContext(graded, context, i);
 
-      // Early stopping if perfect score
-      if (bestScore >= 10) {
-        logger.service(this.provider, `Perfect score achieved at iteration ${i + 1}`);
-        sendProgress({
-          phase: 'iteration',
-          iteration: i + 1,
-          message: `Perfect score achieved at iteration ${i + 1}!`
-        });
-        break;
+        // Early stopping if perfect score
+        if (bestScore >= 10) {
+          logger.service(this.provider, `🎉 Perfect score achieved at iteration ${i + 1}!`);
+          sendProgress({
+            phase: 'complete',
+            iteration: i + 1,
+            message: `🎉 Perfect score achieved! Stopping early at iteration ${i + 1}/${maxIterations}`,
+            finalScore: bestScore
+          });
+          break;
+        }
       }
+
+      // Final summary
+      logger.service(this.provider, `✅ Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
+      sendProgress({
+        phase: 'finalizing',
+        message: `✅ Analysis complete - Best score: ${bestScore.toFixed(1)}/10`,
+        finalScore: bestScore,
+        totalIterations: iterations.length
+      });
+
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.service(this.provider, `❌ Analysis failed: ${errorMsg}`, 'error');
+      sendProgress({
+        phase: 'error',
+        message: `❌ Analysis failed: ${errorMsg}`,
+        error: errorMsg
+      });
+      throw error;
     }
 
     // Build final response
@@ -289,9 +348,11 @@ def transform(grid):
     ].filter(Boolean).join('\n\n');
     
     if (!textSources) {
-      logger.warn('No text found in response for program extraction', 'grover');
+      logger.service(this.provider, '⚠️ No text content in LLM response for program extraction', 'warn');
       return programs;
     }
+    
+    logger.service(this.provider, `📖 Parsing ${textSources.length} characters of response text...`);
     
     // Extract all Python code blocks (with or without language tag)
     // Handle both ```python and ``` formats
@@ -307,16 +368,22 @@ def transform(grid):
         const code = match[1].trim();
         if (code.includes('def transform') && !programs.includes(code)) {
           programs.push(code);
-          logger.service('Grover', `Found program (${code.length} chars)`);
+          logger.service(this.provider, `✅ Found program #${programs.length} (${code.length} chars, ${code.split('\n').length} lines)`);
         }
       }
     }
     
-    logger.service('Grover', `Extracted ${programs.length} programs from response`);
+    logger.service(this.provider, `📊 Extraction complete: ${programs.length} program(s) found`);
     
     if (programs.length === 0) {
-      logger.warn('No programs extracted. First 500 chars of textSources:', 'grover');
-      logger.warn(textSources.substring(0, 500), 'grover');
+      logger.service(this.provider, '⚠️ No Python code blocks with "def transform" found in response', 'warn');
+      logger.service(this.provider, `📄 Response preview (first 500 chars):\n${textSources.substring(0, 500)}`, 'warn');
+      
+      // Check if code exists but lacks transform function
+      const hasCodeBlocks = /```[\s\S]*?```/.test(textSources);
+      if (hasCodeBlocks) {
+        logger.service(this.provider, '⚠️ Code blocks found but missing "def transform(grid)" function', 'warn');
+      }
     }
     
     return programs;

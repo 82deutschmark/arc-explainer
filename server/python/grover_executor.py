@@ -29,8 +29,7 @@ def validate_ast(code: str) -> tuple[bool, str]:
         for node in ast.walk(tree):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 return (False, "Imports not allowed")
-            if isinstance(node, (ast.Exec,)):
-                return (False, "Exec not allowed")
+            # Note: ast.Exec was removed in Python 3 (exec is now a function, checked below)
             if isinstance(node, ast.Call):
                 # Block dangerous function calls
                 if isinstance(node.func, ast.Name):

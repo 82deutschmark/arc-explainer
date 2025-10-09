@@ -277,23 +277,40 @@ export class PythonBridge {
 
       child.on('close', (code) => {
         if (code !== 0) {
-          return reject(new Error(`Grover executor failed: ${stderrData}`));
+          // Parse stderr for structured error if possible
+          let errorDetail = stderrData.trim();
+          try {
+            const errorJson = JSON.parse(stderrData);
+            if (errorJson.message) {
+              errorDetail = errorJson.message;
+            }
+          } catch {
+            // Not JSON, use raw stderr
+          }
+          
+          return reject(new Error(`Python executor failed (exit code ${code}): ${errorDetail}`));
         }
 
         try {
           const lines = stdoutData.trim().split('\n');
+          if (lines.length === 0) {
+            return reject(new Error('Python executor produced no output'));
+          }
+          
           const lastLine = lines[lines.length - 1];
           const result = JSON.parse(lastLine);
 
           if (result.type === 'execution_results') {
             resolve({ results: result.results });
           } else if (result.type === 'error') {
-            reject(new Error(result.message));
+            reject(new Error(`Python execution error: ${result.message}`));
           } else {
-            reject(new Error(`Unexpected response: ${lastLine}`));
+            reject(new Error(`Unexpected Python response type: ${result.type}`));
           }
         } catch (err) {
-          reject(new Error(`Failed to parse Grover executor output: ${err}`));
+          const parseError = err instanceof Error ? err.message : String(err);
+          const preview = stdoutData.substring(0, 200);
+          reject(new Error(`Failed to parse Python executor output: ${parseError}\nOutput preview: ${preview}`));
         }
       });
 
