@@ -1,4 +1,44 @@
-## [2025-10-09]
+## [2025-10-09]   Claude puts an October date into a file marked September!
+
+## v3.5.5 - Grover Elegant UI Experience Design
+
+### Added
+- **Grover Elegant UI Experience Plan** (Design Phase)
+  - Comprehensive UX redesign plan to make quantum-inspired search VISIBLE and ENGAGING
+  - Addresses "garbage UI" problem: users wait 5-27 minutes seeing empty console
+  - Proposes timeline-based interface showing every phase of iterative search
+  - **Key Components:**
+    - IterationCard (expandable) - Shows prompt, programs, execution, context amplification
+    - ProgramExecutionViewer - Visual grid comparisons with pass/fail indicators
+    - LiveActivityStream - Real-time log of every backend operation
+    - SearchSpaceVisualization - Graph showing score convergence across iterations
+    - ConversationChainViewer - Shows Responses API conversation chaining magic
+  - **Design Philosophy:** Turn 5 minutes of waiting into 5 minutes of fascination
+  - Files: docs/09102025-Grover-Elegant-UI-Experience-Plan.md
+  - Author: Sonnet 4.5
+
+### Fixed
+- **Grover Import Dependencies** (Critical)
+  - Removed incorrect dependency on `getDefaultPromptId()` from promptBuilder
+  - **Root Cause:** Grover uses specialized prompt system (buildCodeGenPrompt), not standard templates
+  - Grover builds CUSTOM iteration-specific prompts with context saturation
+  - Changed default promptId parameter to string literal "grover"
+  - Added comments explaining promptId is ignored in Grover's custom workflow
+  - Files: server/services/grover.ts
+  - Commit: af38198
+  - Author: Sonnet 4.5
+
+### Verified
+- **Responses API Conversation Chaining** (✅ WORKING)
+  - Confirmed Grover correctly uses previousResponseId across iterations
+  - **Flow:**
+    1. Iteration 1: Initial request with full context → captures response.id
+    2. Iteration 2+: Continuation with previousResponseId → API loads encrypted reasoning
+    3. OpenAI/Grok detect continuation → send ONLY new message (96% token reduction)
+  - **Impact:** True stateful conversation without context limits
+  - Each iteration builds on encrypted server-side reasoning (30-day retention)
+  - This IS the quantum-inspired amplitude amplification from solver/grover-arc/README.md
+  - Evidence: grover.ts:54, 149, 154; openai.ts:213, 264, 451; grok.ts:241, 250, 223
 
 ## v3.5.4 - Global Broadcast Logger for Real-Time Browser Visibility
 

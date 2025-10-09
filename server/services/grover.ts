@@ -123,17 +123,16 @@ export class GroverService extends BaseAIService {
       sendProgress({
         phase: 'prompt_ready',
         iteration: i + 1,
-        message: `📤 Sending prompt to ${underlyingModel} (${codeGenPrompt.length} chars)...`
-      });
-      sendProgress({
-        phase: 'prompt_content',
-        iteration: i + 1,
-        message: `\n--- PROMPT START ---\n${codeGenPrompt.substring(0, 800)}${codeGenPrompt.length > 800 ? '\n... [truncated ' + (codeGenPrompt.length - 800) + ' chars]' : ''}\n--- PROMPT END ---\n`
+        message: `📤 Sending prompt to ${underlyingModel} (${codeGenPrompt.length} chars)...`,
+        promptPreview: codeGenPrompt.substring(0, 1500),
+        promptLength: codeGenPrompt.length,
+        conversationChain: previousResponseId || null
       });
       sendProgress({
         phase: 'waiting_llm',
         iteration: i + 1,
-        message: `⏳ Waiting for ${underlyingModel} response...`
+        message: `⏳ Waiting for ${underlyingModel} response...`,
+        waitingStart: Date.now()
       });
 
       const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
@@ -154,9 +153,15 @@ export class GroverService extends BaseAIService {
       previousResponseId = llmResponse.providerResponseId || undefined;
 
       sendProgress({
-        phase: 'code_generation',
+        phase: 'response_received',
         iteration: i + 1,
-        message: `✅ Code generation complete - Extracting programs...`
+        message: `✅ Response received (${llmResponse.totalTokens || 0} tokens)`,
+        responseId: previousResponseId,
+        tokenUsage: {
+          input: llmResponse.inputTokens || 0,
+          output: llmResponse.outputTokens || 0,
+          total: llmResponse.totalTokens || 0
+        }
       });
 
       // 2. Extract programs from LLM response
@@ -178,7 +183,12 @@ export class GroverService extends BaseAIService {
       sendProgress({
         phase: 'programs_extracted',
         iteration: i + 1,
-        message: `📝 Extracted ${programs.length} program(s) - Executing on training data...`
+        message: `📝 Extracted ${programs.length} program(s) - Executing on training data...`,
+        programsExtracted: programs.map((p, idx) => ({
+          index: idx,
+          code: p,
+          lines: p.split('\n').length
+        }))
       });
 
       // 3. Execute programs in Python sandbox
@@ -232,7 +242,14 @@ export class GroverService extends BaseAIService {
         iteration: i + 1,
         message: `${emoji} Iteration ${i + 1} complete - Best: ${currentBest.toFixed(1)}/10 | Overall best: ${bestScore.toFixed(1)}/10`,
         iterationBest: currentBest,
-        overallBest: bestScore
+        overallBest: bestScore,
+        iterations,
+        executionSummary: {
+          total: programs.length,
+          successful: graded.filter(r => !r.error).length,
+          failed: graded.filter(r => r.error).length,
+          scores: graded.map(r => r.score)
+        }
       });
 
       // 7. Build amplified context for next iteration
