@@ -581,3 +581,30 @@ export interface ReasoningItem {
   step?: number;
   category?: string;
 }
+
+/**
+ * Grover iteration tracking types
+ */
+export interface GroverIteration {
+  iteration: number;
+  programs: string[];            // Generated code candidates
+  executionResults: {
+    programIdx: number;
+    score: number;              // 0-10 grading
+    output: number[][] | null;  // Predicted grid
+    error?: string;             // Execution error if any
+    code: string;
+  }[];
+  best: {
+    programIdx: number;
+    score: number;
+    code: string;
+  };
+  timestamp: number;
+}
+
+export interface GroverExplanationData extends ExplanationRecord {
+  groverIterations?: GroverIteration[];
+  groverBestProgram?: string;
+  iterationCount?: number;
+}
