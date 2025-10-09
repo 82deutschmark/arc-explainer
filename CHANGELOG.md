@@ -1,5 +1,297 @@
 ## [2025-10-08]
 
+## v3.8.1 - Progressive Reasoning Workflow Automation
+
+### Summary
+Created streamlined workflow for running progressive reasoning on unsolved ARC puzzles. New helper script fetches unsolved puzzles from database using existing robust analytics infrastructure, then feeds directly into progressive reasoning testing.
+
+### Added
+- **Unsolved Puzzle Fetcher Script**
+  - **NEW:** `scripts/get-unsolved-puzzles.ts`
+  - Fetches unsolved puzzles via `/api/model-dataset/performance` endpoint
+  - Leverages existing `ModelDatasetRepository` infrastructure
+  - Outputs puzzle IDs to `scripts/grok-4-unsolved-arc2.txt` (one ID per line)
+  - **Configuration Options:**
+    - `--model <name>`: Model to check (default: `grok-4-fast-reasoning`)
+    - `--dataset <name>`: Dataset to check (default: `evaluation2` for ARC2-Eval)
+    - `--output <path>`: Output file path
+    - `--include-failed <bool>`: Include incorrect attempts (default: true)
+    - `--include-unattempted <bool>`: Include never-attempted puzzles (default: true)
+  - **Usage:**
+    ```bash
+    # Default: grok-4-fast-reasoning on ARC2-Eval
+    node --import tsx scripts/get-unsolved-puzzles.ts
+
+    # Custom model/dataset
+    node --import tsx scripts/get-unsolved-puzzles.ts \
+      --model gpt-5-2025-08-07 \
+      --dataset evaluation
+    ```
+  - File: `scripts/get-unsolved-puzzles.ts`
+
+### Enhanced
+- **Progressive Reasoning Auto-Load**
+  - **Modified:** `scripts/grok-4-progressive-reasoning.ts`
+  - Added automatic detection of default puzzle file
+  - If no puzzle IDs provided, auto-checks for `scripts/grok-4-unsolved-arc2.txt`
+  - Loads and displays count automatically
+  - **New Usage Pattern:**
+    ```bash
+    # Step 1: Generate unsolved list
+    node --import tsx scripts/get-unsolved-puzzles.ts
+
+    # Step 2: Run progressive reasoning (auto-loads)
+    node --import tsx scripts/grok-4-progressive-reasoning.ts
+    ```
+  - Eliminates manual `--file` flag for streamlined workflow
+  - File: `scripts/grok-4-progressive-reasoning.ts`
+
+### Documentation
+- **NEW:** `docs/08102025-Progressive-Reasoning-Workflow.md`
+  - Complete workflow documentation for running progressive reasoning at scale
+  - Architecture diagrams showing data flow through system
+  - Time & cost estimates for full ARC2-Eval run (115 puzzles)
+  - Troubleshooting guide for common issues
+  - Advanced usage patterns (custom models, filtering strategies, parallel testing)
+  - Success metrics and expected outcomes based on pilot testing (4% improvement rate)
+
+- **UPDATED:** `scripts/README.md`
+  - Complete rewrite with comprehensive script documentation
+  - Sections: Progressive Reasoning, Batch Analysis, Helper Scripts, Best Practices
+  - Detailed usage examples for all scripts
+  - Architecture notes on Responses API vs Chat Completions API
+  - Troubleshooting section with common issues and solutions
+  - Future enhancements section
+
+### Test Results
+**Initial Run** (October 8, 2025):
+- **Script:** `get-unsolved-puzzles.ts` successfully fetched performance data
+- **ARC2-Eval Status:**
+  - Total Puzzles: 120
+  - ✅ Correct: 5 (4.2% baseline)
+  - ❌ Incorrect: 115 (95.8% unsolved)
+  - ⚠️  Not Attempted: 0 (all puzzles have been analyzed)
+- **Output:** Generated `scripts/grok-4-unsolved-arc2.txt` with 115 puzzle IDs
+- **Next Step:** Ready for full progressive reasoning run
+
+### Technical Details
+**Workflow Pattern:**
+```bash
+# 1. Fetch unsolved puzzles (queries database)
+ModelDatasetRepository.getModelDatasetPerformance()
+  → /api/model-dataset/performance/grok-4-fast-reasoning/evaluation2
+  → Returns: {correct[], incorrect[], notAttempted[]}
+  → Writes: scripts/grok-4-unsolved-arc2.txt
+
+# 2. Run progressive reasoning (auto-loads file)
+grok-4-progressive-reasoning.ts
+  → Detects scripts/grok-4-unsolved-arc2.txt
+  → Loads 115 puzzle IDs
+  → Runs 2 iterations per puzzle with conversation chaining
+  → Saves all results to database
+```
+
+**Data Source Integration:**
+- Reuses proven `ModelDatasetRepository` (SRP compliant)
+- Leverages existing `/api/model-dataset/performance` endpoint
+- No new database queries or repository methods needed
+- Follows established analytics architecture patterns
+
+**Progressive Reasoning Expected Results** (based on 25-puzzle pilot):
+- **Improvement Rate:** ~4% (1 in 25 puzzles improved from ✗ to ✓)
+- **Degradation Rate:** ~4% (1 in 25 puzzles degraded from ✓ to ✗)
+- **Stability Rate:** ~92% (23 in 25 unchanged)
+- **For 115 puzzles:** Expecting ~5 improvements, ~5 degradations, ~105 unchanged
+- **Time Estimate:** ~20-24 hours (concurrent execution, ~11 min/puzzle)
+
+### Benefits
+- ✅ **Automated Workflow:** Two-command process to run progressive reasoning on all unsolved puzzles
+- ✅ **Reuses Infrastructure:** Leverages existing robust analytics queries (ModelDatasetRepository)
+- ✅ **Flexible Configuration:** Support for any model/dataset combination
+- ✅ **Clear Documentation:** Complete workflow guide with troubleshooting
+- ✅ **Reproducible Testing:** Consistent process for systematic improvement evaluation
+- ✅ **SRP/DRY Compliant:** get-unsolved-puzzles.ts fetches data, grok-4-progressive-reasoning.ts runs analysis
+
+### Files Created
+- `scripts/get-unsolved-puzzles.ts` - Helper script to fetch unsolved puzzles
+- `scripts/grok-4-unsolved-arc2.txt` - Generated list of 115 unsolved ARC2-Eval puzzle IDs
+- `docs/08102025-Progressive-Reasoning-Workflow.md` - Complete workflow documentation
+
+### Files Modified
+- `scripts/grok-4-progressive-reasoning.ts` - Added auto-detection of default file
+- `scripts/README.md` - Complete rewrite with comprehensive documentation
+
+### Next Steps
+1. Review generated puzzle list: `cat scripts/grok-4-unsolved-arc2.txt | head -20`
+2. Optional: Test on small subset first (5-10 puzzles)
+3. Run full progressive reasoning: `node --import tsx scripts/grok-4-progressive-reasoning.ts`
+4. Monitor progress via Analytics Dashboard: http://localhost:5173/analytics
+5. Analyze improvement patterns after completion
+
+---
+
+## v3.8.0 - Enhanced JSON Parsing & Progressive Reasoning Testing Infrastructure
+
+### Summary
+Major improvements to Grok-4 integration and testing infrastructure. Fixed critical JSON parsing issues where structured output responses contained explanatory text after JSON, causing parse failures. Created automated progressive reasoning testing to evaluate multi-iteration conversation chaining.
+
+### Problem - Grok Structured Output Partially Working
+**Issue:** Despite enabling structured output (`response_format: json_schema`), Grok-4-Fast-Reasoning was returning valid JSON followed by explanatory text, breaking the parser:
+- Error: `Unexpected non-whitespace character after JSON at position XXXX`
+- Structured output was correctly formatting the JSON but not preventing extra content
+- JsonParser couldn't handle mixed content (JSON + explanation text)
+
+**Impact:** 100% of Grok-4-Fast-Reasoning responses were failing JSON validation, even though they contained valid JSON.
+
+### Fixed - Enhanced JSON Parser for Mixed Content
+
+**1. JsonParser.ts - Mixed Content Extraction**
+- Added `extractJsonFromMixedContent()` method to handle JSON followed by text
+- Enhanced `attemptDirectParse()` to detect "after JSON" errors and retry with extraction
+- Uses brace-counting algorithm to find exact end of JSON object
+- Validates extracted JSON before returning
+- Method: `mixed_content_extraction` tracking in parse results
+
+**2. Strengthened System Prompts**
+- Enhanced `buildJsonInstructions()` in `jsonInstructions.ts` to add explicit warning:
+  ```
+  CRITICAL: Return ONLY valid JSON with no additional text, explanations, 
+  or formatting after the closing brace.
+  ```
+- Enhanced `buildMinimalJsonInstructions()` with same enforcement
+- Applied to all custom prompts and discussion mode prompts
+
+**3. Grok Service Already Had Structured Output**
+- Confirmed `grok.ts` line 257-262 sends `response_format: json_schema`
+- Confirmed `GROK_JSON_SCHEMA` is being sent to API
+- Issue was not lack of structured output, but Grok ignoring the "no extra text" constraint
+
+### New Feature - Progressive Reasoning Testing Script
+
+**Created: `scripts/grok-4-progressive-reasoning.ts`**
+
+Automates what `PuzzleDiscussion.tsx` does manually - iterative AI self-refinement through conversation chaining.
+
+**Key Features:**
+- **Multi-iteration testing:** Defaults to 3 iterations (0=initial, 1-2=refinements)
+- **Conversation chaining:** Uses `previousResponseId` to maintain context across iterations
+- **Discussion mode:** Uses `discussion` promptId for AI self-refinement prompts
+- **Database persistence:** Saves each iteration separately for analysis
+- **Improvement tracking:** Reports correctness progression (✗ → ✓, ✓ → ✗, unchanged)
+- **Batch testing:** Can process multiple puzzles sequentially with configurable delays
+
+**Usage:**
+```bash
+# Default: 3 iterations per puzzle
+node --import tsx scripts/grok-4-progressive-reasoning.ts <puzzle-ids...>
+
+# Custom iteration count
+node --import tsx scripts/grok-4-progressive-reasoning.ts --iterations 5 <puzzle-ids...>
+
+# From file
+node --import tsx scripts/grok-4-progressive-reasoning.ts --file puzzle-ids.txt
+```
+
+**Output Metrics:**
+- Per-puzzle iteration tracking
+- Correctness progression visualization (e.g., `✗ → ✗ → ✓`)
+- Improvement analysis: How many puzzles improved vs degraded
+- Total success rates and timing statistics
+- Provider response ID tracking for debugging
+
+**Testing Hypothesis:**
+Progressive reasoning should improve accuracy by allowing the AI to:
+1. Make an initial attempt
+2. Self-critique using conversation history
+3. Refine the solution with full context retained server-side
+
+This tests whether Grok-4's Responses API (with encrypted reasoning retention) outperforms single-shot analysis.
+
+### Technical Details
+
+**JsonParser Enhancement:**
+```typescript
+// Before: Direct parse only
+JSON.parse(input); // Fails if extra text after JSON
+
+// After: Multi-strategy with mixed content handling
+1. Try direct parse
+2. If "after JSON" error, extract JSON portion via brace matching
+3. Validate extracted JSON
+4. Return with method tracking
+```
+
+**Conversation Chaining Flow:**
+```
+Iteration 0: Initial analysis
+  ↓ (saves providerResponseId)
+Iteration 1: previousResponseId → API maintains context
+  ↓ (saves new providerResponseId)
+Iteration 2: previousResponseId → API continues conversation
+```
+
+### Files Changed
+
+**Core Infrastructure:**
+- `server/utils/JsonParser.ts`
+  - Added `extractJsonFromMixedContent()` method
+  - Enhanced `attemptDirectParse()` with mixed content detection
+  - Fixed `attemptPatternExtraction()` to use new extraction method
+  - Fixed TypeScript errors (added missing `success` field to error returns)
+
+**Prompt System:**
+- `server/services/prompts/components/jsonInstructions.ts`
+  - Enhanced `buildJsonInstructions()` with CRITICAL enforcement warning
+  - Enhanced `buildMinimalJsonInstructions()` with JSON-only constraint
+  - Lines 111, 121: Added explicit "no extra text" instructions
+
+**Testing Scripts:**
+- `scripts/grok-4-progressive-reasoning.ts` - **NEW FILE**
+  - 330 lines: Complete progressive reasoning test infrastructure
+  - Multi-iteration orchestration with conversation chaining
+  - Improvement tracking and statistical analysis
+  - Batch processing with configurable delays
+
+### Benefits
+
+**JSON Parsing:**
+- ✅ Handles Grok's mixed content responses (JSON + explanation)
+- ✅ Maintains backward compatibility with clean JSON responses
+- ✅ Better error messages with method tracking
+- ✅ No data loss from valid JSON in mixed content
+
+**Testing Infrastructure:**
+- ✅ Automated progressive reasoning testing at scale
+- ✅ Reproducible experiments with consistent configuration
+- ✅ Improvement tracking across iterations
+- ✅ Easy comparison: single-shot vs multi-iteration performance
+- ✅ Database persistence for offline analysis
+
+**Prompt Enforcement:**
+- ✅ Clearer instructions to AI models about JSON-only output
+- ✅ Reduced likelihood of mixed content responses
+- ✅ Consistent enforcement across all prompt modes
+
+### Next Steps
+
+**Immediate:**
+1. Run progressive reasoning tests on 25-puzzle baseline dataset
+2. Compare single-shot accuracy vs 3-iteration accuracy
+3. Analyze improvement patterns (which puzzles benefit most)
+
+**Future Enhancements:**
+1. Adaptive iteration count (stop early if solution stabilizes)
+2. Confidence threshold for auto-refinement
+3. Integration with batch testing infrastructure
+4. Export progressive reasoning results to CSV for analysis
+
+### Related Documentation
+- User rules: Enhanced JSON parsing expectations
+- PuzzleDiscussion.tsx: Manual progressive reasoning interface (this script automates it)
+- Grok service: Structured output already enabled, now handles mixed content
+
+---
+
 ## v3.7.9 - Fix CompactPuzzleDisplay Adaptive Layout for Multi-Test Puzzles
 
 ### Summary
