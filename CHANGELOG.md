@@ -1,5 +1,18 @@
 ## [2025-10-09]
 
+### Fixed
+- **Ingestion Runs Schema** - Fixed NOT NULL constraint violation
+  - `completed_at` and `duration_ms` now allow NULL for in-progress ingestion runs
+  - Migration 0003: `migrations/0003_fix_ingestion_runs_completed_at.sql`
+  - Migration runner: `scripts/run-migration-ingestion-fix.js`
+  - Records created with NULL when ingestion starts, populated on completion
+
+- **HuggingFace Ingestion Overwrite** - Implemented actual deletion
+  - Added `ExplanationRepository.deleteExplanation(id)` method
+  - Fixed `deleteDuplicate()` in `ingest-huggingface-dataset.ts` to actually delete
+  - Was logging "Would delete... (not implemented)" but not deleting
+  - Now properly removes existing entries when `--overwrite` flag is used
+
 ## v3.9.0 - Saturn Architectural Fix COMPLETE
 
 ### 🔥 BREAKING CHANGES
