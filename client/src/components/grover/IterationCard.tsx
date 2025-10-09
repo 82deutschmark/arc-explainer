@@ -77,7 +77,8 @@ export function IterationCard({
   conversationChain,
   tokenUsage
 }: IterationCardProps) {
-  const [isExpanded, setIsExpanded] = React.useState(isActive);
+  // ALWAYS start expanded so user can see the actual code generated
+  const [isExpanded, setIsExpanded] = React.useState(true);
 
   // Status indicator
   const getStatusIcon = () => {
