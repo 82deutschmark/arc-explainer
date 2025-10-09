@@ -116,13 +116,12 @@ export function useGroverProgress(taskId: string | undefined) {
           if (!data) return;
 
           setState((prev) => {
-            // Accumulate log lines
+            // Accumulate ALL log messages
             let nextLogs = prev.logLines ? [...prev.logLines] : [];
             const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
-            const phase = data.phase;
-            const status = data.status;
             
-            if (msg && (phase === 'log' || status === 'error' || status === 'completed' || phase === 'iteration')) {
+            // Capture ALL messages (not just specific phases)
+            if (msg) {
               nextLogs.push(msg);
               if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
             }
