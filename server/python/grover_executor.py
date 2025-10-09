@@ -10,8 +10,13 @@ SRP/DRY check: Pass - Single responsibility (safe code execution only)
 import sys
 import json
 import ast
-import signal
+import platform
 from typing import Dict, List, Any
+
+# Timeout support only on Unix (Windows doesn't have signal.SIGALRM)
+IS_UNIX = platform.system() != 'Windows'
+if IS_UNIX:
+    import signal
 
 class ExecutionTimeout(Exception):
     """Raised when code execution exceeds timeout"""
@@ -42,7 +47,7 @@ def validate_ast(code: str) -> tuple[bool, str]:
 
 def execute_program(code: str, inputs: List[List[List[int]]]) -> Dict[str, Any]:
     """
-    Execute program on training inputs with 5s timeout
+    Execute program on training inputs with 5s timeout (Unix only)
 
     Args:
         code: Python code defining transform(grid) function
@@ -56,9 +61,10 @@ def execute_program(code: str, inputs: List[List[List[int]]]) -> Dict[str, Any]:
     if not valid:
         return {"outputs": [], "error": f"AST validation failed: {error_msg}"}
 
-    # Set timeout
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(5)
+    # Set timeout (Unix only - Windows doesn't support SIGALRM)
+    if IS_UNIX:
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
 
     try:
         # Create isolated namespace
@@ -80,14 +86,17 @@ def execute_program(code: str, inputs: List[List[List[int]]]) -> Dict[str, Any]:
             except Exception as e:
                 return {"outputs": outputs, "error": f"Transform error: {type(e).__name__}: {str(e)}"}
 
-        signal.alarm(0)  # Cancel timeout
+        if IS_UNIX:
+            signal.alarm(0)  # Cancel timeout
         return {"outputs": outputs, "error": None}
 
     except ExecutionTimeout:
-        signal.alarm(0)
+        if IS_UNIX:
+            signal.alarm(0)
         return {"outputs": [], "error": "Execution timeout (5s)"}
     except Exception as e:
-        signal.alarm(0)
+        if IS_UNIX:
+            signal.alarm(0)
         return {"outputs": [], "error": f"{type(e).__name__}: {str(e)}"}
 
 def main():

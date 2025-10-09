@@ -99,6 +99,23 @@ export class GroverService extends BaseAIService {
 
       // 1. Generate programs via underlying service (Responses API!)
       const codeGenPrompt = this.buildCodeGenPrompt(context, i);
+      
+      // IMMEDIATE FEEDBACK: Show prompt before LLM call
+      sendProgress({
+        phase: 'prompt_ready',
+        iteration: i + 1,
+        message: `📤 Sending prompt to ${underlyingModel} (${codeGenPrompt.length} chars)...`
+      });
+      sendProgress({
+        phase: 'prompt_content',
+        iteration: i + 1,
+        message: `\n--- PROMPT START ---\n${codeGenPrompt.substring(0, 800)}${codeGenPrompt.length > 800 ? '\n... [truncated ' + (codeGenPrompt.length - 800) + ' chars]' : ''}\n--- PROMPT END ---\n`
+      });
+      sendProgress({
+        phase: 'waiting_llm',
+        iteration: i + 1,
+        message: `⏳ Waiting for ${underlyingModel} response...`
+      });
 
       const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
         task,
