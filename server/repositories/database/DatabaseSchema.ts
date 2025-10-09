@@ -327,6 +327,18 @@ export class DatabaseSchema {
 
     // Migration: Add index for rebuttal tracking queries
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_rebutting_explanation_id ON explanations(rebutting_explanation_id) WHERE rebutting_explanation_id IS NOT NULL`);
+
+    // Migration: Add Grover iteration tracking columns
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS grover_iterations JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS grover_best_program TEXT DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS iteration_count INTEGER DEFAULT NULL;
+    `);
+
+    // Migration: Add indexes for Grover queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_iteration_count ON explanations(iteration_count) WHERE iteration_count IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_grover_iterations ON explanations USING GIN(grover_iterations) WHERE grover_iterations IS NOT NULL`);
   }
 
   /**
