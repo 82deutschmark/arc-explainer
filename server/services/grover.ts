@@ -57,7 +57,7 @@ export class GroverService extends BaseAIService {
       // 1. Generate programs via underlying service (Responses API!)
       const codeGenPrompt = this.buildCodeGenPrompt(context, i);
 
-      const llmResponse = await underlyingService.analyzePuzzleWithModel(
+      const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
         task,
         underlyingModel,
         taskId,

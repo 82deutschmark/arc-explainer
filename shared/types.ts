@@ -553,17 +553,16 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter';
+  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter' | 'Grover' | 'Saturn';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   isReasoning?: boolean;
   apiModelName: string;
-  modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
+  modelType: 'gpt5_chat' | 'gpt5' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter' | 'grover' | 'saturn';
   contextWindow?: number;
   maxOutputTokens?: number; // Only used for some models
   releaseDate?: string; // Release date in YYYY-MM format
   supportsFunctionCalling?: boolean;
   supportsSystemPrompts?: boolean;
-  supportsStructuredOutput?: boolean;
   supportsVision?: boolean;
   requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
   
