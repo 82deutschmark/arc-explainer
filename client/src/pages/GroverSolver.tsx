@@ -185,6 +185,9 @@ export default function GroverSolver() {
               phase={isActive ? state.phase : undefined}
               message={isActive ? state.message : undefined}
               bestOverall={bestOverall > 0 ? bestOverall : undefined}
+              promptPreview={isActive ? state.promptPreview : undefined}
+              conversationChain={isActive ? state.conversationChain : undefined}
+              tokenUsage={isActive ? state.tokenUsage : undefined}
             />
           );
         })}

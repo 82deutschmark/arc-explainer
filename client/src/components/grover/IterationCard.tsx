@@ -22,6 +22,13 @@ interface IterationCardProps {
   phase?: string;
   message?: string;
   bestOverall?: number;
+  promptPreview?: string;
+  conversationChain?: string | null;
+  tokenUsage?: {
+    input: number;
+    output: number;
+    total: number;
+  };
 }
 
 export function IterationCard({ 
@@ -30,7 +37,10 @@ export function IterationCard({
   isActive = false,
   phase,
   message,
-  bestOverall 
+  bestOverall,
+  promptPreview,
+  conversationChain,
+  tokenUsage
 }: IterationCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(isActive);
 
@@ -103,6 +113,50 @@ export function IterationCard({
       {data && isExpanded && (
         <CardContent className="px-3 pb-3 pt-0">
           <div className="space-y-3">
+            
+            {/* Prompt & Response Info */}
+            {(promptPreview || conversationChain || tokenUsage) && (
+              <div className="border-t pt-3">
+                <h4 className="text-xs font-semibold mb-2">📤 Prompt & Response</h4>
+                <div className="space-y-2">
+                  {promptPreview && (
+                    <Collapsible>
+                      <CollapsibleTrigger className="text-xs text-blue-600 hover:text-blue-800">
+                        View Prompt Preview ({promptPreview.length} chars)
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <pre className="mt-1 p-2 bg-gray-50 rounded text-xs overflow-x-auto max-h-40 leading-tight">
+                          {promptPreview}
+                        </pre>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                  {conversationChain && (
+                    <div className="text-xs bg-blue-50 p-2 rounded">
+                      <span className="text-gray-600">🔗 Conversation Chain:</span>
+                      <code className="ml-1 text-blue-700">{conversationChain.substring(0, 24)}...</code>
+                    </div>
+                  )}
+                  {tokenUsage && (
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="bg-gray-50 p-1.5 rounded">
+                        <span className="text-gray-600">Input:</span>
+                        <span className="ml-1 font-medium">{tokenUsage.input.toLocaleString()}</span>
+                      </div>
+                      <div className="bg-gray-50 p-1.5 rounded">
+                        <span className="text-gray-600">Output:</span>
+                        <span className="ml-1 font-medium">{tokenUsage.output.toLocaleString()}</span>
+                      </div>
+                      <div className="bg-gray-50 p-1.5 rounded">
+                        <span className="text-gray-600">Total:</span>
+                        <span className="ml-1 font-medium">{tokenUsage.total.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
             
             {/* Programs Generated */}
             <div className="border-t pt-3">
