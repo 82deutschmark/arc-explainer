@@ -17,11 +17,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Terminal, Code, TrendingUp } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Terminal } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useGroverProgress } from '@/hooks/useGroverProgress';
 import GroverModelSelect, { type GroverModelKey } from '@/components/grover/GroverModelSelect';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { IterationCard } from '@/components/grover/IterationCard';
 
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -169,61 +169,32 @@ export default function GroverSolver() {
         )}
       </div>
 
-      {/* Iteration Results - Compact */}
-      {state.iterations && state.iterations.length > 0 && (
-        <Card className="mb-3">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="flex items-center gap-1.5 text-xs font-semibold">
-              <TrendingUp className="h-3 w-3" />
-              Iterations ({state.iterations.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 pb-2 pt-1">
-            <div className="space-y-2">
-              {state.iterations.map((iter) => (
-                <div key={iter.iteration} className="border rounded p-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">#{iter.iteration + 1}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-600">{iter.programs.length} programs</span>
-                      <Badge variant="default" className="text-xs py-0">
-                        {iter.best.score.toFixed(1)}/10
-                      </Badge>
-                    </div>
-                  </div>
-                  {iter.best.code && (
-                    <details className="mt-1">
-                      <summary className="cursor-pointer text-xs text-blue-600 hover:text-blue-800">
-                        Code
-                      </summary>
-                      <pre className="mt-1 p-1.5 bg-gray-900 text-gray-100 rounded text-xs overflow-x-auto leading-tight">
-                        <code>{iter.best.code}</code>
-                      </pre>
-                    </details>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Best Program - Compact */}
-      {state.bestProgram && isDone && (
-        <Card className="mb-3">
-          <CardHeader className="pb-1 pt-2 px-3">
-            <CardTitle className="flex items-center gap-1.5 text-xs font-semibold">
-              <Code className="h-3 w-3" />
-              Best Program
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 pb-2 pt-1">
-            <pre className="p-2 bg-gray-900 text-gray-100 rounded overflow-x-auto text-xs leading-tight">
-              <code>{state.bestProgram}</code>
-            </pre>
-          </CardContent>
-        </Card>
-      )}
+      {/* Iteration Timeline */}
+      <div className="mb-3 space-y-0">
+        {/* Render all iterations (completed, active, and queued) */}
+        {Array.from({ length: state.totalIterations || 5 }).map((_, idx) => {
+          const iterNum = idx + 1;
+          const iterData = state.iterations?.find(it => it.iteration === idx);
+          const isActive = isRunning && state.iteration === iterNum;
+          
+          // Calculate best overall score up to this point
+          const bestOverall = state.iterations
+            ?.filter(it => it.iteration < idx)
+            .reduce((max, it) => Math.max(max, it.best?.score || 0), 0) || 0;
+          
+          return (
+            <IterationCard
+              key={iterNum}
+              iteration={iterNum}
+              data={iterData}
+              isActive={isActive}
+              phase={isActive ? state.phase : undefined}
+              message={isActive ? state.message : undefined}
+              bestOverall={bestOverall > 0 ? bestOverall : undefined}
+            />
+          );
+        })}
+      </div>
 
       {/* Console Log - Compact */}
       <Card className="mb-3">
