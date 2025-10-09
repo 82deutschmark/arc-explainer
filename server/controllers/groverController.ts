@@ -12,6 +12,7 @@ import type { Request, Response } from 'express';
 import { formatResponse } from '../utils/responseFormatter.js';
 import { groverService } from '../services/grover.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
+import { broadcast } from '../services/wsService.js';
 import { randomUUID } from 'crypto';
 
 export const groverController = {
@@ -42,6 +43,13 @@ export const groverController = {
     // Start async Grover analysis (non-blocking)
     setImmediate(async () => {
       try {
+        // Broadcast initial status
+        broadcast(sessionId, {
+          status: 'running',
+          phase: 'initializing',
+          message: 'Starting Grover analysis...'
+        });
+
         const result = await groverService.analyzePuzzleWithModel(
           task,
           modelKey,
@@ -52,7 +60,8 @@ export const groverController = {
           undefined, // PromptOptions
           {
             maxSteps: options.maxSteps,
-            previousResponseId: options.previousResponseId
+            previousResponseId: options.previousResponseId,
+            sessionId // Pass sessionId for progress broadcasting
           }
         );
 
@@ -62,29 +71,16 @@ export const groverController = {
           grover: result
         });
 
-        console.log('[Grover] Analysis complete and saved:', {
-          taskId,
-          modelKey,
-          iterationCount: result.iterationCount,
-          confidence: result.confidence,
-          sessionId
+        // Broadcast completion
+        broadcast(sessionId, {
+          status: 'completed',
+          phase: 'done',
+          message: 'Grover analysis complete!',
+          result,
+          iterations: result.groverIterations,
+          bestProgram: result.groverBestProgram,
+          bestScore: result.confidence
         });
-      } catch (err) {
-        console.error('[Grover] Analysis failed:', {
-          taskId,
-          modelKey,
-          error: err instanceof Error ? err.message : String(err)
-        });
-      }
-    });
 
-    // Return session info immediately
-    return res.json(formatResponse.success({
-      sessionId,
-      message: 'Grover analysis started',
-      taskId,
-      modelKey,
-      maxIterations: options.maxSteps
-    }));
-  }
-};
+        console.log('[Grover] Analysis complete and saved:', {
+          
