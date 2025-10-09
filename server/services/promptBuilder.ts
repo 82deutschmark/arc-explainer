@@ -79,7 +79,7 @@ export function buildAnalysisPrompt(
     useStructuredOutput = true,
     retryMode = false,
     previousAnalysis,
-    badFeedback,
+  
     originalExplanation,
     customChallenge
   } = options;
@@ -223,28 +223,6 @@ export function buildAnalysisPrompt(
             systemPrompt += `\nHad Reasoning Log: Yes (${previousAnalysis.reasoningLog.length} chars)`;
           }
         }
-        
-        // Include bad feedback if available
-        if (badFeedback && badFeedback.length > 0) {
-          systemPrompt += `\n\nUSER FEEDBACK ON PREVIOUS ANALYSIS (Full DB Records):`;
-          badFeedback.forEach((feedback, index) => {
-            systemPrompt += `\nFeedback ${index + 1} (DB ID: ${feedback.id}):`;
-            systemPrompt += `\n  Vote: ${feedback.voteType}`;
-            systemPrompt += `\n  Comment: "${feedback.comment}"`;
-            systemPrompt += `\n  Created: ${feedback.createdAt || 'Unknown'}`;
-            if (feedback.explanationId) {
-              systemPrompt += `\n  Related to Explanation ID: ${feedback.explanationId}`;
-            }
-            if (feedback.modelName) {
-              systemPrompt += `\n  Model: ${feedback.modelName}`;
-            }
-            if (feedback.confidence) {
-              systemPrompt += `\n  Model Confidence: ${feedback.confidence}%`;
-            }
-            systemPrompt += `\n`;
-          });
-          systemPrompt += `\nPlease address these specific criticisms in your new analysis.`;
-        }
       }
     }
   }
@@ -261,7 +239,7 @@ export function buildAnalysisPrompt(
   let userPrompt: string;
   
   if (systemPromptMode === 'None') {
-    // Legacy mode: all instructions in user prompt (old behavior)
+    // Legacy mode: all instructions in user prompt (old behavior)  NEEDS TO BE DEPRECATED!
     const legacyResult = buildLegacyPrompt(task, promptId, customPrompt, options);
     userPrompt = legacyResult.prompt;
   } else {
