@@ -215,11 +215,14 @@ def transform(grid):
   private extractPrograms(response: AIResponse): string[] {
     const programs: string[] = [];
     
+    // CRITICAL: When JSON parsing fails, OpenAI stores raw text in _rawResponse
+    const rawText = (response as any)._rawResponse || response.rawResponse || '';
+    
     // Build a combined text from all possible response fields
     const textSources = [
+      rawText,  // Try raw response first (markdown code)
       response.solvingStrategy,
       response.patternDescription,
-      response.rawResponse,
       JSON.stringify(response)
     ].filter(Boolean).join('\n\n');
     
@@ -229,10 +232,11 @@ def transform(grid):
     }
     
     // Extract all Python code blocks (with or without language tag)
+    // Handle both ```python and ``` formats
     const patterns = [
-      /```python\n([\s\S]*?)```/g,
-      /```\n(def transform[\s\S]*?)```/g,
-      /```(def transform[\s\S]*?)```/g,
+      /```python\s+([\s\S]*?)```/g,  // ```python with whitespace
+      /```\s+(def transform[\s\S]*?)```/g,  // ``` with whitespace before def
+      /```(def transform[\s\S]*?)```/g,  // ``` with def immediately
     ];
     
     for (const pattern of patterns) {
@@ -241,11 +245,18 @@ def transform(grid):
         const code = match[1].trim();
         if (code.includes('def transform') && !programs.includes(code)) {
           programs.push(code);
+          logger.service('Grover', `Found program (${code.length} chars)`);
         }
       }
     }
     
     logger.service('Grover', `Extracted ${programs.length} programs from response`);
+    
+    if (programs.length === 0) {
+      logger.warn('No programs extracted. First 500 chars of textSources:', 'grover');
+      logger.warn(textSources.substring(0, 500), 'grover');
+    }
+    
     return programs;
   }
 
