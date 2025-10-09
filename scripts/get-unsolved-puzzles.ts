@@ -35,6 +35,25 @@ interface CLIArgs {
   outputPath: string;
   includeFailed: boolean;
   includeUnattempted: boolean;
+  useModelFamily: boolean;
+}
+
+/**
+ * Get model family members for cross-model filtering
+ */
+function getModelFamily(modelName: string): string[] {
+  // GPT-5 family: if ANY variant solved it, skip for ALL variants
+  if (modelName.startsWith('gpt-5')) {
+    return [
+      'gpt-5-2025-08-07',
+      'gpt-5-mini-2025-08-07',
+      'gpt-5-nano-2025-08-07',
+      'gpt-5-chat-latest'
+    ];
+  }
+
+  // Default: just the single model
+  return [modelName];
 }
 
 /**
@@ -48,6 +67,7 @@ function parseArgs(): CLIArgs {
   let outputPath = path.join(process.cwd(), 'scripts', 'grok-4-unsolved-arc2.txt');
   let includeFailed = true;
   let includeUnattempted = true;
+  let useModelFamily = true; // Default: use model family for GPT-5 variants
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -98,7 +118,8 @@ function parseArgs(): CLIArgs {
     datasetName,
     outputPath,
     includeFailed,
-    includeUnattempted
+    includeUnattempted,
+    useModelFamily
   };
 }
 
@@ -147,37 +168,82 @@ async function fetchUnsolvedPuzzles(
  */
 async function main(): Promise<void> {
   try {
-    const { modelName, datasetName, outputPath, includeFailed, includeUnattempted } = parseArgs();
+    const { modelName, datasetName, outputPath, includeFailed, includeUnattempted, useModelFamily } = parseArgs();
+
+    // Determine which models to check (model family for GPT-5, single model otherwise)
+    const modelsToCheck = useModelFamily && modelName.startsWith('gpt-5')
+      ? getModelFamily(modelName)
+      : [modelName];
 
     console.log('📋 GET UNSOLVED PUZZLES FOR PROGRESSIVE REASONING');
     console.log('='.repeat(80));
     console.log(`Model: ${modelName}`);
+    if (modelsToCheck.length > 1) {
+      console.log(`Model Family: Checking all GPT-5 variants (${modelsToCheck.length} models)`);
+    }
     console.log(`Dataset: ${datasetName}`);
     console.log(`Output: ${outputPath}`);
     console.log(`Include Failed: ${includeFailed}`);
     console.log(`Include Unattempted: ${includeUnattempted}`);
     console.log('='.repeat(80));
 
-    // Fetch performance data from API
-    const performance = await fetchUnsolvedPuzzles(modelName, datasetName);
+    // Fetch performance data for all models in family
+    const allPerformances = await Promise.all(
+      modelsToCheck.map(model => fetchUnsolvedPuzzles(model, datasetName))
+    );
+
+    // Merge results: puzzle is "solved" if ANY model in family solved it
+    const allSolvedPuzzles = new Set<string>();
+    allPerformances.forEach(perf => {
+      perf.correct.forEach(id => allSolvedPuzzles.add(id));
+    });
+
+    // Get total puzzle count from first performance
+    const performance = allPerformances[0];
+
+    // Calculate combined statistics
+    const totalPuzzles = performance.summary.totalPuzzles;
+    const solvedByFamily = allSolvedPuzzles.size;
+
+    // Get all puzzles and filter out those solved by ANY family member
+    const datasetPuzzleIds = [
+      ...performance.correct,
+      ...performance.incorrect,
+      ...performance.notAttempted
+    ];
+
+    const unsolvedByFamily = datasetPuzzleIds.filter(id => !allSolvedPuzzles.has(id));
 
     console.log('\n📊 Performance Summary:');
-    console.log(`   Total Puzzles: ${performance.summary.totalPuzzles}`);
-    console.log(`   ✅ Correct: ${performance.summary.correct}`);
-    console.log(`   ❌ Incorrect: ${performance.summary.incorrect}`);
-    console.log(`   ⚠️  Not Attempted: ${performance.summary.notAttempted}`);
-
-    // Collect unsolved puzzle IDs based on user preferences
-    const unsolvedPuzzles: string[] = [];
-
-    if (includeFailed) {
-      unsolvedPuzzles.push(...performance.incorrect);
-      console.log(`\n➕ Including ${performance.incorrect.length} failed puzzles`);
+    if (modelsToCheck.length > 1) {
+      console.log(`   Total Puzzles: ${totalPuzzles}`);
+      console.log(`   ✅ Solved by ANY GPT-5 variant: ${solvedByFamily}`);
+      console.log(`   ❌ Unsolved by ALL variants: ${unsolvedByFamily.length}`);
+      console.log(`\n   Individual Model Stats:`);
+      allPerformances.forEach((perf, idx) => {
+        console.log(`      ${modelsToCheck[idx]}: ${perf.correct.length} correct`);
+      });
+    } else {
+      console.log(`   Total Puzzles: ${performance.summary.totalPuzzles}`);
+      console.log(`   ✅ Correct: ${performance.summary.correct}`);
+      console.log(`   ❌ Incorrect: ${performance.summary.incorrect}`);
+      console.log(`   ⚠️  Not Attempted: ${performance.summary.notAttempted}`);
     }
 
-    if (includeUnattempted) {
-      unsolvedPuzzles.push(...performance.notAttempted);
-      console.log(`➕ Including ${performance.notAttempted.length} unattempted puzzles`);
+    // Collect unsolved puzzle IDs
+    const unsolvedPuzzles = modelsToCheck.length > 1
+      ? unsolvedByFamily  // For GPT-5 family, use puzzles unsolved by ALL
+      : [...(includeFailed ? performance.incorrect : []), ...(includeUnattempted ? performance.notAttempted : [])];
+
+    if (modelsToCheck.length === 1) {
+      if (includeFailed) {
+        console.log(`\n➕ Including ${performance.incorrect.length} failed puzzles`);
+      }
+      if (includeUnattempted) {
+        console.log(`➕ Including ${performance.notAttempted.length} unattempted puzzles`);
+      }
+    } else {
+      console.log(`\n➕ Including all ${unsolvedPuzzles.length} puzzles unsolved by ALL GPT-5 variants`);
     }
 
     if (unsolvedPuzzles.length === 0) {
