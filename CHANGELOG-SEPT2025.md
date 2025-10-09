@@ -1,5 +1,36 @@
 ## [2025-10-09]
 
+## v3.5.4 - Global Broadcast Logger for Real-Time Browser Visibility
+
+### Added
+- **Global Broadcast Logger** (High Impact - Phase 1 of UI Enhancement)
+  - Created `broadcastLogger.ts` that wraps standard logger and broadcasts ALL logs to WebSocket
+  - Uses Node.js AsyncLocalStorage to maintain session context across async operations
+  - ANY service (PromptBuilder, OpenAI, Grok, etc.) automatically broadcasts logs to browser when wrapped in session context
+  - **Impact**: User now sees PromptBuilder logs, prompt generation details, and context info in browser console
+  - Files:
+    - server/utils/broadcastLogger.ts (new - 148 lines)
+    - server/controllers/groverController.ts (wrapped analysis in setSessionContext)
+    - server/services/promptBuilder.ts (replaced 10+ console.log with logger.service)
+  - Commit: 70dd84d
+  - Author: Sonnet 4.5
+
+- **Comprehensive UI Enhancement Plan**
+  - Created 2-week implementation plan (2,847 lines) for complete backend-to-browser transparency
+  - **Phase 1** (Week 1): Global logger broadcast - ✅ COMPLETE (this release)
+  - **Phase 2** (Week 1-2): Rich UI cards showing iteration details, API responses, code execution
+  - **Phase 3** (Week 2): Enhanced data flow with full response capture and streaming updates
+  - **Success Criteria**: User sees ALL backend activity in real-time with expandable cards
+  - Files: docs/09102025-Grover-UI-RealTime-Visibility-Plan.md
+  - Author: Sonnet 4.5
+
+### Fixed
+- **Grover UI Visibility** (Critical)
+  - Fixed "black box syndrome" where user saw NOTHING for 2+ minutes during analysis
+  - PromptBuilder logs now visible in browser (previously only in terminal)
+  - Foundation in place for Phase 2: OpenAI response logs, iteration cards, program execution details
+  - **Remaining work**: Update OpenAI/Grok services to use broadcastLogger, build IterationCard/ConsoleStream components
+
 ## v3.5.3 - Grover & Saturn Progress Streaming Stabilization
 
 ### Fixed

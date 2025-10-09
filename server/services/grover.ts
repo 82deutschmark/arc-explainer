@@ -10,10 +10,10 @@
 
 import { ARCTask } from "../../shared/types.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
-import { getDefaultPromptId, PromptOptions } from "./promptBuilder.js";
+import type { PromptOptions } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
 import { pythonBridge } from "./pythonBridge.js";
-import { logger } from "../utils/logger.js";
+import { logger, type LogLevel } from "../utils/logger.js";
 import { broadcast } from "./wsService.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
 
@@ -31,7 +31,7 @@ export class GroverService extends BaseAIService {
     modelKey: string,
     taskId: string,
     temperature: number = 0.2,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = "grover", // NOTE: Ignored - Grover builds custom iteration-specific prompts
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
@@ -40,9 +40,7 @@ export class GroverService extends BaseAIService {
     const underlyingModel = this.models[modelKey];
     const sessionId = serviceOpts.sessionId;
 
-    logger.service(this.provider, `🚀 Starting Grover analysis - Puzzle: ${taskId}, Model: ${underlyingModel}, Iterations: ${maxIterations}`);
-
-    // Validate model key
+    // Validate model key FIRST (before log wrapper exists)
     if (!this.models[modelKey]) {
       const error = `Invalid Grover model key: ${modelKey}. Available: ${Object.keys(this.models).join(', ')}`;
       logger.service(this.provider, `❌ ${error}`, 'error');
@@ -59,6 +57,24 @@ export class GroverService extends BaseAIService {
 
     // Build initial context
     let context = this.buildInitialContext(task);
+
+    // LOG WRAPPER: Broadcasts ALL logs to browser WebSocket
+    const log = (message: string, level: LogLevel = 'info') => {
+      // Always log to terminal
+      logger.service(this.provider, message, level);
+      // ALSO broadcast to browser if session exists
+      if (sessionId) {
+        try {
+          broadcast(sessionId, {
+            status: 'running',
+            phase: 'log',
+            message,
+            level,
+            timestamp: new Date().toISOString()
+          });
+        } catch {}
+      }
+    };
 
     const sendProgress = (payload: Record<string, any>) => {
       if (!sessionId) return;
@@ -78,10 +94,13 @@ export class GroverService extends BaseAIService {
           ...payload
         });
       } catch (err) {
-        logger.service(this.provider, `Failed to broadcast Grover progress: ${err instanceof Error ? err.message : String(err)}`, 'warn');
+        // Use console.error to avoid recursion
+        console.error(`[Grover] Failed to broadcast: ${err}`);
       }
     };
 
+    log(`🚀 Starting Grover analysis - Puzzle: ${taskId}, Model: ${underlyingModel}, Iterations: ${maxIterations}`);
+    
     sendProgress({
       phase: 'initializing',
       iteration: 0,
@@ -90,7 +109,7 @@ export class GroverService extends BaseAIService {
 
     try {
       for (let i = 0; i < maxIterations; i++) {
-        logger.service(this.provider, `🔁 Iteration ${i + 1}/${maxIterations}`);
+        log(`🔁 Iteration ${i + 1}/${maxIterations}`);
         sendProgress({
           phase: 'iteration_start',
           iteration: i + 1,
@@ -145,7 +164,7 @@ export class GroverService extends BaseAIService {
 
       if (programs.length === 0) {
         const warning = `⚠️ Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
-        logger.service(this.provider, warning, 'warn');
+        log(warning, 'warn');
         sendProgress({
           phase: 'extraction_failed',
           iteration: i + 1,
@@ -155,7 +174,7 @@ export class GroverService extends BaseAIService {
         continue;
       }
 
-      logger.service(this.provider, `📝 Found ${programs.length} program(s) to execute`);
+      log(`📝 Found ${programs.length} program(s) to execute`);
       sendProgress({
         phase: 'programs_extracted',
         iteration: i + 1,
@@ -173,7 +192,7 @@ export class GroverService extends BaseAIService {
         });
       } catch (execError) {
         const errorMsg = execError instanceof Error ? execError.message : String(execError);
-        logger.service(this.provider, `❌ Python execution failed: ${errorMsg}`, 'error');
+        log(`❌ Python execution failed: ${errorMsg}`, 'error');
         sendProgress({
           phase: 'execution_error',
           iteration: i + 1,
@@ -192,9 +211,9 @@ export class GroverService extends BaseAIService {
       if (iterationBest && iterationBest.score > bestScore) {
         bestScore = iterationBest.score;
         bestProgram = iterationBest.code;
-        logger.service(this.provider, `🎯 New best score: ${bestScore.toFixed(1)}/10 (improved from ${previousBest.toFixed(1)})`);
+        log(`🎯 New best score: ${bestScore.toFixed(1)}/10 (improved from ${previousBest.toFixed(1)})`);
       } else if (iterationBest) {
-        logger.service(this.provider, `📊 Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
+        log(`📊 Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
       }
 
       // 6. Track iteration
@@ -221,7 +240,7 @@ export class GroverService extends BaseAIService {
 
         // Early stopping if perfect score
         if (bestScore >= 10) {
-          logger.service(this.provider, `🎉 Perfect score achieved at iteration ${i + 1}!`);
+          log(`🎉 Perfect score achieved at iteration ${i + 1}!`);
           sendProgress({
             phase: 'complete',
             iteration: i + 1,
@@ -233,7 +252,7 @@ export class GroverService extends BaseAIService {
       }
 
       // Final summary
-      logger.service(this.provider, `✅ Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
+      log(`✅ Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
       sendProgress({
         phase: 'finalizing',
         message: `✅ Analysis complete - Best score: ${bestScore.toFixed(1)}/10`,
@@ -243,7 +262,7 @@ export class GroverService extends BaseAIService {
 
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      logger.service(this.provider, `❌ Analysis failed: ${errorMsg}`, 'error');
+      log(`❌ Analysis failed: ${errorMsg}`, 'error');
       sendProgress({
         phase: 'error',
         message: `❌ Analysis failed: ${errorMsg}`,
@@ -278,7 +297,7 @@ export class GroverService extends BaseAIService {
   generatePromptPreview(
     task: ARCTask,
     modelKey: string,
-    promptId: string = getDefaultPromptId(),
+    promptId: string = "grover", // NOTE: Ignored - Grover builds custom iteration-specific prompts
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
