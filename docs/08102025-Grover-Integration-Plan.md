@@ -19,31 +19,258 @@ This document outlines the integration of Zoe Carver's **Grover-ARC** iterative 
 
 ---
 
-## Background: Saturn Solver Audit Results
+## Background: Saturn Solver Deep Audit Results
 
-### What We Learned from Saturn
+### Executive Summary: Saturn's Architectural Violations
 
-**Strengths:**
-- ✅ Uses Responses API correctly (`client_openai.responses.create()`)
-- ✅ Structured reasoning with `effort` and `summary` parameters
-- ✅ Tool calling for iterative grid visualization
-- ✅ Real-time NDJSON streaming via WebSocket
+After comprehensive code audit, Saturn Visual Solver exhibits **systemic architectural isolation** that prevents it from leveraging 3+ months of Responses API infrastructure investment. This is a **critical technical debt** that must be fixed before any new solvers (Grover) are integrated.
 
-**Critical Architectural Flaws:**
-- ❌ **Bypasses entire TypeScript service layer** - Direct Python → OpenAI client
-- ❌ **Provider lock-in** - Hardcoded to OpenAI only (`self.client_openai = OpenAI()`)
-- ❌ **No conversation chaining** - Can't leverage `previousResponseId` infrastructure
-- ❌ **Isolated cost tracking** - Not integrated with RepositoryService
-- ❌ **Duplicate API logic** - Reimplements what grok.ts/openai.ts already provide
+---
 
-**Current Flow (WRONG):**
+## 🔍 Deep Audit: Saturn Visual Solver
+
+### Architecture Flow Analysis
+
+**Current Saturn Flow (BROKEN):**
 ```
-Controller → Python Wrapper → Direct OpenAI Client → Responses API
-          ↓
-    [SKIPS: grok.ts, openai.ts, BaseAIService, conversation chaining]
+User Request
+    ↓
+saturnController.ts (analyze endpoint)
+    ↓
+saturnVisualService.ts (orchestrates Python subprocess)
+    ↓
+pythonBridge.ts (spawns Python, streams NDJSON)
+    ↓
+saturn_wrapper.py (thin wrapper)
+    ↓
+arc_visual_solver.py ← ⚠️ DIRECT OpenAI CLIENT HERE
+    ↓
+self.client_openai = OpenAI(api_key=self.api_key_openai)  # Line 58
+self.client_openai.responses.create(...)  # Line 128
+    ↓
+OpenAI Responses API
+
+❌ SKIPPED ENTIRELY:
+- grok.ts / openai.ts (provider services)
+- BaseAIService (standardization)
+- Conversation chaining (previousResponseId)
+- Cost tracking via repositoryService
+- Multi-provider support
+- Prompt template system
+- Analytics integration
 ```
 
-**Lesson for Grover:** Don't repeat this mistake. Use TypeScript for orchestration, Python ONLY for execution sandbox.
+**What TypeScript Services Provide (that Saturn bypasses):**
+```typescript
+// openai.ts (689 lines of production-hardened code)
+- Responses API integration with retry logic
+- Reasoning capture (GPT-5 effort/summary)
+- Conversation chaining via previousResponseId
+- Token usage tracking
+- Cost calculation
+- Structured output with JSON schema
+- Error handling and timeout management
+- Prompt package building
+- Response validation
+
+// grok.ts (451 lines)
+- Same features for xAI provider
+- Multi-provider abstraction
+- Provider-specific quirks handled
+
+// BaseAIService.ts (450 lines)
+- DRY principle enforcement
+- Standardized response format
+- Temperature handling
+- Prompt preview generation
+- Model capability detection
+```
+
+---
+
+### Critical Flaws in Detail
+
+#### ❌ Flaw #1: Provider Lock-In (SEVERE)
+
+**Location:** `solver/arc_visual_solver.py:58`
+```python
+def __init__(self):
+    self.api_key_openai = os.getenv("OPENAI_API_KEY")
+    if not self.api_key_openai:
+        raise ValueError("OpenAI API key must be provided...")
+    self.client_openai = OpenAI(api_key=self.api_key_openai)  # ← HARDCODED
+```
+
+**Impact:**
+- Cannot use grok-4-fast (our target for cost efficiency)
+- Cannot use Anthropic, Gemini, or any other provider
+- Saturn wrapper has "provider pass-through" (line 102) but it's **fake** - arc_visual_solver.py ignores it
+- User selects "Grok" in UI → still calls OpenAI behind the scenes
+
+**Memory Reference:** Memory fd326af1 says "provider pass-through" was implemented, but audit reveals it only goes to the wrapper, not the solver itself.
+
+---
+
+#### ❌ Flaw #2: No Conversation Chaining (CRITICAL)
+
+**Location:** `solver/arc_visual_solver.py:128`
+```python
+response = self.client_openai.responses.create(**call_params)
+# call_params has NO previousResponseId field
+```
+
+**Impact:**
+- Every phase starts fresh, no context retention
+- Cannot leverage multi-turn reasoning optimization
+- Wastes tokens re-explaining puzzle context
+- Our grok.ts/openai.ts have full conversation chaining support (unused)
+
+**Correct Approach (from grok.ts:264):**
+```typescript
+const requestBody: any = {
+  model: apiModelName,
+  input: messages,
+  previous_response_id: serviceOpts.previousResponseId,  // ← THIS
+  store: serviceOpts.store ?? true,
+  // ...
+};
+```
+
+---
+
+#### ❌ Flaw #3: Duplicate API Logic (DRY Violation)
+
+**What Saturn Reimplements:**
+
+| Feature | openai.ts | Saturn | Status |
+|---------|-----------|--------|--------|
+| Responses API call | ✅ Lines 200-350 | ✅ Line 128 | **DUPLICATE** |
+| Tool calling loop | ✅ Handled by API | ✅ Lines 126-188 | **DUPLICATE** |
+| Base64 image encoding | ✅ Utility | ✅ Line 87 | **DUPLICATE** |
+| Reasoning capture | ✅ Lines 520-580 | ❌ Incomplete | **MISSING** |
+| Retry logic | ✅ BaseAIService | ❌ None | **MISSING** |
+| Timeout handling | ✅ 45min timeout | ⚠️ Python-side only | **INCOMPLETE** |
+| Cost calculation | ✅ repositoryService | ❌ None | **MISSING** |
+| Response validation | ✅ Lines 600-650 | ❌ None | **MISSING** |
+
+**Lines of Code Wasted:** ~300+ lines in arc_visual_solver.py duplicating what openai.ts already does
+
+---
+
+#### ❌ Flaw #4: Analytics Isolation
+
+**Current State:**
+```python
+# arc_visual_solver.py has NO concept of:
+- repositoryService.cost.track()
+- repositoryService.explanation.create()
+- repositoryService.trustworthiness.calculate()
+- Model performance leaderboards
+- Token usage trends
+- API call logging
+```
+
+**Impact:**
+- Saturn runs don't contribute to model comparison data
+- Cost analysis incomplete
+- Cannot compare Saturn vs standard solver performance
+- Trust scores unavailable for Saturn results
+
+---
+
+#### ❌ Flaw #5: Reasoning Log Capture (INCOMPLETE)
+
+**What Saturn Captures:**
+```python
+# Lines 232-246 in saturn_wrapper.py
+conversation_log = json.dumps(solver.conversation_history, indent=2)
+'reasoningLog': conversation_log  # ← THIS IS JUST MESSAGES
+```
+
+**What It SHOULD Capture (from openai.ts:520-580):**
+```typescript
+reasoningLog: {
+  effort: 'high',
+  summary: response.reasoning_summary,
+  steps: response.reasoning_steps,  // ← GPT-5 provides this
+  thinking: response.thinking,       // ← Structured reasoning
+  providedVerbosity: 'detailed'
+}
+```
+
+**Impact:**
+- Loses GPT-5's structured reasoning output
+- Can't analyze reasoning quality
+- UI can't show reasoning timeline
+- Debate feature can't compare reasoning approaches
+
+---
+
+### What Works Well (Keep These)
+
+✅ **NDJSON Streaming:** pythonBridge → saturnVisualService → WebSocket works great  
+✅ **Image Generation:** grid_to_image with base64 encoding is solid  
+✅ **Phased Prompting:** Training example progression makes sense  
+✅ **Tool Calling Pattern:** visualize_grid tool concept is correct  
+✅ **Database Persistence:** saturn_log, saturn_events properly saved  
+
+---
+
+### Comparison: What Grover Does Right
+
+**Grover Architecture (from solver/grover-arc/solver.py):**
+```python
+# Grover uses xAI SDK directly (gpt5_prompt.py:9-18)
+from xai_sdk import Client
+
+client = Client(api_key=os.getenv("XAI_API_KEY"))
+chat = client.chat.create(model="grok-4-fast-reasoning")
+```
+
+**Key Differences:**
+1. **Iteration Logic in Python** - Grover does DSL generation + execution + grading (lines 107-186)
+2. **Multi-iteration loops** - Grover runs 5 iterations with feedback (line 201)
+3. **Amplitude Amplification** - Sorts attempts by grade, removes low-scorers (lines 88-104)
+4. **Code Execution** - Generates Python programs, not grid predictions
+
+**What Grover ALSO Gets Wrong:**
+- ❌ Still uses direct xAI client (gpt5_prompt.py:18)
+- ❌ Bypasses grok.ts Responses API integration
+- ❌ No conversation chaining
+- ❌ No cost tracking
+
+**Lesson:** Grover's iteration algorithm is brilliant, but it has the SAME architectural isolation problem as Saturn.
+
+---
+
+## 🎯 Core Problem Statement
+
+Both Saturn and Grover treat our **3 months of TypeScript Responses API infrastructure as irrelevant** by implementing direct Python API clients. This creates:
+
+1. **Maintenance Hell:** Every provider update requires changing 3 codebases (grok.ts, saturn, grover)
+2. **Feature Fragmentation:** Conversation chaining works in UI, breaks in solvers
+3. **Analytics Blind Spots:** Can't compare solver performance accurately
+4. **Cost Explosion:** No centralized rate limiting or cost caps
+5. **DRY Violations:** 500+ lines of duplicate code
+
+**Root Cause:** Solvers were built in isolation without understanding the larger TypeScript service architecture.
+
+---
+
+## 🔧 Lesson for Grover Integration
+
+**DON'T:**
+- ❌ Create `grover_direct_api.py` that calls OpenAI/xAI directly
+- ❌ Bypass grok.ts/openai.ts services
+- ❌ Reimplement conversation chaining in Python
+- ❌ Build separate cost tracking
+
+**DO:**
+- ✅ Use TypeScript for ALL API orchestration
+- ✅ Python ONLY for execution sandbox (run DSL programs safely)
+- ✅ Route through groverService.ts → grok.ts → Responses API
+- ✅ Leverage existing conversation chaining
+- ✅ Integrate with repositoryService for analytics
 
 ---
 
@@ -139,7 +366,445 @@ groverService.ts (extends BaseAIService)
 
 ---
 
-## Implementation Phases
+## 🔨 PRIORITY: Saturn Solver Fix Plan
+
+### Why Fix Saturn First?
+
+**Rationale:** Saturn is ALREADY in production use. Grover is NOT. Fixing Saturn's architecture validates our approach before adding Grover complexity.
+
+**Benefits:**
+1. Proves TypeScript ↔ Python hybrid architecture works
+2. Unlocks multi-provider support for existing users
+3. Enables conversation chaining immediately
+4. Fixes analytics blind spots
+5. Serves as template for Grover integration
+
+---
+
+### Saturn Fix: 3-Phase Approach
+
+#### Phase 1: Create saturnService.ts (TypeScript API Layer)
+
+**Goal:** Route Saturn through openai.ts/grok.ts instead of direct Python client
+
+**File:** `server/services/saturnService.ts`
+
+```typescript
+/**
+ * Saturn Service - Visual Solver with TypeScript API Integration
+ * Author: Sonnet 4.5
+ * Date: 2025-10-08
+ * PURPOSE: Wrapper that delegates LLM calls to openai.ts/grok.ts while keeping
+ * Saturn's phased prompting and tool calling logic. Python becomes VISUALIZATION ONLY.
+ * SRP/DRY check: Pass - Extends BaseAIService, reuses provider services
+ */
+
+import { ARCTask } from "../../shared/types.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { getDefaultPromptId, PromptOptions } from "./promptBuilder.js";
+import { aiServiceFactory } from "./aiServiceFactory.js";
+import { pythonBridge } from "./pythonBridge.js";
+import { broadcast } from './wsService.js';
+import { logger } from "../utils/logger.js";
+
+export class SaturnService extends BaseAIService {
+  protected provider = "Saturn";
+  protected models: Record<string, string> = {
+    "saturn-grok-4-fast": "grok-4-fast",
+    "saturn-gpt-5": "gpt-5",
+    "saturn-claude-3.5": "claude-3.5-sonnet"
+  };
+
+  async analyzePuzzleWithModel(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    const underlyingModel = this.models[modelKey];
+    const underlyingService = aiServiceFactory.getService(underlyingModel);
+    
+    logger.service(this.provider, `Starting Saturn with ${underlyingModel}`);
+    
+    const sessionId = serviceOpts.sessionId || crypto.randomUUID();
+    let previousResponseId: string | undefined = undefined;
+    const phases: any[] = [];
+    
+    // Phase 1: First training example
+    broadcast(sessionId, { status: 'running', phase: 'phase1', message: 'Analyzing first training example...' });
+    
+    const phase1Prompt = this.buildPhase1Prompt(task);
+    const phase1Images = await this.generateGridImages(
+      [task.train[0].input, task.train[0].output],
+      taskId
+    );
+    
+    const phase1Response = await underlyingService.analyzePuzzleWithModel(
+      task,
+      underlyingModel,
+      taskId,
+      temperature,
+      'saturn-phase1', // Custom prompt ID
+      phase1Prompt,
+      { ...options, images: phase1Images },
+      { ...serviceOpts, previousResponseId }
+    );
+    
+    previousResponseId = phase1Response.providerResponseId;
+    phases.push({ phase: 1, response: phase1Response });
+    
+    // Phase 2: Second training example (if exists)
+    if (task.train.length > 1) {
+      broadcast(sessionId, { status: 'running', phase: 'phase2', message: 'Predicting second output...' });
+      
+      const phase2Prompt = this.buildPhase2Prompt(task);
+      const phase2Images = await this.generateGridImages([task.train[1].input], taskId);
+      
+      const phase2Response = await underlyingService.analyzePuzzleWithModel(
+        task,
+        underlyingModel,
+        taskId,
+        temperature,
+        'saturn-phase2',
+        phase2Prompt,
+        { ...options, images: phase2Images },
+        { ...serviceOpts, previousResponseId }
+      );
+      
+      previousResponseId = phase2Response.providerResponseId;
+      phases.push({ phase: 2, response: phase2Response });
+    }
+    
+    // Phase 3: Test input
+    broadcast(sessionId, { status: 'running', phase: 'phase3', message: 'Solving test input...' });
+    
+    const phase3Prompt = this.buildPhase3Prompt(task);
+    const phase3Images = await this.generateGridImages([task.test[0].input], taskId);
+    
+    const phase3Response = await underlyingService.analyzePuzzleWithModel(
+      task,
+      underlyingModel,
+      taskId,
+      temperature,
+      'saturn-phase3',
+      phase3Prompt,
+      { ...options, images: phase3Images },
+      { ...serviceOpts, previousResponseId }
+    );
+    
+    phases.push({ phase: 3, response: phase3Response });
+    
+    // Aggregate results
+    const totalCost = phases.reduce((sum, p) => sum + (p.response.estimatedCost || 0), 0);
+    const totalTokens = phases.reduce((sum, p) => sum + (p.response.totalTokens || 0), 0);
+    
+    return {
+      model: modelKey,
+      temperature,
+      saturnPhases: phases,
+      phaseCount: phases.length,
+      estimatedCost: totalCost,
+      totalTokens,
+      predictedOutput: phase3Response.predictedOutput,
+      patternDescription: `Saturn Visual Solver (${phases.length} phases)`,
+      solvingStrategy: phase3Response.solvingStrategy,
+      confidence: phase3Response.confidence,
+      providerResponseId: previousResponseId,
+      reasoningLog: phases.map(p => p.response.reasoningLog).filter(Boolean),
+      hasReasoningLog: phases.some(p => p.response.hasReasoningLog),
+      ...serviceOpts
+    };
+  }
+  
+  private async generateGridImages(grids: number[][][], taskId: string): Promise<string[]> {
+    // Call Python visualization subprocess
+    const result = await pythonBridge.runGridVisualization(grids, taskId);
+    return result.imagePaths;
+  }
+  
+  private buildPhase1Prompt(task: ARCTask): string {
+    return `You are analyzing a visual puzzle. Here's the first training example.
+    
+Training Example 1:
+Input: ${JSON.stringify(task.train[0].input)}
+Output: ${JSON.stringify(task.train[0].output)}
+
+Analyze the transformation pattern. What changes from input to output?`;
+  }
+  
+  private buildPhase2Prompt(task: ARCTask): string {
+    return `Now predict the output for this second training input based on the pattern you identified:
+
+Input: ${JSON.stringify(task.train[1].input)}
+
+What should the output be?`;
+  }
+  
+  private buildPhase3Prompt(task: ARCTask): string {
+    return `Apply the pattern to solve this test input:
+
+Test Input: ${JSON.stringify(task.test[0].input)}
+
+Provide the output grid in the exact format: [[row1], [row2], ...]]`;
+  }
+  
+  getModelInfo(modelKey: string): ModelInfo {
+    const underlyingModel = this.models[modelKey];
+    const underlyingService = aiServiceFactory.getService(underlyingModel);
+    const underlyingInfo = underlyingService.getModelInfo(underlyingModel);
+    
+    return {
+      ...underlyingInfo,
+      name: `Saturn (${underlyingInfo.name})`,
+      supportsVision: true // Saturn adds visualization
+    };
+  }
+  
+  generatePromptPreview(): PromptPreview {
+    // Implementation similar to above
+    throw new Error("Saturn prompt preview not yet implemented");
+  }
+  
+  protected async callProviderAPI(): Promise<any> {
+    throw new Error("Saturn uses underlying services - this should not be called directly");
+  }
+  
+  protected parseProviderResponse(): any {
+    throw new Error("Saturn uses underlying services - this should not be called directly");
+  }
+}
+
+export const saturnService = new SaturnService();
+```
+
+**Key Changes:**
+1. ✅ Routes ALL LLM calls through openai.ts/grok.ts
+2. ✅ Preserves conversation chaining via `previousResponseId`
+3. ✅ Multi-provider support out of the box
+4. ✅ Integrates with cost tracking
+5. ✅ Maintains phased prompting approach
+
+---
+
+#### Phase 2: Create grid_visualizer.py (Python Visualization ONLY)
+
+**Goal:** Extract ONLY image generation from arc_visual_solver.py
+
+**File:** `server/python/grid_visualizer.py`
+
+```python
+#!/usr/bin/env python3
+"""
+Grid Visualization Service
+Author: Sonnet 4.5
+Date: 2025-10-08
+PURPOSE: ONLY generates PNG images from grids. NO API calls. NO solver logic.
+Reads JSON from stdin: { grids: [[...]], taskId: str, cellSize: int }
+Outputs JSON to stdout: { imagePaths: [...], base64Images: [...] }
+SRP/DRY check: Pass - Single responsibility (visualization), no AI logic
+"""
+import sys
+import json
+import base64
+import os
+from typing import List, Dict, Any
+from PIL import Image
+import numpy as np
+
+# ARC color palette
+ARC_COLORS = {
+    0: (0, 0, 0),        # Black
+    1: (0, 116, 217),    # Blue
+    2: (255, 65, 54),    # Red
+    3: (46, 204, 64),    # Green
+    4: (255, 220, 0),    # Yellow
+    5: (128, 128, 128),  # Grey
+    6: (240, 18, 190),   # Magenta
+    7: (255, 133, 27),   # Orange
+    8: (127, 219, 255),  # Cyan
+    9: (128, 0, 0)       # Maroon
+}
+
+def grid_to_image(grid: List[List[int]], cell_size: int = 30) -> Image.Image:
+    """Convert grid to PIL Image"""
+    height = len(grid)
+    width = len(grid[0]) if grid else 0
+    
+    img_array = np.zeros((height * cell_size, width * cell_size, 3), dtype=np.uint8)
+    
+    for i, row in enumerate(grid):
+        for j, value in enumerate(row):
+            color = ARC_COLORS.get(value, (128, 128, 128))
+            img_array[i*cell_size:(i+1)*cell_size, j*cell_size:(j+1)*cell_size] = color
+    
+    return Image.fromarray(img_array)
+
+def main():
+    try:
+        payload = json.loads(sys.stdin.read())
+        grids = payload.get('grids', [])
+        task_id = payload.get('taskId', 'unknown')
+        cell_size = payload.get('cellSize', 30)
+        
+        temp_dir = os.path.join(os.path.dirname(__file__), '../../solver/img_tmp')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        image_paths = []
+        base64_images = []
+        
+        for idx, grid in enumerate(grids):
+            img = grid_to_image(grid, cell_size)
+            img_path = os.path.join(temp_dir, f"{task_id}_grid_{idx}.png")
+            img.save(img_path)
+            
+            with open(img_path, 'rb') as f:
+                b64 = base64.b64encode(f.read()).decode('utf-8')
+            
+            image_paths.append(img_path)
+            base64_images.append(b64)
+        
+        sys.stdout.write(json.dumps({
+            "type": "visualization_complete",
+            "imagePaths": image_paths,
+            "base64Images": base64_images
+        }) + "\n")
+        sys.stdout.flush()
+        return 0
+        
+    except Exception as e:
+        sys.stderr.write(json.dumps({"type": "error", "message": str(e)}) + "\n")
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+**Key Changes:**
+1. ✅ NO OpenAI imports
+2. ✅ NO API calls
+3. ✅ ONLY image generation
+4. ✅ Reads from stdin, writes to stdout (standard bridge pattern)
+
+---
+
+#### Phase 3: Update pythonBridge.ts
+
+**File:** `server/services/pythonBridge.ts`
+
+Add new method:
+
+```typescript
+async runGridVisualization(
+  grids: number[][][],
+  taskId: string,
+  cellSize: number = 30
+): Promise<{ imagePaths: string[]; base64Images: string[] }> {
+  const scriptPath = path.join(__dirname, '../python/grid_visualizer.py');
+  const pythonBin = this.resolvePythonBin();
+  
+  const payload = JSON.stringify({ grids, taskId, cellSize });
+  
+  return new Promise((resolve, reject) => {
+    const child = spawn(pythonBin, [scriptPath], {
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    
+    child.stdin.write(payload);
+    child.stdin.end();
+    
+    let stdout = '';
+    let stderr = '';
+    
+    child.stdout.on('data', (chunk) => { stdout += chunk; });
+    child.stderr.on('data', (chunk) => { stderr += chunk; });
+    
+    child.on('close', (code) => {
+      if (code !== 0) {
+        return reject(new Error(`Visualization failed: ${stderr}`));
+      }
+      
+      try {
+        const result = JSON.parse(stdout.trim());
+        if (result.type === 'visualization_complete') {
+          resolve({
+            imagePaths: result.imagePaths,
+            base64Images: result.base64Images
+          });
+        } else {
+          reject(new Error(`Unexpected response: ${stdout}`));
+        }
+      } catch (err) {
+        reject(new Error(`Failed to parse visualizer output: ${err}`));
+      }
+    });
+  });
+}
+```
+
+---
+
+### Saturn Fix: Impact Analysis
+
+**Before Fix:**
+- ❌ OpenAI only
+- ❌ No conversation chaining
+- ❌ Isolated from analytics
+- ❌ 300+ lines of duplicate code
+- ❌ Can't compare with other models
+
+**After Fix:**
+- ✅ Multi-provider (grok-4-fast, GPT-5, Claude, etc.)
+- ✅ Full conversation chaining
+- ✅ Integrated with repositoryService
+- ✅ Reuses 1000+ lines from openai.ts/grok.ts
+- ✅ Saturn results appear in leaderboards
+
+**Code Reduction:**
+- Delete: `solver/arc_visual_solver.py` (444 lines)
+- Add: `server/services/saturnService.ts` (~200 lines)
+- Add: `server/python/grid_visualizer.py` (~80 lines)
+- **Net: -164 lines, +multi-provider support**
+
+---
+
+### Saturn Fix: Migration Plan
+
+**✅ Week 1 - COMPLETE (2025-10-09):**
+1. ✅ Created `saturnService.ts` extending BaseAIService (540 lines)
+2. ✅ Created `grid_visualizer.py` (image generation only, 165 lines)
+3. ✅ Added `pythonBridge.runGridVisualization()` method
+4. ✅ Updated `saturnController.ts` to route through saturnService
+5. ✅ Registered saturnService in aiServiceFactory
+6. ✅ Fixed all TypeScript type errors
+7. ✅ Updated default model to `gpt-5-nano-2025-08-07` for PoC cost efficiency
+
+**⏳ Week 2 - Testing Phase (PENDING):**
+1. Test with grok-4-fast-reasoning (prove multi-provider works)
+2. Test with gpt-5-nano and gpt-5-mini
+3. Verify conversation chaining persists across phases
+4. Validate cost tracking appears in analytics
+5. Compare Saturn vs standard solver on same puzzle
+
+**⏳ Week 3 - Cleanup (PENDING):**
+1. Deprecate `arc_visual_solver.py` (mark as legacy)
+2. Update UI to show new Saturn model options
+3. Document new architecture in CHANGELOG ✅ DONE
+4. Create user migration guide
+
+**Supported Models (PoC-Optimized):**
+- `saturn-grok-4-fast-reasoning` → grok-4-fast-reasoning
+- `saturn-gpt-5-nano` → gpt-5-nano-2025-08-07 (DEFAULT)
+- `saturn-gpt-5-mini` → gpt-5-mini-2025-08-07
+
+**Rollback Plan:** Keep `arc_visual_solver.py` for 1 month as fallback
+
+---
+
+## Implementation Phases (GROVER)
 
 ### Phase 1: Repository Import & Isolation (Week 1, Days 1-2)
 
