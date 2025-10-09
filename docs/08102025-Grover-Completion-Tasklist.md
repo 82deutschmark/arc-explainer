@@ -211,7 +211,9 @@ app.post('/api/puzzle/grover/:taskId/:modelKey', groverController.analyze);
 
 ---
 
-### **Task 5: Test End-to-End**
+### **Task 5: Test End-to-End** ⏳ READY FOR TESTING
+
+**All code is complete**. Ready for manual testing once server is started.
 
 **Steps:**
 
@@ -224,7 +226,7 @@ app.post('/api/puzzle/grover/:taskId/:modelKey', groverController.analyze);
 
 3. Test API call (use Postman or curl):
    ```bash
-   POST http://localhost:5000/api/puzzle/grover/007bbfb7/grover-grok-4-fast
+   POST http://localhost:5000/api/puzzle/grover/007bbfb7/grover-gpt-5-nano
    Content-Type: application/json
 
    {
