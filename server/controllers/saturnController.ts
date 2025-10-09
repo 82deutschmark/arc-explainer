@@ -29,8 +29,8 @@ export const saturnController = {
     // Generate a session id for tracking progress
     const sessionId = randomUUID();
 
-    // Saturn model key (maps to underlying provider model)
-    // saturn-grok-4-fast, saturn-gpt-5-nano, saturn-claude-3.5, etc.
+    // Saturn model key (maps to underlying provider model - RESPONSES API compatible only)
+    // saturn-grok-4-fast-reasoning, saturn-gpt-5-nano, saturn-gpt-5-mini
     const modelKey = (req.body?.modelKey as string) || 'saturn-gpt-5-nano';
     const temperature = typeof req.body?.temperature === 'number' ? req.body.temperature : 0.2;
     const promptId = (req.body?.promptId as string) || 'solver';
