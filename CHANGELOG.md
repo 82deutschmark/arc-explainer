@@ -13,6 +13,19 @@
   - Was logging "Would delete... (not implemented)" but not deleting
   - Now properly removes existing entries when `--overwrite` flag is used
 
+- **HuggingFace Ingestion Display Bugs** - Fixed misleading accuracy reporting
+  - **Problem 1**: "Average accuracy: 50.0%" shown for ALL incorrect predictions
+    - Root cause: Passing `undefined` confidence defaulted to 50, creating hallucinated scores
+    - Fixed by passing `confidence: 0` for external data (pure correctness, no confidence weighting)
+  - **Problem 2**: "Multi-test: Some incorrect" shown even when ALL predictions wrong
+    - Root cause: Binary logic couldn't distinguish "all wrong" vs "some wrong"
+    - Fixed by counting actual correct/incorrect predictions and showing accurate labels:
+      - "All correct ✓" when all tests pass
+      - "All incorrect ✗" when all tests fail
+      - "Partially correct (N/M) ⚠️" for mixed results
+  - Now displays "Correctness rate: N/M (X%)" instead of misleading "Average accuracy"
+  - Single-test now shows "Correctness: 100.0% or 0.0%" instead of confusing accuracy scores
+
 ## v3.9.0 - Saturn Architectural Fix COMPLETE
 
 ### 🔥 BREAKING CHANGES
