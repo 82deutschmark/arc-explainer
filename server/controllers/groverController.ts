@@ -60,9 +60,8 @@ export const groverController = {
           undefined, // PromptOptions
           {
             maxSteps: options.maxSteps,
-            previousResponseId: options.previousResponseId,
-            sessionId // Pass sessionId for progress broadcasting
-          }
+            previousResponseId: options.previousResponseId
+          } as any // Cast to any - sessionId will be accessed in groverService
         );
 
         // Save to database via explanationService
@@ -83,4 +82,35 @@ export const groverController = {
         });
 
         console.log('[Grover] Analysis complete and saved:', {
-          
+          taskId,
+          modelKey,
+          iterationCount: result.iterationCount,
+          confidence: result.confidence,
+          sessionId
+        });
+      } catch (err) {
+        // Broadcast error
+        broadcast(sessionId, {
+          status: 'error',
+          phase: 'error',
+          message: err instanceof Error ? err.message : String(err)
+        });
+
+        console.error('[Grover] Analysis failed:', {
+          taskId,
+          modelKey,
+          error: err instanceof Error ? err.message : String(err)
+        });
+      }
+    });
+
+    // Return session info immediately
+    return res.json(formatResponse.success({
+      sessionId,
+      message: 'Grover analysis started',
+      taskId,
+      modelKey,
+      maxIterations: options.maxSteps
+    }));
+  }
+};
