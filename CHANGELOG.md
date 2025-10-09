@@ -38,6 +38,17 @@
   - **Files Modified**: `server/services/responseValidator.ts`, `server/scripts/ingest-huggingface-dataset.ts`
   - **Note**: Database field `multi_test_average_accuracy` is misnamed - contains trustworthiness OR correctness depending on data source
 
+- **HuggingFace Ingestion Summary Confusion** - Fixed misleading puzzle summary
+  - **Problem**: Summary showed "(1 correct)" when 3/4 individual predictions were correct
+    - Example: Attempt 1: 2/2 correct, Attempt 2: 1/2 correct → Summary: "(1 correct)" ← confusing!
+    - Old summary only counted "fully correct attempts" (where ALL predictions in that attempt pass)
+    - User sees individual prediction counts but summary aggregates differently
+  - **Fix**: Now shows BOTH attempt-level and prediction-level correctness:
+    - "⚠️ f3e62deb - Saved 2/2 attempts | Predictions: 3/4 correct (75.0%)"
+    - Clear distinction between "attempts fully correct" vs "individual predictions correct"
+  - Tracks `totalPredictionsMade` and `totalPredictionsCorrect` across both attempts
+  - Shows aggregate percentage: how many individual test case predictions were correct overall
+
 ## v3.9.0 - Saturn Architectural Fix COMPLETE
 
 ### 🔥 BREAKING CHANGES
