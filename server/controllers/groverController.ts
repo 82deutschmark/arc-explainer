@@ -40,9 +40,9 @@ export const groverController = {
     };
 
     // Start async Grover analysis (non-blocking)
-    setImmediate(() => {
-      groverService
-        .analyzePuzzleWithModel(
+    setImmediate(async () => {
+      try {
+        const result = await groverService.analyzePuzzleWithModel(
           task,
           modelKey,
           taskId,
@@ -54,24 +54,28 @@ export const groverController = {
             maxSteps: options.maxSteps,
             previousResponseId: options.previousResponseId
           }
-        )
-        .then(result => {
-          // TODO: Save result to database via explanationService
-          console.log('[Grover] Analysis complete:', {
-            taskId,
-            modelKey,
-            iterationCount: result.iterationCount,
-            confidence: result.confidence,
-            sessionId
-          });
-        })
-        .catch(err => {
-          console.error('[Grover] Analysis failed:', {
-            taskId,
-            modelKey,
-            error: err instanceof Error ? err.message : String(err)
-          });
+        );
+
+        // Save to database via explanationService
+        const { explanationService } = await import('../services/explanationService.js');
+        await explanationService.saveExplanation(taskId, {
+          grover: result
         });
+
+        console.log('[Grover] Analysis complete and saved:', {
+          taskId,
+          modelKey,
+          iterationCount: result.iterationCount,
+          confidence: result.confidence,
+          sessionId
+        });
+      } catch (err) {
+        console.error('[Grover] Analysis failed:', {
+          taskId,
+          modelKey,
+          error: err instanceof Error ? err.message : String(err)
+        });
+      }
     });
 
     // Return session info immediately

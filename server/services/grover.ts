@@ -353,18 +353,22 @@ Generate new programs that build on successful patterns and avoid failures.`;
     const lastIteration = iterations[iterations.length - 1];
     const finalScore = lastIteration?.best?.score || 0;
 
-    return {
+    // Build final response with all required fields
+    const finalResponse: AIResponse = {
       model: modelKey,
+      // Grover-specific fields (stored in database)
       groverIterations: iterations,
       groverBestProgram: bestProgram,
       iterationCount: iterations.length,
-      estimatedCost: null, // TODO: Sum iteration costs
-      temperature,
+      // Standard explanation fields
       patternDescription: `Grover iterative solver completed ${iterations.length} iterations`,
       solvingStrategy: bestProgram || "No successful program found",
       hints: [`Final score: ${finalScore.toFixed(1)}/10`, `Iterations: ${iterations.length}`],
-      predictedOutput: predictedOutput,
       confidence: Math.round((finalScore / 10) * 100),
+      // Prediction fields
+      predictedOutput: predictedOutput,
+      predictedOutputGrid: predictedOutput,
+      // Reasoning fields
       reasoningLog: null,
       hasReasoningLog: true,
       reasoningItems: iterations.map(iter => ({
@@ -372,12 +376,17 @@ Generate new programs that build on successful patterns and avoid failures.`;
         detail: `Best score: ${iter.best.score.toFixed(1)}/10`,
         step: iter.iteration
       })),
+      // Token/cost fields
       inputTokens: null,
       outputTokens: null,
       reasoningTokens: null,
       totalTokens: null,
+      estimatedCost: null, // TODO: Sum iteration costs
+      temperature,
       ...serviceOpts
     };
+
+    return finalResponse;
   }
 }
 
