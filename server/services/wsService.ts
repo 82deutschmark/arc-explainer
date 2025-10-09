@@ -42,13 +42,19 @@ function parseSessionId(url?: string | null): string | null {
 
 export function attach(server: Server) {
   if (wss) return wss;
-  // Attach on specific path; clients should connect to ws(s)://host/api/saturn/progress?sessionId=...
+  // Attach without path restriction - handles both /api/saturn/progress and /api/grover/progress
+  // Clients connect to ws(s)://host/api/{solver}/progress?sessionId=...
   wss = new WebSocketServer({ 
-    server, 
-    path: '/api/saturn/progress',
-    // Allow WebSocket connections from all origins
+    server,
+    // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
-      cb(true);  // Allow all WebSocket connections
+      const url = info.req.url || '';
+      // Accept both /api/saturn/progress and /api/grover/progress
+      if (url.startsWith('/api/saturn/progress') || url.startsWith('/api/grover/progress')) {
+        cb(true);
+      } else {
+        cb(false, 404, 'WebSocket path not found');
+      }
     }
   });
 
