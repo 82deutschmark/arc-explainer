@@ -340,9 +340,13 @@ async function checkDuplicate(puzzleId: string, modelName: string): Promise<bool
 async function deleteDuplicate(puzzleId: string, modelName: string): Promise<void> {
   const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
   const existing = explanations.find(exp => exp.modelName === modelName);
-  if (existing) {
-    // Note: This would require implementing a delete method in the repository
-    console.log(`   ⚠️  Would delete existing entry for ${modelName} (not implemented)`);
+  if (existing && existing.id) {
+    const deleted = await repositoryService.explanations.deleteExplanation(existing.id);
+    if (deleted) {
+      console.log(`   🗑️  Deleted existing entry for ${modelName} (ID: ${existing.id})`);
+    } else {
+      console.log(`   ⚠️  Failed to delete existing entry for ${modelName} (ID: ${existing.id})`);
+    }
   }
 }
 

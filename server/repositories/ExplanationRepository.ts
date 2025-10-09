@@ -910,4 +910,26 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
   }
 
+  /**
+   * Delete an explanation by ID
+   * Used by ingestion scripts to overwrite existing entries
+   * 
+   * @author Cascade using GPT-5-Pro
+   * @date 2025-10-09
+   */
+  async deleteExplanation(id: number): Promise<boolean> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot delete explanation', 'explanation-repository');
+      return false;
+    }
+
+    try {
+      const result = await this.query(`DELETE FROM explanations WHERE id = $1`, [id]);
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      logger.error(`Error deleting explanation ${id}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return false;
+    }
+  }
+
 }
