@@ -81,6 +81,7 @@ export function useGroverProgress(taskId: string | undefined) {
       logLines: []
     });
     closeSocket();
+    setSessionId(null);
 
     const wireOptions = {
       temperature: options?.temperature ?? 0.2,
@@ -90,59 +91,104 @@ export function useGroverProgress(taskId: string | undefined) {
 
     const modelKey = options?.modelKey || 'grover-gpt-5-nano';
     
-    const res = await apiRequest('POST', `/api/puzzle/grover/${taskId}/${modelKey}`, wireOptions);
-    const json = await res.json();
-    const sid = json?.data?.sessionId as string;
-    setSessionId(sid);
+    try {
+      const res = await apiRequest('POST', `/api/puzzle/grover/${taskId}/${modelKey}`, wireOptions);
+      const json = await res.json();
+      const sid = json?.data?.sessionId as string | undefined;
+      if (!sid) {
+        throw new Error('Grover session did not return a sessionId');
+      }
+      setSessionId(sid);
 
-    // Open WebSocket (Grover uses same progress endpoint as Saturn)
-    const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
-    const isDev = import.meta.env.DEV;
-    const wsHost = isDev ? 'localhost:5000' : location.host;
-    const wsUrl = `${wsProtocol}://${wsHost}/api/grover/progress?sessionId=${encodeURIComponent(sid)}`;
-    
-    const sock = new WebSocket(wsUrl);
-    wsRef.current = sock;
+      // Open WebSocket (Grover uses same progress endpoint as Saturn)
+      const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+      const isDev = import.meta.env.DEV;
+      const wsHost = isDev ? 'localhost:5000' : location.host;
+      const wsUrl = `${wsProtocol}://${wsHost}/api/grover/progress?sessionId=${encodeURIComponent(sid)}`;
+      
+      const sock = new WebSocket(wsUrl);
+      wsRef.current = sock;
 
-    sock.onmessage = (evt) => {
-      try {
-        const payload = JSON.parse(evt.data);
-        const data = payload?.data;
-        if (!data) return;
+      sock.onmessage = (evt) => {
+        try {
+          const payload = JSON.parse(evt.data);
+          const data = payload?.data;
+          if (!data) return;
 
+          setState((prev) => {
+            // Accumulate log lines
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
+            const phase = data.phase;
+            const status = data.status;
+            
+            if (msg && (phase === 'log' || status === 'error' || status === 'completed' || phase === 'iteration')) {
+              nextLogs.push(msg);
+              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+            }
+
+            // Accumulate iterations
+            let nextIterations = prev.iterations || [];
+            if (data.iterations && Array.isArray(data.iterations)) {
+              nextIterations = data.iterations;
+            }
+
+            return { 
+              ...prev, 
+              ...data,
+              logLines: nextLogs,
+              iterations: nextIterations
+            };
+          });
+        } catch (error) {
+          console.error('[GROVER] WebSocket parse error:', error);
+        }
+      };
+
+      sock.onerror = (event) => {
+        console.error('[GROVER] WebSocket error:', event);
         setState((prev) => {
-          // Accumulate log lines
-          let nextLogs = prev.logLines ? [...prev.logLines] : [];
-          const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
-          const phase = data.phase;
-          const status = data.status;
-          
-          if (msg && (phase === 'log' || status === 'error' || status === 'completed' || phase === 'iteration')) {
-            nextLogs.push(msg);
-            if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
-          }
-
-          // Accumulate iterations
-          let nextIterations = prev.iterations || [];
-          if (data.iterations && Array.isArray(data.iterations)) {
-            nextIterations = data.iterations;
-          }
-
-          return { 
-            ...prev, 
-            ...data,
-            logLines: nextLogs,
-            iterations: nextIterations
+          if (prev.status !== 'running') return prev;
+          const nextLogs = [...(prev.logLines ?? []), 'WebSocket connection error'];
+          return {
+            ...prev,
+            status: 'error',
+            phase: 'connection_error',
+            message: 'WebSocket connection failed',
+            logLines: nextLogs.slice(-500)
           };
         });
-      } catch (error) {
-        console.error('[GROVER] WebSocket parse error:', error);
-      }
-    };
+      };
 
-    sock.onclose = () => {
-      console.log('[GROVER] WebSocket closed');
-    };
+      sock.onclose = (evt) => {
+        console.log('[GROVER] WebSocket closed');
+        setState((prev) => {
+          if (prev.status !== 'running') return prev;
+          const reason = evt.reason || 'Grover progress connection closed unexpectedly';
+          const nextLogs = [...(prev.logLines ?? []), reason];
+          return {
+            ...prev,
+            status: 'error',
+            phase: 'connection_closed',
+            message: reason,
+            logLines: nextLogs.slice(-500)
+          };
+        });
+      };
+    } catch (error) {
+      console.error('[GROVER] Failed to start analysis:', error);
+      setState((prev) => {
+        const message = error instanceof Error ? error.message : String(error);
+        const nextLogs = [...(prev.logLines ?? []), message];
+        return {
+          ...prev,
+          status: 'error',
+          phase: 'request_failed',
+          message,
+          logLines: nextLogs.slice(-500)
+        };
+      });
+    }
 
   }, [taskId, closeSocket]);
 
