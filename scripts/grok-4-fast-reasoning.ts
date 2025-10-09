@@ -42,10 +42,11 @@ const GROK_MODEL = 'grok-4-fast-reasoning';
 const PUZZLE_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes (reasoning models can be slow)
 
 // Delay between triggering concurrent analyses
-const TRIGGER_DELAY_MS = 2000; // 2 seconds
+const TRIGGER_DELAY_MS = 1000; // 1 second
 
 // NEW: Concurrency cap (align with xAI provider limits). Override via env XAI_MAX_CONCURRENCY.
-const MAX_CONCURRENCY = Math.max(1, Number(process.env.XAI_MAX_CONCURRENCY || 2));
+// Delete MAX_CONCURRENCY usage by replacing pool implementation with paced launcher
+// const MAX_CONCURRENCY = Math.max(1, Number(process.env.XAI_MAX_CONCURRENCY || 2));
 
 // NEW: Parse an optional --limit or -n flag from CLI to restrict the run size (useful for smoke tests)
 function getLimitFromArgs(): number | null {
@@ -162,8 +163,8 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
     // Prepare analysis request (mirroring client UI behavior)
     // IMPORTANT: NO reasoning parameters for Grok-4 models
     const requestBody: AnalysisRequest = {
-      temperature: 0.2, // Default temperature (Grok-4-fast-reasoning supports temperature)
-      promptId: 'solver', // Use solver prompt as specified
+      temperature: 0.99, // Default temperature (Grok-4-fast-reasoning supports temperature)
+      promptId: 'custom', // Use  prompt as specified
       systemPromptMode: 'ARC', // Use ARC system prompt mode
       omitAnswer: true, // Researcher option to hide correct answer
       retryMode: false // Not in retry mode
@@ -238,47 +239,40 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
 }
 
 /**
- * Analyze all puzzles using a small worker pool (concurrency-limited)
+ * Analyze all puzzles with unlimited concurrency, 1s stagger between starts
  */
-async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<AnalysisResult[]> {
+async function analyzeAllPuzzlesPaced(puzzleIds: string[]): Promise<AnalysisResult[]> {
   if (puzzleIds.length === 0) {
     console.log('No puzzle IDs provided. Nothing to analyze.');
     return [];
   }
 
-  console.log(`\n🚀 Queueing ${puzzleIds.length} analyses with concurrency = ${MAX_CONCURRENCY}...`);
+  console.log(`\n🚀 Queueing ${puzzleIds.length} analyses with 1s stagger and no concurrency cap...`);
   console.log('='.repeat(80));
 
-  const results: AnalysisResult[] = new Array(puzzleIds.length);
-  let index = 0;
+  const resultPromises: Promise<AnalysisResult>[] = [];
 
-  async function worker(workerId: number) {
-    while (true) {
-      const current = index++;
-      if (current >= puzzleIds.length) break;
-      const puzzleId = puzzleIds[current];
-      try {
-        const res = await analyzePuzzle(puzzleId);
-        results[current] = res;
-      } catch (e: any) {
-        results[current] = { puzzleId, success: false, error: String(e?.message || e) };
-      }
-      // small pacing delay between triggers to avoid burst
-      if (current < puzzleIds.length - 1) {
-        await new Promise(r => setTimeout(r, TRIGGER_DELAY_MS));
-      }
-    }
+  for (let i = 0; i < puzzleIds.length; i++) {
+    const puzzleId = puzzleIds[i];
+    const p = new Promise<AnalysisResult>((resolve) => {
+      setTimeout(async () => {
+        try {
+          const res = await analyzePuzzle(puzzleId);
+          resolve(res);
+        } catch (e: any) {
+          resolve({ puzzleId, success: false, error: String(e?.message || e) });
+        }
+      }, i * TRIGGER_DELAY_MS);
+    });
+    resultPromises.push(p);
   }
 
-  // Start a small pool
-  const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, puzzleIds.length) }, (_, i) => worker(i));
-  await Promise.all(workers);
+  const results = await Promise.all(resultPromises);
 
-  // Count successes and failures
   const successful = results.filter(r => r?.success).length;
   const failed = results.filter(r => r && !r.success).length;
 
-  console.log(`📊 CONCURRENT ANALYSIS COMPLETE:`);
+  console.log(`📊 PACED ANALYSIS COMPLETE:`);
   console.log(`   Total puzzles: ${puzzleIds.length}`);
   console.log(`   Successful: ${successful} (${((successful / puzzleIds.length) * 100).toFixed(1)}%)`);
   console.log(`   Failed: ${failed} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
@@ -342,8 +336,8 @@ async function main(): Promise<void> {
     console.log('🚀 All analyses run concurrently with delays between triggers');
     console.log('='.repeat(80));
 
-    // Process all puzzles concurrently
-    const results = await analyzeAllPuzzlesConcurrently(puzzleIds);
+    // Process all puzzles (pacing only, no concurrency cap)
+    const results = await analyzeAllPuzzlesPaced(puzzleIds);
 
     // Overall summary
     console.log('\n🎉 FINAL OVERALL SUMMARY:');
