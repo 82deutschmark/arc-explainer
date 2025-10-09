@@ -16,6 +16,7 @@ import { pythonBridge } from "./pythonBridge.js";
 import { logger, type LogLevel } from "../utils/logger.js";
 import { broadcast } from "./wsService.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
+import { validateSolverResponse, validateSolverResponseMulti } from "./responseValidator.js";
 
 export class GroverService extends BaseAIService {
   protected provider = "Grover";
@@ -289,7 +290,7 @@ export class GroverService extends BaseAIService {
     }
 
     // Build final response with test predictions
-    return await this.buildGroverResponse(
+    const response = await this.buildGroverResponse(
       modelKey,
       temperature,
       iterations,
@@ -297,6 +298,46 @@ export class GroverService extends BaseAIService {
       task.test,
       serviceOpts
     );
+
+    // Validate predictions against test outputs
+    const confidence = response.confidence || 50;
+    
+    if (task.test.length === 1) {
+      // Single-test validation
+      const correctAnswer = task.test[0].output;
+      const validation = validateSolverResponse(response, correctAnswer, 'solver', confidence);
+      
+      response.predictedOutputGrid = validation.predictedGrid;
+      response.isPredictionCorrect = validation.isPredictionCorrect;
+      response.predictionAccuracyScore = validation.predictionAccuracyScore;
+      response.hasMultiplePredictions = false;
+      response.multiplePredictedOutputs = null;
+      response.multiTestResults = null;
+      response.multiTestAllCorrect = null;
+      response.multiTestAverageAccuracy = null;
+      response.multiTestPredictionGrids = null;
+      
+      log(`✓ Validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'} (score: ${validation.predictionAccuracyScore.toFixed(2)})`);
+    } else {
+      // Multi-test validation
+      const correctAnswers = task.test.map(t => t.output);
+      const multiValidation = validateSolverResponseMulti(response, correctAnswers, 'solver', confidence);
+      
+      response.hasMultiplePredictions = multiValidation.hasMultiplePredictions;
+      response.multiplePredictedOutputs = multiValidation.multiplePredictedOutputs;
+      response.multiTestResults = multiValidation.multiTestResults;
+      response.multiTestAllCorrect = multiValidation.multiTestAllCorrect;
+      response.multiTestAverageAccuracy = multiValidation.multiTestAverageAccuracy;
+      response.multiTestPredictionGrids = multiValidation.multiTestPredictionGrids;
+      response.predictedOutputGrid = multiValidation.multiplePredictedOutputs;
+      response.predictionAccuracyScore = multiValidation.multiTestAverageAccuracy;
+      response.isPredictionCorrect = multiValidation.multiTestAllCorrect || false;
+      
+      const correctCount = multiValidation.multiTestResults?.filter((r: any) => r.isCorrect).length || 0;
+      log(`✓ Validation: ${correctCount}/${task.test.length} correct (avg accuracy: ${multiValidation.multiTestAverageAccuracy.toFixed(2)})`);
+    }
+
+    return response;
   }
 
   getModelInfo(modelKey: string): ModelInfo {
