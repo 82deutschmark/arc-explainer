@@ -212,16 +212,40 @@ def transform(grid):
 \`\`\``;
   }
 
-  private extractPrograms(llmResponse: any): string[] {
-    const text = llmResponse.patternDescription || llmResponse.solvingStrategy || "";
-    const codeBlockRegex = /```python\n([\s\S]*?)\n```/g;
+  private extractPrograms(response: AIResponse): string[] {
     const programs: string[] = [];
-
-    let match;
-    while ((match = codeBlockRegex.exec(text)) !== null) {
-      programs.push(match[1]);
+    
+    // Build a combined text from all possible response fields
+    const textSources = [
+      response.solvingStrategy,
+      response.patternDescription,
+      response.rawResponse,
+      JSON.stringify(response)
+    ].filter(Boolean).join('\n\n');
+    
+    if (!textSources) {
+      logger.warn('No text found in response for program extraction', 'grover');
+      return programs;
     }
-
+    
+    // Extract all Python code blocks (with or without language tag)
+    const patterns = [
+      /```python\n([\s\S]*?)```/g,
+      /```\n(def transform[\s\S]*?)```/g,
+      /```(def transform[\s\S]*?)```/g,
+    ];
+    
+    for (const pattern of patterns) {
+      let match;
+      while ((match = pattern.exec(textSources)) !== null) {
+        const code = match[1].trim();
+        if (code.includes('def transform') && !programs.includes(code)) {
+          programs.push(code);
+        }
+      }
+    }
+    
+    logger.service('Grover', `Extracted ${programs.length} programs from response`);
     return programs;
   }
 
