@@ -36,7 +36,7 @@
 
 ### Phase 4: Controller Updates ✅ COMPLETE
 - [x] Update saturnController.ts to route through saturnService
-- [x] Add model key mapping (saturn-grok-4-fast, saturn-gpt-5, saturn-claude-3.5, saturn-gpt-4)
+- [x] Add model key mapping (RESPONSES API compatible only: saturn-grok-4-fast-reasoning, saturn-gpt-5-nano, saturn-gpt-5-mini)
 - [x] Preserve WebSocket sessionId flow
 - [x] Fix TypeScript type errors for ServiceOptions
 
@@ -74,7 +74,7 @@ Controller → saturnService.ts → grok.ts/openai.ts → Responses API
 ## 🔍 Key Decisions
 
 1. **Keep saturn_wrapper.py:** Preserve for backward compatibility during transition
-2. **Multi-provider models:** saturn-grok-4-fast, saturn-gpt-5, saturn-claude-3.5
+2. **RESPONSES API compatible models ONLY:** saturn-grok-4-fast-reasoning, saturn-gpt-5-nano, saturn-gpt-5-mini
 3. **Conversation chaining:** Pass previousResponseId between phases
 4. **Image handling:** Generate via Python subprocess, attach to LLM prompts
 5. **Rollback plan:** Keep arc_visual_solver.py for 1 month as fallback
@@ -93,12 +93,12 @@ Controller → saturnService.ts → grok.ts/openai.ts → Responses API
 ## 📦 Files Created/Modified
 
 ### New Files:
-1. **`server/services/saturnService.ts`** (538 lines)
+1. **`server/services/saturnService.ts`** (540 lines)
    - Extends BaseAIService
    - Multi-phase orchestration (3-5 phases depending on training examples)
    - Conversation chaining via previousResponseId
-   - Routes through grok.ts/openai.ts/claude.ts
-   - Model keys: saturn-grok-4-fast, saturn-gpt-5, saturn-claude-3.5, saturn-gpt-4
+   - Routes through grok.ts/openai.ts (RESPONSES API compatible providers only)
+   - Model keys: saturn-grok-4-fast-reasoning, saturn-gpt-5-nano, saturn-gpt-5-mini
 
 2. **`server/python/grid_visualizer.py`** (165 lines)
    - Pure visualization (NO API calls)

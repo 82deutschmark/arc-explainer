@@ -409,10 +409,11 @@ import { logger } from "../utils/logger.js";
 
 export class SaturnService extends BaseAIService {
   protected provider = "Saturn";
+  // RESPONSES API compatible models ONLY
   protected models: Record<string, string> = {
-    "saturn-grok-4-fast": "grok-4-fast",
-    "saturn-gpt-5": "gpt-5",
-    "saturn-claude-3.5": "claude-3.5-sonnet"
+    "saturn-grok-4-fast-reasoning": "grok-4-fast-reasoning",
+    "saturn-gpt-5-nano": "gpt-5-nano-2025-08-07",
+    "saturn-gpt-5-mini": "gpt-5-mini-2025-08-07"
   };
 
   async analyzePuzzleWithModel(

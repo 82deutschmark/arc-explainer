@@ -18,9 +18,11 @@ import { getApiModelName, getModelConfig } from "../config/models/index.js";
 
 export class GroverService extends BaseAIService {
   protected provider = "Grover";
+  // RESPONSES API compatible models ONLY (for iterative solving)
   protected models: Record<string, string> = {
     "grover-grok-4-fast-reasoning": "grok-4-fast-reasoning",
-    "grover-gpt-5": "gpt-5-2025-08-07",
+    "grover-gpt-5-nano": "gpt-5-nano-2025-08-07",
+    "grover-gpt-5-mini": "gpt-5-mini-2025-08-07"
   };
 
   async analyzePuzzleWithModel(
