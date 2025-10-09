@@ -60,7 +60,8 @@ export const groverController = {
           undefined, // PromptOptions
           {
             maxSteps: options.maxSteps,
-            previousResponseId: options.previousResponseId
+            previousResponseId: options.previousResponseId,
+            sessionId
           } as any // Cast to any - sessionId will be accessed in groverService
         );
 
@@ -70,6 +71,13 @@ export const groverController = {
           grover: result
         });
 
+        const bestScore = Array.isArray(result.groverIterations)
+          ? result.groverIterations.reduce((max: number, iter: any) => {
+              const score = typeof iter?.best?.score === 'number' ? iter.best.score : 0;
+              return score > max ? score : max;
+            }, 0)
+          : 0;
+
         // Broadcast completion
         broadcast(sessionId, {
           status: 'completed',
@@ -78,7 +86,7 @@ export const groverController = {
           result,
           iterations: result.groverIterations,
           bestProgram: result.groverBestProgram,
-          bestScore: result.confidence
+          bestScore
         });
 
         console.log('[Grover] Analysis complete and saved:', {

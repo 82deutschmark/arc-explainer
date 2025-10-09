@@ -1,3 +1,27 @@
+## [2025-10-09]
+
+## v3.5.3 - Grover & Saturn Progress Streaming Stabilization
+
+### Fixed
+- **Grover WebSocket Streaming** (High Impact)
+  - Injected WebSocket `sessionId` into Grover service pipeline so iteration updates broadcast in real time.
+  - Added granular progress events (initialization, code generation, execution, best-score updates) to mirror Saturn telemetry.
+  - Hardened Grover UI hook against missing session IDs and socket failures to surface errors immediately.
+  - Files: 
+    - server/services/grover.ts
+    - server/controllers/groverController.ts
+    - server/services/base/BaseAIService.ts
+    - client/src/hooks/useGroverProgress.ts
+- **Saturn Visual Solver Endpoint Regression** (Critical)
+  - Restored `/api/saturn/analyze-with-reasoning/:taskId` controller handler that proxies to the Python visual solver.
+  - Ensures Responses API runs stream status updates via the shared WebSocket hub.
+  - Files: server/controllers/saturnController.ts
+
+### Added
+- **Audit Plan Documentation**
+  - Captured Grover/Saturn diagnostic plan and hypotheses for ongoing investigation.
+  - Files: docs/20251009-plan-grover-ui-repair.md
+
 ## [2025-10-06]
 
 ## v3.5.2 - Trustworthiness Leaderboard SQL Fix

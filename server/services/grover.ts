@@ -14,6 +14,7 @@ import { getDefaultPromptId, PromptOptions } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
 import { pythonBridge } from "./pythonBridge.js";
 import { logger } from "../utils/logger.js";
+import { broadcast } from "./wsService.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
 
 export class GroverService extends BaseAIService {
@@ -37,6 +38,7 @@ export class GroverService extends BaseAIService {
   ): Promise<AIResponse> {
     const maxIterations = serviceOpts.maxSteps || 5;
     const underlyingModel = this.models[modelKey];
+    const sessionId = serviceOpts.sessionId;
 
     logger.service(this.provider, `Starting Grover analysis with ${underlyingModel} (${maxIterations} iterations)`);
 
@@ -51,8 +53,41 @@ export class GroverService extends BaseAIService {
     // Build initial context
     let context = this.buildInitialContext(task);
 
+    const sendProgress = (payload: Record<string, any>) => {
+      if (!sessionId) return;
+      try {
+        broadcast(sessionId, {
+          status: payload.status ?? 'running',
+          phase: payload.phase ?? 'iteration',
+          iteration: payload.iteration ?? 0,
+          totalIterations: maxIterations,
+          progress: payload.progress ?? (payload.iteration !== undefined && maxIterations > 0
+            ? Math.min(1, payload.iteration / maxIterations)
+            : undefined),
+          message: payload.message,
+          bestScore,
+          bestProgram,
+          iterations,
+          ...payload
+        });
+      } catch (err) {
+        logger.service(this.provider, `Failed to broadcast Grover progress: ${err instanceof Error ? err.message : String(err)}`, 'warn');
+      }
+    };
+
+    sendProgress({
+      phase: 'initializing',
+      iteration: 0,
+      message: `Starting Grover analysis with ${underlyingModel}`
+    });
+
     for (let i = 0; i < maxIterations; i++) {
       logger.service(this.provider, `Iteration ${i + 1}/${maxIterations}`);
+      sendProgress({
+        phase: 'iteration_start',
+        iteration: i + 1,
+        message: `Beginning iteration ${i + 1}/${maxIterations}`
+      });
 
       // 1. Generate programs via underlying service (Responses API!)
       const codeGenPrompt = this.buildCodeGenPrompt(context, i);
@@ -74,16 +109,32 @@ export class GroverService extends BaseAIService {
       // Store response ID for next iteration
       previousResponseId = llmResponse.providerResponseId || undefined;
 
+      sendProgress({
+        phase: 'code_generation',
+        iteration: i + 1,
+        message: `Generated candidate programs with ${underlyingModel}`
+      });
+
       // 2. Extract programs from LLM response
       const programs = this.extractPrograms(llmResponse);
 
       if (programs.length === 0) {
         logger.service(this.provider, `No programs generated in iteration ${i + 1}`, 'warn');
+        sendProgress({
+          phase: 'iteration',
+          iteration: i + 1,
+          message: `Iteration ${i + 1} produced no programs`
+        });
         continue;
       }
 
       // 3. Execute programs in Python sandbox
       const executionResults = await this.executeProgramsSandbox(programs, task.train);
+      sendProgress({
+        phase: 'execution',
+        iteration: i + 1,
+        message: `Executed ${programs.length} program(s) on training examples`
+      });
 
       // 4. Grade results
       const graded = this.gradeExecutions(executionResults, task.train);
@@ -104,12 +155,23 @@ export class GroverService extends BaseAIService {
         timestamp: Date.now()
       });
 
+      sendProgress({
+        phase: 'iteration',
+        iteration: i + 1,
+        message: `Iteration ${i + 1} best score: ${(iterationBest?.score ?? 0).toFixed(1)}/10`
+      });
+
       // 7. Build amplified context for next iteration
       context = this.amplifyContext(graded, context, i);
 
       // Early stopping if perfect score
       if (bestScore >= 10) {
         logger.service(this.provider, `Perfect score achieved at iteration ${i + 1}`);
+        sendProgress({
+          phase: 'iteration',
+          iteration: i + 1,
+          message: `Perfect score achieved at iteration ${i + 1}!`
+        });
         break;
       }
     }

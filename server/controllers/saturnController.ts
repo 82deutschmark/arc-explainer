@@ -11,6 +11,7 @@
 import type { Request, Response } from 'express';
 import { formatResponse } from '../utils/responseFormatter';
 import { saturnService } from '../services/saturnService';
+import { saturnVisualService } from '../services/saturnVisualService';
 import { puzzleLoader } from '../services/puzzleLoader';
 import { explanationService } from '../services/explanationService';
 import { getSessionSnapshot } from '../services/wsService';
@@ -147,5 +148,59 @@ export const saturnController = {
     });
 
     return res.json(formatResponse.success({ sessionId, modelKey }));
+  },
+
+  async analyzeWithReasoning(req: Request, res: Response) {
+    const { taskId } = req.params as { taskId: string };
+    if (!taskId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing taskId'));
+    }
+
+    const sessionId = randomUUID();
+
+    const model = typeof req.body?.model === 'string' && req.body.model.trim().length > 0
+      ? req.body.model.trim()
+      : 'gpt-5';
+    const provider = typeof req.body?.provider === 'string' && req.body.provider.trim().length > 0
+      ? req.body.provider.trim()
+      : undefined;
+    const temperature = typeof req.body?.temperature === 'number'
+      ? req.body.temperature
+      : 0.2;
+    const cellSize = typeof req.body?.cellSize === 'number'
+      ? req.body.cellSize
+      : 24;
+    const maxSteps = typeof req.body?.maxSteps === 'number'
+      ? req.body.maxSteps
+      : 8;
+    const captureReasoning = req.body?.captureReasoning !== false;
+
+    const reasoningEffortRaw = req.body?.reasoningEffort;
+    const allowedEffort = new Set(['minimal', 'low', 'medium', 'high']);
+    const reasoningEffort = typeof reasoningEffortRaw === 'string' && allowedEffort.has(reasoningEffortRaw)
+      ? reasoningEffortRaw as 'minimal' | 'low' | 'medium' | 'high'
+      : undefined;
+
+    setImmediate(async () => {
+      try {
+        await saturnVisualService.run(taskId, sessionId, {
+          provider,
+          model,
+          temperature,
+          cellSize,
+          maxSteps,
+          captureReasoning,
+          reasoningEffort
+        });
+      } catch (error) {
+        console.error('[Saturn] Visual solver run failed:', error);
+      }
+    });
+
+    return res.json(formatResponse.success({
+      sessionId,
+      model,
+      provider
+    }));
   },
 };
