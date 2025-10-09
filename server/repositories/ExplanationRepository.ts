@@ -45,9 +45,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions,
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
           provider_response_id, provider_raw_response, multi_test_prediction_grids,
-          rebutting_explanation_id
+          rebutting_explanation_id,
+          grover_iterations, grover_best_program, iteration_count
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -96,7 +97,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         this.safeJsonStringify(data.providerRawResponse),
         this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || []),
         // Rebuttal tracking
-        data.rebuttingExplanationId || null
+        data.rebuttingExplanationId || null,
+        // NEW: Grover iterative solver fields
+        this.safeJsonStringify(data.groverIterations),
+        data.groverBestProgram || null,
+        data.iterationCount || null
       ], client);
 
       if (result.rows.length === 0) {
