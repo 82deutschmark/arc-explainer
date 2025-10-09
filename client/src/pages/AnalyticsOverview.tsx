@@ -65,14 +65,14 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select Grok 4 Fast Reasoning model if available, fallback to first model
+  // Auto-select gpt-5-pro-2025-10-06-attempt1 model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const targetModel = 'grok-4-fast-reasoning';
-      const grok4 = availableModels.includes(targetModel) 
-        ? targetModel 
-        : availableModels.find(m => m.includes('grok-4-fast-reasoning'));
-      setSelectedModelForDataset(grok4 || availableModels[0]);
+      const targetModel = 'gpt-5-pro-2025-10-06-attempt1';
+      const gpt5Pro = availableModels.includes(targetModel)
+        ? targetModel
+        : availableModels.find(m => m.includes('gpt-5-pro-2025-10-06-attempt1'));
+      setSelectedModelForDataset(gpt5Pro || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
