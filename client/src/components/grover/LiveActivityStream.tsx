@@ -119,37 +119,47 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
                 <div className="text-[10px] mt-1">Logs will appear here in real-time</div>
               </div>
             ) : (
-              logs.map((log, idx) => {
-                // Check if this is a prompt payload line
-                const isPromptHeader = log.includes('━━━━━━━━━━ PROMPT PAYLOAD');
-                const isPromptEnd = log.includes('━━━━━━━━━━ END PROMPT');
-                const isPromptContent = !log.startsWith('[') && idx > 0 && 
-                  logs[idx - 1].includes('PROMPT PAYLOAD') && 
-                  !log.includes('END PROMPT');
-                
-                if (isPromptHeader || isPromptEnd) {
+              (() => {
+                let inPromptBlock = false;
+                return logs.map((log, idx) => {
+                  // Check if this is a prompt payload line
+                  const isPromptHeader = log.includes('━━━━━━━━━━ PROMPT PAYLOAD');
+                  const isPromptEnd = log.includes('━━━━━━━━━━ END PROMPT');
+                  
+                  if (isPromptHeader) {
+                    inPromptBlock = true;
+                    return (
+                      <div key={idx} className="py-1 text-cyan-400 font-bold border-t border-cyan-800">
+                        {log}
+                      </div>
+                    );
+                  }
+                  
+                  if (isPromptEnd) {
+                    inPromptBlock = false;
+                    return (
+                      <div key={idx} className="py-1 text-cyan-400 font-bold border-b border-cyan-800">
+                        {log}
+                      </div>
+                    );
+                  }
+                  
+                  if (inPromptBlock) {
+                    return (
+                      <div key={idx} className="py-0.5 text-yellow-200 bg-gray-800 px-2 my-1 rounded text-[11px] leading-relaxed whitespace-pre-wrap border-l-2 border-yellow-500">
+                        {log}
+                      </div>
+                    );
+                  }
+                  
                   return (
-                    <div key={idx} className="py-1 text-cyan-400 font-bold border-t border-cyan-800">
+                    <div key={idx} className={`py-0.5 hover:bg-gray-800 px-1 rounded ${getLogColor(log)}`}>
+                      <span className="text-gray-500 text-[10px] mr-2">[{idx + 1}]</span>
                       {log}
                     </div>
                   );
-                }
-                
-                if (isPromptContent) {
-                  return (
-                    <div key={idx} className="py-0.5 text-yellow-200 bg-gray-800 px-2 my-1 rounded text-[11px] leading-relaxed whitespace-pre-wrap border-l-2 border-yellow-500">
-                      {log}
-                    </div>
-                  );
-                }
-                
-                return (
-                  <div key={idx} className={`py-0.5 hover:bg-gray-800 px-1 rounded ${getLogColor(log)}`}>
-                    <span className="text-gray-500 text-[10px] mr-2">[{idx + 1}]</span>
-                    {log}
-                  </div>
-                );
-              })
+                });
+              })()
             )}
           </div>
         </ScrollArea>
