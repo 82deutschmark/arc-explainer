@@ -18,6 +18,7 @@ import { determineCorrectness } from '@shared/utils/correctness';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
+import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -118,6 +119,17 @@ export default function PuzzleExaminer() {
     processingModels,
     isAnalyzing,
     analyzerErrors,
+    streamingEnabled,
+    streamingModelKey,
+    streamStatus,
+    streamingText,
+    streamingReasoning,
+    streamingPhase,
+    streamingMessage,
+    streamingTokenUsage,
+    streamError,
+    cancelStreamingAnalysis,
+    canStreamModel,
     // GPT-5 reasoning parameters
     reasoningEffort,
     setReasoningEffort,
@@ -140,9 +152,34 @@ export default function PuzzleExaminer() {
     omitAnswer,
     retryMode: isRetryMode, // Enable retry mode if coming from discussion
     // systemPromptMode removed - now hardcoded to 'ARC' in the backend
+    models,
   });
   
   // Find the current model's details if we're analyzing
+
+  const isStreamingActive = streamingModelKey !== null;
+  const streamingState =
+    streamStatus && typeof streamStatus === 'object' && 'state' in streamStatus
+      ? (streamStatus as { state: string }).state || 'idle'
+      : 'idle';
+
+  const streamingModel = streamingModelKey ? models?.find(model => model.key === streamingModelKey) || null : null;
+  const streamingPanelStatus: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed' = (() => {
+    switch (streamingState) {
+      case 'requested':
+      case 'starting':
+        return 'starting';
+      case 'in_progress':
+        return 'in_progress';
+      case 'completed':
+        return 'completed';
+      case 'failed':
+        return 'failed';
+      default:
+        return 'idle';
+    }
+  })();
+
   const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) : null;
 
   // Use only saved explanations from database (no optimistic UI)
@@ -406,6 +443,22 @@ export default function PuzzleExaminer() {
         </div>
       </CollapsibleCard>
 
+
+      {isStreamingActive && (
+        <div className="mt-4">
+          <StreamingAnalysisPanel
+            title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+            status={streamingPanelStatus}
+            phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+            message={streamingPanelStatus === 'failed' ? streamError?.message ?? streamingMessage ?? 'Streaming failed' : streamingMessage}
+            text={streamingText}
+            reasoning={streamingReasoning}
+            tokenUsage={streamingTokenUsage}
+            onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
+          />
+        </div>
+      )}
+
       {/* Advanced Controls */}
       <CollapsibleCard
         title="Advanced Controls"
@@ -613,16 +666,20 @@ export default function PuzzleExaminer() {
       >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
               {models?.map((model) => {
-                const isThisModelProcessing = processingModels.has(model.key);
+                const isProcessing = processingModels.has(model.key);
+                const isStreamingThisModel = streamingModelKey === model.key;
+                const disableDueToStreaming = isStreamingActive && !isStreamingThisModel;
 
                 return (
                   <ModelButton
                     key={model.key}
                     model={model}
-                    isAnalyzing={isThisModelProcessing}
+                    isAnalyzing={isProcessing}
+                    isStreaming={isStreamingThisModel}
+                    streamingSupported={streamingEnabled && canStreamModel(model.key)}
                     explanationCount={explanations.filter(explanation => explanation.modelName === model.key).length}
                     onAnalyze={handleAnalyzeWithModel}
-                    disabled={isThisModelProcessing}
+                    disabled={isProcessing || disableDueToStreaming}
                     error={analyzerErrors.get(model.key)}
                   />
                 );
@@ -742,7 +799,7 @@ export default function PuzzleExaminer() {
         options={{
           emojiSetKey: emojiSet,
           omitAnswer,
-          sendAsEmojis  /// THIS SHOULD EXIST!!!!
+          sendAsEmojis
         }}
       />
     </div>
