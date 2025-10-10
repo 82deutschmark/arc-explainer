@@ -11,6 +11,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import type { AnalysisResult, ExplanationData } from '@/types/puzzle';
 import { useParams, Link } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PuzzleDebateHeader } from '@/components/puzzle/debate/PuzzleDebateHeader';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { ExplanationsList } from '@/components/puzzle/debate/ExplanationsList';
+import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { IndividualDebate } from '@/components/puzzle/debate/IndividualDebate';
 
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -59,6 +61,18 @@ export default function ModelDebate() {
     promptId,
     setPromptId,
     temperature,
+    streamingEnabled,
+    streamingModelKey,
+    streamStatus,
+    streamingText,
+    streamingReasoning,
+    streamingPhase,
+    streamingMessage,
+    streamingTokenUsage,
+    streamError,
+    cancelStreamingAnalysis,
+    canStreamModel,
+    startStreamingAnalysis,
     isGPT5ReasoningModel,
     reasoningEffort,
     reasoningVerbosity,
@@ -72,8 +86,33 @@ export default function ModelDebate() {
     omitAnswer: false,
     originalExplanation: selectedExplanation,
     customChallenge: debateState.customChallenge,
-    previousResponseId: debateState.getLastResponseId(debateState.challengerModel) // Provider-aware chaining
+    previousResponseId: debateState.getLastResponseId(debateState.challengerModel), // Provider-aware chaining
+    models,
   });
+
+  const isStreamingActive = streamingModelKey !== null;
+  const streamingState =
+    streamStatus && typeof streamStatus === 'object' && 'state' in streamStatus
+      ? (streamStatus as { state: string }).state || 'idle'
+      : 'idle';
+  const streamingModel = streamingModelKey ? models?.find(model => model.key === streamingModelKey) || null : null;
+  const streamingPanelStatus: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed' = (() => {
+    switch (streamingState) {
+      case 'requested':
+      case 'starting':
+        return 'starting';
+      case 'in_progress':
+        return 'in_progress';
+      case 'completed':
+        return 'completed';
+      case 'failed':
+        return 'failed';
+      default:
+        return 'idle';
+    }
+  })();
+  const [pendingStream, setPendingStream] = useState<{ modelKey: string; baseline: string | null } | null>(null);
+
 
   // Set promptId to 'debate' when debate mode is active
   useEffect(() => {
@@ -87,68 +126,75 @@ export default function ModelDebate() {
   // Challenge generation handler
   const handleGenerateChallenge = async () => {
     if (!debateState.challengerModel || !debateState.selectedExplanationId || !taskId) return;
-
     if (!selectedExplanation) return;
 
     try {
-      // Set prompt to debate mode for backend prompt generation
       setPromptId('debate');
 
-      // Get last response ID for conversation chaining (provider-aware)
-      const lastResponseId = debateState.getLastResponseId(debateState.challengerModel);
-      
-      // Get provider information for logging
+      const challengerModelKey = debateState.challengerModel;
+      const modelConfig = models?.find(model => model.key === challengerModelKey);
+      const supportsTemperature = modelConfig?.supportsTemperature ?? true;
+      const canStream = streamingEnabled && canStreamModel(challengerModelKey);
+
+      if (canStream) {
+        const baseline = explanations
+          .filter(exp => exp.modelName === challengerModelKey)
+          .reduce<string | null>((acc, exp) => {
+            if (!acc) return exp.createdAt;
+            return new Date(exp.createdAt) > new Date(acc) ? exp.createdAt : acc;
+          }, null);
+        setPendingStream({ modelKey: challengerModelKey, baseline });
+        startStreamingAnalysis(challengerModelKey, supportsTemperature);
+        toast({
+          title: 'Streaming challenge started',
+          description: `${modelConfig?.name ?? challengerModelKey} is streaming a new rebuttal.`,
+        });
+        return;
+      }
+
+      const lastResponseId = debateState.getLastResponseId(challengerModelKey);
       const lastMessage = debateState.debateMessages[debateState.debateMessages.length - 1];
       const lastProvider = lastMessage ? debateState.extractProvider(lastMessage.modelName) : 'none';
-      const challengerProvider = debateState.extractProvider(debateState.challengerModel);
+      const challengerProvider = debateState.extractProvider(challengerModelKey);
 
-      // Build mutation payload
       const payload: any = {
-        modelKey: debateState.challengerModel,
+        modelKey: challengerModelKey,
         temperature,
         topP,
         candidateCount,
         thinkingBudget,
-        ...(isGPT5ReasoningModel(debateState.challengerModel) ? {
+        ...(isGPT5ReasoningModel(challengerModelKey) ? {
           reasoningEffort,
           reasoningVerbosity,
           reasoningSummaryType
         } : {})
       };
 
-      // Log conversation chain status for debugging
       if (lastResponseId) {
-        console.log(`[Debate Chaining] ✅ Continuing ${challengerProvider} conversation with response ID: ${lastResponseId}`);
+        console.log(`[Debate Chaining] Continuing ${challengerProvider} conversation with response ID: ${lastResponseId}`);
       } else if (lastProvider !== challengerProvider && lastProvider !== 'none') {
-        console.log(`[Debate Chaining] ⚠️ Cross-provider debate detected (${lastProvider} → ${challengerProvider}). Starting new conversation chain (no context).`);
+        console.log(`[Debate Chaining] Cross-provider debate detected (${lastProvider} -> ${challengerProvider}). Starting new conversation chain (no context).`);
       } else {
         console.log('[Debate Chaining] Starting new conversation (no previous response ID)');
       }
 
-      // Call mutation and wait for result
       const savedData = await analyzeAndSaveMutation.mutateAsync(payload);
 
-      // Refetch to get the complete explanation with all fields
       await refetchExplanations();
 
-      // Find the new explanation from the saved data
-      // The savedData contains the explanations keyed by model
-      const newExplanationData = savedData?.explanations?.[debateState.challengerModel];
+      const newExplanationData = savedData?.explanations?.[challengerModelKey];
 
       if (newExplanationData) {
-        // Add to debate messages
         debateState.addChallengeMessage(newExplanationData);
 
-        // Show success feedback
         toast({
           title: "Challenge Generated!",
-          description: `${models?.find(m => m.key === debateState.challengerModel)?.name || debateState.challengerModel} has responded to the challenge.`,
+          description: `${modelConfig?.name || challengerModelKey} has responded to the challenge.`,
         });
       } else {
         throw new Error("Failed to retrieve challenge response");
       }
 
-      // Clear custom challenge input
       debateState.setCustomChallenge('');
     } catch (error) {
       console.error('Challenge generation error:', error);
@@ -159,6 +205,49 @@ export default function ModelDebate() {
       });
     }
   };
+  useEffect(() => {
+    if (!pendingStream) {
+      return;
+    }
+    if (isStreamingActive) {
+      return;
+    }
+    const { modelKey, baseline } = pendingStream;
+    const latest = explanations
+      .filter(exp => exp.modelName === modelKey)
+      .reduce((acc: ExplanationData | null, exp) => {
+        if (!acc) return exp;
+        return new Date(exp.createdAt) > new Date(acc.createdAt) ? exp : acc;
+      }, null as ExplanationData | null);
+    if (!latest) {
+      return;
+    }
+    if (baseline && new Date(latest.createdAt) <= new Date(baseline)) {
+      return;
+    }
+    debateState.addChallengeMessage(latest);
+    toast({
+      title: "Challenge Generated!",
+      description: `${models?.find(m => m.key === modelKey)?.name || modelKey} has responded to the challenge.`,
+    });
+    debateState.setCustomChallenge('');
+    setPendingStream(null);
+  }, [pendingStream, isStreamingActive, explanations, debateState, models, toast]);
+
+  useEffect(() => {
+    if (!pendingStream) {
+      return;
+    }
+    if (streamingPanelStatus !== 'failed') {
+      return;
+    }
+    toast({
+      title: 'Streaming failed',
+      description: streamError?.message ?? 'The streaming request failed.',
+      variant: 'destructive',
+    });
+    setPendingStream(null);
+  }, [pendingStream, streamingPanelStatus, streamError, toast]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {
@@ -216,23 +305,43 @@ export default function ModelDebate() {
             );
           }
           return (
-            <IndividualDebate
-              originalExplanation={selectedExplanation}
-              debateMessages={debateState.debateMessages}
-              taskId={taskId}
-              testCases={task!.test}
-              models={models}
-              task={task}
-              challengerModel={debateState.challengerModel}
-              customChallenge={debateState.customChallenge}
-              processingModels={processingModels}
-              analyzerErrors={analyzerErrors}
-              onBackToList={debateState.endDebate}
-              onResetDebate={debateState.resetDebate}
-              onChallengerModelChange={debateState.setChallengerModel}
-              onCustomChallengeChange={debateState.setCustomChallenge}
-              onGenerateChallenge={handleGenerateChallenge}
-            />
+            <>
+              {isStreamingActive && debateState.challengerModel && (
+                <div className="mb-4">
+                  <StreamingAnalysisPanel
+                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Challenge'}`}
+                    status={streamingPanelStatus}
+                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+                    message={
+                      streamingPanelStatus === 'failed'
+                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                        : streamingMessage
+                    }
+                    text={streamingText}
+                    reasoning={streamingReasoning}
+                    tokenUsage={streamingTokenUsage}
+                    onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
+                  />
+                </div>
+              )}
+              <IndividualDebate
+                originalExplanation={selectedExplanation}
+                debateMessages={debateState.debateMessages}
+                taskId={taskId}
+                testCases={task!.test}
+                models={models}
+                task={task}
+                challengerModel={debateState.challengerModel}
+                customChallenge={debateState.customChallenge}
+                processingModels={processingModels}
+                analyzerErrors={analyzerErrors}
+                onBackToList={debateState.endDebate}
+                onResetDebate={debateState.resetDebate}
+                onChallengerModelChange={debateState.setChallengerModel}
+                onCustomChallengeChange={debateState.setCustomChallenge}
+                onGenerateChallenge={handleGenerateChallenge}
+              />
+            </>
           );
         })()
       ) : explanations && explanations.length > 0 ? (

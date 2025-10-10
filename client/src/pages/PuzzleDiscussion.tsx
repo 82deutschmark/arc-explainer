@@ -11,6 +11,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import type { AnalysisResult } from '@/types/puzzle';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 import { PredictionIteration } from '@/components/puzzle/PredictionCard';
 import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
+import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -62,7 +64,6 @@ export default function PuzzleDiscussion() {
   // Fetch eligible explanations for landing page
   const { data: eligibleData, isLoading: isLoadingEligible } = useEligibleExplanations(20, 0);
   const eligibleExplanations = eligibleData?.explanations || [];
-
   // Refinement state management (NOT debate state)
   const refinementState = useRefinementState();
 
@@ -86,7 +87,16 @@ export default function PuzzleDiscussion() {
     setReasoningSummaryType,
     topP,
     candidateCount,
-    thinkingBudget
+    thinkingBudget,
+    streamingModelKey,
+    streamStatus,
+    streamingText,
+    streamingReasoning,
+    streamingPhase,
+    streamingMessage,
+    streamingTokenUsage,
+    streamError,
+    cancelStreamingAnalysis
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
@@ -95,6 +105,30 @@ export default function PuzzleDiscussion() {
     customChallenge: refinementState.userGuidance,
     previousResponseId: refinementState.getLastResponseId() // Single-model chaining
   });
+
+  const isStreamingActive = streamingModelKey !== null;
+  const streamingState =
+    streamStatus && typeof streamStatus === 'object' && 'state' in streamStatus
+      ? (streamStatus as { state: string }).state || 'idle'
+      : 'idle';
+  const streamingModel = streamingModelKey ? models?.find(model => model.key === streamingModelKey) || null : null;
+  const streamingPanelStatus: "idle" | "starting" | "in_progress" | "completed" | "failed" = (() => {
+    switch (streamingState) {
+      case 'requested':
+      case 'starting':
+        return 'starting';
+      case 'in_progress':
+        return 'in_progress';
+      case 'completed':
+        return 'completed';
+      case 'failed':
+        return 'failed';
+      default:
+        return 'idle';
+    }
+  })();
+  const [pendingStream, setPendingStream] = useState<{ modelKey: string; baseline: string | null } | null>(null);
+
 
   // Set promptId to 'discussion' when active for AI self-refinement
   useEffect(() => {
@@ -378,32 +412,59 @@ export default function PuzzleDiscussion() {
           }
 
           return (
-            <RefinementThread
-              originalExplanation={selectedExplanation}
-              iterations={refinementState.iterations}
-              taskId={taskId}
-              testCases={task!.test}
-              models={models}
-              task={task!}
-              activeModel={refinementState.activeModel}
-              userGuidance={refinementState.userGuidance}
-              isProcessing={processingModels.has(refinementState.activeModel)}
-              error={analyzerErrors.get(refinementState.activeModel) || null}
-              temperature={temperature}
-              setTemperature={setTemperature}
-              reasoningEffort={reasoningEffort}
-              setReasoningEffort={setReasoningEffort}
-              reasoningVerbosity={reasoningVerbosity}
-              setReasoningVerbosity={setReasoningVerbosity}
-              reasoningSummaryType={reasoningSummaryType}
-              setReasoningSummaryType={setReasoningSummaryType}
-              isGPT5ReasoningModel={isGPT5ReasoningModel}
-              promptId={promptId}
-              onBackToList={refinementState.endRefinement}
-              onResetRefinement={refinementState.resetRefinement}
-              onUserGuidanceChange={refinementState.setUserGuidance}
-              onContinueRefinement={handleGenerateRefinement}
-            />
+            <>
+              {isStreamingActive && refinementState.activeModel && (
+                <div className="mb-4">
+                  <StreamingAnalysisPanel
+                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+                    status={streamingPanelStatus}
+                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+                    message={
+                      streamingPanelStatus === 'failed'
+                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                        : streamingMessage
+                    }
+                    text={streamingText}
+                    reasoning={streamingReasoning}
+                    tokenUsage={streamingTokenUsage}
+                    onCancel={
+                      streamingPanelStatus === 'in_progress'
+                        ? () => {
+                            cancelStreamingAnalysis();
+                            setPendingStream(null);
+                          }
+                        : undefined
+                    }
+                  />
+                </div>
+              )}
+              <RefinementThread
+                originalExplanation={selectedExplanation}
+                iterations={refinementState.iterations}
+                taskId={taskId}
+                testCases={task!.test}
+                models={models}
+                task={task!}
+                activeModel={refinementState.activeModel}
+                userGuidance={refinementState.userGuidance}
+                isProcessing={processingModels.has(refinementState.activeModel)}
+                error={analyzerErrors.get(refinementState.activeModel) || null}
+                temperature={temperature}
+                setTemperature={setTemperature}
+                reasoningEffort={reasoningEffort}
+                setReasoningEffort={setReasoningEffort}
+                reasoningVerbosity={reasoningVerbosity}
+                setReasoningVerbosity={setReasoningVerbosity}
+                reasoningSummaryType={reasoningSummaryType}
+                setReasoningSummaryType={setReasoningSummaryType}
+                isGPT5ReasoningModel={isGPT5ReasoningModel}
+                promptId={promptId}
+                onBackToList={refinementState.endRefinement}
+                onResetRefinement={refinementState.resetRefinement}
+                onUserGuidanceChange={refinementState.setUserGuidance}
+                onContinueRefinement={handleGenerateRefinement}
+              />
+            </>
           );
         })()
       ) : filteredEligibleExplanations.length > 0 ? (
