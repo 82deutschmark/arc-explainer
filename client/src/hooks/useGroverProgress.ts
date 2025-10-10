@@ -131,9 +131,13 @@ export function useGroverProgress(taskId: string | undefined) {
         try {
           const payload = JSON.parse(evt.data);
           const data = payload?.data;
-          if (!data) return;
+          if (!data) {
+            console.warn('[GROVER] Message has no data, skipping');
+            return;
+          }
 
           setState((prev) => {
+            console.log('[GROVER] Updating state - prev status:', prev.status, 'new phase:', data.phase);
             // Accumulate ALL log messages
             let nextLogs = prev.logLines ? [...prev.logLines] : [];
             const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
@@ -201,12 +205,14 @@ export function useGroverProgress(taskId: string | undefined) {
               nextIterations = data.iterations;
             }
 
-            return { 
+            const newState = { 
               ...prev, 
               ...data,
               logLines: nextLogs,
               iterations: nextIterations
             };
+            console.log('[GROVER] New state created - logs:', newState.logLines?.length, 'status:', newState.status);
+            return newState;
           });
         } catch (error) {
           console.error('[GROVER] WebSocket parse error:', error);
