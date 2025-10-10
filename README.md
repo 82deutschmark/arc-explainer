@@ -16,6 +16,8 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 - ConceptARC dataset support across loaders, APIs, and UI filters.
 - HuggingFace ingestion of GPT-5-PRO results with correctness-only scoring when confidence is absent.
 
+For Grover solver details, see solver/grover-arc/README.md.
+
 ## What's New in v3.7.7 🎉
 
 ### Conversation Chaining & Reasoning Persistence ⭐ NEW
