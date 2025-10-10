@@ -51,10 +51,11 @@ export default function GroverSolver() {
     }
   }, [state.status, startTime]);
 
-  // Force re-render for timer
+  // Force re-render for timer AND poll for updates
   const [, setTick] = React.useState(0);
   React.useEffect(() => {
     if (isRunning) {
+      // Update every second for timer + force React to check state changes
       const interval = setInterval(() => {
         setTick(tick => tick + 1);
       }, 1000);

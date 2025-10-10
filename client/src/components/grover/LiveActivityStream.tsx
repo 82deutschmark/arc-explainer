@@ -35,10 +35,12 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
     );
   }
 
-  // Auto-scroll unless paused
+  // Auto-scroll unless paused - use ref to avoid infinite loop
+  const logsLengthRef = React.useRef(logs.length);
   React.useEffect(() => {
-    if (!isPaused && scrollRef.current) {
+    if (!isPaused && scrollRef.current && logs.length > logsLengthRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      logsLengthRef.current = logs.length;
     }
   }, [logs, isPaused]);
 
