@@ -24,7 +24,6 @@ import GroverModelSelect, { type GroverModelKey } from '@/components/grover/Grov
 import { IterationCard } from '@/components/grover/IterationCard';
 import { LiveActivityStream } from '@/components/grover/LiveActivityStream';
 import { SearchVisualization } from '@/components/grover/SearchVisualization';
-import { ConversationChainViewer } from '@/components/grover/ConversationChainViewer';
 
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -280,11 +279,6 @@ export default function GroverSolver() {
               currentIteration={state.iteration}
             />
           )}
-
-          <ConversationChainViewer
-            hasChain={isRunning || isDone}
-            iterationCount={state.iterations?.length || 0}
-          />
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import type { Request, Response } from 'express';
 import { formatResponse } from '../utils/responseFormatter.js';
 import { groverService } from '../services/grover.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
-import { broadcast } from '../services/wsService.js';
+import { broadcast, getSessionSnapshot } from '../services/wsService.js';
 import { setSessionContext } from '../utils/broadcastLogger.js';
 import { randomUUID } from 'crypto';
 
@@ -126,5 +126,15 @@ export const groverController = {
       modelKey,
       maxIterations: options.maxSteps
     }));
+  }
+  ,
+  async getStatus(req: Request, res: Response) {
+    const { sessionId } = req.params as { sessionId: string };
+    if (!sessionId) {
+      return res.status(400).json(formatResponse.error('bad_request', 'Missing sessionId'));
+    }
+
+    const snapshot = getSessionSnapshot(sessionId);
+    return res.json(formatResponse.success({ sessionId, snapshot }));
   }
 };
