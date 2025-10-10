@@ -1,50 +1,32 @@
-CRITICAL FIX: Null grid row handling - three-layer defense
+fix: UI improvements and WebSocket state bug fixes
 
 Author: Cascade using Claude Sonnet 4.5
-Date: 2025-10-09T22:07:00-04:00
+Date: 2025-10-09T22:34:00-04:00
 
-PROBLEM:
-Application crashed with 'Cannot read properties of null (reading map)' when
-displaying puzzle grids containing null rows. Error occurred in PuzzleGrid.tsx
-when trying to render grids from database with corrupt data structure.
+CHANGES:
 
-ROOT CAUSE:
-1. Database contained JSONB fields with null rows: [[1,2,3], null, [4,5,6]]
-2. Grid data was sanitized on WRITE but not on READ from database
-3. safeJsonParse() returned already-parsed JSONB objects without validation
-4. Frontend assumed all rows were valid arrays and crashed on .map()
+1. Removed ConversationChainViewer Component
+   - Deleted component with hardcoded fake token calculations
+   - Lines 65, 78, 81, 84 had fabricated numbers (~500 tokens, fake math)
+   - Removed import from GroverSolver.tsx
 
-FIX IMPLEMENTED (Three-Layer Defense):
+2. Enhanced Grover UI Clickability
+   - Start Analysis button: Large gradient (blue->purple), bold shadows
+   - Back button: Added text label, outline variant, clear hover states
+   - GitHub link: Thicker borders, better visual prominence
+   - Program cards: Full-width buttons with 2px borders, color-coded backgrounds
+   - Best program: Green gradient background, star badge
+   - Expand/collapse: 8x8 colored state indicator boxes
+   - All interactive elements: Clear shadows, hover effects, state feedback
 
-Layer 1 - Frontend Validation (PuzzleGrid.tsx):
-- Added validGrid useMemo to filter out null/undefined rows before rendering
-- Component now gracefully handles corrupt data that slips through backend
-- Prevents crashes while preserving display of valid rows
-
-Layer 2 - Backend Read Sanitization (ExplanationRepository.ts):
-- Added sanitizeGridData() when reading predictedOutputGrid from database
-- Added sanitizeMultipleGrids() for multiTestPredictionGrids
-- Ensures all data leaving repository layer is validated and clean
-
-Layer 3 - Enhanced Utility Function (CommonUtilities.ts):
-- Modified sanitizeGridData to SKIP corrupt rows instead of failing entire grid
-- Added validation to ensure at least some rows remain after sanitization
-- Added detailed logging for null rows, non-array rows, and empty grids
-- Graceful degradation: preserves valid data while filtering corrupt entries
-
-TECHNICAL DEBT ADDRESSED:
-- Previously: Sanitization only on write, not on read
-- Now: Sanitization on both write AND read (defense in depth)
-- Previously: Strict validation discarded entire grids for single bad row
-- Now: Graceful recovery preserves valid data while logging issues
+3. Fixed WebSocket State Management Bug
+   - Log-only messages no longer overwrite status with stale errors
+   - Progress phases (prompt_ready, waiting_llm, etc.) force status to 'running'
+   - Prevents status getting stuck on 'error' when process is working
+   - Fixed in useGroverProgress.ts lines 208-227
 
 FILES MODIFIED:
-- client/src/components/puzzle/PuzzleGrid.tsx
-- server/repositories/ExplanationRepository.ts
-- server/utils/CommonUtilities.ts
-- docs/2025-10-09-Grid-Null-Row-Fix.md (comprehensive analysis)
-
-IMPACT:
-Resolves crash on puzzle 9aaea919 and any other puzzles with corrupt grid data.
-Application now recovers gracefully from legacy data issues while logging for
-investigation. Three layers ensure robust handling of edge cases.
+- client/src/pages/GroverSolver.tsx (removed ConversationChainViewer, enhanced buttons)
+- client/src/components/grover/IterationCard.tsx (program cards UI overhaul)
+- client/src/hooks/useGroverProgress.ts (WebSocket state management fix)
+- CHANGELOG.md (added grid null row fix entry)
