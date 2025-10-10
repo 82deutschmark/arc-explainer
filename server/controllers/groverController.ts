@@ -41,18 +41,26 @@ export const groverController = {
       previousResponseId: req.body?.previousResponseId as string | undefined,
     };
 
+    // CRITICAL: Broadcast initial state IMMEDIATELY before returning response
+    // This ensures snapshot is available when client fetches it
+    // Fixes "blank screen for 3 minutes" by storing state BEFORE response returns
+    console.log('[Grover] Broadcasting initial state for sessionId:', sessionId);
+    broadcast(sessionId, {
+      status: 'running',
+      phase: 'initializing',
+      iteration: 0,
+      totalIterations: options.maxSteps,
+      message: 'Starting Grover analysis...',
+      logLines: [],
+      iterations: []
+    });
+
     // Start async Grover analysis (non-blocking)
     // CRITICAL: Wrap entire operation in setSessionContext so ALL logs broadcast to browser
     setImmediate(() => {
       setSessionContext(sessionId, async () => {
         try {
-          // Broadcast initial status
-          broadcast(sessionId, {
-            status: 'running',
-            phase: 'initializing',
-            message: 'Starting Grover analysis...'
-          });
-
+          // groverService will broadcast progress updates via sendProgress
           const result = await groverService.analyzePuzzleWithModel(
           task,
           modelKey,
