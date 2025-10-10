@@ -1,3 +1,35 @@
+## [4.0.1] - 2025-10-09 11:16 PM
+
+### Fixed
+- **CRITICAL**: Fixed React hooks violation in IterationCard causing infinite re-render crash (React Error #310)
+  - Moved useState calls from inside map loop to component top level
+  - Used Set state for tracking expanded programs instead of individual states
+- **CRITICAL**: Fixed null grid row handling preventing application crashes
+  - Three-layer defense: frontend validation, backend read sanitization, enhanced utility functions
+  - Application now gracefully recovers from corrupt legacy data
+- Fixed Grover Activity stream not displaying prompt text content
+  - Replaced fragile single-line detection with stateful prompt block tracking
+  - Prompt content now properly displays with yellow highlighting between header/footer
+- Fixed Grover WebSocket state management bugs
+  - Log-only messages no longer overwrite status with stale errors
+  - Progress phases force status back to 'running' to clear error states
+- Fixed missing phase labels in Grover status display (initializing, iteration_start, finalizing, complete)
+- Fixed Grover snapshot hydration for instant progress display
+  - Added immediate snapshot fetch after receiving sessionId
+  - Prevents blank screen for 3 minutes by showing state within 1-2 seconds
+  - Backend now broadcasts initial state synchronously before returning response
+  - Page reload preserves progress via snapshot
+
+### Changed
+- Enhanced Grover UI clickability and visibility
+  - Start Analysis button: large gradient (blue→purple), prominent shadows
+  - Program cards: full-width buttons with 2px borders, color-coded backgrounds, state indicators
+  - Back button: added text label and clearer styling
+  - GitHub attribution link: improved visual prominence
+- Removed ConversationChainViewer component with hardcoded fake token calculations
+
+---
+
 ## [4.0.0] - 2025-10-10
 
 ### Highlights
@@ -20,20 +52,9 @@
 
 ---
 
-## [2025-10-09]
+## [2025-10-09] - Archive
 
-### Work In Progress - Version 3.9.3
-- **Grover UI and Progress Fixes** - COMPLETED ✅
-  - Removed ConversationChainViewer component with hardcoded fake token calculations
-  - Enhanced UI clickability: gradient buttons, shadows, color-coded program cards
-  - Fixed WebSocket log messages overwriting error status
-  - Added snapshot hydration for instant progress display (1-2s instead of 3 minutes)
-  - Broadcast initial state synchronously before returning response
-  - Page reload now preserves progress via snapshot
-  - **CRITICAL**: Fixed React hooks violation in IterationCard causing infinite re-render crash
-    - Moved useState calls from inside map loop to component top level
-    - Used Set state for tracking expanded programs instead of individual states
-    - Crash was React Error #310 (too many re-renders)
+### Work In Progress Items (Historical Context)
 - **Grid Null Row Crash Fix** - COMPLETED ✅
   - **Problem**: Application crashed with "Cannot read properties of null (reading 'map')" on puzzle 9aaea919
   - **Root Cause**: Database JSONB fields contained arrays with null rows `[[1,2,3], null, [4,5,6]]`. Grid sanitization only occurred on write, not read. `safeJsonParse()` returned PostgreSQL JSONB objects without validating structure.
