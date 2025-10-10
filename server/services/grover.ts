@@ -37,6 +37,8 @@ export class GroverService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
+    const harness = serviceOpts.stream;
+    const controller = this.registerStream(harness);
     const maxIterations = serviceOpts.maxSteps || 5;
     const underlyingModel = this.models[modelKey];
     const sessionId = serviceOpts.sessionId;
@@ -67,25 +69,48 @@ export class GroverService extends BaseAIService {
     };
 
     const sendProgress = (payload: Record<string, any>) => {
-      if (!sessionId) return;
-      try {
-        broadcast(sessionId, {
-          status: payload.status ?? 'running',
-          phase: payload.phase ?? 'iteration',
-          iteration: payload.iteration ?? 0,
+      if (sessionId) {
+        try {
+          broadcast(sessionId, {
+            status: payload.status ?? 'running',
+            phase: payload.phase ?? 'iteration',
+            iteration: payload.iteration ?? 0,
+            totalIterations: maxIterations,
+            progress: payload.progress ?? (payload.iteration !== undefined && maxIterations > 0
+              ? Math.min(1, payload.iteration / maxIterations)
+              : undefined),
+            message: payload.message,
+            bestScore,
+            bestProgram,
+            iterations,
+            ...payload
+          });
+        } catch (err) {
+          console.error(`[Grover] Failed to broadcast: ${err}`);
+        }
+      }
+
+      if (harness) {
+        this.emitStreamEvent(harness, "stream.status", {
+          state: payload.status ?? "in_progress",
+          phase: payload.phase,
+          message: payload.message,
+          iteration: payload.iteration,
           totalIterations: maxIterations,
           progress: payload.progress ?? (payload.iteration !== undefined && maxIterations > 0
             ? Math.min(1, payload.iteration / maxIterations)
             : undefined),
-          message: payload.message,
-          bestScore,
-          bestProgram,
-          iterations,
-          ...payload
         });
-      } catch (err) {
-        // Use console.error to avoid recursion
-        console.error(`[Grover] Failed to broadcast: ${err}`);
+        if (payload.message) {
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta: `${payload.message}\n`,
+            metadata: {
+              iteration: payload.iteration,
+              phase: payload.phase,
+            },
+          });
+        }
       }
     };
 
@@ -125,6 +150,12 @@ export class GroverService extends BaseAIService {
         waitingStart: Date.now()
       });
 
+      const underlyingServiceOpts: ServiceOptions = {
+        ...serviceOpts,
+        stream: undefined,
+        previousResponseId,
+      };
+
       const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
         task,
         underlyingModel,
@@ -133,10 +164,7 @@ export class GroverService extends BaseAIService {
         promptId,
         codeGenPrompt,
         options,
-        {
-          ...serviceOpts,
-          previousResponseId // Conversation chaining across iterations!
-        }
+        underlyingServiceOpts
       );
 
       // Store response ID for next iteration
@@ -261,14 +289,12 @@ export class GroverService extends BaseAIService {
       // Final summary
       log(`✅ Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
       sendProgress({
+        status: 'completed',
         phase: 'finalizing',
-        message: `✅ Analysis complete - Best score: ${bestScore.toFixed(1)}/10`,
+        message: `Analysis complete - Best score: ${bestScore.toFixed(1)}/10`,
         finalScore: bestScore,
         totalIterations: iterations.length
       });
-
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
       log(`❌ Analysis failed: ${errorMsg}`, 'error');
       sendProgress({
         phase: 'error',
@@ -326,6 +352,19 @@ export class GroverService extends BaseAIService {
       log(`✓ Validation: ${correctCount}/${task.test.length} correct (avg accuracy: ${multiValidation.multiTestAverageAccuracy.toFixed(2)})`);
     }
 
+    this.finalizeStream(harness, {
+      status: 'success',
+      metadata: {
+        bestScore,
+        finalScore,
+        iterations,
+        bestProgram,
+        tokenUsage: serviceOpts.tokenUsage,
+      },
+      responseSummary: {
+        analysis: response,
+      },
+    });
     return response;
   }
 
@@ -628,6 +667,19 @@ Generate new programs that build on successful patterns and avoid failures.`;
       ...serviceOpts
     };
 
+    this.finalizeStream(harness, {
+      status: 'success',
+      metadata: {
+        bestScore,
+        finalScore,
+        iterations,
+        bestProgram,
+        tokenUsage: serviceOpts.tokenUsage,
+      },
+      responseSummary: {
+        analysis: finalResponse,
+      },
+    });
     return finalResponse;
   }
 }
