@@ -1,3 +1,34 @@
+## [4.0.4] - 2025-10-10
+
+### Added
+- **Enhanced Puzzle Name Display Across All Pages**
+  - Added puzzle name display next to puzzle IDs in headers across all pages for better visual identification
+  - **PuzzleExaminer.tsx**: Updated main heading to show puzzle name alongside ID (e.g., "Puzzle 0520fde7 - Vertical Symmetry")
+  - **ClickablePuzzleBadge Component**: Enhanced with optional tooltip-based name display using `showName` prop
+  - **PuzzleFeedback.tsx**: Updated model performance matrix table headers to show puzzle names
+  - **ModelBrowser.tsx**: Enhanced toast messages to include puzzle names for better feedback
+  - **AnalyticsOverview.tsx**: Updated performance matrix to use consistent badge styling
+  - **Utility Functions**: Added `getPuzzleName()` function in `shared/utils/puzzleNames.ts` for consistent name retrieval
+  - Improved user experience with better puzzle identification across the entire application
+
+### Changed
+- **ClickablePuzzleBadge**: Refactored to use tooltip-based name display instead of inline text for cleaner UI
+- **Badge Styling**: Consistent styling across all pages with proper hover states and visual feedback
+- **Toast Messages**: Enhanced with puzzle names for better user feedback during analysis operations
+
+### Technical Details
+- Files Modified:
+  - `client/src/pages/PuzzleExaminer.tsx` - Added puzzle name to main heading and page title
+  - `client/src/pages/PuzzleFeedback.tsx` - Updated matrix table headers with named badges
+  - `client/src/pages/ModelBrowser.tsx` - Enhanced toast messages with puzzle names
+  - `client/src/pages/AnalyticsOverview.tsx` - Updated performance matrix styling
+  - `client/src/components/ui/ClickablePuzzleBadge.tsx` - Added tooltip-based name display
+  - `shared/utils/puzzleNames.ts` - Added `getPuzzleName()` utility function
+- Maintains backward compatibility while significantly improving UI consistency and user experience
+- Tooltip-based approach prevents layout issues while still providing name information on hover
+
+---
+
 ## [4.0.3] - 2025-10-10
 
 ### Fixed
