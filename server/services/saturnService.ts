@@ -284,81 +284,71 @@ export class SaturnService extends BaseAIService {
         .flatMap(p => p.response.reasoningItems || [])
         .filter(Boolean);
       
-      // Build final response
+      // Build final response (using final phase's predictions)
+      const finalPhase = phases[phases.length - 1].response;
+      
       const finalResponse: AIResponse = {
         model: modelKey,
         temperature,
+        reasoningLog: allReasoningLogs.join('\n\n---\n\n'),
+        hasReasoningLog: allReasoningLogs.length > 0,
+        reasoningItems: allReasoningItems,
         
-        // Saturn-specific fields
-        saturnPhases: phases.map(p => ({
-          phase: p.phase,
-          name: p.name,
-          images: p.images,
-          patternDescription: p.response.patternDescription,
-          solvingStrategy: p.response.solvingStrategy,
-          confidence: p.response.confidence,
-          tokenUsage: {
-            input: p.response.inputTokens,
-            output: p.response.outputTokens,
-            reasoning: p.response.reasoningTokens
-          },
-          cost: p.response.estimatedCost
-        })),
-        phaseCount: phases.length,
-        
-        // Final prediction from last phase
-        predictedOutput: phase3Response.predictedOutput,
-        patternDescription: `Saturn Visual Solver (${phases.length} phases via ${underlyingModel})`,
-        solvingStrategy: phase3Response.solvingStrategy || 'Multi-phase visual analysis',
-        hints: phase3Response.hints || [],
-        confidence: phase3Response.confidence || 0,
-        
-        // Conversation chaining
-        providerResponseId: previousResponseId,
-        
-        // Aggregated token usage
+        // Token usage (aggregated across all phases)
         inputTokens: totalInputTokens,
         outputTokens: totalOutputTokens,
         reasoningTokens: totalReasoningTokens,
         totalTokens: totalInputTokens + totalOutputTokens + totalReasoningTokens,
         estimatedCost: totalCost,
         
-        // Reasoning aggregation
-        reasoningLog: allReasoningLogs.length > 0 ? allReasoningLogs : null,
-        hasReasoningLog: allReasoningLogs.length > 0,
-        reasoningItems: allReasoningItems.length > 0 ? allReasoningItems : undefined,
+        // Predicted output from final phase
+        predictedOutput: finalPhase.predictedOutput,
+        solvingStrategy: finalPhase.solvingStrategy,
+        patternDescription: finalPhase.patternDescription,
+        hints: finalPhase.hints,
+        confidence: finalPhase.confidence,
         
-        // Prompt tracking
-        systemPromptUsed: null,
-        userPromptUsed: null,
-        promptTemplateId: promptId,
-        customPromptText: customPrompt || null,
+        // Saturn-specific metadata
+        saturnPhases: phases.map(p => ({
+          phase: p.phase,
+          name: p.name,
+          images: p.images,
+          response: {
+            predictedOutput: p.response.predictedOutput,
+            confidence: p.response.confidence,
+            reasoningLog: p.response.reasoningLog
+          }
+        })),
         
-        // Model info
-        reasoningEffort: serviceOpts.reasoningEffort || null,
-        reasoningVerbosity: serviceOpts.reasoningVerbosity || null,
-        reasoningSummaryType: serviceOpts.reasoningSummaryType || null
+        // Provider metadata
+        providerResponseId: finalPhase.providerResponseId,
+        systemPromptUsed: 'Saturn Multi-Phase Visual Analysis',
+        promptTemplateId: 'saturn-multi-phase',
       };
       
       broadcast(sessionId, { 
-        status: 'completed', 
-        phase: 'done',
-        message: 'Saturn visual analysis completed successfully',
-        result: finalResponse
+        status: 'complete', 
+        phase: 'complete',
+        message: 'Saturn analysis complete',
+        result: {
+          confidence: finalResponse.confidence,
+          totalCost: totalCost,
+          totalPhases: phases.length
+        }
       });
-      
-      logger.service(this.provider, `Completed Saturn analysis. Total cost: $${totalCost.toFixed(4)}, Phases: ${phases.length}`);
       
       return finalResponse;
       
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      logger.error(`[${this.provider}] Analysis failed for ${modelKey}:`, errorMsg);
+      logger.error(`[${this.provider}] Saturn analysis failed:`, errorMsg);
+      
       broadcast(sessionId, { 
         status: 'error', 
         phase: 'error',
-        message: errorMsg
+        message: `Saturn analysis failed: ${errorMsg}`
       });
+      
       throw error;
     }
   }
@@ -544,3 +534,8 @@ IMPORTANT: Provide your answer as a grid in the exact format with proper JSON st
 }
 
 export const saturnService = new SaturnService();
+
+
+
+
+
