@@ -296,6 +296,70 @@ Response: { "providerResponseId": "resp_def456", ... }
 
 **⚙️ Performance**: Cost queries optimized with database indexes on `(model_name, estimated_cost)` and `(created_at, estimated_cost, model_name)`.
 
+### Model Comparison & Analysis ✨
+
+#### Model-to-Model Comparison
+- `GET /api/metrics/compare` - Compare specific models on a dataset
+  - **Query params**: `model1` (required), `model2` (required), `model3` (optional), `model4` (optional), `dataset` (required)
+  - **Response**: `ModelComparisonResult` with detailed puzzle-by-puzzle comparison
+  - **Data Structure**:
+    ```typescript
+    {
+      summary: {
+        totalPuzzles: number;
+        model1Name: string;
+        model2Name: string;
+        model3Name?: string;
+        model4Name?: string;
+        dataset: string;
+        allCorrect: number;        // All models got it right
+        allIncorrect: number;      // All models got it wrong
+        allNotAttempted: number;   // No model tried
+        threeCorrect?: number;     // Exactly 3 correct (4-model comparison)
+        twoCorrect?: number;       // Exactly 2 correct
+        oneCorrect?: number;       // Exactly 1 correct
+        model1OnlyCorrect: number; // Only model 1 correct
+        model2OnlyCorrect: number; // Only model 2 correct
+        model3OnlyCorrect?: number;
+        model4OnlyCorrect?: number;
+      },
+      details: PuzzleComparisonDetail[];  // Per-puzzle results
+    }
+    ```
+  - **Use Case**: Head-to-head model performance comparison on specific datasets
+  - **Example**: `/api/metrics/compare?model1=gpt-5-pro&model2=grok-4&dataset=evaluation2`
+  - **Limits**: Up to 4 models simultaneously, any dataset from data/ directory
+
+- `POST /api/puzzle/analyze-list` - Analyze specific puzzles across ALL models
+  - **Body**: `{ puzzleIds: string[] }` - Array of puzzle IDs (max 500)
+  - **Response**: `PuzzleListAnalysisResponse` with model-puzzle matrix
+  - **Data Structure**:
+    ```typescript
+    {
+      modelPuzzleMatrix: Array<{
+        modelName: string;
+        puzzleStatuses: Array<{
+          puzzleId: string;
+          status: 'correct' | 'incorrect' | 'not_attempted';
+        }>;
+      }>;
+      puzzleResults: Array<{
+        puzzle_id: string;
+        correct_models: string[];
+        total_attempts: number;
+      }>;
+      summary: {
+        totalPuzzles: number;
+        totalModels: number;
+        perfectModels: number;      // Got ALL puzzles correct
+        partialModels: number;      // Got some correct, some wrong
+        notAttemptedModels: number; // Never tried any
+      };
+    }
+    ```
+  - **Use Case**: Check which models solved specific user-selected puzzles (inverse of model comparison)
+  - **Limits**: Max 500 puzzle IDs per request
+
 ### Model Analysis
 - `GET /api/puzzle/confidence-stats` - Model confidence analysis
   - **Limits**: No limits
