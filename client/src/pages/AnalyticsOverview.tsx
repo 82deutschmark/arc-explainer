@@ -32,7 +32,8 @@ const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   training: 'ARC1-Train',
   evaluation2: 'ARC2-Eval',
   training2: 'ARC2-Train',
-  'arc-heavy': 'ARC-Heavy'
+  'arc-heavy': 'ARC-Heavy',
+  'concept-arc': 'ConceptARC'
 };
 
 type DatasetOption = DatasetInfo & { displayName: string };
@@ -65,14 +66,14 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select Grok 4 Fast Reasoning model if available, fallback to first model
+  // Auto-select gpt-5-pro-2025-10-06-attempt1 model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const targetModel = 'grok-4-fast-reasoning';
-      const grok4 = availableModels.includes(targetModel) 
-        ? targetModel 
-        : availableModels.find(m => m.includes('grok-4-fast-reasoning'));
-      setSelectedModelForDataset(grok4 || availableModels[0]);
+      const targetModel = 'gpt-5-pro-2025-10-06-attempt1';
+      const gpt5Pro = availableModels.includes(targetModel)
+        ? targetModel
+        : availableModels.find(m => m.includes('gpt-5-pro-2025-10-06-attempt1'));
+      setSelectedModelForDataset(gpt5Pro || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
@@ -330,7 +331,6 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
-
 
 
 

@@ -1,0 +1,3 @@
+[submodule "solver/grover-arc"]
+	path = solver/grover-arc
+	url = https://github.com/zoecarver/grover-arc

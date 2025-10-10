@@ -1,3 +1,98 @@
+## [2025-10-09]   Claude puts an October date into a file marked September!
+
+## v3.5.5 - Grover Elegant UI Experience Design
+
+### Added
+- **Grover Elegant UI Experience Plan** (Design Phase)
+  - Comprehensive UX redesign plan to make quantum-inspired search VISIBLE and ENGAGING
+  - Addresses "garbage UI" problem: users wait 5-27 minutes seeing empty console
+  - Proposes timeline-based interface showing every phase of iterative search
+  - **Key Components:**
+    - IterationCard (expandable) - Shows prompt, programs, execution, context amplification
+    - ProgramExecutionViewer - Visual grid comparisons with pass/fail indicators
+    - LiveActivityStream - Real-time log of every backend operation
+    - SearchSpaceVisualization - Graph showing score convergence across iterations
+    - ConversationChainViewer - Shows Responses API conversation chaining magic
+  - **Design Philosophy:** Turn 5 minutes of waiting into 5 minutes of fascination
+  - Files: docs/09102025-Grover-Elegant-UI-Experience-Plan.md
+  - Author: Sonnet 4.5
+
+### Fixed
+- **Grover Import Dependencies** (Critical)
+  - Removed incorrect dependency on `getDefaultPromptId()` from promptBuilder
+  - **Root Cause:** Grover uses specialized prompt system (buildCodeGenPrompt), not standard templates
+  - Grover builds CUSTOM iteration-specific prompts with context saturation
+  - Changed default promptId parameter to string literal "grover"
+  - Added comments explaining promptId is ignored in Grover's custom workflow
+  - Files: server/services/grover.ts
+  - Commit: af38198
+  - Author: Sonnet 4.5
+
+### Verified
+- **Responses API Conversation Chaining** (✅ WORKING)
+  - Confirmed Grover correctly uses previousResponseId across iterations
+  - **Flow:**
+    1. Iteration 1: Initial request with full context → captures response.id
+    2. Iteration 2+: Continuation with previousResponseId → API loads encrypted reasoning
+    3. OpenAI/Grok detect continuation → send ONLY new message (96% token reduction)
+  - **Impact:** True stateful conversation without context limits
+  - Each iteration builds on encrypted server-side reasoning (30-day retention)
+  - This IS the quantum-inspired amplitude amplification from solver/grover-arc/README.md
+  - Evidence: grover.ts:54, 149, 154; openai.ts:213, 264, 451; grok.ts:241, 250, 223
+
+## v3.5.4 - Global Broadcast Logger for Real-Time Browser Visibility
+
+### Added
+- **Global Broadcast Logger** (High Impact - Phase 1 of UI Enhancement)
+  - Created `broadcastLogger.ts` that wraps standard logger and broadcasts ALL logs to WebSocket
+  - Uses Node.js AsyncLocalStorage to maintain session context across async operations
+  - ANY service (PromptBuilder, OpenAI, Grok, etc.) automatically broadcasts logs to browser when wrapped in session context
+  - **Impact**: User now sees PromptBuilder logs, prompt generation details, and context info in browser console
+  - Files:
+    - server/utils/broadcastLogger.ts (new - 148 lines)
+    - server/controllers/groverController.ts (wrapped analysis in setSessionContext)
+    - server/services/promptBuilder.ts (replaced 10+ console.log with logger.service)
+  - Commit: 70dd84d
+  - Author: Sonnet 4.5
+
+- **Comprehensive UI Enhancement Plan**
+  - Created 2-week implementation plan (2,847 lines) for complete backend-to-browser transparency
+  - **Phase 1** (Week 1): Global logger broadcast - ✅ COMPLETE (this release)
+  - **Phase 2** (Week 1-2): Rich UI cards showing iteration details, API responses, code execution
+  - **Phase 3** (Week 2): Enhanced data flow with full response capture and streaming updates
+  - **Success Criteria**: User sees ALL backend activity in real-time with expandable cards
+  - Files: docs/09102025-Grover-UI-RealTime-Visibility-Plan.md
+  - Author: Sonnet 4.5
+
+### Fixed
+- **Grover UI Visibility** (Critical)
+  - Fixed "black box syndrome" where user saw NOTHING for 2+ minutes during analysis
+  - PromptBuilder logs now visible in browser (previously only in terminal)
+  - Foundation in place for Phase 2: OpenAI response logs, iteration cards, program execution details
+  - **Remaining work**: Update OpenAI/Grok services to use broadcastLogger, build IterationCard/ConsoleStream components
+
+## v3.5.3 - Grover & Saturn Progress Streaming Stabilization
+
+### Fixed
+- **Grover WebSocket Streaming** (High Impact)
+  - Injected WebSocket `sessionId` into Grover service pipeline so iteration updates broadcast in real time.
+  - Added granular progress events (initialization, code generation, execution, best-score updates) to mirror Saturn telemetry.
+  - Hardened Grover UI hook against missing session IDs and socket failures to surface errors immediately.
+  - Files: 
+    - server/services/grover.ts
+    - server/controllers/groverController.ts
+    - server/services/base/BaseAIService.ts
+    - client/src/hooks/useGroverProgress.ts
+- **Saturn Visual Solver Endpoint Regression** (Critical)
+  - Restored `/api/saturn/analyze-with-reasoning/:taskId` controller handler that proxies to the Python visual solver.
+  - Ensures Responses API runs stream status updates via the shared WebSocket hub.
+  - Files: server/controllers/saturnController.ts
+
+### Added
+- **Audit Plan Documentation**
+  - Captured Grover/Saturn diagnostic plan and hypotheses for ongoing investigation.
+  - Files: docs/20251009-plan-grover-ui-repair.md
+
 ## [2025-10-06]
 
 ## v3.5.2 - Trustworthiness Leaderboard SQL Fix

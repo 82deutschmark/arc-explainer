@@ -16,6 +16,8 @@ class AIServiceFactory {
   private geminiService: any;
   private deepseekService: any;
   private openrouterService: any;
+  private groverService: any;
+  private saturnService: any;
 
   /**
    * Initialize the factory by loading all AI services once at startup
@@ -28,13 +30,17 @@ class AIServiceFactory {
     const { geminiService } = await import('./gemini');
     const { deepseekService } = await import('./deepseek');
     const { openrouterService } = await import('./openrouter');
-    
+    const { groverService } = await import('./grover');
+    const { saturnService } = await import('./saturnService');
+
     this.anthropicService = anthropicService;
     this.openaiService = openaiService;
     this.grokService = grokService;
     this.geminiService = geminiService;
     this.deepseekService = deepseekService;
     this.openrouterService = openrouterService;
+    this.groverService = groverService;
+    this.saturnService = saturnService;
   }
 
   /**
@@ -53,6 +59,18 @@ class AIServiceFactory {
       return this.anthropicService;
     }
     
+    // Saturn visual solver (uses underlying models with visual analysis)
+    if (model.startsWith('saturn-')) {
+      console.log('   -> Saturn service');
+      return this.saturnService;
+    }
+    
+    // Grover iterative solver (uses underlying models)
+    if (model.startsWith('grover-')) {
+      console.log('   -> Grover service');
+      return this.groverService;
+    }
+
     // xAI Grok models
     if (model.startsWith('grok-')) {
       console.log('   -> Grok service');

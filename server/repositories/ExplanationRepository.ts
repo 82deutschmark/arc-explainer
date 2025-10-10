@@ -45,9 +45,10 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions,
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
           provider_response_id, provider_raw_response, multi_test_prediction_grids,
-          rebutting_explanation_id
+          rebutting_explanation_id,
+          grover_iterations, grover_best_program, iteration_count
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -96,7 +97,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         this.safeJsonStringify(data.providerRawResponse),
         this.safeJsonStringify(this.sanitizeMultipleGrids(data.multiTestPredictionGrids) || []),
         // Rebuttal tracking
-        data.rebuttingExplanationId || null
+        data.rebuttingExplanationId || null,
+        // NEW: Grover iterative solver fields
+        this.safeJsonStringify(data.groverIterations),
+        data.groverBestProgram || null,
+        data.iterationCount || null
       ], client);
 
       if (result.rows.length === 0) {
@@ -204,6 +209,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
         multi_test_prediction_grids AS "multiTestPredictionGrids",
+        grover_iterations AS "groverIterations",
+        grover_best_program AS "groverBestProgram",
+        iteration_count AS "iterationCount",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -245,6 +253,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
         multi_test_prediction_grids AS "multiTestPredictionGrids",
+        grover_iterations AS "groverIterations",
+        grover_best_program AS "groverBestProgram",
+        iteration_count AS "iterationCount",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -556,9 +567,15 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       confidence: this.normalizeConfidence(row.confidence),
       alienMeaningConfidence: this.normalizeConfidence(row.alienMeaningConfidence),
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
-      predictedOutputGrid: this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
+      // CRITICAL FIX: Sanitize grid data on READ to filter out null rows from legacy/corrupt data
+      predictedOutputGrid: this.sanitizeGridData(this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid')),
       multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
+      // CRITICAL FIX: Sanitize multi-test prediction grids on READ as well
+      multiTestPredictionGrids: this.sanitizeMultipleGrids(this.safeJsonParse(row.multiTestPredictionGrids, 'multiTestPredictionGrids')),
+      
+      // Parse Grover-specific JSONB field
+      groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),
       
       // Ensure boolean fields are properly typed
       hasReasoningLog: !!row.hasReasoningLog,
@@ -671,7 +688,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       minAccuracy?: number;
       maxAccuracy?: number;
       zeroAccuracyOnly?: boolean;
-      source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+      source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
       multiTestFilter?: 'single' | 'multi';
       includeRichMetrics?: boolean;
     }
@@ -902,6 +919,28 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     } catch (error) {
       logger.error(`Error counting explanations: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
       return 0;
+    }
+  }
+
+  /**
+   * Delete an explanation by ID
+   * Used by ingestion scripts to overwrite existing entries
+   * 
+   * @author Cascade using GPT-5-Pro
+   * @date 2025-10-09
+   */
+  async deleteExplanation(id: number): Promise<boolean> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - cannot delete explanation', 'explanation-repository');
+      return false;
+    }
+
+    try {
+      const result = await this.query(`DELETE FROM explanations WHERE id = $1`, [id]);
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      logger.error(`Error deleting explanation ${id}: ${error instanceof Error ? error.message : String(error)}`, 'explanation-repository');
+      return false;
     }
   }
 

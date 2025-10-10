@@ -103,6 +103,10 @@ export interface ExplanationData {
   saturnImages?: string[]; // Array of image paths generated during Saturn analysis
   saturnLog?: string | null; // Verbose stdout/stderr logs from Saturn solver
   saturnEvents?: string | null; // Compressed NDJSON/JSON event trace
+  // Grover iterative solver fields
+  groverIterations?: any[] | null; // Array of iteration data from Grover solver
+  groverBestProgram?: string | null; // Best Python program discovered by Grover
+  iterationCount?: number | null; // Total number of iterations completed
   // Solver mode validation fields
   predictedOutputGrid?: number[][] | null; // Grid extracted from AI response
   isPredictionCorrect?: boolean | null; // Whether prediction matches correct answer

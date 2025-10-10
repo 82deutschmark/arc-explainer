@@ -18,7 +18,7 @@
 export interface ARCTask {
   train: ARCExample[];
   test: ARCExample[];
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
 }
 
 export interface ARCExample {
@@ -35,7 +35,7 @@ export interface PuzzleMetadata {
   outputSize: [number, number];
   hasExplanation?: boolean;
   description?: string;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   importSource?: string; // Track which import/dataset this came from
   importDate?: Date;     // When it was imported
 }
@@ -553,11 +553,11 @@ export interface ModelConfig {
   premium: boolean;
   cost: { input: string; output: string };
   supportsTemperature: boolean;
-  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter';
+  provider: 'OpenAI' | 'Anthropic' | 'xAI' | 'Gemini' | 'DeepSeek' | 'OpenRouter' | 'Grover' | 'Saturn';
   responseTime: { speed: 'fast' | 'moderate' | 'slow'; estimate: string };
   isReasoning?: boolean;
   apiModelName: string;
-  modelType: 'gpt5' | 'gpt5_chat' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter';
+  modelType: 'gpt5_chat' | 'gpt5' | 'o3_o4' | 'claude' | 'grok' | 'gemini' | 'deepseek' | 'openrouter' | 'grover' | 'saturn';
   contextWindow?: number;
   maxOutputTokens?: number; // Only used for some models
   releaseDate?: string; // Release date in YYYY-MM format
@@ -580,4 +580,31 @@ export interface ReasoningItem {
   detail?: string;
   step?: number;
   category?: string;
+}
+
+/**
+ * Grover iteration tracking types
+ */
+export interface GroverIteration {
+  iteration: number;
+  programs: string[];            // Generated code candidates
+  executionResults: {
+    programIdx: number;
+    score: number;              // 0-10 grading
+    output: number[][] | null;  // Predicted grid
+    error?: string;             // Execution error if any
+    code: string;
+  }[];
+  best: {
+    programIdx: number;
+    score: number;
+    code: string;
+  };
+  timestamp: number;
+}
+
+export interface GroverExplanationData extends ExplanationRecord {
+  groverIterations?: GroverIteration[];
+  groverBestProgram?: string;
+  iterationCount?: number;
 }

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS ingestion_runs (
   -- Dataset identification
   dataset_name VARCHAR(255) NOT NULL,
   base_url TEXT NOT NULL,
-  source VARCHAR(50), -- ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
+  source VARCHAR(50), -- ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy, ConceptARC
 
   -- Run statistics
   total_puzzles INTEGER NOT NULL,

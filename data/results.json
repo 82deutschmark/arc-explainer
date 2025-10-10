@@ -1,0 +1,973 @@
+{
+    "score": 7.166666666666666,
+    "total_tasks": 120,
+    "total_cost": 7.187245399999999,
+    "total_attempts": 326,
+    "avg_cost_per_task": 0.05989371166666666,
+    "avg_cost_per_attempt": 0.022046765030674844,
+    "avg_output_tokens_per_task": 2841.108333333333,
+    "avg_duration_per_task": 613.3213686250002,
+    "task_results": {
+        "da515329": {
+            "score": 0.0,
+            "cost": 0.0256008,
+            "attempts": 2,
+            "output_tokens": 1719,
+            "duration": 285.55469,
+            "num_attempts_with_empty_list": 0
+        },
+        "e12f9a14": {
+            "score": 0.0,
+            "cost": 0.0641147,
+            "attempts": 2,
+            "output_tokens": 5493,
+            "duration": 618.163596,
+            "num_attempts_with_empty_list": 0
+        },
+        "88e364bc": {
+            "score": 0.0,
+            "cost": 0.0935926,
+            "attempts": 4,
+            "output_tokens": 4800,
+            "duration": 922.003905,
+            "num_attempts_with_empty_list": 0
+        },
+        "a251c730": {
+            "score": 0.0,
+            "cost": 0.0250702,
+            "attempts": 2,
+            "output_tokens": 456,
+            "duration": 245.660705,
+            "num_attempts_with_empty_list": 0
+        },
+        "9385bd28": {
+            "score": 0.0,
+            "cost": 0.08676239999999999,
+            "attempts": 4,
+            "output_tokens": 2229,
+            "duration": 877.383368,
+            "num_attempts_with_empty_list": 0
+        },
+        "409aa875": {
+            "score": 0.0,
+            "cost": 0.0642797,
+            "attempts": 2,
+            "output_tokens": 1542,
+            "duration": 655.993685,
+            "num_attempts_with_empty_list": 0
+        },
+        "abc82100": {
+            "score": 0.0,
+            "cost": 0.0701642,
+            "attempts": 2,
+            "output_tokens": 2400,
+            "duration": 826.309089,
+            "num_attempts_with_empty_list": 0
+        },
+        "a6f40cea": {
+            "score": 0.0,
+            "cost": 0.041305499999999995,
+            "attempts": 2,
+            "output_tokens": 762,
+            "duration": 489.401483,
+            "num_attempts_with_empty_list": 0
+        },
+        "d59b0160": {
+            "score": 0.0,
+            "cost": 0.0543887,
+            "attempts": 2,
+            "output_tokens": 1533,
+            "duration": 549.195773,
+            "num_attempts_with_empty_list": 0
+        },
+        "62593bfd": {
+            "score": 0.0,
+            "cost": 0.1177925,
+            "attempts": 4,
+            "output_tokens": 7026,
+            "duration": 1282.2227070000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "9aaea919": {
+            "score": 0.0,
+            "cost": 0.040409799999999996,
+            "attempts": 2,
+            "output_tokens": 5313,
+            "duration": 329.38295,
+            "num_attempts_with_empty_list": 0
+        },
+        "b9e38dc0": {
+            "score": 0.0,
+            "cost": 0.076602,
+            "attempts": 2,
+            "output_tokens": 1710,
+            "duration": 822.568134,
+            "num_attempts_with_empty_list": 0
+        },
+        "64efde09": {
+            "score": 0.0,
+            "cost": 0.059080099999999997,
+            "attempts": 2,
+            "output_tokens": 4875,
+            "duration": 633.1446470000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "2b83f449": {
+            "score": 0.0,
+            "cost": 0.035908800000000005,
+            "attempts": 2,
+            "output_tokens": 1941,
+            "duration": 319.510893,
+            "num_attempts_with_empty_list": 0
+        },
+        "eee78d87": {
+            "score": 0.0,
+            "cost": 0.0351437,
+            "attempts": 2,
+            "output_tokens": 1539,
+            "duration": 417.50006399999995,
+            "num_attempts_with_empty_list": 0
+        },
+        "195c6913": {
+            "score": 0.0,
+            "cost": 0.0885647,
+            "attempts": 4,
+            "output_tokens": 8082,
+            "duration": 854.902195,
+            "num_attempts_with_empty_list": 0
+        },
+        "db695cfb": {
+            "score": 0.0,
+            "cost": 0.0253632,
+            "attempts": 2,
+            "output_tokens": 3150,
+            "duration": 254.18237499999998,
+            "num_attempts_with_empty_list": 0
+        },
+        "67e490f4": {
+            "score": 0.0,
+            "cost": 0.0357925,
+            "attempts": 2,
+            "output_tokens": 726,
+            "duration": 366.583565,
+            "num_attempts_with_empty_list": 0
+        },
+        "6e4f6532": {
+            "score": 0.0,
+            "cost": 0.0331633,
+            "attempts": 2,
+            "output_tokens": 1440,
+            "duration": 296.659452,
+            "num_attempts_with_empty_list": 0
+        },
+        "e87109e9": {
+            "score": 0.0,
+            "cost": 0.0305842,
+            "attempts": 2,
+            "output_tokens": 2226,
+            "duration": 266.883821,
+            "num_attempts_with_empty_list": 0
+        },
+        "581f7754": {
+            "score": 0.0,
+            "cost": 0.0959753,
+            "attempts": 4,
+            "output_tokens": 3132,
+            "duration": 1048.606013,
+            "num_attempts_with_empty_list": 0
+        },
+        "a25697e4": {
+            "score": 0.0,
+            "cost": 0.0734547,
+            "attempts": 4,
+            "output_tokens": 7116,
+            "duration": 769.064346,
+            "num_attempts_with_empty_list": 0
+        },
+        "97d7923e": {
+            "score": 0.0,
+            "cost": 0.0554048,
+            "attempts": 2,
+            "output_tokens": 1200,
+            "duration": 583.483918,
+            "num_attempts_with_empty_list": 0
+        },
+        "58f5dbd5": {
+            "score": 0.0,
+            "cost": 0.037786999999999994,
+            "attempts": 2,
+            "output_tokens": 1482,
+            "duration": 396.933896,
+            "num_attempts_with_empty_list": 0
+        },
+        "1ae2feb7": {
+            "score": 0.6666666666666666,
+            "cost": 0.0597693,
+            "attempts": 6,
+            "output_tokens": 2640,
+            "duration": 574.210875,
+            "num_attempts_with_empty_list": 0
+        },
+        "16de56c4": {
+            "score": 0.5,
+            "cost": 0.0760556,
+            "attempts": 4,
+            "output_tokens": 2271,
+            "duration": 985.224514,
+            "num_attempts_with_empty_list": 0
+        },
+        "b5ca7ac4": {
+            "score": 0.0,
+            "cost": 0.06973940000000001,
+            "attempts": 2,
+            "output_tokens": 2943,
+            "duration": 613.469827,
+            "num_attempts_with_empty_list": 0
+        },
+        "291dc1e1": {
+            "score": 0.0,
+            "cost": 0.049934099999999995,
+            "attempts": 2,
+            "output_tokens": 939,
+            "duration": 606.132314,
+            "num_attempts_with_empty_list": 0
+        },
+        "446ef5d2": {
+            "score": 0.0,
+            "cost": 0.06610569999999999,
+            "attempts": 4,
+            "output_tokens": 5256,
+            "duration": 655.831535,
+            "num_attempts_with_empty_list": 0
+        },
+        "dd6b8c4b": {
+            "score": 0.0,
+            "cost": 0.0843579,
+            "attempts": 4,
+            "output_tokens": 1452,
+            "duration": 889.4565769999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "38007db0": {
+            "score": 0.0,
+            "cost": 0.064252,
+            "attempts": 4,
+            "output_tokens": 2058,
+            "duration": 617.692149,
+            "num_attempts_with_empty_list": 0
+        },
+        "28a6681f": {
+            "score": 0.0,
+            "cost": 0.0340478,
+            "attempts": 2,
+            "output_tokens": 600,
+            "duration": 430.15100099999995,
+            "num_attempts_with_empty_list": 0
+        },
+        "8b7bacbf": {
+            "score": 0.0,
+            "cost": 0.0628829,
+            "attempts": 4,
+            "output_tokens": 8832,
+            "duration": 520.316047,
+            "num_attempts_with_empty_list": 0
+        },
+        "edb79dae": {
+            "score": 0.0,
+            "cost": 0.0526674,
+            "attempts": 2,
+            "output_tokens": 2583,
+            "duration": 462.198343,
+            "num_attempts_with_empty_list": 0
+        },
+        "31f7f899": {
+            "score": 0.0,
+            "cost": 0.0282568,
+            "attempts": 2,
+            "output_tokens": 1785,
+            "duration": 286.04143999999997,
+            "num_attempts_with_empty_list": 0
+        },
+        "4c3d4a41": {
+            "score": 0.0,
+            "cost": 0.056132,
+            "attempts": 4,
+            "output_tokens": 1920,
+            "duration": 596.032605,
+            "num_attempts_with_empty_list": 0
+        },
+        "de809cff": {
+            "score": 0.0,
+            "cost": 0.0274655,
+            "attempts": 2,
+            "output_tokens": 2790,
+            "duration": 262.890156,
+            "num_attempts_with_empty_list": 0
+        },
+        "898e7135": {
+            "score": 0.0,
+            "cost": 0.030618399999999997,
+            "attempts": 2,
+            "output_tokens": 1380,
+            "duration": 286.90785,
+            "num_attempts_with_empty_list": 0
+        },
+        "fc7cae8d": {
+            "score": 0.0,
+            "cost": 0.046734899999999996,
+            "attempts": 2,
+            "output_tokens": 1503,
+            "duration": 464.79379500000005,
+            "num_attempts_with_empty_list": 0
+        },
+        "6e453dd6": {
+            "score": 1.0,
+            "cost": 0.0454547,
+            "attempts": 2,
+            "output_tokens": 1800,
+            "duration": 404.336838,
+            "num_attempts_with_empty_list": 0
+        },
+        "c4d067a0": {
+            "score": 0.0,
+            "cost": 0.0500419,
+            "attempts": 2,
+            "output_tokens": 4377,
+            "duration": 548.594747,
+            "num_attempts_with_empty_list": 0
+        },
+        "8698868d": {
+            "score": 0.0,
+            "cost": 0.0422251,
+            "attempts": 2,
+            "output_tokens": 1356,
+            "duration": 418.417246,
+            "num_attempts_with_empty_list": 0
+        },
+        "8b9c3697": {
+            "score": 0.0,
+            "cost": 0.06493209999999999,
+            "attempts": 2,
+            "output_tokens": 3729,
+            "duration": 644.719347,
+            "num_attempts_with_empty_list": 0
+        },
+        "89565ca0": {
+            "score": 0.0,
+            "cost": 0.0299823,
+            "attempts": 2,
+            "output_tokens": 124,
+            "duration": 312.140615,
+            "num_attempts_with_empty_list": 0
+        },
+        "53fb4810": {
+            "score": 0.0,
+            "cost": 0.025204,
+            "attempts": 2,
+            "output_tokens": 2706,
+            "duration": 257.484712,
+            "num_attempts_with_empty_list": 0
+        },
+        "e3721c99": {
+            "score": 0.0,
+            "cost": 0.06848599999999999,
+            "attempts": 4,
+            "output_tokens": 5406,
+            "duration": 680.6280059999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "e8686506": {
+            "score": 0.0,
+            "cost": 0.0529341,
+            "attempts": 2,
+            "output_tokens": 208,
+            "duration": 613.775586,
+            "num_attempts_with_empty_list": 0
+        },
+        "35ab12c3": {
+            "score": 0.0,
+            "cost": 0.0494761,
+            "attempts": 2,
+            "output_tokens": 2649,
+            "duration": 562.427254,
+            "num_attempts_with_empty_list": 0
+        },
+        "20270e3b": {
+            "score": 0.0,
+            "cost": 0.07336490000000001,
+            "attempts": 4,
+            "output_tokens": 690,
+            "duration": 789.539599,
+            "num_attempts_with_empty_list": 0
+        },
+        "88bcf3b4": {
+            "score": 0.0,
+            "cost": 0.0729259,
+            "attempts": 4,
+            "output_tokens": 3855,
+            "duration": 746.724217,
+            "num_attempts_with_empty_list": 0
+        },
+        "7491f3cf": {
+            "score": 0.0,
+            "cost": 0.055643099999999994,
+            "attempts": 2,
+            "output_tokens": 1050,
+            "duration": 553.9359159999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "7b80bb43": {
+            "score": 0.0,
+            "cost": 0.0324049,
+            "attempts": 2,
+            "output_tokens": 2910,
+            "duration": 345.55676500000004,
+            "num_attempts_with_empty_list": 0
+        },
+        "dfadab01": {
+            "score": 0.0,
+            "cost": 0.040345099999999995,
+            "attempts": 2,
+            "output_tokens": 2400,
+            "duration": 421.40461300000004,
+            "num_attempts_with_empty_list": 0
+        },
+        "a47bf94d": {
+            "score": 0.0,
+            "cost": 0.0432899,
+            "attempts": 2,
+            "output_tokens": 4059,
+            "duration": 431.399852,
+            "num_attempts_with_empty_list": 0
+        },
+        "3dc255db": {
+            "score": 0.0,
+            "cost": 0.04224069999999999,
+            "attempts": 2,
+            "output_tokens": 936,
+            "duration": 506.449032,
+            "num_attempts_with_empty_list": 0
+        },
+        "2c181942": {
+            "score": 0.0,
+            "cost": 0.0459783,
+            "attempts": 2,
+            "output_tokens": 3903,
+            "duration": 473.153466,
+            "num_attempts_with_empty_list": 0
+        },
+        "6ffbe589": {
+            "score": 0.0,
+            "cost": 0.0612831,
+            "attempts": 2,
+            "output_tokens": 807,
+            "duration": 521.3316520000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "faa9f03d": {
+            "score": 0.0,
+            "cost": 0.041609799999999995,
+            "attempts": 2,
+            "output_tokens": 864,
+            "duration": 460.21877900000004,
+            "num_attempts_with_empty_list": 0
+        },
+        "332f06d7": {
+            "score": 0.0,
+            "cost": 0.038391499999999995,
+            "attempts": 2,
+            "output_tokens": 2400,
+            "duration": 396.182332,
+            "num_attempts_with_empty_list": 0
+        },
+        "2ba387bc": {
+            "score": 1.0,
+            "cost": 0.0206808,
+            "attempts": 2,
+            "output_tokens": 768,
+            "duration": 208.943428,
+            "num_attempts_with_empty_list": 0
+        },
+        "800d221b": {
+            "score": 0.0,
+            "cost": 0.0437506,
+            "attempts": 2,
+            "output_tokens": 2703,
+            "duration": 480.491575,
+            "num_attempts_with_empty_list": 0
+        },
+        "5dbc8537": {
+            "score": 0.0,
+            "cost": 0.130443,
+            "attempts": 4,
+            "output_tokens": 2757,
+            "duration": 1381.946649,
+            "num_attempts_with_empty_list": 0
+        },
+        "b99e7126": {
+            "score": 0.0,
+            "cost": 0.0364092,
+            "attempts": 2,
+            "output_tokens": 5049,
+            "duration": 272.934169,
+            "num_attempts_with_empty_list": 0
+        },
+        "71e489b6": {
+            "score": 0.0,
+            "cost": 0.10208769999999999,
+            "attempts": 4,
+            "output_tokens": 3576,
+            "duration": 1014.768301,
+            "num_attempts_with_empty_list": 0
+        },
+        "3a25b0d8": {
+            "score": 0.0,
+            "cost": 0.09742229999999999,
+            "attempts": 4,
+            "output_tokens": 1944,
+            "duration": 980.795486,
+            "num_attempts_with_empty_list": 0
+        },
+        "5545f144": {
+            "score": 0.0,
+            "cost": 0.054783399999999996,
+            "attempts": 2,
+            "output_tokens": 1350,
+            "duration": 496.43475,
+            "num_attempts_with_empty_list": 0
+        },
+        "7c66cb00": {
+            "score": 0.0,
+            "cost": 0.0666068,
+            "attempts": 2,
+            "output_tokens": 4248,
+            "duration": 733.9821979999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "cb2d8a2c": {
+            "score": 0.0,
+            "cost": 0.09286449999999999,
+            "attempts": 4,
+            "output_tokens": 4920,
+            "duration": 1001.625993,
+            "num_attempts_with_empty_list": 0
+        },
+        "135a2760": {
+            "score": 0.0,
+            "cost": 0.041793,
+            "attempts": 2,
+            "output_tokens": 5046,
+            "duration": 434.406314,
+            "num_attempts_with_empty_list": 0
+        },
+        "78332cb0": {
+            "score": 0.0,
+            "cost": 0.0349587,
+            "attempts": 4,
+            "output_tokens": 1266,
+            "duration": 344.72020599999996,
+            "num_attempts_with_empty_list": 0
+        },
+        "221dfab4": {
+            "score": 0.0,
+            "cost": 0.12091579999999999,
+            "attempts": 4,
+            "output_tokens": 9159,
+            "duration": 1159.1414829999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "271d71e2": {
+            "score": 0.0,
+            "cost": 0.052023299999999995,
+            "attempts": 2,
+            "output_tokens": 4137,
+            "duration": 539.123071,
+            "num_attempts_with_empty_list": 0
+        },
+        "4c416de3": {
+            "score": 0.0,
+            "cost": 0.060914800000000005,
+            "attempts": 2,
+            "output_tokens": 2508,
+            "duration": 638.645447,
+            "num_attempts_with_empty_list": 0
+        },
+        "4e34c42c": {
+            "score": 0.0,
+            "cost": 0.10598899999999999,
+            "attempts": 4,
+            "output_tokens": 795,
+            "duration": 1172.4432140000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "20a9e565": {
+            "score": 0.0,
+            "cost": 0.0881848,
+            "attempts": 4,
+            "output_tokens": 219,
+            "duration": 951.1449909999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "f560132c": {
+            "score": 0.0,
+            "cost": 0.060528,
+            "attempts": 2,
+            "output_tokens": 447,
+            "duration": 690.703707,
+            "num_attempts_with_empty_list": 0
+        },
+        "3e6067c3": {
+            "score": 0.0,
+            "cost": 0.109537,
+            "attempts": 4,
+            "output_tokens": 10626,
+            "duration": 1025.916555,
+            "num_attempts_with_empty_list": 0
+        },
+        "7666fa5d": {
+            "score": 0.0,
+            "cost": 0.0632665,
+            "attempts": 2,
+            "output_tokens": 1536,
+            "duration": 696.855687,
+            "num_attempts_with_empty_list": 0
+        },
+        "dbff022c": {
+            "score": 0.0,
+            "cost": 0.0487152,
+            "attempts": 2,
+            "output_tokens": 1014,
+            "duration": 506.76564099999996,
+            "num_attempts_with_empty_list": 0
+        },
+        "db0c5428": {
+            "score": 0.0,
+            "cost": 0.038168999999999995,
+            "attempts": 2,
+            "output_tokens": 1734,
+            "duration": 399.849369,
+            "num_attempts_with_empty_list": 0
+        },
+        "45a5af55": {
+            "score": 0.0,
+            "cost": 0.0159838,
+            "attempts": 2,
+            "output_tokens": 2028,
+            "duration": 115.148265,
+            "num_attempts_with_empty_list": 0
+        },
+        "7b0280bc": {
+            "score": 0.0,
+            "cost": 0.0335937,
+            "attempts": 2,
+            "output_tokens": 2700,
+            "duration": 322.185775,
+            "num_attempts_with_empty_list": 0
+        },
+        "0934a4d8": {
+            "score": 0.0,
+            "cost": 0.0595857,
+            "attempts": 2,
+            "output_tokens": 135,
+            "duration": 576.000995,
+            "num_attempts_with_empty_list": 0
+        },
+        "80a900e0": {
+            "score": 0.0,
+            "cost": 0.06200889999999999,
+            "attempts": 2,
+            "output_tokens": 2649,
+            "duration": 631.941883,
+            "num_attempts_with_empty_list": 0
+        },
+        "4a21e3da": {
+            "score": 0.0,
+            "cost": 0.0615646,
+            "attempts": 2,
+            "output_tokens": 2400,
+            "duration": 712.978118,
+            "num_attempts_with_empty_list": 0
+        },
+        "f931b4a8": {
+            "score": 0.0,
+            "cost": 0.0879923,
+            "attempts": 4,
+            "output_tokens": 336,
+            "duration": 934.918881,
+            "num_attempts_with_empty_list": 0
+        },
+        "142ca369": {
+            "score": 0.0,
+            "cost": 0.0963184,
+            "attempts": 4,
+            "output_tokens": 3090,
+            "duration": 958.413541,
+            "num_attempts_with_empty_list": 0
+        },
+        "7ed72f31": {
+            "score": 0.0,
+            "cost": 0.0571045,
+            "attempts": 4,
+            "output_tokens": 6684,
+            "duration": 617.775791,
+            "num_attempts_with_empty_list": 0
+        },
+        "aa4ec2a5": {
+            "score": 0.0,
+            "cost": 0.029127899999999998,
+            "attempts": 2,
+            "output_tokens": 2106,
+            "duration": 250.449445,
+            "num_attempts_with_empty_list": 0
+        },
+        "21897d95": {
+            "score": 0.0,
+            "cost": 0.07964429999999999,
+            "attempts": 4,
+            "output_tokens": 6999,
+            "duration": 707.997069,
+            "num_attempts_with_empty_list": 0
+        },
+        "2d0172a1": {
+            "score": 0.0,
+            "cost": 0.0664326,
+            "attempts": 4,
+            "output_tokens": 681,
+            "duration": 614.145365,
+            "num_attempts_with_empty_list": 0
+        },
+        "7b3084d4": {
+            "score": 0.0,
+            "cost": 0.04160609999999999,
+            "attempts": 2,
+            "output_tokens": 588,
+            "duration": 439.356827,
+            "num_attempts_with_empty_list": 0
+        },
+        "b10624e5": {
+            "score": 0.0,
+            "cost": 0.06600349999999999,
+            "attempts": 2,
+            "output_tokens": 4299,
+            "duration": 695.323751,
+            "num_attempts_with_empty_list": 0
+        },
+        "58490d8a": {
+            "score": 1.0,
+            "cost": 0.0273582,
+            "attempts": 2,
+            "output_tokens": 594,
+            "duration": 286.245327,
+            "num_attempts_with_empty_list": 0
+        },
+        "269e22fb": {
+            "score": 0.0,
+            "cost": 0.0578424,
+            "attempts": 4,
+            "output_tokens": 4435,
+            "duration": 510.31333599999994,
+            "num_attempts_with_empty_list": 0
+        },
+        "1818057f": {
+            "score": 0.0,
+            "cost": 0.0353097,
+            "attempts": 2,
+            "output_tokens": 2970,
+            "duration": 377.34603500000003,
+            "num_attempts_with_empty_list": 0
+        },
+        "b6f77b65": {
+            "score": 0.0,
+            "cost": 0.1534814,
+            "attempts": 4,
+            "output_tokens": 1728,
+            "duration": 1577.4667560000003,
+            "num_attempts_with_empty_list": 0
+        },
+        "16b78196": {
+            "score": 0.0,
+            "cost": 0.02926,
+            "attempts": 2,
+            "output_tokens": 2520,
+            "duration": 289.15186,
+            "num_attempts_with_empty_list": 0
+        },
+        "136b0064": {
+            "score": 1.0,
+            "cost": 0.087637,
+            "attempts": 2,
+            "output_tokens": 798,
+            "duration": 940.941073,
+            "num_attempts_with_empty_list": 0
+        },
+        "65b59efc": {
+            "score": 0.5,
+            "cost": 0.09444720000000001,
+            "attempts": 4,
+            "output_tokens": 4095,
+            "duration": 1029.687101,
+            "num_attempts_with_empty_list": 0
+        },
+        "8e5c0c38": {
+            "score": 0.5,
+            "cost": 0.103296,
+            "attempts": 4,
+            "output_tokens": 5811,
+            "duration": 943.705797,
+            "num_attempts_with_empty_list": 0
+        },
+        "981571dc": {
+            "score": 0.0,
+            "cost": 0.0754241,
+            "attempts": 2,
+            "output_tokens": 5316,
+            "duration": 698.071444,
+            "num_attempts_with_empty_list": 0
+        },
+        "4c7dc4dd": {
+            "score": 0.0,
+            "cost": 0.07298539999999999,
+            "attempts": 4,
+            "output_tokens": 278,
+            "duration": 681.9461020000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "8f3a5a89": {
+            "score": 0.0,
+            "cost": 0.058186999999999996,
+            "attempts": 2,
+            "output_tokens": 852,
+            "duration": 619.507851,
+            "num_attempts_with_empty_list": 0
+        },
+        "36a08778": {
+            "score": 0.0,
+            "cost": 0.07664389999999999,
+            "attempts": 4,
+            "output_tokens": 7026,
+            "duration": 756.363197,
+            "num_attempts_with_empty_list": 0
+        },
+        "b0039139": {
+            "score": 0.0,
+            "cost": 0.1345199,
+            "attempts": 4,
+            "output_tokens": 588,
+            "duration": 1621.285012,
+            "num_attempts_with_empty_list": 0
+        },
+        "cbebaa4b": {
+            "score": 0.0,
+            "cost": 0.033856199999999996,
+            "attempts": 2,
+            "output_tokens": 2028,
+            "duration": 348.241669,
+            "num_attempts_with_empty_list": 0
+        },
+        "247ef758": {
+            "score": 0.0,
+            "cost": 0.13828409999999997,
+            "attempts": 4,
+            "output_tokens": 3096,
+            "duration": 1614.2742250000001,
+            "num_attempts_with_empty_list": 0
+        },
+        "a395ee82": {
+            "score": 0.0,
+            "cost": 0.034176399999999996,
+            "attempts": 2,
+            "output_tokens": 2907,
+            "duration": 379.99327,
+            "num_attempts_with_empty_list": 0
+        },
+        "c7f57c3e": {
+            "score": 0.0,
+            "cost": 0.05687,
+            "attempts": 2,
+            "output_tokens": 4620,
+            "duration": 615.751854,
+            "num_attempts_with_empty_list": 0
+        },
+        "13e47133": {
+            "score": 0.0,
+            "cost": 0.0385294,
+            "attempts": 2,
+            "output_tokens": 2700,
+            "duration": 387.975835,
+            "num_attempts_with_empty_list": 0
+        },
+        "8f215267": {
+            "score": 0.0,
+            "cost": 0.0513517,
+            "attempts": 2,
+            "output_tokens": 3456,
+            "duration": 526.556455,
+            "num_attempts_with_empty_list": 0
+        },
+        "7b5033c1": {
+            "score": 0.0,
+            "cost": 0.005217299999999999,
+            "attempts": 2,
+            "output_tokens": 150,
+            "duration": 39.585841,
+            "num_attempts_with_empty_list": 0
+        },
+        "e376de54": {
+            "score": 0.0,
+            "cost": 0.0393217,
+            "attempts": 2,
+            "output_tokens": 1536,
+            "duration": 427.88570300000003,
+            "num_attempts_with_empty_list": 0
+        },
+        "a32d8b75": {
+            "score": 0.0,
+            "cost": 0.0715357,
+            "attempts": 4,
+            "output_tokens": 5525,
+            "duration": 637.571179,
+            "num_attempts_with_empty_list": 0
+        },
+        "bf45cf4b": {
+            "score": 1.0,
+            "cost": 0.027862599999999998,
+            "attempts": 2,
+            "output_tokens": 3126,
+            "duration": 281.352777,
+            "num_attempts_with_empty_list": 0
+        },
+        "5961cc34": {
+            "score": 0.0,
+            "cost": 0.048371700000000004,
+            "attempts": 2,
+            "output_tokens": 4458,
+            "duration": 417.524741,
+            "num_attempts_with_empty_list": 0
+        },
+        "d8e07eb2": {
+            "score": 0.0,
+            "cost": 0.11304729999999999,
+            "attempts": 4,
+            "output_tokens": 8055,
+            "duration": 947.4126789999999,
+            "num_attempts_with_empty_list": 0
+        },
+        "d35bdbdc": {
+            "score": 0.0,
+            "cost": 0.0925764,
+            "attempts": 6,
+            "output_tokens": 1800,
+            "duration": 986.411382,
+            "num_attempts_with_empty_list": 0
+        },
+        "9bbf930d": {
+            "score": 0.0,
+            "cost": 0.0513044,
+            "attempts": 2,
+            "output_tokens": 2895,
+            "duration": 496.656922,
+            "num_attempts_with_empty_list": 0
+        }
+    },
+    "num_attempts_with_empty_list": 0
+}
