@@ -1,3 +1,45 @@
+## [4.0.13] - 2025-10-10
+
+### Added
+- **Dedicated Model Comparison Page**
+  - **Problem Solved**: Previous ModelComparisonDialog used cramped modal with 90vh overflow that was unreadable for 120+ puzzle datasets
+  - **Solution**: Created dedicated `/model-comparison` page with proper layout for large datasets
+  - **Key Features**:
+    - **Complete Dataset Visibility**: Shows ALL puzzles in the dataset at once (120+ puzzles) - no pagination limits
+    - **Advanced Filtering**: Filter by result type (all correct, all incorrect, disagreements, not attempted)
+    - **Clear Visual Distinction**: ✅ (correct), ❌ (incorrect), ⏳ (not attempted) with proper tooltips
+    - **CSV Export**: Download comparison results for external analysis
+    - **Summary Statistics**: Quick overview cards at top showing agreement patterns
+    - **Responsive Design**: Sticky headers, proper spacing, hover states
+  - **Route Integration**: Added `/model-comparison` route in App.tsx
+  - **Navigation**: AnalyticsOverview now navigates to page instead of opening cramped dialog
+  - **Data Flow**: Uses existing `/api/metrics/compare` endpoint, passes data via wouter location state
+
+### Fixed
+- **Model Comparison Logic Bug**
+  - **Issue**: Both incorrect and not_attempted puzzles displayed hourglass emoji (⏳)
+  - **Fix**: Now correctly shows ❌ (red X) for incorrect, ⏳ (gray clock) for not attempted
+  - **Impact**: Users can now properly distinguish between actual wrong answers vs unattempted puzzles
+
+### Changed
+- **Model Comparison Page: Removed Pagination**
+  - **Problem**: Pagination was incorrectly limiting visibility to only 30 puzzles per page, defeating the purpose of model comparison
+  - **Solution**: Removed pagination completely - now displays ALL puzzles in the dataset at once (120+ puzzles)
+  - **Key Changes**:
+    - Removed `ITEMS_PER_PAGE` constant and `currentPage` state
+    - Removed pagination UI components (top and bottom navigation)
+    - Updated display text: "Showing all {filteredDetails.length} puzzles"
+    - All puzzles now visible simultaneously for complete model comparison analysis
+  - **Impact**: Users can now see the complete comparison matrix across entire datasets without artificial limitations
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/pages/ModelComparisonPage.tsx` - Removed all pagination logic and UI (now shows all puzzles at once)
+- **Performance**: Displays all puzzles at once - no artificial limits on dataset size
+- **User Experience**: Complete visibility into model performance patterns across full datasets
+
+---
+
 ## [4.0.11] - 2025-10-10
 
 ### Added
