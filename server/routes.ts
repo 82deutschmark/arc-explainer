@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
   
-  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - GÜán+Å MISLEADING ENDPOINTS!
+  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - Gï¿½ï¿½n+ï¿½ MISLEADING ENDPOINTS!
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
   // WARNING: Despite name, returns mixed data. accuracyByModel contains trustworthiness-filtered results!
   // Models without trustworthiness scores are excluded from "accuracy" rankings.
@@ -117,6 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/model-dataset/performance/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelPerformance));
   app.get("/api/model-dataset/models", asyncHandler(modelDatasetController.getAvailableModels));
   app.get("/api/model-dataset/datasets", asyncHandler(modelDatasetController.getAvailableDatasets));
+  app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelDatasetMetrics));
 
 
   // Prompt preview route - shows exact prompt that will be sent to specific provider
