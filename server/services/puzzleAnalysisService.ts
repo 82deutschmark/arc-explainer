@@ -28,6 +28,7 @@ import { validateSolverResponse, validateSolverResponseMulti } from './responseV
 import { logger } from '../utils/logger';
 import { isSolverMode } from './prompts/systemPrompts';
 import type { PromptOptions } from './promptBuilder';
+import type { ServiceOptions, StreamingHarness } from './base/BaseAIService';
 import type { ARCExample, DetailedFeedback } from '../../shared/types';
 import type { ExplanationData } from '../repositories/interfaces/IExplanationRepository.ts';
 
@@ -40,12 +41,14 @@ export interface AnalysisOptions {
   omitAnswer?: boolean;
   topP?: number;
   candidateCount?: number;
+  thinkingBudget?: number;
   reasoningEffort?: string;
   reasoningVerbosity?: string;
   reasoningSummaryType?: string;
   systemPromptMode?: string;
   retryMode?: boolean;
   originalExplanation?: ExplanationData; // For debate mode
+  originalExplanationId?: number;
   customChallenge?: string; // For debate mode
   previousResponseId?: string; // For conversation chaining
 }
@@ -73,12 +76,14 @@ export class PuzzleAnalysisService {
       omitAnswer = true,
       topP,
       candidateCount,
+      thinkingBudget,
       reasoningEffort,
       reasoningVerbosity,
       reasoningSummaryType,
       systemPromptMode = 'ARC',
       retryMode = false,
       originalExplanation,
+      originalExplanationId,
       customChallenge,
       previousResponseId
     } = options;
@@ -88,6 +93,10 @@ export class PuzzleAnalysisService {
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
+    let resolvedOriginalExplanation = originalExplanation;
+    if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+    }
     
     // Get retry context if needed
     const retryContext = retryMode ? await this.getRetryContext(taskId) : null;
@@ -98,13 +107,14 @@ export class PuzzleAnalysisService {
     if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
     if (topP) promptOptions.topP = topP;
     if (candidateCount) promptOptions.candidateCount = candidateCount;
+    if (typeof thinkingBudget === 'number') promptOptions.thinkingBudget = thinkingBudget;
     if (retryContext) {
       promptOptions.retryMode = retryMode;
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
             if (retryContext.badFeedback && retryContext.badFeedback.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
     // Add debate mode context
-    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
     if (customChallenge) promptOptions.customChallenge = customChallenge;
     
     // Build service options
@@ -140,9 +150,9 @@ export class PuzzleAnalysisService {
     }
 
     // Add rebuttal tracking if this is a debate response
-    if (originalExplanation && originalExplanation.id) {
-      result.rebuttingExplanationId = originalExplanation.id;
-      logger.debug(`Marking as rebuttal to explanation ${originalExplanation.id}`, 'puzzle-analysis-service');
+    if (resolvedOriginalExplanation && resolvedOriginalExplanation.id) {
+      result.rebuttingExplanationId = resolvedOriginalExplanation.id;
+      logger.debug(`Marking as rebuttal to explanation ${resolvedOriginalExplanation.id}`, 'puzzle-analysis-service');
     }
 
     // Note: Database saving is handled by the calling service (explanationService)
@@ -153,6 +163,86 @@ export class PuzzleAnalysisService {
     await this.saveRawLog(taskId, model, result);
 
     return result;
+  }
+
+  /**
+   * Analyze a puzzle using streaming responses, mirroring analyzePuzzle logic.
+   */
+  async analyzePuzzleStreaming(
+    taskId: string,
+    model: string,
+    options: AnalysisOptions = {},
+    stream: StreamingHarness,
+    overrides: Partial<ServiceOptions> = {}
+  ): Promise<void> {
+    const {
+      temperature = 0.2,
+      captureReasoning = true,
+      promptId = 'solver',
+      customPrompt,
+      emojiSetKey,
+      omitAnswer = true,
+      topP,
+      candidateCount,
+      thinkingBudget,
+      reasoningEffort,
+      reasoningVerbosity,
+      reasoningSummaryType,
+      systemPromptMode = 'ARC',
+      retryMode = false,
+      originalExplanation,
+      originalExplanationId,
+      customChallenge,
+      previousResponseId,
+    } = options;
+
+    const puzzle = await puzzleService.getPuzzleById(taskId);
+    const aiService = aiServiceFactory.getService(model);
+
+    let resolvedOriginalExplanation = originalExplanation;
+    if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+    }
+
+    const retryContext = retryMode ? await this.getRetryContext(taskId) : null;
+
+    const promptOptions: PromptOptions = {};
+    if (emojiSetKey) promptOptions.emojiSetKey = emojiSetKey;
+    if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
+    if (topP) promptOptions.topP = topP;
+    if (candidateCount) promptOptions.candidateCount = candidateCount;
+    if (typeof thinkingBudget === 'number') promptOptions.thinkingBudget = thinkingBudget;
+    if (retryContext) {
+      promptOptions.retryMode = retryMode;
+      if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
+      if (retryContext.badFeedback && retryContext.badFeedback.length > 0) {
+        promptOptions.badFeedback = retryContext.badFeedback as any[];
+      }
+    }
+    if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
+
+    const serviceOpts: ServiceOptions = {
+      ...overrides,
+      captureReasoning,
+      stream,
+    };
+    if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
+    if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
+    if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+    if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
+    if (previousResponseId) serviceOpts.previousResponseId = previousResponseId;
+
+    await aiService.analyzePuzzleWithStreaming(
+      puzzle,
+      model,
+      taskId,
+      temperature,
+      promptId,
+      customPrompt,
+      promptOptions,
+      serviceOpts
+    );
   }
 
   /**
