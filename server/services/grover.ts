@@ -44,6 +44,7 @@ export class GroverService extends BaseAIService {
     // Validate model key FIRST (before log wrapper exists)
     if (!this.models[modelKey]) {
       const error = `Invalid Grover model key: ${modelKey}. Available: ${Object.keys(this.models).join(', ')}`;
+      // NOTE: Can't use log() wrapper here - it doesn't exist yet
       logger.service(this.provider, `❌ ${error}`, 'error');
       throw new Error(error);
     }
@@ -166,7 +167,7 @@ export class GroverService extends BaseAIService {
       });
 
       // 2. Extract programs from LLM response
-      const programs = this.extractPrograms(llmResponse);
+      const programs = this.extractPrograms(llmResponse, log);
 
       if (programs.length === 0) {
         const warning = `⚠️ Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
@@ -427,7 +428,7 @@ def transform(grid):
 \`\`\``;
   }
 
-  private extractPrograms(response: AIResponse): string[] {
+  private extractPrograms(response: AIResponse, log: (msg: string, level?: LogLevel) => void): string[] {
     const programs: string[] = [];
     
     // CRITICAL: When JSON parsing fails, OpenAI stores raw text in _rawResponse
@@ -442,11 +443,11 @@ def transform(grid):
     ].filter(Boolean).join('\n\n');
     
     if (!textSources) {
-      logger.service(this.provider, '⚠️ No text content in LLM response for program extraction', 'warn');
+      log('⚠️ No text content in LLM response for program extraction', 'warn');
       return programs;
     }
     
-    logger.service(this.provider, `📖 Parsing ${textSources.length} characters of response text...`);
+    log(`📖 Parsing ${textSources.length} characters of response text...`);
     
     // Extract all Python code blocks (with or without language tag)
     // Handle both ```python and ``` formats
@@ -462,21 +463,21 @@ def transform(grid):
         const code = match[1].trim();
         if (code.includes('def transform') && !programs.includes(code)) {
           programs.push(code);
-          logger.service(this.provider, `✅ Found program #${programs.length} (${code.length} chars, ${code.split('\n').length} lines)`);
+          log(`✅ Found program #${programs.length} (${code.length} chars, ${code.split('\n').length} lines)`);
         }
       }
     }
     
-    logger.service(this.provider, `📊 Extraction complete: ${programs.length} program(s) found`);
+    log(`📊 Extraction complete: ${programs.length} program(s) found`);
     
     if (programs.length === 0) {
-      logger.service(this.provider, '⚠️ No Python code blocks with "def transform" found in response', 'warn');
-      logger.service(this.provider, `📄 Response preview (first 500 chars):\n${textSources.substring(0, 500)}`, 'warn');
+      log('⚠️ No Python code blocks with "def transform" found in response', 'warn');
+      log(`📄 Response preview (first 500 chars):\n${textSources.substring(0, 500)}`, 'warn');
       
       // Check if code exists but lacks transform function
       const hasCodeBlocks = /```[\s\S]*?```/.test(textSources);
       if (hasCodeBlocks) {
-        logger.service(this.provider, '⚠️ Code blocks found but missing "def transform(grid)" function', 'warn');
+        log('⚠️ Code blocks found but missing "def transform(grid)" function', 'warn');
       }
     }
     
@@ -572,6 +573,8 @@ Generate new programs that build on successful patterns and avoid failures.`;
     if (bestProgram && testExamples.length > 0) {
       try {
         const testInputs = testExamples.map(ex => ex.input);
+        // NOTE: buildGroverResponse is called outside the main loop where log() exists
+        // These logs won't be broadcast to WebSocket, only to terminal
         logger.service(this.provider, `Executing best program on ${testInputs.length} test input(s)...`);
         
         const executionResult = await pythonBridge.runGroverTestExecution(bestProgram, testInputs);
