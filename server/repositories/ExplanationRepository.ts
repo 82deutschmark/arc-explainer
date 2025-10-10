@@ -209,6 +209,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
         multi_test_prediction_grids AS "multiTestPredictionGrids",
+        grover_iterations AS "groverIterations",
+        grover_best_program AS "groverBestProgram",
+        iteration_count AS "iterationCount",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -250,6 +253,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         multi_test_all_correct AS "multiTestAllCorrect",
         multi_test_average_accuracy AS "multiTestAverageAccuracy",
         multi_test_prediction_grids AS "multiTestPredictionGrids",
+        grover_iterations AS "groverIterations",
+        grover_best_program AS "groverBestProgram",
+        iteration_count AS "iterationCount",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -564,6 +570,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       predictedOutputGrid: this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
       multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
+      
+      // Parse Grover-specific JSONB field
+      groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),
       
       // Ensure boolean fields are properly typed
       hasReasoningLog: !!row.hasReasoningLog,
