@@ -1,4 +1,4 @@
-/**
+/**NEEDS AUDIT!!  This is my idiot implementation of a complex statistic...  please double check.
  * Trustworthiness Repository Implementation
  *
  * Handles AI CONFIDENCE RELIABILITY analysis operations only.
