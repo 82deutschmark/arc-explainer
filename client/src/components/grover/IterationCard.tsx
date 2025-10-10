@@ -79,6 +79,10 @@ export function IterationCard({
 }: IterationCardProps) {
   // ALWAYS start expanded so user can see the actual code generated
   const [isExpanded, setIsExpanded] = React.useState(true);
+  // Track which programs are expanded (by index)
+  const [expandedPrograms, setExpandedPrograms] = React.useState<Set<number>>(new Set());
+  // Track prompt preview expanded state
+  const [isPromptOpen, setIsPromptOpen] = React.useState(false);
 
   // Status indicator
   const getStatusIcon = () => {
@@ -173,30 +177,27 @@ export function IterationCard({
                   <span>📤</span> Prompt & Response
                 </h4>
                 <div className="space-y-2">
-                  {promptPreview && (() => {
-                    const [isPromptOpen, setIsPromptOpen] = React.useState(false);
-                    return (
-                      <Collapsible open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-                        <CollapsibleTrigger asChild>
-                          <button className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 hover:border-blue-400 rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer">
-                            <div className={`flex items-center justify-center w-5 h-5 rounded ${
-                              isPromptOpen ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-700'
-                            } transition-all`}>
-                              {isPromptOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                            </div>
-                            <span className="text-xs font-bold text-blue-900">
-                              View Prompt Preview ({promptPreview.length.toLocaleString()} chars)
-                            </span>
-                          </button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <pre className="mt-2 p-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-xs overflow-x-auto max-h-60 leading-relaxed">
-                            {promptPreview}
-                          </pre>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    );
-                  })()}
+                  {promptPreview && (
+                    <Collapsible open={isPromptOpen} onOpenChange={setIsPromptOpen}>
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 hover:border-blue-400 rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer">
+                          <div className={`flex items-center justify-center w-5 h-5 rounded ${
+                            isPromptOpen ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-700'
+                          } transition-all`}>
+                            {isPromptOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                          </div>
+                          <span className="text-xs font-bold text-blue-900">
+                            View Prompt Preview ({promptPreview.length.toLocaleString()} chars)
+                          </span>
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <pre className="mt-2 p-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-xs overflow-x-auto max-h-60 leading-relaxed">
+                          {promptPreview}
+                        </pre>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
                   {conversationChain && (
                     <div className="text-xs bg-blue-50 p-2 rounded">
                       <span className="text-gray-600">🔗 Conversation Chain:</span>
@@ -234,10 +235,21 @@ export function IterationCard({
                 {data.programs.map((program, idx) => {
                   const result = data.executionResults.find(r => r.programIdx === idx);
                   const isBest = idx === data.best.programIdx;
-                  const [isOpen, setIsOpen] = React.useState(false);
+                  const isOpen = expandedPrograms.has(idx);
+                  const toggleOpen = () => {
+                    setExpandedPrograms(prev => {
+                      const next = new Set(prev);
+                      if (next.has(idx)) {
+                        next.delete(idx);
+                      } else {
+                        next.add(idx);
+                      }
+                      return next;
+                    });
+                  };
                   
                   return (
-                    <Collapsible key={idx} open={isOpen} onOpenChange={setIsOpen}>
+                    <Collapsible key={idx} open={isOpen} onOpenChange={toggleOpen}>
                       <CollapsibleTrigger asChild>
                         <button className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all shadow-sm hover:shadow-md cursor-pointer ${
                           isBest 
