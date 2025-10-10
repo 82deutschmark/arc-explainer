@@ -15,7 +15,11 @@ import { saturnVisualService } from '../services/saturnVisualService';
 import { puzzleLoader } from '../services/puzzleLoader';
 import { explanationService } from '../services/explanationService';
 import { getSessionSnapshot, broadcast } from '../services/wsService';
+import { saturnStreamService } from '../services/streaming/saturnStreamService';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager';
+import { logger } from '../utils/logger';
 import { randomUUID } from 'crypto';
+import type { ServiceOptions } from '../services/base/BaseAIService';
 
 export const saturnController = {
   async analyze(req: Request, res: Response) {
@@ -171,6 +175,66 @@ export const saturnController = {
     });
 
     return res.json(formatResponse.success({ sessionId, modelKey }));
+  },
+
+  async streamAnalyze(req: Request, res: Response) {
+    const { taskId, modelKey } = req.params as { taskId: string; modelKey: string };
+    if (!taskId || !modelKey) {
+      res.status(400).json(formatResponse.error('bad_request', 'Missing taskId or modelKey'));
+      return;
+    }
+
+    const sessionId = randomUUID();
+    sseStreamManager.register(sessionId, res);
+    sseStreamManager.sendEvent(sessionId, 'stream.init', {
+      sessionId,
+      taskId,
+      modelKey,
+      createdAt: new Date().toISOString(),
+    });
+
+    const abortController = new AbortController();
+    res.on('close', () => abortController.abort());
+
+    const parsedTemperature = typeof req.query.temperature === 'string' ? Number(req.query.temperature) : undefined;
+    const temperature = Number.isFinite(parsedTemperature) ? (parsedTemperature as number) : 0.2;
+    const promptId =
+      typeof req.query.promptId === 'string' && req.query.promptId.trim().length > 0
+        ? req.query.promptId.trim()
+        : 'solver';
+    const reasoningEffort =
+      typeof req.query.reasoningEffort === 'string'
+        ? (req.query.reasoningEffort as ServiceOptions['reasoningEffort'])
+        : undefined;
+    const reasoningVerbosity =
+      typeof req.query.reasoningVerbosity === 'string'
+        ? (req.query.reasoningVerbosity as ServiceOptions['reasoningVerbosity'])
+        : undefined;
+    const reasoningSummaryType =
+      typeof req.query.reasoningSummaryType === 'string'
+        ? (req.query.reasoningSummaryType as ServiceOptions['reasoningSummaryType'])
+        : undefined;
+    const previousResponseId =
+      typeof req.query.previousResponseId === 'string' ? req.query.previousResponseId : undefined;
+
+    try {
+      await saturnStreamService.startStreaming({
+        sessionId,
+        taskId,
+        modelKey,
+        temperature,
+        promptId,
+        reasoningEffort,
+        reasoningVerbosity,
+        reasoningSummaryType,
+        previousResponseId,
+        abortSignal: abortController.signal,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[SaturnStream] Controller failure: ${message}`, error);
+      sseStreamManager.error(sessionId, 'SATURN_STREAM_ERROR', message);
+    }
   },
 
   async analyzeWithReasoning(req: Request, res: Response) {

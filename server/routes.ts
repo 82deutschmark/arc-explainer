@@ -166,6 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));
+  app.get("/api/stream/saturn/:taskId/:modelKey", asyncHandler(saturnController.streamAnalyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
 
