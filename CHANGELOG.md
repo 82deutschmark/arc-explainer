@@ -1,9 +1,9 @@
 ## [4.0.0] - 2025-10-10
 
 ### Highlights
+- Grover solver integration: iterative program search, UI display, WebSocket streaming, and snapshot hydration.
 - ConceptARC dataset support across loaders, APIs, and UI filters.
 - HuggingFace ingestion of GPT-5-PRO results with correctness-only scoring when confidence is absent.
-- Grover solver integration: iterative program search, UI display, WebSocket streaming, and snapshot hydration.
 
 ### Added
 - ConceptARC added to dataset enums, loaders, validation, and frontend selectors.
@@ -14,11 +14,6 @@
 ### Changed
 - Analytics: separated pure accuracy from trustworthiness; external datasets (e.g., HF GPT-5-PRO) compute correctness without confidence.
 - Response validator functions accept nullable confidence and compute appropriate metrics.
-
-### Fixed
-- Grover WebSocket broadcasting via broadcastLogger; live logs now stream reliably.
-- Null grid row crash: three-layer defense (repo read sanitization, frontend guard, util sanitizer).
-- React Rules of Hooks violations in Grover UI components.
 
 ### Breaking Changes
 - Metric semantics clarified: trustworthiness vs. accuracy; downstream consumers relying on overloaded fields should re-check mappings.

@@ -1,5 +1,7 @@
 # ARC-AGI Explainer Platform
 
+**Version 4.0.0** — October 10, 2025
+
 **Version 3.7.7** • October 8, 2025
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -10,9 +12,9 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ## What's New in v4.0.0
 
+- Grover solver integration with UI display, WebSocket streaming, and snapshot hydration.
 - ConceptARC dataset support across loaders, APIs, and UI filters.
 - HuggingFace ingestion of GPT-5-PRO results with correctness-only scoring when confidence is absent.
-- Grover solver integration with UI display, WebSocket streaming, and snapshot hydration.
 
 ## What's New in v3.7.7 🎉
 
