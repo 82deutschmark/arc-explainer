@@ -27,9 +27,10 @@
  * - Matches logic from responseValidator.ts exactly
  */
 
-import { repositoryService } from '../server/repositories/RepositoryService.ts';
-import { normalizeConfidence } from '../server/utils/CommonUtilities.ts';
-import { logger } from '../server/utils/logger.ts';
+import 'dotenv/config';
+import { Pool } from 'pg';
+import { normalizeConfidence } from '../server/utils/CommonUtilities.js';
+import { logger } from '../server/utils/logger.js';
 
 interface DatabaseRow {
   id: number;
@@ -158,31 +159,42 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
     errors: []
   };
 
-  try {
-    // Initialize repository service
-    console.log('Step 0: Initializing database connection...');
-    const connected = await repositoryService.initialize();
-    if (!connected) {
-      throw new Error('Failed to connect to database');
-    }
-    console.log('Database connection established');
-    console.log('');
+  const databaseUrl = process.env.DATABASE_URL;
+  console.log(`🔌 Checking database connection...`);
+  if (!databaseUrl) {
+    console.log('⚠️  No DATABASE_URL found - this script requires database access');
+    console.log('   Make sure .env file exists with DATABASE_URL set');
+    throw new Error('DATABASE_URL not set');
+  }
+  console.log('✅ DATABASE_URL found');
 
+  const pool = new Pool({ connectionString: databaseUrl });
+  console.log('📊 Connecting to database...');
+  
+  // Test connection
+  try {
+    await pool.query('SELECT 1');
+    console.log('✅ Database connection successful!\n');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    throw error;
+  }
+
+  try {
     // Step 1: Get total count
     console.log('Step 1: Counting total entries...');
-    const countResult = await repositoryService.db!.query('SELECT COUNT(*) as count FROM explanations');
+    const countResult = await pool.query('SELECT COUNT(*) as count FROM explanations');
     stats.totalEntries = parseInt(countResult.rows[0].count);
     console.log(`Total entries to process: ${stats.totalEntries.toLocaleString()}`);
     console.log('');
 
-    // Step 2: Process in batches
     console.log('Step 2: Processing entries in batches...');
     let offset = 0;
     let trustworthinessSum = 0;
 
     while (offset < stats.totalEntries) {
-      const batchResult = await repositoryService.db!.query<DatabaseRow>(`
-        SELECT 
+      const batchResult = await pool.query(`
+        SELECT
           id,
           puzzle_id,
           model_name,
@@ -235,7 +247,7 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
 
             // Update database (if not dry run)
             if (!dryRun) {
-              await repositoryService.db!.query(
+              await pool.query(
                 'UPDATE explanations SET trustworthiness_score = $1 WHERE id = $2',
                 [newTrustworthiness, row.id]
               );
@@ -314,6 +326,8 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
   } catch (error) {
     console.error('FATAL ERROR:', error);
     throw error;
+  } finally {
+    await pool.end();
   }
 }
 
@@ -322,63 +336,101 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
  */
 async function verifyDatabaseState(): Promise<void> {
   console.log('Verifying database state...');
-  
-  const result = await repositoryService.db!.query(`
-    SELECT 
-      COUNT(*) as total_entries,
-      COUNT(trustworthiness_score) as entries_with_trustworthiness,
-      AVG(trustworthiness_score) as avg_trustworthiness,
-      MIN(trustworthiness_score) as min_trustworthiness,
-      MAX(trustworthiness_score) as max_trustworthiness,
-      COUNT(*) FILTER (WHERE trustworthiness_score IS NULL) as null_count,
-      COUNT(*) FILTER (WHERE trustworthiness_score = 1.0 AND confidence = 0) as corrupted_count
-    FROM explanations
-  `);
 
-  const row = result.rows[0];
-  console.log('Database Statistics:');
-  console.log(`  Total entries:                  ${parseInt(row.total_entries).toLocaleString()}`);
-  console.log(`  Entries with trustworthiness:   ${parseInt(row.entries_with_trustworthiness).toLocaleString()}`);
-  console.log(`  Null trustworthiness:           ${parseInt(row.null_count).toLocaleString()}`);
-  console.log(`  Corrupted entries (1.0 + 0):    ${parseInt(row.corrupted_count).toLocaleString()}`);
-  console.log(`  Average trustworthiness:        ${parseFloat(row.avg_trustworthiness).toFixed(4)}`);
-  console.log(`  Min trustworthiness:            ${parseFloat(row.min_trustworthiness).toFixed(4)}`);
-  console.log(`  Max trustworthiness:            ${parseFloat(row.max_trustworthiness).toFixed(4)}`);
-  console.log('');
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL not set');
+  }
+
+  const pool = new Pool({ connectionString: databaseUrl });
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) as total_entries,
+        COUNT(trustworthiness_score) as entries_with_trustworthiness,
+        AVG(trustworthiness_score) as avg_trustworthiness,
+        MIN(trustworthiness_score) as min_trustworthiness,
+        MAX(trustworthiness_score) as max_trustworthiness,
+        COUNT(*) FILTER (WHERE trustworthiness_score IS NULL) as null_count,
+        COUNT(*) FILTER (WHERE trustworthiness_score = 1.0 AND confidence = 0) as corrupted_count
+      FROM explanations
+    `);
+
+    const row = result.rows[0];
+    console.log('Database Statistics:');
+    console.log(`  Total entries:                  ${parseInt(row.total_entries).toLocaleString()}`);
+    console.log(`  Entries with trustworthiness:   ${parseInt(row.entries_with_trustworthiness).toLocaleString()}`);
+    console.log(`  Null trustworthiness:           ${parseInt(row.null_count).toLocaleString()}`);
+    console.log(`  Corrupted entries (1.0 + 0):    ${parseInt(row.corrupted_count).toLocaleString()}`);
+    console.log(`  Average trustworthiness:        ${parseFloat(row.avg_trustworthiness).toFixed(4)}`);
+    console.log(`  Min trustworthiness:            ${parseFloat(row.min_trustworthiness).toFixed(4)}`);
+    console.log(`  Max trustworthiness:            ${parseFloat(row.max_trustworthiness).toFixed(4)}`);
+    console.log('');
+  } finally {
+    await pool.end();
+  }
 }
 
 // Main execution
 async function main() {
+  console.log('\n' + '='.repeat(80));
+  console.log('🔧 TRUSTWORTHINESS RECALCULATION SCRIPT STARTING');
+  console.log('='.repeat(80) + '\n');
+  
   const args = process.argv.slice(2);
   const dryRun = !args.includes('--live');
   const verifyOnly = args.includes('--verify');
 
+  console.log('📋 Script Arguments:');
+  console.log(`   - Args: ${args.join(', ') || '(none)'}`);
+  console.log(`   - Mode: ${dryRun ? '🔍 DRY RUN (no changes will be made)' : '⚡ LIVE MODE (will update database)'}`);
+  console.log(`   - Verify Only: ${verifyOnly ? 'YES' : 'NO'}`);
+  console.log('');
+
   if (verifyOnly) {
+    console.log('🔍 Running in VERIFY-ONLY mode...\n');
     await verifyDatabaseState();
-    process.exit(0);
+    console.log('\n✅ Verification complete!\n');
+    return;
   }
 
   // Show database state before migration
-  console.log('BEFORE MIGRATION:');
+  console.log('📊 BEFORE MIGRATION:');
+  console.log('='.repeat(80));
   await verifyDatabaseState();
 
   // Run migration
+  console.log('\n' + '='.repeat(80));
+  console.log('🚀 STARTING MIGRATION...');
+  console.log('='.repeat(80) + '\n');
   await runMigration(dryRun);
 
   // Show database state after migration
   if (!dryRun) {
-    console.log('');
-    console.log('AFTER MIGRATION:');
+    console.log('\n' + '='.repeat(80));
+    console.log('📊 AFTER MIGRATION:');
+    console.log('='.repeat(80));
     await verifyDatabaseState();
+    console.log('\n' + '='.repeat(80));
+    console.log('✅ MIGRATION COMPLETE!');
+    console.log('='.repeat(80) + '\n');
+  } else {
+    console.log('\n' + '='.repeat(80));
+    console.log('ℹ️  DRY RUN COMPLETE - No changes were made to the database');
+    console.log('   Run with --live flag to apply changes');
+    console.log('='.repeat(80) + '\n');
   }
-
-  process.exit(0);
 }
 
 // Run if executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(error => {
-    console.error('Migration failed:', error);
+    console.error('\n' + '='.repeat(80));
+    console.error('❌ MIGRATION FAILED!');
+    console.error('='.repeat(80));
+    console.error('Error:', error);
+    console.error('='.repeat(80) + '\n');
     process.exit(1);
   });
 }
