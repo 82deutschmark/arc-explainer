@@ -135,18 +135,30 @@ export interface PuzzleComparisonDetail {
   puzzleId: string;
   model1Result: 'correct' | 'incorrect' | 'not_attempted';
   model2Result: 'correct' | 'incorrect' | 'not_attempted';
+  model3Result?: 'correct' | 'incorrect' | 'not_attempted';
+  model4Result?: 'correct' | 'incorrect' | 'not_attempted';
 }
 
 export interface ModelComparisonSummary {
-  bothCorrect: number;
-  model1OnlyCorrect: number;
-  model2OnlyCorrect: number;
-  bothIncorrect: number;
-  neitherAttempted: number;
   totalPuzzles: number;
   model1Name: string;
   model2Name: string;
+  model3Name?: string;
+  model4Name?: string;
   dataset: string;
+  // Agreement counts
+  allCorrect: number;
+  allIncorrect: number;
+  allNotAttempted: number;
+  // Partial agreement counts
+  threeCorrect?: number;
+  twoCorrect?: number;
+  oneCorrect?: number;
+  // Model-specific counts
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  model3OnlyCorrect?: number;
+  model4OnlyCorrect?: number;
 }
 
 export interface ModelComparisonResult {
@@ -675,20 +687,25 @@ export class MetricsRepository extends BaseRepository {
     }
   }
 
-  async getModelComparison(model1: string, model2: string, dataset: string): Promise<ModelComparisonResult> {
+  async getModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
+    return this.getMultiModelComparison(models, dataset);
+  }
+  private async getMultiModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
     if (!this.isConnected()) {
       logger.warn('Database not connected - returning empty model comparison.', 'database');
       return {
         summary: {
-          bothCorrect: 0,
+          totalPuzzles: 0,
+          model1Name: models[0] || '',
+          model2Name: models[1] || '',
+          model3Name: models[2] || '',
+          model4Name: models[3] || '',
+          dataset: dataset,
+          allCorrect: 0,
+          allIncorrect: 0,
+          allNotAttempted: 0,
           model1OnlyCorrect: 0,
           model2OnlyCorrect: 0,
-          bothIncorrect: 0,
-          neitherAttempted: 0,
-          totalPuzzles: 0,
-          model1Name: model1,
-          model2Name: model2,
-          dataset: dataset,
         },
         details: [],
       };
@@ -697,13 +714,25 @@ export class MetricsRepository extends BaseRepository {
     try {
       const puzzleIds = await this.getPuzzleIdsForDataset(dataset);
       if (puzzleIds.length === 0) {
-        // No puzzles found for this dataset, return empty result
         return {
-            summary: { bothCorrect: 0, model1OnlyCorrect: 0, model2OnlyCorrect: 0, bothIncorrect: 0, neitherAttempted: 0, totalPuzzles: 0, model1Name: model1, model2Name: model2, dataset },
-            details: []
+          summary: { 
+            totalPuzzles: 0, 
+            model1Name: models[0] || '',
+            model2Name: models[1] || '',
+            model3Name: models[2] || '',
+            model4Name: models[3] || '',
+            dataset, 
+            allCorrect: 0, 
+            allIncorrect: 0, 
+            allNotAttempted: 0,
+            model1OnlyCorrect: 0,
+            model2OnlyCorrect: 0 
+          },
+          details: []
         };
       }
 
+      const placeholders = models.map((_, index) => `$${index + 2}`).join(', ');
       const query = `
         WITH latest_explanations AS (
           SELECT
@@ -712,7 +741,7 @@ export class MetricsRepository extends BaseRepository {
             (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
             ROW_NUMBER() OVER(PARTITION BY puzzle_id, model_name ORDER BY created_at DESC) as rn
           FROM explanations
-          WHERE model_name IN ($1, $2) AND puzzle_id = ANY($3::text[])
+          WHERE model_name = ANY($1::text[]) AND puzzle_id = ANY($${models.length + 2}::text[])
         ),
         model_results AS (
           SELECT 
@@ -724,50 +753,73 @@ export class MetricsRepository extends BaseRepository {
         )
         SELECT
           p.puzzle_id,
-          m1.is_correct as model1_correct,
-          m2.is_correct as model2_correct
-        FROM (SELECT unnest($3::text[]) as puzzle_id) p
-        LEFT JOIN model_results m1 ON p.puzzle_id = m1.puzzle_id AND m1.model_name = $1
-        LEFT JOIN model_results m2 ON p.puzzle_id = m2.puzzle_id AND m2.model_name = $2
+          ${models.map((model, index) => `MAX(CASE WHEN mr${index + 1}.model_name = $${index + 2} THEN mr${index + 1}.is_correct END) as model${index + 1}_correct`).join(',\n          ')}
+        FROM (SELECT unnest($${models.length + 2}::text[]) as puzzle_id) p
+        ${models.map((model, index) => `LEFT JOIN model_results mr${index + 1} ON p.puzzle_id = mr${index + 1}.puzzle_id AND mr${index + 1}.model_name = $${index + 2}`).join('\n        ')}
+        GROUP BY p.puzzle_id
         ORDER BY p.puzzle_id;
       `;
 
-      const result = await this.query(query, [model1, model2, puzzleIds]);
+      const result = await this.query(query, [models, ...models, puzzleIds]);
 
-      let bothCorrect = 0;
-      let model1OnlyCorrect = 0;
-      let model2OnlyCorrect = 0;
-      let bothIncorrect = 0;
-      let neitherAttempted = 0;
+      // Initialize counters
+      const summary = {
+        allCorrect: 0,
+        allIncorrect: 0,
+        allNotAttempted: 0,
+        threeCorrect: 0,
+        twoCorrect: 0,
+        oneCorrect: 0,
+        model1OnlyCorrect: 0,
+        model2OnlyCorrect: 0,
+        model3OnlyCorrect: 0,
+        model4OnlyCorrect: 0,
+      };
 
       const details: PuzzleComparisonDetail[] = result.rows.map(row => {
-        const model1Result = row.model1_correct === null ? 'not_attempted' : (row.model1_correct ? 'correct' : 'incorrect');
-        const model2Result = row.model2_correct === null ? 'not_attempted' : (row.model2_correct ? 'correct' : 'incorrect');
+        const results = models.map((model, index) => {
+          const value = row[`model${index + 1}_correct`];
+          return value === null ? 'not_attempted' : (value ? 'correct' : 'incorrect');
+        });
 
-        if (model1Result === 'correct' && model2Result === 'correct') bothCorrect++;
-        else if (model1Result === 'correct' && model2Result !== 'correct') model1OnlyCorrect++;
-        else if (model1Result !== 'correct' && model2Result === 'correct') model2OnlyCorrect++;
-        else if (model1Result === 'incorrect' && model2Result === 'incorrect') bothIncorrect++;
-        else if (model1Result === 'not_attempted' && model2Result === 'not_attempted') neitherAttempted++;
+        // Count correct models for this puzzle
+        const correctCount = results.filter(r => r === 'correct').length;
+        const incorrectCount = results.filter(r => r === 'incorrect').length;
+        const notAttemptedCount = results.filter(r => r === 'not_attempted').length;
+
+        // Update summary counters
+        if (correctCount === models.length) summary.allCorrect++;
+        else if (incorrectCount === models.length) summary.allIncorrect++;
+        else if (notAttemptedCount === models.length) summary.allNotAttempted++;
+        else if (correctCount === 3) summary.threeCorrect++;
+        else if (correctCount === 2) summary.twoCorrect++;
+        else if (correctCount === 1) summary.oneCorrect++;
+
+        // Count individual model successes
+        results.forEach((result, index) => {
+          if (result === 'correct' && results.filter(r => r === 'correct').length === 1) {
+            summary[`model${index + 1}OnlyCorrect` as keyof typeof summary]++;
+          }
+        });
 
         return {
           puzzleId: row.puzzle_id,
-          model1Result,
-          model2Result
+          model1Result: results[0],
+          model2Result: results[1],
+          ...(results[2] !== undefined && { model3Result: results[2] }),
+          ...(results[3] !== undefined && { model4Result: results[3] }),
         };
       });
 
       return {
         summary: {
-          bothCorrect,
-          model1OnlyCorrect,
-          model2OnlyCorrect,
-          bothIncorrect,
-          neitherAttempted,
           totalPuzzles: puzzleIds.length,
-          model1Name: model1,
-          model2Name: model2,
-          dataset
+          model1Name: models[0] || '',
+          model2Name: models[1] || '',
+          model3Name: models[2] || '',
+          model4Name: models[3] || '',
+          dataset,
+          ...summary,
         },
         details
       };

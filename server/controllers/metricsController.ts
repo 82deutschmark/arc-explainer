@@ -129,21 +129,18 @@ class MetricsController {
    * @access  Public
    */
   getModelComparison = asyncHandler(async (req: Request, res: Response) => {
-    const { model1, model2, dataset } = req.query;
+    const { model1, model2, model3, model4, dataset } = req.query;
 
-    if (!model1 || !model2 || !dataset) {
+    if (!model1 || !dataset) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required query parameters: model1, model2, dataset',
+        message: 'Missing required query parameters: model1, dataset',
       });
     }
 
     try {
-      const comparisonData = await repositoryService.metrics.getModelComparison(
-        model1 as string,
-        model2 as string,
-        dataset as string
-      );
+      const models = [model1, model2, model3, model4].filter(Boolean) as string[];
+      const comparisonData = await repositoryService.metrics.getModelComparison(models, dataset as string);
       res.status(200).json({
         success: true,
         data: comparisonData,

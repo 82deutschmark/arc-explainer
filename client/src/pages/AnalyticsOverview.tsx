@@ -33,18 +33,30 @@ export interface PuzzleComparisonDetail {
   puzzleId: string;
   model1Result: 'correct' | 'incorrect' | 'not_attempted';
   model2Result: 'correct' | 'incorrect' | 'not_attempted';
+  model3Result?: 'correct' | 'incorrect' | 'not_attempted';
+  model4Result?: 'correct' | 'incorrect' | 'not_attempted';
 }
 
 export interface ModelComparisonSummary {
-  bothCorrect: number;
-  model1OnlyCorrect: number;
-  model2OnlyCorrect: number;
-  bothIncorrect: number;
-  neitherAttempted: number;
   totalPuzzles: number;
   model1Name: string;
   model2Name: string;
+  model3Name?: string;
+  model4Name?: string;
   dataset: string;
+  // Agreement counts
+  allCorrect: number;
+  allIncorrect: number;
+  allNotAttempted: number;
+  // Partial agreement counts
+  threeCorrect?: number;
+  twoCorrect?: number;
+  oneCorrect?: number;
+  // Model-specific counts
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  model3OnlyCorrect?: number;
+  model4OnlyCorrect?: number;
 }
 
 export interface ModelComparisonResult {
@@ -68,6 +80,8 @@ export default function AnalyticsOverview() {
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
   const [selectedModelForComparison, setSelectedModelForComparison] = useState<string>('');
+  const [selectedModel3, setSelectedModel3] = useState<string>('');
+  const [selectedModel4, setSelectedModel4] = useState<string>('');
   const [selectedDataset, setSelectedDataset] = useState<string>('');
 
   // Model comparison state
@@ -108,17 +122,46 @@ export default function AnalyticsOverview() {
     }
   }, [availableModels, selectedModelForDataset]);
 
+  // Auto-select Grok-4 as 2nd model if available
+  React.useEffect(() => {
+    if (availableModels.length > 0 && !selectedModelForComparison) {
+      const grok4 = availableModels.find(m => m.includes('grok-4')) || availableModels[1];
+      if (grok4 && grok4 !== selectedModelForDataset) {
+        setSelectedModelForComparison(grok4);
+      }
+    }
+  }, [availableModels, selectedModelForDataset, selectedModelForComparison]);
+
+  // Auto-select Claude Sonnet 4.5 as 3rd model if available
+  React.useEffect(() => {
+    if (availableModels.length > 0 && !selectedModel3) {
+      const claudeSonnet = availableModels.find(m => m.includes('claude') && m.includes('sonnet') && m.includes('4.5'));
+      if (claudeSonnet && claudeSonnet !== selectedModelForDataset && claudeSonnet !== selectedModelForComparison) {
+        setSelectedModel3(claudeSonnet);
+      }
+    }
+  }, [availableModels, selectedModelForDataset, selectedModelForComparison, selectedModel3]);
+
 
   // Set page title and scroll to top
   const handleCompare = async () => {
-    if (!selectedModelForDataset || !selectedModelForComparison || !selectedDataset) return;
+    if (!selectedModelForDataset || !selectedDataset) return;
 
     setLoadingComparison(true);
     setComparisonError(null);
     setComparisonResult(null);
 
     try {
-      const response = await fetch(`/api/metrics/compare?model1=${encodeURIComponent(selectedModelForDataset)}&model2=${encodeURIComponent(selectedModelForComparison)}&dataset=${encodeURIComponent(selectedDataset)}`);
+      const models = [selectedModelForDataset, selectedModelForComparison, selectedModel3, selectedModel4].filter(Boolean);
+      const queryParams = new URLSearchParams({
+        model1: models[0] || '',
+        ...(models[1] && { model2: models[1] }),
+        ...(models[2] && { model3: models[2] }),
+        ...(models[3] && { model4: models[3] }),
+        dataset: selectedDataset
+      });
+      
+      const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch comparison data');
@@ -222,7 +265,7 @@ export default function AnalyticsOverview() {
               </div>
 
               <div>
-                <label htmlFor="model-compare-select" className="text-sm font-medium mb-2 block">Model 2 (Compare):</label>
+                <label htmlFor="model-compare-select" className="text-sm font-medium mb-2 block">Model 2 (Grok-4):</label>
                 <Select 
                   value={selectedModelForComparison} 
                   onValueChange={setSelectedModelForComparison}
@@ -241,10 +284,53 @@ export default function AnalyticsOverview() {
                 </Select>
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="model3-select" className="text-sm font-medium mb-2 block">Model 3 (Optional):</label>
+                <Select 
+                  value={selectedModel3} 
+                  onValueChange={setSelectedModel3}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model3-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose third model (optional)" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label htmlFor="model4-select" className="text-sm font-medium mb-2 block">Model 4 (Optional):</label>
+                <Select 
+                  value={selectedModel4} 
+                  onValueChange={setSelectedModel4}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model4-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose fourth model (optional)" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison && m !== selectedModel3).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="flex justify-center pt-4">
                 <Button 
                     onClick={handleCompare}
-                    disabled={!selectedModelForDataset || !selectedModelForComparison || selectedModelForDataset === selectedModelForComparison || loadingComparison}
+                    disabled={!selectedModelForDataset || !selectedDataset || loadingComparison}
                     size="lg"
                 >
                     {loadingComparison ? 'Comparing...' : 'Compare Models'}
