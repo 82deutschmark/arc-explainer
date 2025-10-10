@@ -567,9 +567,12 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       confidence: this.normalizeConfidence(row.confidence),
       alienMeaningConfidence: this.normalizeConfidence(row.alienMeaningConfidence),
       saturnImages: this.safeJsonParse(row.saturnImages, 'saturnImages', []),
-      predictedOutputGrid: this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid'),
+      // CRITICAL FIX: Sanitize grid data on READ to filter out null rows from legacy/corrupt data
+      predictedOutputGrid: this.sanitizeGridData(this.safeJsonParse(row.predictedOutputGrid, 'predictedOutputGrid')),
       multiplePredictedOutputs: row.multiplePredictedOutputs, // Boolean flag, not JSON data
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
+      // CRITICAL FIX: Sanitize multi-test prediction grids on READ as well
+      multiTestPredictionGrids: this.sanitizeMultipleGrids(this.safeJsonParse(row.multiTestPredictionGrids, 'multiTestPredictionGrids')),
       
       // Parse Grover-specific JSONB field
       groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),

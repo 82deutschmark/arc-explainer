@@ -1,6 +1,15 @@
 ## [2025-10-09]
 
 ### Work In Progress - Version 3.9.3
+- **Grid Null Row Crash Fix** - COMPLETED ✅
+  - **Problem**: Application crashed with "Cannot read properties of null (reading 'map')" on puzzle 9aaea919
+  - **Root Cause**: Database JSONB fields contained arrays with null rows `[[1,2,3], null, [4,5,6]]`. Grid sanitization only occurred on write, not read. `safeJsonParse()` returned PostgreSQL JSONB objects without validating structure.
+  - **Fix**: Three-layer defense
+    - Frontend: `PuzzleGrid.tsx` filters null rows before rendering
+    - Backend: `ExplanationRepository.ts` sanitizes grids on read
+    - Utilities: `sanitizeGridData()` skips corrupt rows instead of discarding entire grid
+  - **Impact**: Application recovers gracefully from legacy corrupt data while logging issues for investigation
+  - **Documentation**: `docs/2025-10-09-Grid-Null-Row-Fix.md`
 - **Grover Display Fix** - COMPLETED ✅
   - **Problem**: Grover solver results saved to database but never appeared on PuzzleExaminer page
     - Database had grover_iterations, grover_best_program, iteration_count data

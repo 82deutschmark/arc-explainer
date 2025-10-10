@@ -11,19 +11,25 @@ import { Badge } from '@/components/ui/badge';
 import { GridCell } from './GridCell';
 
 export const PuzzleGrid = React.memo(function PuzzleGrid({ grid, title, showEmojis, highlight = false, emojiSet, diffMask }: PuzzleGridProps) {
+  // Validate grid and filter out null/undefined rows
+  const validGrid = useMemo(() => {
+    if (!grid || !Array.isArray(grid)) return [];
+    return grid.filter(row => row && Array.isArray(row));
+  }, [grid]);
+
   // Memoize expensive calculations
   const gridMetadata = useMemo(() => {
-    const rows = grid.length;
-    const cols = grid[0]?.length || 0;
+    const rows = validGrid.length;
+    const cols = validGrid[0]?.length || 0;
     const maxDim = Math.max(rows, cols);
     const size: "small" | "normal" | "large" = maxDim <= 5 ? "large" : maxDim <= 10 ? "normal" : "small";
     
     return { rows, cols, maxDim, size };
-  }, [grid]);
+  }, [validGrid]);
 
   // Memoize the grid content to prevent re-rendering cells unnecessarily
   const gridContent = useMemo(() => {
-    return grid.map((row, rowIndex) => (
+    return validGrid.map((row, rowIndex) => (
       <div key={rowIndex} className="flex">
         {row.map((cell, colIndex) => (
           <GridCell 
@@ -37,7 +43,7 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({ grid, title, showEmoj
         ))}
       </div>
     ));
-  }, [grid, showEmojis, gridMetadata.size, emojiSet, diffMask]);
+  }, [validGrid, showEmojis, gridMetadata.size, emojiSet, diffMask]);
   
   return (
     <div className={`text-center ${highlight ? 'bg-green-50 p-2 rounded-lg border-2 border-green-300' : ''}`}>

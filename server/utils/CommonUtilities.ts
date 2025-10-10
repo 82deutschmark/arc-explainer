@@ -409,9 +409,16 @@ export function sanitizeGridData(gridData: any): number[][] | null {
     for (let rowIndex = 0; rowIndex < parsedGrid.length; rowIndex++) {
       const row = parsedGrid[rowIndex];
       
+      // CRITICAL FIX: Skip null/undefined rows instead of failing entire grid
+      // This handles legacy data with corrupt rows while preserving valid data
+      if (row === null || row === undefined) {
+        logger.warn(`Grid row ${rowIndex} is null/undefined - skipping`, 'utilities');
+        continue;
+      }
+      
       if (!Array.isArray(row)) {
-        logger.warn(`Grid row ${rowIndex} is not an array`, 'utilities');
-        return null;
+        logger.warn(`Grid row ${rowIndex} is not an array - skipping`, 'utilities');
+        continue;
       }
       
       const sanitizedRow: number[] = [];
@@ -490,6 +497,12 @@ export function sanitizeGridData(gridData: any): number[][] | null {
       }
       
       sanitizedGrid.push(sanitizedRow);
+    }
+    
+    // Validate that we have at least some valid rows
+    if (sanitizedGrid.length === 0) {
+      logger.warn('Grid sanitization resulted in empty grid - all rows were invalid', 'utilities');
+      return null;
     }
     
     return sanitizedGrid;
