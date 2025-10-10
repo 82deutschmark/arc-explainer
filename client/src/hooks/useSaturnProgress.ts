@@ -25,6 +25,9 @@ export interface SaturnOptions {
   captureReasoning?: boolean;
   useResponsesAPI?: boolean;
   previousResponseId?: string;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  reasoningVerbosity?: 'low' | 'medium' | 'high';
+  reasoningSummaryType?: 'auto' | 'detailed';
 }
 
 export interface SaturnProgressState {
@@ -80,43 +83,25 @@ export function useSaturnProgress(taskId: string | undefined) {
     });
     closeSocket();
 
-    // Map friendly UI labels to backend model ids and include provider for clarity.
-    // Wrapper still validates and enforces OpenAI-only (base64 PNG), but we send
-    // provider explicitly to surface clear errors on unsupported selections.
-    const uiModel = options?.model ?? 'GPT-5';
-    let provider: string | undefined;
-    let modelId: string | undefined;
-    const m = (uiModel || '').toString().toLowerCase();
-    if (m === 'gpt-5' || uiModel === 'GPT-5') {
-      provider = 'openai';
-      modelId = 'gpt-5';
-    } else if (m.includes('claude')) {
-      provider = 'anthropic';
-      modelId = uiModel; // wrapper will error (unsupported provider)
-    } else if (m.includes('grok')) {
-      provider = 'xai';
-      modelId = uiModel; // wrapper will error (unsupported provider)
-    } else {
-      provider = undefined; // let wrapper infer
-      modelId = uiModel;
-    }
-
-    const wireOptions = {
-      provider,
-      model: modelId,
-      temperature: options?.temperature ?? 0.2,
-      cellSize: options?.cellSize ?? 24,
-      maxSteps: options?.maxSteps ?? 8,
-      captureReasoning: !!options?.captureReasoning,
-      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
-    };
-
-    // Choose endpoint based on whether to use Responses API
-    const endpoint = options?.useResponsesAPI 
-      ? `/api/saturn/analyze-with-reasoning/${taskId}`
-      : `/api/saturn/analyze/${taskId}`;
+    // FIXED: Use NEW TypeScript-based Saturn endpoint
+    // Model key is now passed directly (e.g., "gpt-5-nano-2025-08-07")
+    const endpoint = `/api/saturn/analyze/${taskId}`;
     
-    const res = await apiRequest('POST', endpoint, wireOptions);
+    // Use model key directly - Saturn service handles mapping
+    const modelKey = options?.model || 'gpt-5-nano-2025-08-07';
+    
+    const requestBody = {
+      modelKey,
+      temperature: options?.temperature ?? 0.2,
+      promptId: 'solver',
+      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
+      captureReasoning: true,
+      reasoningEffort: options?.reasoningEffort || 'high',
+      reasoningVerbosity: options?.reasoningVerbosity || 'high',
+      reasoningSummaryType: options?.reasoningSummaryType || 'detailed'
+    };
+    
+    const res = await apiRequest('POST', endpoint, requestBody);
     const json = await res.json();
     const sid = json?.data?.sessionId as string;
     setSessionId(sid);
