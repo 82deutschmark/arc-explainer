@@ -1,13 +1,17 @@
 /**
  * Author: Cascade
- * Date: 2025-10-10
- * PURPOSE: Renders a CORRECT and EFFICIENT matrix for model comparison results.
+ * Date: 2025-10-10T19:00:00-04:00 (Updated for maximum density)
+ * PURPOSE: Renders a CORRECT and EFFICIENT matrix for model comparison results with maximum information density.
  * This component replaces the flawed ModelComparisonResults.tsx.
  * 
  * FIXES:
  * - Correctly maps puzzles to columns and models to rows.
  * - Uses a Map for efficient O(1) lookup of puzzle results, fixing the nested loop issue.
  * - Ensures the table body cells align perfectly with the header columns.
+ * 
+ * DENSITY IMPROVEMENTS (2025-10-10):
+ * - Reduced padding: CardHeader to pt-2 px-2 pb-1, CardContent to px-2 pb-2
+ * - Reduced font sizes: text-sm→text-xs for title, text-xs→text-[10px] for legend
  * 
  * SRP and DRY check: Pass - Single responsibility is to render the comparison matrix.
  * shadcn/ui: Pass - Uses shadcn/ui components and follows project styling.
@@ -47,16 +51,16 @@ export const NewModelComparisonResults: React.FC<NewModelComparisonResultsProps>
 
   return (
     <Card>
-      <CardHeader className="pb-1">
-        <CardTitle className="text-sm flex items-center gap-1">
+      <CardHeader className="pb-1 pt-2 px-2">
+        <CardTitle className="text-xs flex items-center gap-1">
           <Database className="h-3 w-3" />
           Model Comparison Matrix
         </CardTitle>
-        <p className="text-xs text-gray-600">
+        <p className="text-[10px] text-gray-600">
           ✅ = Correct, ❌ = Incorrect, ⏳ = Not Attempted
         </p>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 px-2 pb-2">
         <div className="overflow-x-auto relative">
           <table className="w-full text-xs border-collapse">
             <thead>
