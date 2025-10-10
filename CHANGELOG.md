@@ -1,53 +1,23 @@
 ## [4.0.7] - 2025-10-10
 
 ### Fixed
-- **CRITICAL: Model Comparison Feature - Data Bug and UX Overhaul**
-  - **Data Bug**: `MetricsRepository.getPuzzleIdsForDataset()` returned 0 puzzles due to flawed LIKE pattern matching
-    - Previous implementation: `WHERE puzzle_id LIKE 'evaluation2%'`
-    - Problem: Puzzle IDs are 8-char hex codes (e.g., '0520fde7') - they don't contain dataset names
-    - Dataset names come from directory structure (data/evaluation2/) not puzzle ID content
-    - Solution: Replaced SQL LIKE pattern with `puzzleLoader.getPuzzleList()` to get actual puzzle IDs from filesystem
-    - Added dataset→source mapping for proper filtering (evaluation→ARC1-Eval, evaluation2→ARC2-Eval, etc.)
-  - **UX Bug**: Comparison results rendered at page bottom requiring scrolling - terrible user experience
-    - Previous implementation: Inline rendering at bottom of AnalyticsOverview page
-    - New implementation: Modal dialog using shadcn/ui Dialog component
-    - Created `ModelComparisonDialog.tsx` - Full-featured comparison modal with:
-      - Summary statistics cards (All Correct, All Incorrect, Not Attempted, Unique Solves)
-      - Detailed puzzle-by-puzzle matrix table
-      - Proper loading states with spinner
-      - Error handling with styled alerts
-      - Close button and escape key support
-    - Updated `AnalyticsOverview.tsx`:
-      - Added dialog state management (`isComparisonDialogOpen`)
-      - "Compare Models" button now opens modal immediately (shows loading state)
-      - Removed buggy inline rendering section (lines 488-490)
-      - Dialog opens with loading spinner, then displays results when ready
+- **CRITICAL: Model Comparison Architecture - DRY/SRP Violations**
+  - **Root Cause**: `MetricsRepository.getPuzzleIdsForDataset()` used wrong semantic for model comparison
+    - Problem: Used `puzzleLoader.getPuzzleList({ source })` which applies priority-based filtering
+    - When dataset has 120 puzzles but 20 also exist in higher-priority dataset, puzzleLoader excludes 20
+    - Model comparison needs ALL puzzles in directory, not priority-filtered subset
+  - **Solution**: Delegate to `ModelDatasetRepository.getPuzzleIdsFromDataset()` (direct filesystem access)
+    - Made `ModelDatasetRepository.getPuzzleIdsFromDataset()` public (was private)
+    - Updated `MetricsRepository.getPuzzleIdsForDataset()` to delegate (removed 30+ lines of puzzleLoader logic)
+    - Now returns correct puzzle counts matching filesystem directory contents
+  - **Architecture Benefits**: Single source of truth, SRP compliance, DRY compliance, better maintainability
 
 ### Technical Details
-- **Backend Fix** (`server/repositories/MetricsRepository.ts`):
-  - Lines 833-863: Complete rewrite of `getPuzzleIdsForDataset()`
-  - Now imports `puzzleLoader` service for filesystem-based puzzle discovery
-  - Dataset mapping: `evaluation→ARC1-Eval`, `training→ARC1`, `evaluation2→ARC2-Eval`, `training2→ARC2`, etc.
-  - Filters puzzles by source using `puzzleLoader.getPuzzleList({ source })`
-  - Returns sorted array of actual puzzle IDs that exist in the database
-  - Added debug logging to trace dataset→puzzle mapping
-- **Frontend Components**:
-  - New file: `client/src/components/analytics/ModelComparisonDialog.tsx` (130 lines)
-    - Modal dialog with shadcn/ui Dialog component
-    - Summary statistics cards showing all-correct, all-incorrect, not-attempted, unique-solves
-    - Embeds ModelComparisonResults table
-    - Loading spinner and error handling
-  - Updated: `client/src/components/analytics/ModelComparisonResults.tsx`
-    - Enhanced table styling with sticky model column, better spacing
-    - Puzzle badges now show tooltips with puzzle names (e.g., "007bbfb7 - fractal")
-    - Larger emoji icons (✅❌⏳) for better visibility
-    - Improved hover states and row highlighting
-  - Updated: `client/src/pages/AnalyticsOverview.tsx`
-    - Removed buggy inline rendering at bottom
-    - Added dialog state management
-    - "Compare Models" button opens modal immediately
-  - Dialog displays comparison for 2-4 models simultaneously
-  - Responsive grid layout for summary stats
+- **Files Changed**:
+  - `server/repositories/MetricsRepository.ts` - Delegation pattern, removed puzzleLoader dependency
+  - `server/repositories/ModelDatasetRepository.ts` - Made getPuzzleIdsFromDataset() public
+  - `docs/2025-10-10-model-comparison-architecture-analysis.md` - Root cause analysis
+  - `docs/2025-10-10-model-comparison-fix-summary.md` - Fix summary and verification
   - Max height with scroll for large datasets
 
 ### User Impact
