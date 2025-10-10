@@ -1,6 +1,7 @@
 /**
- * useConfidenceStats Hook
- * 
+ * useConfidenceStats Hook  THIS IS USELESS AND DOESNT UNDERSTAND THAT CONFIDENCE IS NOT TRUSTWORTHINESS!!
+ * A better use would be if it normalized confidence!  Some models return it as 0.85 when they mean 85%, and 1 when they mean 100% and it is up to us to normalize it!!
+ * Realize that if a model returns 0.95, it means 95% confidence, not 0.95% confidence!
  * This hook fetches confidence statistics from the API, providing data for the 
  * Confidence Leaderboard. It returns the stats, loading state, and any errors.
  */

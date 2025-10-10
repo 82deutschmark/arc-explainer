@@ -1,6 +1,17 @@
 ## [2025-10-09]
 
 ### Work In Progress - Version 3.9.3
+- **Grover WebSocket Broadcasting Fix** - COMPLETED ✅
+  - **Problem**: Frontend UI not receiving backend logs during Grover analysis
+    - Backend terminal showed: "📖 Parsing...", "✅ Found program #1", "📊 Extraction complete"
+    - Frontend LiveActivityStream was completely empty
+  - **Root Cause**: `grover.ts` was importing from `utils/logger.js` instead of `utils/broadcastLogger.js`
+    - The `broadcastLogger` uses AsyncLocalStorage to auto-broadcast logs when session context is set
+    - Controller was correctly calling `setSessionContext()`, but service was using wrong logger
+  - **Fix**: Changed import to use `broadcastLogger`, simplified log() wrapper, exported LogLevel type
+  - **Impact**: Frontend now receives ALL backend logs in real-time (program extraction, execution, iteration progress)
+  - **Documentation**: `docs/2025-10-09-Grover-WebSocket-Broadcasting-Fix.md`
+  - **Commits**: bf65bf9 (docs), previous commit (implementation)
 - **Grover Prediction Persistence** - Fixing systematic null prediction issue (IN PROGRESS - NOT TESTED)
   - **Problem Identified**: Grover solver results never include predicted grids in database
     - Root cause: Best program only executed on training inputs during iterative search, never on test inputs
