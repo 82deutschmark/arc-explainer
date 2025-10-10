@@ -2620,3 +2620,4 @@ To enable conversation chaining:
 - Database migration must be run: Execute `server/migrations/001_create_ingestion_runs.sql`
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
+\n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.

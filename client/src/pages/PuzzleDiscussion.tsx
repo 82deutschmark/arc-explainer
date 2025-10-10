@@ -61,7 +61,7 @@ export default function PuzzleDiscussion() {
   const { explanations, isLoading: isLoadingExplanations, refetchExplanations } = usePuzzleWithExplanation(taskId || '');
   const { data: models } = useModels();
 
-  // Fetch eligible explanations for landing page
+  // Fetch eligible explanations for landing page (filtered client-side to match refinement requirements)
   const { data: eligibleData, isLoading: isLoadingEligible } = useEligibleExplanations(20, 0);
   const eligibleExplanations = eligibleData?.explanations || [];
   // Refinement state management (NOT debate state)

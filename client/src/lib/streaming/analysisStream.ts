@@ -36,6 +36,7 @@ export interface AnalysisStreamParams {
   omitAnswer?: boolean;
   topP?: number;
   candidateCount?: number;
+  thinkingBudget?: number;
   reasoningEffort?: string;
   reasoningVerbosity?: string;
   reasoningSummaryType?: string;
@@ -43,6 +44,10 @@ export interface AnalysisStreamParams {
   previousResponseId?: string;
   captureReasoning?: boolean;
   sessionId?: string;
+  retryMode?: boolean;
+  originalExplanationId?: number;
+  originalExplanation?: Record<string, unknown>;
+  customChallenge?: string;
 }
 
 export interface AnalysisStreamHandlers {
@@ -74,6 +79,7 @@ function buildQuery(params: AnalysisStreamParams): string {
   append("omitAnswer", params.omitAnswer);
   append("topP", params.topP);
   append("candidateCount", params.candidateCount);
+  append("thinkingBudget", params.thinkingBudget);
   append("reasoningEffort", params.reasoningEffort);
   append("reasoningVerbosity", params.reasoningVerbosity);
   append("reasoningSummaryType", params.reasoningSummaryType);
@@ -81,6 +87,17 @@ function buildQuery(params: AnalysisStreamParams): string {
   append("previousResponseId", params.previousResponseId);
   append("captureReasoning", params.captureReasoning);
   append("sessionId", params.sessionId);
+  append("retryMode", params.retryMode);
+  append("originalExplanationId", params.originalExplanationId);
+  append("customChallenge", params.customChallenge);
+
+  if (params.originalExplanation) {
+    try {
+      query.append("originalExplanation", JSON.stringify(params.originalExplanation));
+    } catch (error) {
+      console.warn("[SSE] Failed to serialize originalExplanation for query", error);
+    }
+  }
 
   return query.toString();
 }
