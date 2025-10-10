@@ -30,7 +30,7 @@
   - **Commits**: ac833eb (test execution infrastructure), 84b6de5 (docs + changelog), [uncommitted validation integration]
 - **ConceptARC Dataset Enablement** - Finished wiring ConceptARC into loaders, services, and UI filters
   - Added ConceptARC to shared enums, puzzle loader priority list, API filters, and validation middleware
-  - Cleaned frontend selects (Puzzle Browser, Discussion, Analytics, DB Viewer) to include ConceptARC without formatting artifacts
+  - Cleaned frontend selects and dataset display maps (Puzzle Browser, Discussion, Analytics, Model Browser, DB Viewer) to include ConceptARC without formatting artifacts
   - Restored Grover WebSocket error handling status transitions after expanding diagnostics
   - Extended HuggingFace ingestion script to auto-detect ConceptARC sources
   - Documented cleanup plan in `docs/2025-10-09-plan-conceptarc-cleanup.md`
