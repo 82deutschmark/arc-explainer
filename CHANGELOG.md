@@ -1,3 +1,70 @@
+## [4.0.7] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Model Comparison Feature - Data Bug and UX Overhaul**
+  - **Data Bug**: `MetricsRepository.getPuzzleIdsForDataset()` returned 0 puzzles due to flawed LIKE pattern matching
+    - Previous implementation: `WHERE puzzle_id LIKE 'evaluation2%'`
+    - Problem: Puzzle IDs are 8-char hex codes (e.g., '0520fde7') - they don't contain dataset names
+    - Dataset names come from directory structure (data/evaluation2/) not puzzle ID content
+    - Solution: Replaced SQL LIKE pattern with `puzzleLoader.getPuzzleList()` to get actual puzzle IDs from filesystem
+    - Added dataset→source mapping for proper filtering (evaluation→ARC1-Eval, evaluation2→ARC2-Eval, etc.)
+  - **UX Bug**: Comparison results rendered at page bottom requiring scrolling - terrible user experience
+    - Previous implementation: Inline rendering at bottom of AnalyticsOverview page
+    - New implementation: Modal dialog using shadcn/ui Dialog component
+    - Created `ModelComparisonDialog.tsx` - Full-featured comparison modal with:
+      - Summary statistics cards (All Correct, All Incorrect, Not Attempted, Unique Solves)
+      - Detailed puzzle-by-puzzle matrix table
+      - Proper loading states with spinner
+      - Error handling with styled alerts
+      - Close button and escape key support
+    - Updated `AnalyticsOverview.tsx`:
+      - Added dialog state management (`isComparisonDialogOpen`)
+      - "Compare Models" button now opens modal immediately (shows loading state)
+      - Removed buggy inline rendering section (lines 488-490)
+      - Dialog opens with loading spinner, then displays results when ready
+
+### Technical Details
+- **Backend Fix** (`server/repositories/MetricsRepository.ts`):
+  - Lines 833-863: Complete rewrite of `getPuzzleIdsForDataset()`
+  - Now imports `puzzleLoader` service for filesystem-based puzzle discovery
+  - Dataset mapping: `evaluation→ARC1-Eval`, `training→ARC1`, `evaluation2→ARC2-Eval`, `training2→ARC2`, etc.
+  - Filters puzzles by source using `puzzleLoader.getPuzzleList({ source })`
+  - Returns sorted array of actual puzzle IDs that exist in the database
+  - Added debug logging to trace dataset→puzzle mapping
+- **Frontend Components**:
+  - New file: `client/src/components/analytics/ModelComparisonDialog.tsx` (130 lines)
+    - Modal dialog with shadcn/ui Dialog component
+    - Summary statistics cards showing all-correct, all-incorrect, not-attempted, unique-solves
+    - Embeds ModelComparisonResults table
+    - Loading spinner and error handling
+  - Updated: `client/src/components/analytics/ModelComparisonResults.tsx`
+    - Enhanced table styling with sticky model column, better spacing
+    - Puzzle badges now show tooltips with puzzle names (e.g., "007bbfb7 - fractal")
+    - Larger emoji icons (✅❌⏳) for better visibility
+    - Improved hover states and row highlighting
+  - Updated: `client/src/pages/AnalyticsOverview.tsx`
+    - Removed buggy inline rendering at bottom
+    - Added dialog state management
+    - "Compare Models" button opens modal immediately
+  - Dialog displays comparison for 2-4 models simultaneously
+  - Responsive grid layout for summary stats
+  - Max height with scroll for large datasets
+
+### User Impact
+- **Major Fix**: Model comparison now actually works - displays real data for all datasets
+- **Better UX**: Results appear in centered modal dialog instead of requiring scroll to bottom
+- **Immediate Feedback**: Loading state visible instantly when clicking "Compare Models"
+- **Professional Presentation**: Clean modal with summary stats and detailed matrix
+- **Multiple Models**: Supports comparing 2-4 models simultaneously with clear visualization
+
+### Files Modified
+- `server/repositories/MetricsRepository.ts` - Fixed dataset-to-puzzle mapping
+- `client/src/components/analytics/ModelComparisonDialog.tsx` - NEW modal component
+- `client/src/pages/AnalyticsOverview.tsx` - Integrated modal dialog, removed inline rendering
+- `docs/2025-10-10-fix-model-comparison-modal.md` - Implementation plan and bug analysis
+
+---
+
 ## [4.0.6] - 2025-10-10
 
 ### Fixed

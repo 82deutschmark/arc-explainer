@@ -23,7 +23,7 @@ import {
 // Import existing components
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
-import { ModelComparisonResults } from '@/components/analytics/ModelComparisonResults';
+import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
@@ -88,6 +88,7 @@ export default function AnalyticsOverview() {
   const [comparisonResult, setComparisonResult] = useState<ModelComparisonResult | null>(null);
   const [loadingComparison, setLoadingComparison] = useState<boolean>(false);
   const [comparisonError, setComparisonError] = useState<string | null>(null);
+  const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState<boolean>(false);
 
   // Collapsible sections state
   const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
@@ -147,6 +148,8 @@ export default function AnalyticsOverview() {
   const handleCompare = async () => {
     if (!selectedModelForDataset || !selectedDataset) return;
 
+    // Open dialog immediately to show loading state
+    setIsComparisonDialogOpen(true);
     setLoadingComparison(true);
     setComparisonError(null);
     setComparisonResult(null);
@@ -468,26 +471,14 @@ export default function AnalyticsOverview() {
           </CardContent>
         </Card>
 
-        {/* Comparison Results Section */}
-        {loadingComparison && (
-            <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                <p className="text-sm text-muted-foreground mt-2">Comparing models...</p>
-            </div>
-        )}
-        {comparisonError && (
-            <Card className="bg-red-50 border-red-200">
-                <CardHeader>
-                    <CardTitle className="text-red-700">Comparison Error</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p>{comparisonError}</p>
-                </CardContent>
-            </Card>
-        )}
-        {comparisonResult && (
-            <ModelComparisonResults result={comparisonResult} />
-        )}
+        {/* Model Comparison Dialog - Replaces inline rendering at bottom */}
+        <ModelComparisonDialog
+          open={isComparisonDialogOpen}
+          onOpenChange={setIsComparisonDialogOpen}
+          comparisonResult={comparisonResult}
+          loading={loadingComparison}
+          error={comparisonError}
+        />
 
         {/* Most Difficult Puzzles Section */}
         <Card>
