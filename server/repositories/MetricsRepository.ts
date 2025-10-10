@@ -720,6 +720,7 @@ export class MetricsRepository extends BaseRepository {
     try {
       const puzzleIds = await this.getPuzzleIdsForDataset(dataset);
       if (puzzleIds.length === 0) {
+        logger.warn(`No puzzles found for dataset: ${dataset}`, 'metrics');
         return {
           summary: { 
             totalPuzzles: 0, 
@@ -738,35 +739,35 @@ export class MetricsRepository extends BaseRepository {
         };
       }
 
-      const placeholders = models.map((_, index) => `$${index + 2}`).join(', ');
+      logger.info(`Comparing ${models.length} models on ${puzzleIds.length} puzzles from ${dataset}`, 'metrics');
+
+      // SIMPLIFIED APPROACH (following puzzleController.analyzeList pattern):
+      // Fetch all explanations for these puzzles and models, then build matrix in JavaScript
+      // This is more reliable than complex dynamic SQL
+      
       const query = `
-        WITH latest_explanations AS (
-          SELECT
-            puzzle_id,
-            model_name,
-            (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
-            ROW_NUMBER() OVER(PARTITION BY puzzle_id, model_name ORDER BY created_at DESC) as rn
-          FROM explanations
-          WHERE model_name = ANY($1::text[]) AND puzzle_id = ANY($${models.length + 2}::text[])
-        ),
-        model_results AS (
-          SELECT 
-            puzzle_id,
-            model_name,
-            is_correct
-          FROM latest_explanations
-          WHERE rn = 1
-        )
-        SELECT
-          p.puzzle_id,
-          ${models.map((model, index) => `MAX(CASE WHEN mr${index + 1}.model_name = $${index + 2} THEN mr${index + 1}.is_correct END) as model${index + 1}_correct`).join(',\n          ')}
-        FROM (SELECT unnest($${models.length + 2}::text[]) as puzzle_id) p
-        ${models.map((model, index) => `LEFT JOIN model_results mr${index + 1} ON p.puzzle_id = mr${index + 1}.puzzle_id AND mr${index + 1}.model_name = $${index + 2}`).join('\n        ')}
-        GROUP BY p.puzzle_id
-        ORDER BY p.puzzle_id;
+        SELECT DISTINCT ON (puzzle_id, model_name)
+          puzzle_id,
+          model_name,
+          (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
+          created_at
+        FROM explanations
+        WHERE model_name = ANY($1::text[]) 
+        AND puzzle_id = ANY($2::text[])
+        ORDER BY puzzle_id, model_name, created_at DESC
       `;
 
-      const result = await this.query(query, [models, ...models, puzzleIds]);
+      const result = await this.query(query, [models, puzzleIds]);
+      
+      // Build a map of puzzle_id -> model_name -> correctness
+      const puzzleModelMap = new Map<string, Map<string, boolean | null>>();
+      
+      for (const row of result.rows) {
+        if (!puzzleModelMap.has(row.puzzle_id)) {
+          puzzleModelMap.set(row.puzzle_id, new Map());
+        }
+        puzzleModelMap.get(row.puzzle_id)!.set(row.model_name, row.is_correct);
+      }
 
       // Initialize counters
       const summary = {
@@ -782,10 +783,15 @@ export class MetricsRepository extends BaseRepository {
         model4OnlyCorrect: 0,
       };
 
-      const details: PuzzleComparisonDetail[] = result.rows.map(row => {
-        const results = models.map((model, index) => {
-          const value = row[`model${index + 1}_correct`];
-          return value === null ? 'not_attempted' : (value ? 'correct' : 'incorrect');
+      const details: PuzzleComparisonDetail[] = puzzleIds.map(puzzleId => {
+        const modelResults = puzzleModelMap.get(puzzleId) || new Map();
+        
+        // Get result for each model
+        const results = models.map((modelName) => {
+          const isCorrect = modelResults.get(modelName);
+          return isCorrect === null || isCorrect === undefined 
+            ? 'not_attempted' 
+            : (isCorrect ? 'correct' : 'incorrect');
         });
 
         // Count correct models for this puzzle
@@ -795,27 +801,33 @@ export class MetricsRepository extends BaseRepository {
 
         // Update summary counters
         if (correctCount === models.length) summary.allCorrect++;
-        else if (incorrectCount === models.length) summary.allIncorrect++;
         else if (notAttemptedCount === models.length) summary.allNotAttempted++;
-        else if (correctCount === 3) summary.threeCorrect++;
-        else if (correctCount === 2) summary.twoCorrect++;
+        else if (incorrectCount + notAttemptedCount === models.length) summary.allIncorrect++;
+        else if (correctCount === 3 && models.length >= 3) summary.threeCorrect++;
+        else if (correctCount === 2 && models.length >= 2) summary.twoCorrect++;
         else if (correctCount === 1) summary.oneCorrect++;
 
-        // Count individual model successes
-        results.forEach((result, index) => {
-          if (result === 'correct' && results.filter(r => r === 'correct').length === 1) {
-            summary[`model${index + 1}OnlyCorrect` as keyof typeof summary]++;
+        // Count individual model "only correct" scenarios
+        if (correctCount === 1) {
+          const onlyCorrectIndex = results.findIndex(r => r === 'correct');
+          if (onlyCorrectIndex >= 0 && onlyCorrectIndex < 4) {
+            const key = `model${onlyCorrectIndex + 1}OnlyCorrect` as keyof typeof summary;
+            if (typeof summary[key] === 'number') {
+              (summary[key] as number)++;
+            }
           }
-        });
+        }
 
         return {
-          puzzleId: row.puzzle_id,
-          model1Result: results[0],
-          model2Result: results[1],
-          ...(results[2] !== undefined && { model3Result: results[2] }),
-          ...(results[3] !== undefined && { model4Result: results[3] }),
+          puzzleId,
+          model1Result: results[0] as 'correct' | 'incorrect' | 'not_attempted',
+          model2Result: results[1] as 'correct' | 'incorrect' | 'not_attempted',
+          ...(models.length >= 3 && { model3Result: results[2] as 'correct' | 'incorrect' | 'not_attempted' }),
+          ...(models.length >= 4 && { model4Result: results[3] as 'correct' | 'incorrect' | 'not_attempted' }),
         };
       });
+
+      logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
       return {
         summary: {
