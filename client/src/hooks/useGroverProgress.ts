@@ -113,6 +113,32 @@ export function useGroverProgress(taskId: string | undefined) {
       }
       setSessionId(sid);
 
+      // CRITICAL: Hydrate from snapshot immediately for instant progress display
+      try {
+        console.log('[GROVER] Fetching snapshot for sessionId:', sid);
+        const snapshotRes = await apiRequest('GET', `/api/grover/status/${sid}`);
+        const snapshotJson = await snapshotRes.json();
+        const snapshot = snapshotJson?.data?.snapshot;
+        if (snapshot && typeof snapshot === 'object') {
+          console.log('[GROVER] Hydrating from snapshot after start:', snapshot);
+          setState(prev => ({
+            ...prev,
+            ...snapshot,
+            status: snapshot.status || prev.status,
+            iteration: typeof snapshot.iteration === 'number' ? snapshot.iteration : prev.iteration,
+            totalIterations: snapshot.totalIterations || prev.totalIterations,
+            logLines: Array.isArray(snapshot.logLines) ? 
+              [...snapshot.logLines, `[${new Date().toLocaleTimeString()}] Initial state loaded`] : 
+              [`[${new Date().toLocaleTimeString()}] Initial state loaded`],
+            iterations: Array.isArray(snapshot.iterations) ? snapshot.iterations : prev.iterations
+          }));
+        } else {
+          console.warn('[GROVER] Snapshot empty after start:', snapshotJson);
+        }
+      } catch (snapshotErr) {
+        console.error('[GROVER] Snapshot fetch failed:', snapshotErr);
+      }
+
       // Open WebSocket (Grover uses same progress endpoint as Saturn)
       const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
       const isDev = import.meta.env.DEV;
@@ -124,6 +150,10 @@ export function useGroverProgress(taskId: string | undefined) {
 
       sock.onopen = () => {
         console.log('[GROVER] WebSocket CONNECTED to:', wsUrl);
+        setState(prev => ({
+          ...prev,
+          logLines: [...(prev.logLines || []), `[${new Date().toLocaleTimeString()}] WebSocket connected successfully`]
+        }));
       };
 
       sock.onmessage = (evt) => {
@@ -291,29 +321,41 @@ export function useGroverProgress(taskId: string | undefined) {
     
     const fetchSnapshot = async () => {
       try {
+        console.log('[GROVER] Fetching snapshot for sessionId:', sessionId);
         const snapshotRes = await apiRequest('GET', `/api/grover/status/${sessionId}`);
         const snapshotJson = await snapshotRes.json();
         const snapshot = snapshotJson?.data?.snapshot;
         if (snapshot && typeof snapshot === 'object') {
-          console.log('[GROVER] Rehydrating from snapshot after reload:', snapshot);
+          console.log('[GROVER] Hydrating from snapshot:', snapshot);
           setState(prev => ({
             ...prev,
             ...snapshot,
             status: snapshot.status || prev.status,
             iteration: typeof snapshot.iteration === 'number' ? snapshot.iteration : prev.iteration,
             totalIterations: snapshot.totalIterations || prev.totalIterations,
-            logLines: Array.isArray(snapshot.logLines) ? snapshot.logLines : prev.logLines,
+            logLines: Array.isArray(snapshot.logLines) ? 
+              [...snapshot.logLines, `[${new Date().toLocaleTimeString()}] State hydrated from snapshot`] : 
+              [`[${new Date().toLocaleTimeString()}] State hydrated from snapshot`],
             iterations: Array.isArray(snapshot.iterations) ? snapshot.iterations : prev.iterations
           }));
+        } else {
+          console.warn('[GROVER] Snapshot is empty or invalid:', snapshotJson);
+          setState(prev => ({
+            ...prev,
+            logLines: [...(prev.logLines || []), `[${new Date().toLocaleTimeString()}] Warning: Snapshot was empty, waiting for WebSocket updates...`]
+          }));
         }
-      } catch (err) {
-        console.warn('[GROVER] Failed to fetch snapshot on reload:', err);
+      } catch (snapshotErr) {
+        console.error('[GROVER] Failed to fetch snapshot:', snapshotErr);
+        setState(prev => ({
+          ...prev,
+          logLines: [...(prev.logLines || []), `[${new Date().toLocaleTimeString()}] Error fetching snapshot: ${snapshotErr}`]
+        }));
       }
     };
     
     fetchSnapshot();
   }, [sessionId]); // Only depend on sessionId, not state
-
   useEffect(() => {
     return () => {
       closeSocket();

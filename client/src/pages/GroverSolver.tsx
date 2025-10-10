@@ -174,12 +174,16 @@ export default function GroverSolver() {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold text-blue-900">
+                    {state.phase === 'initializing' && '🔄 Initializing'}
+                    {state.phase === 'iteration_start' && '🔁 Starting Iteration'}
                     {state.phase === 'prompt_ready' && '📤 Sending Prompt'}
                     {state.phase === 'waiting_llm' && '⏳ Waiting for AI Response'}
                     {state.phase === 'response_received' && '✅ Response Received'}
                     {state.phase === 'programs_extracted' && '📝 Extracting Programs'}
                     {state.phase === 'execution' && '🐍 Executing Programs'}
                     {state.phase === 'iteration_complete' && '🎯 Iteration Complete'}
+                    {state.phase === 'finalizing' && '✨ Finalizing Results'}
+                    {state.phase === 'complete' && '🎉 Complete!'}
                     {!state.phase && 'Processing...'}
                   </h3>
                   <div className="flex items-center gap-2">
