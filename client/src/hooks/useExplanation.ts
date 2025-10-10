@@ -79,6 +79,10 @@ export function useExplanations(puzzleId: string | null) {
           multiTestAverageAccuracy: (raw as any).multiTestAverageAccuracy,
           hasMultiplePredictions: (raw as any).hasMultiplePredictions,
           isPredictionCorrect: (raw as any).isPredictionCorrect,
+          // Map Grover iterative solver fields
+          groverIterations: (raw as any).groverIterations,
+          groverBestProgram: (raw as any).groverBestProgram,
+          iterationCount: (raw as any).iterationCount,
         }));
       } catch (error) {
         console.error("Error fetching explanations:", error);

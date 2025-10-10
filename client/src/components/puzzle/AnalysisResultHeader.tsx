@@ -30,6 +30,7 @@ interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'resul
   showRawDb: boolean;
   setShowRawDb: (show: boolean) => void;
   isSaturnResult: boolean;
+  isGroverResult?: boolean;
   eloMode?: boolean;
 }
 
@@ -96,6 +97,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
   showRawDb,
   setShowRawDb,
   isSaturnResult,
+  isGroverResult = false,
   eloMode = false
 }) => {
   const { toast } = useToast();
@@ -172,6 +174,17 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
           {result.saturnSuccess ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
           <span className="text-xs font-medium">
             {result.saturnSuccess ? 'SOLVED' : 'Incorrect'}
+          </span>
+        </Badge>
+      )}
+
+      {isGroverResult && result.iterationCount && (
+        <Badge 
+          variant="outline" 
+          className="flex items-center gap-1 bg-green-50 border-green-200 text-green-700">
+          <span className="text-xs">🔄</span>
+          <span className="text-xs font-medium">
+            GROVER: {result.iterationCount} iterations
           </span>
         </Badge>
       )}

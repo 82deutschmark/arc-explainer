@@ -27,6 +27,7 @@ export const formatConfidence = (confidence: string | number) => {
 interface AnalysisResultContentProps {
   result: ExplanationData;
   isSaturnResult: boolean;
+  isGroverResult?: boolean;
   showReasoning: boolean;
   setShowReasoning: (show: boolean) => void;
   showAlienMeaning: boolean;
@@ -42,12 +43,14 @@ const SkeletonLoader = ({ className = "", height = "h-4" }: { className?: string
 export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   result,
   isSaturnResult,
+  isGroverResult = false,
   showReasoning,
   setShowReasoning,
   showAlienMeaning,
   setShowAlienMeaning,
   eloMode = false
 }) => {
+  const [showGroverProgram, setShowGroverProgram] = React.useState(false);
   const isOptimistic = result.isOptimistic;
   const status = result.status;
   
@@ -126,7 +129,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h5 className="font-semibold">
-              {isSaturnResult ? '🪐 Saturn Visual Analysis' : 'Pattern Description'}
+              {isSaturnResult ? '🪐 Saturn Visual Analysis' : isGroverResult ? '🔄 Grover Iterative Analysis' : 'Pattern Description'}
             </h5>
             {!isSaturnResult && result.confidence && (
               <Badge variant="outline" className="text-xs">
@@ -160,7 +163,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
       {result.solvingStrategy && (
         <div>
           <h5 className="font-semibold">
-            {isSaturnResult ? 'Visual Solving Process' : 'Solving Strategy'}
+            {isSaturnResult ? 'Visual Solving Process' : isGroverResult ? 'Search Strategy' : 'Solving Strategy'}
           </h5>
           <p className="text-gray-600">{result.solvingStrategy}</p>
         </div>
@@ -168,7 +171,7 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
       {result.hints && result.hints.length > 0 && (
         <div>
           <h5 className="font-semibold">
-            {isSaturnResult ? 'Key Observations' : 'Hints'}
+            {isSaturnResult ? 'Key Observations' : isGroverResult ? 'Program Evolution' : 'Hints'}
           </h5>
           <ul className="list-disc list-inside text-gray-600">
             {result.hints.map((hint, i) => <li key={i}>{hint}</li>)}
@@ -317,6 +320,37 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                   </p>
                 </div>
               )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {isGroverResult && result.groverBestProgram && (
+        <div className="bg-green-50 border border-green-200 rounded">
+          <button
+            onClick={() => setShowGroverProgram(!showGroverProgram)}
+            className="w-full flex items-center justify-between p-3 text-left hover:bg-green-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm">🔄</span>
+              <h5 className="font-semibold text-green-800">Discovered Python Program</h5>
+              <Badge variant="outline" className="text-xs bg-green-50 border-green-200">
+                Best of {result.iterationCount || '?'} iterations
+              </Badge>
+            </div>
+            {showGroverProgram ? (
+              <ChevronUp className="h-4 w-4 text-green-600" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-green-600" />
+            )}
+          </button>
+          {showGroverProgram && (
+            <div className="px-3 pb-3">
+              <div className="bg-white p-3 rounded border border-green-100">
+                <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">
+                  {result.groverBestProgram}
+                </pre>
+              </div>
             </div>
           )}
         </div>
