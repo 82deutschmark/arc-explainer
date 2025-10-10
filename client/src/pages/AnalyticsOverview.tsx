@@ -22,6 +22,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -36,7 +37,6 @@ import {
 // Import existing components
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
-import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
@@ -98,10 +98,8 @@ export default function AnalyticsOverview() {
   const [selectedDataset, setSelectedDataset] = useState<string>('');
 
   // Model comparison state
-  const [comparisonResult, setComparisonResult] = useState<ModelComparisonResult | null>(null);
   const [loadingComparison, setLoadingComparison] = useState<boolean>(false);
-  const [comparisonError, setComparisonError] = useState<string | null>(null);
-  const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState<boolean>(false);
+  const [, navigate] = useLocation();
 
   // Collapsible sections state
   const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
@@ -158,15 +156,11 @@ export default function AnalyticsOverview() {
   }, [availableModels, selectedModelForDataset, selectedModelForComparison, selectedModel3]);
 
 
-  // Set page title and scroll to top
+  // Navigate to comparison page with data
   const handleCompare = async () => {
     if (!selectedModelForDataset || !selectedDataset) return;
 
-    // Open dialog immediately to show loading state
-    setIsComparisonDialogOpen(true);
     setLoadingComparison(true);
-    setComparisonError(null);
-    setComparisonResult(null);
 
     try {
       const models = [
@@ -189,9 +183,12 @@ export default function AnalyticsOverview() {
         throw new Error(errorData.message || 'Failed to fetch comparison data');
       }
       const result = await response.json();
-      setComparisonResult(result.data);
+      
+      // Navigate to dedicated comparison page with data
+      navigate('/model-comparison', { state: { comparisonData: result.data } });
     } catch (error) {
-      setComparisonError(error instanceof Error ? error.message : 'An unknown error occurred');
+      console.error('Comparison error:', error);
+      // You could show a toast here if needed
     } finally {
       setLoadingComparison(false);
     }
@@ -598,15 +595,6 @@ export default function AnalyticsOverview() {
             )}
           </CardContent>
         </Card>
-
-        {/* Model Comparison Dialog - Replaces inline rendering at bottom */}
-        <ModelComparisonDialog
-          open={isComparisonDialogOpen}
-          onOpenChange={setIsComparisonDialogOpen}
-          comparisonResult={comparisonResult}
-          loading={loadingComparison}
-          error={comparisonError}
-        />
 
         {/* Most Difficult Puzzles Section */}
         <Card>
