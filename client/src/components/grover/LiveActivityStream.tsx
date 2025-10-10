@@ -25,6 +25,14 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
   // MUST be before early return - React Rules of Hooks
   const logsLengthRef = React.useRef(logs?.length || 0);
   
+  // Auto-scroll unless paused - MUST be before early return!
+  React.useEffect(() => {
+    if (!isPaused && scrollRef.current && logs && logs.length > logsLengthRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      logsLengthRef.current = logs.length;
+    }
+  }, [logs, isPaused]);
+  
   // Show compact placeholder if no logs
   if (!logs || logs.length === 0) {
     return (
@@ -36,14 +44,6 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
       </Card>
     );
   }
-
-  // Auto-scroll unless paused - use ref to avoid infinite loop
-  React.useEffect(() => {
-    if (!isPaused && scrollRef.current && logs.length > logsLengthRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      logsLengthRef.current = logs.length;
-    }
-  }, [logs, isPaused]);
 
   const getLogColor = (log: string) => {
     if (log.includes('❌') || log.includes('[ERROR]') || log.includes('Error')) return 'text-red-400 font-semibold';
