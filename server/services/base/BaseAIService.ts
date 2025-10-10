@@ -29,6 +29,7 @@ export interface StreamCompletion {
   durationMs?: number;
   metadata?: Record<string, any>;
   responseSummary?: Record<string, any>;
+  error?: string; // Add error message field for robust error reporting
 }
 
 export interface StreamingHarness {
