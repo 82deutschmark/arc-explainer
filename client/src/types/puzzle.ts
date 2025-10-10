@@ -67,6 +67,8 @@ export interface PuzzleGridProps {
 export interface ModelButtonProps {
   model: ModelConfig;
   isAnalyzing: boolean;
+  isStreaming?: boolean;
+  streamingSupported?: boolean;
   explanationCount: number;
   onAnalyze: (modelKey: string) => void;
   disabled: boolean;
