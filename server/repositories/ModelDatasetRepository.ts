@@ -1,14 +1,24 @@
 /**
  * 
- * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR)
- * Date: 2025-09-26T20:43:42-04:00
- * PURPOSE: REAL database queries for model performance on ANY ARC dataset.
+ * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR + ARCHITECTURE FIX 2025-10-10)
+ * Date: 2025-09-26T20:43:42-04:00 (updated 2025-10-10)
+ * PURPOSE: CANONICAL SOURCE for all dataset operations including:
+ * - Model performance queries on ANY ARC dataset
+ * - Dataset discovery (filesystem-based)
+ * - Puzzle ID retrieval from datasets (single source of truth)
+ * 
+ * ARCHITECTURE FIX (2025-10-10): 
+ * - getPuzzleIdsFromDataset() now PUBLIC (was private)
+ * - Used by MetricsRepository for model comparisons (SRP delegation pattern)
+ * - Eliminates DRY violation where MetricsRepository duplicated dataset logic
+ * 
  * Dynamic dataset selection like retry-failed-puzzles.ts - no hardcoded puzzle IDs!
  * FIXED: Correct three-way classification using explicit boolean checks (not just NULL fallback)
  * - CORRECT: is_prediction_correct = true OR multi_test_all_correct = true
  * - INCORRECT: is_prediction_correct = false OR multi_test_all_correct = false  
  * - NOT ATTEMPTED: No entry OR indeterminate (NULL correctness values)
- * SRP and DRY check: Pass - Single responsibility for model dataset performance, reuses database connection patterns
+ * 
+ * SRP and DRY check: Pass - Single responsibility for all dataset operations
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -82,8 +92,10 @@ export class ModelDatasetRepository extends BaseRepository {
 
   /**
    * Get puzzle IDs from a specific dataset directory (exactly like retry-failed-puzzles.ts)
+   * PUBLIC: Now the canonical source for mapping dataset names to puzzle IDs
+   * Used by MetricsRepository for model comparisons (SRP delegation pattern)
    */
-  private getPuzzleIdsFromDataset(datasetName: string): string[] {
+  public getPuzzleIdsFromDataset(datasetName: string): string[] {
     try {
       const directory = path.join(process.cwd(), 'data', datasetName);
       

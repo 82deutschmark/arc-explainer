@@ -1,30 +1,36 @@
 /**
  * Metrics Repository Implementation
  * 
- * Aggregates analytics from AccuracyRepository, TrustworthinessRepository, and FeedbackRepository.
+ * Aggregates analytics from AccuracyRepository, TrustworthinessRepository, FeedbackRepository,
+ * and ModelDatasetRepository.
  * Handles mixed overview metrics and comprehensive dashboard analytics.
  * 
  * SCOPE: This repository handles AGGREGATED ANALYTICS combining:
  * - Pure accuracy data from AccuracyRepository
  * - Trustworthiness data from TrustworthinessRepository  
  * - User feedback data from FeedbackRepository
+ * - Dataset puzzle IDs from ModelDatasetRepository (for model comparisons)
  * - Infrastructure/database performance metrics
  * 
  * RESPONSIBILITIES:
  * - Provide unified dashboard overviews combining multiple data sources
  * - Handle mixed analytics that require data from multiple repositories
  * - Infrastructure and performance monitoring metrics
- * - Cross-repository comparative analytics
+ * - Cross-repository comparative analytics (e.g., multi-model comparisons)
  * 
  * WHAT THIS REPOSITORY DOES NOT HANDLE:
  * - Individual repository concerns (those stay in their respective repositories)
  * - Raw data storage or manipulation (delegates to other repositories)
+ * - Dataset discovery or filesystem operations (delegates to ModelDatasetRepository)
  * 
  * This repository follows the Aggregate pattern, coordinating between
  * specialized repositories without duplicating their logic.
  * 
- * @author Claude
- * @date 2025-08-31
+ * ARCHITECTURE FIX (2025-10-10): Removed puzzleLoader dependency and dataset mapping logic.
+ * Now properly delegates to ModelDatasetRepository for dataset operations (SRP compliance).
+ * 
+ * @author Claude / Cascade
+ * @date 2025-08-31 (updated 2025-10-10)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -836,29 +842,13 @@ export class MetricsRepository extends BaseRepository {
           return result.rows.map(r => r.puzzle_id);
       }
       
-      // CRITICAL FIX: Use puzzleLoader to get actual puzzle IDs from filesystem
-      // Previous LIKE pattern matching failed because puzzle IDs (e.g., '0520fde7') don't contain dataset names
-      // Dataset names come from directory structure (data/evaluation2/) not puzzle ID content
-      const { puzzleLoader } = await import('../services/puzzleLoader');
+      // SRP COMPLIANCE: Delegate to ModelDatasetRepository (single source of truth for dataset operations)
+      // ModelDatasetRepository owns dataset-to-directory mapping and filesystem access
+      // This fixes the bug where puzzleLoader's priority-based filtering excluded valid puzzles
+      const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
+      const puzzleIds = modelDatasetRepo.getPuzzleIdsFromDataset(dataset);
       
-      // Map frontend dataset names to puzzleLoader source enum
-      const datasetSourceMap: Record<string, string> = {
-        'evaluation': 'ARC1-Eval',
-        'training': 'ARC1',
-        'evaluation2': 'ARC2-Eval',
-        'training2': 'ARC2',
-        'arc-heavy': 'ARC-Heavy',
-        'concept-arc': 'ConceptARC'
-      };
-      
-      const source = datasetSourceMap[dataset] || dataset;
-      logger.info(`getPuzzleIdsForDataset: dataset=${dataset}, mapped source=${source}`, 'metrics');
-      
-      const puzzles = puzzleLoader.getPuzzleList({ source: source as any });
-      logger.info(`getPuzzleIdsForDataset: Found ${puzzles.length} puzzles for ${dataset}`, 'metrics');
-      
-      const puzzleIds = puzzles.map(p => p.id).sort();
-      logger.info(`getPuzzleIdsForDataset: Returning puzzle IDs (first 5): ${puzzleIds.slice(0, 5).join(', ')}`, 'metrics');
+      logger.info(`getPuzzleIdsForDataset: dataset=${dataset}, found ${puzzleIds.length} puzzles directly from filesystem`, 'metrics');
       
       return puzzleIds;
   }
