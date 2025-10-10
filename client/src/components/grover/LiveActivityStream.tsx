@@ -22,6 +22,8 @@ interface LiveActivityStreamProps {
 export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivityStreamProps) {
   const [isPaused, setIsPaused] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  // MUST be before early return - React Rules of Hooks
+  const logsLengthRef = React.useRef(logs?.length || 0);
   
   // Show compact placeholder if no logs
   if (!logs || logs.length === 0) {
@@ -36,7 +38,6 @@ export function LiveActivityStream({ logs, maxHeight = "300px" }: LiveActivitySt
   }
 
   // Auto-scroll unless paused - use ref to avoid infinite loop
-  const logsLengthRef = React.useRef(logs.length);
   React.useEffect(() => {
     if (!isPaused && scrollRef.current && logs.length > logsLengthRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
