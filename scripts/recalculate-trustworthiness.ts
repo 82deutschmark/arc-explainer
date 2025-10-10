@@ -28,9 +28,14 @@
  */
 
 import 'dotenv/config';
+import { config } from 'dotenv';
 import { Pool } from 'pg';
+import { fileURLToPath } from 'url';
 import { normalizeConfidence } from '../server/utils/CommonUtilities.js';
 import { logger } from '../server/utils/logger.js';
+
+// Explicitly load .env file
+config({ path: '.env' });
 
 interface DatabaseRow {
   id: number;
@@ -424,7 +429,12 @@ async function main() {
 }
 
 // Run if executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Fixed for Windows: Normalize both paths to forward slashes for comparison
+const scriptPath = fileURLToPath(import.meta.url).replace(/\\/g, '/');
+const argPath = process.argv[1]?.replace(/\\/g, '/');
+const isMainModule = process.argv[1] && scriptPath === argPath;
+
+if (isMainModule) {
   main().catch(error => {
     console.error('\n' + '='.repeat(80));
     console.error('❌ MIGRATION FAILED!');
