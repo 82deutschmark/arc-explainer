@@ -24,6 +24,7 @@ import adminController, * as adminControllerFns from './controllers/adminControl
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
+import { streamController } from "./controllers/streamController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -73,6 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", validation.puzzleAnalysis, asyncHandler(puzzleController.analyze));
   app.post("/api/puzzle/analyze-list", asyncHandler(puzzleController.analyzeList));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
+  app.get("/api/stream/analyze/:taskId/:modelKey", asyncHandler(streamController.startAnalysisStream));
   
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));

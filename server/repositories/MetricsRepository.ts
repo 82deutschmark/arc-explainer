@@ -131,6 +131,29 @@ export interface ComprehensiveDashboard {
   };
 }
 
+export interface PuzzleComparisonDetail {
+  puzzleId: string;
+  model1Result: 'correct' | 'incorrect' | 'not_attempted';
+  model2Result: 'correct' | 'incorrect' | 'not_attempted';
+}
+
+export interface ModelComparisonSummary {
+  bothCorrect: number;
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  bothIncorrect: number;
+  neitherAttempted: number;
+  totalPuzzles: number;
+  model1Name: string;
+  model2Name: string;
+  dataset: string;
+}
+
+export interface ModelComparisonResult {
+  summary: ModelComparisonSummary;
+  details: PuzzleComparisonDetail[];
+}
+
 export interface ModelReliabilityStat {
   modelName: string;
   totalRequests: number;
@@ -650,6 +673,118 @@ export class MetricsRepository extends BaseRepository {
       logger.error(`Error getting model reliability stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
+  }
+
+  async getModelComparison(model1: string, model2: string, dataset: string): Promise<ModelComparisonResult> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model comparison.', 'database');
+      return {
+        summary: {
+          bothCorrect: 0,
+          model1OnlyCorrect: 0,
+          model2OnlyCorrect: 0,
+          bothIncorrect: 0,
+          neitherAttempted: 0,
+          totalPuzzles: 0,
+          model1Name: model1,
+          model2Name: model2,
+          dataset: dataset,
+        },
+        details: [],
+      };
+    }
+
+    try {
+      const puzzleIds = await this.getPuzzleIdsForDataset(dataset);
+      if (puzzleIds.length === 0) {
+        // No puzzles found for this dataset, return empty result
+        return {
+            summary: { bothCorrect: 0, model1OnlyCorrect: 0, model2OnlyCorrect: 0, bothIncorrect: 0, neitherAttempted: 0, totalPuzzles: 0, model1Name: model1, model2Name: model2, dataset },
+            details: []
+        };
+      }
+
+      const query = `
+        WITH latest_explanations AS (
+          SELECT
+            puzzle_id,
+            model_name,
+            (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
+            ROW_NUMBER() OVER(PARTITION BY puzzle_id, model_name ORDER BY created_at DESC) as rn
+          FROM explanations
+          WHERE model_name IN ($1, $2) AND puzzle_id = ANY($3::text[])
+        ),
+        model_results AS (
+          SELECT 
+            puzzle_id,
+            model_name,
+            is_correct
+          FROM latest_explanations
+          WHERE rn = 1
+        )
+        SELECT
+          p.puzzle_id,
+          m1.is_correct as model1_correct,
+          m2.is_correct as model2_correct
+        FROM (SELECT unnest($3::text[]) as puzzle_id) p
+        LEFT JOIN model_results m1 ON p.puzzle_id = m1.puzzle_id AND m1.model_name = $1
+        LEFT JOIN model_results m2 ON p.puzzle_id = m2.puzzle_id AND m2.model_name = $2
+        ORDER BY p.puzzle_id;
+      `;
+
+      const result = await this.query(query, [model1, model2, puzzleIds]);
+
+      let bothCorrect = 0;
+      let model1OnlyCorrect = 0;
+      let model2OnlyCorrect = 0;
+      let bothIncorrect = 0;
+      let neitherAttempted = 0;
+
+      const details: PuzzleComparisonDetail[] = result.rows.map(row => {
+        const model1Result = row.model1_correct === null ? 'not_attempted' : (row.model1_correct ? 'correct' : 'incorrect');
+        const model2Result = row.model2_correct === null ? 'not_attempted' : (row.model2_correct ? 'correct' : 'incorrect');
+
+        if (model1Result === 'correct' && model2Result === 'correct') bothCorrect++;
+        else if (model1Result === 'correct' && model2Result !== 'correct') model1OnlyCorrect++;
+        else if (model1Result !== 'correct' && model2Result === 'correct') model2OnlyCorrect++;
+        else if (model1Result === 'incorrect' && model2Result === 'incorrect') bothIncorrect++;
+        else if (model1Result === 'not_attempted' && model2Result === 'not_attempted') neitherAttempted++;
+
+        return {
+          puzzleId: row.puzzle_id,
+          model1Result,
+          model2Result
+        };
+      });
+
+      return {
+        summary: {
+          bothCorrect,
+          model1OnlyCorrect,
+          model2OnlyCorrect,
+          bothIncorrect,
+          neitherAttempted,
+          totalPuzzles: puzzleIds.length,
+          model1Name: model1,
+          model2Name: model2,
+          dataset
+        },
+        details
+      };
+
+    } catch (error) {
+      logger.error(`Error in getModelComparison: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  private async getPuzzleIdsForDataset(dataset: string): Promise<string[]> {
+      if (dataset === 'all') {
+          const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations ORDER BY puzzle_id');
+          return result.rows.map(r => r.puzzle_id);
+      }
+      const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations WHERE puzzle_id LIKE $1 ORDER BY puzzle_id', [`${dataset}%`]);
+      return result.rows.map(r => r.puzzle_id);
   }
 
   // ==================== HELPER METHODS FOR SRP REFACTORING ====================

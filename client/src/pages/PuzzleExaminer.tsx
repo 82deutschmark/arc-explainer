@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { AnalysisResult } from '@/types/puzzle';
 import { determineCorrectness } from '@shared/utils/correctness';
+import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,7 +57,9 @@ export default function PuzzleExaminer() {
 
   // Set page title with puzzle ID
   React.useEffect(() => {
-    document.title = taskId ? `ARC Puzzle ${taskId}` : 'ARC Puzzle Examiner';
+    const puzzleName = getPuzzleName(taskId);
+    const title = puzzleName ? `${taskId} - ${puzzleName}` : `ARC Puzzle ${taskId}`;
+    document.title = taskId ? title : 'ARC Puzzle Examiner';
   }, [taskId]);
 
   // Early return if no taskId
@@ -208,7 +211,7 @@ export default function PuzzleExaminer() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            Puzzle {taskId}
+            Puzzle {getPuzzleName(taskId) ? `${taskId} - ${getPuzzleName(taskId)}` : taskId}
             {task?.source && (
               <Badge variant="outline" className={`ml-2 ${
                 task.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 

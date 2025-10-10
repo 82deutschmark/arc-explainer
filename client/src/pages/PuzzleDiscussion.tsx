@@ -33,6 +33,8 @@ import { useModels } from '@/hooks/useModels';
 import { useRefinementState } from '@/hooks/refinement/useRefinementState';
 import { useEligibleExplanations } from '@/hooks/useEligibleExplanations';
 import { determineCorrectness } from '@shared/utils/correctness';
+import { formatPuzzleDisplay } from '@shared/utils/puzzleNames';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 
 export default function PuzzleDiscussion() {
   const { taskId } = useParams<{ taskId?: string }>();
@@ -49,7 +51,7 @@ export default function PuzzleDiscussion() {
 
   // Page title
   useEffect(() => {
-    document.title = taskId ? `Discussion - Puzzle ${taskId}` : 'Discussion';
+    document.title = taskId ? `Discussion - ${formatPuzzleDisplay(taskId)}` : 'Discussion';
   }, [taskId]);
 
   // Data hooks
@@ -337,9 +339,7 @@ export default function PuzzleDiscussion() {
         <div className="flex items-center gap-3">
           <Brain className="h-6 w-6 text-purple-600" />
           <h1 className="text-2xl font-bold">Progressive Reasoning</h1>
-          <Badge variant="outline" className="text-sm font-mono">
-            {taskId}
-          </Badge>
+          {taskId && <ClickablePuzzleBadge puzzleId={taskId} clickable={false} />}
         </div>
       </div>
 

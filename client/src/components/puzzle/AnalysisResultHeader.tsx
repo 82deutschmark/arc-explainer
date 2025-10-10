@@ -20,6 +20,7 @@ import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
 import { useToast } from '@/hooks/use-toast';
 import type { ExplanationData } from '@/types/puzzle';
+import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 
 interface AnalysisResultHeaderProps extends Pick<AnalysisResultCardProps, 'result' | 'model'> {
   modelKey: string;
@@ -160,11 +161,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
       )}
       
       {result.puzzleId && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
-          <span className="text-xs text-gray-600">
-            ID: {result.puzzleId}
-          </span>
-        </Badge>
+        <ClickablePuzzleBadge puzzleId={result.puzzleId} variant="neutral" clickable={false} />
       )}
 
       {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (

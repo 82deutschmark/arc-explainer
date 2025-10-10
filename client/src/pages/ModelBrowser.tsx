@@ -15,7 +15,9 @@ import { Database, BarChart3 } from 'lucide-react';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
 import { useToast } from '@/hooks/use-toast';
+import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { apiRequest } from '@/lib/queryClient';
+import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
 
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
@@ -36,6 +38,16 @@ export default function ModelBrowser() {
   const [selectedDataset, setSelectedDataset] = useState<string>('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [analyzingIds, setAnalyzingIds] = useState<Set<string>>(new Set());
+  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const {
+    startStream,
+    closeStream,
+    visibleText,
+    reasoningText,
+    status: streamStatus,
+    summary: streamSummary,
+  } = useAnalysisStreaming();
+  const [currentStreamingPuzzle, setCurrentStreamingPuzzle] = useState<string | null>(null);
 
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
@@ -71,39 +83,103 @@ export default function ModelBrowser() {
     if (!selectedModel || !selectedDataset) return;
 
     setAnalyzingIds(prev => new Set(prev).add(puzzleId));
-    toast({ title: 'Analyzing...', description: `Running ${selectedModel} on ${puzzleId}` });
+    toast({ title: 'Analyzing...', description: `Running ${selectedModel} on ${getPuzzleName(puzzleId) ? `${puzzleId} - ${getPuzzleName(puzzleId)}` : puzzleId}` });
+
+    const encodedModel = encodeURIComponent(selectedModel);
+
+    if (streamingEnabled) {
+      try {
+        setCurrentStreamingPuzzle(puzzleId);
+        startStream(
+          {
+            taskId: puzzleId,
+            modelKey: selectedModel,
+            temperature: 0.2,
+            promptId: 'solver',
+            systemPromptMode: 'ARC',
+            omitAnswer: true,
+          },
+          {
+            onStatus: status => {
+              if ((status as any).state === 'failed') {
+                const message = (status as any).message || 'Streaming failed';
+                toast({ title: 'Error', description: message, variant: 'destructive' });
+              }
+            },
+            onComplete: async summary => {
+              try {
+                const analysis = summary.responseSummary?.analysis as Record<string, unknown> | undefined;
+                if (!analysis) {
+                  throw new Error('Streaming summary missing analysis payload');
+                }
+                const save = await apiRequest('POST', `/api/puzzle/save-explained/${puzzleId}`, {
+                  explanations: {
+                    [selectedModel]: {
+                      ...analysis,
+                      modelKey: selectedModel,
+                    },
+                  },
+                });
+                const saveJson = await save.json();
+                if (!saveJson.success) {
+                  throw new Error(saveJson.message || 'Save failed');
+                }
+
+                toast({ title: 'Completed', description: `Saved analysis for ${getPuzzleName(puzzleId) ? `${puzzleId} - ${getPuzzleName(puzzleId)}` : puzzleId}` });
+                setRefreshKey(k => k + 1);
+              } catch (error: any) {
+                const msg = error?.message || 'Streaming analysis failed';
+                toast({ title: 'Error', description: msg, variant: 'destructive' });
+              } finally {
+                closeStream();
+                setCurrentStreamingPuzzle(null);
+                setAnalyzingIds(prev => { const n = new Set(prev); n.delete(puzzleId); return n; });
+              }
+            },
+            onError: error => {
+              toast({ title: 'Error', description: error.message, variant: 'destructive' });
+              closeStream();
+              setCurrentStreamingPuzzle(null);
+              setAnalyzingIds(prev => { const n = new Set(prev); n.delete(puzzleId); return n; });
+            },
+          }
+        );
+      } catch (error: any) {
+        const msg = error?.message || 'Failed to start streaming analysis';
+        toast({ title: 'Error', description: msg, variant: 'destructive' });
+        closeStream();
+        setCurrentStreamingPuzzle(null);
+        setAnalyzingIds(prev => { const n = new Set(prev); n.delete(puzzleId); return n; });
+      }
+      return;
+    }
 
     try {
-      const encodedModel = encodeURIComponent(selectedModel);
       const body: any = {
         temperature: 0.2,
         promptId: 'solver',
         systemPromptMode: 'ARC',
         omitAnswer: true,
-        retryMode: false
+        retryMode: false,
       };
 
-      // Step 1: Analyze
       const res = await apiRequest('POST', `/api/puzzle/analyze/${puzzleId}/${encodedModel}`, body);
       const resJson = await res.json();
       if (!resJson.success) throw new Error(resJson.message || 'Analysis failed');
       const analysisData = resJson.data;
 
-      // Step 2: Save
       const save = await apiRequest('POST', `/api/puzzle/save-explained/${puzzleId}`, {
         explanations: {
           [selectedModel]: {
             ...analysisData,
-            modelKey: selectedModel
-          }
-        }
+            modelKey: selectedModel,
+          },
+        },
       });
       const saveJson = await save.json();
       if (!saveJson.success) throw new Error(saveJson.message || 'Save failed');
 
-      toast({ title: 'Completed', description: `Saved analysis for ${puzzleId}` });
-
-      // Trigger a fresh fetch of performance
+      toast({ title: 'Completed', description: `Saved analysis for ${getPuzzleName(puzzleId) ? `${puzzleId} - ${getPuzzleName(puzzleId)}` : puzzleId}` });
       setRefreshKey(k => k + 1);
     } catch (err: any) {
       const msg = err?.message || 'Analysis failed';
@@ -301,3 +377,4 @@ export default function ModelBrowser() {
     </div>
   );
 }
+
