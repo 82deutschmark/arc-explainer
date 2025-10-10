@@ -14,7 +14,7 @@ import { saturnService } from '../services/saturnService';
 import { saturnVisualService } from '../services/saturnVisualService';
 import { puzzleLoader } from '../services/puzzleLoader';
 import { explanationService } from '../services/explanationService';
-import { getSessionSnapshot } from '../services/wsService';
+import { getSessionSnapshot, broadcast } from '../services/wsService';
 import { randomUUID } from 'crypto';
 
 export const saturnController = {
@@ -46,13 +46,27 @@ export const saturnController = {
       captureReasoning: req.body?.captureReasoning !== false,
     };
 
+    // Broadcast initial state immediately
+    broadcast(sessionId, {
+      status: 'running',
+      phase: 'initializing',
+      step: 0,
+      message: `Starting Saturn analysis with ${modelKey}...`
+    });
+
     // Kick off analysis async (non-blocking)
     setImmediate(async () => {
       try {
         // Load puzzle
         const task = await puzzleLoader.loadPuzzle(taskId);
         if (!task) {
-          console.error(`[Saturn] Puzzle not found: ${taskId}`);
+          const errorMsg = `Puzzle not found: ${taskId}`;
+          console.error(`[Saturn] ${errorMsg}`);
+          broadcast(sessionId, {
+            status: 'error',
+            phase: 'init',
+            message: errorMsg
+          });
           return;
         }
 
@@ -76,7 +90,14 @@ export const saturnController = {
         console.log(`[Saturn] Analysis complete for ${taskId}, cost: $${result.estimatedCost?.toFixed(4)}`);
 
       } catch (err: unknown) {
-        console.error(`[Saturn] Run error for ${taskId}:`, err);
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        console.error(`[Saturn] Run error for ${taskId}:`, errorMsg, err);
+        // CRITICAL: Broadcast error to UI so user can see what went wrong
+        broadcast(sessionId, {
+          status: 'error',
+          phase: 'runtime',
+          message: `Saturn analysis failed: ${errorMsg}`
+        });
       }
     });
 
