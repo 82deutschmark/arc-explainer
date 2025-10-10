@@ -63,3 +63,7 @@
 - OpenAI GPT-5 mini/nano and Grok-4(-Fast) providers stream via Responses API.
 - Client-side EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) power Model Browser live view.
 - Added unit tests (`npx tsx --test tests/sseUtils.test.ts`) for SSE parsing utilities.
+## Next Steps
+- Extend streaming hook into `GroverSolver.tsx` so Grover UI shows the same live panel (reuse `useAnalysisStreaming`).
+- Update Grover batch scripts to opt into SSE after validating Railway deployment stability.
+- Gather feedback on Model Browser streaming UX before expanding to additional models.
