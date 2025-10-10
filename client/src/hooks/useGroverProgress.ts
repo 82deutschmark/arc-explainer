@@ -63,6 +63,15 @@ export interface GroverProgressState {
     failed: number;
     scores: number[];
   };
+  streamingStatus?: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
+  streamingText?: string;
+  streamingReasoning?: string;
+  streamingMessage?: string;
+  streamingTokenUsage?: {
+    input?: number;
+    output?: number;
+    reasoning?: number;
+  };
 }
 
 export function useGroverProgress(taskId: string | undefined) {
@@ -73,6 +82,8 @@ export function useGroverProgress(taskId: string | undefined) {
     logLines: []
   });
   const wsRef = useRef<WebSocket | null>(null);
+  const sseRef = useRef<EventSource | null>(null);
+  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
 
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
@@ -80,6 +91,14 @@ export function useGroverProgress(taskId: string | undefined) {
       wsRef.current = null;
     }
   }, []);
+
+  const closeEventSource = useCallback(() => {
+    if (sseRef.current) {
+      try { sseRef.current.close(); } catch {}
+      sseRef.current = null;
+    }
+  }, []);
+
 
   const start = useCallback(async (options?: GroverOptions) => {
     if (!taskId) return;
