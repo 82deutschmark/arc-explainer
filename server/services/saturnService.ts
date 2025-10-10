@@ -24,10 +24,18 @@ export class SaturnService extends BaseAIService {
   protected provider = "Saturn";
   
   // Map Saturn model keys to underlying provider models (RESPONSES API compatible only)
+  // Now supports BOTH old format (saturn-*) and new format (direct model keys)
   protected models: Record<string, string> = {
+    // Old format (legacy)
     "saturn-grok-4-fast-reasoning": "grok-4-fast-reasoning",
     "saturn-gpt-5-nano": "gpt-5-nano-2025-08-07",
-    "saturn-gpt-5-mini": "gpt-5-mini-2025-08-07"
+    "saturn-gpt-5-mini": "gpt-5-mini-2025-08-07",
+    // New format (direct model keys) - passthrough
+    "grok-4-fast-reasoning": "grok-4-fast-reasoning",
+    "gpt-5-nano-2025-08-07": "gpt-5-nano-2025-08-07",
+    "gpt-5-mini-2025-08-07": "gpt-5-mini-2025-08-07",
+    "gpt-5-2025-08-07": "gpt-5-2025-08-07",
+    "grok-4": "grok-4"
   };
 
   async analyzePuzzleWithModel(

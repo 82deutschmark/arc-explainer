@@ -1,3 +1,32 @@
+## [4.0.3] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Saturn Solver Responses API Error**
+  - **Problem**: `'OpenAI' object has no attribute 'responses'` error when running Saturn
+  - **Root Cause**: UI was calling OLD Python-based endpoint (`/analyze-with-reasoning`) that tried to use OpenAI Responses API directly from Python, but Python library version doesn't have this attribute
+  - **Solution**: Updated `useSaturnProgress.ts` to call NEW TypeScript-based endpoint (`/analyze`) that properly delegates to OpenAI/Grok services
+  - **Architecture**:
+    - OLD: UI → Python wrapper → OpenAI API ❌ (broken)
+    - NEW: UI → TypeScript Saturn service → OpenAI/Grok services → OpenAI API ✅ (working)
+  - Frontend passes model key directly (e.g., `gpt-5-nano-2025-08-07`)
+  - Saturn service maps to underlying provider models
+  - Supports full reasoning parameters (effort, verbosity, summary type)
+  
+### Changed
+- **Saturn Controller**: Added `reasoningVerbosity` and `reasoningSummaryType` parameters
+- **Saturn Service**: Extended model mapping to support both legacy `saturn-*` format and direct model keys
+- **useSaturnProgress Hook**: Simplified model key handling, removed broken endpoint routing
+
+### Technical Details
+- Files Modified:
+  - `client/src/hooks/useSaturnProgress.ts` - Fixed endpoint routing and model key handling
+  - `server/controllers/saturnController.ts` - Added missing reasoning parameters
+  - `server/services/saturnService.ts` - Extended model key mapping
+- Removed obsolete provider inference logic
+- Default reasoning parameters: effort=high, verbosity=high, summary=detailed
+
+---
+
 ## [4.0.2] - 2025-10-10
 
 ### Added

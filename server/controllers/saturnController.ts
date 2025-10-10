@@ -40,7 +40,9 @@ export const saturnController = {
     const serviceOpts = {
       sessionId, // For WebSocket broadcasting
       previousResponseId: req.body?.previousResponseId as string | undefined,
-      reasoningEffort: (req.body?.reasoningEffort as 'minimal' | 'low' | 'medium' | 'high') || 'medium',
+      reasoningEffort: (req.body?.reasoningEffort as 'minimal' | 'low' | 'medium' | 'high') || 'high',
+      reasoningVerbosity: (req.body?.reasoningVerbosity as 'low' | 'medium' | 'high') || 'high',
+      reasoningSummaryType: (req.body?.reasoningSummaryType as 'auto' | 'detailed') || 'detailed',
       captureReasoning: req.body?.captureReasoning !== false,
     };
 
