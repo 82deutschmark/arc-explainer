@@ -32,6 +32,15 @@ function parseBoolean(value: unknown, fallback?: boolean): boolean | undefined {
   return fallback;
 }
 
+function parseJson<T>(value: unknown): T | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return undefined;
+  }
+}
+
 export const streamController = {
   async startAnalysisStream(req: Request, res: Response) {
     const { taskId, modelKey } = req.params;
@@ -55,8 +64,13 @@ export const streamController = {
       const temperature = parseNumber(req.query.temperature, 0.2);
       const topP = parseNumber(req.query.topP);
       const candidateCount = parseNumber(req.query.candidateCount);
+      const thinkingBudget = parseNumber(req.query.thinkingBudget);
       const captureReasoning = parseBoolean(req.query.captureReasoning, true);
       const omitAnswer = parseBoolean(req.query.omitAnswer, true);
+      const retryMode = parseBoolean(req.query.retryMode, false);
+      const originalExplanationId = parseNumber(req.query.originalExplanationId);
+      const originalExplanation = parseJson(req.query.originalExplanation);
+      const customChallenge = typeof req.query.customChallenge === "string" ? req.query.customChallenge : undefined;
 
       const promptOptions: PromptOptions = {};
       if (typeof req.query.emojiSetKey === "string") {
@@ -70,6 +84,18 @@ export const streamController = {
       }
       if (typeof candidateCount === "number") {
         promptOptions.candidateCount = candidateCount;
+      }
+      if (typeof thinkingBudget === "number") {
+        promptOptions.thinkingBudget = thinkingBudget;
+      }
+      if (retryMode === true) {
+        promptOptions.retryMode = true;
+      }
+      if (originalExplanation) {
+        promptOptions.originalExplanation = originalExplanation;
+      }
+      if (customChallenge) {
+        promptOptions.customChallenge = customChallenge;
       }
 
       const serviceOpts: ServiceOptions = {
@@ -105,6 +131,11 @@ export const streamController = {
           serviceOpts,
           temperature,
           customPrompt,
+          captureReasoning,
+          retryMode,
+          originalExplanationId,
+          originalExplanation,
+          customChallenge,
         })
         .catch((error) => {
           const message = error instanceof Error ? error.message : String(error);
