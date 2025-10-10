@@ -835,8 +835,32 @@ export class MetricsRepository extends BaseRepository {
           const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations ORDER BY puzzle_id');
           return result.rows.map(r => r.puzzle_id);
       }
-      const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations WHERE puzzle_id LIKE $1 ORDER BY puzzle_id', [`${dataset}%`]);
-      return result.rows.map(r => r.puzzle_id);
+      
+      // CRITICAL FIX: Use puzzleLoader to get actual puzzle IDs from filesystem
+      // Previous LIKE pattern matching failed because puzzle IDs (e.g., '0520fde7') don't contain dataset names
+      // Dataset names come from directory structure (data/evaluation2/) not puzzle ID content
+      const { puzzleLoader } = await import('../services/puzzleLoader');
+      
+      // Map frontend dataset names to puzzleLoader source enum
+      const datasetSourceMap: Record<string, string> = {
+        'evaluation': 'ARC1-Eval',
+        'training': 'ARC1',
+        'evaluation2': 'ARC2-Eval',
+        'training2': 'ARC2',
+        'arc-heavy': 'ARC-Heavy',
+        'concept-arc': 'ConceptARC'
+      };
+      
+      const source = datasetSourceMap[dataset] || dataset;
+      logger.info(`getPuzzleIdsForDataset: dataset=${dataset}, mapped source=${source}`, 'metrics');
+      
+      const puzzles = puzzleLoader.getPuzzleList({ source: source as any });
+      logger.info(`getPuzzleIdsForDataset: Found ${puzzles.length} puzzles for ${dataset}`, 'metrics');
+      
+      const puzzleIds = puzzles.map(p => p.id).sort();
+      logger.info(`getPuzzleIdsForDataset: Returning puzzle IDs (first 5): ${puzzleIds.slice(0, 5).join(', ')}`, 'metrics');
+      
+      return puzzleIds;
   }
 
   // ==================== HELPER METHODS FOR SRP REFACTORING ====================

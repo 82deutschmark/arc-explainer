@@ -49,22 +49,27 @@ export const ModelComparisonResults: React.FC<ModelComparisonResultsProps> = ({ 
       </CardHeader>
       <CardContent className="pt-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-xs border-collapse">
             <thead>
-              <tr className="border-b">
-                <th className="text-left py-1 px-2 font-medium">Model</th>
+              <tr className="border-b-2 border-gray-300">
+                <th className="text-left py-2 px-3 font-semibold bg-gray-50 sticky left-0 z-10">Model</th>
                 {puzzleIds.map((puzzleId) => (
-                  <th key={puzzleId} className="text-center py-1 px-2 font-medium min-w-16">
-                    <ClickablePuzzleBadge puzzleId={puzzleId} clickable={true} showName={false} />
+                  <th key={puzzleId} className="text-center py-2 px-2 font-medium min-w-[80px] bg-gray-50">
+                    <ClickablePuzzleBadge 
+                      puzzleId={puzzleId} 
+                      clickable={true} 
+                      showName={true}
+                      className="text-xs font-mono"
+                    />
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {activeModels.map((model) => (
-                <tr key={model.key} className="border-b hover:bg-gray-50">
-                  <td className="py-1 px-2 font-medium truncate max-w-32" title={model.name}>
-                    {model.name}
+                <tr key={model.key} className="border-b hover:bg-gray-100 transition-colors">
+                  <td className="py-2 px-3 font-medium truncate max-w-[200px] bg-white sticky left-0 z-10 border-r" title={model.name}>
+                    <span className="text-sm">{model.name}</span>
                   </td>
                   {details.map((detail) => {
                     const result = model.key === 'model1' ? detail.model1Result
@@ -73,10 +78,12 @@ export const ModelComparisonResults: React.FC<ModelComparisonResultsProps> = ({ 
                                  : detail.model4Result;
                     
                     return (
-                      <td key={detail.puzzleId} className="text-center py-1 px-2">
-                        {result === 'correct' && '✅'}
-                        {result === 'incorrect' && '❌'}
-                        {result === 'not_attempted' && '⏳'}
+                      <td key={detail.puzzleId} className="text-center py-2 px-2">
+                        <span className="text-lg" title={result}>
+                          {result === 'correct' && '✅'}
+                          {result === 'incorrect' && '❌'}
+                          {result === 'not_attempted' && '⏳'}
+                        </span>
                       </td>
                     );
                   })}
