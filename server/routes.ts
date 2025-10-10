@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
   
-  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - ‚ö†Ô∏è MISLEADING ENDPOINTS!
+  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - G‹·n+≈ MISLEADING ENDPOINTS!
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
   // WARNING: Despite name, returns mixed data. accuracyByModel contains trustworthiness-filtered results!
   // Models without trustworthiness scores are excluded from "accuracy" rankings.
@@ -172,6 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Grover iterative solver routes
   app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
+  app.get("/api/stream/grover/:taskId/:modelKey", asyncHandler(groverController.streamAnalyze));
   app.get("/api/grover/status/:sessionId", asyncHandler(groverController.getStatus));
 
   // Batch analysis routes
