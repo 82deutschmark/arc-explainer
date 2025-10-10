@@ -229,7 +229,8 @@ export class OpenAIService extends BaseAIService {
           reasoningLog,
           accumulatedText: aggregates.text,
           accumulatedReasoning: aggregates.reasoning,
-          refusal: aggregates.refusal
+          refusal: aggregates.refusal,
+          analysis: finalModelResponse
         }
       });
 
