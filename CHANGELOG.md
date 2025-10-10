@@ -1,3 +1,52 @@
+## [4.0.6] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Trustworthiness Score Recalculation Migration**
+  - **Problem**: Yesterday's confidence normalization fix (commit 1cf3961) corrected confidence values but didn't recalculate the derived trustworthiness_score field
+  - **Impact**: Trustworthiness scores were calculated using incorrect confidence values (e.g., 0.85 treated as 0.85% instead of 85%, or 1 treated as 1% instead of 100%)
+  - **Solution**: Created migration script `scripts/recalculate-trustworthiness.ts` to recalculate ALL trustworthiness scores
+  - **Trustworthiness Formula** (from responseValidator.ts):
+    - Correct + High Confidence: 0.75 - 1.0 (good alignment)
+    - Correct + Low Confidence: 0.5 - 0.75 (still rewards correctness)
+    - Incorrect + High Confidence: 0.0 - 0.05 (heavily penalizes overconfidence)
+    - Incorrect + Low Confidence: 0.5 - 1.0 (rewards honest uncertainty)
+    - No Confidence: Pure correctness (0.0 or 1.0)
+  - **Default Handling**: Null/undefined/blank confidence defaults to 50
+  - **Correctness Logic**: Uses `multi_test_all_correct ?? is_prediction_correct ?? false`
+  - **Migration Features**:
+    - Dry-run mode for safety (`--verify` flag for stats only)
+    - Batch processing (1000 entries at a time)
+    - Progress reporting every 100 entries
+    - Comprehensive statistics report
+    - Error tracking and logging
+  - **Files Created**:
+    - `scripts/recalculate-trustworthiness.ts` - Migration script with exact logic from responseValidator.ts
+    - `docs/2025-10-10-trustworthiness-recalculation-plan.md` - Detailed migration plan and context
+
+### Technical Details
+- **Root Cause**: Trustworthiness is a DERIVED metric combining confidence + correctness. When confidence values were fixed, trustworthiness wasn't recalculated
+- **Key Distinction**: 
+  - **Confidence** = what the model claims ("I'm 95% confident")
+  - **Trustworthiness** = reliability metric (does confidence predict correctness?)
+- **Migration Process**:
+  1. Fetch all entries from database
+  2. Normalize confidence using `normalizeConfidence()` utility
+  3. Determine correctness using correctness.ts logic
+  4. Calculate trustworthiness using responseValidator.ts formula
+  5. Update database with new trustworthiness_score
+- **Batch Processing**: Processes 1000 entries at a time to avoid memory issues
+- **Progress Tracking**: Reports progress every 100 entries with percentage complete
+- **Statistics**: Tracks min/max/avg trustworthiness, correct/incorrect distribution, null confidence count
+- **Safety**: Dry-run mode by default, requires `--live` flag to write to database
+
+### User Impact
+- **Major Fix**: Trustworthiness leaderboards now reflect accurate reliability metrics
+- **Research Integrity**: Primary research metric now correctly calculated for all historical data
+- **Consistency**: All trustworthiness scores now use normalized confidence values
+- **No User Action Required**: Migration is one-time administrative task
+
+---
+
 ## [4.0.5] - 2025-10-10
 
 ### Added
