@@ -1,3 +1,65 @@
+## [4.0.9] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Terminology Consistency - "solved/failed" → "correct/incorrect"**
+  - **Root Cause**: Frontend hook (`useModelDatasetPerformance.ts`) incorrectly used `solved`/`failed` terminology
+    - Backend repository and database correctly use `correct`/`incorrect` for puzzle-solving accuracy
+    - Hook unnecessarily mapped backend's correct terms to wrong terms
+    - Component tried to use proper `correct`/`incorrect` but TypeScript errors forced wrong usage
+    - Created confusion: "failed" implies API error, not incorrect puzzle solution
+  - **Solution**: Eliminated unnecessary abstraction layer
+    - Updated `ModelDatasetPerformance` interface to use `correct`/`incorrect` (not `solved`/`failed`)
+    - Removed mapping logic - hook now passes through backend data unchanged
+    - Fixed component to consistently use project-standard `correct`/`incorrect` terminology
+    - Updated controller documentation to reflect correct terminology
+  - **Impact**: Consistent terminology across entire stack, eliminates semantic confusion
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/hooks/useModelDatasetPerformance.ts` - Fixed interface and removed mapping
+  - `client/src/pages/AnalyticsOverview.tsx` - Uses correct property names with TypeScript types
+  - `server/controllers/modelDatasetController.ts` - Fixed documentation
+  - `docs/2025-10-10-fix-solved-failed-terminology.md` - Detailed analysis and fix plan
+- **Semantic Clarity**: 
+  - `correct`/`incorrect` = Puzzle-solving accuracy (proper usage)
+  - `failed` = Reserved for API/technical errors only (not puzzle accuracy)
+- **Architecture Benefits**: Single source of truth, no unnecessary data transformations, proper DRY compliance
+
+### User Impact
+- **Immediate Fix**: AnalyticsOverview model performance displays correctly
+- **Developer Experience**: Clear, consistent terminology reduces confusion
+- **Future Maintainability**: Eliminates source of bugs from terminology mismatch
+
+---
+
+## [4.0.8] - 2025-10-10
+
+### Added
+- **Grover Solver Advanced Controls**
+  - **New Feature**: The Grover Solver page now includes an "Advanced Controls" section, mirroring the functionality available on the Puzzle Examiner page
+  - **Temperature Control**: Users can now configure temperature (0.1-2.0) to control creativity/randomness in code generation
+  - **GPT-5 Reasoning Parameters**: Added support for fine-tuning GPT-5 models with:
+    - **Effort Level**: Minimal, Low, Medium, High reasoning effort
+    - **Verbosity**: Low, Medium, High reasoning detail levels
+    - **Summary Type**: Auto or Detailed summary generation
+  - **User Experience**: All controls are disabled during analysis to prevent configuration changes mid-run
+  - **Backend Integration**: Updated `useGroverProgress` hook to accept and forward advanced parameters to backend API
+
+### Changed
+- **Grover Model Selection**
+  - **Model Update**: Removed `grok-4-fast` from Grover model options as it was not intended for use with this solver
+  - **Available Models**: Now only shows `grover-gpt-5-nano` and `grover-gpt-5-mini` which are specifically designed for Grover analysis
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/pages/GroverSolver.tsx` - Added advanced controls UI and state management
+  - `client/src/hooks/useGroverProgress.ts` - Extended options interface and API integration
+  - `client/src/components/grover/GroverModelSelect.tsx` - Removed grok-4-fast model option
+- **Architecture**: Maintains SRP/DRY compliance by reusing existing UI patterns from PuzzleExaminer
+- **User Impact**: Provides users with greater control over Grover solver behavior and aligns capabilities with main puzzle analysis interface
+
+---
+
 ## [4.0.7] - 2025-10-10
 
 ### Fixed
