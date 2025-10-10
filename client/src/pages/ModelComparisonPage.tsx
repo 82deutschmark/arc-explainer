@@ -75,8 +75,6 @@ export interface ModelComparisonResult {
 
 type FilterType = 'all' | 'all_correct' | 'all_incorrect' | 'disagreement' | 'not_attempted';
 
-const ITEMS_PER_PAGE = 30;
-
 export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
   const [, params] = useRoute('/model-comparison');
@@ -84,7 +82,6 @@ export default function ModelComparisonPage() {
   // Get comparison data from location state
   const comparisonData = (window.history.state?.usr?.comparisonData as ModelComparisonResult | null);
   
-  const [currentPage, setCurrentPage] = useState(1);
   const [filterType, setFilterType] = useState<FilterType>('all');
 
   if (!comparisonData) {
@@ -136,18 +133,6 @@ export default function ModelComparisonPage() {
       }
     });
   }, [details, filterType, activeModels]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredDetails.length / ITEMS_PER_PAGE);
-  const paginatedDetails = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredDetails.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredDetails, currentPage]);
-
-  // Reset to page 1 when filter changes
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [filterType]);
 
   // Export to CSV
   const handleExport = () => {
@@ -263,40 +248,15 @@ export default function ModelComparisonPage() {
                 </SelectContent>
               </Select>
               <span className="text-sm text-muted-foreground">
-                Showing {paginatedDetails.length} of {filteredDetails.length} puzzles
+                Showing all {filteredDetails.length} puzzles
               </span>
             </div>
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm font-medium">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </div>
         </CardHeader>
 
         {/* Results Grid */}
         <CardContent>
-          {paginatedDetails.length === 0 ? (
+          {filteredDetails.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               No puzzles match the current filter.
             </div>
@@ -314,7 +274,7 @@ export default function ModelComparisonPage() {
               </div>
 
               {/* Data Rows */}
-              {paginatedDetails.map(detail => (
+              {filteredDetails.map(detail => (
                 <div
                   key={detail.puzzleId}
                   className="grid gap-3 items-center p-3 rounded-md hover:bg-muted/30 transition-colors border"
@@ -339,33 +299,6 @@ export default function ModelComparisonPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* Bottom Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Previous
-          </Button>
-          <div className="flex items-center gap-2 px-4">
-            <span className="text-sm font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
