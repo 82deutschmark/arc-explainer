@@ -110,28 +110,86 @@ export function normalizeConfidence(confidence: any): number {
   if (confidence === null || confidence === undefined) {
     return 50; // Default confidence
   }
-  
-  // Handle numeric values
-  if (typeof confidence === 'number') {
-    return Math.max(0, Math.min(100, Math.round(confidence)));
-  }
-  
-  // Handle string values
-  if (typeof confidence === 'string') {
-    const parsed = parseFloat(confidence);
-    if (isNaN(parsed)) {
-      return 50; // Default for invalid strings
+
+  let numericValue: number | null = null;
+  let originalHadPercentToken = false;
+  let originalWasStringFraction = false;
+
+  // Handle numeric values first
+  if (typeof confidence === 'number' && !Number.isNaN(confidence)) {
+    numericValue = confidence;
+  } else if (typeof confidence === 'string') {
+    const trimmed = confidence.trim();
+    if (trimmed.length === 0) {
+      return 50;
     }
-    return Math.max(0, Math.min(100, Math.round(parsed)));
-  }
-  
-  // Handle boolean values (for edge cases)
-  if (typeof confidence === 'boolean') {
+
+    originalHadPercentToken = /%|percent/i.test(trimmed);
+
+    // Remove textual percent markers and normalize decimal separators
+    const cleaned = trimmed
+      .replace(/percent(age)?/gi, '')
+      .replace(/%/g, '')
+      .replace(',', '.')
+      .trim();
+
+    const match = cleaned.match(/-?\d+(\.\d+)?/);
+    if (match) {
+      numericValue = parseFloat(match[0]);
+      if (!Number.isNaN(numericValue)) {
+        originalWasStringFraction = cleaned.includes('.') || cleaned.startsWith('0');
+      }
+    }
+  } else if (typeof confidence === 'boolean') {
     return confidence ? 100 : 0;
+  } else if (typeof confidence === 'object') {
+    // Handle structures like { confidence: 0.85 } or { value: 0.92 }
+    const candidate =
+      (confidence && typeof confidence.confidence === 'number' && !Number.isNaN(confidence.confidence))
+        ? confidence.confidence
+        : (confidence && typeof confidence.value === 'number' && !Number.isNaN(confidence.value))
+          ? confidence.value
+          : null;
+    if (candidate !== null) {
+      numericValue = candidate;
+    }
   }
-  
-  // Default fallback
-  return 50;
+
+  if (numericValue === null || Number.isNaN(numericValue)) {
+    return 50;
+  }
+
+  let normalized = numericValue;
+
+  if (normalized < 0) {
+    normalized = 0;
+  }
+
+  // Scale fractional inputs (0 < x <= 1) that are intended to represent percentages.
+  // Providers like Grok often send 0.85 to mean 85%; they also send 1 to mean 100.
+  const shouldScaleFraction =
+    normalized > 0 &&
+    normalized <= 1 &&
+    !originalHadPercentToken &&
+    (originalWasStringFraction || normalized !== Math.trunc(normalized));
+
+  if (shouldScaleFraction) {
+    normalized = normalized * 100;
+  } else if (
+    normalized === 1 &&
+    !originalHadPercentToken &&
+    !originalWasStringFraction
+  ) {
+    // Heuristic: bare value `1` from providers like Grok should be treated as 100%.
+    normalized = 100;
+  }
+
+  if (normalized > 100) {
+    normalized = 100;
+  }
+
+  // Round to nearest integer for storage consistency (DB expects 0-100 integer)
+  return Math.round(normalized);
 }
 
 /**
