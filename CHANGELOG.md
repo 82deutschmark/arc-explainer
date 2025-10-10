@@ -1,6 +1,50 @@
-## [4.0.4] - 2025-10-10
+## [4.0.5] - 2025-10-10
 
 ### Added
+- **Multi-Model Comparison Feature**
+  - **Backend Support**: Extended `/api/metrics/compare` endpoint to support comparing 2-4 models simultaneously
+  - **Dynamic Model Selection**: AnalyticsOverview.tsx now supports 4 model selection dropdowns with intelligent defaults:
+    - **Model 1 (Primary)**: gpt-5-pro-2025-10-06-attempt1 (auto-selected if available)
+    - **Model 2 (Grok-4)**: Grok-4 variants (auto-selected if available)
+    - **Model 3 (Claude)**: Claude Sonnet 4.5 (auto-selected if available)
+    - **Model 4 (Optional)**: Any remaining model (user selectable)
+  - **Enhanced Summary Statistics**: New agreement patterns beyond simple pairwise comparison:
+    - All correct, all incorrect, all not attempted
+    - Three correct, two correct, one correct (for 4-model comparisons)
+    - Model-specific "only correct" counters for each model
+  - **Matrix Table Display**: Rewritten ModelComparisonResults component to match PuzzleFeedback.tsx design:
+    - Clean HTML table with puzzle IDs as columns, models as rows
+    - Emojis for results: ✅ (correct), ❌ (incorrect), ⏳ (not attempted)
+    - Clickable puzzle badges in column headers
+    - Hover states and responsive design
+    - Eliminated nested Card components that caused poor layout
+
+### Changed
+- **API Query Parameters**: `/api/metrics/compare` now accepts `model1`, `model2`, `model3`, `model4` (all optional except model1)
+- **Repository Method**: `MetricsRepository.getModelComparison()` now accepts variable number of models (2-4)
+- **SQL Query**: Enhanced to handle multiple models dynamically using `ANY()` operator and conditional aggregations
+- **Frontend UI**: Added 3rd and 4th model selectors with "None" option for optional comparisons
+- **Error Handling**: Improved validation and error messages for multi-model scenarios
+
+### Technical Details
+- **Files Modified**:
+  - `server/controllers/metricsController.ts` - Updated to handle multiple model query parameters
+  - `server/repositories/MetricsRepository.ts` - Enhanced comparison logic for variable model count
+  - `client/src/pages/AnalyticsOverview.tsx` - Added 3rd/4th model selectors and auto-selection logic
+  - `client/src/components/analytics/ModelComparisonResults.tsx` - Complete rewrite using matrix table design
+- **Backward Compatibility**: Existing 2-model comparisons continue to work unchanged
+- **Performance**: Optimized SQL queries to handle multiple models efficiently
+- **UI/UX**: Consistent with existing PuzzleFeedback.tsx Model Performance Matrix design
+
+### User Impact
+- **Major Feature**: Users can now compare up to 4 models simultaneously on any dataset
+- **Better Insights**: See which models excel on which puzzles and identify patterns
+- **Intelligent Defaults**: Popular models (GPT-5, Grok-4, Claude) auto-selected for common comparisons
+- **Consistent Design**: Matches the proven matrix table design from feedback page
+
+---
+
+## [4.0.4] - 2025-10-10
 - **Enhanced Puzzle Name Display Across All Pages**
   - Added puzzle name display next to puzzle IDs in headers across all pages for better visual identification
   - **PuzzleExaminer.tsx**: Updated main heading to show puzzle name alongside ID (e.g., "Puzzle 0520fde7 - Vertical Symmetry")
