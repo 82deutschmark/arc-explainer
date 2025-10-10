@@ -9,10 +9,19 @@
 import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
 import { GROK_JSON_SCHEMA } from "./schemas/grokJsonSchema.js";
-import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
+import type { ResponseStreamEvent } from "openai/resources/responses/responses";
 import { getDefaultPromptId, PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { getApiModelName, getModelConfig, modelSupportsTemperature } from "../config/models/index.js";
 import { logger } from "../utils/logger.js";
+import { parseSseEvent } from "./streaming/sseUtils.js";
+
+type GrokStreamAggregates = {
+  text: string;
+  reasoning: string;
+  summary: string;
+  refusal: string;
+};
 
 const GROK_RESPONSES_ENDPOINT = "https://api.x.ai/v1/responses";
 const DEFAULT_TEMPERATURE = 0.2;
@@ -35,6 +44,10 @@ export class GrokService extends BaseAIService {
     "grok-4-fast-reasoning": "grok-4-fast-reasoning",
     "grok-4-fast-non-reasoning": "grok-4-fast-non-reasoning"
   };
+
+  supportsStreaming(modelKey: string): boolean {
+    return ["grok-4", "grok-4-fast", "grok-4-fast-reasoning", "grok-4-fast-non-reasoning"].includes(modelKey);
+  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -94,7 +107,205 @@ export class GrokService extends BaseAIService {
     }
   }
 
-  getModelInfo(modelKey: string): ModelInfo {
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = DEFAULT_TEMPERATURE,
+    promptId: string = getDefaultPromptId(),
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    if (!this.supportsStreaming(modelKey)) {
+      return super.analyzePuzzleWithStreaming(
+        task,
+        modelKey,
+        taskId,
+        temperature,
+        promptId,
+        customPrompt,
+        options,
+        serviceOpts
+      );
+    }
+
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    const appliedTemperature = typeof temperature === "number" ? temperature : DEFAULT_TEMPERATURE;
+
+    this.logAnalysisStart(modelKey, appliedTemperature, promptPackage.userPrompt.length, serviceOpts);
+
+    const harness = serviceOpts.stream;
+    const controller = this.registerStream(harness);
+    const startedAt = Date.now();
+
+    try {
+      const apiKey = process.env.GROK_API_KEY;
+      if (!apiKey) {
+        throw new Error("GROK_API_KEY is not configured");
+      }
+
+      const messages = this.buildMessages(promptPackage, !!serviceOpts.previousResponseId);
+
+      const payload: Record<string, unknown> = {
+        model: getApiModelName(modelKey),
+        input: messages,
+        store: serviceOpts.store ?? true,
+        parallel_tool_calls: false,
+        truncation: "auto",
+        previous_response_id: serviceOpts.previousResponseId,
+        ...(modelSupportsTemperature(modelKey) && { temperature: appliedTemperature }),
+        ...(typeof serviceOpts.maxOutputTokens === "number" && serviceOpts.maxOutputTokens > 0
+          ? { max_output_tokens: serviceOpts.maxOutputTokens }
+          : {})
+      };
+
+      if (this.supportsStructuredOutput(modelKey)) {
+        payload.response_format = {
+          type: "json_schema",
+          json_schema: GROK_JSON_SCHEMA.schema
+        };
+      }
+
+      const requestOptions: Record<string, unknown> = {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          Accept: "text/event-stream"
+        },
+        body: JSON.stringify({ ...payload, stream: true }),
+        dispatcher: XAI_SHARED_AGENT
+      };
+
+      if (controller) {
+        requestOptions.signal = controller.signal;
+      } else {
+        requestOptions.signal = AbortSignal.timeout(RESPONSE_TIMEOUT_MS);
+      }
+
+      const response = await undiciRequest(GROK_RESPONSES_ENDPOINT, requestOptions as any);
+
+      if (response.statusCode >= 400) {
+        const errorText = await response.body.text();
+        throw new Error(`xAI streaming error: ${response.statusCode} - ${errorText}`);
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let finalPayload: any = null;
+      const aggregates: GrokStreamAggregates = {
+        text: "",
+        reasoning: "",
+        summary: "",
+        refusal: ""
+      };
+
+      for await (const chunk of response.body) {
+        buffer += decoder.decode(chunk, { stream: true });
+        let boundary: number;
+        while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+          const rawEvent = buffer.slice(0, boundary).trim();
+          buffer = buffer.slice(boundary + 2);
+          if (!rawEvent) {
+            continue;
+          }
+
+          const parsed = parseSseEvent(rawEvent);
+          if (!parsed) {
+            continue;
+          }
+
+          if (parsed.event === "done") {
+            continue;
+          }
+
+          const eventPayload = parsed.data ?? {};
+          const streamEvent = {
+            ...(eventPayload ?? {}),
+            type: parsed.event,
+            sequence_number: eventPayload?.sequence_number ?? 0
+          } as ResponseStreamEvent;
+
+          this.handleStreamingEvent(streamEvent, harness, aggregates);
+
+          if (parsed.event === "response.completed") {
+            finalPayload = eventPayload;
+          } else if (parsed.event === "response.failed") {
+            const message = eventPayload?.error?.message ?? "Grok streaming failed";
+            throw new Error(message);
+          }
+        }
+      }
+
+      if (!finalPayload) {
+        throw new Error("Streaming completed without final Grok response");
+      }
+
+      const providerResponse = this.enhanceProviderResponse(
+        finalPayload.response ?? finalPayload,
+        modelKey,
+        taskId
+      );
+
+      const {
+        result,
+        tokenUsage,
+        reasoningLog,
+        reasoningItems,
+        status,
+        incomplete,
+        incompleteReason,
+        responseId
+      } = this.parseProviderResponse(providerResponse, modelKey, false, taskId);
+
+      const finalModelResponse = this.buildStandardResponse(
+        modelKey,
+        appliedTemperature,
+        result,
+        tokenUsage,
+        serviceOpts,
+        reasoningLog,
+        false,
+        reasoningItems,
+        status,
+        incomplete,
+        incompleteReason,
+        promptPackage,
+        promptId,
+        customPrompt,
+        responseId
+      );
+
+      this.finalizeStream(harness, {
+        status: "success",
+        durationMs: Date.now() - startedAt,
+        metadata: {
+          responseId,
+          tokenUsage
+        },
+        responseSummary: {
+          outputText: providerResponse.output_text,
+          reasoningLog,
+          accumulatedText: aggregates.text,
+          refusal: aggregates.refusal,
+          analysis: finalModelResponse
+        }
+      });
+
+      return finalModelResponse;
+    } catch (error) {
+      if (harness?.sessionId) {
+        this.cleanupStream(harness.sessionId);
+      }
+
+      if ((error as any)?.name === "AbortError") {
+        throw error;
+      }
+
+      this.handleAnalysisError(error, modelKey, task);
+    }
+  }  getModelInfo(modelKey: string): ModelInfo {
     const modelConfig = getModelConfig(modelKey);
     const modelName = getApiModelName(modelKey);
 
@@ -274,6 +485,97 @@ export class GrokService extends BaseAIService {
    * 
    * Initial mode: Send full conversation setup (system + user)
    */
+  private handleStreamingEvent(
+    event: ResponseStreamEvent,
+    harness: StreamingHarness | undefined,
+    aggregates: GrokStreamAggregates
+  ): void {
+    switch (event.type) {
+      case "response.output_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.text += delta;
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta,
+            content: (event as any).snapshot ?? aggregates.text,
+            metadata: {
+              sequence: event.sequence_number,
+              outputIndex: (event as any).output_index
+            }
+          });
+        }
+        break;
+      }
+      case "response.reasoning_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.reasoning += delta;
+          this.emitStreamChunk(harness, {
+            type: "reasoning",
+            delta,
+            content: aggregates.reasoning,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.reasoning_summary_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.summary += delta;
+          this.emitStreamChunk(harness, {
+            type: "reasoning_summary",
+            delta,
+            content: aggregates.summary,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.refusal.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.refusal += delta;
+          this.emitStreamChunk(harness, {
+            type: "refusal",
+            delta,
+            content: aggregates.refusal,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.in_progress": {
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "in_progress",
+          step: (event as any).step
+        });
+        break;
+      }
+      case "response.completed": {
+        this.emitStreamEvent(harness, "stream.status", { state: "completed" });
+        break;
+      }
+      case "response.failed":
+      case "error": {
+        const message = (event as any).error?.message ?? "Grok streaming failed";
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "failed",
+          message
+        });
+        break;
+      }
+      default:
+        break;
+    }
+  }
   private buildMessages(
     promptPackage: PromptPackage,
     isContinuation: boolean = false
@@ -447,4 +749,15 @@ export class GrokService extends BaseAIService {
 }
 
 export const grokService = new GrokService();
+
+
+
+
+
+
+
+
+
+
+
 

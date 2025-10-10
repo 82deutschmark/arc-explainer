@@ -27,6 +27,12 @@ This document describes the public APIs that external applications rely on. Thes
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
   - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
+- `GET /api/stream/analyze/:taskId/:modelKey` - Start Server-Sent Events stream for token-by-token analysis
+  - **Params**: `taskId` (string), `modelKey` (string) - Model name
+  - **Query**: Accepts same analysis options as the POST endpoint (`temperature`, `promptId`, `omitAnswer`, `reasoningEffort`, etc.)
+  - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
+  - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
+  - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)

@@ -28,6 +28,7 @@ import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
 import type { ExplanationData } from '@/types/puzzle';
+import { formatPuzzleDisplay } from '@shared/utils/puzzleNames';
 
 const LAST_MODEL_STORAGE_KEY = 'puzzleFeedback:lastModel';
 const LAST_CUSTOM_MODEL_STORAGE_KEY = 'puzzleFeedback:lastCustomModel';
@@ -66,7 +67,7 @@ export default function PuzzleFeedback() {
 
 // Set page title
   React.useEffect(() => {
-    document.title = puzzleId ? `Test Solution - ${puzzleId}` : 'Test Your Solution';
+    document.title = puzzleId ? `Test Solution - ${formatPuzzleDisplay(puzzleId)}` : 'Test Your Solution';
   }, [puzzleId]);
 
   // Fetch puzzle data when puzzleId changes
@@ -445,7 +446,7 @@ export default function PuzzleFeedback() {
                           <th className="text-left py-1 px-2 font-medium">Model</th>
                           {puzzleAnalysisData.puzzleResults.map((puzzle) => (
                             <th key={puzzle.puzzle_id} className="text-center py-1 px-2 font-medium min-w-16">
-                              {puzzle.puzzle_id.slice(0, 8)}
+                              <ClickablePuzzleBadge puzzleId={puzzle.puzzle_id} clickable={false} showName={true} />
                             </th>
                           ))}
                         </tr>

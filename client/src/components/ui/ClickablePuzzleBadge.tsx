@@ -1,16 +1,18 @@
 /**
  * 
- * Author: Cascade
- * Date: 2025-09-26T20:58:02-04:00
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-10T10:04:10-04:00
  * PURPOSE: Reusable clickable puzzle badge component for consistent navigation across the app.
  * Provides click-to-navigate functionality to puzzle pages with proper hover states and styling.
+ * Now displays puzzle IDs with their friendly names (e.g., "007bbfb7 - fractal").
  * Extracted from AnalyticsOverview to make it reusable across components.
  * 
  * USAGE EXAMPLES:
- * <ClickablePuzzleBadge puzzleId="12345" variant="success" />       // Green solved puzzle
- * <ClickablePuzzleBadge puzzleId="67890" variant="error" />         // Red failed puzzle  
- * <ClickablePuzzleBadge puzzleId="abcde" variant="neutral" />       // Gray not attempted
- * <ClickablePuzzleBadge puzzleId="xyz" clickable={false} />         // Non-clickable badge
+ * <ClickablePuzzleBadge puzzleId="007bbfb7" variant="success" />       // Shows "007bbfb7 - fractal"
+ * <ClickablePuzzleBadge puzzleId="67890" variant="error" />            // Red failed puzzle  
+ * <ClickablePuzzleBadge puzzleId="abcde" variant="neutral" />          // Gray not attempted
+ * <ClickablePuzzleBadge puzzleId="xyz" clickable={false} />            // Non-clickable badge
+ * <ClickablePuzzleBadge puzzleId="007bbfb7" showName={false} />        // Shows only ID
  * 
  * SRP and DRY check: Pass - Single responsibility for puzzle badge display and navigation
  */
@@ -18,6 +20,13 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { getPuzzleName } from '@shared/utils/puzzleNames';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ClickablePuzzleBadgeProps {
   puzzleId: string;
@@ -37,6 +46,10 @@ interface ClickablePuzzleBadgeProps {
    * Whether to open in new tab (default: true)
    */
   openInNewTab?: boolean;
+  /**
+   * Whether to display the puzzle name alongside the ID (default: true)
+   */
+  showName?: boolean;
 }
 
 const variantStyles = {
@@ -51,7 +64,8 @@ export const ClickablePuzzleBadge: React.FC<ClickablePuzzleBadgeProps> = ({
   variant = 'default',
   clickable = true,
   className,
-  openInNewTab = true
+  openInNewTab = true,
+  showName = true
 }) => {
   const handleClick = () => {
     if (!clickable) return;
@@ -64,24 +78,35 @@ export const ClickablePuzzleBadge: React.FC<ClickablePuzzleBadgeProps> = ({
     }
   };
 
-  const baseClasses = clickable 
-    ? 'cursor-pointer transition-colors'
-    : '';
+  const puzzleName = showName ? getPuzzleName(puzzleId) : undefined;
+  const tooltipContent = puzzleName ? `${puzzleId} - ${puzzleName}` : puzzleId;
 
-  const variantClasses = variantStyles[variant];
-
-  return (
+  const badgeContent = (
     <Badge
       variant="outline"
       className={cn(
-        baseClasses,
-        variantClasses,
+        clickable ? 'cursor-pointer transition-colors' : '',
+        variantStyles[variant],
         className
       )}
       onClick={clickable ? handleClick : undefined}
-      title={clickable ? `Click to view puzzle ${puzzleId}` : undefined}
     >
       {puzzleId}
     </Badge>
   );
+
+  if (showName && puzzleName) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{badgeContent}</TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltipContent}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return badgeContent;
 };

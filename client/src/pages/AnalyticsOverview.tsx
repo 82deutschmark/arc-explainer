@@ -23,9 +23,34 @@ import {
 // Import existing components
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
+import { ModelComparisonResults } from '@/components/analytics/ModelComparisonResults';
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+
+// Types for the new Model Comparison feature
+export interface PuzzleComparisonDetail {
+  puzzleId: string;
+  model1Result: 'correct' | 'incorrect' | 'not_attempted';
+  model2Result: 'correct' | 'incorrect' | 'not_attempted';
+}
+
+export interface ModelComparisonSummary {
+  bothCorrect: number;
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  bothIncorrect: number;
+  neitherAttempted: number;
+  totalPuzzles: number;
+  model1Name: string;
+  model2Name: string;
+  dataset: string;
+}
+
+export interface ModelComparisonResult {
+  summary: ModelComparisonSummary;
+  details: PuzzleComparisonDetail[];
+}
 
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
@@ -42,7 +67,13 @@ export default function AnalyticsOverview() {
 
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
+  const [selectedModelForComparison, setSelectedModelForComparison] = useState<string>('');
   const [selectedDataset, setSelectedDataset] = useState<string>('');
+
+  // Model comparison state
+  const [comparisonResult, setComparisonResult] = useState<ModelComparisonResult | null>(null);
+  const [loadingComparison, setLoadingComparison] = useState<boolean>(false);
+  const [comparisonError, setComparisonError] = useState<string | null>(null);
 
   // Collapsible sections state
   const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
@@ -79,6 +110,28 @@ export default function AnalyticsOverview() {
 
 
   // Set page title and scroll to top
+  const handleCompare = async () => {
+    if (!selectedModelForDataset || !selectedModelForComparison || !selectedDataset) return;
+
+    setLoadingComparison(true);
+    setComparisonError(null);
+    setComparisonResult(null);
+
+    try {
+      const response = await fetch(`/api/metrics/compare?model1=${encodeURIComponent(selectedModelForDataset)}&model2=${encodeURIComponent(selectedModelForComparison)}&dataset=${encodeURIComponent(selectedDataset)}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch comparison data');
+      }
+      const result = await response.json();
+      setComparisonResult(result.data);
+    } catch (error) {
+      setComparisonError(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setLoadingComparison(false);
+    }
+  };
+
   React.useEffect(() => {
     document.title = 'Analytics Dashboard - ARC Explainer';
     window.scrollTo(0, 0);
@@ -143,7 +196,7 @@ export default function AnalyticsOverview() {
               </div>
 
               <div>
-                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model:</label>
+                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model 1 (Primary):</label>
                 <Select 
                   value={selectedModelForDataset} 
                   onValueChange={setSelectedModelForDataset}
@@ -167,6 +220,35 @@ export default function AnalyticsOverview() {
                   <p className="text-sm text-yellow-600 mt-1">No models found with database entries</p>
                 )}
               </div>
+
+              <div>
+                <label htmlFor="model-compare-select" className="text-sm font-medium mb-2 block">Model 2 (Compare):</label>
+                <Select 
+                  value={selectedModelForComparison} 
+                  onValueChange={setSelectedModelForComparison}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model-compare-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose a model to compare" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableModels.filter(m => m !== selectedModelForDataset).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-center pt-4">
+                <Button 
+                    onClick={handleCompare}
+                    disabled={!selectedModelForDataset || !selectedModelForComparison || selectedModelForDataset === selectedModelForComparison || loadingComparison}
+                    size="lg"
+                >
+                    {loadingComparison ? 'Comparing...' : 'Compare Models'}
+                </Button>
             </div>
 
             {loadingPerformance && selectedModelForDataset && (
@@ -294,6 +376,27 @@ export default function AnalyticsOverview() {
             )}
           </CardContent>
         </Card>
+
+        {/* Comparison Results Section */}
+        {loadingComparison && (
+            <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                <p className="text-sm text-muted-foreground mt-2">Comparing models...</p>
+            </div>
+        )}
+        {comparisonError && (
+            <Card className="bg-red-50 border-red-200">
+                <CardHeader>
+                    <CardTitle className="text-red-700">Comparison Error</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p>{comparisonError}</p>
+                </CardContent>
+            </Card>
+        )}
+        {comparisonResult && (
+            <ModelComparisonResults result={comparisonResult} />
+        )}
 
         {/* Most Difficult Puzzles Section */}
         <Card>
