@@ -404,7 +404,7 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.correct.map((puzzleId) => (
+                        {modelDatasetPerformance.correct.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
                         ))}
                       </div>
@@ -425,7 +425,7 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.incorrect.map((puzzleId) => (
+                        {modelDatasetPerformance.incorrect.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
                         ))}
                       </div>

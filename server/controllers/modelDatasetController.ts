@@ -1,9 +1,9 @@
 /**
  * 
  * Author: Gemini 2.5 Pro
- * Date: 2025-09-26T15:23:00-04:00
+ * Date: 2025-09-26T15:23:00-04:00 (Updated 2025-10-10 - terminology fix)
  * PURPOSE: RESTful controller for model dataset performance API endpoints.
- * Provides REAL database queries showing which ARC evaluation puzzles each model solved/failed/hasn't attempted.
+ * Provides REAL database queries showing which ARC evaluation puzzles each model got correct/incorrect/hasn't attempted.
  * Based on is_prediction_correct and multi_test_all_correct fields from the explanations table.
  * SRP and DRY check: Pass - Single responsibility for model dataset API endpoints only.
  */
