@@ -8,6 +8,12 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ---
 
+## What's New in v4.0.0
+
+- ConceptARC dataset support across loaders, APIs, and UI filters.
+- HuggingFace ingestion of GPT-5-PRO results with correctness-only scoring when confidence is absent.
+- Grover solver integration with UI display, WebSocket streaming, and snapshot hydration.
+
 ## What's New in v3.7.7 🎉
 
 ### Conversation Chaining & Reasoning Persistence ⭐ NEW
