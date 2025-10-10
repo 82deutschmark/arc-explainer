@@ -1,17 +1,20 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T18:43:00-04:00 (Updated for high-density UI)
- * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics with improved information density.
+ * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density)
+ * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics with MAXIMUM information density.
  * 
  * MAJOR UI/UX IMPROVEMENTS (2025-10-10):
  * - CRITICAL FIX: Now prominently displays MODEL NAME (was completely missing!)
  * - Added visual progress bar showing correct/incorrect/not-attempted proportions
- * - Reduced padding from p-4 to p-3 for higher information density
+ * - EXTREME PADDING REDUCTION: p-4→p-3→p-2, gap-4→gap-3→gap-2 for maximum density
  * - Changed from 4 cards to 3 + prominent header card with model/dataset info
  * - Added "Success Rate of Attempted" metric (correct / attempted puzzles)
  * - Increased puzzle badge grid from 2 to 3 columns for denser layout
  * - Added percentage of total on each stat card
  * - Improved visual hierarchy with gradient header card
+ * - Reduced header/content padding to pt-2 px-2 pb-1 for maximum space utilization
+ * - Font size reductions: text-base→text-sm for titles
+ * - Added TODO comments for future metric badges (cost, time, tokens)
  * 
  * Uses proper shadcn/ui components and follows established patterns.
  * SRP and DRY check: Pass - Single responsibility of displaying analytics, reuses existing components
@@ -365,7 +368,7 @@ export default function AnalyticsOverview() {
               <div className="space-y-3">
                 {/* Model & Dataset Header - CRITICAL INFO */}
                 <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-                  <CardContent className="p-3">
+                  <CardContent className="p-2">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -431,10 +434,10 @@ export default function AnalyticsOverview() {
                   </CardContent>
                 </Card>
 
-                {/* Compact Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Compact Summary Stats with Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-3">
+                    <CardContent className="p-2">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="text-3xl font-bold text-green-700">{modelDatasetPerformance.summary.correct}</div>
@@ -447,11 +450,17 @@ export default function AnalyticsOverview() {
                           <div className="text-xs text-green-500">of total</div>
                         </div>
                       </div>
+                      {/* TODO: Add aggregate badges here for correct puzzles:
+                          - Average cost for correct answers
+                          - Average processing time
+                          - Total tokens used
+                          Requires new API endpoint: /api/model-dataset/metrics/:model/:dataset
+                      */}
                     </CardContent>
                   </Card>
                   
                   <Card className="bg-red-50 border-red-200">
-                    <CardContent className="p-3">
+                    <CardContent className="p-2">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="text-3xl font-bold text-red-700">{modelDatasetPerformance.summary.incorrect}</div>
@@ -464,11 +473,12 @@ export default function AnalyticsOverview() {
                           <div className="text-xs text-red-500">of total</div>
                         </div>
                       </div>
+                      {/* TODO: Add aggregate badges for incorrect puzzles */}
                     </CardContent>
                   </Card>
                   
                   <Card className="bg-gray-50 border-gray-200">
-                    <CardContent className="p-3">
+                    <CardContent className="p-2">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="text-3xl font-bold text-gray-700">{modelDatasetPerformance.summary.notAttempted}</div>
@@ -485,15 +495,15 @@ export default function AnalyticsOverview() {
                   </Card>
                 </div>
 
-                {/* Detailed Puzzle Lists - More Compact */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                {/* Detailed Puzzle Lists - Maximum Density */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                   <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base text-green-700 flex items-center gap-2">
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-green-700 flex items-center gap-2">
                         ✅ Correct ({modelDatasetPerformance.correct.length})
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="max-h-80 overflow-y-auto pt-2">
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
                       <div className="grid grid-cols-3 gap-1 text-xs">
                         {modelDatasetPerformance.correct.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
@@ -506,12 +516,12 @@ export default function AnalyticsOverview() {
                   </Card>
 
                   <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base text-red-700 flex items-center gap-2">
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-red-700 flex items-center gap-2">
                         ❌ Incorrect ({modelDatasetPerformance.incorrect.length})
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="max-h-80 overflow-y-auto pt-2">
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
                       <div className="grid grid-cols-3 gap-1 text-xs">
                         {modelDatasetPerformance.incorrect.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
@@ -524,12 +534,12 @@ export default function AnalyticsOverview() {
                   </Card>
 
                   <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base text-gray-700 flex items-center gap-2">
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-gray-700 flex items-center gap-2">
                         ⚠️ Not Attempted ({modelDatasetPerformance.notAttempted.length})
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="max-h-80 overflow-y-auto pt-2">
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
                       <div className="grid grid-cols-3 gap-1 text-xs">
                         {modelDatasetPerformance.notAttempted.map((puzzleId) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="neutral" />

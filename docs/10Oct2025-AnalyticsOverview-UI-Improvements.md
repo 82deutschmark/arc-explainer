@@ -1,7 +1,7 @@
-# Analytics Overview UI/UX Improvements
+# Analytics Overview UI/UX Improvements - MAXIMUM DENSITY
 **Date:** October 10, 2025  
 **Author:** Cascade using Claude Sonnet 4.5  
-**Scope:** AnalyticsOverview.tsx - Model Performance Dashboard
+**Scope:** AnalyticsOverview.tsx, ModelComparisonDialog.tsx, NewModelComparisonResults.tsx - Maximum Information Density
 
 ## Problem Statement
 
@@ -148,3 +148,71 @@ Still uses `ModelDatasetPerformance` from `useModelDatasetPerformance` hook:
 ✅ All existing features preserved
 
 Only visual/layout changes - pure UI enhancement.
+
+---
+
+## Phase 2: MAXIMUM Density Improvements (10 Oct 2025 - 19:00)
+
+User requested even more aggressive padding reduction and preparation for metric badges.
+
+### Additional Changes
+
+**AnalyticsOverview.tsx:**
+- Padding: p-3 → p-2 (header card and stat cards)
+- Gaps: gap-3 → gap-2 (all grids)
+- CardHeader: Custom padding pt-2 px-2 pb-1 (was pb-2)
+- CardContent: Custom padding pt-1 px-2 pb-2 (was default)
+- Title font: text-base → text-sm
+- Added TODO comments for future metric badges (cost, time, tokens)
+
+**ModelComparisonDialog.tsx:**
+- Padding: p-4 → p-2 for stat cards
+- Gaps: gap-4 → gap-2
+- Numbers: text-3xl → text-2xl
+- Labels: text-sm → text-xs
+- Subtitles: text-xs → text-[10px]
+- Spacing: space-y-4 → space-y-2
+- Added TODO comments for aggregate metrics per category
+
+**NewModelComparisonResults.tsx:**
+- CardHeader: pb-1 → pb-1 pt-2 px-2
+- CardContent: pt-0 → pt-0 px-2 pb-2
+- Title: text-sm → text-xs
+- Legend: text-xs → text-[10px]
+
+### Metrics Planned for Future (TODOs Added)
+
+Based on available database fields (estimated_cost, api_processing_time_ms, input_tokens, output_tokens):
+
+1. **Per-category aggregates:**
+   - Average cost for correct puzzles
+   - Average cost for incorrect puzzles
+   - Average processing time
+   - Total tokens used
+
+2. **Comparison aggregates:**
+   - Total cost for puzzles all models got correct
+   - Average time across models
+   - Token usage comparison between models
+
+3. **Required API endpoint:**
+   - `/api/model-dataset/metrics/:model/:dataset`
+   - Returns: `{ avgCostCorrect, avgCostIncorrect, avgTime, totalTokens, ... }`
+
+### Total Density Gains (Original → Final)
+
+| Element | Original | Phase 1 | Phase 2 | Total Reduction |
+|---------|----------|---------|---------|-----------------|
+| Main stat cards padding | 16px | 12px | 8px | 50% |
+| Grid gaps | 16px | 12px | 8px | 50% |
+| Puzzle list headers | default | pb-2 | pt-2 px-2 pb-1 | Optimized |
+| Puzzle list content | default | pt-2 | pt-1 px-2 pb-2 | Optimized |
+| Comparison stat padding | 16px | N/A | 8px | 50% |
+| Title font sizes | text-base | text-base | text-sm | Smaller |
+
+### Files Modified in Phase 2
+
+1. `client/src/pages/AnalyticsOverview.tsx` - Maximum density + TODO comments
+2. `client/src/components/analytics/ModelComparisonDialog.tsx` - Maximum density + TODO comments
+3. `client/src/components/analytics/NewModelComparisonResults.tsx` - Maximum density
+4. `docs/10Oct2025-AnalyticsOverview-UI-Improvements.md` - Updated documentation
