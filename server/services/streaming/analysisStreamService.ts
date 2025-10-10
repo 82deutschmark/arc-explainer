@@ -11,10 +11,10 @@ const STREAMING_ENABLED = process.env.ENABLE_SSE_STREAMING === 'true';
 
 import { nanoid } from "nanoid";
 import type { Request } from "express";
-import { aiServiceFactory } from "../aiServiceFactory";
-import { puzzleService } from "../puzzleService";
+import { puzzleAnalysisService } from "../puzzleAnalysisService";
 import { sseStreamManager } from "./SSEStreamManager";
 import { logger } from "../../utils/logger";
+import { aiServiceFactory } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
 
@@ -27,6 +27,11 @@ export interface StreamAnalysisPayload {
   serviceOpts?: ServiceOptions;
   temperature?: number;
   customPrompt?: string;
+  captureReasoning?: boolean;
+  retryMode?: boolean;
+  originalExplanationId?: number;
+  originalExplanation?: any;
+  customChallenge?: string;
 }
 
 export class AnalysisStreamService {
@@ -54,36 +59,55 @@ export class AnalysisStreamService {
 
     try {
       sseStreamManager.sendEvent(sessionId, "stream.status", { state: "starting" });
-      const puzzle = await puzzleService.getPuzzleById(taskId);
       const promptId = payload.promptId ?? "solver";
       const promptOptions = payload.options ?? {};
       const temperature = payload.temperature ?? 0.2;
       const customPrompt = payload.customPrompt;
-      const serviceOpts: ServiceOptions = {
-        ...(payload.serviceOpts ?? {}),
-        stream: {
-          sessionId,
-          emit: (chunk) => {
-            sseStreamManager.sendEvent(sessionId, "stream.chunk", chunk);
-          },
-          end: (summary) => {
-            sseStreamManager.close(sessionId, summary);
-          },
-          emitEvent: (event, data) => {
-            sseStreamManager.sendEvent(sessionId, event, data);
-          },
+      const captureReasoning = payload.captureReasoning ?? true;
+      const retryMode = payload.retryMode ?? false;
+      const streamHarness = {
+        sessionId,
+        emit: (chunk: any) => {
+          sseStreamManager.sendEvent(sessionId, "stream.chunk", chunk);
+        },
+        end: (summary: any) => {
+          sseStreamManager.close(sessionId, summary);
+        },
+        emitEvent: (event: string, data: any) => {
+          sseStreamManager.sendEvent(sessionId, event, data);
         },
       };
 
-      await aiService.analyzePuzzleWithStreaming(
-        puzzle,
-        decodedModel,
+      const baseServiceOpts: ServiceOptions = {
+        ...(payload.serviceOpts ?? {}),
+        stream: streamHarness,
+      };
+
+      await puzzleAnalysisService.analyzePuzzleStreaming(
         taskId,
-        temperature,
-        promptId,
-        customPrompt,
-        promptOptions,
-        serviceOpts
+        decodedModel,
+        {
+          temperature,
+          captureReasoning,
+          promptId,
+          customPrompt,
+          emojiSetKey: promptOptions.emojiSetKey as string | undefined,
+          omitAnswer: promptOptions.omitAnswer as boolean | undefined,
+          topP: promptOptions.topP as number | undefined,
+          candidateCount: promptOptions.candidateCount as number | undefined,
+          thinkingBudget: promptOptions.thinkingBudget as number | undefined,
+          reasoningEffort: baseServiceOpts.reasoningEffort,
+          reasoningVerbosity: baseServiceOpts.reasoningVerbosity,
+          reasoningSummaryType: baseServiceOpts.reasoningSummaryType,
+          systemPromptMode: baseServiceOpts.systemPromptMode,
+          retryMode,
+          originalExplanation: payload.originalExplanation,
+          originalExplanationId: payload.originalExplanationId,
+          customChallenge: payload.customChallenge,
+          previousResponseId: baseServiceOpts.previousResponseId,
+        },
+        streamHarness,
+        baseServiceOpts
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
