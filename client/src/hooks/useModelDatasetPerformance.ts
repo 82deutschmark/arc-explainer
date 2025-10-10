@@ -32,6 +32,34 @@ export interface DatasetInfo {
   path: string;
 }
 
+export interface ModelDatasetMetrics {
+  modelName: string;
+  dataset: string;
+  overall: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    totalTime: number;
+    avgTokens: number;
+    totalTokens: number;
+  };
+  correct: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
+  incorrect: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
+}
+
 interface UseModelDatasetPerformanceResult {
   performance: ModelDatasetPerformance | null;
   loading: boolean;
@@ -181,4 +209,58 @@ export function useAvailableDatasets(): UseAvailableDatasetsResult {
   }, []);
 
   return { datasets, loading, error };
+}
+
+/**
+ * Hook for fetching aggregate metrics (cost, time, tokens) for a model on a dataset
+ * SRP: Single responsibility - fetch metrics data only
+ * DRY: Follows same pattern as useModelDatasetPerformance
+ */
+export function useModelDatasetMetrics(modelName: string | null, datasetName: string | null): {
+  metrics: ModelDatasetMetrics | null;
+  loading: boolean;
+  error: string | null;
+} {
+  const [metrics, setMetrics] = useState<ModelDatasetMetrics | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!modelName || !datasetName) {
+      setMetrics(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    async function fetchMetrics() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/model-dataset/metrics/${encodeURIComponent(modelName || '')}/${encodeURIComponent(datasetName || '')}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setMetrics(data.data);
+        } else {
+          throw new Error(data.message || 'Failed to fetch model metrics');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        setMetrics(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMetrics();
+  }, [modelName, datasetName]);
+
+  return { metrics, loading, error };
 }

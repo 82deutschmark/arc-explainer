@@ -91,6 +91,37 @@ class ModelDatasetController {
       });
     }
   });
+
+  /**
+   * @desc    Get aggregate metrics (cost, time, tokens) for a model on a specific dataset
+   * @route   GET /api/model-dataset/metrics/:modelName/:datasetName
+   * @access  Public
+   */
+  getModelDatasetMetrics = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { modelName, datasetName } = req.params;
+      
+      if (!modelName || !datasetName) {
+        return res.status(400).json({
+          success: false,
+          message: 'Model name and dataset name are required',
+        });
+      }
+
+      const metrics = await repositoryService.modelDataset.getModelDatasetMetrics(modelName, datasetName);
+
+      res.status(200).json({
+        success: true,
+        data: metrics,
+      });
+    } catch (error) {
+      logger.error(`Error in getModelDatasetMetrics: ${error instanceof Error ? error.message : String(error)}`, 'api');
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving model dataset metrics',
+      });
+    }
+  });
 }
 
 export default new ModelDatasetController();
