@@ -28,6 +28,12 @@
   - **Risk**: Per `docs/09102025-Grover-E2E-Assessment.md`, 3 critical bugs were found during that session without testing. This implementation adds more untested code on top of partially tested code.
   - **Next Steps**: Run Grover solver on test puzzle, check database fields, verify predictions are correct, verify validation metrics computed correctly
   - **Commits**: ac833eb (test execution infrastructure), 84b6de5 (docs + changelog), [uncommitted validation integration]
+- **ConceptARC Dataset Enablement** - Finished wiring ConceptARC into loaders, services, and UI filters
+  - Added ConceptARC to shared enums, puzzle loader priority list, API filters, and validation middleware
+  - Cleaned frontend selects (Puzzle Browser, Discussion, Analytics, DB Viewer) to include ConceptARC without formatting artifacts
+  - Restored Grover WebSocket error handling status transitions after expanding diagnostics
+  - Extended HuggingFace ingestion script to auto-detect ConceptARC sources
+  - Documented cleanup plan in `docs/2025-10-09-plan-conceptarc-cleanup.md`
 
 ### Version 3.9.1
 
