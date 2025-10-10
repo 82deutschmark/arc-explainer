@@ -12,6 +12,9 @@ import { logger as baseLogger, type LogLevel } from './logger.js';
 import { broadcast } from '../services/wsService.js';
 import { AsyncLocalStorage } from 'async_hooks';
 
+// Re-export LogLevel for consumers
+export type { LogLevel };
+
 // Store session context across async calls
 const sessionStorage = new AsyncLocalStorage<{ sessionId: string }>();
 

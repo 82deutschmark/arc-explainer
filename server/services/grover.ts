@@ -13,7 +13,7 @@ import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, M
 import type { PromptOptions } from "./promptBuilder.js";
 import { aiServiceFactory } from "./aiServiceFactory.js";
 import { pythonBridge } from "./pythonBridge.js";
-import { logger, type LogLevel } from "../utils/logger.js";
+import { logger, type LogLevel } from "../utils/broadcastLogger.js";
 import { broadcast } from "./wsService.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
 import { validateSolverResponse, validateSolverResponseMulti } from "./responseValidator.js";
@@ -61,21 +61,9 @@ export class GroverService extends BaseAIService {
     let context = this.buildInitialContext(task);
 
     // LOG WRAPPER: Broadcasts ALL logs to browser WebSocket
+    // NOTE: Using broadcastLogger which auto-broadcasts via AsyncLocalStorage session context
     const log = (message: string, level: LogLevel = 'info') => {
-      // Always log to terminal
       logger.service(this.provider, message, level);
-      // ALSO broadcast to browser if session exists
-      if (sessionId) {
-        try {
-          broadcast(sessionId, {
-            status: 'running',
-            phase: 'log',
-            message,
-            level,
-            timestamp: new Date().toISOString()
-          });
-        } catch {}
-      }
     };
 
     const sendProgress = (payload: Record<string, any>) => {
@@ -167,7 +155,7 @@ export class GroverService extends BaseAIService {
       });
 
       // 2. Extract programs from LLM response
-      const programs = this.extractPrograms(llmResponse, log);
+      const programs = this.extractPrograms(llmResponse);
 
       if (programs.length === 0) {
         const warning = `⚠️ Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
@@ -428,7 +416,7 @@ def transform(grid):
 \`\`\``;
   }
 
-  private extractPrograms(response: AIResponse, log: (msg: string, level?: LogLevel) => void): string[] {
+  private extractPrograms(response: AIResponse): string[] {
     const programs: string[] = [];
     
     // CRITICAL: When JSON parsing fails, OpenAI stores raw text in _rawResponse
@@ -443,11 +431,11 @@ def transform(grid):
     ].filter(Boolean).join('\n\n');
     
     if (!textSources) {
-      log('⚠️ No text content in LLM response for program extraction', 'warn');
+      logger.service(this.provider, '⚠️ No text content in LLM response for program extraction', 'warn');
       return programs;
     }
     
-    log(`📖 Parsing ${textSources.length} characters of response text...`);
+    logger.service(this.provider, `📖 Parsing ${textSources.length} characters of response text...`);
     
     // Extract all Python code blocks (with or without language tag)
     // Handle both ```python and ``` formats
@@ -463,21 +451,21 @@ def transform(grid):
         const code = match[1].trim();
         if (code.includes('def transform') && !programs.includes(code)) {
           programs.push(code);
-          log(`✅ Found program #${programs.length} (${code.length} chars, ${code.split('\n').length} lines)`);
+          logger.service(this.provider, `✅ Found program #${programs.length} (${code.length} chars, ${code.split('\n').length} lines)`);
         }
       }
     }
     
-    log(`📊 Extraction complete: ${programs.length} program(s) found`);
+    logger.service(this.provider, `📊 Extraction complete: ${programs.length} program(s) found`);
     
     if (programs.length === 0) {
-      log('⚠️ No Python code blocks with "def transform" found in response', 'warn');
-      log(`📄 Response preview (first 500 chars):\n${textSources.substring(0, 500)}`, 'warn');
+      logger.service(this.provider, '⚠️ No Python code blocks with "def transform" found in response', 'warn');
+      logger.service(this.provider, `📄 Response preview (first 500 chars):\n${textSources.substring(0, 500)}`, 'warn');
       
       // Check if code exists but lacks transform function
       const hasCodeBlocks = /```[\s\S]*?```/.test(textSources);
       if (hasCodeBlocks) {
-        log('⚠️ Code blocks found but missing "def transform(grid)" function', 'warn');
+        logger.service(this.provider, '⚠️ Code blocks found but missing "def transform(grid)" function', 'warn');
       }
     }
     
