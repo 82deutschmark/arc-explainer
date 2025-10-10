@@ -282,6 +282,38 @@ export function useGroverProgress(taskId: string | undefined) {
 
   }, [taskId, closeSocket]);
 
+  // Poll snapshot on mount if sessionId exists (page reload mid-run)
+  useEffect(() => {
+    if (!sessionId) return;
+    
+    // Only fetch if state is empty/idle (page was reloaded)
+    if (state.status !== 'idle' && state.iterations && state.iterations.length > 0) return;
+    
+    const fetchSnapshot = async () => {
+      try {
+        const snapshotRes = await apiRequest('GET', `/api/grover/status/${sessionId}`);
+        const snapshotJson = await snapshotRes.json();
+        const snapshot = snapshotJson?.data?.snapshot;
+        if (snapshot && typeof snapshot === 'object') {
+          console.log('[GROVER] Rehydrating from snapshot after reload:', snapshot);
+          setState(prev => ({
+            ...prev,
+            ...snapshot,
+            status: snapshot.status || prev.status,
+            iteration: typeof snapshot.iteration === 'number' ? snapshot.iteration : prev.iteration,
+            totalIterations: snapshot.totalIterations || prev.totalIterations,
+            logLines: Array.isArray(snapshot.logLines) ? snapshot.logLines : prev.logLines,
+            iterations: Array.isArray(snapshot.iterations) ? snapshot.iterations : prev.iterations
+          }));
+        }
+      } catch (err) {
+        console.warn('[GROVER] Failed to fetch snapshot on reload:', err);
+      }
+    };
+    
+    fetchSnapshot();
+  }, [sessionId]); // Only depend on sessionId, not state
+
   useEffect(() => {
     return () => {
       closeSocket();
