@@ -1,3 +1,33 @@
+## [4.0.2] - 2025-10-10
+
+### Added
+- **Saturn Solver: Dynamic Model Selection & Reasoning Controls**
+  - Replaced hardcoded model list (GPT-5, Claude 4, Grok 4) with full model selector using `useModels()` hook
+  - Added temperature control slider (0-2 range) for models that support it
+  - Added GPT-5 reasoning controls:
+    - **Reasoning Effort**: minimal, low, medium, high
+    - **Reasoning Verbosity**: low, medium, high  
+    - **Reasoning Summary Type**: auto, detailed
+  - Added collapsible "Advanced Settings" panel with Settings button
+  - Temperature and reasoning parameters now properly forwarded to backend API
+  - Model selector automatically detects which models support temperature
+  - Reasoning controls only show for GPT-5 models (gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07)
+
+### Changed
+- **SaturnModelSelect.tsx**: Converted from hardcoded dropdown to dynamic model list using `useModels()` hook
+- **SaturnVisualSolver.tsx**: Added state management for temperature and reasoning parameters
+- Backend Saturn controller already supported these parameters - now fully connected to UI
+
+### Technical Details
+- Files Modified:
+  - `client/src/components/saturn/SaturnModelSelect.tsx` - Dynamic model loading
+  - `client/src/pages/SaturnVisualSolver.tsx` - Advanced settings UI
+- Pattern: Follows same approach as PuzzleDiscussion page for consistency
+- UI: Uses shadcn/ui Slider and Select components for controls
+- Default model changed from string literal 'GPT-5' to model key 'gpt-5-nano-2025-08-07'
+
+---
+
 ## [4.0.1] - 2025-10-09 11:16 PM
 
 ### Fixed
