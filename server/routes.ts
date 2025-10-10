@@ -169,6 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Grover iterative solver routes
   app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
+  app.get("/api/grover/status/:sessionId", asyncHandler(groverController.getStatus));
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));

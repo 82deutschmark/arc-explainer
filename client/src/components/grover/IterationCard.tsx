@@ -97,7 +97,7 @@ export function IterationCard({
   const programCount = data?.programs?.length ?? 0;
 
   return (
-    <Card className="mb-2">
+    <Card className="mb-2 border-2 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -112,10 +112,10 @@ export function IterationCard({
           <div className="flex items-center gap-3">
             {data && (
               <>
-                <span className="text-xs text-gray-600">
+                <span className="text-xs font-semibold text-gray-700 bg-gray-100 px-2 py-1 rounded">
                   {programCount} {programCount === 1 ? 'program' : 'programs'}
                 </span>
-                <Badge variant="default" className="bg-green-600 text-xs">
+                <Badge variant="default" className="bg-green-600 text-xs font-bold shadow-sm">
                   Best: {bestScore.toFixed(1)}/10
                 </Badge>
               </>
@@ -123,9 +123,13 @@ export function IterationCard({
             {data && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-gray-500 hover:text-gray-700"
+                className={`flex items-center justify-center w-8 h-8 rounded-lg border-2 transition-all shadow-sm hover:shadow-md ${
+                  isExpanded 
+                    ? 'bg-blue-600 border-blue-700 text-white hover:bg-blue-700' 
+                    : 'bg-white border-gray-300 text-gray-600 hover:border-blue-400 hover:bg-blue-50'
+                }`}
               >
-                {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
               </button>
             )}
           </div>
@@ -165,20 +169,34 @@ export function IterationCard({
             {/* Prompt & Response Info */}
             {(promptPreview || conversationChain || tokenUsage) && (
               <div className="border-t pt-3">
-                <h4 className="text-xs font-semibold mb-2">📤 Prompt & Response</h4>
+                <h4 className="text-sm font-bold mb-3 text-gray-900 flex items-center gap-2">
+                  <span>📤</span> Prompt & Response
+                </h4>
                 <div className="space-y-2">
-                  {promptPreview && (
-                    <Collapsible>
-                      <CollapsibleTrigger className="text-xs text-blue-600 hover:text-blue-800">
-                        View Prompt Preview ({promptPreview.length} chars)
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <pre className="mt-1 p-2 bg-gray-50 rounded text-xs overflow-x-auto max-h-40 leading-tight">
-                          {promptPreview}
-                        </pre>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
+                  {promptPreview && (() => {
+                    const [isPromptOpen, setIsPromptOpen] = React.useState(false);
+                    return (
+                      <Collapsible open={isPromptOpen} onOpenChange={setIsPromptOpen}>
+                        <CollapsibleTrigger asChild>
+                          <button className="w-full flex items-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 hover:border-blue-400 rounded-lg transition-all shadow-sm hover:shadow-md cursor-pointer">
+                            <div className={`flex items-center justify-center w-5 h-5 rounded ${
+                              isPromptOpen ? 'bg-blue-600 text-white' : 'bg-blue-200 text-blue-700'
+                            } transition-all`}>
+                              {isPromptOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                            </div>
+                            <span className="text-xs font-bold text-blue-900">
+                              View Prompt Preview ({promptPreview.length.toLocaleString()} chars)
+                            </span>
+                          </button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <pre className="mt-2 p-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-xs overflow-x-auto max-h-60 leading-relaxed">
+                            {promptPreview}
+                          </pre>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    );
+                  })()}
                   {conversationChain && (
                     <div className="text-xs bg-blue-50 p-2 rounded">
                       <span className="text-gray-600">🔗 Conversation Chain:</span>
@@ -208,48 +226,67 @@ export function IterationCard({
             
             {/* Programs Generated */}
             <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold mb-2">Programs Generated</h4>
+              <h4 className="text-sm font-bold mb-3 text-gray-900 flex items-center gap-2">
+                <span className="text-purple-600">📝</span> Programs Generated
+                <Badge variant="outline" className="text-xs">{data.programs.length}</Badge>
+              </h4>
               <div className="space-y-2">
                 {data.programs.map((program, idx) => {
                   const result = data.executionResults.find(r => r.programIdx === idx);
                   const isBest = idx === data.best.programIdx;
+                  const [isOpen, setIsOpen] = React.useState(false);
                   
                   return (
-                    <Collapsible key={idx}>
-                      <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                        <div className="flex items-center gap-2">
-                          <CollapsibleTrigger className="text-xs font-medium text-blue-600 hover:text-blue-800">
-                            Program {idx + 1}
-                          </CollapsibleTrigger>
-                          {isBest && (
-                            <Badge variant="default" className="text-xs bg-green-600">
-                              BEST
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-600">
-                            {program.split('\n').length} lines
-                          </span>
-                          {result && (
-                            <Badge 
-                              variant={result.error ? "destructive" : "outline"}
-                              className="text-xs"
-                            >
-                              {result.error ? 'Error' : `${result.score.toFixed(1)}/10`}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      <CollapsibleContent>
-                        <pre className="mt-1 p-2 bg-gray-900 text-gray-100 rounded text-xs overflow-x-auto leading-tight max-h-60">
-                          <code>{program}</code>
-                        </pre>
-                        {result?.error && (
-                          <div className="mt-1 p-2 bg-red-50 text-red-700 rounded text-xs">
-                            <strong>Error:</strong> {result.error}
+                    <Collapsible key={idx} open={isOpen} onOpenChange={setIsOpen}>
+                      <CollapsibleTrigger asChild>
+                        <button className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all shadow-sm hover:shadow-md cursor-pointer ${
+                          isBest 
+                            ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-400 hover:border-green-500 hover:from-green-100 hover:to-emerald-100' 
+                            : 'bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <div className={`flex items-center justify-center w-6 h-6 rounded ${
+                              isOpen ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                            } transition-all`}>
+                              {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </div>
+                            <span className="text-sm font-bold text-gray-900">
+                              Program {idx + 1}
+                            </span>
+                            {isBest && (
+                              <Badge variant="default" className="text-xs bg-green-600 font-bold shadow-sm">
+                                ⭐ BEST
+                              </Badge>
+                            )}
                           </div>
-                        )}
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                              {program.split('\n').length} lines
+                            </span>
+                            {result && (
+                              <Badge 
+                                variant={result.error ? "destructive" : "outline"}
+                                className={`text-sm font-bold shadow-sm ${
+                                  result.error ? '' : 'bg-blue-50 border-blue-400'
+                                }`}
+                              >
+                                {result.error ? '❌ Error' : `${result.score.toFixed(1)}/10`}
+                              </Badge>
+                            )}
+                          </div>
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mt-2 border-2 border-gray-200 rounded-lg overflow-hidden">
+                          <pre className="p-3 bg-gray-900 text-gray-100 text-xs overflow-x-auto leading-relaxed max-h-96">
+                            <code>{program}</code>
+                          </pre>
+                          {result?.error && (
+                            <div className="p-3 bg-red-50 text-red-700 text-xs border-t-2 border-red-200">
+                              <strong className="font-bold">❌ Error:</strong> {result.error}
+                            </div>
+                          )}
+                        </div>
                       </CollapsibleContent>
                     </Collapsible>
                   );
@@ -259,26 +296,28 @@ export function IterationCard({
 
             {/* Execution Summary */}
             <div className="border-t pt-3">
-              <h4 className="text-xs font-semibold mb-2">Execution Summary</h4>
-              <div className="bg-gray-50 p-2 rounded">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-gray-600">Total Programs:</span>
-                    <span className="ml-2 font-medium">{programCount}</span>
+              <h4 className="text-sm font-bold mb-3 text-gray-900 flex items-center gap-2">
+                <span className="text-orange-600">📊</span> Execution Summary
+              </h4>
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-3 rounded-lg border-2 border-gray-200">
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-white p-2 rounded border border-gray-200">
+                    <span className="text-gray-600 font-medium">Total Programs:</span>
+                    <span className="ml-2 font-bold text-gray-900">{programCount}</span>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Best Score:</span>
-                    <span className="ml-2 font-medium text-green-600">{bestScore.toFixed(1)}/10</span>
+                  <div className="bg-white p-2 rounded border border-gray-200">
+                    <span className="text-gray-600 font-medium">Best Score:</span>
+                    <span className="ml-2 font-bold text-green-600">{bestScore.toFixed(1)}/10</span>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Successful:</span>
-                    <span className="ml-2 font-medium">
+                  <div className="bg-white p-2 rounded border border-gray-200">
+                    <span className="text-gray-600 font-medium">Successful:</span>
+                    <span className="ml-2 font-bold text-blue-600">
                       {data.executionResults.filter(r => !r.error).length}
                     </span>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Failed:</span>
-                    <span className="ml-2 font-medium text-red-600">
+                  <div className="bg-white p-2 rounded border border-gray-200">
+                    <span className="text-gray-600 font-medium">Failed:</span>
+                    <span className="ml-2 font-bold text-red-600">
                       {data.executionResults.filter(r => r.error).length}
                     </span>
                   </div>
@@ -289,17 +328,19 @@ export function IterationCard({
             {/* Context Amplification Info */}
             {bestOverall !== undefined && (
               <div className="border-t pt-3">
-                <h4 className="text-xs font-semibold mb-2">🧠 Context Amplification</h4>
-                <div className="bg-blue-50 p-2 rounded text-xs">
-                  <p className="text-gray-700">
-                    Overall best score: <strong>{bestOverall.toFixed(1)}/10</strong>
+                <h4 className="text-sm font-bold mb-3 text-gray-900 flex items-center gap-2">
+                  <span>🧠</span> Context Amplification
+                </h4>
+                <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-3 rounded-lg border-2 border-purple-200 text-xs">
+                  <p className="text-gray-800 font-medium">
+                    Overall best score: <strong className="text-purple-700">{bestOverall.toFixed(1)}/10</strong>
                   </p>
                   {bestScore > bestOverall && (
-                    <p className="text-green-700 mt-1">
-                      ✨ New best! Improved by <strong>+{(bestScore - bestOverall).toFixed(1)}</strong>
+                    <p className="text-green-700 mt-2 font-bold">
+                      ✨ New best! Improved by <strong className="text-lg">+{(bestScore - bestOverall).toFixed(1)}</strong>
                     </p>
                   )}
-                  <p className="text-gray-600 mt-2">
+                  <p className="text-gray-700 mt-2 leading-relaxed">
                     Best programs positioned last in context for maximum attention weight in next iteration.
                   </p>
                 </div>

@@ -6,6 +6,9 @@ Purpose: To provide guidance to AI Agents when working with code in this reposit
 
 WE ARE ON WINDOWS!!!  USE POWERSHELL SYNTAX AND COMMANDS!!!
 
+Your output to the user MUST BE LESS THAN 200 WORDS.  No code snippets.  No markdown.  Just plain text simple language.
+YOU MAY NOT OUTPUT A WALL OF TEXT TO THE USER!!!
+ 
 This file provides guidance to AI Agents when working with code in this repository.
 Every file you create should start with:
  * 

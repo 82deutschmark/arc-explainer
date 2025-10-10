@@ -205,9 +205,23 @@ export function useGroverProgress(taskId: string | undefined) {
               nextIterations = data.iterations;
             }
 
-            const newState = { 
+            // CRITICAL FIX: Don't spread status from log-only messages
+            // Only update status when explicitly changed (not for type: 'log' or phase: 'log')
+            const isLogOnly = data.type === 'log' || data.phase === 'log';
+            
+            // If we're getting progress phases, clear error status
+            const isProgressPhase = ['prompt_ready', 'waiting_llm', 'response_received', 'programs_extracted', 'execution', 'iteration_complete'].includes(data.phase);
+            
+            const newState = isLogOnly ? {
+              ...prev,
+              message: data.message || prev.message,
+              logLines: nextLogs,
+              iterations: nextIterations
+            } : { 
               ...prev, 
               ...data,
+              // If receiving progress phase, force status to running
+              status: isProgressPhase ? 'running' : (data.status || prev.status),
               logLines: nextLogs,
               iterations: nextIterations
             };
