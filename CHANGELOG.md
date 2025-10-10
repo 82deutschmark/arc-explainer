@@ -29,6 +29,23 @@
 
 ---
 
+## [Unreleased]
+
+### Added
+- **SSE Streaming Scaffold (Needs Audit)**
+  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `ENABLE_SSE_STREAMING` feature flag.
+  - Added frontend EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) currently wired into the dormant Model Browser page.
+  - UI integration for active workflows (PuzzleExaminer, Discussion, Debate, Grover) still pending—feature is incomplete and must be audited before use.
+  - Updated navigation to expose `/models`, but no production flow consumes the new streaming path yet.
+
+### Changed
+- Updated `EXTERNAL_API.md`, README streaming notes, and execution plan docs with provisional instructions; documentation reflects unverified behavior and needs review.
+
+### Testing
+- Added unit coverage for SSE parser (`npx tsx --test tests/sseUtils.test.ts`). No end-to-end validation performed.
+
+---
+
 ## [4.0.3] - 2025-10-10
 
 ### Fixed
