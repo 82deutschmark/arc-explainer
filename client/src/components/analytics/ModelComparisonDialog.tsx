@@ -24,11 +24,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { DialogClose } from '@/components/ui/dialog';
 import { NewModelComparisonResults } from './NewModelComparisonResults';
 import { ModelComparisonResult } from '@/pages/AnalyticsOverview';
-import { Loader2 } from 'lucide-react';
+import { Loader2, XCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  computeUniqueSolves,
+  formatModelNames,
+  hasComparisonSummary,
+} from '@/utils/modelComparison';
 
 interface ModelComparisonDialogProps {
   open: boolean;
@@ -45,91 +51,151 @@ export const ModelComparisonDialog: React.FC<ModelComparisonDialogProps> = ({
   loading,
   error
 }) => {
+  const hasSummary = hasComparisonSummary(comparisonResult);
+  const modelNames = formatModelNames(comparisonResult?.summary);
+  const uniqueSolveCount = computeUniqueSolves(comparisonResult?.summary);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-7xl max-h-[90vh] overflow-y-auto"
+        aria-describedby="model-comparison-description"
+      >
+        <DialogClose asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-4 rounded-full hover:bg-muted"
+            aria-label="Close dialog"
+          >
+            <XCircle className="h-4 w-4" />
+          </Button>
+        </DialogClose>
+
         <DialogHeader>
           <DialogTitle className="text-2xl">Model Comparison Results</DialogTitle>
-          <DialogDescription>
-            {comparisonResult ? (
+          <DialogDescription id="model-comparison-description">
+            {hasSummary ? (
               <>
-                Comparing {comparisonResult.summary.model1Name}, {comparisonResult.summary.model2Name}
-                {comparisonResult.summary.model3Name && `, ${comparisonResult.summary.model3Name}`}
-                {comparisonResult.summary.model4Name && `, ${comparisonResult.summary.model4Name}`} on{' '}
-                {comparisonResult.summary.dataset} dataset ({comparisonResult.summary.totalPuzzles} puzzles)
+                Comparing {modelNames} on {comparisonResult.summary.dataset} dataset (
+                {comparisonResult.summary.totalPuzzles} puzzles)
               </>
+            ) : loading ? (
+              'Analyzing models...'
             ) : (
-              'Loading comparison data...'
+              'Ready to compare models'
             )}
           </DialogDescription>
         </DialogHeader>
 
         {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin mr-2" />
-            <span className="text-lg">Comparing models...</span>
+          <div className="flex flex-col items-center justify-center py-12 space-y-3" role="status" aria-live="polite">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="text-lg font-medium">Processing model comparisons...</span>
+            <span className="text-sm text-muted-foreground">
+              This may take a moment depending on dataset size.
+            </span>
           </div>
         )}
 
         {error && (
-          <Alert className="bg-red-50 border-red-200">
-            <XCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-700">
-              <strong>Error:</strong> {error}
+          <Alert variant="destructive" role="alert" aria-live="assertive" className="mb-4">
+            <AlertDescription>
+              <div className="flex items-start space-x-2">
+                <XCircle className="h-5 w-5 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-semibold">Comparison failed</p>
+                  <p className="text-sm">{error}</p>
+                </div>
+              </div>
             </AlertDescription>
           </Alert>
         )}
 
-        {!loading && !error && comparisonResult && (
-          <div className="space-y-2">
-            {/* Summary Statistics - Compact */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-2">
-                <div className="text-2xl font-bold text-green-700">
-                  {comparisonResult.summary.allCorrect}
-                </div>
-                <div className="text-xs font-medium text-green-600">All Correct</div>
-                <div className="text-[10px] text-green-500">Every model</div>
-                {/* TODO: Add badges with aggregate metrics per category:
-                    - Total cost for puzzles all models got correct
-                    - Average time across models
-                    - Compare token usage between models
-                */}
-              </div>
-
-              <div className="bg-red-50 border border-red-200 rounded-lg p-2">
-                <div className="text-2xl font-bold text-red-700">
-                  {comparisonResult.summary.allIncorrect}
-                </div>
-                <div className="text-xs font-medium text-red-600">All Incorrect</div>
-                <div className="text-[10px] text-red-500">Every model failed</div>
-              </div>
-
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-2">
-                <div className="text-2xl font-bold text-gray-700">
-                  {comparisonResult.summary.allNotAttempted}
-                </div>
-                <div className="text-xs font-medium text-gray-600">Not Attempted</div>
-                <div className="text-[10px] text-gray-500">No model tried</div>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
-                <div className="text-2xl font-bold text-blue-700">
-                  {(comparisonResult.summary.model1OnlyCorrect || 0) + 
-                   (comparisonResult.summary.model2OnlyCorrect || 0) + 
-                   (comparisonResult.summary.model3OnlyCorrect || 0) + 
-                   (comparisonResult.summary.model4OnlyCorrect || 0)}
-                </div>
-                <div className="text-xs font-medium text-blue-600">Unique Solves</div>
-                <div className="text-[10px] text-blue-500">Only one model</div>
-              </div>
+        {!loading && !error && hasSummary && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <StatCard
+                label="All Correct"
+                value={comparisonResult.summary.allCorrect}
+                description="All models solved correctly"
+                status="success"
+              />
+              <StatCard
+                label="All Incorrect"
+                value={comparisonResult.summary.allIncorrect}
+                description="Every model failed"
+                status="error"
+              />
+              <StatCard
+                label="Not Attempted"
+                value={comparisonResult.summary.allNotAttempted}
+                description="No model attempted"
+                status="muted"
+              />
+              <StatCard
+                label="Unique Solves"
+                value={uniqueSolveCount}
+                description="Solved by exactly one model"
+                status="info"
+              />
             </div>
 
-            {/* Detailed Matrix */}
             <NewModelComparisonResults result={comparisonResult} />
           </div>
         )}
       </DialogContent>
     </Dialog>
+  );
+};
+
+type StatCardStatus = 'success' | 'error' | 'info' | 'muted';
+
+const STAT_CARD_STYLES: Record<StatCardStatus, { border: string; indicator: string; text: string }> = {
+  success: {
+    border: 'border-green-200 bg-green-50',
+    indicator: 'bg-green-500',
+    text: 'text-green-700',
+  },
+  error: {
+    border: 'border-red-200 bg-red-50',
+    indicator: 'bg-red-500',
+    text: 'text-red-700',
+  },
+  info: {
+    border: 'border-blue-200 bg-blue-50',
+    indicator: 'bg-blue-500',
+    text: 'text-blue-700',
+  },
+  muted: {
+    border: 'border-gray-200 bg-gray-50',
+    indicator: 'bg-gray-500',
+    text: 'text-gray-700',
+  },
+};
+
+interface StatCardProps {
+  label: string;
+  value: number;
+  description: string;
+  status: StatCardStatus;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ label, value, description, status }) => {
+  const { border, indicator, text } = STAT_CARD_STYLES[status];
+
+  return (
+    <div className={`rounded-lg border ${border} p-3 shadow-sm`}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className={`text-2xl font-bold ${text}`} aria-live="polite">
+            {value}
+          </p>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+        </div>
+        <span className={`mt-1 h-3 w-3 rounded-full ${indicator}`} aria-hidden="true" />
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">{description}</p>
+    </div>
   );
 };
