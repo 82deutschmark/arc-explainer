@@ -152,7 +152,12 @@ export default function AnalyticsOverview() {
     setComparisonResult(null);
 
     try {
-      const models = [selectedModelForDataset, selectedModelForComparison, selectedModel3, selectedModel4].filter(Boolean);
+      const models = [
+        selectedModelForDataset, 
+        selectedModelForComparison, 
+        selectedModel3 === '__none__' ? '' : selectedModel3, 
+        selectedModel4 === '__none__' ? '' : selectedModel4
+      ].filter(Boolean);
       const queryParams = new URLSearchParams({
         model1: models[0] || '',
         ...(models[1] && { model2: models[1] }),
@@ -296,7 +301,7 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose third model (optional)" : "Select dataset first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="__none__">None</SelectItem>
                     {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison).map((model) => (
                       <SelectItem key={model} value={model}>
                         {model}
@@ -317,7 +322,7 @@ export default function AnalyticsOverview() {
                     <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose fourth model (optional)" : "Select dataset first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="__none__">None</SelectItem>
                     {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison && m !== selectedModel3).map((model) => (
                       <SelectItem key={model} value={model}>
                         {model}
