@@ -1,6 +1,39 @@
 ## [2025-10-09]
 
 ### Work In Progress - Version 3.9.3
+- **Grover Display Fix** - COMPLETED ✅
+  - **Problem**: Grover solver results saved to database but never appeared on PuzzleExaminer page
+    - Database had grover_iterations, grover_best_program, iteration_count data
+    - Frontend UI showed nothing - no badge, no program, no iteration count
+  - **Root Cause**: ExplanationRepository SELECT queries missing grover_* fields
+    - INSERT queries included fields ✅
+    - SELECT queries (getExplanationsForPuzzle, getExplanationById) missing fields ❌
+    - Result: Silent data loss on retrieval - frontend never received the data
+  - **Backend Fixes**:
+    - Added grover_iterations, grover_best_program, iteration_count to SELECT queries (lines 212-214, 256-258)
+    - Added groverIterations JSON parsing to mapRowToExplanation() (line 575)
+  - **Frontend Fixes**:
+    - Added Grover fields to ExplanationData TypeScript interface
+    - Added field mapping in useExplanation.ts hook
+    - Added isGroverResult detection in AnalysisResultCard (similar to isSaturnResult)
+    - Added "🔄 GROVER: N iterations" badge in AnalysisResultHeader
+    - Added collapsible Python program display in AnalysisResultContent
+    - Custom headings: "Grover Iterative Analysis", "Search Strategy", "Program Evolution"
+  - **Impact**: Grover explanations now fully visible with all iteration data
+  - **Documentation**: `docs/2025-10-09-Grover-Display-and-Confidence-Normalization-Plan.md`
+  - **Commits**: a944ba0
+- **Confidence Normalization Investigation** - ANALYSIS COMPLETE
+  - **Problem Reported**: Grok models return confidence as 0-1 decimal (0.85 = 85%, 1 = 100%)
+    - Example: DB record id:33701 has confidence:1 but should be 100
+    - Breaks Trustworthiness metrics (expects 0-100 scale)
+  - **Finding**: normalizeConfidence() in ExplanationRepository IS CORRECT ✅
+    - Already multiplies 0-1 range by 100 for new inserts
+    - Code at lines 686-710 handles this properly
+  - **Real Issue**: Database has OLD records from before normalization was added
+    - Need migration script to fix existing Grok entries
+    - Script must only target Grok models (OpenAI o3 actually has 1% confidence sometimes)
+  - **Next Steps**: Create `scripts/fix-grok-confidence.js` migration (not yet implemented)
+  - **Status**: Analysis done, awaiting migration script creation
 - **Grover WebSocket Broadcasting Fix** - COMPLETED ✅
   - **Problem**: Frontend UI not receiving backend logs during Grover analysis
     - Backend terminal showed: "📖 Parsing...", "✅ Found program #1", "📊 Extraction complete"
