@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ModelComparisonResults } from './ModelComparisonResults';
+import { NewModelComparisonResults } from './NewModelComparisonResults';
 import { ModelComparisonResult } from '@/pages/AnalyticsOverview';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -113,7 +113,7 @@ export const ModelComparisonDialog: React.FC<ModelComparisonDialogProps> = ({
             </div>
 
             {/* Detailed Matrix */}
-            <ModelComparisonResults result={comparisonResult} />
+            <NewModelComparisonResults result={comparisonResult} />
           </div>
         )}
       </DialogContent>
