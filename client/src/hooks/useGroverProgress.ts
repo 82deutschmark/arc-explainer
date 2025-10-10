@@ -19,6 +19,9 @@ export interface GroverOptions {
   temperature?: number;
   maxIterations?: number;
   previousResponseId?: string;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  reasoningVerbosity?: 'low' | 'medium' | 'high';
+  reasoningSummaryType?: 'auto' | 'detailed';
 }
 
 export interface GroverIteration {
@@ -118,7 +121,10 @@ export function useGroverProgress(taskId: string | undefined) {
     const wireOptions = {
       temperature: options?.temperature ?? 0.2,
       maxIterations: options?.maxIterations ?? 5,
-      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
+      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
+      ...(options?.reasoningEffort && { reasoningEffort: options.reasoningEffort }),
+      ...(options?.reasoningVerbosity && { reasoningVerbosity: options.reasoningVerbosity }),
+      ...(options?.reasoningSummaryType && { reasoningSummaryType: options.reasoningSummaryType }),
     };
 
     const modelKey = options?.modelKey || 'grover-gpt-5-nano';
