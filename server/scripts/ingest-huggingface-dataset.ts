@@ -89,7 +89,7 @@ export interface IngestionConfig {
   verbose: boolean;
   forceOverwrite: boolean;
   skipDuplicates: boolean;
-  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   limit?: number;
   delay: number;
   stopOnError: boolean;
@@ -230,12 +230,23 @@ async function validateAndEnrichAggregatedAttempt(
       multiResponse,
       expectedOutputs,
       'external-huggingface',
-      undefined // No confidence for external data
+      null // External data has NO confidence - calculate pure correctness rate (not trustworthiness)
     );
     
     if (config.verbose) {
-      console.log(`   📊 Multi-test: ${validationResult.multiTestAllCorrect ? 'All correct ✓' : 'Some incorrect ✗'}`);
-      console.log(`   📈 Average accuracy: ${(validationResult.multiTestAverageAccuracy * 100).toFixed(1)}%`);
+      // Determine correctness label based on actual results
+      const numCorrect = validationResult.multiTestResults.filter((r: any) => r.isPredictionCorrect).length;
+      const numTotal = validationResult.multiTestResults.length;
+      let correctnessLabel: string;
+      if (numCorrect === numTotal) {
+        correctnessLabel = 'All correct ✓';
+      } else if (numCorrect === 0) {
+        correctnessLabel = 'All incorrect ✗';
+      } else {
+        correctnessLabel = `Partially correct (${numCorrect}/${numTotal}) ⚠️`;
+      }
+      console.log(`   📊 Multi-test: ${correctnessLabel}`);
+      console.log(`   📈 Correctness rate: ${numCorrect}/${numTotal} (${((numCorrect / numTotal) * 100).toFixed(1)}%)`);
     }
   } else {
     // Single-test validation
@@ -243,12 +254,12 @@ async function validateAndEnrichAggregatedAttempt(
       { predictedOutput: predictedGrids[0] },
       expectedOutputs[0],
       'external-huggingface',
-      undefined
+      null // External data has NO confidence - calculate pure correctness (not trustworthiness)
     );
 
     if (config.verbose) {
       console.log(`   📊 Single-test: ${validationResult.isPredictionCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
-      console.log(`   📈 Accuracy: ${(validationResult.predictionAccuracyScore * 100).toFixed(1)}%`);
+      console.log(`   📈 Correctness: ${validationResult.isPredictionCorrect ? '100.0' : '0.0'}%`);
     }
   }
   
@@ -340,9 +351,13 @@ async function checkDuplicate(puzzleId: string, modelName: string): Promise<bool
 async function deleteDuplicate(puzzleId: string, modelName: string): Promise<void> {
   const explanations = await repositoryService.explanations.getExplanationsForPuzzle(puzzleId);
   const existing = explanations.find(exp => exp.modelName === modelName);
-  if (existing) {
-    // Note: This would require implementing a delete method in the repository
-    console.log(`   ⚠️  Would delete existing entry for ${modelName} (not implemented)`);
+  if (existing && existing.id) {
+    const deleted = await repositoryService.explanations.deleteExplanation(existing.id);
+    if (deleted) {
+      console.log(`   🗑️  Deleted existing entry for ${modelName} (ID: ${existing.id})`);
+    } else {
+      console.log(`   ⚠️  Failed to delete existing entry for ${modelName} (ID: ${existing.id})`);
+    }
   }
 }
 
@@ -422,7 +437,9 @@ async function processPuzzle(
     ];
     
     let totalSaved = 0;
-    let totalCorrect = 0;
+    let totalCorrect = 0; // Count of attempts where ALL predictions were correct
+    let totalPredictionsMade = 0; // Total individual predictions across all attempts
+    let totalPredictionsCorrect = 0; // Total correct individual predictions
     
     for (const { attemptNumber, predictions } of attemptGroups) {
       if (predictions.length === 0) {
@@ -476,6 +493,17 @@ async function processPuzzle(
         if (isCorrect) {
           totalCorrect++;
         }
+        
+        // Track individual prediction correctness for aggregate summary
+        if (isMultiTest && enrichedData.multiTestResults) {
+          const numTests = enrichedData.multiTestResults.length;
+          const numCorrect = enrichedData.multiTestResults.filter((r: any) => r.isPredictionCorrect).length;
+          totalPredictionsMade += numTests;
+          totalPredictionsCorrect += numCorrect;
+        } else if (!isMultiTest) {
+          totalPredictionsMade += 1;
+          totalPredictionsCorrect += (enrichedData.isPredictionCorrect ? 1 : 0);
+        }
 
         progress.successDetails.push({
           puzzleId: `${puzzleId}-attempt${attemptNumber}`,
@@ -488,10 +516,32 @@ async function processPuzzle(
       }
     }
     
-    // Summary
+    // Summary - show both attempt-level and prediction-level correctness
     if (totalSaved > 0) {
-      const statusIcon = totalCorrect === 2 ? '✅' : totalCorrect > 0 ? '⚠️' : '❌';
-      console.log(`${statusIcon} ${puzzleId} - Saved ${totalSaved}/2 attempts (${totalCorrect} correct)`);
+      const allAttemptsCorrect = totalCorrect === 2;
+      const someAttemptsCorrect = totalCorrect > 0 && totalCorrect < 2;
+      const noAttemptsCorrect = totalCorrect === 0;
+      
+      let statusIcon: string;
+      let attemptSummary: string;
+      
+      if (allAttemptsCorrect) {
+        statusIcon = '✅';
+        attemptSummary = 'both attempts fully correct';
+      } else if (someAttemptsCorrect) {
+        statusIcon = '⚠️';
+        attemptSummary = `${totalCorrect} attempt fully correct`;
+      } else {
+        statusIcon = '❌';
+        attemptSummary = 'no attempts fully correct';
+      }
+      
+      // Show aggregate prediction correctness
+      const predictionPercentage = totalPredictionsMade > 0 
+        ? ((totalPredictionsCorrect / totalPredictionsMade) * 100).toFixed(1)
+        : '0.0';
+      
+      console.log(`${statusIcon} ${puzzleId} - Saved ${totalSaved}/2 attempts | Predictions: ${totalPredictionsCorrect}/${totalPredictionsMade} correct (${predictionPercentage}%)`);
     }
     
   } catch (error: any) {
@@ -513,7 +563,7 @@ async function processPuzzle(
 /**
  * Auto-detect ARC source from HuggingFace dataset URL
  */
-function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | undefined {
+function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC' | undefined {
   const url = baseUrl.toLowerCase();
 
   // arcprize/arc_agi_v1_public_eval → ARC1-Eval
@@ -531,6 +581,10 @@ function autoDetectSource(baseUrl: string): 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC
   // arcprize/arc_agi_v2_training → ARC2
   if (url.includes('arc_agi_v2') && (url.includes('train') || url.includes('training'))) {
     return 'ARC2';
+  }
+  // conceptarc dataset mirrors neoneye ConceptARC naming
+  if (url.includes('conceptarc') || url.includes('concept-arc') || url.includes('concept_arc')) {
+    return 'ConceptARC';
   }
 
   return undefined;
@@ -735,10 +789,10 @@ function parseArgs(): IngestionConfig {
       config.baseUrl = args[++i];
     } else if (arg === '--source' && i + 1 < args.length) {
       const source = args[++i];
-      if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy'].includes(source)) {
+      if (['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval', 'ARC-Heavy', 'ConceptARC'].includes(source)) {
         config.source = source as any;
       } else {
-        console.error(`Invalid source: ${source}. Must be one of: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy`);
+        console.error(`Invalid source: ${source}. Must be one of: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy, ConceptARC`);
         process.exit(1);
       }
     } else if (arg === '--limit' && i + 1 < args.length) {
@@ -788,7 +842,7 @@ OPTIONS:
                            V2 uses: /resolve/refs/heads/main (newer HF format)
                            (default: arcprize/arc_agi_v1_public_eval/resolve/main)
   --source <source>        Override auto-detected ARC source
-                           Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy
+                           Options: ARC1, ARC1-Eval, ARC2, ARC2-Eval, ARC-Heavy, ConceptARC
                            (Auto-detected from arcprize/* URLs)
   --limit <N>              Only process first N puzzles (useful for testing)
   --delay <ms>             Delay in milliseconds between requests (default: 100)

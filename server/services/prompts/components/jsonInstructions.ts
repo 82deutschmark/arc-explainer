@@ -63,7 +63,7 @@ export const JSON_FIELDS = {
     'solvingStrategy: Domain-specific language to solve the puzzle',
     'patternDescription: Transformation rules (2-3 short imperatives)',
     'hints: Array of 3 simple hints so even a child could understand how to solve the puzzle',
-    'confidence: Your certainty level (1-100)'
+    'confidence: Your certainty level expressed as a percentage (1-100) certain that you are correct.'
   ],
   
   // Generate formatted instruction text

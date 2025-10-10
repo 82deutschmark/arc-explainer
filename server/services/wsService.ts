@@ -6,12 +6,17 @@
  * session-based channels so backend services can broadcast progress updates
  * to all clients connected for a given sessionId.
  *
+ * Supports multiple solver paths:
+ * - /api/saturn/progress?sessionId=... (Saturn Visual Solver)
+ * - /api/grover/progress?sessionId=... (Grover Iterative Solver)
+ *
  * Exposes:
  * - attach(server): initialize ws server and URL routing
  * - broadcast(sessionId, data): send JSON to all clients subscribed to sessionId
  * - getSessionSnapshot(sessionId): return last known snapshot for polling API
  *
  * Author: Cascade (model: Cascade)
+ * Updated: Sonnet 4.5 (2025-10-09) - Added Grover support
  */
 
 import type { Server } from 'http';
@@ -26,7 +31,7 @@ let wss: WebSocketServer | null = null;
 function parseSessionId(url?: string | null): string | null {
   if (!url) return null;
   try {
-    // Expect URL like /api/saturn/progress?sessionId=...
+    // Expect URL like /api/saturn/progress?sessionId=... or /api/grover/progress?sessionId=...
     const qs = url.split('?')[1] || '';
     const params = new URLSearchParams(qs);
     const sid = params.get('sessionId');
@@ -37,13 +42,19 @@ function parseSessionId(url?: string | null): string | null {
 
 export function attach(server: Server) {
   if (wss) return wss;
-  // Attach on specific path; clients should connect to ws(s)://host/api/saturn/progress?sessionId=...
+  // Attach without path restriction - handles both /api/saturn/progress and /api/grover/progress
+  // Clients connect to ws(s)://host/api/{solver}/progress?sessionId=...
   wss = new WebSocketServer({ 
-    server, 
-    path: '/api/saturn/progress',
-    // Allow WebSocket connections from all origins
+    server,
+    // No path restriction - verifyClient will check the URL
     verifyClient: (info, cb) => {
-      cb(true);  // Allow all WebSocket connections
+      const url = info.req.url || '';
+      // Accept both /api/saturn/progress and /api/grover/progress
+      if (url.startsWith('/api/saturn/progress') || url.startsWith('/api/grover/progress')) {
+        cb(true);
+      } else {
+        cb(false, 404, 'WebSocket path not found');
+      }
     }
   });
 

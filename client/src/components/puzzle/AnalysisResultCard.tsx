@@ -155,6 +155,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
   }, [predictedGrid, expectedOutputGrids]);
 
   const isSaturnResult = Boolean(result.saturnEvents || (result.saturnImages && result.saturnImages.length > 0) || result.saturnLog);
+  const isGroverResult = Boolean(result.groverIterations || result.groverBestProgram || result.iterationCount);
 
   return (
     <div 
@@ -173,6 +174,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         showRawDb={showRawDb}
         setShowRawDb={setShowRawDb}
         isSaturnResult={isSaturnResult}
+        isGroverResult={isGroverResult}
         eloMode={eloMode}
       />
 
@@ -196,6 +198,7 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
       <AnalysisResultContent
         result={result}
         isSaturnResult={isSaturnResult}
+        isGroverResult={isGroverResult}
         showReasoning={showReasoning}
         setShowReasoning={setShowReasoning}
         showAlienMeaning={showAlienMeaning}

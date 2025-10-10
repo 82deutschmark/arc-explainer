@@ -61,7 +61,7 @@ export default function PuzzleBrowser() {
     if (gridSizeConsistent === 'true') result.gridSizeConsistent = true;
     if (gridSizeConsistent === 'false') result.gridSizeConsistent = false;
     // Don't use prioritize flags anymore, as we'll filter the results ourselves
-    if (arcVersion === 'ARC1' || arcVersion === 'ARC1-Eval' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval' || arcVersion === 'ARC-Heavy') result.source = arcVersion;
+    if (arcVersion === 'ARC1' || arcVersion === 'ARC1-Eval' || arcVersion === 'ARC2' || arcVersion === 'ARC2-Eval' || arcVersion === 'ARC-Heavy' || arcVersion === 'ConceptARC') result.source = arcVersion;
     if (multiTestFilter === 'single') result.multiTestFilter = 'single';
     if (multiTestFilter === 'multi') result.multiTestFilter = 'multi';
     return result;
@@ -333,6 +333,7 @@ export default function PuzzleBrowser() {
                     <SelectItem value="ARC2">ARC2 Training</SelectItem>
                     <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
                     <SelectItem value="ARC-Heavy">ARC-Heavy Dataset</SelectItem>
+                    <SelectItem value="ConceptARC">ConceptARC Dataset</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -424,6 +425,7 @@ export default function PuzzleBrowser() {
                                 puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
                                 puzzle.source === 'ARC2-Eval' ? 'bg-green-50 text-green-700 font-bold' :
                                 puzzle.source === 'ARC-Heavy' ? 'bg-orange-50 text-orange-700 font-semibold' :
+                                puzzle.source === 'ConceptARC' ? 'bg-teal-50 text-teal-700 font-semibold' :
                                 'bg-gray-50 text-gray-700'
                               }`}>
                                 {puzzle.source.replace('-Eval', ' Eval').replace('-Heavy', ' Heavy')}

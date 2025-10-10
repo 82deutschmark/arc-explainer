@@ -28,6 +28,7 @@ export interface ServiceOptions {
   systemPromptMode?: 'ARC' | 'None';
   store?: boolean;
   captureReasoning?: boolean; // Add captureReasoning property
+  sessionId?: string; // Optional WebSocket session for streaming progress
 }
 
 export interface TokenUsage {

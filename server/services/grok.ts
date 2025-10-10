@@ -236,8 +236,8 @@ export class GrokService extends BaseAIService {
       throw new Error("GROK_API_KEY is not configured");
     }
 
-    // CRITICAL FIX: If continuing conversation, ONLY send new message
-    // API retrieves full context from previous_response_id
+    // Responses API: If continuing conversation, only send new message
+    // API retrieves full context, encrypted reasoning, and history from previous_response_id
     const isContinuation = !!serviceOpts.previousResponseId;
     const messages = this.buildMessages(promptPackage, isContinuation);
 
@@ -266,8 +266,13 @@ export class GrokService extends BaseAIService {
 
   /**
    * Build messages array for Responses API
-   * CRITICAL: If continuation, ONLY send new user message
-   * The API retrieves full context from previous_response_id
+   * 
+   * Continuation mode: Only send new user message
+   *   - API retrieves full conversation history, system prompt, and encrypted reasoning
+   *     from previous_response_id stored server-side (30-day retention)
+   *   - Enables stateful progressive refinement without manual context management
+   * 
+   * Initial mode: Send full conversation setup (system + user)
    */
   private buildMessages(
     promptPackage: PromptPackage,
@@ -276,13 +281,12 @@ export class GrokService extends BaseAIService {
     const messages: Array<{ role: string; content: string }> = [];
     
     if (isContinuation) {
-      // Continuation: API loads context from previous_response_id
-      // ONLY send the new message
-      console.log('[Grok] 🔄 Continuation mode - sending ONLY new user message');
+      // Continuation: API retrieves context & reasoning from previous_response_id
+      console.log('[Grok] 🔄 Continuation - sending new message only (context loaded server-side)');
       messages.push({ role: "user", content: promptPackage.userPrompt });
     } else {
-      // Initial: Send full conversation
-      console.log('[Grok] 📄 Initial mode - sending system + user messages');
+      // Initial: Send full conversation setup
+      console.log('[Grok] 📄 Initial turn - sending system + user messages');
       if (promptPackage.systemPrompt) {
         messages.push({ role: "system", content: promptPackage.systemPrompt });
       }

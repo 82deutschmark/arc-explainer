@@ -287,6 +287,17 @@ export default function PuzzleExaminer() {
               🪐 Saturn Solver
             </Button>
           </Link>
+
+          {/* Grover Iterative Solver Button */}
+          <Link href={`/puzzle/grover/${taskId}`}>
+            <Button
+              size="sm"
+              className="transition-all duration-300 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 shadow-lg shadow-green-500/25 border-2 border-green-400/50 text-white font-semibold"
+            >
+              <Rocket className="h-4 w-4 mr-2" />
+              🔄 Grover Solver
+            </Button>
+          </Link>
         </div>
       </div>
 

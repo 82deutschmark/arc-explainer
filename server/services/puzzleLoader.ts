@@ -21,7 +21,7 @@ interface PuzzleInfo {
   inputSize: [number, number];
   outputSize: [number, number];
   hasExplanation: boolean;
-  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   testCaseCount: number;
   importSource?: string; // Track which import/dataset this came from
   importDate?: Date;     // When it was imported
@@ -30,7 +30,7 @@ interface PuzzleInfo {
 interface DataSource {
   name: string;
   directory: string;
-  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+  source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
   priority: number;
   importSource?: string; // For imported datasets, track the original import source
 }
@@ -74,6 +74,13 @@ export class PuzzleLoader {
       source: 'ARC-Heavy',
       priority: 5,
       importSource: 'neoneye/arc-dataset-collection'
+    },
+    {
+      name: 'ConceptARC',
+      directory: path.join(process.cwd(), 'data', 'concept-arc'),
+      source: 'ConceptARC',
+      priority: 6,
+      importSource: 'neoneye/arc-dataset-collection/ConceptARC'
     }
   ];
 
@@ -175,7 +182,7 @@ export class PuzzleLoader {
     return loadedCount;
   }
 
-  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy', dataSource: DataSource): PuzzleInfo {
+  private analyzePuzzleMetadata(taskId: string, task: ARCTask, source: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC', dataSource: DataSource): PuzzleInfo {
     const { maxGridSize, gridSizeConsistent, inputSize, outputSize } = this.getGridDimensions(task);
     const hasExplanation = this.checkHasExplanation(taskId);
 
@@ -288,7 +295,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
     multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
@@ -307,7 +314,7 @@ export class PuzzleLoader {
     gridSizeConsistent?: boolean;
     prioritizeUnexplained?: boolean;
     prioritizeExplained?: boolean;
-    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy';
+    source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
     multiTestFilter?: 'single' | 'multi';
   }): PuzzleInfo[] {
     if (filters.maxGridSize !== undefined) {
