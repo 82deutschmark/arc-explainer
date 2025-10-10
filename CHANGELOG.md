@@ -1,3 +1,56 @@
+## [4.0.11] - 2025-10-10
+
+### Added
+- **Aggregate Metric Badges System**
+  - **Scope**: Analytics Overview now displays cost, time, and token metrics as compact badges in Correct/Incorrect stat cards
+  - **Backend Implementation**:
+    - New repository method: `ModelDatasetRepository.getModelDatasetMetrics()` - Single efficient SQL query with FILTER clauses
+    - New controller method: `modelDatasetController.getModelDatasetMetrics()`
+    - New API endpoint: `GET /api/model-dataset/metrics/:modelName/:datasetName`
+    - Returns aggregate metrics broken down by correct/incorrect categories
+  - **Frontend Implementation**:
+    - New hook: `useModelDatasetMetrics()` in `useModelDatasetPerformance.ts`
+    - Badge display in AnalyticsOverview showing:
+      - 💰 Average cost (4 decimal precision, e.g., $0.0023 avg)
+      - ⏱️ Average time (2 decimal precision in seconds, e.g., 12.45s avg)
+      - 🔤 Average tokens (integer with thousand separators, e.g., 2,450 tok)
+  - **Display Format**:
+    - Badges use `text-[10px]` for maximum density
+    - Color-coded: green-50 for correct, red-50 for incorrect
+    - Only displayed when metrics exist (graceful degradation)
+
+### Changed
+- **Fixed Rounded Percentages to Show 2 Decimal Places**
+  - Changed all `Math.round()` to `.toFixed(2)` for percentage displays
+  - Affects: AnalyticsOverview success rates, DifficultPuzzlesSection accuracy/confidence
+  - Examples: 7.45% instead of 7%, 92.31% instead of 92%
+  - Provides more precise accuracy measurements for model comparison
+
+### Technical Details
+- **Files Modified**:
+  - Backend:
+    - `server/repositories/ModelDatasetRepository.ts` - Added getModelDatasetMetrics() method with SQL FILTER clauses
+    - `server/controllers/modelDatasetController.ts` - Added getModelDatasetMetrics() endpoint
+    - `server/routes.ts` - **MANUAL ADDITION REQUIRED**: Add route for /api/model-dataset/metrics/:modelName/:datasetName
+  - Frontend:
+    - `client/src/hooks/useModelDatasetPerformance.ts` - Added useModelDatasetMetrics() hook
+    - `client/src/pages/AnalyticsOverview.tsx` - Added Badge import, metrics hook call, badge display
+    - `client/src/components/analytics/DifficultPuzzlesSection.tsx` - Fixed percentage precision
+- **SRP Compliance**:
+  - ModelDatasetRepository handles single-model metrics (not MetricsRepository which handles cross-model comparisons)
+  - Single SQL query with FILTER clauses instead of multiple queries (DRY)
+  - Hook follows same pattern as useModelDatasetPerformance (DRY)
+- **Performance**: Single efficient query aggregates all metrics in one database call
+- **Error Handling**: Graceful degradation if metrics unavailable, UI still functional
+
+### Manual Step Required
+**IMPORTANT**: Add this line to `server/routes.ts` after line 119 (the datasets route):
+```typescript
+app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelDatasetMetrics));
+```
+
+---
+
 ## [4.0.10] - 2025-10-10
 
 ### Changed

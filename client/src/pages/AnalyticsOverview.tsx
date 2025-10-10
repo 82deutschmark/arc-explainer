@@ -25,6 +25,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   BarChart3,
   Database,
@@ -38,7 +39,7 @@ import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzles
 import { ModelComparisonDialog } from '@/components/analytics/ModelComparisonDialog';
 
 // Import hooks that follow proper repository pattern
-import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
 
 // Types for the new Model Comparison feature
 export interface PuzzleComparisonDetail {
@@ -109,6 +110,7 @@ export default function AnalyticsOverview() {
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
+  const { metrics: modelDatasetMetrics, loading: loadingMetrics } = useModelDatasetMetrics(selectedModelForDataset || null, selectedDataset || null);
   const datasetOptions: DatasetOption[] = useMemo(() => {
     return availableDatasets.map((dataset) => ({
       ...dataset,
@@ -383,14 +385,14 @@ export default function AnalyticsOverview() {
                           <span className="text-gray-400">•</span>
                           <span>Success Rate of Attempted: <strong className="text-green-700">
                             {modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect > 0
-                              ? Math.round((modelDatasetPerformance.summary.correct / (modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect)) * 100)
-                              : 0}%
+                              ? ((modelDatasetPerformance.summary.correct / (modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect)) * 100).toFixed(2)
+                              : '0.00'}%
                           </strong></span>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="text-4xl font-bold text-green-700">
-                          {Math.round((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100)}%
+                          {((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
                         </div>
                         <div className="text-xs text-gray-600 font-medium">Overall Success</div>
                         <div className="text-xs text-gray-500">{modelDatasetPerformance.summary.correct}/{modelDatasetPerformance.summary.totalPuzzles} correct</div>
@@ -445,17 +447,30 @@ export default function AnalyticsOverview() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-green-600">
-                            {Math.round((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100)}%
+                            {((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
                           </div>
                           <div className="text-xs text-green-500">of total</div>
                         </div>
                       </div>
-                      {/* TODO: Add aggregate badges here for correct puzzles:
-                          - Average cost for correct answers
-                          - Average processing time
-                          - Total tokens used
-                          Requires new API endpoint: /api/model-dataset/metrics/:model/:dataset
-                      */}
+                      {modelDatasetMetrics && modelDatasetMetrics.correct.count > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {modelDatasetMetrics.correct.avgCost > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              💰 ${modelDatasetMetrics.correct.avgCost.toFixed(4)} avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.correct.avgTime > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              ⏱️ {(modelDatasetMetrics.correct.avgTime / 1000).toFixed(2)}s avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.correct.avgTokens > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              🔤 {Math.round(modelDatasetMetrics.correct.avgTokens).toLocaleString()} tok
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                   
@@ -468,12 +483,30 @@ export default function AnalyticsOverview() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-red-600">
-                            {Math.round((modelDatasetPerformance.summary.incorrect / modelDatasetPerformance.summary.totalPuzzles) * 100)}%
+                            {((modelDatasetPerformance.summary.incorrect / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
                           </div>
                           <div className="text-xs text-red-500">of total</div>
                         </div>
                       </div>
-                      {/* TODO: Add aggregate badges for incorrect puzzles */}
+                      {modelDatasetMetrics && modelDatasetMetrics.incorrect.count > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {modelDatasetMetrics.incorrect.avgCost > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              💰 ${modelDatasetMetrics.incorrect.avgCost.toFixed(4)} avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.incorrect.avgTime > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              ⏱️ {(modelDatasetMetrics.incorrect.avgTime / 1000).toFixed(2)}s avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.incorrect.avgTokens > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              🔤 {Math.round(modelDatasetMetrics.incorrect.avgTokens).toLocaleString()} tok
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                   
@@ -486,7 +519,7 @@ export default function AnalyticsOverview() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-gray-600">
-                            {Math.round((modelDatasetPerformance.summary.notAttempted / modelDatasetPerformance.summary.totalPuzzles) * 100)}%
+                            {((modelDatasetPerformance.summary.notAttempted / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
                           </div>
                           <div className="text-xs text-gray-500">of total</div>
                         </div>

@@ -80,7 +80,7 @@ export function DifficultPuzzlesSection() {
   }
 
   const formatAccuracy = (accuracy: number) => {
-    return Math.round(accuracy * 100) + '%';
+    return (accuracy * 100).toFixed(2) + '%';
   };
 
   const getAccuracyBadgeColor = (accuracy: number) => {
@@ -98,7 +98,7 @@ export function DifficultPuzzlesSection() {
   };
 
   const formatConfidence = (confidence: number) => {
-    return Math.round(confidence * 100) + '%';
+    return (confidence * 100).toFixed(2) + '%';
   };
 
   return (
