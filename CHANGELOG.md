@@ -35,6 +35,10 @@
   - Added snapshot hydration for instant progress display (1-2s instead of 3 minutes)
   - Broadcast initial state synchronously before returning response
   - Page reload now preserves progress via snapshot
+  - **CRITICAL**: Fixed React hooks violation in IterationCard causing infinite re-render crash
+    - Moved useState calls from inside map loop to component top level
+    - Used Set state for tracking expanded programs instead of individual states
+    - Crash was React Error #310 (too many re-renders)
 - **Grid Null Row Crash Fix** - COMPLETED ✅
   - **Problem**: Application crashed with "Cannot read properties of null (reading 'map')" on puzzle 9aaea919
   - **Root Cause**: Database JSONB fields contained arrays with null rows `[[1,2,3], null, [4,5,6]]`. Grid sanitization only occurred on write, not read. `safeJsonParse()` returned PostgreSQL JSONB objects without validating structure.
