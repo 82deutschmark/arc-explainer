@@ -2,7 +2,6 @@
 
 **Version 4.0.0** — October 10, 2025
 
-**Version 3.7.7** • October 8, 2025
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
 
