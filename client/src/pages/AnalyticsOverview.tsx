@@ -358,17 +358,17 @@ export default function AnalyticsOverview() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-green-700">{modelDatasetPerformance.summary.solved}</div>
+                      <div className="text-2xl font-bold text-green-700">{modelDatasetPerformance.summary.correct}</div>
                       <div className="text-sm text-green-600">Puzzles CORRECT</div>
                       <div className="text-xs text-green-500 mt-1">
-                        {Math.round((modelDatasetPerformance.summary.solved / modelDatasetPerformance.summary.totalPuzzles) * 100)}% success rate
+                        {Math.round((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100)}% success rate
                       </div>
                     </CardContent>
                   </Card>
                   
                   <Card className="bg-red-50 border-red-200">
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.failed}</div>
+                      <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.incorrect}</div>
                       <div className="text-sm text-red-600">Puzzles Incorrect</div>
                       <div className="text-xs text-red-500 mt-1">Attempted but got wrong answer</div>
                     </CardContent>
@@ -396,7 +396,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-green-700 flex items-center gap-2">
-                        ✅ Correct ({modelDatasetPerformance.solved.length})
+                        ✅ Correct ({modelDatasetPerformance.correct.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         is_prediction_correct = true OR multi_test_all_correct = true
@@ -404,11 +404,11 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.solved.map((puzzleId) => (
+                        {modelDatasetPerformance.correct.map((puzzleId) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
                         ))}
                       </div>
-                      {modelDatasetPerformance.solved.length === 0 && (
+                      {modelDatasetPerformance.correct.length === 0 && (
                         <p className="text-sm text-gray-500 italic">No puzzles solved yet</p>
                       )}
                     </CardContent>
@@ -417,7 +417,7 @@ export default function AnalyticsOverview() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-red-700 flex items-center gap-2">
-                        ❌ Incorrect ({modelDatasetPerformance.failed.length})
+                        ❌ Incorrect ({modelDatasetPerformance.incorrect.length})
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         Attempted but failed (false OR null values count as incorrect)
@@ -425,11 +425,11 @@ export default function AnalyticsOverview() {
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.failed.map((puzzleId) => (
+                        {modelDatasetPerformance.incorrect.map((puzzleId) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
                         ))}
                       </div>
-                      {modelDatasetPerformance.failed.length === 0 && (
+                      {modelDatasetPerformance.incorrect.length === 0 && (
                         <p className="text-sm text-gray-500 italic">No incorrect attempts</p>
                       )}
                     </CardContent>
