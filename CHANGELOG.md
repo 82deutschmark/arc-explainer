@@ -1,4 +1,17 @@
-## [4.0.18] - 2025-10-10
+## [4.0.19] - 2025-10-11
+
+### Fixed
+- **SSE Session Management Race Condition**
+  - **Problem**: SSE manager was logging flood of warnings when trying to send events to closed sessions
+  - **Root Cause**: Race condition between `harness.end()` closing sessions and async operations continuing to send events
+  - **Solution**: Made session management more lenient by:
+    - Removing warning logs for closed session operations (these are normal when async ops complete after stream ends)
+    - Adding try-catch blocks for write operations (connections can close between check and write)
+    - Logging errors at debug level instead of warn level for closed session operations
+  - **Impact**: Eliminates confusing warning spam while maintaining proper session lifecycle management
+  - **Files**: `server/services/streaming/SSEStreamManager.ts`
+
+---
 
 ### Added
 - **PuzzleBrowser: Compact "Resources & References" Section**
