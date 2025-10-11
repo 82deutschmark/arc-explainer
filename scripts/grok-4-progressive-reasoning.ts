@@ -33,6 +33,7 @@ const PUZZLE_STAGGER_MS = 1000; // 1 second stagger between starting puzzles (ra
 
 // Configuration for ARC2 dataset
 const DATASET = 'arc2'; // Use ARC2 evaluation dataset
+const BATCH_SIZE = 5; // Process puzzles in batches of 5
 
 // Parse command line arguments
 interface CLIArgs {
@@ -132,13 +133,13 @@ async function runIteration(
     // Build request payload
     const requestBody: any = {
       temperature: 0.99,
-      promptId: 'discussion', // CRITICAL: Use discussion mode for progressive reasoning
+      promptId: previousResponseId ? 'discussion' : 'solver', // First iteration uses solver, subsequent use discussion
       systemPromptMode: 'ARC',
       omitAnswer: true,
       retryMode: false
     };
 
-    // Add previousResponseId for continuation iterations
+    // Add previousResponseId for continuation iterations (discussion mode)
     if (previousResponseId) {
       requestBody.previousResponseId = previousResponseId;
     }
@@ -249,6 +250,12 @@ async function runProgressiveReasoning(
     const result = await runIteration(puzzleId, i, lastProviderResponseId);
     iterations.push(result);
 
+    // CRITICAL: If first iteration got it correct, STOP - no need for more iterations!
+    if (i === 0 && result.success && result.isPredictionCorrect) {
+      console.log(`🎯 SOLVED on first try! No need for further iterations.`);
+      break;
+    }
+
     if (!result.success) {
       console.log(`⚠️  Stopping iterations for ${puzzleId} due to failure`);
       break;
@@ -319,36 +326,53 @@ async function main(): Promise<void> {
     console.log(`Timeout per iteration: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
     console.log('='.repeat(80));
 
-    // Fire off all puzzles concurrently with staggered starts (2s delay)
-    const resultPromises: Promise<PuzzleResult>[] = [];
+    // Process puzzles in batches of 5
+    const allResults: PuzzleResult[] = [];
 
-    for (let i = 0; i < puzzleIds.length; i++) {
-      const puzzleId = puzzleIds[i];
-      
-      // Wrap in delayed promise to stagger starts
-      const delayedPromise = new Promise<PuzzleResult>((resolve) => {
-        setTimeout(async () => {
-          try {
-            const result = await runProgressiveReasoning(puzzleId, maxIterations);
-            resolve(result);
-          } catch (error) {
-            console.error(`Fatal error processing ${puzzleId}:`, error);
-            resolve({
-              puzzleId,
-              iterations: [],
-              totalSuccess: false,
-              totalTime: 0
-            });
-          }
-        }, i * PUZZLE_STAGGER_MS);
-      });
-      
-      resultPromises.push(delayedPromise);
+    for (let batchStart = 0; batchStart < puzzleIds.length; batchStart += BATCH_SIZE) {
+      const batchEnd = Math.min(batchStart + BATCH_SIZE, puzzleIds.length);
+      const batch = puzzleIds.slice(batchStart, batchEnd);
+
+      console.log(`\n🔥 Processing batch ${Math.floor(batchStart / BATCH_SIZE) + 1}/${Math.ceil(puzzleIds.length / BATCH_SIZE)} (${batch.length} puzzles)`);
+
+      // Fire off current batch concurrently with staggered starts
+      const resultPromises: Promise<PuzzleResult>[] = [];
+
+      for (let i = 0; i < batch.length; i++) {
+        const puzzleId = batch[i];
+
+        // Wrap in delayed promise to stagger starts within batch
+        const delayedPromise = new Promise<PuzzleResult>((resolve) => {
+          setTimeout(async () => {
+            try {
+              const result = await runProgressiveReasoning(puzzleId, maxIterations);
+              resolve(result);
+            } catch (error) {
+              console.error(`Fatal error processing ${puzzleId}:`, error);
+              resolve({
+                puzzleId,
+                iterations: [],
+                totalSuccess: false,
+                totalTime: 0
+              });
+            }
+          }, i * PUZZLE_STAGGER_MS);
+        });
+
+        resultPromises.push(delayedPromise);
+      }
+
+      // Wait for current batch to complete
+      console.log(`⚡ Batch ${Math.floor(batchStart / BATCH_SIZE) + 1} queued with ${PUZZLE_STAGGER_MS/1000}s stagger. Processing concurrently...\n`);
+      const batchResults = await Promise.all(resultPromises);
+      allResults.push(...batchResults);
+
+      // Add delay between batches (except for the last batch)
+      if (batchEnd < puzzleIds.length) {
+        console.log(`⏳ Waiting 10 seconds before next batch...\n`);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
     }
-
-    // Wait for all puzzles to complete
-    console.log(`\n⚡ All ${puzzleIds.length} puzzles queued with ${PUZZLE_STAGGER_MS/1000}s stagger. Processing concurrently...\n`);
-    const allResults = await Promise.all(resultPromises);
 
     // Final summary
     console.log('\n\n🎉 FINAL SUMMARY');

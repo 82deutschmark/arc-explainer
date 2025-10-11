@@ -1,11 +1,11 @@
 /**
  * 
- * Author: Cascade (Fixed naming issues from previous dev)
- * Date: 2025-09-26T20:29:52-04:00
+ * Author: Cascade
+ * Date: 2025-10-10 (Fixed critical terminology error)
  * PURPOSE: React hooks for fetching REAL model dataset performance data from database.
- * Shows which puzzles each model solved, failed, or hasn't attempted on ANY dataset.
+ * Shows which puzzles each model got correct, incorrect, or hasn't attempted on ANY dataset.
  * Dynamic dataset selection - no hardcoded evaluation dataset!
- * FIXED: Backend/frontend naming mismatch (correct->solved, incorrect->failed)
+ * TERMINOLOGY FIX: Now correctly uses 'correct/incorrect' matching backend (not 'solved/failed')
  * Uses proper error handling, loading states, and data fetching patterns.
  * SRP and DRY check: Pass - Single responsibility for model dataset performance data fetching
  */
@@ -15,12 +15,12 @@ import { useState, useEffect } from 'react';
 export interface ModelDatasetPerformance {
   modelName: string;
   dataset: string;
-  solved: string[];   // Maps to backend 'correct'
-  failed: string[];   // Maps to backend 'incorrect' 
+  correct: string[];     // Puzzles with correct predictions
+  incorrect: string[];   // Puzzles with incorrect predictions
   notAttempted: string[];
   summary: {
-    solved: number;     // Maps to backend 'correct'
-    failed: number;     // Maps to backend 'incorrect'
+    correct: number;     // Count of correct predictions
+    incorrect: number;   // Count of incorrect predictions
     notAttempted: number;
     totalPuzzles: number;
   };
@@ -30,6 +30,34 @@ export interface DatasetInfo {
   name: string;
   puzzleCount: number;
   path: string;
+}
+
+export interface ModelDatasetMetrics {
+  modelName: string;
+  dataset: string;
+  overall: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    totalTime: number;
+    avgTokens: number;
+    totalTokens: number;
+  };
+  correct: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
+  incorrect: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
 }
 
 interface UseModelDatasetPerformanceResult {
@@ -81,22 +109,8 @@ export function useModelDatasetPerformance(modelName: string | null, datasetName
         const data = await response.json();
         
         if (data.success) {
-          // Map backend field names (correct/incorrect) to frontend names (solved/failed)
-          const backendData = data.data;
-          const mappedData: ModelDatasetPerformance = {
-            modelName: backendData.modelName,
-            dataset: backendData.dataset,
-            solved: backendData.correct || [],
-            failed: backendData.incorrect || [],
-            notAttempted: backendData.notAttempted || [],
-            summary: {
-              solved: backendData.summary?.correct || 0,
-              failed: backendData.summary?.incorrect || 0,
-              notAttempted: backendData.summary?.notAttempted || 0,
-              totalPuzzles: backendData.summary?.totalPuzzles || 0
-            }
-          };
-          setPerformance(mappedData);
+          // Backend already returns correct/incorrect - no mapping needed
+          setPerformance(data.data);
         } else {
           throw new Error(data.message || 'Failed to fetch model performance');
         }
@@ -195,4 +209,58 @@ export function useAvailableDatasets(): UseAvailableDatasetsResult {
   }, []);
 
   return { datasets, loading, error };
+}
+
+/**
+ * Hook for fetching aggregate metrics (cost, time, tokens) for a model on a dataset
+ * SRP: Single responsibility - fetch metrics data only
+ * DRY: Follows same pattern as useModelDatasetPerformance
+ */
+export function useModelDatasetMetrics(modelName: string | null, datasetName: string | null): {
+  metrics: ModelDatasetMetrics | null;
+  loading: boolean;
+  error: string | null;
+} {
+  const [metrics, setMetrics] = useState<ModelDatasetMetrics | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!modelName || !datasetName) {
+      setMetrics(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    async function fetchMetrics() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/model-dataset/metrics/${encodeURIComponent(modelName || '')}/${encodeURIComponent(datasetName || '')}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          setMetrics(data.data);
+        } else {
+          throw new Error(data.message || 'Failed to fetch model metrics');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        setMetrics(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMetrics();
+  }, [modelName, datasetName]);
+
+  return { metrics, loading, error };
 }

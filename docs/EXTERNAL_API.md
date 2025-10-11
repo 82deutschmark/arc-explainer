@@ -27,6 +27,12 @@ This document describes the public APIs that external applications rely on. Thes
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
   - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
+- `GET /api/stream/analyze/:taskId/:modelKey` - Start Server-Sent Events stream for token-by-token analysis
+  - **Params**: `taskId` (string), `modelKey` (string) - Model name
+  - **Query**: Accepts same analysis options as the POST endpoint (`temperature`, `promptId`, `omitAnswer`, `reasoningEffort`, etc.)
+  - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
+  - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
+  - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)
@@ -289,6 +295,70 @@ Response: { "providerResponseId": "resp_def456", ... }
 **🔄 Data Consistency**: All cost endpoints now return identical values for the same model (eliminated previous inconsistencies between UI components).
 
 **⚙️ Performance**: Cost queries optimized with database indexes on `(model_name, estimated_cost)` and `(created_at, estimated_cost, model_name)`.
+
+### Model Comparison & Analysis ✨
+
+#### Model-to-Model Comparison
+- `GET /api/metrics/compare` - Compare specific models on a dataset
+  - **Query params**: `model1` (required), `model2` (required), `model3` (optional), `model4` (optional), `dataset` (required)
+  - **Response**: `ModelComparisonResult` with detailed puzzle-by-puzzle comparison
+  - **Data Structure**:
+    ```typescript
+    {
+      summary: {
+        totalPuzzles: number;
+        model1Name: string;
+        model2Name: string;
+        model3Name?: string;
+        model4Name?: string;
+        dataset: string;
+        allCorrect: number;        // All models got it right
+        allIncorrect: number;      // All models got it wrong
+        allNotAttempted: number;   // No model tried
+        threeCorrect?: number;     // Exactly 3 correct (4-model comparison)
+        twoCorrect?: number;       // Exactly 2 correct
+        oneCorrect?: number;       // Exactly 1 correct
+        model1OnlyCorrect: number; // Only model 1 correct
+        model2OnlyCorrect: number; // Only model 2 correct
+        model3OnlyCorrect?: number;
+        model4OnlyCorrect?: number;
+      },
+      details: PuzzleComparisonDetail[];  // Per-puzzle results
+    }
+    ```
+  - **Use Case**: Head-to-head model performance comparison on specific datasets
+  - **Example**: `/api/metrics/compare?model1=gpt-5-pro&model2=grok-4&dataset=evaluation2`
+  - **Limits**: Up to 4 models simultaneously, any dataset from data/ directory
+
+- `POST /api/puzzle/analyze-list` - Analyze specific puzzles across ALL models
+  - **Body**: `{ puzzleIds: string[] }` - Array of puzzle IDs (max 500)
+  - **Response**: `PuzzleListAnalysisResponse` with model-puzzle matrix
+  - **Data Structure**:
+    ```typescript
+    {
+      modelPuzzleMatrix: Array<{
+        modelName: string;
+        puzzleStatuses: Array<{
+          puzzleId: string;
+          status: 'correct' | 'incorrect' | 'not_attempted';
+        }>;
+      }>;
+      puzzleResults: Array<{
+        puzzle_id: string;
+        correct_models: string[];
+        total_attempts: number;
+      }>;
+      summary: {
+        totalPuzzles: number;
+        totalModels: number;
+        perfectModels: number;      // Got ALL puzzles correct
+        partialModels: number;      // Got some correct, some wrong
+        notAttemptedModels: number; // Never tried any
+      };
+    }
+    ```
+  - **Use Case**: Check which models solved specific user-selected puzzles (inverse of model comparison)
+  - **Limits**: Max 500 puzzle IDs per request
 
 ### Model Analysis
 - `GET /api/puzzle/confidence-stats` - Model confidence analysis

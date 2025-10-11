@@ -1,30 +1,36 @@
 /**
  * Metrics Repository Implementation
  * 
- * Aggregates analytics from AccuracyRepository, TrustworthinessRepository, and FeedbackRepository.
+ * Aggregates analytics from AccuracyRepository, TrustworthinessRepository, FeedbackRepository,
+ * and ModelDatasetRepository.
  * Handles mixed overview metrics and comprehensive dashboard analytics.
  * 
  * SCOPE: This repository handles AGGREGATED ANALYTICS combining:
  * - Pure accuracy data from AccuracyRepository
  * - Trustworthiness data from TrustworthinessRepository  
  * - User feedback data from FeedbackRepository
+ * - Dataset puzzle IDs from ModelDatasetRepository (for model comparisons)
  * - Infrastructure/database performance metrics
  * 
  * RESPONSIBILITIES:
  * - Provide unified dashboard overviews combining multiple data sources
  * - Handle mixed analytics that require data from multiple repositories
  * - Infrastructure and performance monitoring metrics
- * - Cross-repository comparative analytics
+ * - Cross-repository comparative analytics (e.g., multi-model comparisons)
  * 
  * WHAT THIS REPOSITORY DOES NOT HANDLE:
  * - Individual repository concerns (those stay in their respective repositories)
  * - Raw data storage or manipulation (delegates to other repositories)
+ * - Dataset discovery or filesystem operations (delegates to ModelDatasetRepository)
  * 
  * This repository follows the Aggregate pattern, coordinating between
  * specialized repositories without duplicating their logic.
  * 
- * @author Claude
- * @date 2025-08-31
+ * ARCHITECTURE FIX (2025-10-10): Removed puzzleLoader dependency and dataset mapping logic.
+ * Now properly delegates to ModelDatasetRepository for dataset operations (SRP compliance).
+ * 
+ * @author Claude / Cascade
+ * @date 2025-08-31 (updated 2025-10-10)
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -129,6 +135,41 @@ export interface ComprehensiveDashboard {
     totalCost: number;
     avgCostPerAttempt: number;
   };
+}
+
+export interface PuzzleComparisonDetail {
+  puzzleId: string;
+  model1Result: 'correct' | 'incorrect' | 'not_attempted';
+  model2Result: 'correct' | 'incorrect' | 'not_attempted';
+  model3Result?: 'correct' | 'incorrect' | 'not_attempted';
+  model4Result?: 'correct' | 'incorrect' | 'not_attempted';
+}
+
+export interface ModelComparisonSummary {
+  totalPuzzles: number;
+  model1Name: string;
+  model2Name: string;
+  model3Name?: string;
+  model4Name?: string;
+  dataset: string;
+  // Agreement counts
+  allCorrect: number;
+  allIncorrect: number;
+  allNotAttempted: number;
+  // Partial agreement counts
+  threeCorrect?: number;
+  twoCorrect?: number;
+  oneCorrect?: number;
+  // Model-specific counts
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  model3OnlyCorrect?: number;
+  model4OnlyCorrect?: number;
+}
+
+export interface ModelComparisonResult {
+  summary: ModelComparisonSummary;
+  details: PuzzleComparisonDetail[];
 }
 
 export interface ModelReliabilityStat {
@@ -650,6 +691,178 @@ export class MetricsRepository extends BaseRepository {
       logger.error(`Error getting model reliability stats: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
+  }
+
+  async getModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
+    return this.getMultiModelComparison(models, dataset);
+  }
+  private async getMultiModelComparison(models: string[], dataset: string): Promise<ModelComparisonResult> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty model comparison.', 'database');
+      return {
+        summary: {
+          totalPuzzles: 0,
+          model1Name: models[0] || '',
+          model2Name: models[1] || '',
+          model3Name: models[2] || '',
+          model4Name: models[3] || '',
+          dataset: dataset,
+          allCorrect: 0,
+          allIncorrect: 0,
+          allNotAttempted: 0,
+          model1OnlyCorrect: 0,
+          model2OnlyCorrect: 0,
+        },
+        details: [],
+      };
+    }
+
+    try {
+      const puzzleIds = await this.getPuzzleIdsForDataset(dataset);
+      if (puzzleIds.length === 0) {
+        logger.warn(`No puzzles found for dataset: ${dataset}`, 'metrics');
+        return {
+          summary: { 
+            totalPuzzles: 0, 
+            model1Name: models[0] || '',
+            model2Name: models[1] || '',
+            model3Name: models[2] || '',
+            model4Name: models[3] || '',
+            dataset, 
+            allCorrect: 0, 
+            allIncorrect: 0, 
+            allNotAttempted: 0,
+            model1OnlyCorrect: 0,
+            model2OnlyCorrect: 0 
+          },
+          details: []
+        };
+      }
+
+      logger.info(`Comparing ${models.length} models on ${puzzleIds.length} puzzles from ${dataset}`, 'metrics');
+
+      // SIMPLIFIED APPROACH (following puzzleController.analyzeList pattern):
+      // Fetch all explanations for these puzzles and models, then build matrix in JavaScript
+      // This is more reliable than complex dynamic SQL
+      
+      const query = `
+        SELECT DISTINCT ON (puzzle_id, model_name)
+          puzzle_id,
+          model_name,
+          (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
+          created_at
+        FROM explanations
+        WHERE model_name = ANY($1::text[]) 
+        AND puzzle_id = ANY($2::text[])
+        ORDER BY puzzle_id, model_name, created_at DESC
+      `;
+
+      const result = await this.query(query, [models, puzzleIds]);
+      
+      // Build a map of puzzle_id -> model_name -> correctness
+      const puzzleModelMap = new Map<string, Map<string, boolean | null>>();
+      
+      for (const row of result.rows) {
+        if (!puzzleModelMap.has(row.puzzle_id)) {
+          puzzleModelMap.set(row.puzzle_id, new Map());
+        }
+        puzzleModelMap.get(row.puzzle_id)!.set(row.model_name, row.is_correct);
+      }
+
+      // Initialize counters
+      const summary = {
+        allCorrect: 0,
+        allIncorrect: 0,
+        allNotAttempted: 0,
+        threeCorrect: 0,
+        twoCorrect: 0,
+        oneCorrect: 0,
+        model1OnlyCorrect: 0,
+        model2OnlyCorrect: 0,
+        model3OnlyCorrect: 0,
+        model4OnlyCorrect: 0,
+      };
+
+      const details: PuzzleComparisonDetail[] = puzzleIds.map(puzzleId => {
+        const modelResults = puzzleModelMap.get(puzzleId) || new Map();
+        
+        // Get result for each model
+        const results = models.map((modelName) => {
+          const isCorrect = modelResults.get(modelName);
+          return isCorrect === null || isCorrect === undefined 
+            ? 'not_attempted' 
+            : (isCorrect ? 'correct' : 'incorrect');
+        });
+
+        // Count correct models for this puzzle
+        const correctCount = results.filter(r => r === 'correct').length;
+        const incorrectCount = results.filter(r => r === 'incorrect').length;
+        const notAttemptedCount = results.filter(r => r === 'not_attempted').length;
+
+        // Update summary counters
+        if (correctCount === models.length) summary.allCorrect++;
+        else if (notAttemptedCount === models.length) summary.allNotAttempted++;
+        else if (incorrectCount + notAttemptedCount === models.length) summary.allIncorrect++;
+        else if (correctCount === 3 && models.length >= 3) summary.threeCorrect++;
+        else if (correctCount === 2 && models.length >= 2) summary.twoCorrect++;
+        else if (correctCount === 1) summary.oneCorrect++;
+
+        // Count individual model "only correct" scenarios
+        if (correctCount === 1) {
+          const onlyCorrectIndex = results.findIndex(r => r === 'correct');
+          if (onlyCorrectIndex >= 0 && onlyCorrectIndex < 4) {
+            const key = `model${onlyCorrectIndex + 1}OnlyCorrect` as keyof typeof summary;
+            if (typeof summary[key] === 'number') {
+              (summary[key] as number)++;
+            }
+          }
+        }
+
+        return {
+          puzzleId,
+          model1Result: results[0] as 'correct' | 'incorrect' | 'not_attempted',
+          model2Result: results[1] as 'correct' | 'incorrect' | 'not_attempted',
+          ...(models.length >= 3 && { model3Result: results[2] as 'correct' | 'incorrect' | 'not_attempted' }),
+          ...(models.length >= 4 && { model4Result: results[3] as 'correct' | 'incorrect' | 'not_attempted' }),
+        };
+      });
+
+      logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
+
+      return {
+        summary: {
+          totalPuzzles: puzzleIds.length,
+          model1Name: models[0] || '',
+          model2Name: models[1] || '',
+          model3Name: models[2] || '',
+          model4Name: models[3] || '',
+          dataset,
+          ...summary,
+        },
+        details
+      };
+
+    } catch (error) {
+      logger.error(`Error in getModelComparison: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  private async getPuzzleIdsForDataset(dataset: string): Promise<string[]> {
+      if (dataset === 'all') {
+          const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations ORDER BY puzzle_id');
+          return result.rows.map(r => r.puzzle_id);
+      }
+      
+      // SRP COMPLIANCE: Delegate to ModelDatasetRepository (single source of truth for dataset operations)
+      // ModelDatasetRepository owns dataset-to-directory mapping and filesystem access
+      // This fixes the bug where puzzleLoader's priority-based filtering excluded valid puzzles
+      const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
+      const puzzleIds = modelDatasetRepo.getPuzzleIdsFromDataset(dataset);
+      
+      logger.info(`getPuzzleIdsForDataset: dataset=${dataset}, found ${puzzleIds.length} puzzles directly from filesystem`, 'metrics');
+      
+      return puzzleIds;
   }
 
   // ==================== HELPER METHODS FOR SRP REFACTORING ====================

@@ -41,7 +41,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           predicted_output_grid, multiple_predicted_outputs, multi_test_results,
           saturn_success, saturn_images, saturn_log, saturn_events,
           alien_meaning, alien_meaning_confidence,
-          is_prediction_correct, prediction_accuracy_score,
+          is_prediction_correct, trustworthiness_score,
           multi_test_all_correct, multi_test_average_accuracy, has_multiple_predictions,
           system_prompt_used, user_prompt_used, prompt_template_id, custom_prompt_text,
           provider_response_id, provider_raw_response, multi_test_prediction_grids,
@@ -140,7 +140,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
         predicted_output_grid AS "predictedOutputGrid",
         is_prediction_correct AS "isPredictionCorrect",
-        prediction_accuracy_score AS "predictionAccuracyScore",
+        trustworthiness_score AS "predictionAccuracyScore",
         has_multiple_predictions AS "hasMultiplePredictions",
         multiple_predicted_outputs AS "multiplePredictedOutputs",
         multi_test_results AS "multiTestResults",
@@ -202,7 +202,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
         predicted_output_grid AS "predictedOutputGrid",
         is_prediction_correct AS "isPredictionCorrect",
-        prediction_accuracy_score AS "predictionAccuracyScore",
+        trustworthiness_score AS "predictionAccuracyScore",
         has_multiple_predictions AS "hasMultiplePredictions",
         multiple_predicted_outputs AS "multiplePredictedOutputs",
         multi_test_results AS "multiTestResults",
@@ -246,7 +246,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturn_events AS "saturnEvents", saturn_success AS "saturnSuccess",
         predicted_output_grid AS "predictedOutputGrid",
         is_prediction_correct AS "isPredictionCorrect",
-        prediction_accuracy_score AS "predictionAccuracyScore",
+        trustworthiness_score AS "predictionAccuracyScore",
         has_multiple_predictions AS "hasMultiplePredictions",
         multiple_predicted_outputs AS "multiplePredictedOutputs",
         multi_test_results AS "multiTestResults",
@@ -351,7 +351,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           e.saturn_success,
           e.predicted_output_grid,
           e.is_prediction_correct,
-          e.prediction_accuracy_score,
+          e.trustworthiness_score,
           e.provider_raw_response,
           e.reasoning_items,
           e.temperature,
@@ -402,7 +402,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             saturnSuccess: row.saturn_success,
             predictedOutputGrid: row.predicted_output_grid,
             isPredictionCorrect: row.is_prediction_correct,
-            predictionAccuracyScore: row.prediction_accuracy_score,
+            predictionAccuracyScore: row.trustworthiness_score,
             providerRawResponse: row.provider_raw_response,
             reasoningItems: row.reasoning_items,
             temperature: row.temperature,
@@ -705,17 +705,17 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
 
       if (filters?.zeroAccuracyOnly) {
         // Only show puzzles with 0% accuracy
-        havingConditions.push('AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) = 0');
+        havingConditions.push('AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) = 0');
       } else {
         // Apply accuracy range filters if provided
         if (filters?.minAccuracy !== undefined) {
-          havingConditions.push(`AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) >= $${paramIndex}`);
+          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) >= $${paramIndex}`);
           queryParams.push(filters.minAccuracy);
           paramIndex++;
         }
         
         if (filters?.maxAccuracy !== undefined) {
-          havingConditions.push(`AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) <= $${paramIndex}`);
+          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) <= $${paramIndex}`);
           queryParams.push(filters.maxAccuracy);
           paramIndex++;
         }
@@ -729,7 +729,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             // Original filter logic for other sort types
             havingConditions.push(`(
               COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) > 0 OR
-              AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
+              AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
               COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
             )`);
           }
@@ -780,7 +780,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           SELECT 
             e.puzzle_id,
             COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) as wrong_count,
-            AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
+            AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
             AVG(e.confidence) as avg_confidence,
             COUNT(DISTINCT e.id) as total_explanations,
             COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') as negative_feedback,
@@ -789,7 +789,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             MIN(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN e.id END) as worst_explanation_id,${richMetricsColumns}
             (
               COUNT(CASE WHEN e.is_prediction_correct = false OR e.multi_test_all_correct = false THEN 1 END) * 5.0 +
-              CASE WHEN AVG(COALESCE(e.prediction_accuracy_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
+              CASE WHEN AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
               CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
               COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') * 2.0
             ) as composite_score

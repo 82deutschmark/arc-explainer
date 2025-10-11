@@ -566,6 +566,7 @@ export interface ModelConfig {
   supportsStructuredOutput?: boolean;
   supportsVision?: boolean;
   requiresPromptFormat?: boolean; // For OpenRouter models that need "prompt" instead of "messages"
+  supportsStreaming?: boolean;
   
   // Model Management fields
   isActive?: boolean; // Controls whether model appears in selectors (default: true)

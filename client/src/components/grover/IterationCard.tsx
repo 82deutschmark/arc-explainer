@@ -83,6 +83,8 @@ export function IterationCard({
   const [expandedPrograms, setExpandedPrograms] = React.useState<Set<number>>(new Set());
   // Track prompt preview expanded state
   const [isPromptOpen, setIsPromptOpen] = React.useState(false);
+  const formatCount = (value?: number | null) =>
+    typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString() : '—';
 
   // Status indicator
   const getStatusIcon = () => {
@@ -187,7 +189,7 @@ export function IterationCard({
                             {isPromptOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                           </div>
                           <span className="text-xs font-bold text-blue-900">
-                            View Prompt Preview ({promptPreview.length.toLocaleString()} chars)
+                            View Prompt Preview ({formatCount(promptPreview.length)} chars)
                           </span>
                         </button>
                       </CollapsibleTrigger>
@@ -208,15 +210,15 @@ export function IterationCard({
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="bg-gray-50 p-1.5 rounded">
                         <span className="text-gray-600">Input:</span>
-                        <span className="ml-1 font-medium">{tokenUsage.input.toLocaleString()}</span>
+                        <span className="ml-1 font-medium">{formatCount(tokenUsage.input)}</span>
                       </div>
                       <div className="bg-gray-50 p-1.5 rounded">
                         <span className="text-gray-600">Output:</span>
-                        <span className="ml-1 font-medium">{tokenUsage.output.toLocaleString()}</span>
+                        <span className="ml-1 font-medium">{formatCount(tokenUsage.output)}</span>
                       </div>
                       <div className="bg-gray-50 p-1.5 rounded">
                         <span className="text-gray-600">Total:</span>
-                        <span className="ml-1 font-medium">{tokenUsage.total.toLocaleString()}</span>
+                        <span className="ml-1 font-medium">{formatCount(tokenUsage.total)}</span>
                       </div>
                     </div>
                   )}

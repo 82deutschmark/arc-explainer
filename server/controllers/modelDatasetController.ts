@@ -1,9 +1,9 @@
 /**
  * 
  * Author: Gemini 2.5 Pro
- * Date: 2025-09-26T15:23:00-04:00
+ * Date: 2025-09-26T15:23:00-04:00 (Updated 2025-10-10 - terminology fix)
  * PURPOSE: RESTful controller for model dataset performance API endpoints.
- * Provides REAL database queries showing which ARC evaluation puzzles each model solved/failed/hasn't attempted.
+ * Provides REAL database queries showing which ARC evaluation puzzles each model got correct/incorrect/hasn't attempted.
  * Based on is_prediction_correct and multi_test_all_correct fields from the explanations table.
  * SRP and DRY check: Pass - Single responsibility for model dataset API endpoints only.
  */
@@ -88,6 +88,37 @@ class ModelDatasetController {
       res.status(500).json({
         success: false,
         message: 'Error retrieving available datasets',
+      });
+    }
+  });
+
+  /**
+   * @desc    Get aggregate metrics (cost, time, tokens) for a model on a specific dataset
+   * @route   GET /api/model-dataset/metrics/:modelName/:datasetName
+   * @access  Public
+   */
+  getModelDatasetMetrics = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { modelName, datasetName } = req.params;
+      
+      if (!modelName || !datasetName) {
+        return res.status(400).json({
+          success: false,
+          message: 'Model name and dataset name are required',
+        });
+      }
+
+      const metrics = await repositoryService.modelDataset.getModelDatasetMetrics(modelName, datasetName);
+
+      res.status(200).json({
+        success: true,
+        data: metrics,
+      });
+    } catch (error) {
+      logger.error(`Error in getModelDatasetMetrics: ${error instanceof Error ? error.message : String(error)}`, 'api');
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving model dataset metrics',
       });
     }
   });

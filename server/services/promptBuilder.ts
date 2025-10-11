@@ -45,6 +45,7 @@ export interface PromptOptions {
   previousAnalysis?: any; // Previous failed analysis data
   originalExplanation?: any; // For debate mode: the original explanation to challenge
   customChallenge?: string; // For debate mode: human guidance on what to focus on
+  badFeedback?: any[]; // Feedback entries influencing retry prompts
 }
 
 /**

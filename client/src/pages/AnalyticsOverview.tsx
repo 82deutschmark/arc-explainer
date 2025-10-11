@@ -1,18 +1,32 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-04T22:37:28-04:00
- * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics.
- * Removed flawed leaderboard sections that were producing inaccurate data.
- * Retains only the reliable database query tool for examining individual model performance on ARC datasets.
+ * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density)
+ * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics with MAXIMUM information density.
+ * 
+ * MAJOR UI/UX IMPROVEMENTS (2025-10-10):
+ * - CRITICAL FIX: Now prominently displays MODEL NAME (was completely missing!)
+ * - Added visual progress bar showing correct/incorrect/not-attempted proportions
+ * - EXTREME PADDING REDUCTION: p-4→p-3→p-2, gap-4→gap-3→gap-2 for maximum density
+ * - Changed from 4 cards to 3 + prominent header card with model/dataset info
+ * - Added "Success Rate of Attempted" metric (correct / attempted puzzles)
+ * - Increased puzzle badge grid from 2 to 3 columns for denser layout
+ * - Added percentage of total on each stat card
+ * - Improved visual hierarchy with gradient header card
+ * - Reduced header/content padding to pt-2 px-2 pb-1 for maximum space utilization
+ * - Font size reductions: text-base→text-sm for titles
+ * - Added TODO comments for future metric badges (cost, time, tokens)
+ * 
  * Uses proper shadcn/ui components and follows established patterns.
  * SRP and DRY check: Pass - Single responsibility of displaying analytics, reuses existing components
  * shadcn/ui: Pass - Uses proper shadcn/ui components throughout (Card, Badge, Button, Select, etc.)
  */
 
 import React, { useState, useMemo } from 'react';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   BarChart3,
   Database,
@@ -25,7 +39,43 @@ import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
 
 // Import hooks that follow proper repository pattern
-import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
+
+// Types for the new Model Comparison feature
+export interface PuzzleComparisonDetail {
+  puzzleId: string;
+  model1Result: 'correct' | 'incorrect' | 'not_attempted';
+  model2Result: 'correct' | 'incorrect' | 'not_attempted';
+  model3Result?: 'correct' | 'incorrect' | 'not_attempted';
+  model4Result?: 'correct' | 'incorrect' | 'not_attempted';
+}
+
+export interface ModelComparisonSummary {
+  totalPuzzles: number;
+  model1Name: string;
+  model2Name: string;
+  model3Name?: string;
+  model4Name?: string;
+  dataset: string;
+  // Agreement counts
+  allCorrect: number;
+  allIncorrect: number;
+  allNotAttempted: number;
+  // Partial agreement counts
+  threeCorrect?: number;
+  twoCorrect?: number;
+  oneCorrect?: number;
+  // Model-specific counts
+  model1OnlyCorrect: number;
+  model2OnlyCorrect: number;
+  model3OnlyCorrect?: number;
+  model4OnlyCorrect?: number;
+}
+
+export interface ModelComparisonResult {
+  summary: ModelComparisonSummary;
+  details: PuzzleComparisonDetail[];
+}
 
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
@@ -42,7 +92,14 @@ export default function AnalyticsOverview() {
 
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
+  const [selectedModelForComparison, setSelectedModelForComparison] = useState<string>('');
+  const [selectedModel3, setSelectedModel3] = useState<string>('');
+  const [selectedModel4, setSelectedModel4] = useState<string>('');
   const [selectedDataset, setSelectedDataset] = useState<string>('');
+
+  // Model comparison state
+  const [loadingComparison, setLoadingComparison] = useState<boolean>(false);
+  const [, navigate] = useLocation();
 
   // Collapsible sections state
   const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
@@ -51,6 +108,7 @@ export default function AnalyticsOverview() {
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
   const { datasets: availableDatasets, loading: loadingDatasets, error: datasetsError } = useAvailableDatasets();
   const { performance: modelDatasetPerformance, loading: loadingPerformance, error: performanceError } = useModelDatasetPerformance(selectedModelForDataset || null, selectedDataset || null);
+  const { metrics: modelDatasetMetrics, loading: loadingMetrics } = useModelDatasetMetrics(selectedModelForDataset || null, selectedDataset || null);
   const datasetOptions: DatasetOption[] = useMemo(() => {
     return availableDatasets.map((dataset) => ({
       ...dataset,
@@ -77,8 +135,66 @@ export default function AnalyticsOverview() {
     }
   }, [availableModels, selectedModelForDataset]);
 
+  // Auto-select Grok-4 as 2nd model if available
+  React.useEffect(() => {
+    if (availableModels.length > 0 && !selectedModelForComparison) {
+      const grok4 = availableModels.find(m => m.includes('grok-4')) || availableModels[1];
+      if (grok4 && grok4 !== selectedModelForDataset) {
+        setSelectedModelForComparison(grok4);
+      }
+    }
+  }, [availableModels, selectedModelForDataset, selectedModelForComparison]);
 
-  // Set page title and scroll to top
+  // Auto-select Claude Sonnet 4.5 as 3rd model if available
+  React.useEffect(() => {
+    if (availableModels.length > 0 && !selectedModel3) {
+      const claudeSonnet = availableModels.find(m => m.includes('claude') && m.includes('sonnet') && m.includes('4.5'));
+      if (claudeSonnet && claudeSonnet !== selectedModelForDataset && claudeSonnet !== selectedModelForComparison) {
+        setSelectedModel3(claudeSonnet);
+      }
+    }
+  }, [availableModels, selectedModelForDataset, selectedModelForComparison, selectedModel3]);
+
+
+  // Navigate to comparison page with data
+  const handleCompare = async () => {
+    if (!selectedModelForDataset || !selectedDataset) return;
+
+    setLoadingComparison(true);
+
+    try {
+      const models = [
+        selectedModelForDataset, 
+        selectedModelForComparison, 
+        selectedModel3 === '__none__' ? '' : selectedModel3, 
+        selectedModel4 === '__none__' ? '' : selectedModel4
+      ].filter(Boolean);
+      
+      const queryParams = new URLSearchParams({
+        model1: models[0] || '',
+        ...(models[1] && { model2: models[1] }),
+        ...(models[2] && { model3: models[2] }),
+        ...(models[3] && { model4: models[3] }),
+        dataset: selectedDataset
+      });
+      
+      const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch comparison data');
+      }
+      const result = await response.json();
+      
+      // Navigate to dedicated comparison page with data
+      navigate('/model-comparison', { state: { comparisonData: result.data } });
+    } catch (error) {
+      console.error('Comparison error:', error);
+      // You could show a toast here if needed
+    } finally {
+      setLoadingComparison(false);
+    }
+  };
+
   React.useEffect(() => {
     document.title = 'Analytics Dashboard - ARC Explainer';
     window.scrollTo(0, 0);
@@ -143,7 +259,7 @@ export default function AnalyticsOverview() {
               </div>
 
               <div>
-                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model:</label>
+                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model 1 (Primary):</label>
                 <Select 
                   value={selectedModelForDataset} 
                   onValueChange={setSelectedModelForDataset}
@@ -167,6 +283,78 @@ export default function AnalyticsOverview() {
                   <p className="text-sm text-yellow-600 mt-1">No models found with database entries</p>
                 )}
               </div>
+
+              <div>
+                <label htmlFor="model-compare-select" className="text-sm font-medium mb-2 block">Model 2 (Grok-4):</label>
+                <Select 
+                  value={selectedModelForComparison} 
+                  onValueChange={setSelectedModelForComparison}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model-compare-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose a model to compare" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableModels.filter(m => m !== selectedModelForDataset).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="model3-select" className="text-sm font-medium mb-2 block">Model 3 (Optional):</label>
+                <Select 
+                  value={selectedModel3} 
+                  onValueChange={setSelectedModel3}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model3-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose third model (optional)" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label htmlFor="model4-select" className="text-sm font-medium mb-2 block">Model 4 (Optional):</label>
+                <Select 
+                  value={selectedModel4} 
+                  onValueChange={setSelectedModel4}
+                  disabled={loadingModels || !selectedDataset}
+                >
+                  <SelectTrigger id="model4-select">
+                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose fourth model (optional)" : "Select dataset first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
+                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison && m !== selectedModel3).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-center pt-4">
+                <Button 
+                    onClick={handleCompare}
+                    disabled={!selectedModelForDataset || !selectedDataset || loadingComparison}
+                    size="lg"
+                >
+                    {loadingComparison ? 'Comparing...' : 'Compare Models'}
+                </Button>
             </div>
 
             {loadingPerformance && selectedModelForDataset && (
@@ -177,99 +365,213 @@ export default function AnalyticsOverview() {
             )}
 
             {modelDatasetPerformance && !loadingPerformance && (
-              <div className="space-y-4">
-                {/* Summary Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Card className="bg-green-50 border-green-200">
-                    <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-green-700">{modelDatasetPerformance.summary.solved}</div>
-                      <div className="text-sm text-green-600">Puzzles CORRECT</div>
-                      <div className="text-xs text-green-500 mt-1">
-                        {Math.round((modelDatasetPerformance.summary.solved / modelDatasetPerformance.summary.totalPuzzles) * 100)}% success rate
+              <div className="space-y-3">
+                {/* Model & Dataset Header - CRITICAL INFO */}
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                  <CardContent className="p-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h2 className="text-2xl font-bold text-gray-900">{modelDatasetPerformance.modelName}</h2>
+                          <span className="text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md font-medium">
+                            {DATASET_DISPLAY_NAME_MAP[modelDatasetPerformance.dataset] || modelDatasetPerformance.dataset}
+                          </span>
+                          <span className="text-sm text-gray-500">({modelDatasetPerformance.summary.totalPuzzles} puzzles)</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span>Attempted: <strong>{modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect}</strong> / {modelDatasetPerformance.summary.totalPuzzles}</span>
+                          <span className="text-gray-400">•</span>
+                          <span>Success Rate of Attempted: <strong className="text-green-700">
+                            {modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect > 0
+                              ? ((modelDatasetPerformance.summary.correct / (modelDatasetPerformance.summary.correct + modelDatasetPerformance.summary.incorrect)) * 100).toFixed(2)
+                              : '0.00'}%
+                          </strong></span>
+                        </div>
                       </div>
+                      <div className="text-right">
+                        <div className="text-4xl font-bold text-green-700">
+                          {((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
+                        </div>
+                        <div className="text-xs text-gray-600 font-medium">Overall Success</div>
+                        <div className="text-xs text-gray-500">{modelDatasetPerformance.summary.correct}/{modelDatasetPerformance.summary.totalPuzzles} correct</div>
+                      </div>
+                    </div>
+                    
+                    {/* Visual Progress Bar */}
+                    <div className="mt-3 space-y-1">
+                      <div className="flex h-6 rounded-md overflow-hidden shadow-sm">
+                        {modelDatasetPerformance.summary.correct > 0 && (
+                          <div 
+                            className="bg-green-500 flex items-center justify-center text-xs font-semibold text-white"
+                            style={{ width: `${(modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100}%` }}
+                          >
+                            {modelDatasetPerformance.summary.correct > 0 && `${modelDatasetPerformance.summary.correct}`}
+                          </div>
+                        )}
+                        {modelDatasetPerformance.summary.incorrect > 0 && (
+                          <div 
+                            className="bg-red-500 flex items-center justify-center text-xs font-semibold text-white"
+                            style={{ width: `${(modelDatasetPerformance.summary.incorrect / modelDatasetPerformance.summary.totalPuzzles) * 100}%` }}
+                          >
+                            {modelDatasetPerformance.summary.incorrect > 0 && `${modelDatasetPerformance.summary.incorrect}`}
+                          </div>
+                        )}
+                        {modelDatasetPerformance.summary.notAttempted > 0 && (
+                          <div 
+                            className="bg-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700"
+                            style={{ width: `${(modelDatasetPerformance.summary.notAttempted / modelDatasetPerformance.summary.totalPuzzles) * 100}%` }}
+                          >
+                            {modelDatasetPerformance.summary.notAttempted > 0 && `${modelDatasetPerformance.summary.notAttempted}`}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-green-500 rounded-sm"></span>Correct</span>
+                        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded-sm"></span>Incorrect</span>
+                        <span className="flex items-center gap-1"><span className="w-3 h-3 bg-gray-300 rounded-sm"></span>Not Attempted</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Compact Summary Stats with Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-3xl font-bold text-green-700">{modelDatasetPerformance.summary.correct}</div>
+                          <div className="text-sm font-medium text-green-600">Correct</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-green-600">
+                            {((modelDatasetPerformance.summary.correct / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
+                          </div>
+                          <div className="text-xs text-green-500">of total</div>
+                        </div>
+                      </div>
+                      {modelDatasetMetrics && modelDatasetMetrics.correct.count > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {modelDatasetMetrics.correct.avgCost > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              💰 ${modelDatasetMetrics.correct.avgCost.toFixed(4)} avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.correct.avgTime > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              ⏱️ {(modelDatasetMetrics.correct.avgTime / 1000).toFixed(2)}s avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.correct.avgTokens > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-green-50 text-green-700 border-green-200">
+                              🔤 {Math.round(modelDatasetMetrics.correct.avgTokens).toLocaleString()} tok
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                   
                   <Card className="bg-red-50 border-red-200">
-                    <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-red-700">{modelDatasetPerformance.summary.failed}</div>
-                      <div className="text-sm text-red-600">Puzzles Incorrect</div>
-                      <div className="text-xs text-red-500 mt-1">Attempted but got wrong answer</div>
+                    <CardContent className="p-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-3xl font-bold text-red-700">{modelDatasetPerformance.summary.incorrect}</div>
+                          <div className="text-sm font-medium text-red-600">Incorrect</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-red-600">
+                            {((modelDatasetPerformance.summary.incorrect / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
+                          </div>
+                          <div className="text-xs text-red-500">of total</div>
+                        </div>
+                      </div>
+                      {modelDatasetMetrics && modelDatasetMetrics.incorrect.count > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {modelDatasetMetrics.incorrect.avgCost > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              💰 ${modelDatasetMetrics.incorrect.avgCost.toFixed(4)} avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.incorrect.avgTime > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              ⏱️ {(modelDatasetMetrics.incorrect.avgTime / 1000).toFixed(2)}s avg
+                            </Badge>
+                          )}
+                          {modelDatasetMetrics.incorrect.avgTokens > 0 && (
+                            <Badge variant="outline" className="text-[10px] bg-red-50 text-red-700 border-red-200">
+                              🔤 {Math.round(modelDatasetMetrics.incorrect.avgTokens).toLocaleString()} tok
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                   
                   <Card className="bg-gray-50 border-gray-200">
-                    <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-gray-700">{modelDatasetPerformance.summary.notAttempted}</div>
-                      <div className="text-sm text-gray-600">Not Attempted</div>
-                      <div className="text-xs text-gray-500 mt-1">No prediction attempts in database</div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-blue-700">{modelDatasetPerformance.summary.totalPuzzles}</div>
-                      <div className="text-sm text-blue-600">Total Puzzles</div>
-                      <div className="text-xs text-blue-500 mt-1">ARC Evaluation Set</div>
+                    <CardContent className="p-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-3xl font-bold text-gray-700">{modelDatasetPerformance.summary.notAttempted}</div>
+                          <div className="text-sm font-medium text-gray-600">Not Attempted</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-gray-600">
+                            {((modelDatasetPerformance.summary.notAttempted / modelDatasetPerformance.summary.totalPuzzles) * 100).toFixed(2)}%
+                          </div>
+                          <div className="text-xs text-gray-500">of total</div>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
 
-                {/* Detailed Puzzle Lists */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Detailed Puzzle Lists - Maximum Density */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="text-green-700 flex items-center gap-2">
-                        ✅ Correct ({modelDatasetPerformance.solved.length})
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-green-700 flex items-center gap-2">
+                        ✅ Correct ({modelDatasetPerformance.correct.length})
                       </CardTitle>
-                      <p className="text-xs text-muted-foreground">
-                        is_prediction_correct = true OR multi_test_all_correct = true
-                      </p>
                     </CardHeader>
-                    <CardContent className="max-h-60 overflow-y-auto">
-                      <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.solved.map((puzzleId) => (
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
+                      <div className="grid grid-cols-3 gap-1 text-xs">
+                        {modelDatasetPerformance.correct.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="success" />
                         ))}
                       </div>
-                      {modelDatasetPerformance.solved.length === 0 && (
+                      {modelDatasetPerformance.correct.length === 0 && (
                         <p className="text-sm text-gray-500 italic">No puzzles solved yet</p>
                       )}
                     </CardContent>
                   </Card>
 
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="text-red-700 flex items-center gap-2">
-                        ❌ Incorrect ({modelDatasetPerformance.failed.length})
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-red-700 flex items-center gap-2">
+                        ❌ Incorrect ({modelDatasetPerformance.incorrect.length})
                       </CardTitle>
-                      <p className="text-xs text-muted-foreground">
-                        Attempted but failed (false OR null values count as incorrect)
-                      </p>
                     </CardHeader>
-                    <CardContent className="max-h-60 overflow-y-auto">
-                      <div className="grid grid-cols-2 gap-1 text-xs">
-                        {modelDatasetPerformance.failed.map((puzzleId) => (
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
+                      <div className="grid grid-cols-3 gap-1 text-xs">
+                        {modelDatasetPerformance.incorrect.map((puzzleId: string) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="error" />
                         ))}
                       </div>
-                      {modelDatasetPerformance.failed.length === 0 && (
+                      {modelDatasetPerformance.incorrect.length === 0 && (
                         <p className="text-sm text-gray-500 italic">No incorrect attempts</p>
                       )}
                     </CardContent>
                   </Card>
 
                   <Card>
-                    <CardHeader>
-                      <CardTitle className="text-gray-700 flex items-center gap-2">
+                    <CardHeader className="pb-1 pt-2 px-2">
+                      <CardTitle className="text-sm text-gray-700 flex items-center gap-2">
                         ⚠️ Not Attempted ({modelDatasetPerformance.notAttempted.length})
                       </CardTitle>
-                      <p className="text-xs text-muted-foreground">
-                        No entries in explanations table for this model
-                      </p>
                     </CardHeader>
-                    <CardContent className="max-h-60 overflow-y-auto">
-                      <div className="grid grid-cols-2 gap-1 text-xs">
+                    <CardContent className="max-h-80 overflow-y-auto pt-1 px-2 pb-2">
+                      <div className="grid grid-cols-3 gap-1 text-xs">
                         {modelDatasetPerformance.notAttempted.map((puzzleId) => (
                           <ClickablePuzzleBadge key={puzzleId} puzzleId={puzzleId} variant="neutral" />
                         ))}

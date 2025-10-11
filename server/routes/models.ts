@@ -23,6 +23,7 @@ router.get('/', (req, res) => {
     premium: model.premium,
     cost: model.cost,
     supportsTemperature: model.supportsTemperature,
+    supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
     isReasoning: model.isReasoning
@@ -54,6 +55,7 @@ router.get('/:modelKey', (req, res) => {
     premium: model.premium,
     cost: model.cost,
     supportsTemperature: model.supportsTemperature,
+    supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
     isReasoning: model.isReasoning
@@ -78,6 +80,7 @@ router.get('/provider/:provider', (req, res) => {
     premium: model.premium,
     cost: model.cost,
     supportsTemperature: model.supportsTemperature,
+    supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
     isReasoning: model.isReasoning
