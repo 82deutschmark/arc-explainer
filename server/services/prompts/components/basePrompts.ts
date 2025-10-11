@@ -62,7 +62,7 @@ Try again using different reasoning approaches. What new insights can you discov
  * Additional instructions for specific prompt modes
  */
 export const ADDITIONAL_INSTRUCTIONS = {
-  solver: `Predict the correct output grid for the test case.`,
+  solver: `Predict the correct output grid(s) for the test case(s).`,
 
   explanation: `Focus on:
 1. What transformation pattern is demonstrated in the training examples
@@ -113,18 +113,13 @@ Your challenge response must:
 
 Be thorough in identifying weaknesses in the other AI explanation. Your goal is to demonstrate superior reasoning and problem-solving.`,
 
-  discussion: `SELF-REFINEMENT INSTRUCTIONS:
-
-You will be shown:
-1. Your previous analysis attempt (pattern description, strategy, hints)
-2. Whether your prediction was correct or incorrect
-3. Optional human guidance on what to reconsider
+  discussion: `Your previous attempt was incorrect or incomplete. 
 
 Your refined response must:
 1. Self-critique: Identify what you got wrong or missed in your previous attempt
 2. Fresh perspective: Apply different reasoning strategies you didn't try before
 3. New solution: Predict the output with improved reasoning
-4. Explain improvements: Show how your new analysis addresses previous gaps
+4. Explain improvements: The simple answer that you missed before
 
-Be thorough in reconsidering your assumptions. Your goal is to demonstrate learning and improved problem-solving through iterative refinement.`
+Think hard while reconsidering your assumptions. Demonstrate learning and improved problem-solving.`
 } as const;
