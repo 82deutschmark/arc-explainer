@@ -276,7 +276,7 @@ export default function PuzzleBrowser() {
                     </a>
                     <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      📚 ARC Study Notes <ExternalLink className="h-3 w-3" />
+                      📚 All the ARC Resources <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
@@ -288,7 +288,7 @@ export default function PuzzleBrowser() {
 
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
-                  💝 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights and unwavering support! 🌟
+                  🙏🏻 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🌟
                 </p>
               </div>
             </CardContent>
