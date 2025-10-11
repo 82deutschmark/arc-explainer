@@ -255,7 +255,7 @@ export class PuzzleAnalysisService {
       }
     };
 
-    const serviceOpts: ServiceOptions = {
+    const serviceOpts: any = {
       ...overrides,
       captureReasoning,
       stream: validatingHarness,
