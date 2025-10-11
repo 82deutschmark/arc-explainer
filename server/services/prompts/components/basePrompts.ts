@@ -23,7 +23,7 @@
  * - Could extract mode configs to separate mode definition files
  * - Not urgent - current structure is maintainable
  */
-export const BASE_SYSTEM_PROMPT = `Use careful reasoning and think hard about your answer.
+export const BASE_SYSTEM_PROMPT = `Use careful reasoning and think hard about your answer. It is ok if you are not sure, give an honest confidence score between 1 and 100, with 1 being not at all confident and 100 being totally certain about your answer.
 `;
 
 /**
