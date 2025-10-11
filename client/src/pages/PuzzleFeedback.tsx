@@ -1,9 +1,20 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-28
+ * Author: Claude Code using Sonnet 4, Cascade using Claude Sonnet 4.5
+ * Date: 2025-09-28, Updated 2025-10-10
  * PURPOSE: PuzzleFeedback page allows users to test their own predicted grid solutions against ARC puzzles.
  * Reuses existing grid visualization and validation components for consistent UX with AI model results.
  * Users can paste grid arrays like [[0,8,8,8,0],[8,0,0,0,8]] and see immediate correct/incorrect feedback.
+ * 
+ * MAJOR IMPROVEMENTS (2025-10-10):
+ * - MAXIMUM INFORMATION DENSITY: Matrix now shows only active models (filtered out inactive ones)
+ * - Per-puzzle difficulty metrics with color-coded success rate badges
+ * - Model performance summary columns (✅ correct, ❌ incorrect, % success rate)
+ * - Enhanced summary stats: Active Models, Overall Success Rate, Total Attempts, Hard Puzzles count
+ * - Uses ClickablePuzzleBadge components for consistent navigation
+ * - Compact sticky header with puzzle IDs and success rates
+ * - Replaced useless "Perfect Models" stats with actionable metrics
+ * - Visual improvements: color-coded cells, minimal "·" for not-attempted
+ * 
  * SRP and DRY check: Pass - Reuses existing validation logic, grid visualization, and puzzle lookup patterns.
  * shadcn/ui: Pass - Uses existing shadcn/ui components throughout.
  */
@@ -398,81 +409,160 @@ export default function PuzzleFeedback() {
             </Alert>
           )}
 
-          {puzzleAnalysisData && (
+          {puzzleAnalysisData && (() => {
+            // Filter active models (models that attempted at least 1 puzzle)
+            const activeModels = puzzleAnalysisData.modelPuzzleMatrix.filter(model => 
+              model.puzzleStatuses.some(status => status.status !== 'not_attempted')
+            );
+
+            // Calculate per-puzzle metrics
+            const puzzleMetrics = puzzleAnalysisData.puzzleResults.map(puzzle => {
+              const totalModels = activeModels.length;
+              const correctCount = puzzle.correct_models.length;
+              const successRate = totalModels > 0 ? (correctCount / totalModels) * 100 : 0;
+              
+              // Difficulty tier based on success rate
+              let difficulty: 'trivial' | 'easy' | 'medium' | 'hard' | 'extreme';
+              let difficultyColor: string;
+              if (successRate >= 75) {
+                difficulty = 'trivial';
+                difficultyColor = 'bg-green-100 text-green-700';
+              } else if (successRate >= 50) {
+                difficulty = 'easy';
+                difficultyColor = 'bg-blue-100 text-blue-700';
+              } else if (successRate >= 25) {
+                difficulty = 'medium';
+                difficultyColor = 'bg-yellow-100 text-yellow-700';
+              } else if (successRate >= 10) {
+                difficulty = 'hard';
+                difficultyColor = 'bg-orange-100 text-orange-700';
+              } else {
+                difficulty = 'extreme';
+                difficultyColor = 'bg-red-100 text-red-700';
+              }
+
+              return {
+                puzzleId: puzzle.puzzle_id,
+                correctCount,
+                totalAttempts: puzzle.total_attempts,
+                successRate,
+                difficulty,
+                difficultyColor
+              };
+            });
+
+            // Calculate aggregate stats
+            const totalAttempts = puzzleMetrics.reduce((sum, p) => sum + p.totalAttempts, 0);
+            const totalCorrect = puzzleMetrics.reduce((sum, p) => sum + p.correctCount, 0);
+            const overallSuccessRate = totalAttempts > 0 ? (totalCorrect / activeModels.length / puzzleAnalysisData.puzzleResults.length * 100) : 0;
+
+            return (
             <div className="space-y-2 mt-2">
-              {/* Summary Stats */}
-              <div className="grid grid-cols-3 gap-2">
+              {/* Enhanced Summary Stats - Per-Puzzle Insights */}
+              <div className="grid grid-cols-4 gap-2">
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardContent className="p-2">
+                    <div className="text-2xl font-bold text-blue-700">{activeModels.length}</div>
+                    <div className="text-xs text-blue-600 font-medium">Active Models</div>
+                    <div className="text-xs text-blue-500">Attempted puzzles</div>
+                  </CardContent>
+                </Card>
+
                 <Card className="bg-green-50 border-green-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-green-700">{puzzleAnalysisData.summary.perfectModels}</div>
-                    <div className="text-xs text-green-600">Perfect Models</div>
-                    <div className="text-xs text-green-500">Got all correct</div>
+                    <div className="text-2xl font-bold text-green-700">{overallSuccessRate.toFixed(1)}%</div>
+                    <div className="text-xs text-green-600 font-medium">Success Rate</div>
+                    <div className="text-xs text-green-500">{totalCorrect} solves total</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-red-50 border-red-200">
+                <Card className="bg-purple-50 border-purple-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-red-700">{puzzleAnalysisData.summary.partialModels}</div>
-                    <div className="text-xs text-red-600">Partial Models</div>
-                    <div className="text-xs text-red-500">Got some wrong</div>
+                    <div className="text-2xl font-bold text-purple-700">{totalAttempts}</div>
+                    <div className="text-xs text-purple-600 font-medium">Total Attempts</div>
+                    <div className="text-xs text-purple-500">{(totalAttempts / puzzleAnalysisData.puzzleResults.length).toFixed(1)} avg/puzzle</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-50 border-gray-200">
+                <Card className="bg-orange-50 border-orange-200">
                   <CardContent className="p-2">
-                    <div className="text-lg font-bold text-gray-700">{puzzleAnalysisData.summary.notAttemptedModels}</div>
-                    <div className="text-xs text-gray-600">Not Attempted</div>
-                    <div className="text-xs text-gray-500">Never tried any</div>
+                    <div className="text-2xl font-bold text-orange-700">
+                      {puzzleMetrics.filter(p => p.difficulty === 'hard' || p.difficulty === 'extreme').length}
+                    </div>
+                    <div className="text-xs text-orange-600 font-medium">Hard Puzzles</div>
+                    <div className="text-xs text-orange-500">&lt;25% solve rate</div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Model vs Puzzle Matrix Table */}
+              {/* Enhanced Model vs Puzzle Matrix Table */}
               <Card>
                 <CardHeader className="pb-1">
-                  <CardTitle className="text-sm flex items-center gap-1">
+                  <CardTitle className="text-sm flex items-center gap-2">
                     <Database className="h-3 w-3" />
                     Model Performance Matrix
+                    <Badge variant="outline" className="text-xs">
+                      {activeModels.length} active / {puzzleAnalysisData.summary.totalModels} total
+                    </Badge>
                   </CardTitle>
                   <p className="text-xs text-gray-600">
-                    ✅ = Correct, ❌ = Incorrect, ⏳ = Not Attempted
+                    ✅ = Correct, ❌ = Incorrect • Showing only models that attempted puzzles
                   </p>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
+                    <table className="w-full text-xs border-collapse">
                       <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-1 px-2 font-medium">Model</th>
-                          {puzzleAnalysisData.puzzleResults.map((puzzle) => (
-                            <th key={puzzle.puzzle_id} className="text-center py-1 px-2 font-medium min-w-16">
-                              <ClickablePuzzleBadge puzzleId={puzzle.puzzle_id} clickable={false} showName={true} />
+                        <tr className="border-b-2">
+                          <th className="text-left py-2 px-2 font-semibold sticky left-0 bg-white z-10">Model</th>
+                          <th className="text-center py-2 px-2 font-semibold bg-green-50">✅</th>
+                          <th className="text-center py-2 px-2 font-semibold bg-red-50">❌</th>
+                          <th className="text-center py-2 px-2 font-semibold bg-blue-50">%</th>
+                          {puzzleMetrics.map((metric) => (
+                            <th key={metric.puzzleId} className="text-center py-2 px-1 font-medium min-w-20">
+                              <div className="flex flex-col items-center gap-1">
+                                <ClickablePuzzleBadge puzzleId={metric.puzzleId} showName={false} className="text-[10px] px-1" />
+                                <Badge variant="outline" className={`text-[9px] px-1 py-0 ${metric.difficultyColor}`}>
+                                  {metric.successRate.toFixed(0)}%
+                                </Badge>
+                              </div>
                             </th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
-                        {puzzleAnalysisData.modelPuzzleMatrix.map((model) => (
-                          <tr key={model.modelName} className="border-b hover:bg-gray-50">
-                            <td className="py-1 px-2 font-medium truncate max-w-32" title={model.modelName}>
-                              {model.modelName}
-                            </td>
-                            {model.puzzleStatuses.map((puzzle) => (
-                              <td key={puzzle.puzzleId} className="text-center py-1 px-2">
-                                {puzzle.status === 'correct' && '✅'}
-                                {puzzle.status === 'incorrect' && '❌'}
-                                {puzzle.status === 'not_attempted' && '⏳'}
+                        {activeModels.map((model) => {
+                          const correctCount = model.puzzleStatuses.filter(p => p.status === 'correct').length;
+                          const incorrectCount = model.puzzleStatuses.filter(p => p.status === 'incorrect').length;
+                          const attemptedCount = correctCount + incorrectCount;
+                          const successRate = attemptedCount > 0 ? (correctCount / attemptedCount * 100).toFixed(0) : '0';
+
+                          return (
+                            <tr key={model.modelName} className="border-b hover:bg-gray-50">
+                              <td className="py-2 px-2 font-medium truncate max-w-48 sticky left-0 bg-white" title={model.modelName}>
+                                {model.modelName}
                               </td>
-                            ))}
-                          </tr>
-                        ))}
+                              <td className="text-center py-2 px-2 bg-green-50 font-semibold text-green-700">{correctCount}</td>
+                              <td className="text-center py-2 px-2 bg-red-50 font-semibold text-red-700">{incorrectCount}</td>
+                              <td className="text-center py-2 px-2 bg-blue-50 font-semibold text-blue-700">{successRate}%</td>
+                              {model.puzzleStatuses.map((puzzle) => (
+                                <td key={puzzle.puzzleId} className="text-center py-2 px-1">
+                                  {puzzle.status === 'correct' && <span className="text-green-600 text-base">✅</span>}
+                                  {puzzle.status === 'incorrect' && <span className="text-red-600 text-base">❌</span>}
+                                  {puzzle.status === 'not_attempted' && <span className="text-gray-300 text-xs">·</span>}
+                                </td>
+                              ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          )}
+            );
+          })()}
         </CardContent>
       </Card>
 
