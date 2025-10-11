@@ -226,14 +226,25 @@ export default function PuzzleDiscussion() {
 
   // Auto-start refinement when ?select= parameter is present
   useEffect(() => {
-    if (selectId && explanations && !refinementState.isRefinementActive) {
+    // Only attempt auto-selection when:
+    // 1. We have a selectId from URL
+    // 2. Explanations are loaded (not loading and exists)
+    // 3. Refinement is not already active
+    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive) {
       const explanation = explanations.find(e => e.id === selectId);
       if (explanation) {
         console.log(`[PuzzleDiscussion] Auto-selecting explanation #${selectId} from URL parameter`);
         handleStartRefinement(selectId);
+      } else {
+        console.error(`[PuzzleDiscussion] Explanation #${selectId} not found in loaded explanations`);
+        toast({
+          title: "Explanation not found",
+          description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
+          variant: "destructive"
+        });
       }
     }
-  }, [selectId, explanations, refinementState.isRefinementActive]);
+  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, toast]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {

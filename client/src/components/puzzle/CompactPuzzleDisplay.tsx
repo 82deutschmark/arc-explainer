@@ -2,7 +2,7 @@
  * CompactPuzzleDisplay.tsx
  *
  * Author: Cascade using Claude Sonnet 4 on 2025-10-07
- * Last Modified: Cascade using Claude Sonnet 4 on 2025-10-10
+ * Last Modified: Cascade using Claude Sonnet 4.5 on 2025-10-11
  * Date: 2025-10-07T21:12:05-04:00
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
  * NOW SUPPORTS MULTIPLE TEST CASES for multi-test puzzles like 195c6913.
@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
 
 // Reuse existing components
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
@@ -95,7 +95,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
         </CardHeader>
       )}
       <CardContent className="p-1">
-        <div className="flex flex-wrap items-start gap-10">
+        <div className="flex flex-wrap items-start gap-6">
           {/* Training Examples - COLLAPSIBLE (LEFT SIDE) */}
           <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen} className="min-w-fit">
             <CollapsibleTrigger asChild>
@@ -116,21 +116,21 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="flex flex-wrap gap-8 p-1">
+              <div className="flex flex-wrap gap-4 p-1">
                 {displayedExamples.map((example, index) => (
-                  <div key={index} className="flex items-center gap-6 min-w-fit">
-                    <div className="text-[9px] text-gray-500">{index + 1}.</div>
+                  <div key={index} className="flex items-center gap-4 min-w-fit">
+                    <div className="text-[10px] text-gray-500">{index + 1}.</div>
                     <div className="min-w-[4rem] max-w-[16rem] max-h-[12rem] border border-white/30 p-0.5 bg-gray-900/5 flex items-center justify-center overflow-hidden">
                       <TinyGrid grid={example.input} />
                     </div>
-                    <div className="text-[9px] text-gray-400">→</div>
+                    <div className="text-[10px] text-gray-400">→</div>
                     <div className="min-w-[4rem] max-w-[16rem] max-h-[12rem] border border-white/30 p-0.5 bg-gray-900/5 flex items-center justify-center overflow-hidden">
                       <TinyGrid grid={example.output} />
                     </div>
                   </div>
                 ))}
                 {trainExamples.length > maxTrainingExamples && (
-                  <div className="text-[9px] text-gray-500 min-w-fit">
+                  <div className="text-[10px] text-gray-500 min-w-fit">
                     +{trainExamples.length - maxTrainingExamples}
                   </div>
                 )}
@@ -144,7 +144,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               <div key={index} className="flex flex-col gap-1 min-w-fit">
                 {/* Badge ABOVE row if multi-test */}
                 {isMultiTest && (
-                  <span className="text-[9px] text-gray-500 font-medium">
+                  <span className="text-[11px] text-gray-500 font-medium">
                     Test {index + 1}
                   </span>
                 )}
@@ -152,7 +152,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 {/* Input → Output row with proper spacing */}
                 <div className={`flex items-center ${testCases.length > 2 ? 'gap-8' : 'gap-10'}`}>
                   <div className="flex flex-col items-start">
-                    <div className="text-[9px] text-gray-600 mb-1">Input</div>
+                    <div className="text-[11px] text-gray-600 mb-1 font-medium">Input</div>
                     <div className={`${gridSizeClass} border border-white/40 p-1 bg-gray-900/5 flex items-center justify-center`}>
                       <TinyGrid grid={testCase.input} />
                     </div>
@@ -168,7 +168,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                   )}
 
                   <div className="flex flex-col items-start">
-                    <div className="text-[9px] text-gray-600 mb-1">Output</div>
+                    <div className="text-[11px] text-gray-600 mb-1 font-medium">Output</div>
                     <div className={`${gridSizeClass} border border-white/40 p-1 bg-gray-900/5 flex items-center justify-center`}>
                       <TinyGrid grid={testCase.output} />
                     </div>
@@ -179,22 +179,26 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </div>
         </div>
 
-        {/* Prediction Timeline - VERTICAL (NEW) */}
+        {/* Refinement History - HORIZONTAL with better visibility */}
         {hasPredictions && (
-          <div className="w-full border-t border-purple-300 pt-2 mt-3">
-            <div className="text-[9px] font-semibold text-purple-700 mb-1 flex items-center gap-1">
-              <span>Prediction Evolution</span>
-              <Badge variant="outline" className="text-[8px] px-1 py-0">
+          <div className="w-full border-t-2 border-purple-400 pt-4 mt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Brain className="h-4 w-4 text-purple-600" />
+              <h3 className="text-sm font-bold text-purple-900">
+                Refinement History
+              </h3>
+              <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700">
                 {predictions!.length} iteration{predictions!.length > 1 ? 's' : ''}
               </Badge>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex overflow-x-auto gap-3 pb-2">
               {predictions!.map((pred, index) => (
-                <PredictionCard
-                  key={index}
-                  prediction={pred}
-                  isLatest={index === predictions!.length - 1}
-                />
+                <div key={index} className="flex-shrink-0">
+                  <PredictionCard
+                    prediction={pred}
+                    isLatest={index === predictions!.length - 1}
+                  />
+                </div>
               ))}
             </div>
           </div>

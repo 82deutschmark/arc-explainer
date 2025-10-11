@@ -1,3 +1,51 @@
+## [4.2.3] - 2025-10-11 01:11 PM
+## PuzzleDiscussion & CompactPuzzleDisplay UX Fixes
+
+### Fixed
+- **CRITICAL: "Refine This Analysis" Navigation Bug**
+  - **Problem**: Clicking "Refine This Analysis" badge set correct URL parameter (`?select={id}`) but failed to auto-select the explanation
+  - **Root Cause**: Race condition in auto-selection useEffect - ran before explanations were loaded
+  - **Solution**: Added `isLoadingExplanations` guard and proper null checks to ensure explanations are loaded before attempting auto-selection
+  - **Added**: Error toast notification when explanation ID not found (deleted or ineligible)
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **CRITICAL: PredictionCard Aspect-Square Destroying Non-Square Grids**
+  - **Problem**: Hardcoded `aspect-square` constraint forced all prediction grids into squares, destroying 1x30, 30x1, and other non-square aspect ratios
+  - **Solution**: Removed aspect-square constraint, added `max-w-[20rem] max-h-[20rem]` with flexbox centering for natural aspect ratios
+  - **Files**: `client/src/components/puzzle/PredictionCard.tsx`
+
+- **CompactPuzzleDisplay Typography & Spacing**
+  - **Problem**: Microscopic fonts (8px-9px) made content unreadable, excessive spacing wasted screen real estate
+  - **Solution**: 
+    - Bumped font sizes from 8px→10px and 9px→11px for readability
+    - Reduced spacing from gap-10→gap-6 and gap-8→gap-4
+    - Added font-medium to Input/Output labels for better hierarchy
+  - **Files**: `client/src/components/puzzle/CompactPuzzleDisplay.tsx`
+
+- **Prediction Evolution → Refinement History Redesign**
+  - **Problem**: Generic title, vertical layout wasted space, tiny fonts made section useless
+  - **Solution**:
+    - Renamed "Prediction Evolution" → "Refinement History" with Brain icon
+    - Changed vertical layout to horizontal scrollable layout for better space utilization
+    - Increased section header from 9px→14px (text-sm font-bold)
+    - Added stronger visual separation with purple-400 border (was purple-300)
+    - Better badge styling with purple-100 background
+  - **Files**: `client/src/components/puzzle/CompactPuzzleDisplay.tsx`, `client/src/components/puzzle/PredictionCard.tsx`
+
+### Technical Details
+- All fixes maintain SRP/DRY principles and shadcn/ui component usage
+- No new dependencies added
+- Backward compatible with existing component usage
+- Improved debugging with console.error for navigation failures
+
+### Files Modified
+- `client/src/pages/PuzzleDiscussion.tsx` - Navigation auto-selection fix
+- `client/src/components/puzzle/PredictionCard.tsx` - Removed aspect-square, improved typography
+- `client/src/components/puzzle/CompactPuzzleDisplay.tsx` - Typography, spacing, and Refinement History redesign
+- `docs/2025-10-11-puzzle-discussion-fixes.md` - Detailed fix plan and testing checklist
+
+---
+
 ## [4.2.2] - 2025-10-11 12:45 PM
 ## ResponseValidator Refactoring - Code Quality & Reliability Improvements
 ### Fixed
