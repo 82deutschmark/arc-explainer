@@ -169,23 +169,17 @@ export default function AnalyticsOverview() {
         selectedModel3 === '__none__' ? '' : selectedModel3, 
         selectedModel4 === '__none__' ? '' : selectedModel4
       ].filter(Boolean);
-      const queryParams = new URLSearchParams({
-        model1: models[0] || '',
-        ...(models[1] && { model2: models[1] }),
-        ...(models[2] && { model3: models[2] }),
-        ...(models[3] && { model4: models[3] }),
-        dataset: selectedDataset
+      
+      // Navigate to dedicated comparison page with model list and dataset
+      // ModelComparisonPage will fetch performance data for each model independently
+      navigate('/model-comparison', { 
+        state: { 
+          comparisonState: {
+            models,
+            dataset: selectedDataset
+          }
+        } 
       });
-      
-      const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch comparison data');
-      }
-      const result = await response.json();
-      
-      // Navigate to dedicated comparison page with data
-      navigate('/model-comparison', { state: { comparisonData: result.data } });
     } catch (error) {
       console.error('Comparison error:', error);
       // You could show a toast here if needed
