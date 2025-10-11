@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -199,72 +199,98 @@ export default function PuzzleBrowser() {
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
 
-          {/* Resources & References Section */}
-          <Card className="shadow-md border-0 bg-gradient-to-r from-purple-50 to-blue-50 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-purple-600" />
-                Resources & References
-              </h3>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                {/* Research */}
-                <div>
-                  <p className="font-semibold text-gray-700 mb-1">Research</p>
-                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                    ARC2 Paper <ExternalLink className="h-3 w-3" />
+          {/* Resources & References Section - Enhanced with emojis and better styling */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Sparkles className="h-6 w-6 text-purple-600" />
+                <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
+                  🌟 ARC-AGI Knowledge Hub 🌟
+                </h3>
+                <Sparkles className="h-6 w-6 text-purple-600" />
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Research Section */}
+                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-purple-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Cpu className="h-4 w-4 text-purple-600" />
+                    <p className="font-bold text-purple-800 text-sm">🧠 Research Papers</p>
+                  </div>
+                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
+                     className="text-blue-600 hover:text-purple-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    📄 ARC2 Technical Report <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
 
-                {/* Data Sources */}
-                <div>
-                  <p className="font-semibold text-gray-700 mb-1">Data Sources</p>
+                {/* Data Sources Section */}
+                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Database className="h-4 w-4 text-blue-600" />
+                    <p className="font-bold text-blue-800 text-sm">💾 Data Sources</p>
+                  </div>
                   <div className="space-y-1">
-                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      HuggingFace <ExternalLink className="h-3 w-3" />
+                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
+                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      🤗 HuggingFace Datasets <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      Official Repo <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
+                       className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      🏛️ Official Repository <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
 
-                {/* SOTA Solutions */}
-                <div>
-                  <p className="font-semibold text-gray-700 mb-1">SOTA Solutions</p>
+                {/* SOTA Solutions Section */}
+                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Trophy className="h-4 w-4 text-green-600" />
+                    <p className="font-bold text-green-800 text-sm">🏆 Top Solutions</p>
+                  </div>
                   <div className="space-y-1">
-                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      zoecarver <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
+                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      👑 zoecarver's Approach <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      jerber <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
+                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      🎯 jerber's Solutions <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      epang080516 <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
+                       className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      ⚡ epang080516's Code <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
 
-                {/* Community */}
-                <div>
-                  <p className="font-semibold text-gray-700 mb-1">Community</p>
+                {/* Community Section */}
+                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className="h-4 w-4 text-orange-600" />
+                    <p className="font-bold text-orange-800 text-sm">👥 Community</p>
+                  </div>
                   <div className="space-y-1">
-                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      Puzzle Names <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      📛 Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      ARC Notes <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      📚 ARC Study Notes <ExternalLink className="h-3 w-3" />
                     </a>
-                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                      Datasets <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
+                       className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      📊 Dataset Collection <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 mt-3 text-center">
-                Special thanks to <strong>Simon Strandgaard (@neoneye)</strong> for invaluable insights and support
-              </p>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
+                  💝 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights and unwavering support! 🌟
+                </p>
+              </div>
             </CardContent>
           </Card>
         </header>
