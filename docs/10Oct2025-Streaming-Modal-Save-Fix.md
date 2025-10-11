@@ -51,7 +51,8 @@ The streaming response never called `validateAndEnrichResult()`, so prediction g
 - Added Dialog import from shadcn/ui
 - Wrapped StreamingAnalysisPanel in `<Dialog>` component
 - Removed inline rendering block
-- Added modal styling with max-width and scrolling
+- **Increased modal size to 95vw x 90vh for large text output**
+- **Added manual close button - no auto-close on completion**
 - Integrated cancel functionality with dialog close handler
 
 **Changes:**
@@ -63,16 +64,24 @@ The streaming response never called `validateAndEnrichResult()`, so prediction g
   </div>
 )}
 
-// NEW: Modal dialog
+// NEW: Modal dialog (MUCH LARGER)
 <Dialog open={isStreamingActive} onOpenChange={...}>
-  <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+  <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
     <DialogHeader>
       <DialogTitle>Streaming {model name}</DialogTitle>
     </DialogHeader>
-    <StreamingAnalysisPanel ... />
+    <StreamingAnalysisPanel 
+      ... 
+      onClose={closeStreamingModal}  // Manual close button
+    />
   </DialogContent>
 </Dialog>
 ```
+
+**Text Area Sizes Increased:**
+- Current Output: `max-h-[500px]` (was 40px)
+- Reasoning: `max-h-[400px]` (was 32px)
+- Both with monospace font for better readability
 
 ### 2. Streaming Validation Utility (Backend)
 
