@@ -1,17 +1,17 @@
 /**
  * Author: Cascade using Sonnet 4.5
  * Date: 2025-10-08
- * PURPOSE: Progressive Reasoning test for Grok-4-Fast-Reasoning using conversation chaining.
+ * PURPOSE: Progressive Reasoning test for regular Grok-4 using conversation chaining.
  *          Automates what PuzzleDiscussion.tsx does manually: iterative refinement through
  *          multi-turn conversations with previousResponseId chaining.
  *
  * SRP and DRY check: Pass - Orchestrates progressive reasoning via API endpoints
  *
  * USAGE:
- * node --import tsx scripts/grok-4-progressive-reasoning.ts <puzzle-ids...>
- * node --import tsx scripts/grok-4-progressive-reasoning.ts --file puzzle-ids.txt
- * node --import tsx scripts/grok-4-progressive-reasoning.ts --iterations 3 <puzzle-ids...>
- * node --import tsx scripts/grok-4-progressive-reasoning.ts  (auto-loads from scripts/grok-4-unsolved-arc2.txt if exists)
+ * node --import tsx scripts/grok-4-progressive-reasoning-regular.ts <puzzle-ids...>
+ * node --import tsx scripts/grok-4-progressive-reasoning-regular.ts --file puzzle-ids.txt
+ * node --import tsx scripts/grok-4-progressive-reasoning-regular.ts --iterations 3 <puzzle-ids...>
+ * node --import tsx scripts/grok-4-progressive-reasoning-regular.ts  (auto-loads from scripts/grok-4-unsolved-arc2.txt if exists)
  *
  * The script performs iterative refinement:
  * - Iteration 0: Initial analysis (gets providerResponseId)
@@ -26,7 +26,7 @@ dotenv.config();
 
 // Configuration
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
-const GROK_MODEL = 'grok-4-fast-reasoning'; // Use Grok-4-Fast-Reasoning model
+const GROK_MODEL = 'grok-4'; // Use regular Grok-4 model
 const PUZZLE_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes per iteration
 const ITERATION_DELAY_MS = 1000; // 1 second between iterations
 const PUZZLE_STAGGER_MS = 1000; // 1 second stagger between starting puzzles (rate limit protection)
@@ -311,13 +311,13 @@ async function main(): Promise<void> {
     if (puzzleIds.length === 0) {
       console.log('\n❌ No puzzle IDs provided.');
       console.log('\nUsage examples:');
-      console.log('  node --import tsx scripts/grok-4-progressive-reasoning.ts <puzzle-ids...>');
-      console.log('  node --import tsx scripts/grok-4-progressive-reasoning.ts --file puzzle-ids.txt');
-      console.log('  node --import tsx scripts/grok-4-progressive-reasoning.ts --iterations 5 <puzzle-ids...>');
+      console.log('  node --import tsx scripts/grok-4-progressive-reasoning-regular.ts <puzzle-ids...>');
+      console.log('  node --import tsx scripts/grok-4-progressive-reasoning-regular.ts --file puzzle-ids.txt');
+      console.log('  node --import tsx scripts/grok-4-progressive-reasoning-regular.ts --iterations 5 <puzzle-ids...>');
       process.exit(1);
     }
 
-    console.log('🤖 GROK-4-FAST-REASONING PROGRESSIVE REASONING TEST');
+    console.log('🤖 GROK-4 PROGRESSIVE REASONING TEST');
     console.log('='.repeat(80));
     console.log(`Model: ${GROK_MODEL}`);
     console.log(`API Base URL: ${API_BASE_URL}`);
@@ -401,7 +401,7 @@ async function main(): Promise<void> {
       if (successfulIters.length >= 2) {
         const firstCorrect = successfulIters[0].isPredictionCorrect;
         const lastCorrect = successfulIters[successfulIters.length - 1].isPredictionCorrect;
-        
+
         if (!firstCorrect && lastCorrect) improvedCount++;
         else if (firstCorrect === lastCorrect) unchangedCount++;
         else if (firstCorrect && !lastCorrect) degradedCount++;
