@@ -1,21 +1,21 @@
 /**
  * CompactPuzzleDisplay.tsx
  *
- * Author: Cascade using Claude Sonnet 4 on 2025-10-07
- * Last Modified: Cascade using Sonnet 4 on 2025-10-11 (Gallery refactor)
+ * Author: Cascade using Claude Sonnet 4.5
+ * Last Modified: 2025-10-11 (Complete modularization)
  * Date: 2025-10-07T21:12:05-04:00
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
- * NOW SUPPORTS MULTIPLE TEST CASES for multi-test puzzles like 195c6913.
- * REFACTORED: Now uses TrainingPairGallery for improved information density.
+ * Orchestrates training examples, test cases, and prediction history.
+ * FULLY MODULARIZED: All grids now use dedicated components (Phase 3 refactor).
  * 
- * DESIGN IMPROVEMENTS (Oct 11, 2025):
- * - Replaced vertical training examples with gallery-style layout
- * - Uses new TrainingPairGallery component (3-6 cards per row)
- * - Maintains collapsible behavior with improved space efficiency
- * - Grids render at natural aspect ratios with max-width/max-height constraints
+ * ARCHITECTURE (Oct 11, 2025):
+ * - TrainingPairGallery for training examples (collapsible)
+ * - TestCaseGallery for test cases (adaptive layout)
+ * - PredictionCard for refinement history (horizontal scroll)
+ * - All grid rendering delegated to specialized components
  * 
- * Single responsibility: Puzzle visualization only - highly reusable across app.
- * SRP/DRY check: Pass - Delegates to TrainingPairGallery, reuses components
+ * Single responsibility: Orchestration only - no direct grid rendering.
+ * SRP/DRY check: Pass - Pure orchestration, delegates all rendering
  * shadcn/ui: Pass - Uses shadcn/ui Collapsible, Card, Badge components
  */
 
@@ -27,9 +27,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
 
 // Reuse existing components
-import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { PredictionCard, PredictionIteration } from '@/components/puzzle/PredictionCard';
 import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
+import { TestCaseGallery } from '@/components/puzzle/testcases/TestCaseGallery';
 
 // Types
 import type { ARCExample } from '@shared/types';
@@ -64,26 +64,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
 }) => {
   const [isTrainingOpen, setIsTrainingOpen] = useState(!defaultTrainingCollapsed);
   const displayedExamples = trainExamples.slice(0, maxTrainingExamples);
-  const isMultiTest = testCases.length > 1;
   const hasPredictions = showPredictions && predictions && predictions.length > 0;
-
-  // Adaptive grid sizing - allows natural aspect ratios (no forced squares!)
-  const getGridSizeClass = (testCount: number): string => {
-    if (testCount === 1) {
-      return 'max-w-[24rem] max-h-[24rem]';  // Large for single test
-    } else if (testCount === 2) {
-      return 'max-w-[16rem] max-h-[16rem]';  // Medium for dual test
-    } else {
-      return 'max-w-[12rem] max-h-[12rem]';  // Smaller for multi-test
-    }
-  };
-
-  const gridSizeClass = getGridSizeClass(testCases.length);
-
-  // Adaptive layout direction
-  const containerClass = testCases.length > 2
-    ? 'flex flex-col gap-3'          // Vertical stack for 3+ tests
-    : 'flex flex-row flex-wrap gap-8'; // Horizontal for 1-2 tests
 
   return (
     <Card className="p-0">
@@ -126,45 +107,12 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Test Cases - ADAPTIVE LAYOUT */}
-          <div className={containerClass}>
-            {testCases.map((testCase, index) => (
-              <div key={index} className="flex flex-col gap-1 min-w-fit">
-                {/* Badge ABOVE row if multi-test */}
-                {isMultiTest && (
-                  <span className="text-[11px] text-gray-500 font-medium">
-                    Test {index + 1}
-                  </span>
-                )}
-
-                {/* Input → Output row with proper spacing */}
-                <div className={`flex items-center ${testCases.length > 2 ? 'gap-8' : 'gap-10'}`}>
-                  <div className="flex flex-col items-start">
-                    <div className="text-[11px] text-gray-600 mb-1 font-medium">Input</div>
-                    <div className={`${gridSizeClass} border border-white/40 p-1 bg-gray-900/5 flex items-center justify-center`}>
-                      <TinyGrid grid={testCase.input} />
-                    </div>
-                  </div>
-
-                  {/* Visual separator - adaptive based on layout */}
-                  {testCases.length > 2 ? (
-                    <div className="text-xs text-gray-400">→</div>
-                  ) : (
-                    <div className="flex items-center px-2">
-                      <div className="w-px h-24 bg-gray-300"></div>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col items-start">
-                    <div className="text-[11px] text-gray-600 mb-1 font-medium">Output</div>
-                    <div className={`${gridSizeClass} border border-white/40 p-1 bg-gray-900/5 flex items-center justify-center`}>
-                      <TinyGrid grid={testCase.output} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Test Cases - DELEGATED TO TESTCASEGALLERY */}
+          <TestCaseGallery
+            testCases={testCases}
+            showHeader={false}
+            showEmojis={showEmojis}
+          />
 
           {/* Refinement History - HORIZONTAL with better visibility */}
           {hasPredictions && (
