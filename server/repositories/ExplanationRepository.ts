@@ -82,7 +82,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.alienMeaningConfidence || null,
         // Validation fields using actual schema column names
         data.isPredictionCorrect || null,
-        data.predictionAccuracyScore || null,
+        data.trustworthinessScore || null,
         // Multi-test fields using actual schema column names
         data.multiTestAllCorrect || null,
         data.multiTestAverageAccuracy || null,
@@ -308,7 +308,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         saturnSuccess: null,
         predictedOutputGrid: null,
         isPredictionCorrect: null,
-        predictionAccuracyScore: null,
+        trustworthinessScore: null,
         providerRawResponse: null,
         reasoningItems: null,
         temperature: null,
@@ -402,7 +402,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
             saturnSuccess: row.saturn_success,
             predictedOutputGrid: row.predicted_output_grid,
             isPredictionCorrect: row.is_prediction_correct,
-            predictionAccuracyScore: row.trustworthiness_score,
+            trustworthinessScore: row.trustworthiness_score,
             providerRawResponse: row.provider_raw_response,
             reasoningItems: row.reasoning_items,
             temperature: row.temperature,
