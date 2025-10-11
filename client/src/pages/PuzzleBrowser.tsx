@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -229,69 +229,123 @@ export default function PuzzleBrowser() {
             </CardContent>
           </Card>
 
-          {/* Credits & Acknowledgments */}
-          <Card className="shadow-md border-0 bg-gradient-to-r from-green-50 to-teal-50 backdrop-blur-sm">
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <span className="text-lg">🙏</span>
-                Credits & Acknowledgments
-              </h3>
-              <div className="space-y-2 text-sm text-gray-700">
-                <div className="flex items-start gap-2">
-                  <span className="font-medium min-w-[100px]">Puzzle Names:</span>
-                  <div className="flex-1">
+          {/* Credits & Acknowledgments - Beautiful Enhanced Section */}
+          <Card className="shadow-xl border-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 backdrop-blur-sm overflow-hidden">
+            <CardContent className="p-6">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-3 mb-2">
+                  <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
+                    Credits & Acknowledgments
+                  </h3>
+                  <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
+                </div>
+                <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+                  This project stands on the shoulders of giants. We're grateful to these amazing contributors.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Puzzle Names Credit */}
+                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-emerald-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="h-5 w-5 text-amber-500" />
+                    <h4 className="font-bold text-gray-900">Puzzle Names</h4>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    Human-readable puzzle naming system
+                  </p>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-emerald-200"
+                  >
                     <a 
                       href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                      className="flex items-center justify-center gap-2"
                     >
-                      Google ARC-GEN Project
+                      <span className="font-medium">Google ARC-GEN</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
-                  </div>
+                  </Button>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-medium min-w-[100px]">SOTA Solutions:</span>
-                  <div className="flex-1 space-y-1">
-                    <div>
+
+                {/* SOTA Solutions Credit */}
+                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-blue-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Trophy className="h-5 w-5 text-yellow-500" />
+                    <h4 className="font-bold text-gray-900">SOTA Solutions</h4>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    State-of-the-art solving approaches
+                  </p>
+                  <div className="space-y-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border-blue-200"
+                    >
                       <a 
                         href="https://github.com/jerber" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                        className="flex items-center justify-center gap-2"
                       >
-                        jerber
+                        <span className="font-medium">jerber</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
-                    </div>
-                    <div>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border-blue-200"
+                    >
                       <a 
                         href="https://github.com/epang080516/arc_agi" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                        className="flex items-center justify-center gap-2"
                       >
-                        epang080516/arc_agi
+                        <span className="font-medium">epang080516</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
-                    </div>
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-medium min-w-[100px]">Special Thanks:</span>
-                  <div className="flex-1">
+
+                {/* Special Thanks Credit */}
+                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-rose-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Heart className="h-5 w-5 text-rose-500 fill-rose-500" />
+                    <h4 className="font-bold text-gray-900">Special Thanks</h4>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    For invaluable help and support
+                  </p>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-200"
+                  >
                     <a 
                       href="https://github.com/neoneye" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                      className="flex items-center justify-center gap-2"
                     >
-                      Simon Strandgaard (@neoneye)
+                      <span className="font-medium">Simon Strandgaard</span>
                       <ExternalLink className="h-3 w-3" />
                     </a>
-                    <span className="text-gray-600 ml-1">for invaluable help and support</span>
-                  </div>
+                  </Button>
+                  <p className="text-xs text-gray-500 text-center mt-2">
+                    @neoneye
+                  </p>
                 </div>
               </div>
             </CardContent>
