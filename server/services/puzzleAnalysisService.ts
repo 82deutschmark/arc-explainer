@@ -291,7 +291,7 @@ export class PuzzleAnalysisService {
       if (explanations && explanations.length > 0) {
         // Find the worst analysis (incorrect prediction or lowest trustworthiness)
         previousAnalysis = explanations.find(exp => exp.isPredictionCorrect === false) || 
-                         explanations.sort((a, b) => (a.predictionAccuracyScore || 1) - (b.predictionAccuracyScore || 1))[0];
+                         explanations.sort((a, b) => (a.trustworthinessScore || 1) - (b.trustworthinessScore || 1))[0];
       }
       
       // Get bad feedback for this puzzle
@@ -355,7 +355,7 @@ export class PuzzleAnalysisService {
 
       // Legacy fields for backward compatibility
       result.predictedOutputGrid = multiValidation.multiplePredictedOutputs;
-      result.predictionAccuracyScore = multiValidation.multiTestAverageAccuracy;
+      result.trustworthinessScore = multiValidation.multiTestAverageAccuracy;
       result.multiValidation = multiValidation.multiTestResults; // Legacy alias
 
     } else {
@@ -366,7 +366,7 @@ export class PuzzleAnalysisService {
       // Single-test validation results
       result.predictedOutputGrid = validation.predictedGrid;
       result.isPredictionCorrect = validation.isPredictionCorrect;
-      result.predictionAccuracyScore = validation.predictionAccuracyScore;
+      result.trustworthinessScore = validation.trustworthinessScore;
 
       // Ensure multi-test fields are properly set for single-test cases
       result.hasMultiplePredictions = false;
