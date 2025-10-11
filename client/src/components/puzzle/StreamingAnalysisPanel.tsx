@@ -26,6 +26,7 @@ interface StreamingAnalysisPanelProps {
   reasoning?: string;
   tokenUsage?: TokenUsageSummary;
   onCancel?: () => void;
+  onClose?: () => void;
 }
 
 export function StreamingAnalysisPanel({
@@ -37,6 +38,7 @@ export function StreamingAnalysisPanel({
   reasoning,
   tokenUsage,
   onCancel,
+  onClose,
 }: StreamingAnalysisPanelProps) {
   const renderStatusBadge = () => {
     switch (status) {
@@ -73,18 +75,23 @@ export function StreamingAnalysisPanel({
             Cancel
           </Button>
         )}
+        {onClose && (status === 'completed' || status === 'failed') && (
+          <Button variant="default" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-4 text-sm text-blue-900">
         <div>
           <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
-          <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-40 overflow-y-auto">
+          <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
             {text?.trim() || 'Waiting for output\u2026'}
           </pre>
         </div>
         {reasoning && reasoning.trim().length > 0 && (
           <div>
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>
-            <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-32 overflow-y-auto text-xs text-blue-700">
+            <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[400px] overflow-y-auto text-xs text-blue-700 font-mono">
               {reasoning}
             </pre>
           </div>

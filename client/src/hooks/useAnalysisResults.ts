@@ -257,6 +257,11 @@ export function useAnalysisResults({
     setAnalyzerErrors(prev => new Map(prev).set(context.modelKey, new Error('Analysis cancelled')));
   }, [closeStream, removeProcessingModel, resetStreamingState]);
 
+  const closeStreamingModal = useCallback(() => {
+    closeStream();
+    resetStreamingState();
+  }, [closeStream, resetStreamingState]);
+
   // Legacy mutation path (non-streaming)
   const analyzeAndSaveMutation = useMutation({
     mutationFn: async (payload: {
@@ -440,6 +445,7 @@ export function useAnalysisResults({
     streamingTokenUsage,
     streamError,
     cancelStreamingAnalysis,
+    closeStreamingModal,
     canStreamModel,
     reasoningEffort,
     setReasoningEffort,
