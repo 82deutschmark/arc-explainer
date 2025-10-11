@@ -232,7 +232,7 @@ export function buildAnalysisPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey,
     omitAnswer,
-    useEmojis: (!!emojiSetKey) || isAlien, // Use emojis if explicit toggle selected (emojiSetKey) OR alien mode
+    useEmojis: !!emojiSetKey,
     isSolverMode: isSolver,
     isMultiTest: task.test.length > 1
   };
@@ -283,7 +283,7 @@ function buildLegacyPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey: options.emojiSetKey,
     omitAnswer: options.omitAnswer,
-    useEmojis: (!!options.emojiSetKey) || (selectedTemplate?.emojiMapIncluded || false), // Emoji when toggle set OR template requires
+    useEmojis: !!options.emojiSetKey,
     isSolverMode: isSolverMode(promptId),
     isMultiTest: task.test.length > 1
   };
