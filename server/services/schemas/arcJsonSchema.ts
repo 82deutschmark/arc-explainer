@@ -21,7 +21,7 @@ export const ARC_JSON_SCHEMA = {
   schema: {
     type: "object",
     properties: {
-      // Multi-prediction support
+      // Multi-prediction support  THIS IS CONFUSING AND TOO COMPLEX!! OUR VALIDATOR AND PARSING SHOULD HANDLE THIS!!!
       multiplePredictedOutputs: {
         type: "boolean",
         description: "False if there is only one test input, true otherwise"
@@ -62,7 +62,7 @@ export const ARC_JSON_SCHEMA = {
       // Analysis fields
       solvingStrategy: {
         type: "string",
-        description: "Clear explanation of the solving approach, written as pseudo-code"
+        description: "Clear explanation of the solving approach, easy for a child to understand and apply"
       },
 
 
