@@ -220,7 +220,8 @@ export class GrokService extends BaseAIService {
             continue;
           }
 
-          const eventPayload = parsed.data ?? {};
+          // SSE data is untyped (manually parsed), cast to any for property access
+          const eventPayload: any = parsed.data ?? {};
           const streamEvent = {
             ...(eventPayload ?? {}),
             type: parsed.event,

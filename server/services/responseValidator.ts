@@ -1,21 +1,21 @@
 /**
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-09-30
- * PURPOSE: Response validation service that extracts predicted grids from AI responses and validates
- * them against correct answers. Handles both single-test and multi-test puzzle validation with accuracy
- * scoring, grid extraction, and prediction correctness checking. Critical for debate system to properly
- * validate rebuttal responses.
+ * Date: 2025-10-11 (major refactor)
+ * PURPOSE: Response validation service with flexible grid extraction using multiple fallback strategies.
+ * Validates predicted grids against correct answers for single-test and multi-test puzzles with accuracy
+ * scoring and partial prediction support. Uses extractPredictions utility for field-name-agnostic extraction,
+ * text parsing fallbacks, and salvages partial multi-test data (e.g., 1/3 grids found).
  *
- * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded from
- * solver mode validation, causing all debate rebuttals to skip prediction extraction and be marked as
- * 100% correct regardless of actual accuracy. Now uses centralized isSolverMode() function from
- * systemPrompts.ts to ensure consistent validation across all solver-type prompts (solver, custom,
- * debate, educationalApproach, gepa).
+ * CRITICAL UPDATE (2025-10-11): Validators now use extractPredictions() utility instead of hardcoded
+ * field access. This enables:
+ * - Multiple field name aliases (predictedOutput, output, solution, answer, result)
+ * - Numbered fields (predictedOutput1, predictedOutput2, etc.)
+ * - Array formats and TestCase objects
+ * - Text extraction fallbacks when structured data missing
+ * - Partial prediction support (accept 1/3 grids instead of rejecting all)
  *
- * SRP and DRY check: Pass - Single responsibility (response validation only), now properly uses
- * centralized solver mode detection instead of duplicating logic. File is 561 lines due to complex
- * grid extraction strategies (text parsing, JSON extraction, multi-format support) and detailed
- * accuracy calculation logic. Could potentially be refactored into smaller modules in the future.
+ * SRP/DRY check: Pass - Single responsibility (response validation), reuses extraction utilities from
+ * schemas/solver.ts instead of duplicating logic. Flexible extraction prevents data loss from format mismatches.
  */
 
 import { logger } from '../utils/logger.ts';
@@ -476,15 +476,61 @@ export function validateSolverResponse(
     : confidence;
   const hasConfidence = actualConfidence !== null;
 
-  // arcJsonSchema guarantees predictedOutput is a clean 2D integer array
-  const predictedGrid = analysisData.predictedOutput;
+  // FLEXIBLE EXTRACTION: Use extractPredictions utility with multiple fallbacks
+  let predictedGrid: number[][] | null = null;
+  let extractionMethod = 'unknown';
+
+  // Strategy 1: Try structured extraction using extractPredictions
+  const extracted = extractPredictions(analysisData, 1);
+  if (extracted.predictedOutput) {
+    predictedGrid = extracted.predictedOutput;
+    extractionMethod = 'extractPredictions_single';
+  } else if (extracted.predictedOutputs && extracted.predictedOutputs.length > 0) {
+    predictedGrid = extracted.predictedOutputs[0];
+    extractionMethod = 'extractPredictions_array';
+  }
+
+  // Strategy 2: Try extracting from raw response
+  if (!predictedGrid && response._rawResponse) {
+    const rawExtracted = extractPredictions(response._rawResponse, 1);
+    if (rawExtracted.predictedOutput) {
+      predictedGrid = rawExtracted.predictedOutput;
+      extractionMethod = 'extractPredictions_rawResponse';
+    } else if (rawExtracted.predictedOutputs && rawExtracted.predictedOutputs.length > 0) {
+      predictedGrid = rawExtracted.predictedOutputs[0];
+      extractionMethod = 'extractPredictions_rawResponse_array';
+    }
+  }
+
+  // Strategy 3: Text extraction fallback
+  if (!predictedGrid) {
+    const textSources = [
+      analysisData.solvingStrategy,
+      analysisData.patternDescription,
+      analysisData.text,
+      typeof response._rawResponse === 'string' ? response._rawResponse : null,
+      typeof response._providerRawResponse === 'string' ? response._providerRawResponse : null
+    ].filter(Boolean);
+
+    for (const text of textSources) {
+      if (text && typeof text === 'string') {
+        const { grid, method } = extractGridFromText(text);
+        if (grid) {
+          predictedGrid = grid;
+          extractionMethod = `text_${method}`;
+          logger.info('Single-test: Recovered grid via text extraction', 'validator');
+          break;
+        }
+      }
+    }
+  }
   
   if (!predictedGrid || !Array.isArray(predictedGrid)) {
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
       predictionAccuracyScore: calculateTrustworthinessScore(false, actualConfidence, hasConfidence),
-      extractionMethod: 'no_predicted_output'
+      extractionMethod: 'all_methods_failed'
     };
   }
 
@@ -497,7 +543,7 @@ export function validateSolverResponse(
     predictedGrid,
     isPredictionCorrect: isCorrect,
     predictionAccuracyScore: accuracyScore,
-    extractionMethod: 'arcJsonSchema_clean'
+    extractionMethod
   };
 }
 
@@ -520,13 +566,6 @@ export function validateSolverResponseMulti(
   promptId: string,
   confidence: number | null = 50
 ): MultiValidationResult {
-  // EMERGENCY DEBUG: Log the exact structure being passed to validator
-  if (process.env.VALIDATOR_DEBUG === 'true') {
-    console.log('[VALIDATOR-INPUT-DEBUG] response keys:', Object.keys(response));
-    console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse:', response._rawResponse ? Object.keys(response._rawResponse) : 'no _rawResponse');
-    console.log('[VALIDATOR-INPUT-DEBUG] response.predictedOutput1:', response.predictedOutput1);
-    console.log('[VALIDATOR-INPUT-DEBUG] response._rawResponse?.predictedOutput1:', response._rawResponse?.predictedOutput1);
-  }
   // Validate solver mode responses AND custom prompts that may be attempting to solve
   // Custom prompts often ask AI to predict answers, so they should be validated too
   // FIXED: Use centralized isSolverMode function to include debate, educationalApproach, gepa
@@ -555,18 +594,66 @@ export function validateSolverResponseMulti(
     : confidence;
   const hasConfidence = actualConfidence !== null;
 
-  // CRITICAL FIX: Extract grids from _rawResponse where they actually exist
-  const rawResponse = response._rawResponse || response._providerRawResponse || {};
-  const predictedGrids: (number[][] | null)[] = [
-    rawResponse.predictedOutput1 || analysisData.predictedOutput1 || response.predictedOutput1 || null,
-    rawResponse.predictedOutput2 || analysisData.predictedOutput2 || response.predictedOutput2 || null,
-    rawResponse.predictedOutput3 || analysisData.predictedOutput3 || response.predictedOutput3 || null
-  ].slice(0, correctAnswers.length);
+  // FLEXIBLE EXTRACTION: Use extractPredictions utility instead of hardcoded field access
+  // This handles multiple formats: numbered fields, arrays, aliases, TestCase objects
+  let predictedGrids: (number[][] | null)[] = [];
+  let extractionMethodSummary = 'unknown';
 
-  // Pad or trim to match expected count
+  // Strategy 1: Try structured extraction from response data
+  const extracted = extractPredictions(analysisData, correctAnswers.length);
+  if (extracted.predictedOutputs && extracted.predictedOutputs.length > 0) {
+    predictedGrids = extracted.predictedOutputs;
+    extractionMethodSummary = 'extractPredictions_structured';
+    logger.info(`Multi-test: Extracted ${predictedGrids.length}/${correctAnswers.length} grids via extractPredictions`, 'validator');
+  }
+
+  // Strategy 2: Try extracting from raw response if structured extraction failed
+  if (predictedGrids.length === 0 && response._rawResponse) {
+    const rawExtracted = extractPredictions(response._rawResponse, correctAnswers.length);
+    if (rawExtracted.predictedOutputs && rawExtracted.predictedOutputs.length > 0) {
+      predictedGrids = rawExtracted.predictedOutputs;
+      extractionMethodSummary = 'extractPredictions_rawResponse';
+      logger.info(`Multi-test: Extracted ${predictedGrids.length}/${correctAnswers.length} grids from _rawResponse`, 'validator');
+    }
+  }
+
+  // Strategy 3: Text extraction fallback if structured methods failed
+  if (predictedGrids.length === 0) {
+    const textSources = [
+      analysisData.solvingStrategy,
+      analysisData.patternDescription,
+      analysisData.text,
+      typeof response._rawResponse === 'string' ? response._rawResponse : null,
+      typeof response._providerRawResponse === 'string' ? response._providerRawResponse : null
+    ].filter(Boolean);
+
+    for (const text of textSources) {
+      if (text && typeof text === 'string') {
+        const { grids, method } = extractAllGridsFromText(text);
+        if (grids.length > 0) {
+          predictedGrids = grids.slice(0, correctAnswers.length);
+          extractionMethodSummary = `text_extraction_${method}`;
+          logger.info(`Multi-test: Recovered ${predictedGrids.length}/${correctAnswers.length} grids via text extraction`, 'validator');
+          break;
+        }
+      }
+    }
+  }
+
+  // PARTIAL SUCCESS SUPPORT: Accept whatever grids we found, even if incomplete
+  const foundCount = predictedGrids.filter(g => g !== null).length;
+  if (foundCount > 0 && foundCount < correctAnswers.length) {
+    logger.warn(`Multi-test: Partial success - found ${foundCount}/${correctAnswers.length} grids`, 'validator');
+    extractionMethodSummary += '_partial';
+  }
+
+  // Pad with nulls to match expected count
   while (predictedGrids.length < correctAnswers.length) {
     predictedGrids.push(null);
   }
+
+  // Trim if we somehow got too many
+  predictedGrids = predictedGrids.slice(0, correctAnswers.length);
 
   const itemResults: MultiValidationItemResult[] = [];
   let totalScore = 0;
@@ -583,7 +670,7 @@ export function validateSolverResponseMulti(
         predictedGrid: null,
         isPredictionCorrect: false,
         predictionAccuracyScore: score,
-        extractionMethod: 'arcJsonSchema_clean',
+        extractionMethod: extractionMethodSummary,
         expectedDimensions: { rows: expected?.length || 0, cols: expected?.[0]?.length || 0 }
       });
       totalScore += score;
@@ -600,7 +687,7 @@ export function validateSolverResponseMulti(
       predictedGrid: predicted,
       isPredictionCorrect: isCorrect,
       predictionAccuracyScore: score,
-      extractionMethod: 'arcJsonSchema_clean',
+      extractionMethod: extractionMethodSummary,
       expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
     });
     totalScore += score;
@@ -620,6 +707,6 @@ export function validateSolverResponseMulti(
     multiTestAllCorrect: allCorrect,                 // Overall correctness flag
     multiTestAverageAccuracy: averageScore,          // TRUSTWORTHINESS (with confidence) or CORRECTNESS RATE (without)
     multiTestPredictionGrids: predictedGrids,        // Grid storage (same as multiplePredictedOutputs for consistency)
-    extractionMethodSummary: 'arcJsonSchema_clean'  // Debug/logging info
+    extractionMethodSummary                          // Track how grids were extracted
   };
 }

@@ -1,3 +1,23 @@
+## [4.0.20] - 2025-10-11
+
+### Fixed
+- **Flexible Grid Extraction for Multi-Test Predictions**
+  - **Problem**: Validators hardcoded to look for exact field names (`predictedOutput1-3`), rejecting valid grids with different formats or partial data
+  - **Root Cause**: Ignored existing `extractPredictions()` utility that supports 10+ field formats, aliases, and text extraction
+  - **Solution**: Validators now use multi-strategy extraction with fallbacks:
+    - Uses `extractPredictions()` for numbered fields, arrays, aliases (`output`, `solution`, `answer`, `result`), and TestCase objects
+    - Text extraction fallback scans markdown code blocks and patterns when structured data missing
+    - Partial prediction support: accepts 1/3 grids instead of rejecting all
+    - Extraction method tracking for debugging
+  - **Impact**: Prevents data loss from format mismatches, salvages partial multi-test results, recovers grids from text
+  - **Files**: `server/services/responseValidator.ts` (both single and multi-test validators)
+
+- **Grok Streaming TypeScript Errors**
+  - Fixed type errors in SSE event payload handling by explicitly typing as `any` since SSE data is dynamically parsed
+  - **Files**: `server/services/grok.ts`
+
+---
+
 ## [4.0.19] - 2025-10-11
 
 ### Fixed
