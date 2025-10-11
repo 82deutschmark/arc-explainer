@@ -1,3 +1,22 @@
+## [4.0.18] - 2025-10-10
+
+### Added
+- **PuzzleBrowser: Credits & Acknowledgments Section**
+  - Added beautiful credits card below ARC2 Paper section
+  - **Puzzle Names**: Link to Google ARC-GEN Project task list for puzzle naming credits
+  - **SOTA Solutions**: Links to jerber and epang080516/arc_agi repositories
+  - **Special Thanks**: Recognition for Simon Strandgaard (@neoneye) for invaluable help and support
+  - Green-to-teal gradient design with emoji header and external link icons
+  - Responsive layout with proper spacing and typography
+
+### Fixed
+- **PuzzleBrowser TypeScript Error**
+  - Fixed type conversion error on line 74: `PuzzleListItem[]` to `EnhancedPuzzleMetadata[]`
+  - Solution: Added `as unknown as` intermediate cast for safe type conversion
+  - Impact: Build errors resolved, proper type safety maintained
+
+---
+
 ## [4.0.17] - 2025-10-10
 
 ### Changed

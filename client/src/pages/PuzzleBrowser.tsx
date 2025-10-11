@@ -71,7 +71,7 @@ export default function PuzzleBrowser() {
   
   // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
-    let filtered = (puzzles || []) as EnhancedPuzzleMetadata[];
+    let filtered = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
 
     // Apply search query first
     if (searchQuery.trim()) {
@@ -225,6 +225,74 @@ export default function PuzzleBrowser() {
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Credits & Acknowledgments */}
+          <Card className="shadow-md border-0 bg-gradient-to-r from-green-50 to-teal-50 backdrop-blur-sm">
+            <CardContent className="p-4">
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="text-lg">🙏</span>
+                Credits & Acknowledgments
+              </h3>
+              <div className="space-y-2 text-sm text-gray-700">
+                <div className="flex items-start gap-2">
+                  <span className="font-medium min-w-[100px]">Puzzle Names:</span>
+                  <div className="flex-1">
+                    <a 
+                      href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                    >
+                      Google ARC-GEN Project
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-medium min-w-[100px]">SOTA Solutions:</span>
+                  <div className="flex-1 space-y-1">
+                    <div>
+                      <a 
+                        href="https://github.com/jerber" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                      >
+                        jerber
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                    <div>
+                      <a 
+                        href="https://github.com/epang080516/arc_agi" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                      >
+                        epang080516/arc_agi
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-medium min-w-[100px]">Special Thanks:</span>
+                  <div className="flex-1">
+                    <a 
+                      href="https://github.com/neoneye" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+                    >
+                      Simon Strandgaard (@neoneye)
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <span className="text-gray-600 ml-1">for invaluable help and support</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
