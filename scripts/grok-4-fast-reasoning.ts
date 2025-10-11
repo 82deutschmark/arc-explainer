@@ -34,15 +34,15 @@ dotenv.config();
 // Base URL for the API - adjust if running on different host/port
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
-// Grok-4-Fast-Reasoning model to use for analysis
-const GROK_MODEL = 'grok-4-fast-reasoning';
+// Grok-4 model to use for analysis
+const GROK_MODEL = 'grok-4';
 
 // Timeout per puzzle in milliseconds (60 minutes for Grok-4-fast-reasoning)
 // Reasoning models can take 30-40+ minutes, need generous timeout
 const PUZZLE_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes (reasoning models can be slow)
 
 // Delay between triggering concurrent analyses
-const TRIGGER_DELAY_MS = 1000; // 1 second
+const TRIGGER_DELAY_MS = 1200; // 2 seconds (requested for rate limit safety)
 
 // NEW: Concurrency cap (align with xAI provider limits). Override via env XAI_MAX_CONCURRENCY.
 // Delete MAX_CONCURRENCY usage by replacing pool implementation with paced launcher
@@ -87,6 +87,8 @@ interface AnalysisResult {
   success: boolean;
   error?: string;
   responseTime?: number;
+  isCorrect?: boolean | null; // Track correctness per shared/utils/correctness.ts logic
+  hasMultiplePredictions?: boolean;
 }
 
 /**
@@ -110,6 +112,7 @@ function getPuzzleIdsFromDataset(dataset: 'arc1' | 'arc2'): string[] {
 
 /**
  * Parse command line arguments to get puzzle IDs or dataset
+ * NEW: Auto-loads from grok-4-unsolved-arc2.txt if no args provided
  */
 function getPuzzleIdsFromArgs(): string[] {
   const args = process.argv.slice(2);
@@ -147,8 +150,28 @@ function getPuzzleIdsFromArgs(): string[] {
     }
   }
   
-  // Otherwise, treat all arguments as puzzle IDs
-  return args.filter(arg => !arg.startsWith('-'));
+  // NEW: If no args provided, auto-load from unsolved ARC2 file
+  const puzzleIdsFromArgs = args.filter(arg => !arg.startsWith('-'));
+  
+  if (puzzleIdsFromArgs.length === 0) {
+    const defaultFile = 'scripts/grok-4-unsolved-arc2.txt';
+    if (fs.existsSync(defaultFile)) {
+      console.log(`ℹ️  No puzzle IDs provided, loading from default file: ${defaultFile}`);
+      try {
+        const content = fs.readFileSync(defaultFile, 'utf-8');
+        const loadedIds = content
+          .split('\n')
+          .map(line => line.trim())
+          .filter(line => line.length > 0 && !line.startsWith('#'));
+        console.log(`✅ Loaded ${loadedIds.length} unsolved ARC2 puzzle IDs from ${defaultFile}\n`);
+        return loadedIds;
+      } catch (error) {
+        console.error(`Error reading default file ${defaultFile}:`, error);
+      }
+    }
+  }
+  
+  return puzzleIdsFromArgs;
 }
 
 /**
@@ -162,9 +185,10 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
 
     // Prepare analysis request (mirroring client UI behavior)
     // IMPORTANT: NO reasoning parameters for Grok-4 models
+    // CRITICAL: Use 'solver' prompt to ensure proper prediction JSON schema for multi-test puzzles
     const requestBody: AnalysisRequest = {
       temperature: 0.99, // Default temperature (Grok-4-fast-reasoning supports temperature)
-      promptId: 'custom', // Use  prompt as specified
+      promptId: 'solver', // SOLVER mode ensures proper prediction schema validation
       systemPromptMode: 'ARC', // Use ARC system prompt mode
       omitAnswer: true, // Researcher option to hide correct answer
       retryMode: false // Not in retry mode
@@ -190,6 +214,10 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
     }
 
     const analysisData = analysisResponse.data.data;
+
+    // Extract correctness info (matches shared/utils/correctness.ts logic)
+    const hasMultiplePredictions = analysisData.hasMultiplePredictions || false;
+    const isCorrect = analysisData.multiTestAllCorrect ?? analysisData.isPredictionCorrect;
 
     // Step 2: Save to database (follows same pattern as frontend and other scripts)
     const explanationToSave = {
@@ -217,8 +245,13 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
     const endTime = Date.now();
     const responseTime = Math.round((endTime - startTime) / 1000);
 
-    console.log(`✅ Successfully analyzed and saved ${puzzleId} in ${responseTime}s`);
-    return { puzzleId, success: true, responseTime };
+    // Format correctness output
+    const correctnessEmoji = isCorrect === true ? '✓' : isCorrect === false ? '✗' : '?';
+    const correctnessLabel = isCorrect === true ? 'CORRECT' : isCorrect === false ? 'INCORRECT' : 'UNKNOWN';
+    const testType = hasMultiplePredictions ? 'multi-test' : 'single-test';
+
+    console.log(`✅ ${puzzleId} in ${responseTime}s | ${correctnessEmoji} ${correctnessLabel} (${testType})`);
+    return { puzzleId, success: true, responseTime, isCorrect, hasMultiplePredictions };
 
   } catch (error: any) {
     const endTime = Date.now();
@@ -247,7 +280,9 @@ async function analyzeAllPuzzlesPaced(puzzleIds: string[]): Promise<AnalysisResu
     return [];
   }
 
-  console.log(`\n🚀 Queueing ${puzzleIds.length} analyses with 1s stagger and no concurrency cap...`);
+  console.log(`
+🚀 Queueing ${puzzleIds.length} analyses with ${TRIGGER_DELAY_MS/1000}s stagger and no concurrency cap...`);
+  console.log('⚡ All requests fire concurrently - server will handle them in parallel');
   console.log('='.repeat(80));
 
   const resultPromises: Promise<AnalysisResult>[] = [];
@@ -282,6 +317,17 @@ async function analyzeAllPuzzlesPaced(puzzleIds: string[]): Promise<AnalysisResu
       .filter(r => r && r.success && r.responseTime)
       .reduce((sum, r) => sum + (r!.responseTime || 0), 0) / successful;
     console.log(`   Average response time: ${Math.round(avgTime)}s`);
+    
+    // Correctness breakdown
+    const correct = results.filter(r => r && r.success && r.isCorrect === true).length;
+    const incorrect = results.filter(r => r && r.success && r.isCorrect === false).length;
+    const unknown = results.filter(r => r && r.success && r.isCorrect == null).length;
+    console.log(`\n   CORRECTNESS:`);
+    console.log(`   ✓ Correct: ${correct} (${((correct / successful) * 100).toFixed(1)}%)`);
+    console.log(`   ✗ Incorrect: ${incorrect} (${((incorrect / successful) * 100).toFixed(1)}%)`);
+    if (unknown > 0) {
+      console.log(`   ? Unknown: ${unknown}`);
+    }
   }
 
   return results;
@@ -295,7 +341,7 @@ async function main(): Promise<void> {
     console.log('🤖 GROK-4-FAST-REASONING PUZZLE ANALYSIS SCRIPT');
     console.log('='.repeat(80));
     console.log(`Model: ${GROK_MODEL}`);
-    console.log(`Prompt: solver (standard puzzle-solving prompt)`);
+    console.log(`Prompt: SOLVER (ensures proper prediction JSON schema)`);
     console.log(`API Base URL: ${API_BASE_URL}`);
     console.log(`Timeout per puzzle: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
     console.log(`Trigger delay: ${TRIGGER_DELAY_MS / 1000} seconds`);
@@ -356,6 +402,17 @@ async function main(): Promise<void> {
         .filter(r => r.success && r.responseTime)
         .reduce((sum, r) => sum + (r.responseTime || 0), 0) / successfulAnalyses;
       console.log(`Average analysis time: ${Math.round(avgTime)}s per puzzle`);
+      
+      // Final correctness summary
+      const correct = results.filter(r => r.success && r.isCorrect === true).length;
+      const incorrect = results.filter(r => r.success && r.isCorrect === false).length;
+      const unknown = results.filter(r => r.success && r.isCorrect == null).length;
+      console.log(`\nCORRECTNESS SUMMARY:`);
+      console.log(`✓ Correct predictions: ${correct}/${successfulAnalyses} (${((correct / successfulAnalyses) * 100).toFixed(1)}%)`);
+      console.log(`✗ Incorrect predictions: ${incorrect}/${successfulAnalyses} (${((incorrect / successfulAnalyses) * 100).toFixed(1)}%)`);
+      if (unknown > 0) {
+        console.log(`? Unknown: ${unknown}`);
+      }
     }
 
     // Show failed puzzles for manual review
@@ -365,6 +422,13 @@ async function main(): Promise<void> {
       failedPuzzles.forEach(result => {
         console.log(`   • ${result.puzzleId}: ${result.error}`);
       });
+      
+      // Save failed puzzle IDs to retry file
+      const retryFile = 'scripts/grok-4-retry.txt';
+      const retryContent = failedPuzzles.map(r => r.puzzleId).join('\n');
+      fs.writeFileSync(retryFile, retryContent, 'utf-8');
+      console.log(`\n💾 Failed puzzle IDs saved to: ${retryFile}`);
+      console.log(`   To retry: node --import tsx scripts/grok-4-fast-reasoning.ts --file ${retryFile}`);
     }
 
     console.log('\n✨ Analysis complete! Check the database for new explanations.');

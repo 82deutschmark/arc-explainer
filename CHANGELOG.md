@@ -1,3 +1,663 @@
+## [4.2.1] - 2025-10-11 02:00 AM
+## Version bump
+### Fixed
+- **Flexible Grid Extraction for Multi-Test Predictions**
+  - **Problem**: Validators hardcoded to look for exact field names (`predictedOutput1-3`), rejecting valid grids with different formats or partial data
+  - **Root Cause**: Ignored existing `extractPredictions()` utility that supports 10+ field formats, aliases, and text extraction
+  - **Solution**: Validators now use multi-strategy extraction with fallbacks:
+    - Uses `extractPredictions()` for numbered fields, arrays, aliases (`output`, `solution`, `answer`, `result`), and TestCase objects
+    - Text extraction fallback scans markdown code blocks and patterns when structured data missing
+    - Partial prediction support: accepts 1/3 grids instead of rejecting all
+    - Extraction method tracking for debugging
+  - **Impact**: Prevents data loss from format mismatches, salvages partial multi-test results, recovers grids from text
+  - **Files**: `server/services/responseValidator.ts` (both single and multi-test validators)
+
+- **Grok Streaming TypeScript Errors**
+  - Fixed type errors in SSE event payload handling by explicitly typing as `any` since SSE data is dynamically parsed
+  - **Files**: `server/services/grok.ts`
+
+---
+
+## [4.0.19] - 2025-10-11
+
+### Fixed
+- **SSE Session Management Race Condition**
+  - **Problem**: SSE manager was logging flood of warnings when trying to send events to closed sessions
+  - **Root Cause**: Race condition between `harness.end()` closing sessions and async operations continuing to send events
+  - **Solution**: Made session management more lenient by:
+    - Removing warning logs for closed session operations (these are normal when async ops complete after stream ends)
+    - Adding try-catch blocks for write operations (connections can close between check and write)
+    - Logging errors at debug level instead of warn level for closed session operations
+  - **Impact**: Eliminates confusing warning spam while maintaining proper session lifecycle management
+  - **Files**: `server/services/streaming/SSEStreamManager.ts`
+
+---
+
+### Added
+- **PuzzleBrowser: Compact "Resources & References" Section**
+  - **Maximum information density** in 4-column grid layout
+  - Same size as original section, all essential links included
+  
+  **Structure (4 columns)**:
+  1. **Research**: ARC2 Paper (arXiv)
+  2. **Data Sources**: HuggingFace ARC Prize, Official ARC-AGI repo
+  3. **SOTA Solutions**: zoecarver, jerber, epang080516
+  4. **Community**: Puzzle Names (Google ARC-GEN), ARC Notes, Datasets (Simon's collection)
+  
+  **Features**:
+  - Simple text links with external link icons
+  - Purple/blue gradient card background
+  - Consolidated Simon acknowledgment in single line at bottom
+  - Responsive: 2 columns mobile, 4 columns desktop
+  - All links open securely in new tabs
+
+### Fixed
+- **PuzzleBrowser TypeScript Error**
+  - Fixed type conversion error on line 74: `PuzzleListItem[]` to `EnhancedPuzzleMetadata[]`
+  - Solution: Added `as unknown as` intermediate cast for safe type conversion
+  - Impact: Build errors resolved, proper type safety maintained
+
+---
+
+## [4.0.17] - 2025-10-10
+
+### Changed
+- **Grok-4-Fast-Non-Reasoning Script: Complete Rewrite for Verbose Logging**
+  - **User Request**: Rewrite script to be concurrent (NOT sequential), 2s stagger between starts, verbose console output
+  - **Previous Approach**: Complex worker pool with MAX_CONCURRENCY limiting, minimal logging
+  - **New Approach**: 
+    - Concurrent execution with staggered starts (pattern from grok-4-progressive-reasoning.ts)
+    - All puzzles fire simultaneously with 2-second delays between starts (rate limiting)
+    - Extensive verbose logging at every step of the process
+  - **Validation Flow** (follows `Analysis_Data_Flow_Trace.md`):
+    1. `/api/puzzle/analyze` - Backend validates response & calculates correctness
+    2. `/api/puzzle/save-explained` - Persist validated data to database
+    3. Correctness determined by `shared/utils/correctness.ts` logic
+  - **Console Output Improvements**:
+    - **Per-Puzzle Detail**: Shows puzzle N/total, timestamps, model config, timeout
+    - **Step-by-Step Progress**: Verbose logging for analyze step and save step
+    - **Validation Results**: Displays confidence, correctness flags, accuracy score, tokens, cost
+    - **Timing Stats**: Min/max/average times, total duration
+    - **Summary Reports**: Success/fail counts, failed puzzle list with errors
+  - **Configuration**:
+    - Model: `grok-4-fast-non-reasoning`
+    - Stagger: 2 seconds between puzzle starts
+    - Timeout: 45 minutes per puzzle
+    - Prompt: `solver` template
+  - **Usage**:
+    ```bash
+    node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc1  # 400 puzzles
+    node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc2  # 120 puzzles
+    ```
+  - **Files Modified**:
+    - `scripts/grok-4-fast-non-reasoning.ts` - Complete rewrite with verbose logging
+
+---
+
+## [4.0.16] - 2025-10-10
+
+### Changed - MAJOR REWRITE
+- **Model Comparison: Complete Redesign to Side-by-Side Performance Panels**
+  - **User Request**: Show model performance panels (like AnalyticsOverview) side-by-side, NOT puzzle-by-puzzle matrix
+  - **Previous Approach**: Puzzle-by-puzzle comparison matrix with ✅/❌ icons - completely wrong for the user's need
+  - **New Approach**: Side-by-side display of full performance panels with all stats
+  - **New Component**: `ModelPerformancePanel` - Reusable component extracted from AnalyticsOverview
+    - Shows: Success rate, progress bar, correct/incorrect/not attempted counts
+    - Includes: Metric badges (cost, time, tokens) per category
+    - Displays: Puzzle ID badges in scrollable lists for each category
+    - Reuses: Existing hooks (`useModelDatasetPerformance`, `useModelDatasetMetrics`)
+  - **ModelComparisonPage Rewrite**:
+    - Removed: All puzzle-by-puzzle matrix logic (120+ lines)
+    - Added: Responsive grid layout (1-4 columns) of ModelPerformancePanel instances
+    - Simplified: Receives just `{ models: string[], dataset: string }` from location state
+    - Each panel fetches its own data independently - no complex comparison API needed
+  - **AnalyticsOverview Simplification**:
+    - Removed: API fetch to `/api/metrics/compare`
+    - Changed: Navigate with just model list + dataset, no pre-fetched comparison data
+  - **Impact**: 
+    - User gets exactly what they asked for - same rich panels from AnalyticsOverview, side-by-side
+    - DRY compliance - extracted reusable component
+    - Simpler architecture - no comparison API, just independent model data fetching
+    - Better UX - full performance context for each model, not just correctness icons
+  - **Files Modified**:
+    - NEW: `client/src/components/analytics/ModelPerformancePanel.tsx` (280 lines)
+    - `client/src/pages/ModelComparisonPage.tsx` - Complete rewrite (100 lines, was 345)
+    - `client/src/pages/AnalyticsOverview.tsx` - Simplified navigation logic
+
+---
+
+## [4.0.15] - 2025-10-10
+
+### Fixed
+- **Model Comparison Page Loading Issues**
+  - **Problem #1**: TypeScript error in `useAnalysisResults.ts` - payload type mismatch causing build failures
+  - **Problem #2**: ModelComparisonPage not loading data when navigated to from AnalyticsOverview
+  - **Root Cause #1**: Payload was incorrectly typed as `Record<string, unknown>` but mutation expected specific type with `modelKey` required
+  - **Root Cause #2**: Direct access to `window.history.state` doesn't trigger React re-renders, component wouldn't update with state data
+  - **Solutions**:
+    - Removed incorrect type annotation from payload, let TypeScript infer correct type from object literal
+    - Made comparison data reactive using `useState` with initializer function and `useEffect` to update on location changes
+  - **Impact**: Model comparison page now properly loads and displays data, TypeScript build error resolved
+  - **Files Modified**:
+    - `client/src/hooks/useAnalysisResults.ts` - Fixed payload typing for type safety
+    - `client/src/pages/ModelComparisonPage.tsx` - Made state access reactive following React patterns
+
+---
+
+## [4.0.14] - 2025-10-10
+
+### Fixed - CRITICAL
+- **Streaming Analysis Validation Bug (SYSTEMIC)**
+  - **Impact**: ALL streaming analysis endpoints (standard, Saturn, Grover) were saving NULL prediction grids and incorrect accuracy flags to database
+  - **Root Cause**: Streaming responses bypassed `validateAndEnrichResult()` entirely, skipping prediction grid extraction and correctness calculation
+  - **Solution**: Single centralized fix in `puzzleAnalysisService.analyzePuzzleStreaming()` using validation harness wrapper pattern
+  - **How It Works**: 
+    - Wraps streaming harness to intercept `end()` completion event
+    - Calls `validateStreamingResult()` before sending to client
+    - Extracts prediction grids, calculates correctness flags, sets accuracy scores
+    - Ensures streaming results match database schema expectations
+  - **Affected Endpoints** (all automatically fixed):
+    - `/api/stream/analyze/:taskId/:modelKey` - Standard puzzle analysis (PuzzleExaminer)
+    - `/api/stream/saturn/:taskId/:modelKey` - Saturn Visual Solver
+    - `/api/stream/grover/:taskId/:modelKey` - Grover Iterative Solver
+  - **Database Impact**:
+    - Before: `predicted_output_grid = NULL`, `is_prediction_correct = false`, `prediction_accuracy_score = 0` for ALL streaming
+    - After: Correct values calculated and stored, identical to non-streaming analysis
+  - **Files Modified**:
+    - NEW: `server/services/streamingValidator.ts` - Validation utility mirroring validateAndEnrichResult logic
+    - `server/services/puzzleAnalysisService.ts` - Added validation harness wrapper in analyzePuzzleStreaming()
+  - **Technical Details**: See `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` for complete architecture flow
+
+### Fixed - UI
+- **Streaming Modal UX Improvements**
+  - **Issue #1**: StreamingAnalysisPanel rendered inline instead of as popup modal
+  - **Issue #2**: Modal too small for large text output (was max-w-3xl)
+  - **Issue #3**: Modal auto-closed on completion, too fast to read results
+  - **Issue #4**: Text areas too small (40px/32px height) causing excessive scrolling
+  - **Solutions**:
+    - Wrapped panel in shadcn/ui Dialog component for proper modal behavior
+    - **Increased modal size to 95vw x 90vh** (uses nearly full screen)
+    - **Added manual Close button** - modal no longer auto-closes on completion
+    - **Increased text area heights to 500px/400px** for comfortable viewing
+    - Added monospace font for better code/output readability
+  - **Files Modified**:
+    - `client/src/pages/PuzzleExaminer.tsx` - Dialog wrapper with large sizing, onClose callback
+    - `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Close button, larger text areas
+    - `client/src/hooks/useAnalysisResults.ts` - closeStreamingModal function
+  - **User Experience**: 
+    - Modal appears as large popup (95% screen)
+    - Users can review full results at their own pace
+    - Manual close button prevents premature dismissal
+    - Much less scrolling required
+
+### Documentation
+- Added `docs/10Oct2025-Streaming-Modal-Save-Fix.md` - Detailed technical documentation of the fix
+- Added `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` - Complete architecture analysis of all streaming endpoints
+- Added `docs/10Oct2025-Modal-UX-Improvements.md` - Summary of modal sizing and UX improvements
+- Added `docs/10Oct2025-Task-Complete-Summary.md` - Complete task summary and testing guide
+
+---
+
+## [4.0.13] - 2025-10-10
+
+### Added
+- **Dedicated Model Comparison Page**
+  - **Problem Solved**: Previous ModelComparisonDialog used cramped modal with 90vh overflow that was unreadable for 120+ puzzle datasets
+  - **Solution**: Created dedicated `/model-comparison` page with proper layout for large datasets
+  - **Key Features**:
+    - **Complete Dataset Visibility**: Shows ALL puzzles in the dataset at once (120+ puzzles) - no pagination limits
+    - **Advanced Filtering**: Filter by result type (all correct, all incorrect, disagreements, not attempted)
+    - **Clear Visual Distinction**: ✅ (correct), ❌ (incorrect), ⏳ (not attempted) with proper tooltips
+    - **CSV Export**: Download comparison results for external analysis
+    - **Summary Statistics**: Quick overview cards at top showing agreement patterns
+    - **Responsive Design**: Sticky headers, proper spacing, hover states
+  - **Route Integration**: Added `/model-comparison` route in App.tsx
+  - **Navigation**: AnalyticsOverview now navigates to page instead of opening cramped dialog
+  - **Data Flow**: Uses existing `/api/metrics/compare` endpoint, passes data via wouter location state
+
+### Fixed
+- **Model Comparison Logic Bug**
+  - **Issue**: Both incorrect and not_attempted puzzles displayed hourglass emoji (⏳)
+  - **Fix**: Now correctly shows ❌ (red X) for incorrect, ⏳ (gray clock) for not attempted
+  - **Impact**: Users can now properly distinguish between actual wrong answers vs unattempted puzzles
+
+### Changed
+- **Model Comparison Page: Removed Pagination**
+  - **Problem**: Pagination was incorrectly limiting visibility to only 30 puzzles per page, defeating the purpose of model comparison
+  - **Solution**: Removed pagination completely - now displays ALL puzzles in the dataset at once (120+ puzzles)
+  - **Key Changes**:
+    - Removed `ITEMS_PER_PAGE` constant and `currentPage` state
+    - Removed pagination UI components (top and bottom navigation)
+    - Updated display text: "Showing all {filteredDetails.length} puzzles"
+    - All puzzles now visible simultaneously for complete model comparison analysis
+  - **Impact**: Users can now see the complete comparison matrix across entire datasets without artificial limitations
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/pages/ModelComparisonPage.tsx` - Removed all pagination logic and UI (now shows all puzzles at once)
+- **Performance**: Displays all puzzles at once - no artificial limits on dataset size
+- **User Experience**: Complete visibility into model performance patterns across full datasets
+
+---
+
+## [4.0.11] - 2025-10-10
+
+### Added
+- **Aggregate Metric Badges System**
+  - **Scope**: Analytics Overview now displays cost, time, and token metrics as compact badges in Correct/Incorrect stat cards
+  - **Backend Implementation**:
+    - New repository method: `ModelDatasetRepository.getModelDatasetMetrics()` - Single efficient SQL query with FILTER clauses
+    - New controller method: `modelDatasetController.getModelDatasetMetrics()`
+    - New API endpoint: `GET /api/model-dataset/metrics/:modelName/:datasetName`
+    - Returns aggregate metrics broken down by correct/incorrect categories
+  - **Frontend Implementation**:
+    - New hook: `useModelDatasetMetrics()` in `useModelDatasetPerformance.ts`
+    - Badge display in AnalyticsOverview showing:
+      - 💰 Average cost (4 decimal precision, e.g., $0.0023 avg)
+      - ⏱️ Average time (2 decimal precision in seconds, e.g., 12.45s avg)
+      - 🔤 Average tokens (integer with thousand separators, e.g., 2,450 tok)
+  - **Display Format**:
+    - Badges use `text-[10px]` for maximum density
+    - Color-coded: green-50 for correct, red-50 for incorrect
+    - Only displayed when metrics exist (graceful degradation)
+
+### Changed
+- **Fixed Rounded Percentages to Show 2 Decimal Places**
+  - Changed all `Math.round()` to `.toFixed(2)` for percentage displays
+  - Affects: AnalyticsOverview success rates, DifficultPuzzlesSection accuracy/confidence
+  - Examples: 7.45% instead of 7%, 92.31% instead of 92%
+  - Provides more precise accuracy measurements for model comparison
+
+### Technical Details
+- **Files Modified**:
+  - Backend:
+    - `server/repositories/ModelDatasetRepository.ts` - Added getModelDatasetMetrics() method with SQL FILTER clauses
+    - `server/controllers/modelDatasetController.ts` - Added getModelDatasetMetrics() endpoint
+    - `server/routes.ts` - **MANUAL ADDITION REQUIRED**: Add route for /api/model-dataset/metrics/:modelName/:datasetName
+  - Frontend:
+    - `client/src/hooks/useModelDatasetPerformance.ts` - Added useModelDatasetMetrics() hook
+    - `client/src/pages/AnalyticsOverview.tsx` - Added Badge import, metrics hook call, badge display
+    - `client/src/components/analytics/DifficultPuzzlesSection.tsx` - Fixed percentage precision
+- **SRP Compliance**:
+  - ModelDatasetRepository handles single-model metrics (not MetricsRepository which handles cross-model comparisons)
+  - Single SQL query with FILTER clauses instead of multiple queries (DRY)
+  - Hook follows same pattern as useModelDatasetPerformance (DRY)
+- **Performance**: Single efficient query aggregates all metrics in one database call
+- **Error Handling**: Graceful degradation if metrics unavailable, UI still functional
+
+### Manual Step Required
+**IMPORTANT**: Add this line to `server/routes.ts` after line 119 (the datasets route):
+```typescript
+app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelDatasetMetrics));
+```
+
+---
+
+## [4.0.10] - 2025-10-10
+
+### Changed
+- **MAXIMUM Information Density UI Improvements**
+  - **Scope**: Analytics Overview page and Model Comparison Dialog now use extreme padding reduction for maximum information density
+  - **Changes**:
+    - **Padding Reduction**: p-4→p-3→p-2 (50% reduction), gap-4→gap-3→gap-2 (50% reduction)
+    - **Custom Spacing**: CardHeader pt-2 px-2 pb-1, CardContent pt-1 px-2 pb-2 for optimal space utilization
+    - **Font Size Optimization**: text-base→text-sm for titles, text-3xl→text-2xl for numbers, text-xs→text-[10px] for subtitles
+    - **Grid Spacing**: All grids reduced to gap-2 for tighter layouts
+    - **Comparison Dialog**: Reduced from space-y-4→space-y-2, p-4→p-2 throughout
+  - **User Impact**: 
+    - Significantly more information visible per screen
+    - Maintains readability while maximizing data density
+    - Better use of screen real estate for data-heavy analytics
+  - **Future Enhancements**: Added TODO comments for aggregate metric badges (cost, time, tokens)
+    - Requires new API endpoint: `/api/model-dataset/metrics/:model/:dataset`
+    - Will display: avgCostCorrect, avgCostIncorrect, avgTime, totalTokens
+    - Comparison metrics: total cost per category, average time across models, token usage comparison
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/pages/AnalyticsOverview.tsx` - Maximum density + TODO comments for future metrics
+  - `client/src/components/analytics/ModelComparisonDialog.tsx` - Reduced padding/gaps + TODO comments
+  - `client/src/components/analytics/NewModelComparisonResults.tsx` - Reduced padding and font sizes
+  - `docs/10Oct2025-AnalyticsOverview-UI-Improvements.md` - Phase 2 documentation
+- **Design Philosophy**: 
+  - High information density for analytics/data-heavy pages
+  - Maintain readability with proper font sizes and contrast
+  - Prepare for future metric badges showing cost/time/token aggregates
+- **Backward Compatibility**: No breaking changes, pure UI enhancement
+
+---
+
+## [4.0.9] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Terminology Consistency - "solved/failed" → "correct/incorrect"**
+  - **Root Cause**: Frontend hook (`useModelDatasetPerformance.ts`) incorrectly used `solved`/`failed` terminology
+    - Backend repository and database correctly use `correct`/`incorrect` for puzzle-solving accuracy
+    - Hook unnecessarily mapped backend's correct terms to wrong terms
+    - Component tried to use proper `correct`/`incorrect` but TypeScript errors forced wrong usage
+    - Created confusion: "failed" implies API error, not incorrect puzzle solution
+  - **Solution**: Eliminated unnecessary abstraction layer
+    - Updated `ModelDatasetPerformance` interface to use `correct`/`incorrect` (not `solved`/`failed`)
+    - Removed mapping logic - hook now passes through backend data unchanged
+    - Fixed component to consistently use project-standard `correct`/`incorrect` terminology
+    - Updated controller documentation to reflect correct terminology
+  - **Impact**: Consistent terminology across entire stack, eliminates semantic confusion
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/hooks/useModelDatasetPerformance.ts` - Fixed interface and removed mapping
+  - `client/src/pages/AnalyticsOverview.tsx` - Uses correct property names with TypeScript types
+  - `server/controllers/modelDatasetController.ts` - Fixed documentation
+  - `docs/2025-10-10-fix-solved-failed-terminology.md` - Detailed analysis and fix plan
+- **Semantic Clarity**: 
+  - `correct`/`incorrect` = Puzzle-solving accuracy (proper usage)
+  - `failed` = Reserved for API/technical errors only (not puzzle accuracy)
+- **Architecture Benefits**: Single source of truth, no unnecessary data transformations, proper DRY compliance
+
+### User Impact
+- **Immediate Fix**: AnalyticsOverview model performance displays correctly
+- **Developer Experience**: Clear, consistent terminology reduces confusion
+- **Future Maintainability**: Eliminates source of bugs from terminology mismatch
+
+---
+
+## [4.0.8] - 2025-10-10
+
+### Added
+- **Grover Solver Advanced Controls**
+  - **New Feature**: The Grover Solver page now includes an "Advanced Controls" section, mirroring the functionality available on the Puzzle Examiner page
+  - **Temperature Control**: Users can now configure temperature (0.1-2.0) to control creativity/randomness in code generation
+  - **GPT-5 Reasoning Parameters**: Added support for fine-tuning GPT-5 models with:
+    - **Effort Level**: Minimal, Low, Medium, High reasoning effort
+    - **Verbosity**: Low, Medium, High reasoning detail levels
+    - **Summary Type**: Auto or Detailed summary generation
+  - **User Experience**: All controls are disabled during analysis to prevent configuration changes mid-run
+  - **Backend Integration**: Updated `useGroverProgress` hook to accept and forward advanced parameters to backend API
+
+### Changed
+- **Grover Model Selection**
+  - **Model Update**: Removed `grok-4-fast` from Grover model options as it was not intended for use with this solver
+  - **Available Models**: Now only shows `grover-gpt-5-nano` and `grover-gpt-5-mini` which are specifically designed for Grover analysis
+
+### Technical Details
+- **Files Modified**:
+  - `client/src/pages/GroverSolver.tsx` - Added advanced controls UI and state management
+  - `client/src/hooks/useGroverProgress.ts` - Extended options interface and API integration
+  - `client/src/components/grover/GroverModelSelect.tsx` - Removed grok-4-fast model option
+- **Architecture**: Maintains SRP/DRY compliance by reusing existing UI patterns from PuzzleExaminer
+- **User Impact**: Provides users with greater control over Grover solver behavior and aligns capabilities with main puzzle analysis interface
+
+---
+
+## [4.0.7] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Model Comparison Architecture - DRY/SRP Violations**
+  - **Root Cause**: `MetricsRepository.getPuzzleIdsForDataset()` used wrong semantic for model comparison
+    - Problem: Used `puzzleLoader.getPuzzleList({ source })` which applies priority-based filtering
+    - When dataset has 120 puzzles but 20 also exist in higher-priority dataset, puzzleLoader excludes 20
+    - Model comparison needs ALL puzzles in directory, not priority-filtered subset
+  - **Solution**: Delegate to `ModelDatasetRepository.getPuzzleIdsFromDataset()` (direct filesystem access)
+    - Made `ModelDatasetRepository.getPuzzleIdsFromDataset()` public (was private)
+    - Updated `MetricsRepository.getPuzzleIdsForDataset()` to delegate (removed 30+ lines of puzzleLoader logic)
+    - Now returns correct puzzle counts matching filesystem directory contents
+  - **Architecture Benefits**: Single source of truth, SRP compliance, DRY compliance, better maintainability
+
+### Technical Details
+- **Files Changed**:
+  - `server/repositories/MetricsRepository.ts` - Delegation pattern, removed puzzleLoader dependency
+  - `server/repositories/ModelDatasetRepository.ts` - Made getPuzzleIdsFromDataset() public
+  - `docs/2025-10-10-model-comparison-architecture-analysis.md` - Root cause analysis
+  - `docs/2025-10-10-model-comparison-fix-summary.md` - Fix summary and verification
+  - Max height with scroll for large datasets
+
+### User Impact
+- **Major Fix**: Model comparison now actually works - displays real data for all datasets
+- **Better UX**: Results appear in centered modal dialog instead of requiring scroll to bottom
+- **Immediate Feedback**: Loading state visible instantly when clicking "Compare Models"
+- **Professional Presentation**: Clean modal with summary stats and detailed matrix
+- **Multiple Models**: Supports comparing 2-4 models simultaneously with clear visualization
+
+### Files Modified
+- `server/repositories/MetricsRepository.ts` - Fixed dataset-to-puzzle mapping
+- `client/src/components/analytics/ModelComparisonDialog.tsx` - NEW modal component
+- `client/src/pages/AnalyticsOverview.tsx` - Integrated modal dialog, removed inline rendering
+- `docs/2025-10-10-fix-model-comparison-modal.md` - Implementation plan and bug analysis
+
+---
+
+## [4.0.6] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Trustworthiness Score Recalculation Migration**
+  - **Problem**: Yesterday's confidence normalization fix (commit 1cf3961) corrected confidence values but didn't recalculate the derived trustworthiness_score field
+  - **Impact**: Trustworthiness scores were calculated using incorrect confidence values (e.g., 0.85 treated as 0.85% instead of 85%, or 1 treated as 1% instead of 100%)
+  - **Solution**: Created migration script `scripts/recalculate-trustworthiness.ts` to recalculate ALL trustworthiness scores
+  - **Trustworthiness Formula** (from responseValidator.ts):
+    - Correct + High Confidence: 0.75 - 1.0 (good alignment)
+    - Correct + Low Confidence: 0.5 - 0.75 (still rewards correctness)
+    - Incorrect + High Confidence: 0.0 - 0.05 (heavily penalizes overconfidence)
+    - Incorrect + Low Confidence: 0.5 - 1.0 (rewards honest uncertainty)
+    - No Confidence: Pure correctness (0.0 or 1.0)
+  - **Default Handling**: Null/undefined/blank confidence defaults to 50
+  - **Correctness Logic**: Uses `multi_test_all_correct ?? is_prediction_correct ?? false`
+  - **Migration Features**:
+    - Dry-run mode for safety (`--verify` flag for stats only)
+    - Batch processing (1000 entries at a time)
+    - Progress reporting every 100 entries
+    - Comprehensive statistics report
+    - Error tracking and logging
+  - **Files Created**:
+    - `scripts/recalculate-trustworthiness.ts` - Migration script with exact logic from responseValidator.ts
+    - `docs/2025-10-10-trustworthiness-recalculation-plan.md` - Detailed migration plan and context
+
+### Technical Details
+- **Root Cause**: Trustworthiness is a DERIVED metric combining confidence + correctness. When confidence values were fixed, trustworthiness wasn't recalculated
+- **Key Distinction**: 
+  - **Confidence** = what the model claims ("I'm 95% confident")
+  - **Trustworthiness** = reliability metric (does confidence predict correctness?)
+- **Migration Process**:
+  1. Fetch all entries from database
+  2. Normalize confidence using `normalizeConfidence()` utility
+  3. Determine correctness using correctness.ts logic
+  4. Calculate trustworthiness using responseValidator.ts formula
+  5. Update database with new trustworthiness_score
+- **Batch Processing**: Processes 1000 entries at a time to avoid memory issues
+- **Progress Tracking**: Reports progress every 100 entries with percentage complete
+- **Statistics**: Tracks min/max/avg trustworthiness, correct/incorrect distribution, null confidence count
+- **Safety**: Dry-run mode by default, requires `--live` flag to write to database
+
+### User Impact
+- **Major Fix**: Trustworthiness leaderboards now reflect accurate reliability metrics
+- **Research Integrity**: Primary research metric now correctly calculated for all historical data
+- **Consistency**: All trustworthiness scores now use normalized confidence values
+- **No User Action Required**: Migration is one-time administrative task
+
+---
+
+## [4.0.5] - 2025-10-10
+
+### Added
+- **Multi-Model Comparison Feature**
+  - **Backend Support**: Extended `/api/metrics/compare` endpoint to support comparing 2-4 models simultaneously
+  - **Dynamic Model Selection**: AnalyticsOverview.tsx now supports 4 model selection dropdowns with intelligent defaults:
+    - **Model 1 (Primary)**: gpt-5-pro-2025-10-06-attempt1 (auto-selected if available)
+    - **Model 2 (Grok-4)**: Grok-4 variants (auto-selected if available)
+    - **Model 3 (Claude)**: Claude Sonnet 4.5 (auto-selected if available)
+    - **Model 4 (Optional)**: Any remaining model (user selectable)
+  - **Enhanced Summary Statistics**: New agreement patterns beyond simple pairwise comparison:
+    - All correct, all incorrect, all not attempted
+    - Three correct, two correct, one correct (for 4-model comparisons)
+    - Model-specific "only correct" counters for each model
+  - **Matrix Table Display**: Rewritten ModelComparisonResults component to match PuzzleFeedback.tsx design:
+    - Clean HTML table with puzzle IDs as columns, models as rows
+    - Emojis for results: ✅ (correct), ❌ (incorrect), ⏳ (not attempted)
+    - Clickable puzzle badges in column headers
+    - Hover states and responsive design
+    - Eliminated nested Card components that caused poor layout
+
+### Changed
+- **API Query Parameters**: `/api/metrics/compare` now accepts `model1`, `model2`, `model3`, `model4` (all optional except model1)
+- **Repository Method**: `MetricsRepository.getModelComparison()` now accepts variable number of models (2-4)
+- **SQL Query**: Enhanced to handle multiple models dynamically using `ANY()` operator and conditional aggregations
+- **Frontend UI**: Added 3rd and 4th model selectors with "None" option for optional comparisons
+- **Error Handling**: Improved validation and error messages for multi-model scenarios
+
+### Technical Details
+- **Files Modified**:
+  - `server/controllers/metricsController.ts` - Updated to handle multiple model query parameters
+  - `server/repositories/MetricsRepository.ts` - Enhanced comparison logic for variable model count
+  - `client/src/pages/AnalyticsOverview.tsx` - Added 3rd/4th model selectors and auto-selection logic
+  - `client/src/components/analytics/ModelComparisonResults.tsx` - Complete rewrite using matrix table design
+- **Backward Compatibility**: Existing 2-model comparisons continue to work unchanged
+- **Performance**: Optimized SQL queries to handle multiple models efficiently
+- **UI/UX**: Consistent with existing PuzzleFeedback.tsx Model Performance Matrix design
+
+### User Impact
+- **Major Feature**: Users can now compare up to 4 models simultaneously on any dataset
+- **Better Insights**: See which models excel on which puzzles and identify patterns
+- **Intelligent Defaults**: Popular models (GPT-5, Grok-4, Claude) auto-selected for common comparisons
+- **Consistent Design**: Matches the proven matrix table design from feedback page
+
+---
+
+## [4.0.4] - 2025-10-10
+- **Enhanced Puzzle Name Display Across All Pages**
+  - Added puzzle name display next to puzzle IDs in headers across all pages for better visual identification
+  - **PuzzleExaminer.tsx**: Updated main heading to show puzzle name alongside ID (e.g., "Puzzle 0520fde7 - Vertical Symmetry")
+  - **ClickablePuzzleBadge Component**: Enhanced with optional tooltip-based name display using `showName` prop
+  - **PuzzleFeedback.tsx**: Updated model performance matrix table headers to show puzzle names
+  - **ModelBrowser.tsx**: Enhanced toast messages to include puzzle names for better feedback
+  - **AnalyticsOverview.tsx**: Updated performance matrix to use consistent badge styling
+  - **Utility Functions**: Added `getPuzzleName()` function in `shared/utils/puzzleNames.ts` for consistent name retrieval
+  - Improved user experience with better puzzle identification across the entire application
+
+### Changed
+- **ClickablePuzzleBadge**: Refactored to use tooltip-based name display instead of inline text for cleaner UI
+- **Badge Styling**: Consistent styling across all pages with proper hover states and visual feedback
+- **Toast Messages**: Enhanced with puzzle names for better user feedback during analysis operations
+
+### Technical Details
+- Files Modified:
+  - `client/src/pages/PuzzleExaminer.tsx` - Added puzzle name to main heading and page title
+  - `client/src/pages/PuzzleFeedback.tsx` - Updated matrix table headers with named badges
+  - `client/src/pages/ModelBrowser.tsx` - Enhanced toast messages with puzzle names
+  - `client/src/pages/AnalyticsOverview.tsx` - Updated performance matrix styling
+  - `client/src/components/ui/ClickablePuzzleBadge.tsx` - Added tooltip-based name display
+  - `shared/utils/puzzleNames.ts` - Added `getPuzzleName()` utility function
+- Maintains backward compatibility while significantly improving UI consistency and user experience
+- Tooltip-based approach prevents layout issues while still providing name information on hover
+
+---
+
+## [Unreleased]
+
+### Added
+- **SSE Streaming Scaffold (Needs Audit)**
+  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `ENABLE_SSE_STREAMING` feature flag.
+  - Added frontend EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) currently wired into the dormant Model Browser page.
+  - UI integration for active workflows (PuzzleExaminer, Discussion, Debate, Grover) still pending—feature is incomplete and must be audited before use.
+  - Updated navigation to expose `/models`, but no production flow consumes the new streaming path yet.
+
+### Changed
+- Updated `EXTERNAL_API.md`, README streaming notes, and execution plan docs with provisional instructions; documentation reflects unverified behavior and needs review.
+
+### Testing
+- Added unit coverage for SSE parser (`npx tsx --test tests/sseUtils.test.ts`). No end-to-end validation performed.
+
+---
+
+## [4.0.3] - 2025-10-10
+
+### Fixed
+- **CRITICAL: Saturn Solver Responses API Error**
+  - **Problem**: `'OpenAI' object has no attribute 'responses'` error when running Saturn
+  - **Root Cause**: UI was calling OLD Python-based endpoint (`/analyze-with-reasoning`) that tried to use OpenAI Responses API directly from Python, but Python library version doesn't have this attribute
+  - **Solution**: Updated `useSaturnProgress.ts` to call NEW TypeScript-based endpoint (`/analyze`) that properly delegates to OpenAI/Grok services
+  - **Architecture**:
+    - OLD: UI → Python wrapper → OpenAI API ❌ (broken)
+    - NEW: UI → TypeScript Saturn service → OpenAI/Grok services → OpenAI API ✅ (working)
+  - Frontend passes model key directly (e.g., `gpt-5-nano-2025-08-07`)
+  - Saturn service maps to underlying provider models
+  - Supports full reasoning parameters (effort, verbosity, summary type)
+  
+### Changed
+- **Saturn Controller**: Added `reasoningVerbosity` and `reasoningSummaryType` parameters
+- **Saturn Service**: Extended model mapping to support both legacy `saturn-*` format and direct model keys
+- **useSaturnProgress Hook**: Simplified model key handling, removed broken endpoint routing
+
+### Technical Details
+- Files Modified:
+  - `client/src/hooks/useSaturnProgress.ts` - Fixed endpoint routing and model key handling
+  - `server/controllers/saturnController.ts` - Added missing reasoning parameters
+  - `server/services/saturnService.ts` - Extended model key mapping
+- Removed obsolete provider inference logic
+- Default reasoning parameters: effort=high, verbosity=high, summary=detailed
+
+---
+
+## [4.0.2] - 2025-10-10
+
+### Added
+- **Saturn Solver: Dynamic Model Selection & Reasoning Controls**
+  - Replaced hardcoded model list (GPT-5, Claude 4, Grok 4) with full model selector using `useModels()` hook
+  - Added temperature control slider (0-2 range) for models that support it
+  - Added GPT-5 reasoning controls:
+    - **Reasoning Effort**: minimal, low, medium, high
+    - **Reasoning Verbosity**: low, medium, high  
+    - **Reasoning Summary Type**: auto, detailed
+  - Added collapsible "Advanced Settings" panel with Settings button
+  - Temperature and reasoning parameters now properly forwarded to backend API
+  - Model selector automatically detects which models support temperature
+  - Reasoning controls only show for GPT-5 models (gpt-5-2025-08-07, gpt-5-mini-2025-08-07, gpt-5-nano-2025-08-07)
+
+### Changed
+- **SaturnModelSelect.tsx**: Converted from hardcoded dropdown to dynamic model list using `useModels()` hook
+- **SaturnVisualSolver.tsx**: Added state management for temperature and reasoning parameters
+- Backend Saturn controller already supported these parameters - now fully connected to UI
+
+### Technical Details
+- Files Modified:
+  - `client/src/components/saturn/SaturnModelSelect.tsx` - Dynamic model loading
+  - `client/src/pages/SaturnVisualSolver.tsx` - Advanced settings UI
+- Pattern: Follows same approach as PuzzleDiscussion page for consistency
+- UI: Uses shadcn/ui Slider and Select components for controls
+- Default model changed from string literal 'GPT-5' to model key 'gpt-5-nano-2025-08-07'
+
+---
+
+## [4.0.1] - 2025-10-09 11:16 PM
+
+### Fixed
+- **CRITICAL**: Fixed React hooks violation in IterationCard causing infinite re-render crash (React Error #310)
+  - Moved useState calls from inside map loop to component top level
+  - Used Set state for tracking expanded programs instead of individual states
+- **CRITICAL**: Fixed null grid row handling preventing application crashes
+  - Three-layer defense: frontend validation, backend read sanitization, enhanced utility functions
+  - Application now gracefully recovers from corrupt legacy data
+- Fixed Grover Activity stream not displaying prompt text content
+  - Replaced fragile single-line detection with stateful prompt block tracking
+  - Prompt content now properly displays with yellow highlighting between header/footer
+- Fixed Grover WebSocket state management bugs
+  - Log-only messages no longer overwrite status with stale errors
+  - Progress phases force status back to 'running' to clear error states
+- Fixed missing phase labels in Grover status display (initializing, iteration_start, finalizing, complete)
+- Fixed Grover snapshot hydration for instant progress display
+  - Added immediate snapshot fetch after receiving sessionId
+  - Prevents blank screen for 3 minutes by showing state within 1-2 seconds
+  - Backend now broadcasts initial state synchronously before returning response
+  - Page reload preserves progress via snapshot
+
+### Changed
+- Enhanced Grover UI clickability and visibility
+  - Start Analysis button: large gradient (blue→purple), prominent shadows
+  - Program cards: full-width buttons with 2px borders, color-coded backgrounds, state indicators
+  - Back button: added text label and clearer styling
+  - GitHub attribution link: improved visual prominence
+- Removed ConversationChainViewer component with hardcoded fake token calculations
+
+---
+
 ## [4.0.0] - 2025-10-10
 
 ### Highlights
@@ -20,20 +680,9 @@
 
 ---
 
-## [2025-10-09]
+## [2025-10-09] - Archive
 
-### Work In Progress - Version 3.9.3
-- **Grover UI and Progress Fixes** - COMPLETED ✅
-  - Removed ConversationChainViewer component with hardcoded fake token calculations
-  - Enhanced UI clickability: gradient buttons, shadows, color-coded program cards
-  - Fixed WebSocket log messages overwriting error status
-  - Added snapshot hydration for instant progress display (1-2s instead of 3 minutes)
-  - Broadcast initial state synchronously before returning response
-  - Page reload now preserves progress via snapshot
-  - **CRITICAL**: Fixed React hooks violation in IterationCard causing infinite re-render crash
-    - Moved useState calls from inside map loop to component top level
-    - Used Set state for tracking expanded programs instead of individual states
-    - Crash was React Error #310 (too many re-renders)
+### Work In Progress Items (Historical Context)
 - **Grid Null Row Crash Fix** - COMPLETED ✅
   - **Problem**: Application crashed with "Cannot read properties of null (reading 'map')" on puzzle 9aaea919
   - **Root Cause**: Database JSONB fields contained arrays with null rows `[[1,2,3], null, [4,5,6]]`. Grid sanitization only occurred on write, not read. `safeJsonParse()` returned PostgreSQL JSONB objects without validating structure.
@@ -2399,3 +3048,4 @@ To enable conversation chaining:
 - Database migration must be run: Execute `server/migrations/001_create_ingestion_runs.sql`
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
+\n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.

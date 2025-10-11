@@ -24,6 +24,7 @@ import adminController, * as adminControllerFns from './controllers/adminControl
 import * as modelManagementController from './controllers/modelManagementController.js';
 import * as discussionController from './controllers/discussionController.js';
 import { batchController } from './controllers/batchController.ts';
+import { streamController } from "./controllers/streamController.ts";
 
 import { eloController } from "./controllers/eloController";
 import modelDatasetController from "./controllers/modelDatasetController.ts";
@@ -73,11 +74,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", validation.puzzleAnalysis, asyncHandler(puzzleController.analyze));
   app.post("/api/puzzle/analyze-list", asyncHandler(puzzleController.analyzeList));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
+  app.get("/api/stream/analyze/:taskId/:modelKey", asyncHandler(streamController.startAnalysisStream));
   
   // Debug route to force puzzle loader reinitialization
   app.post("/api/puzzle/reinitialize", asyncHandler(puzzleController.reinitialize));
   
-  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - ⚠️ MISLEADING ENDPOINTS!
+  // MIXED ACCURACY/TRUSTWORTHINESS STATISTICS - G��n+� MISLEADING ENDPOINTS!
   app.get("/api/puzzle/accuracy-stats", asyncHandler(puzzleController.getAccuracyStats));
   // WARNING: Despite name, returns mixed data. accuracyByModel contains trustworthiness-filtered results!
   // Models without trustworthiness scores are excluded from "accuracy" rankings.
@@ -115,6 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/model-dataset/performance/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelPerformance));
   app.get("/api/model-dataset/models", asyncHandler(modelDatasetController.getAvailableModels));
   app.get("/api/model-dataset/datasets", asyncHandler(modelDatasetController.getAvailableDatasets));
+  app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(modelDatasetController.getModelDatasetMetrics));
 
 
   // Prompt preview route - shows exact prompt that will be sent to specific provider
@@ -164,11 +167,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Saturn analysis routes
   app.post("/api/saturn/analyze/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyze));
+  app.get("/api/stream/saturn/:taskId/:modelKey", asyncHandler(saturnController.streamAnalyze));
   app.post("/api/saturn/analyze-with-reasoning/:taskId", validation.saturnAnalysis, asyncHandler(saturnController.analyzeWithReasoning));
   app.get("/api/saturn/status/:sessionId", asyncHandler(saturnController.getStatus));
 
   // Grover iterative solver routes
   app.post("/api/puzzle/grover/:taskId/:modelKey", asyncHandler(groverController.analyze));
+  app.get("/api/stream/grover/:taskId/:modelKey", asyncHandler(groverController.streamAnalyze));
   app.get("/api/grover/status/:sessionId", asyncHandler(groverController.getStatus));
 
   // Batch analysis routes

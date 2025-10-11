@@ -1,11 +1,18 @@
 /**
  * puzzleAnalysisService.ts
  *
- * Author: Cascade using GPT-4.1 (original), Claude Code using Sonnet 4.5 (2025-09-30 fix)
- * Date: 2025-09-29T17:15:00-04:00 (original), 2025-09-30 (validation fix)
+ * Author: Cascade using GPT-4.1 (original), Claude Code using Sonnet 4.5 (2025-09-30 fix), 
+ *         Cascade using Claude Sonnet 4 (2025-10-10 streaming validation fix)
+ * Date: 2025-09-29T17:15:00-04:00 (original), 2025-09-30 (validation fix), 2025-10-10 (streaming fix)
  * PURPOSE: Service for handling puzzle analysis business logic. Extracts complex AI analysis
  * orchestration from controller. Manages the full analysis pipeline: prompt building, AI service
  * calls, response validation, and database persistence preparation.
+ *
+ * CRITICAL FIX (2025-10-10): Fixed streaming validation bug where streaming responses skipped
+ * validateAndEnrichResult() entirely, causing NULL predicted_output_grid, isPredictionCorrect=false,
+ * and predictionAccuracyScore=0 to be saved to database. Now wraps streaming harness to intercept
+ * completion and validate analysis using validateStreamingResult() before sending to client.
+ * This ensures streaming results match database schema expectations just like non-streaming analysis.
  *
  * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded
  * from validateAndEnrichResult() call (line 124). This caused debate rebuttals to skip prediction
@@ -27,7 +34,9 @@ import { repositoryService } from '../repositories/RepositoryService';
 import { validateSolverResponse, validateSolverResponseMulti } from './responseValidator';
 import { logger } from '../utils/logger';
 import { isSolverMode } from './prompts/systemPrompts';
+import { validateStreamingResult } from './streamingValidator';
 import type { PromptOptions } from './promptBuilder';
+import type { ServiceOptions, StreamingHarness } from './base/BaseAIService';
 import type { ARCExample, DetailedFeedback } from '../../shared/types';
 import type { ExplanationData } from '../repositories/interfaces/IExplanationRepository.ts';
 
@@ -40,12 +49,14 @@ export interface AnalysisOptions {
   omitAnswer?: boolean;
   topP?: number;
   candidateCount?: number;
+  thinkingBudget?: number;
   reasoningEffort?: string;
   reasoningVerbosity?: string;
   reasoningSummaryType?: string;
   systemPromptMode?: string;
   retryMode?: boolean;
   originalExplanation?: ExplanationData; // For debate mode
+  originalExplanationId?: number;
   customChallenge?: string; // For debate mode
   previousResponseId?: string; // For conversation chaining
 }
@@ -73,12 +84,14 @@ export class PuzzleAnalysisService {
       omitAnswer = true,
       topP,
       candidateCount,
+      thinkingBudget,
       reasoningEffort,
       reasoningVerbosity,
       reasoningSummaryType,
       systemPromptMode = 'ARC',
       retryMode = false,
       originalExplanation,
+      originalExplanationId,
       customChallenge,
       previousResponseId
     } = options;
@@ -88,6 +101,10 @@ export class PuzzleAnalysisService {
     
     const puzzle = await puzzleService.getPuzzleById(taskId);
     const aiService = aiServiceFactory.getService(model);
+    let resolvedOriginalExplanation = originalExplanation;
+    if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+    }
     
     // Get retry context if needed
     const retryContext = retryMode ? await this.getRetryContext(taskId) : null;
@@ -98,13 +115,14 @@ export class PuzzleAnalysisService {
     if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
     if (topP) promptOptions.topP = topP;
     if (candidateCount) promptOptions.candidateCount = candidateCount;
+    if (typeof thinkingBudget === 'number') promptOptions.thinkingBudget = thinkingBudget;
     if (retryContext) {
       promptOptions.retryMode = retryMode;
       if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
             if (retryContext.badFeedback && retryContext.badFeedback.length > 0) promptOptions.badFeedback = retryContext.badFeedback as any[];
     }
     // Add debate mode context
-    if (originalExplanation) promptOptions.originalExplanation = originalExplanation;
+    if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
     if (customChallenge) promptOptions.customChallenge = customChallenge;
     
     // Build service options
@@ -140,9 +158,9 @@ export class PuzzleAnalysisService {
     }
 
     // Add rebuttal tracking if this is a debate response
-    if (originalExplanation && originalExplanation.id) {
-      result.rebuttingExplanationId = originalExplanation.id;
-      logger.debug(`Marking as rebuttal to explanation ${originalExplanation.id}`, 'puzzle-analysis-service');
+    if (resolvedOriginalExplanation && resolvedOriginalExplanation.id) {
+      result.rebuttingExplanationId = resolvedOriginalExplanation.id;
+      logger.debug(`Marking as rebuttal to explanation ${resolvedOriginalExplanation.id}`, 'puzzle-analysis-service');
     }
 
     // Note: Database saving is handled by the calling service (explanationService)
@@ -153,6 +171,111 @@ export class PuzzleAnalysisService {
     await this.saveRawLog(taskId, model, result);
 
     return result;
+  }
+
+  /**
+   * Analyze a puzzle using streaming responses, mirroring analyzePuzzle logic.
+   */
+  async analyzePuzzleStreaming(
+    taskId: string,
+    model: string,
+    options: AnalysisOptions = {},
+    stream: StreamingHarness,
+    overrides: Partial<ServiceOptions> = {}
+  ): Promise<void> {
+    const {
+      temperature = 0.2,
+      captureReasoning = true,
+      promptId = 'solver',
+      customPrompt,
+      emojiSetKey,
+      omitAnswer = true,
+      topP,
+      candidateCount,
+      thinkingBudget,
+      reasoningEffort,
+      reasoningVerbosity,
+      reasoningSummaryType,
+      systemPromptMode = 'ARC',
+      retryMode = false,
+      originalExplanation,
+      originalExplanationId,
+      customChallenge,
+      previousResponseId,
+    } = options;
+
+    const puzzle = await puzzleService.getPuzzleById(taskId);
+    const aiService = aiServiceFactory.getService(model);
+
+    let resolvedOriginalExplanation = originalExplanation;
+    if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+    }
+
+    const retryContext = retryMode ? await this.getRetryContext(taskId) : null;
+
+    const promptOptions: PromptOptions = {};
+    if (emojiSetKey) promptOptions.emojiSetKey = emojiSetKey;
+    if (typeof omitAnswer === 'boolean') promptOptions.omitAnswer = omitAnswer;
+    if (topP) promptOptions.topP = topP;
+    if (candidateCount) promptOptions.candidateCount = candidateCount;
+    if (typeof thinkingBudget === 'number') promptOptions.thinkingBudget = thinkingBudget;
+    if (retryContext) {
+      promptOptions.retryMode = retryMode;
+      if (retryContext.previousAnalysis) promptOptions.previousAnalysis = retryContext.previousAnalysis;
+      if (retryContext.badFeedback && retryContext.badFeedback.length > 0) {
+        promptOptions.badFeedback = retryContext.badFeedback as any[];
+      }
+    }
+    if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
+    if (customChallenge) promptOptions.customChallenge = customChallenge;
+
+    // Wrap the streaming harness to validate results before sending completion
+    const validatingHarness: StreamingHarness = {
+      sessionId: stream.sessionId,
+      emit: (chunk) => stream.emit(chunk),
+      emitEvent: stream.emitEvent,
+      abortSignal: stream.abortSignal,
+      metadata: stream.metadata,
+      end: (completion) => {
+        // CRITICAL: Validate and enrich the analysis before sending to client
+        if (completion.responseSummary?.analysis) {
+          logger.debug('[Streaming Analysis] Validating result before sending completion', 'puzzle-analysis-service');
+          const validatedAnalysis = validateStreamingResult(
+            completion.responseSummary.analysis,
+            puzzle,
+            promptId
+          );
+          completion.responseSummary.analysis = validatedAnalysis;
+          logger.debug('[Streaming Analysis] Validation complete, sending enriched result', 'puzzle-analysis-service');
+        } else {
+          logger.warn('[Streaming Analysis] No analysis found in completion summary', 'puzzle-analysis-service');
+        }
+        stream.end(completion);
+      }
+    };
+
+    const serviceOpts: any = {
+      ...overrides,
+      captureReasoning,
+      stream: validatingHarness,
+    };
+    if (reasoningEffort) serviceOpts.reasoningEffort = reasoningEffort;
+    if (reasoningVerbosity) serviceOpts.reasoningVerbosity = reasoningVerbosity;
+    if (reasoningSummaryType) serviceOpts.reasoningSummaryType = reasoningSummaryType;
+    if (systemPromptMode) serviceOpts.systemPromptMode = systemPromptMode;
+    if (previousResponseId) serviceOpts.previousResponseId = previousResponseId;
+
+    await aiService.analyzePuzzleWithStreaming(
+      puzzle,
+      model,
+      taskId,
+      temperature,
+      promptId,
+      customPrompt,
+      promptOptions,
+      serviceOpts
+    );
   }
 
   /**

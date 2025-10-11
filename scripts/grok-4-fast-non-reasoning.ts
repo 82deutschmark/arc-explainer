@@ -1,11 +1,15 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-06
+ * Date: 2025-10-10
  * PURPOSE: Analyze ARC Eval puzzles using Grok-4-Fast-Non-Reasoning model via external API endpoints.
- *          This script is adapted from grok-4-fast-reasoning.ts but specifically for Grok-4-Fast-Non-Reasoning.
- *          Key differences from reasoning variant: Uses non-reasoning model for faster response times.
+ *          This script fires all analyses concurrently with 2-second staggered starts for rate limiting.
+ *          Follows proper validation flow from Analysis_Data_Flow_Trace.md:
+ *          1. Frontend calls /api/puzzle/analyze (analysis + validation)
+ *          2. Backend validates response and calculates correctness
+ *          3. Frontend calls /api/puzzle/save-explained (database persistence)
+ *          4. Correctness determined by shared/utils/correctness.ts logic
  *
- * SRP and DRY check: Pass - This script handles API requests for puzzle analysis with proper error handling and progress tracking
+ * SRP and DRY check: Pass - Orchestrates puzzle analysis with proper error handling and verbose progress tracking
  */
 
 import axios from 'axios';
@@ -21,15 +25,11 @@ const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 // Grok-4-Fast-Non-Reasoning model to use for analysis
 const GROK_MODEL = 'grok-4-fast-non-reasoning';
 
-// Timeout per puzzle in milliseconds (8 minutes for Grok-4-fast-non-reasoning - faster than reasoning variant)
-// Based on model config: responseTime: { speed: 'moderate', estimate: '1-2 min' }
-const PUZZLE_TIMEOUT_MS = 8 * 60 * 1000; // 8 minutes (slightly less than reasoning variant)
+// Timeout per puzzle in milliseconds (45 minutes for Grok-4-fast-non-reasoning)
+const PUZZLE_TIMEOUT_MS = 45 * 60 * 1000;
 
-// Delay between triggering concurrent analyses
-const TRIGGER_DELAY_MS = 2000; // 2 seconds
-
-// NEW: Concurrency cap (align with xAI provider limits). Override via env XAI_MAX_CONCURRENCY.
-const MAX_CONCURRENCY = Math.max(1, Number(process.env.XAI_MAX_CONCURRENCY || 2));
+// Delay between starting each puzzle (rate limiting protection)
+const PUZZLE_STAGGER_MS = 2000; // 2 seconds between puzzle starts
 
 interface AnalysisRequest {
   temperature: number;
@@ -37,7 +37,7 @@ interface AnalysisRequest {
   systemPromptMode: string;
   omitAnswer: boolean;
   retryMode: boolean;
-  // NOTE: NO reasoning parameters - this is the non-reasoning variant
+  // NOTE: NO reasoning parameters - this is the non-reasoning variant and Grok doesn't support adjusting it!!
 }
 
 interface AnalysisResult {
@@ -111,27 +111,39 @@ function getPuzzleIdsFromArgs(): string[] {
 
 /**
  * Analyze a single puzzle with Grok-4-Fast-Non-Reasoning
+ * Follows proper validation flow from Analysis_Data_Flow_Trace.md
  */
-async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
+async function analyzePuzzle(puzzleId: string, index: number, total: number): Promise<AnalysisResult> {
   const startTime = Date.now();
 
   try {
-    console.log(`🚀 Starting analysis of ${puzzleId}...`);
+    console.log(`\n${'='.repeat(80)}`);
+    console.log(`🧩 PUZZLE ${index + 1}/${total}: ${puzzleId}`);
+    console.log(`${'='.repeat(80)}`);
+    console.log(`⏱️  Start Time: ${new Date().toISOString()}`);
+    console.log(`🤖 Model: ${GROK_MODEL}`);
+    console.log(`📝 Prompt: solver (standard puzzle-solving prompt)`);
+    
+    console.log(`⏳ Timeout: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
 
-    // Prepare analysis request (mirroring client UI behavior)
-    // IMPORTANT: NO reasoning parameters for non-reasoning model
+    // Prepare analysis request following frontend pattern
     const requestBody: AnalysisRequest = {
-      temperature: 0.2, // Default temperature (Grok-4-fast-non-reasoning supports temperature)
-      promptId: 'solver', // Use solver prompt as specified
-      systemPromptMode: 'ARC', // Use ARC system prompt mode
-      omitAnswer: true, // Researcher option to hide correct answer
-      retryMode: false // Not in retry mode
+      temperature: 0.97,
+      promptId: 'solver',
+      systemPromptMode: 'ARC',
+      omitAnswer: true,
+      retryMode: false
     };
-
-    // URL-encode model key (Grok-4-Fast-Non-Reasoning model)
+      console.log(`🌡️  Temperature: ${requestBody.temperature}`);
+      console.log(`📝 Prompt: ${requestBody.promptId}`);
+      
     const encodedModelKey = encodeURIComponent(GROK_MODEL);
+    
+    console.log(`\n📡 STEP 1/2: Sending analysis request to backend...`);
+    console.log(`   Endpoint: POST ${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`);
 
-    // Step 1: Analyze the puzzle (analysis only, no save)
+    // Step 1: Analyze the puzzle
+    // Backend handles: prompt building, AI API call, response validation, correctness calculation
     const analysisResponse = await axios.post(
       `${API_BASE_URL}/api/puzzle/analyze/${puzzleId}/${encodedModelKey}`,
       requestBody,
@@ -148,8 +160,17 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
     }
 
     const analysisData = analysisResponse.data.data;
+    
+    console.log(`✅ Analysis complete!`);
+    console.log(`   📊 Confidence: ${analysisData.confidence || 'N/A'}%`);
+    console.log(`   🎲 Predicted Output: ${analysisData.predictedOutput ? 'Present' : 'Missing'}`);
+    console.log(`   ✓  Single-Test Correct: ${analysisData.isPredictionCorrect !== undefined ? analysisData.isPredictionCorrect : 'N/A'}`);
+    console.log(`   ✓✓  Multi-Test All Correct: ${analysisData.multiTestAllCorrect !== undefined ? analysisData.multiTestAllCorrect : 'N/A'}`);
+    console.log(`   ⚖ Trustworthiness Score: ${analysisData.predictionAccuracyScore !== undefined ? analysisData.predictionAccuracyScore.toFixed(3) : 'N/A'}`);
+    console.log(`   💰 Estimated Cost: $${analysisData.estimatedCost !== undefined ? analysisData.estimatedCost.toFixed(6) : 'N/A'}`);
+    console.log(`   ⏺ Tokens: ${analysisData.totalTokens || 'N/A'} (in: ${analysisData.inputTokens || 'N/A'}, out: ${analysisData.outputTokens || 'N/A'})`);
 
-    // Step 2: Save to database (follows same pattern as frontend and other scripts)
+    // Step 2: Save to database
     const explanationToSave = {
       [GROK_MODEL]: {
         ...analysisData,
@@ -157,11 +178,14 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
       }
     };
 
+    console.log(`\n💾 STEP 2/2: Saving to database...`);
+    console.log(`   Endpoint: POST ${API_BASE_URL}/api/puzzle/save-explained/${puzzleId}`);
+
     const saveResponse = await axios.post(
       `${API_BASE_URL}/api/puzzle/save-explained/${puzzleId}`,
       { explanations: explanationToSave },
       {
-        timeout: 30000, // 30 seconds for save operation
+        timeout: 30000,
         headers: {
           'Content-Type': 'application/json',
         }
@@ -172,10 +196,16 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
       throw new Error(`Save request failed: ${saveResponse.statusText}`);
     }
 
+    const savedExplanationId = saveResponse.data.explanationIds?.[0] || null;
+    
     const endTime = Date.now();
     const responseTime = Math.round((endTime - startTime) / 1000);
 
-    console.log(`✅ Successfully analyzed and saved ${puzzleId} in ${responseTime}s`);
+    console.log(`✅ Database save complete!`);
+    console.log(`   🆔 Explanation ID: ${savedExplanationId}`);
+    console.log(`   ⏱️  Total Time: ${responseTime}s`);
+    console.log(`   🏁 Status: SUCCESS`);
+
     return { puzzleId, success: true, responseTime };
 
   } catch (error: any) {
@@ -191,62 +221,86 @@ async function analyzePuzzle(puzzleId: string): Promise<AnalysisResult> {
       errorMessage = error.message;
     }
 
-    console.log(`❌ Failed to analyze ${puzzleId} in ${responseTime}s: ${errorMessage}`);
+    console.log(`\n❌ ANALYSIS FAILED`);
+    console.log(`   Error: ${errorMessage}`);
+    console.log(`   ⏱️  Time Before Failure: ${responseTime}s`);
+    console.log(`   🏁 Status: FAILED`);
+
     return { puzzleId, success: false, error: errorMessage, responseTime };
   }
 }
 
 /**
- * Analyze all puzzles using a small worker pool (concurrency-limited)
+ * Analyze all puzzles concurrently with staggered starts (rate limiting)
+ * Pattern from grok-4-progressive-reasoning.ts - fire all with 2s delays
  */
-async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<AnalysisResult[]> {
+async function analyzeAllPuzzles(puzzleIds: string[]): Promise<AnalysisResult[]> {
   if (puzzleIds.length === 0) {
-    console.log('No puzzle IDs provided. Nothing to analyze.');
+    console.log('❌ No puzzle IDs provided. Nothing to analyze.');
     return [];
   }
 
-  console.log(`\n🚀 Queueing ${puzzleIds.length} analyses with concurrency = ${MAX_CONCURRENCY}...`);
+  console.log(`\n🚀 CONCURRENT ANALYSIS WITH STAGGERED STARTS`);
+  console.log('='.repeat(80));
+  console.log(`📦 Total Puzzles: ${puzzleIds.length}`);
+  console.log(`⏱️  Stagger Delay: ${PUZZLE_STAGGER_MS / 1000}s between starts`);
+  console.log(`🔄 Pattern: Fire all concurrently, 2s delay between each start`);
+  console.log(`⏳ Estimated Start Window: ${(puzzleIds.length * PUZZLE_STAGGER_MS) / 1000}s`);
   console.log('='.repeat(80));
 
-  const results: AnalysisResult[] = new Array(puzzleIds.length);
-  let index = 0;
+  // Fire off all puzzles concurrently with staggered starts
+  const resultPromises: Promise<AnalysisResult>[] = [];
 
-  async function worker(workerId: number) {
-    while (true) {
-      const current = index++;
-      if (current >= puzzleIds.length) break;
-      const puzzleId = puzzleIds[current];
-      try {
-        const res = await analyzePuzzle(puzzleId);
-        results[current] = res;
-      } catch (e: any) {
-        results[current] = { puzzleId, success: false, error: String(e?.message || e) };
-      }
-      // small pacing delay between triggers to avoid burst
-      if (current < puzzleIds.length - 1) {
-        await new Promise(r => setTimeout(r, TRIGGER_DELAY_MS));
-      }
-    }
+  for (let i = 0; i < puzzleIds.length; i++) {
+    const puzzleId = puzzleIds[i];
+    
+    // Wrap in delayed promise to stagger starts (rate limiting)
+    const delayedPromise = new Promise<AnalysisResult>((resolve) => {
+      setTimeout(async () => {
+        try {
+          const result = await analyzePuzzle(puzzleId, i, puzzleIds.length);
+          resolve(result);
+        } catch (error) {
+          console.error(`💥 Fatal error processing ${puzzleId}:`, error);
+          resolve({
+            puzzleId,
+            success: false,
+            error: String(error),
+            responseTime: 0
+          });
+        }
+      }, i * PUZZLE_STAGGER_MS);
+    });
+    
+    resultPromises.push(delayedPromise);
   }
 
-  // Start a small pool
-  const workers = Array.from({ length: Math.min(MAX_CONCURRENCY, puzzleIds.length) }, (_, i) => worker(i));
-  await Promise.all(workers);
+  // Wait for all puzzles to complete
+  console.log(`\n⚡ All ${puzzleIds.length} puzzles queued. Processing concurrently...\n`);
+  const results = await Promise.all(resultPromises);
 
-  // Count successes and failures
-  const successful = results.filter(r => r?.success).length;
-  const failed = results.filter(r => r && !r.success).length;
+  // Summary statistics
+  const successful = results.filter(r => r.success).length;
+  const failed = results.filter(r => !r.success).length;
 
-  console.log(`📊 CONCURRENT ANALYSIS COMPLETE:`);
-  console.log(`   Total puzzles: ${puzzleIds.length}`);
-  console.log(`   Successful: ${successful} (${((successful / puzzleIds.length) * 100).toFixed(1)}%)`);
-  console.log(`   Failed: ${failed} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
+  console.log(`\n\n${'='.repeat(80)}`);
+  console.log(`📊 BATCH ANALYSIS COMPLETE`);
+  console.log(`${'='.repeat(80)}`);
+  console.log(`✅ Successful: ${successful} / ${puzzleIds.length} (${((successful / puzzleIds.length) * 100).toFixed(1)}%)`);
+  console.log(`❌ Failed: ${failed} / ${puzzleIds.length} (${((failed / puzzleIds.length) * 100).toFixed(1)}%)`);
 
   if (successful > 0) {
-    const avgTime = results
-      .filter(r => r && r.success && r.responseTime)
-      .reduce((sum, r) => sum + (r!.responseTime || 0), 0) / successful;
-    console.log(`   Average response time: ${Math.round(avgTime)}s`);
+    const successfulResults = results.filter(r => r.success && r.responseTime);
+    const totalTime = successfulResults.reduce((sum, r) => sum + r.responseTime!, 0);
+    const avgTime = totalTime / successfulResults.length;
+    const minTime = Math.min(...successfulResults.map(r => r.responseTime!));
+    const maxTime = Math.max(...successfulResults.map(r => r.responseTime!));
+    
+    console.log(`\n⏱️  TIMING STATISTICS:`);
+    console.log(`   Average: ${Math.round(avgTime)}s per puzzle`);
+    console.log(`   Min: ${minTime}s`);
+    console.log(`   Max: ${maxTime}s`);
+    console.log(`   Total: ${Math.round(totalTime / 60)}m ${totalTime % 60}s`);
   }
 
   return results;
@@ -257,71 +311,56 @@ async function analyzeAllPuzzlesConcurrently(puzzleIds: string[]): Promise<Analy
  */
 async function main(): Promise<void> {
   try {
-    console.log('🤖 GROK-4-FAST-NON-REASONING PUZZLE ANALYSIS SCRIPT');
+    console.log('\n🤖 GROK-4-FAST-NON-REASONING ANALYSIS SCRIPT');
     console.log('='.repeat(80));
-    console.log(`Model: ${GROK_MODEL}`);
-    console.log(`Prompt: solver (standard puzzle-solving prompt)`);
-    console.log(`API Base URL: ${API_BASE_URL}`);
-    console.log(`Timeout per puzzle: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
-    console.log(`Trigger delay: ${TRIGGER_DELAY_MS / 1000} seconds`);
-    console.log('NOTE: Grok-4-Fast-Non-Reasoning model (non-reasoning variant)');
-    console.log('      Expected to be faster than reasoning variant');
+    console.log(`📍 Model: ${GROK_MODEL}`);
+    console.log(`📝 Prompt Template: solver`);
+    console.log(`🌐 API Base URL: ${API_BASE_URL}`);
+    console.log(`⏳ Timeout per Puzzle: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
+    console.log(`⏱️  Stagger Delay: ${PUZZLE_STAGGER_MS / 1000}s between starts`);
+    console.log(`\n📋 VALIDATION FLOW:`);
+    console.log(`   1. Analyze → Backend validates response & calculates correctness`);
+    console.log(`   2. Save → Persist validated data to PostgreSQL database`);
+    console.log(`   3. Correctness uses shared/utils/correctness.ts logic`);
+    console.log('='.repeat(80));
 
     // Get puzzle IDs from command line arguments
     const puzzleIds = getPuzzleIdsFromArgs();
 
     if (puzzleIds.length === 0) {
       console.log('\n❌ No puzzle IDs provided. Please provide puzzle IDs, dataset, or file.');
-      console.log('\nUsage examples:');
+      console.log('\n📖 USAGE EXAMPLES:');
       console.log('  node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc1');
       console.log('  node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc2');
-      console.log('  node --import tsx scripts/grok-4-fast-non-reasoning.ts 00d62c1b 00d7ad95 00da1a24');
+      console.log('  node --import tsx scripts/grok-4-fast-non-reasoning.ts 00d62c1b 00d7ad95');
       console.log('  node --import tsx scripts/grok-4-fast-non-reasoning.ts --file puzzle-ids.txt');
       process.exit(1);
     }
 
-    console.log(`Puzzles to analyze: ${puzzleIds.length}`);
-    console.log('='.repeat(80));
-    console.log('💾 Results are immediately saved to database via API');
-    console.log('⚡ Triggering fresh analysis for all specified puzzles');
-    console.log('🚀 All analyses run concurrently with delays between triggers');
-    console.log('='.repeat(80));
+    console.log(`\n📦 PROCESSING ${puzzleIds.length} PUZZLES`);
+    console.log(`💾 Results saved to database: explanations table`);
+    console.log(`🔄 Execution Pattern: Concurrent with ${PUZZLE_STAGGER_MS / 1000}s stagger`);
 
-    // Process all puzzles concurrently
-    const results = await analyzeAllPuzzlesConcurrently(puzzleIds);
-
-    // Overall summary
-    console.log('\n🎉 FINAL OVERALL SUMMARY:');
-    console.log('='.repeat(80));
-
-    const totalPuzzles = results.length;
-    const successfulAnalyses = results.filter(r => r.success).length;
-    const failedAnalyses = results.filter(r => !r.success).length;
-
-    console.log(`Total puzzles processed: ${totalPuzzles}`);
-    console.log(`Successful analyses: ${successfulAnalyses} (${((successfulAnalyses / totalPuzzles) * 100).toFixed(1)}%)`);
-    console.log(`Failed analyses: ${failedAnalyses} (${((failedAnalyses / totalPuzzles) * 100).toFixed(1)}%)`);
-
-    if (successfulAnalyses > 0) {
-      const avgTime = results
-        .filter(r => r.success && r.responseTime)
-        .reduce((sum, r) => sum + (r.responseTime || 0), 0) / successfulAnalyses;
-      console.log(`Average analysis time: ${Math.round(avgTime)}s per puzzle`);
-    }
+    // Process all puzzles concurrently with staggered starts
+    const results = await analyzeAllPuzzles(puzzleIds);
 
     // Show failed puzzles for manual review
     const failedPuzzles = results.filter(r => !r.success);
     if (failedPuzzles.length > 0) {
-      console.log('\n❌ Failed Puzzles (require manual review):');
-      failedPuzzles.forEach(result => {
-        console.log(`   • ${result.puzzleId}: ${result.error}`);
+      console.log(`\n\n❌ FAILED PUZZLES (${failedPuzzles.length}):`);
+      console.log('='.repeat(80));
+      failedPuzzles.forEach((result, idx) => {
+        console.log(`${idx + 1}. ${result.puzzleId}`);
+        console.log(`   Error: ${result.error}`);
       });
     }
 
-    console.log('\n✨ Analysis complete! Check the database for new explanations.');
+    console.log(`\n\n✨ ANALYSIS COMPLETE!`);
+    console.log(`📊 View results in the database: explanations table`);
+    console.log(`🔍 Filter by model_name = '${GROK_MODEL}'`);
 
   } catch (error) {
-    console.error('💥 Fatal error during analysis:', error);
+    console.error('\n💥 FATAL ERROR:', error);
     process.exit(1);
   }
 }

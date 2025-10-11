@@ -16,6 +16,7 @@ const router = express.Router();
 // Metrics routes
 router.route('/reliability').get(metricsController.getModelReliability);
 router.route('/comprehensive-dashboard').get(metricsController.getComprehensiveDashboard);
+router.route('/compare').get(metricsController.getModelComparison);
 
 // Cost-specific routes following RESTful principles
 router.route('/costs/models').get(costController.getAllModelCosts);

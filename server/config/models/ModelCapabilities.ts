@@ -152,7 +152,7 @@ export class ModelCapabilities {
     return {
       // OpenAI specific overrides
       'gpt-5-2025-08-07': {
-        features: { isReasoning: true, supportsStreaming: false },
+        features: { isReasoning: true, supportsStreaming: true },
         limits: { maxConcurrentRequests: 1 } // Reasoning models have lower limits
       },
       'o3-mini-2025-01-31': {

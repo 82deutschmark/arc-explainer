@@ -21,7 +21,7 @@ export const ARC_JSON_SCHEMA = {
   schema: {
     type: "object",
     properties: {
-      // Multi-prediction support
+      // Multi-prediction support  THIS IS CONFUSING AND TOO COMPLEX!! OUR VALIDATOR AND PARSING SHOULD HANDLE THIS!!!
       multiplePredictedOutputs: {
         type: "boolean",
         description: "False if there is only one test input, true otherwise"
@@ -62,7 +62,7 @@ export const ARC_JSON_SCHEMA = {
       // Analysis fields
       solvingStrategy: {
         type: "string",
-        description: "Clear explanation of the solving approach, written as pseudo-code"
+        description: "Clear explanation of the solving approach, easy for a child to understand and apply"
       },
 
 
@@ -76,21 +76,21 @@ export const ARC_JSON_SCHEMA = {
       hints: {
         type: "array",
         items: { type: "string" },
-        description: "Three hints for understanding the transformation rules."
+        description: "Three hints even a child could use for understanding the transformation rules."
       },
 
       // THIS IS CRITICAL FOR THE PROJECT!!!  IT IS USED IN THE DATABASE AND FRONTEND!!!
       confidence: {
         type: "integer", // No min/max because Grok doesn't like it...  
-        description: "Confidence level in the solution being correct (1-100) return 0 if none"
+        description: "Confidence level in the solution being correct (1-100) return 1 if no confidence in your answer, 100 if you are totally certain"
       },
     },
     required: [
       "multiplePredictedOutputs",
       "predictedOutput", 
-      "predictedOutput1",
-      "predictedOutput2", 
-      "predictedOutput3",
+      "predictedOutput1",  // This is only for multi-tests
+      "predictedOutput2",  // This is only for multi-tests
+      "predictedOutput3",  // This is only for multi-tests
       "solvingStrategy",
       "patternDescription",
       "hints", 

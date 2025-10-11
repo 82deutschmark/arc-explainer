@@ -10,7 +10,7 @@ import { ModelButtonProps } from '@/types/puzzle';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { ModelProgressIndicator } from './ModelProgressIndicator';
 
-export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, disabled, error }: ModelButtonProps) {
+export function ModelButton({ model, isAnalyzing, isStreaming, streamingSupported, explanationCount, onAnalyze, disabled, error }: ModelButtonProps) {
   return (
     <Button
       variant="outline"
@@ -45,7 +45,12 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
         <>
           <div className="flex items-center gap-2 w-full">
             {isAnalyzing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">
+                  {isStreaming ? 'Streaming…' : 'Running…'}
+                </span>
+              </div>
             ) : (
               <div className={`w-4 h-4 rounded-full flex-shrink-0 ${model.color}`} />
             )}
@@ -63,6 +68,11 @@ export function ModelButton({ model, isAnalyzing, explanationCount, onAnalyze, d
           </div>
           
           <div className="text-xs text-gray-600 w-full space-y-1">
+            {streamingSupported && (
+              <div className={`font-medium ${isStreaming ? 'text-blue-600' : 'text-blue-400'}`}>
+                {isStreaming ? 'Streaming live' : 'Streaming ready'}
+              </div>
+            )}
             <div>In: {model.cost.input}/M tokens</div>
             <div>Out: {model.cost.output}/M tokens</div>
             {model.responseTime?.estimate && (

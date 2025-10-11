@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -71,7 +71,7 @@ export default function PuzzleBrowser() {
   
   // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
-    let filtered = (puzzles || []) as EnhancedPuzzleMetadata[];
+    let filtered = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
 
     // Apply search query first
     if (searchQuery.trim()) {
@@ -199,33 +199,72 @@ export default function PuzzleBrowser() {
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
 
-          {/* ARC2 Paper Reference */}
+          {/* Resources & References Section */}
           <Card className="shadow-md border-0 bg-gradient-to-r from-purple-50 to-blue-50 backdrop-blur-sm">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="h-6 w-6 text-purple-600 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-gray-900">ARC2 Research Paper</h3>
-                    <p className="text-sm text-gray-600">Learn about the extended ARC-AGI challenge dataset</p>
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-purple-600" />
+                Resources & References
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                {/* Research */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Research</p>
+                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                    ARC2 Paper <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+
+                {/* Data Sources */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Data Sources</p>
+                  <div className="space-y-1">
+                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      HuggingFace <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Official Repo <ExternalLink className="h-3 w-3" />
+                    </a>
                   </div>
                 </div>
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className="bg-white hover:bg-purple-50 border-purple-200 flex-shrink-0"
-                >
-                  <a 
-                    href="https://www.arxiv.org/pdf/2505.11831" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <span className="hidden sm:inline">Read Paper</span>
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
+
+                {/* SOTA Solutions */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">SOTA Solutions</p>
+                  <div className="space-y-1">
+                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      zoecarver <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      jerber <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      epang080516 <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Community */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Community</p>
+                  <div className="space-y-1">
+                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Puzzle Names <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      ARC Notes <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Datasets <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
               </div>
+
+              <p className="text-xs text-gray-600 mt-3 text-center">
+                Special thanks to <strong>Simon Strandgaard (@neoneye)</strong> for invaluable insights and support
+              </p>
             </CardContent>
           </Card>
         </header>

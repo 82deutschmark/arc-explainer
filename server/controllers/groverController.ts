@@ -11,9 +11,12 @@
 import type { Request, Response } from 'express';
 import { formatResponse } from '../utils/responseFormatter.js';
 import { groverService } from '../services/grover.js';
+import { groverStreamService } from '../services/streaming/groverStreamService.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { broadcast, getSessionSnapshot } from '../services/wsService.js';
+import { sseStreamManager } from '../services/streaming/SSEStreamManager.js';
 import { setSessionContext } from '../utils/broadcastLogger.js';
+import { logger } from '../utils/logger.js';
 import { randomUUID } from 'crypto';
 
 export const groverController = {
@@ -60,67 +63,63 @@ export const groverController = {
     setImmediate(() => {
       setSessionContext(sessionId, async () => {
         try {
-          // groverService will broadcast progress updates via sendProgress
           const result = await groverService.analyzePuzzleWithModel(
-          task,
-          modelKey,
-          taskId,
-          options.temperature,
-          undefined, // promptId - use default
-          undefined, // customPrompt
-          undefined, // PromptOptions
-          {
-            maxSteps: options.maxSteps,
-            previousResponseId: options.previousResponseId,
-            sessionId
-          } as any // Cast to any - sessionId will be accessed in groverService
-        );
+            task,
+            modelKey,
+            taskId,
+            options.temperature,
+            undefined,
+            undefined,
+            undefined,
+            {
+              maxSteps: options.maxSteps,
+              previousResponseId: options.previousResponseId,
+              sessionId,
+            } as any
+          );
 
-        // Save to database via explanationService
-        const { explanationService } = await import('../services/explanationService.js');
-        await explanationService.saveExplanation(taskId, {
-          grover: result
-        });
+          const { explanationService } = await import('../services/explanationService.js');
+          await explanationService.saveExplanation(taskId, {
+            grover: result,
+          });
 
-        const bestScore = Array.isArray(result.groverIterations)
-          ? result.groverIterations.reduce((max: number, iter: any) => {
-              const score = typeof iter?.best?.score === 'number' ? iter.best.score : 0;
-              return score > max ? score : max;
-            }, 0)
-          : 0;
+          const bestScore = Array.isArray(result.groverIterations)
+            ? result.groverIterations.reduce((max: number, iter: any) => {
+                const score = typeof iter?.best?.score === 'number' ? iter.best.score : 0;
+                return score > max ? score : max;
+              }, 0)
+            : 0;
 
-        // Broadcast completion
-        broadcast(sessionId, {
-          status: 'completed',
-          phase: 'done',
-          message: 'Grover analysis complete!',
-          result,
-          iterations: result.groverIterations,
-          bestProgram: result.groverBestProgram,
-          bestScore
-        });
+          broadcast(sessionId, {
+            status: 'completed',
+            phase: 'done',
+            message: 'Grover analysis complete!',
+            result,
+            iterations: result.groverIterations,
+            bestProgram: result.groverBestProgram,
+            bestScore,
+          });
 
-        console.log('[Grover] Analysis complete and saved:', {
-          taskId,
-          modelKey,
-          iterationCount: result.iterationCount,
-          confidence: result.confidence,
-          sessionId
-        });
-      } catch (err) {
-        // Broadcast error
-        broadcast(sessionId, {
-          status: 'error',
-          phase: 'error',
-          message: err instanceof Error ? err.message : String(err)
-        });
+          console.log('[Grover] Analysis complete and saved:', {
+            taskId,
+            modelKey,
+            iterationCount: result.iterationCount,
+            confidence: result.confidence,
+            sessionId,
+          });
+        } catch (err) {
+          broadcast(sessionId, {
+            status: 'error',
+            phase: 'error',
+            message: err instanceof Error ? err.message : String(err),
+          });
 
-        console.error('[Grover] Analysis failed:', {
-          taskId,
-          modelKey,
-          error: err instanceof Error ? err.message : String(err)
-        });
-      }
+          console.error('[Grover] Analysis failed:', {
+            taskId,
+            modelKey,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
       }).catch((err) => {
         console.error('[Grover] Session context error:', err);
       });
@@ -136,6 +135,48 @@ export const groverController = {
     }));
   }
   ,
+  async streamAnalyze(req: Request, res: Response) {
+    const { taskId, modelKey } = req.params as { taskId: string; modelKey: string };
+    if (!taskId || !modelKey) {
+      res.status(400).json(formatResponse.error('bad_request', 'Missing taskId or modelKey'));
+      return;
+    }
+
+    const sessionId = randomUUID();
+    const connection = sseStreamManager.register(sessionId, res);
+    sseStreamManager.sendEvent(sessionId, 'stream.init', {
+      sessionId,
+      taskId,
+      modelKey,
+      createdAt: new Date(connection.createdAt).toISOString(),
+    });
+    sseStreamManager.sendEvent(sessionId, 'stream.status', { state: 'starting' });
+
+    const abortController = new AbortController();
+    res.on('close', () => abortController.abort());
+
+    const parsedTemperature = typeof req.query.temperature === 'string' ? Number(req.query.temperature) : undefined;
+    const temperature = Number.isFinite(parsedTemperature) ? (parsedTemperature as number) : 0.2;
+    const parsedIterations = typeof req.query.maxIterations === 'string' ? Number.parseInt(req.query.maxIterations, 10) : undefined;
+    const maxIterations = Number.isFinite(parsedIterations) && parsedIterations !== undefined && parsedIterations > 0 ? parsedIterations : 5;
+    const previousResponseId = typeof req.query.previousResponseId === 'string' ? req.query.previousResponseId : undefined;
+
+    groverStreamService
+      .startStreaming({
+        sessionId,
+        taskId,
+        modelKey,
+        temperature,
+        maxIterations,
+        previousResponseId,
+        abortSignal: abortController.signal,
+      })
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`[GroverStream] Controller failure: ${message}`, error);
+        sseStreamManager.error(sessionId, 'GROVER_STREAM_ERROR', message);
+      });
+  },
   async getStatus(req: Request, res: Response) {
     const { sessionId } = req.params as { sessionId: string };
     if (!sessionId) {

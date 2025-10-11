@@ -123,6 +123,36 @@ class MetricsController {
     }
   });
 
+  /**
+   * @desc    Get model comparison for a given dataset
+   * @route   GET /api/metrics/compare
+   * @access  Public
+   */
+  getModelComparison = asyncHandler(async (req: Request, res: Response) => {
+    const { model1, model2, model3, model4, dataset } = req.query;
+
+    if (!model1 || !dataset) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required query parameters: model1, dataset',
+      });
+    }
+
+    try {
+      const models = [model1, model2, model3, model4].filter(Boolean) as string[];
+      const comparisonData = await repositoryService.metrics.getModelComparison(models, dataset as string);
+      res.status(200).json({
+        success: true,
+        data: comparisonData,
+      });
+    } catch (error) {
+      logger.error(`Error in getModelComparison: ${error instanceof Error ? error.message : String(error)}`, 'api');
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving model comparison data',
+      });
+    }
+  });
 }
 
 export default new MetricsController();

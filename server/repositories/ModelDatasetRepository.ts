@@ -1,14 +1,24 @@
 /**
  * 
- * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR)
- * Date: 2025-09-26T20:43:42-04:00
- * PURPOSE: REAL database queries for model performance on ANY ARC dataset.
+ * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR + ARCHITECTURE FIX 2025-10-10)
+ * Date: 2025-09-26T20:43:42-04:00 (updated 2025-10-10)
+ * PURPOSE: CANONICAL SOURCE for all dataset operations including:
+ * - Model performance queries on ANY ARC dataset
+ * - Dataset discovery (filesystem-based)
+ * - Puzzle ID retrieval from datasets (single source of truth)
+ * 
+ * ARCHITECTURE FIX (2025-10-10): 
+ * - getPuzzleIdsFromDataset() now PUBLIC (was private)
+ * - Used by MetricsRepository for model comparisons (SRP delegation pattern)
+ * - Eliminates DRY violation where MetricsRepository duplicated dataset logic
+ * 
  * Dynamic dataset selection like retry-failed-puzzles.ts - no hardcoded puzzle IDs!
  * FIXED: Correct three-way classification using explicit boolean checks (not just NULL fallback)
  * - CORRECT: is_prediction_correct = true OR multi_test_all_correct = true
  * - INCORRECT: is_prediction_correct = false OR multi_test_all_correct = false  
  * - NOT ATTEMPTED: No entry OR indeterminate (NULL correctness values)
- * SRP and DRY check: Pass - Single responsibility for model dataset performance, reuses database connection patterns
+ * 
+ * SRP and DRY check: Pass - Single responsibility for all dataset operations
  */
 
 import { BaseRepository } from './base/BaseRepository.ts';
@@ -34,6 +44,34 @@ interface DatasetInfo {
   name: string;
   puzzleCount: number;
   path: string;
+}
+
+export interface ModelDatasetMetrics {
+  modelName: string;
+  dataset: string;
+  overall: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    totalTime: number;
+    avgTokens: number;
+    totalTokens: number;
+  };
+  correct: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
+  incorrect: {
+    count: number;
+    avgCost: number;
+    totalCost: number;
+    avgTime: number;
+    avgTokens: number;
+  };
 }
 
 export class ModelDatasetRepository extends BaseRepository {
@@ -82,8 +120,10 @@ export class ModelDatasetRepository extends BaseRepository {
 
   /**
    * Get puzzle IDs from a specific dataset directory (exactly like retry-failed-puzzles.ts)
+   * PUBLIC: Now the canonical source for mapping dataset names to puzzle IDs
+   * Used by MetricsRepository for model comparisons (SRP delegation pattern)
    */
-  private getPuzzleIdsFromDataset(datasetName: string): string[] {
+  public getPuzzleIdsFromDataset(datasetName: string): string[] {
     try {
       const directory = path.join(process.cwd(), 'data', datasetName);
       
@@ -232,6 +272,122 @@ export class ModelDatasetRepository extends BaseRepository {
       
     } catch (error) {
       logger.error(`Error getting available models: ${error instanceof Error ? error.message : String(error)}`, 'database');
+      throw error;
+    }
+  }
+
+  /**
+   * Get aggregate metrics (cost, time, tokens) for a model on a specific dataset
+   * SRP: Handles ONLY model-dataset metric aggregation (single model on single dataset)
+   * Returns metrics broken down by correct/incorrect categories
+   */
+  async getModelDatasetMetrics(modelName: string, datasetName: string): Promise<ModelDatasetMetrics> {
+    if (!this.isConnected()) {
+      logger.warn('Database not connected - returning empty metrics', 'database');
+      return {
+        modelName,
+        dataset: datasetName,
+        overall: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, totalTime: 0, avgTokens: 0, totalTokens: 0 },
+        correct: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 },
+        incorrect: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 }
+      };
+    }
+
+    try {
+      // DRY: Reuse existing getPuzzleIdsFromDataset method
+      const datasetPuzzles = this.getPuzzleIdsFromDataset(datasetName);
+      if (datasetPuzzles.length === 0) {
+        logger.warn(`No puzzles found for dataset: ${datasetName}`, 'dataset');
+        return {
+          modelName,
+          dataset: datasetName,
+          overall: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, totalTime: 0, avgTokens: 0, totalTokens: 0 },
+          correct: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 },
+          incorrect: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 }
+        };
+      }
+
+      // Single efficient query with FILTER clauses for performance
+      // Uses PostgreSQL FILTER syntax to compute aggregates for subsets
+      const query = `
+        SELECT 
+          COUNT(*) as total_count,
+          COALESCE(AVG(estimated_cost), 0) as avg_cost_all,
+          COALESCE(SUM(estimated_cost), 0) as total_cost_all,
+          COALESCE(AVG(api_processing_time_ms), 0) as avg_time_all,
+          COALESCE(SUM(api_processing_time_ms), 0) as total_time_all,
+          COALESCE(AVG(total_tokens), 0) as avg_tokens_all,
+          COALESCE(SUM(total_tokens), 0) as total_tokens_all,
+          
+          -- Correct subset (matches getModelDatasetPerformance logic)
+          COUNT(*) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true) as count_correct,
+          COALESCE(AVG(estimated_cost) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_cost_correct,
+          COALESCE(SUM(estimated_cost) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as total_cost_correct,
+          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_time_correct,
+          COALESCE(AVG(total_tokens) FILTER (WHERE is_prediction_correct = true OR multi_test_all_correct = true), 0) as avg_tokens_correct,
+          
+          -- Incorrect subset (everything else that was attempted)
+          COUNT(*) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)) as count_incorrect,
+          COALESCE(AVG(estimated_cost) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_cost_incorrect,
+          COALESCE(SUM(estimated_cost) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as total_cost_incorrect,
+          COALESCE(AVG(api_processing_time_ms) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_time_incorrect,
+          COALESCE(AVG(total_tokens) FILTER (WHERE NOT (is_prediction_correct = true OR multi_test_all_correct = true)), 0) as avg_tokens_incorrect
+        FROM explanations
+        WHERE model_name ILIKE $1
+        AND puzzle_id = ANY($2)
+        AND (predicted_output_grid IS NOT NULL OR multi_test_prediction_grids IS NOT NULL)
+      `;
+
+      const result = await this.query(query, [modelName, datasetPuzzles]);
+      
+      if (result.rows.length === 0) {
+        logger.warn(`No metrics found for ${modelName} on ${datasetName}`, 'dataset');
+        return {
+          modelName,
+          dataset: datasetName,
+          overall: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, totalTime: 0, avgTokens: 0, totalTokens: 0 },
+          correct: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 },
+          incorrect: { count: 0, avgCost: 0, totalCost: 0, avgTime: 0, avgTokens: 0 }
+        };
+      }
+
+      const row = result.rows[0];
+
+      logger.info(
+        `Metrics for ${modelName} on ${datasetName}: ${row.total_count} total, ${row.count_correct} correct, ${row.count_incorrect} incorrect`,
+        'dataset'
+      );
+
+      return {
+        modelName,
+        dataset: datasetName,
+        overall: {
+          count: parseInt(row.total_count) || 0,
+          avgCost: parseFloat(row.avg_cost_all) || 0,
+          totalCost: parseFloat(row.total_cost_all) || 0,
+          avgTime: parseFloat(row.avg_time_all) || 0,
+          totalTime: parseFloat(row.total_time_all) || 0,
+          avgTokens: parseFloat(row.avg_tokens_all) || 0,
+          totalTokens: parseFloat(row.total_tokens_all) || 0,
+        },
+        correct: {
+          count: parseInt(row.count_correct) || 0,
+          avgCost: parseFloat(row.avg_cost_correct) || 0,
+          totalCost: parseFloat(row.total_cost_correct) || 0,
+          avgTime: parseFloat(row.avg_time_correct) || 0,
+          avgTokens: parseFloat(row.avg_tokens_correct) || 0,
+        },
+        incorrect: {
+          count: parseInt(row.count_incorrect) || 0,
+          avgCost: parseFloat(row.avg_cost_incorrect) || 0,
+          totalCost: parseFloat(row.total_cost_incorrect) || 0,
+          avgTime: parseFloat(row.avg_time_incorrect) || 0,
+          avgTokens: parseFloat(row.avg_tokens_incorrect) || 0,
+        }
+      };
+
+    } catch (error) {
+      logger.error(`Error getting model dataset metrics for ${modelName} on ${datasetName}: ${error instanceof Error ? error.message : String(error)}`, 'database');
       throw error;
     }
   }

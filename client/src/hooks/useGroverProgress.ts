@@ -19,6 +19,9 @@ export interface GroverOptions {
   temperature?: number;
   maxIterations?: number;
   previousResponseId?: string;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  reasoningVerbosity?: 'low' | 'medium' | 'high';
+  reasoningSummaryType?: 'auto' | 'detailed';
 }
 
 export interface GroverIteration {
@@ -63,6 +66,15 @@ export interface GroverProgressState {
     failed: number;
     scores: number[];
   };
+  streamingStatus?: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
+  streamingText?: string;
+  streamingReasoning?: string;
+  streamingMessage?: string;
+  streamingTokenUsage?: {
+    input?: number;
+    output?: number;
+    reasoning?: number;
+  };
 }
 
 export function useGroverProgress(taskId: string | undefined) {
@@ -73,6 +85,8 @@ export function useGroverProgress(taskId: string | undefined) {
     logLines: []
   });
   const wsRef = useRef<WebSocket | null>(null);
+  const sseRef = useRef<EventSource | null>(null);
+  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
 
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
@@ -80,6 +94,14 @@ export function useGroverProgress(taskId: string | undefined) {
       wsRef.current = null;
     }
   }, []);
+
+  const closeEventSource = useCallback(() => {
+    if (sseRef.current) {
+      try { sseRef.current.close(); } catch {}
+      sseRef.current = null;
+    }
+  }, []);
+
 
   const start = useCallback(async (options?: GroverOptions) => {
     if (!taskId) return;
@@ -99,7 +121,10 @@ export function useGroverProgress(taskId: string | undefined) {
     const wireOptions = {
       temperature: options?.temperature ?? 0.2,
       maxIterations: options?.maxIterations ?? 5,
-      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
+      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
+      ...(options?.reasoningEffort && { reasoningEffort: options.reasoningEffort }),
+      ...(options?.reasoningVerbosity && { reasoningVerbosity: options.reasoningVerbosity }),
+      ...(options?.reasoningSummaryType && { reasoningSummaryType: options.reasoningSummaryType }),
     };
 
     const modelKey = options?.modelKey || 'grover-gpt-5-nano';

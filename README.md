@@ -189,3 +189,4 @@ Contributions welcome! This is a hobby project supporting research into AI reaso
 ---
 
 **Built for research and education in abstract reasoning • [Changelog](./CHANGELOG.md) • [Technical Docs](./CLAUDE.md)**
+

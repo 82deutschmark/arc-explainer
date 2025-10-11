@@ -32,301 +32,270 @@ export class GroverService extends BaseAIService {
     modelKey: string,
     taskId: string,
     temperature: number = 0.2,
-    promptId: string = "grover", // NOTE: Ignored - Grover builds custom iteration-specific prompts
+    promptId: string = "grover",
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
+    const harness = serviceOpts.stream;
+    const controller = this.registerStream(harness);
     const maxIterations = serviceOpts.maxSteps || 5;
     const underlyingModel = this.models[modelKey];
     const sessionId = serviceOpts.sessionId;
 
-    // Validate model key FIRST (before log wrapper exists)
-    if (!this.models[modelKey]) {
+    if (!underlyingModel) {
       const error = `Invalid Grover model key: ${modelKey}. Available: ${Object.keys(this.models).join(', ')}`;
-      // NOTE: Can't use log() wrapper here - it doesn't exist yet
-      logger.service(this.provider, `❌ ${error}`, 'error');
+      logger.service(this.provider, error, 'error');
+      // No stream to finalize, just throw
       throw new Error(error);
     }
 
-    // Get underlying service (grok, openai, etc.)
     const underlyingService = aiServiceFactory.getService(underlyingModel);
 
+    // Centralized state for the entire run
     const iterations: any[] = [];
     let previousResponseId: string | undefined = undefined;
     let bestProgram: string | null = null;
     let bestScore = 0;
-
-    // Build initial context
     let context = this.buildInitialContext(task);
+    let finalResponse: AIResponse | null = null;
+    let status: 'success' | 'error' | 'aborted' = 'error'; // Default to error
+    let finalError: Error | null = null;
 
-    // LOG WRAPPER: Broadcasts ALL logs to browser WebSocket
-    // NOTE: Using broadcastLogger which auto-broadcasts via AsyncLocalStorage session context
+    // Aggregated token and cost tracking
+    const aggregatedTokenUsage: TokenUsage = { input: 0, output: 0 };
+    let aggregatedCost = 0;
+
     const log = (message: string, level: LogLevel = 'info') => {
       logger.service(this.provider, message, level);
     };
 
     const sendProgress = (payload: Record<string, any>) => {
-      if (!sessionId) return;
-      try {
-        broadcast(sessionId, {
-          status: payload.status ?? 'running',
-          phase: payload.phase ?? 'iteration',
-          iteration: payload.iteration ?? 0,
+      if (sessionId) {
+        try {
+          broadcast(sessionId, {
+            status: 'running',
+            phase: payload.phase ?? 'iteration',
+            iteration: payload.iteration ?? 0,
+            totalIterations: maxIterations,
+            progress: payload.progress ?? (payload.iteration !== undefined && maxIterations > 0
+              ? Math.min(1, payload.iteration / maxIterations)
+              : undefined),
+            message: payload.message,
+            bestScore,
+            bestProgram,
+            iterations,
+            ...payload
+          });
+        } catch (err) {
+          console.error(`[Grover] Failed to broadcast: ${err}`);
+        }
+      }
+
+      if (harness) {
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "in_progress",
+          phase: payload.phase,
+          message: payload.message,
+          iteration: payload.iteration,
           totalIterations: maxIterations,
           progress: payload.progress ?? (payload.iteration !== undefined && maxIterations > 0
             ? Math.min(1, payload.iteration / maxIterations)
             : undefined),
-          message: payload.message,
-          bestScore,
-          bestProgram,
-          iterations,
-          ...payload
         });
-      } catch (err) {
-        // Use console.error to avoid recursion
-        console.error(`[Grover] Failed to broadcast: ${err}`);
+        if (payload.message) {
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta: `${payload.message}\n`,
+            metadata: {
+              iteration: payload.iteration,
+              phase: payload.phase,
+            },
+          });
+        }
       }
     };
 
-    log(`🚀 Starting Grover analysis - Puzzle: ${taskId}, Model: ${underlyingModel}, Iterations: ${maxIterations}`);
-    
-    sendProgress({
-      phase: 'initializing',
-      iteration: 0,
-      message: `🔄 Initializing Grover solver with ${underlyingModel} for ${maxIterations} iterations`
-    });
-
     try {
+      log(`Starting Grover analysis - Puzzle: ${taskId}, Model: ${underlyingModel}, Iterations: ${maxIterations}`);
+      sendProgress({
+        phase: 'initializing',
+        iteration: 0,
+        message: `Initializing Grover solver with ${underlyingModel} for ${maxIterations} iterations`
+      });
+
       for (let i = 0; i < maxIterations; i++) {
-        log(`🔁 Iteration ${i + 1}/${maxIterations}`);
+        if (controller?.signal.aborted) {
+          log('Analysis aborted by user.', 'warn');
+          status = 'aborted';
+          throw new Error('Grover analysis aborted by user.');
+        }
+
+        log(`Iteration ${i + 1}/${maxIterations}`);
         sendProgress({
           phase: 'iteration_start',
           iteration: i + 1,
-          message: `🔁 Starting iteration ${i + 1}/${maxIterations} - Generating candidate programs...`
+          message: `Starting iteration ${i + 1}/${maxIterations} - Generating candidate programs...`
         });
 
-      // 1. Generate programs via underlying service (Responses API!)
-      const codeGenPrompt = this.buildCodeGenPrompt(context, i);
-      
-      // IMMEDIATE FEEDBACK: Show prompt before LLM call
-      sendProgress({
-        phase: 'prompt_ready',
-        iteration: i + 1,
-        message: `📤 Sending prompt to ${underlyingModel} (${codeGenPrompt.length} chars)...`,
-        promptPreview: codeGenPrompt.substring(0, 1500),
-        promptLength: codeGenPrompt.length,
-        conversationChain: previousResponseId || null
-      });
-      sendProgress({
-        phase: 'waiting_llm',
-        iteration: i + 1,
-        message: `⏳ Waiting for ${underlyingModel} response...`,
-        waitingStart: Date.now()
-      });
+        const codeGenPrompt = this.buildCodeGenPrompt(context, i);
+        sendProgress({
+          phase: 'prompt_ready',
+          iteration: i + 1,
+          message: `Sending prompt to ${underlyingModel} (${codeGenPrompt.length} chars)...`,
+          promptPreview: codeGenPrompt.substring(0, 1500),
+          promptLength: codeGenPrompt.length,
+          conversationChain: previousResponseId || null
+        });
 
-      const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
-        task,
-        underlyingModel,
-        taskId,
-        temperature,
-        promptId,
-        codeGenPrompt,
-        options,
-        {
+        sendProgress({
+          phase: 'waiting_llm',
+          iteration: i + 1,
+          message: `Waiting for ${underlyingModel} response...`,
+          waitingStart: Date.now()
+        });
+
+        const underlyingServiceOpts: ServiceOptions = {
           ...serviceOpts,
-          previousResponseId // Conversation chaining across iterations!
-        }
-      );
+          stream: undefined, // CRITICAL: Prevent child service from streaming
+          previousResponseId,
+        };
 
-      // Store response ID for next iteration
-      previousResponseId = llmResponse.providerResponseId || undefined;
+        const llmResponse: AIResponse = await underlyingService.analyzePuzzleWithModel(
+          task,
+          underlyingModel,
+          taskId,
+          temperature,
+          promptId,
+          codeGenPrompt,
+          options,
+          underlyingServiceOpts
+        );
 
-      sendProgress({
-        phase: 'response_received',
-        iteration: i + 1,
-        message: `✅ Response received (${llmResponse.totalTokens || 0} tokens)`,
-        responseId: previousResponseId,
-        tokenUsage: {
-          input: llmResponse.inputTokens || 0,
-          output: llmResponse.outputTokens || 0,
-          total: llmResponse.totalTokens || 0
-        }
-      });
+        // Aggregate tokens and cost
+        aggregatedTokenUsage.input += llmResponse.inputTokens || 0;
+        aggregatedTokenUsage.output += llmResponse.outputTokens || 0;
+        aggregatedCost += llmResponse.estimatedCost || 0;
+        previousResponseId = llmResponse.providerResponseId || undefined;
 
-      // 2. Extract programs from LLM response
-      const programs = this.extractPrograms(llmResponse);
-
-      if (programs.length === 0) {
-        const warning = `⚠️ Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
-        log(warning, 'warn');
         sendProgress({
-          phase: 'extraction_failed',
+          phase: 'response_received',
           iteration: i + 1,
-          message: warning,
-          details: 'The LLM response did not contain properly formatted Python code blocks.'
+          message: `Response received (${llmResponse.totalTokens || 0} tokens)`,
+          responseId: previousResponseId,
+          tokenUsage: { input: llmResponse.inputTokens, output: llmResponse.outputTokens }
         });
-        continue;
-      }
 
-      log(`📝 Found ${programs.length} program(s) to execute`);
-      sendProgress({
-        phase: 'programs_extracted',
-        iteration: i + 1,
-        message: `📝 Extracted ${programs.length} program(s) - Executing on training data...`,
-        programsExtracted: programs.map((p, idx) => ({
-          index: idx,
-          code: p,
-          lines: p.split('\n').length
-        }))
-      });
-
-      // 3. Execute programs in Python sandbox
-      let executionResults;
-      try {
-        executionResults = await this.executeProgramsSandbox(programs, task.train);
-        sendProgress({
-          phase: 'execution',
-          iteration: i + 1,
-          message: `🐍 Executed ${programs.length} program(s) on ${task.train.length} training examples`
-        });
-      } catch (execError) {
-        const errorMsg = execError instanceof Error ? execError.message : String(execError);
-        log(`❌ Python execution failed: ${errorMsg}`, 'error');
-        sendProgress({
-          phase: 'execution_error',
-          iteration: i + 1,
-          message: `❌ Execution failed: ${errorMsg}`,
-          details: 'Python sandbox rejected the code or encountered a runtime error.'
-        });
-        throw new Error(`Python execution failed in iteration ${i + 1}: ${errorMsg}`);
-      }
-
-      // 4. Grade results
-      const graded = this.gradeExecutions(executionResults, task.train);
-
-      // 5. Track best program
-      const iterationBest = graded[0]; // Already sorted by score
-      const previousBest = bestScore;
-      if (iterationBest && iterationBest.score > bestScore) {
-        bestScore = iterationBest.score;
-        bestProgram = iterationBest.code;
-        log(`🎯 New best score: ${bestScore.toFixed(1)}/10 (improved from ${previousBest.toFixed(1)})`);
-      } else if (iterationBest) {
-        log(`📊 Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
-      }
-
-      // 6. Track iteration
-      iterations.push({
-        iteration: i,
-        programs,
-        executionResults: graded,
-        best: iterationBest || { programIdx: -1, score: 0, code: "" },
-        timestamp: Date.now()
-      });
-
-      const currentBest = iterationBest?.score ?? 0;
-      const emoji = currentBest >= 10 ? '🎉' : currentBest >= 7 ? '🎯' : currentBest >= 5 ? '📈' : '📊';
-      sendProgress({
-        phase: 'iteration_complete',
-        iteration: i + 1,
-        message: `${emoji} Iteration ${i + 1} complete - Best: ${currentBest.toFixed(1)}/10 | Overall best: ${bestScore.toFixed(1)}/10`,
-        iterationBest: currentBest,
-        overallBest: bestScore,
-        iterations,
-        executionSummary: {
-          total: programs.length,
-          successful: graded.filter(r => !r.error).length,
-          failed: graded.filter(r => r.error).length,
-          scores: graded.map(r => r.score)
+        const programs = this.extractPrograms(llmResponse);
+        if (programs.length === 0) {
+          const warning = `Iteration ${i + 1}: No programs extracted from LLM response. Trying next iteration...`;
+          log(warning, 'warn');
+          sendProgress({ phase: 'extraction_failed', iteration: i + 1, message: warning, details: 'The LLM response did not contain properly formatted Python code blocks.' });
+          continue;
         }
-      });
 
-      // 7. Build amplified context for next iteration
-      context = this.amplifyContext(graded, context, i);
+        log(`Found ${programs.length} program(s) to execute`);
+        sendProgress({
+          phase: 'programs_extracted',
+          iteration: i + 1,
+          message: `Extracted ${programs.length} program(s) - Executing on training data...`,
+          programsExtracted: programs.map((p, idx) => ({ index: idx, code: p, lines: p.split('\n').length }))
+        });
 
-        // Early stopping if perfect score
+        const executionResults = await this.executeProgramsSandbox(programs, task.train);
+        sendProgress({ phase: 'execution', iteration: i + 1, message: `Executed ${programs.length} program(s) on ${task.train.length} training examples` });
+
+        const graded = this.gradeExecutions(executionResults, task.train);
+        const iterationBest = graded[0];
+        if (iterationBest && iterationBest.score > bestScore) {
+          bestScore = iterationBest.score;
+          bestProgram = iterationBest.code;
+          log(`New best score: ${bestScore.toFixed(1)}/10`);
+        } else if (iterationBest) {
+          log(`Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
+        }
+
+        iterations.push({ iteration: i, programs, executionResults: graded, best: iterationBest || { programIdx: -1, score: 0, code: "" }, timestamp: Date.now() });
+
+        const currentBest = iterationBest?.score ?? 0;
+        sendProgress({
+          phase: 'iteration_complete',
+          iteration: i + 1,
+          message: `Iteration ${i + 1} complete. Iteration best: ${currentBest.toFixed(1)}/10. Overall best: ${bestScore.toFixed(1)}/10`,
+          iterationBest: currentBest,
+          overallBest: bestScore,
+          iterations,
+        });
+
+        context = this.amplifyContext(graded, context, i);
+
         if (bestScore >= 10) {
-          log(`🎉 Perfect score achieved at iteration ${i + 1}!`);
-          sendProgress({
-            phase: 'complete',
-            iteration: i + 1,
-            message: `🎉 Perfect score achieved! Stopping early at iteration ${i + 1}/${maxIterations}`,
-            finalScore: bestScore
-          });
+          log(`Perfect score achieved at iteration ${i + 1}!`);
+          sendProgress({ phase: 'complete', iteration: i + 1, message: `Perfect score achieved! Stopping early at iteration ${i + 1}/${maxIterations}`, finalScore: bestScore });
           break;
         }
       }
 
-      // Final summary
-      log(`✅ Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
-      sendProgress({
-        phase: 'finalizing',
-        message: `✅ Analysis complete - Best score: ${bestScore.toFixed(1)}/10`,
-        finalScore: bestScore,
-        totalIterations: iterations.length
-      });
+      log(`Grover analysis complete - Best score: ${bestScore.toFixed(1)}/10 after ${iterations.length} iterations`);
+      sendProgress({ phase: 'finalizing', message: `Analysis complete - Best score: ${bestScore.toFixed(1)}/10`, finalScore: bestScore, totalIterations: iterations.length });
+
+      // Build final response with test predictions
+      finalResponse = await this.buildGroverResponse(
+        modelKey,
+        temperature,
+        iterations,
+        bestProgram,
+        task.test,
+        {
+          ...serviceOpts,
+          inputTokens: aggregatedTokenUsage.input,
+          outputTokens: aggregatedTokenUsage.output,
+          totalTokens: aggregatedTokenUsage.input + aggregatedTokenUsage.output,
+          estimatedCost: aggregatedCost,
+        }
+      );
+
+      // Validate predictions against test outputs
+      const confidence = finalResponse.confidence || 50;
+      if (task.test.length === 1) {
+        const validation = validateSolverResponse(finalResponse, task.test[0].output, 'solver', confidence);
+        Object.assign(finalResponse, validation, { hasMultiplePredictions: false });
+        log(`Validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'} (score: ${validation.predictionAccuracyScore.toFixed(2)})`);
+      } else {
+        const multiValidation = validateSolverResponseMulti(finalResponse, task.test.map(t => t.output), 'solver', confidence);
+        Object.assign(finalResponse, multiValidation);
+        const correctCount = multiValidation.multiTestResults?.filter((r: any) => r.isCorrect).length || 0;
+        log(`Validation: ${correctCount}/${task.test.length} correct (avg accuracy: ${multiValidation.multiTestAverageAccuracy.toFixed(2)})`);
+      }
+
+      status = 'success';
+      return finalResponse;
 
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      log(`❌ Analysis failed: ${errorMsg}`, 'error');
-      sendProgress({
-        phase: 'error',
-        message: `❌ Analysis failed: ${errorMsg}`,
-        error: errorMsg
+      finalError = error instanceof Error ? error : new Error(String(error));
+      if (status !== 'aborted') status = 'error';
+      log(`Analysis failed: ${finalError.message}`, 'error');
+      sendProgress({ phase: 'error', message: `Analysis failed: ${finalError.message}`, error: finalError.message });
+      // Re-throw to be caught by the caller, but finalizeStream will still run
+      throw finalError;
+    } finally {
+      // This block runs ALWAYS, ensuring the stream is closed.
+      this.finalizeStream(harness, {
+        status,
+        metadata: {
+          bestScore,
+          iterations,
+          bestProgram,
+          tokenUsage: aggregatedTokenUsage,
+          estimatedCost: aggregatedCost,
+        },
+        responseSummary: {
+          analysis: finalResponse,
+        },
+        error: finalError?.message
       });
-      throw error;
     }
 
-    // Build final response with test predictions
-    const response = await this.buildGroverResponse(
-      modelKey,
-      temperature,
-      iterations,
-      bestProgram,
-      task.test,
-      serviceOpts
-    );
-
-    // Validate predictions against test outputs
-    const confidence = response.confidence || 50;
-    
-    if (task.test.length === 1) {
-      // Single-test validation
-      const correctAnswer = task.test[0].output;
-      const validation = validateSolverResponse(response, correctAnswer, 'solver', confidence);
-      
-      response.predictedOutputGrid = validation.predictedGrid;
-      response.isPredictionCorrect = validation.isPredictionCorrect;
-      response.predictionAccuracyScore = validation.predictionAccuracyScore;
-      response.hasMultiplePredictions = false;
-      response.multiplePredictedOutputs = null;
-      response.multiTestResults = null;
-      response.multiTestAllCorrect = null;
-      response.multiTestAverageAccuracy = null;
-      response.multiTestPredictionGrids = null;
-      
-      log(`✓ Validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'} (score: ${validation.predictionAccuracyScore.toFixed(2)})`);
-    } else {
-      // Multi-test validation
-      const correctAnswers = task.test.map(t => t.output);
-      const multiValidation = validateSolverResponseMulti(response, correctAnswers, 'solver', confidence);
-      
-      response.hasMultiplePredictions = multiValidation.hasMultiplePredictions;
-      response.multiplePredictedOutputs = multiValidation.multiplePredictedOutputs;
-      response.multiTestResults = multiValidation.multiTestResults;
-      response.multiTestAllCorrect = multiValidation.multiTestAllCorrect;
-      response.multiTestAverageAccuracy = multiValidation.multiTestAverageAccuracy;
-      response.multiTestPredictionGrids = multiValidation.multiTestPredictionGrids;
-      response.predictedOutputGrid = multiValidation.multiplePredictedOutputs;
-      response.predictionAccuracyScore = multiValidation.multiTestAverageAccuracy;
-      response.isPredictionCorrect = multiValidation.multiTestAllCorrect || false;
-      
-      const correctCount = multiValidation.multiTestResults?.filter((r: any) => r.isCorrect).length || 0;
-      log(`✓ Validation: ${correctCount}/${task.test.length} correct (avg accuracy: ${multiValidation.multiTestAverageAccuracy.toFixed(2)})`);
-    }
-
-    return response;
   }
 
   getModelInfo(modelKey: string): ModelInfo {
@@ -552,8 +521,7 @@ Generate new programs that build on successful patterns and avoid failures.`;
   ): Promise<AIResponse> {
     const lastIteration = iterations[iterations.length - 1];
     const finalScore = lastIteration?.best?.score || 0;
-    
-    // Execute best program on test inputs to generate predictions
+
     let predictedOutput = null;
     let multiplePredictedOutputs: (number[][] | null)[] | null = null;
     let hasMultiplePredictions = false;
@@ -561,56 +529,43 @@ Generate new programs that build on successful patterns and avoid failures.`;
     if (bestProgram && testExamples.length > 0) {
       try {
         const testInputs = testExamples.map(ex => ex.input);
-        // NOTE: buildGroverResponse is called outside the main loop where log() exists
-        // These logs won't be broadcast to WebSocket, only to terminal
-        logger.service(this.provider, `Executing best program on ${testInputs.length} test input(s)...`);
-        
+        logger.service(this.provider, `Executing best program on ${testExamples.length} test input(s)...`);
         const executionResult = await pythonBridge.runGroverTestExecution(bestProgram, testInputs);
-        
+
         if (executionResult.error) {
           logger.service(this.provider, `Test execution error: ${executionResult.error}`, 'warn');
-          // Leave predictions as null if execution failed
         } else if (executionResult.outputs && executionResult.outputs.length > 0) {
           if (testInputs.length === 1) {
-            // Single test: use predictedOutput
             predictedOutput = executionResult.outputs[0];
-            logger.service(this.provider, `✅ Generated prediction for single test`);
+            logger.service(this.provider, `Generated prediction for single test`);
           } else {
-            // Multiple tests: use multiplePredictedOutputs
             hasMultiplePredictions = true;
             multiplePredictedOutputs = executionResult.outputs;
-            // Also set numbered fields for validation compatibility
             (executionResult.outputs as (number[][] | null)[]).forEach((output, idx) => {
               (serviceOpts as any)[`predictedOutput${idx + 1}`] = output;
             });
-            logger.service(this.provider, `✅ Generated ${multiplePredictedOutputs.length} predictions for multi-test puzzle`);
+            logger.service(this.provider, `Generated ${multiplePredictedOutputs.length} predictions for multi-test puzzle`);
           }
         }
       } catch (e) {
         const errorMsg = e instanceof Error ? e.message : String(e);
         logger.service(this.provider, `Failed to execute best program on test inputs: ${errorMsg}`, 'warn');
-        // Leave predictions as null if execution failed
       }
     }
 
-    // Build final response with all required fields
     const finalResponse: AIResponse = {
       model: modelKey,
-      // Grover-specific fields (stored in database)
       groverIterations: iterations,
       groverBestProgram: bestProgram,
       iterationCount: iterations.length,
-      // Standard explanation fields
       patternDescription: `Grover iterative solver completed ${iterations.length} iterations`,
       solvingStrategy: bestProgram || "No successful program found",
       hints: [`Final score: ${finalScore.toFixed(1)}/10`, `Iterations: ${iterations.length}`],
       confidence: Math.round((finalScore / 10) * 100),
-      // Prediction fields (CRITICAL: populated from test execution)
       predictedOutput: predictedOutput,
       predictedOutputGrid: predictedOutput,
       hasMultiplePredictions,
       multiplePredictedOutputs,
-      // Reasoning fields
       reasoningLog: null,
       hasReasoningLog: true,
       reasoningItems: iterations.map(iter => ({
@@ -618,14 +573,8 @@ Generate new programs that build on successful patterns and avoid failures.`;
         detail: `Best score: ${iter.best.score.toFixed(1)}/10`,
         step: iter.iteration
       })),
-      // Token/cost fields
-      inputTokens: null,
-      outputTokens: null,
-      reasoningTokens: null,
-      totalTokens: null,
-      estimatedCost: null, // TODO: Sum iteration costs
       temperature,
-      ...serviceOpts
+      ...serviceOpts,
     };
 
     return finalResponse;

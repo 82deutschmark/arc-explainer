@@ -3,12 +3,18 @@
  *
  * Saturn Visual Solver page - pure Python wrapper interface.
  * Features a clean layout focused on showing Python solver output:
+ * - Dynamic model selection from all available models
+ * - Advanced settings panel with temperature and reasoning controls
  * - Status overview with progress tracking
  * - Real-time Python solver logs in terminal style
  * - Collapsible puzzle details
  * - Python-generated image gallery
  *
- * Author: Cascade (model: Cascade), Updated by Claude Code
+ * Author: Cascade using Sonnet 4.5
+ * Date: 2025-10-10
+ * PURPOSE: Provide flexible Saturn solver with full model support and reasoning controls
+ * SRP/DRY check: Pass - Orchestrates Saturn analysis UI only
+ * shadcn/ui: Pass - Uses shadcn/ui components throughout
  */
 
 import React from 'react';
@@ -17,10 +23,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw, Settings } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
-import SaturnModelSelect, { type SaturnModelKey } from '@/components/saturn/SaturnModelSelect';
+import { useModels } from '@/hooks/useModels';
+import SaturnModelSelect from '@/components/saturn/SaturnModelSelect';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 
@@ -28,10 +38,32 @@ export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, sessionId } = useSaturnProgress(taskId);
-  const [model, setModel] = React.useState<SaturnModelKey>('GPT-5');
+  const { data: models } = useModels();
+  
+  // Model and parameter states
+  const [modelKey, setModelKey] = React.useState<string>('gpt-5-nano-2025-08-07');
+  const [temperature, setTemperature] = React.useState<number>(0.2);
+  const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('high');
+  const [reasoningVerbosity, setReasoningVerbosity] = React.useState<'low' | 'medium' | 'high'>('high');
+  const [reasoningSummaryType, setReasoningSummaryType] = React.useState<'auto' | 'detailed'>('detailed');
+  
+  // UI states
   const [showPuzzleDetails, setShowPuzzleDetails] = React.useState(true);
+  const [showAdvancedSettings, setShowAdvancedSettings] = React.useState(false);
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const logRef = React.useRef<HTMLDivElement | null>(null);
+  
+  // Helper to check if model supports temperature
+  const supportsTemperature = React.useMemo(() => {
+    if (!models) return true;
+    const model = models.find(m => m.key === modelKey);
+    return model?.supportsTemperature !== false;
+  }, [models, modelKey]);
+  
+  // Helper to check if model is GPT-5 reasoning model
+  const isGPT5ReasoningModel = (key: string): boolean => {
+    return ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(key);
+  };
 
   // Set page title with puzzle ID
   React.useEffect(() => {
@@ -107,14 +139,25 @@ export default function SaturnVisualSolver() {
     );
   }
 
-  const onStart = () => start({ 
-    model, 
-    temperature: 0.2, 
-    cellSize: 24, 
-    maxSteps: 8, 
-    captureReasoning: true,
-    useResponsesAPI: true // Enable Responses API for structured reasoning
-  });
+  const onStart = () => {
+    const startOptions: any = {
+      model: modelKey,
+      temperature: supportsTemperature ? temperature : undefined,
+      cellSize: 24,
+      maxSteps: 8,
+      captureReasoning: true,
+      useResponsesAPI: true, // Enable Responses API for structured reasoning
+    };
+    
+    // Add reasoning parameters for GPT-5 models
+    if (isGPT5ReasoningModel(modelKey)) {
+      startOptions.reasoningEffort = reasoningEffort;
+      startOptions.reasoningVerbosity = reasoningVerbosity;
+      startOptions.reasoningSummaryType = reasoningSummaryType;
+    }
+    
+    start(startOptions);
+  };
 
   // Helper to get detailed phase explanation
   const getPhaseExplanation = (phase: string | undefined, step?: number, totalSteps?: number) => {
@@ -314,13 +357,125 @@ export default function SaturnVisualSolver() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <SaturnModelSelect value={model} onChange={setModel} disabled={isRunning} />
+          <SaturnModelSelect value={modelKey} onChange={setModelKey} disabled={isRunning} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+            disabled={isRunning}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Settings
+          </Button>
           <Button onClick={onStart} disabled={isRunning} className="flex items-center gap-2">
             <Rocket className="h-4 w-4" />
             {isRunning ? 'Running…' : 'Start Analysis'}
           </Button>
         </div>
       </div>
+
+      {/* Advanced Settings Panel */}
+      {showAdvancedSettings && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Advanced Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Temperature Control */}
+            {supportsTemperature && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Temperature</Label>
+                  <span className="text-sm text-gray-600">{temperature.toFixed(2)}</span>
+                </div>
+                <Slider
+                  value={[temperature]}
+                  onValueChange={(vals) => setTemperature(vals[0])}
+                  min={0}
+                  max={2}
+                  step={0.05}
+                  className="w-full"
+                  disabled={isRunning}
+                />
+                <p className="text-xs text-gray-500">
+                  Controls randomness. Lower = more focused, Higher = more creative.
+                </p>
+              </div>
+            )}
+            
+            {/* GPT-5 Reasoning Controls */}
+            {isGPT5ReasoningModel(modelKey) && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Reasoning Effort</Label>
+                  <Select
+                    value={reasoningEffort}
+                    onValueChange={(v) => setReasoningEffort(v as 'minimal' | 'low' | 'medium' | 'high')}
+                    disabled={isRunning}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="minimal">Minimal</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    How much reasoning the model should perform.
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Reasoning Verbosity</Label>
+                  <Select
+                    value={reasoningVerbosity}
+                    onValueChange={(v) => setReasoningVerbosity(v as 'low' | 'medium' | 'high')}
+                    disabled={isRunning}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Detail level of reasoning output.
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Reasoning Summary</Label>
+                  <Select
+                    value={reasoningSummaryType}
+                    onValueChange={(v) => setReasoningSummaryType(v as 'auto' | 'detailed')}
+                    disabled={isRunning}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Auto</SelectItem>
+                      <SelectItem value="detailed">Detailed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Type of reasoning summary to generate.
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Compact Status Overview */}
       <Card>

@@ -1,42 +1,35 @@
 /**
  * useAnalysisResults.ts
  * 
- * @author Cascade
- * @description This hook manages the logic for analyzing a puzzle with a selected AI model.
- * It follows a database-first approach: when a user requests an analysis,
- * the hook calls the backend to get the explanation, immediately saves it to the database,
- * and then triggers a refetch of all explanations for the puzzle.
- * This ensures the UI is always in sync with the database, which acts as the single source of truth.
- */
-
-/**
- * useAnalysisResults Hook
- * Custom hook for managing AI model analysis results
- * Handles state management and API interaction for puzzle analysis
  * Author: Cascade
+ * PURPOSE: Central hook that orchestrates puzzle analysis requests, manages model-specific state,
+ * and coordinates persistence. Streaming integration augments the legacy POST flow so UI consumers
+ * can transparently render incremental output while preserving the database-first contract.
+ * SRP/DRY check: Pass — single hook responsible for analysis lifecycle; no duplication across pages.
+ * shadcn/ui: Pass — logic only.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import type { ExplanationData } from '@/types/puzzle';
+import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
+import type { AnalysisStreamParams } from '@/lib/streaming/analysisStream';
+import type { ModelConfig } from '@shared/types';
 
 interface UseAnalysisResultsProps {
   taskId: string;
   refetchExplanations: (options?: any) => void;
-  // Analysis options passed from UI state
-  // emojiSetKey selects which emoji palette server-side prompt builder uses
-  // omitAnswer tells prompt builder to omit the "Correct Answer" portion in the test case section
   emojiSetKey?: string;
   omitAnswer?: boolean;
-  // systemPromptMode removed - now using modular architecture (hardcoded to 'ARC')
-  retryMode?: boolean; // Enhanced prompting for retry analysis
-  originalExplanation?: any; // For debate mode
-  customChallenge?: string; // For debate mode
-  previousResponseId?: string; // For conversation chaining
+  retryMode?: boolean;
+  originalExplanation?: ExplanationData | null;
+  customChallenge?: string;
+  previousResponseId?: string;
+  models?: ModelConfig[];
 }
 
-// Removed PendingAnalysis type - no longer using optimistic UI
+type StreamingPanelStatus = 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
 
 export function useAnalysisResults({
   taskId,
@@ -47,258 +40,378 @@ export function useAnalysisResults({
   originalExplanation,
   customChallenge,
   previousResponseId,
+  models,
 }: UseAnalysisResultsProps) {
   const [temperature, setTemperature] = useState(0.2);
   const [topP, setTopP] = useState(0.95);
   const [candidateCount, setCandidateCount] = useState(1);
-  const [thinkingBudget, setThinkingBudget] = useState(-1); // Default to dynamic thinking
-  const [promptId, setPromptId] = useState('solver'); // Default to solver prompt
-  const [customPrompt, setCustomPrompt] = useState<string>('');
+  const [thinkingBudget, setThinkingBudget] = useState(-1);
+  const [promptId, setPromptId] = useState('solver');
+  const [customPrompt, setCustomPrompt] = useState('');
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
   const [processingModels, setProcessingModels] = useState<Set<string>>(new Set());
   const [analyzerErrors, setAnalyzerErrors] = useState<Map<string, Error>>(new Map());
   const [analysisStartTime, setAnalysisStartTime] = useState<Record<string, number>>({});
   const [analysisTimes, setAnalysisTimes] = useState<Record<string, number>>({});
-  
+
   // GPT-5 reasoning parameters
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [reasoningVerbosity, setReasoningVerbosity] = useState<'low' | 'medium' | 'high'>('high');
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
-  // Removed createOptimisticAnalysis function - no longer using optimistic UI
+  // Streaming integration
+  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const {
+    startStream,
+    closeStream,
+    status: streamStatus,
+    visibleText: streamingVisibleText,
+    reasoningText: streamingReasoningText,
+    summary: streamSummary,
+    error: streamError,
+  } = useAnalysisStreaming();
+  const streamingContextRef = useRef<{ modelKey: string; startTime: number } | null>(null);
+  const [streamingModelKey, setStreamingModelKey] = useState<string | null>(null);
+  const [streamingPhase, setStreamingPhase] = useState<string | undefined>();
+  const [streamingMessage, setStreamingMessage] = useState<string | undefined>();
+  const [streamingTokenUsage, setStreamingTokenUsage] = useState<{ input?: number; output?: number; reasoning?: number }>({});
 
-  // Mutation to analyze the puzzle and save the explanation in one step
+  const streamSupportedModels = useMemo(() => {
+    if (!models || models.length === 0) {
+      return new Set<string>();
+    }
+    return new Set(models.filter(model => model.supportsStreaming).map(model => model.key));
+  }, [models]);
+
+  const removeProcessingModel = useCallback((modelKey: string) => {
+    setProcessingModels(prev => {
+      const next = new Set(prev);
+      next.delete(modelKey);
+      return next;
+    });
+  }, []);
+
+  const resetStreamingState = useCallback(() => {
+    streamingContextRef.current = null;
+    setStreamingModelKey(null);
+    setStreamingPhase(undefined);
+    setStreamingMessage(undefined);
+    setStreamingTokenUsage({});
+  }, []);
+
+  const canStreamModel = useCallback(
+    (modelKey: string) => streamingEnabled && streamSupportedModels.has(modelKey),
+    [streamingEnabled, streamSupportedModels]
+  );
+
+  const handleStreamingError = useCallback(
+    (error: { code: string; message: string } | null, modelKey: string) => {
+      closeStream();
+      removeProcessingModel(modelKey);
+      resetStreamingState();
+      const message = error?.message || 'Streaming failed. Please try again.';
+      setAnalyzerErrors(prev => new Map(prev).set(modelKey, new Error(message)));
+    },
+    [closeStream, removeProcessingModel, resetStreamingState]
+  );
+
+  const handleStreamingComplete = useCallback(
+    async (summary: any, modelKey: string) => {
+      try {
+        const tokenUsage = summary?.metadata?.tokenUsage as { input?: number; output?: number; reasoning?: number } | undefined;
+        if (tokenUsage) {
+          setStreamingTokenUsage(tokenUsage);
+        }
+
+        const context = streamingContextRef.current;
+        const startedAt = context && context.modelKey === modelKey ? context.startTime : analysisStartTime[modelKey];
+        const durationSeconds = startedAt ? Math.round((Date.now() - startedAt) / 1000) : undefined;
+        if (durationSeconds !== undefined) {
+          setAnalysisTimes(prev => ({ ...prev, [modelKey]: durationSeconds }));
+        }
+
+        const analysis = summary?.responseSummary?.analysis as Record<string, unknown> | undefined;
+        if (!analysis) {
+          throw new Error('Streaming summary missing analysis payload');
+        }
+
+        const explanationToSave = {
+          [modelKey]: {
+            ...analysis,
+            modelKey,
+            ...(durationSeconds !== undefined ? { actualProcessingTime: durationSeconds } : {}),
+          },
+        };
+
+        const saveResponse = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations: explanationToSave });
+        if (!saveResponse.ok) {
+          throw new Error(`Save request failed: ${saveResponse.statusText}`);
+        }
+        const saveJson = await saveResponse.json();
+        if (saveJson?.success === false) {
+          throw new Error(saveJson.message || 'Save request failed');
+        }
+
+        removeProcessingModel(modelKey);
+        setAnalyzerErrors(prev => {
+          const next = new Map(prev);
+          next.delete(modelKey);
+          return next;
+        });
+        resetStreamingState();
+        closeStream();
+        await refetchExplanations();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Streaming completion failed';
+        handleStreamingError({ code: 'STREAM_SAVE_FAILED', message }, modelKey);
+      }
+    },
+    [analysisStartTime, closeStream, handleStreamingError, refetchExplanations, removeProcessingModel, resetStreamingState, taskId]
+  );
+
+  const startStreamingAnalysis = useCallback(
+    (modelKey: string, supportsTemperature: boolean) => {
+      const startTime = Date.now();
+      setAnalysisStartTime(prev => ({ ...prev, [modelKey]: startTime }));
+      streamingContextRef.current = { modelKey, startTime };
+      setProcessingModels(prev => new Set(prev).add(modelKey));
+      setCurrentModelKey(modelKey);
+      setStreamingModelKey(modelKey);
+      setStreamingPhase(undefined);
+      setStreamingMessage(undefined);
+      setStreamingTokenUsage({});
+      setAnalyzerErrors(prev => {
+        const next = new Map(prev);
+        next.delete(modelKey);
+        return next;
+      });
+
+      const params: AnalysisStreamParams = {
+        taskId,
+        modelKey,
+        temperature: supportsTemperature ? temperature : undefined,
+        promptId,
+        customPrompt: promptId === 'custom' && customPrompt.trim() ? customPrompt.trim() : undefined,
+        emojiSetKey,
+        omitAnswer,
+        topP: supportsTemperature ? topP : undefined,
+        candidateCount: supportsTemperature ? candidateCount : undefined,
+        thinkingBudget,
+        reasoningEffort: isGPT5ReasoningModel(modelKey) ? reasoningEffort : undefined,
+        reasoningVerbosity: isGPT5ReasoningModel(modelKey) ? reasoningVerbosity : undefined,
+        reasoningSummaryType: isGPT5ReasoningModel(modelKey) ? reasoningSummaryType : undefined,
+        systemPromptMode: 'ARC',
+        previousResponseId,
+        captureReasoning: true,
+        retryMode,
+        customChallenge,
+        originalExplanationId: originalExplanation?.id,
+      };
+
+      startStream(params, {
+        onStatus: status => {
+          if (status && typeof status === 'object') {
+            if ('phase' in status && typeof (status as any).phase === 'string') {
+              setStreamingPhase((status as any).phase);
+            }
+            if ('message' in status && typeof (status as any).message === 'string') {
+              setStreamingMessage((status as any).message);
+            }
+          }
+        },
+        onComplete: summary => handleStreamingComplete(summary, modelKey),
+        onError: error => handleStreamingError(error, modelKey),
+      });
+    },
+    [
+      candidateCount,
+      customChallenge,
+      customPrompt,
+      emojiSetKey,
+      handleStreamingComplete,
+      handleStreamingError,
+      omitAnswer,
+      originalExplanation,
+      previousResponseId,
+      promptId,
+      reasoningEffort,
+      reasoningSummaryType,
+      reasoningVerbosity,
+      retryMode,
+      startStream,
+      taskId,
+      temperature,
+      thinkingBudget,
+      topP,
+    ]
+  );
+
+  const cancelStreamingAnalysis = useCallback(() => {
+    const context = streamingContextRef.current;
+    if (!context) {
+      return;
+    }
+    closeStream();
+    removeProcessingModel(context.modelKey);
+    resetStreamingState();
+    setAnalyzerErrors(prev => new Map(prev).set(context.modelKey, new Error('Analysis cancelled')));
+  }, [closeStream, removeProcessingModel, resetStreamingState]);
+
+  const closeStreamingModal = useCallback(() => {
+    closeStream();
+    resetStreamingState();
+  }, [closeStream, resetStreamingState]);
+
+  // Legacy mutation path (non-streaming)
   const analyzeAndSaveMutation = useMutation({
-    mutationFn: async (payload: { 
-      modelKey: string; 
-      temperature?: number; 
+    mutationFn: async (payload: {
+      modelKey: string;
+      temperature?: number;
       topP?: number;
       candidateCount?: number;
       thinkingBudget?: number;
-      reasoningEffort?: string; 
-      reasoningVerbosity?: string; 
-      reasoningSummaryType?: string; 
+      reasoningEffort?: string;
+      reasoningVerbosity?: string;
+      reasoningSummaryType?: string;
     }) => {
-      const { modelKey, temperature: temp, topP: p, candidateCount: c, thinkingBudget: tb, reasoningEffort: effort, reasoningVerbosity: verbosity, reasoningSummaryType: summaryType } = payload;
-      
-      // Record start time for tracking and set processing state
+      const {
+        modelKey,
+        temperature: temp,
+        topP: p,
+        candidateCount: c,
+        thinkingBudget: tb,
+        reasoningEffort: effort,
+        reasoningVerbosity: verbosity,
+        reasoningSummaryType: summaryType,
+      } = payload;
+
       const startTime = Date.now();
       setAnalysisStartTime(prev => ({ ...prev, [modelKey]: startTime }));
       setProcessingModels(prev => new Set(prev).add(modelKey));
-      
+
       try {
-        // 1. Analyze the puzzle
-        const requestBody: any = { 
+        const requestBody: Record<string, unknown> = {
           temperature: temp,
           promptId,
           ...(p ? { topP: p } : {}),
           ...(c ? { candidateCount: c } : {}),
           ...(typeof tb === 'number' ? { thinkingBudget: tb } : {}),
-          // Analysis options forwarded end-to-end
           ...(emojiSetKey ? { emojiSetKey } : {}),
           ...(typeof omitAnswer === 'boolean' ? { omitAnswer } : {}),
           ...(retryMode ? { retryMode } : {}),
-          // Debate mode context
           ...(originalExplanation ? { originalExplanation } : {}),
           ...(customChallenge ? { customChallenge } : {}),
-          // Conversation chaining support
           ...(previousResponseId ? { previousResponseId } : {}),
-          systemPromptMode: 'ARC', // Hardcoded to use new modular architecture
-          // GPT-5 reasoning parameters
+          systemPromptMode: 'ARC',
           ...(effort ? { reasoningEffort: effort } : {}),
           ...(verbosity ? { reasoningVerbosity: verbosity } : {}),
           ...(summaryType ? { reasoningSummaryType: summaryType } : {}),
         };
-        
-        // Include custom prompt if "custom" is selected and customPrompt is provided
-        if (promptId === "custom" && customPrompt.trim()) {
+
+        if (promptId === 'custom' && customPrompt.trim()) {
           requestBody.customPrompt = customPrompt.trim();
         }
-        
-        // URL-encode model key to handle OpenRouter provider/model format (e.g., qwen/qwen-2.5-coder-32b-instruct)
+
         const encodedModelKey = encodeURIComponent(modelKey);
         const analysisResponse = await apiRequest('POST', `/api/puzzle/analyze/${taskId}/${encodedModelKey}`, requestBody);
         if (!analysisResponse.ok) {
-          // Parse error response to provide clear user feedback
-          let errorMessage = 'Analysis request failed';
-
-          try {
-            const errorData = await analysisResponse.json();
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            } else if (errorData.error) {
-              errorMessage = errorData.error;
-            }
-
-            // Add helpful context for specific error types
-            if (analysisResponse.status === 429) {
-              errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-            } else if (analysisResponse.status === 401 || analysisResponse.status === 403) {
-              errorMessage = 'Authentication error. Please check your API key configuration.';
-            } else if (analysisResponse.status === 404) {
-              errorMessage = 'Model or endpoint not available. Please try a different model.';
-            } else if (analysisResponse.status >= 500) {
-              errorMessage = 'Server error occurred. Please try again in a few moments.';
-            }
-
-            // Add retry suggestion for recoverable errors
-            if (errorData.retryable || [429, 503, 504].includes(analysisResponse.status)) {
-              errorMessage += ' Please try again in a few moments.';
-            }
-          } catch (parseError) {
-            // Use status-based fallback messages if JSON parsing fails
-            if (analysisResponse.status === 429) {
-              errorMessage = 'Rate limit exceeded. Please wait and try again.';
-            } else if (analysisResponse.status >= 500) {
-              errorMessage = 'Server error. Please try again later.';
-            } else {
-              errorMessage = `Request failed (${analysisResponse.status}). Please try again.`;
-            }
-          }
-
-          throw new Error(errorMessage);
+          throw await buildAnalysisError(analysisResponse);
         }
         const analysisData = (await analysisResponse.json()).data;
 
-        // Calculate actual processing time
         const endTime = Date.now();
-        const actualTime = Math.round((endTime - startTime) / 1000); // Convert to seconds
-        
-        // Store actual processing time and remove from processing set
+        const actualTime = Math.round((endTime - startTime) / 1000);
         setAnalysisTimes(prev => ({
           ...prev,
-          [modelKey]: actualTime
+          [modelKey]: actualTime,
         }));
 
-        // 2. Save the new explanation to the database
         const explanationToSave = {
-          [modelKey]: { 
-            ...analysisData, 
+          [modelKey]: {
+            ...analysisData,
             modelKey,
-            actualProcessingTime: actualTime // Include timing data with explanation
-          }
+            actualProcessingTime: actualTime,
+          },
         };
-        
+
         const saveResponse = await apiRequest('POST', `/api/puzzle/save-explained/${taskId}`, { explanations: explanationToSave });
         if (!saveResponse.ok) {
           throw new Error(`Save request failed: ${saveResponse.statusText}`);
         }
-        
+
         const savedData = (await saveResponse.json()).data;
 
-        // Remove from processing set
-        setProcessingModels(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(modelKey);
-          return newSet;
-        });
-
+        removeProcessingModel(modelKey);
         return savedData;
-        
-      } catch (error) {
-        // Extract user-friendly error message
-        const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
-
-        // Remove from processing set on error
-        setProcessingModels(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(modelKey);
-          return newSet;
-        });
-        
-
-        // Parse and clean up error message for better user experience
-        let cleanErrorMessage = 'Analysis failed. Please try again.';
-
-        if (error instanceof Error) {
-          // Check for common error patterns and provide user-friendly messages
-          const message = error.message.toLowerCase();
-
-          if (message.includes('rate limit') || message.includes('rate-limit')) {
-            cleanErrorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-          } else if (message.includes('quota') || message.includes('billing')) {
-            cleanErrorMessage = 'API quota exceeded. Please check your billing settings.';
-          } else if (message.includes('timeout') || message.includes('network')) {
-            cleanErrorMessage = 'Request timed out. Please check your connection and try again.';
-          } else if (message.includes('unauthorized') || message.includes('forbidden')) {
-            cleanErrorMessage = 'Authentication error. Please check your API key configuration.';
-          } else if (message.includes('not found') || message.includes('404')) {
-            cleanErrorMessage = 'Model or endpoint not found. Please contact support.';
-          } else if (message.includes('server error') || message.includes('500')) {
-            cleanErrorMessage = 'Server error occurred. Please try again later.';
-          } else {
-            // Try to extract a clean message from JSON errors or use original
-            try {
-              const jsonMatch = error.message.match(/{\s*.*\s*}/);
-              if (jsonMatch) {
-                const errorJson = JSON.parse(jsonMatch[0]);
-                cleanErrorMessage = errorJson.message || errorJson.error || error.message;
-              } else {
-                // Clean up technical prefixes and use original message
-                cleanErrorMessage = error.message.split(':').pop()?.trim() || error.message;
-              }
-            } catch (parseError) {
-              cleanErrorMessage = error.message;
-            }
-          }
-        }
-
-        const errorToSet = new Error(cleanErrorMessage);
+      } catch (error: any) {
+        removeProcessingModel(modelKey);
+        const cleanMessage = normalizeAnalysisError(error);
+        const errorToSet = new Error(cleanMessage);
         setAnalyzerErrors(prev => new Map(prev).set(modelKey, errorToSet));
-        
         throw error;
       }
     },
-    onSuccess: (data, variables) => {
-      // On success, refetch all explanations from the database
+    onSuccess: () => {
       refetchExplanations();
     },
-    onError: (error, variables) => {
-      // Error handling and user feedback are already handled in the mutation function
-      // Errors are stored in analyzerErrors state for display in the UI
-    }
   });
 
-  // Helper to check if model is GPT-5 reasoning model
-  const isGPT5ReasoningModel = (modelKey: string): boolean => {
-    return ["gpt-5-2025-08-07", "gpt-5-mini-2025-08-07", "gpt-5-nano-2025-08-07"].includes(modelKey);
-  };
+  const isGPT5ReasoningModel = useCallback(
+    (modelKey: string) =>
+      ['gpt-5-2025-08-07', 'gpt-5-mini-2025-08-07', 'gpt-5-nano-2025-08-07'].includes(modelKey),
+    []
+  );
 
-  // Expose a single function to the UI to trigger the process
-  const analyzeWithModel = (modelKey: string, supportsTemperature: boolean = true) => {
-    // Clear any previous errors for this model on a new attempt
-    setAnalyzerErrors(prev => {
-      const newMap = new Map(prev);
-      newMap.delete(modelKey);
-      return newMap;
-    });
+  const analyzeWithModel = useCallback(
+    (modelKey: string, supportsTemperature: boolean = true) => {
+      setAnalyzerErrors(prev => {
+        const next = new Map(prev);
+        next.delete(modelKey);
+        return next;
+      });
 
-    // Removed provider restriction - now allows concurrent requests to same provider
-    
-    // Set current model key to show reasoning controls for GPT-5 models
-    setCurrentModelKey(modelKey);
-    
-    const payload: any = {
-      modelKey,
-      ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
-      thinkingBudget, // Always include for Gemini models
-      // Include reasoning parameters only for GPT-5 models
-      ...(isGPT5ReasoningModel(modelKey) ? {
-        reasoningEffort,
-        reasoningVerbosity,
-        reasoningSummaryType
-      } : {})
-    };
-    
-    analyzeAndSaveMutation.mutate(payload);
-  };
+      if (canStreamModel(modelKey)) {
+        startStreamingAnalysis(modelKey, supportsTemperature);
+        return;
+      }
 
-  // Reset current model when analysis completes or errors
+      setCurrentModelKey(modelKey);
+
+      const payload = {
+        modelKey,
+        ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
+        thinkingBudget,
+        ...(isGPT5ReasoningModel(modelKey)
+          ? {
+              reasoningEffort,
+              reasoningVerbosity,
+              reasoningSummaryType,
+            }
+          : {}),
+      };
+
+      analyzeAndSaveMutation.mutate(payload);
+    },
+    [
+      analyzeAndSaveMutation,
+      candidateCount,
+      canStreamModel,
+      isGPT5ReasoningModel,
+      reasoningEffort,
+      reasoningSummaryType,
+      reasoningVerbosity,
+      startStreamingAnalysis,
+      thinkingBudget,
+      topP,
+      temperature,
+    ]
+  );
+
   useEffect(() => {
-    if (!analyzeAndSaveMutation.isPending && currentModelKey) {
+    if (!analyzeAndSaveMutation.isPending && !streamingModelKey && currentModelKey) {
       setCurrentModelKey(null);
     }
-  }, [analyzeAndSaveMutation.isPending]);
+  }, [analyzeAndSaveMutation.isPending, streamingModelKey, currentModelKey]);
 
   return {
     temperature,
@@ -314,14 +427,26 @@ export function useAnalysisResults({
     customPrompt,
     setCustomPrompt,
     analyzeWithModel,
-    analyzeAndSaveMutation, // Expose mutation for advanced use cases (e.g., debate page needs mutateAsync)
+    analyzeAndSaveMutation,
+    startStreamingAnalysis,
     currentModelKey,
     processingModels,
-    isAnalyzing: analyzeAndSaveMutation.isPending,
+    isAnalyzing: analyzeAndSaveMutation.isPending || !!streamingModelKey,
     analyzerErrors,
     analysisStartTime,
     analysisTimes,
-    // GPT-5 reasoning parameters
+    streamingEnabled,
+    streamingModelKey,
+    streamStatus,
+    streamingText: streamingVisibleText,
+    streamingReasoning: streamingReasoningText,
+    streamingPhase,
+    streamingMessage,
+    streamingTokenUsage,
+    streamError,
+    cancelStreamingAnalysis,
+    closeStreamingModal,
+    canStreamModel,
     reasoningEffort,
     setReasoningEffort,
     reasoningVerbosity,
@@ -330,4 +455,64 @@ export function useAnalysisResults({
     setReasoningSummaryType,
     isGPT5ReasoningModel,
   };
+}
+
+async function buildAnalysisError(response: Response): Promise<Error> {
+  try {
+    const data = await response.json();
+    const message =
+      data?.message ||
+      data?.error ||
+      (response.status === 429
+        ? 'Rate limit exceeded. Please wait and try again.'
+        : response.status >= 500
+          ? 'Server error. Please try again later.'
+          : `Request failed (${response.status}). Please try again.`);
+    return new Error(message);
+  } catch {
+    if (response.status === 429) {
+      return new Error('Rate limit exceeded. Please wait and try again.');
+    }
+    if (response.status >= 500) {
+      return new Error('Server error. Please try again later.');
+    }
+    return new Error(`Request failed (${response.status}). Please try again.`);
+  }
+}
+
+function normalizeAnalysisError(error: unknown): string {
+  if (!(error instanceof Error)) {
+    return 'Analysis failed. Please try again.';
+  }
+
+  const message = error.message.toLowerCase();
+  if (message.includes('rate limit')) {
+    return 'Rate limit exceeded. Please wait a moment and try again.';
+  }
+  if (message.includes('quota') || message.includes('billing')) {
+    return 'API quota exceeded. Please check your billing settings.';
+  }
+  if (message.includes('timeout') || message.includes('network')) {
+    return 'Request timed out. Please check your connection and try again.';
+  }
+  if (message.includes('unauthorized') || message.includes('forbidden')) {
+    return 'Authentication error. Please check your API key configuration.';
+  }
+  if (message.includes('not found') || message.includes('404')) {
+    return 'Model or endpoint not found. Please contact support.';
+  }
+  if (message.includes('server error') || message.includes('500')) {
+    return 'Server error occurred. Please try again later.';
+  }
+
+  try {
+    const jsonMatch = error.message.match(/{\s*.*\s*}/);
+    if (jsonMatch) {
+      const errorJson = JSON.parse(jsonMatch[0]);
+      return errorJson.message || errorJson.error || error.message;
+    }
+    return error.message.split(':').pop()?.trim() || error.message;
+  } catch {
+    return error.message;
+  }
 }

@@ -15,6 +15,32 @@ import { calculateCost } from "../../utils/costCalculator.js";
 import { getModelConfig } from "../../config/models/index.js";
 import { logger } from '../../utils/logger.js';
 
+export interface StreamChunk {
+  type: string;
+  content?: string;
+  delta?: string;
+  metadata?: Record<string, any>;
+  raw?: unknown;
+  timestamp?: number;
+}
+
+export interface StreamCompletion {
+  status: 'success' | 'error' | 'aborted';
+  durationMs?: number;
+  metadata?: Record<string, any>;
+  responseSummary?: Record<string, any>;
+  error?: string; // Add error message field for robust error reporting
+}
+
+export interface StreamingHarness {
+  sessionId: string;
+  emit: (chunk: StreamChunk) => void;
+  end: (completion: StreamCompletion) => void;
+  emitEvent?: (event: string, payload: Record<string, unknown>) => void;
+  abortSignal?: AbortSignal;
+  metadata?: Record<string, any>;
+}
+
 // Common types for all AI services
 export interface ServiceOptions {
   previousResponseId?: string;
@@ -29,6 +55,7 @@ export interface ServiceOptions {
   store?: boolean;
   captureReasoning?: boolean; // Add captureReasoning property
   sessionId?: string; // Optional WebSocket session for streaming progress
+  stream?: StreamingHarness;
 }
 
 export interface TokenUsage {
@@ -101,6 +128,7 @@ export interface ModelInfo {
 export abstract class BaseAIService {
   protected abstract provider: string;
   protected abstract models: Record<string, string>;
+  private activeStreamControllers: Map<string, AbortController> = new Map();
 
   /**
    * Main analysis method - must be implemented by each provider
@@ -132,6 +160,23 @@ export abstract class BaseAIService {
     options?: PromptOptions,
     serviceOpts?: ServiceOptions
   ): PromptPreview;
+
+  supportsStreaming(_modelKey: string): boolean {
+    return false;
+  }
+
+  async analyzePuzzleWithStreaming(
+    _task: ARCTask,
+    modelKey: string,
+    _taskId: string,
+    _temperature: number = 0.2,
+    _promptId?: string,
+    _customPrompt?: string,
+    _options?: PromptOptions,
+    _serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    throw new Error(`${this.provider} does not support streaming for ${modelKey}`);
+  }
 
   /**
    * Provider-specific API call - must be implemented by each provider
@@ -432,6 +477,67 @@ export abstract class BaseAIService {
     }
 
     return false;
+  }
+
+  protected registerStream(harness?: StreamingHarness): AbortController | null {
+    if (!harness) {
+      return null;
+    }
+
+    const controller = new AbortController();
+    this.activeStreamControllers.set(harness.sessionId, controller);
+
+    if (harness.abortSignal) {
+      if (harness.abortSignal.aborted) {
+        controller.abort();
+      } else {
+        const abortHandler = () => controller.abort();
+        harness.abortSignal.addEventListener("abort", abortHandler, { once: true });
+      }
+    }
+
+    return controller;
+  }
+
+  protected emitStreamChunk(harness: StreamingHarness | undefined, chunk: StreamChunk): void {
+    if (!harness) return;
+    const enriched: StreamChunk = {
+      ...chunk,
+      timestamp: chunk.timestamp ?? Date.now(),
+    };
+    harness.emit(enriched);
+  }
+
+  protected emitStreamEvent(
+    harness: StreamingHarness | undefined,
+    event: string,
+    payload: Record<string, unknown>
+  ): void {
+    if (!harness?.emitEvent) return;
+    harness.emitEvent(event, payload);
+  }
+
+  protected finalizeStream(harness: StreamingHarness | undefined, completion: StreamCompletion): void {
+    if (!harness) return;
+    try {
+      harness.end({
+        ...completion,
+        timestamp: Date.now(),
+      } as StreamCompletion);
+    } finally {
+      this.cleanupStream(harness.sessionId);
+    }
+  }
+
+  protected cleanupStream(sessionId: string): void {
+    const controller = this.activeStreamControllers.get(sessionId);
+    if (!controller) return;
+    controller.abort();
+    this.activeStreamControllers.delete(sessionId);
+  }
+
+  protected isStreamActive(sessionId: string): boolean {
+    return this.activeStreamControllers.has(sessionId);
   }
 
   /**

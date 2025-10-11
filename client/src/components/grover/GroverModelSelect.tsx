@@ -12,7 +12,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export type GroverModelKey = 'grover-grok-4-fast-reasoning' | 'grover-gpt-5-nano' | 'grover-gpt-5-mini';
+export type GroverModelKey = 'grover-gpt-5-nano' | 'grover-gpt-5-mini';
 
 interface GroverModelSelectProps {
   value: GroverModelKey;
@@ -31,9 +31,6 @@ export default function GroverModelSelect({ value, onChange, disabled }: GroverM
         <SelectValue placeholder="Select model" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="grover-grok-4-fast-reasoning">
-          Grover (Grok 4 Fast) ⚡
-        </SelectItem>
         <SelectItem value="grover-gpt-5-nano">
           Grover (GPT-5 Nano) 💰
         </SelectItem>

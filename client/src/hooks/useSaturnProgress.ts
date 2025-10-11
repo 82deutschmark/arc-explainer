@@ -1,17 +1,12 @@
 /**
  * client/src/hooks/useSaturnProgress.ts
  *
- * Hook for managing a Saturn analysis session: starts the backend job and
- * streams real-time progress updates over WebSocket. Returns helpers and state
- * so pages can render the current phase/progress and final result.
+ * Hook for managing a Saturn analysis session. Supports two execution paths:
+ * 1) SSE streaming when VITE_ENABLE_SSE_STREAMING === 'true'
+ * 2) Legacy WebSocket polling when streaming is disabled
  *
- * How it works:
- * - POST to `/api/saturn/analyze/:taskId` to start a job and get a `sessionId`.
- * - Open a WebSocket to `/api/saturn/progress?sessionId=...`.
- * - Merge streamed JSON snapshots into state. Accumulate any `images` into a
- *   deduplicated `galleryImages` list for the UI.
- *
- * Author: Cascade (model: GPT-5 medium reasoning)
+ * Returns helpers and state so pages can render the current phase/progress,
+ * live streaming output, and final result.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,6 +20,9 @@ export interface SaturnOptions {
   captureReasoning?: boolean;
   useResponsesAPI?: boolean;
   previousResponseId?: string;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  reasoningVerbosity?: 'low' | 'medium' | 'high';
+  reasoningSummaryType?: 'auto' | 'detailed';
 }
 
 export interface SaturnProgressState {
@@ -35,127 +33,84 @@ export interface SaturnProgressState {
   progress?: number;
   message?: string;
   result?: any;
-  images?: { path: string; base64?: string }[]; // last batch from server
-  galleryImages?: { path: string; base64?: string }[]; // accumulated across run
-  // Cascade: accumulate log lines for a live console panel. The backend forwards
-  // Python stdout/stderr as ws events with phase === 'log'. We also append
-  // terminal status messages on error/completion for visibility.
+  images?: { path: string; base64?: string }[];
+  galleryImages?: { path: string; base64?: string }[];
   logLines?: string[];
-  // Reasoning logs from Saturn's analysis process
   reasoningLog?: string;
-  // Accumulated reasoning logs for detailed analysis view
   reasoningHistory?: string[];
+  streamingStatus?: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
+  streamingPhase?: string;
+  streamingMessage?: string;
+  streamingText?: string;
+  streamingReasoning?: string;
+  streamingTokenUsage?: {
+    input?: number;
+    output?: number;
+    reasoning?: number;
+  };
 }
 
 export function useSaturnProgress(taskId: string | undefined) {
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [state, setState] = useState<SaturnProgressState>({ 
-    status: 'idle', 
-    galleryImages: [], 
-    logLines: [], 
-    reasoningHistory: [] 
+  const [state, setState] = useState<SaturnProgressState>({
+    status: 'idle',
+    galleryImages: [],
+    logLines: [],
+    reasoningHistory: [],
+    streamingStatus: 'idle',
   });
   const wsRef = useRef<WebSocket | null>(null);
+  const sseRef = useRef<EventSource | null>(null);
+  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
 
-  // Helper to close any existing socket
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
-      try { wsRef.current.close(); } catch {}
-      wsRef.current = null;
+      try {
+        wsRef.current.close();
+      } catch {
+        // Ignore errors during cleanup
+      } finally {
+        wsRef.current = null;
+      }
     }
   }, []);
 
-  // Start an analysis and open WebSocket
-  const start = useCallback(async (options?: SaturnOptions) => {
-    if (!taskId) return;
-    // Reset state for new run
-    setState({ 
-      status: 'running', 
-      phase: 'initializing', 
-      step: 0, 
-      totalSteps: options?.maxSteps, 
-      galleryImages: [], 
-      logLines: [], 
-      reasoningHistory: [] 
-    });
+  const closeEventSource = useCallback(() => {
+    if (sseRef.current) {
+      try {
+        sseRef.current.close();
+      } catch {
+        // Ignore errors during cleanup
+      } finally {
+        sseRef.current = null;
+      }
+    }
+  }, []);
+
+  const openWebSocket = useCallback((sid: string) => {
     closeSocket();
 
-    // Map friendly UI labels to backend model ids and include provider for clarity.
-    // Wrapper still validates and enforces OpenAI-only (base64 PNG), but we send
-    // provider explicitly to surface clear errors on unsupported selections.
-    const uiModel = options?.model ?? 'GPT-5';
-    let provider: string | undefined;
-    let modelId: string | undefined;
-    const m = (uiModel || '').toString().toLowerCase();
-    if (m === 'gpt-5' || uiModel === 'GPT-5') {
-      provider = 'openai';
-      modelId = 'gpt-5';
-    } else if (m.includes('claude')) {
-      provider = 'anthropic';
-      modelId = uiModel; // wrapper will error (unsupported provider)
-    } else if (m.includes('grok')) {
-      provider = 'xai';
-      modelId = uiModel; // wrapper will error (unsupported provider)
-    } else {
-      provider = undefined; // let wrapper infer
-      modelId = uiModel;
-    }
-
-    const wireOptions = {
-      provider,
-      model: modelId,
-      temperature: options?.temperature ?? 0.2,
-      cellSize: options?.cellSize ?? 24,
-      maxSteps: options?.maxSteps ?? 8,
-      captureReasoning: !!options?.captureReasoning,
-      ...(options?.previousResponseId && { previousResponseId: options.previousResponseId })
-    };
-
-    // Choose endpoint based on whether to use Responses API
-    const endpoint = options?.useResponsesAPI 
-      ? `/api/saturn/analyze-with-reasoning/${taskId}`
-      : `/api/saturn/analyze/${taskId}`;
-    
-    const res = await apiRequest('POST', endpoint, wireOptions);
-    const json = await res.json();
-    const sid = json?.data?.sessionId as string;
-    setSessionId(sid);
-
-    // Open WebSocket
     const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
-    
-    // In development, frontend (Vite) runs on different port than backend
     const isDev = import.meta.env.DEV;
     const wsHost = isDev ? 'localhost:5000' : location.host;
-    
     const wsUrl = `${wsProtocol}://${wsHost}/api/saturn/progress?sessionId=${encodeURIComponent(sid)}`;
-    const sock = new WebSocket(wsUrl);
-    wsRef.current = sock;
 
-    sock.onmessage = (evt) => {
+    const socket = new WebSocket(wsUrl);
+    wsRef.current = socket;
+
+    socket.onmessage = (evt) => {
       try {
-        console.log('[SATURN-DEBUG] WebSocket raw message:', evt.data.substring(0, 500));
         const payload = JSON.parse(evt.data);
         const data = payload?.data;
-        console.log('[SATURN-DEBUG] WebSocket parsed payload:', {
-          type: payload?.type,
-          status: data?.status,
-          phase: data?.phase,
-          step: data?.step,
-          totalSteps: data?.totalSteps,
-          progress: data?.progress,
-          message: data?.message?.substring(0, 100),
-          imagesCount: Array.isArray(data?.images) ? data.images.length : 0
-        });
         if (!data) {
-          console.log('[SATURN-DEBUG] WebSocket message has no data field');
           return;
         }
+
         setState((prev) => {
           let nextGallery = prev.galleryImages ?? [];
           const incoming = Array.isArray(data.images) ? data.images : [];
           if (incoming.length) {
-            const seen = new Set((nextGallery).map((i) => i.path));
+            const seen = new Set(nextGallery.map((i) => i.path));
             for (const im of incoming) {
               if (im?.path && !seen.has(im.path)) {
                 nextGallery = [...nextGallery, im];
@@ -163,62 +118,232 @@ export function useSaturnProgress(taskId: string | undefined) {
               }
             }
           }
-          // Build next log buffer
+
           let nextLogs = prev.logLines ? [...prev.logLines] : [];
           const msg: string | undefined = typeof data.message === 'string' ? data.message : undefined;
           const phase = data.phase;
           const status = data.status;
-          if (msg && (phase === 'log' || status === 'error' || status === 'completed' || phase === 'runtime' || phase === 'persistence' || phase === 'handler')) {
+          if (
+            msg &&
+            (phase === 'log' ||
+              status === 'error' ||
+              status === 'completed' ||
+              phase === 'runtime' ||
+              phase === 'persistence' ||
+              phase === 'handler')
+          ) {
             nextLogs.push(msg);
-            // Cap to avoid unbounded growth
             if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
           }
-          
-          // Handle reasoning logs
+
           let nextReasoningHistory = prev.reasoningHistory ? [...prev.reasoningHistory] : [];
           const reasoningLog = data.reasoningLog;
           if (reasoningLog && typeof reasoningLog === 'string') {
             nextReasoningHistory.push(reasoningLog);
-            // Cap reasoning history to avoid unbounded growth  
             if (nextReasoningHistory.length > 100) nextReasoningHistory = nextReasoningHistory.slice(-100);
           }
-          
-          const newState = { 
-            ...prev, 
-            ...data, 
-            galleryImages: nextGallery, 
+
+          return {
+            ...prev,
+            ...data,
+            galleryImages: nextGallery,
             logLines: nextLogs,
-            reasoningHistory: nextReasoningHistory
+            reasoningHistory: nextReasoningHistory,
           };
-          console.log('[SATURN-DEBUG] WebSocket state update:', {
-            status: newState.status,
-            phase: newState.phase,
-            galleryCount: newState.galleryImages?.length || 0,
-            logCount: newState.logLines?.length || 0,
-            reasoningCount: newState.reasoningHistory?.length || 0,
-            hasCurrentReasoning: !!newState.reasoningLog,
-            currentReasoningPreview: newState.reasoningLog?.substring(0, 100),
-            receivedReasoningLog: data.reasoningLog?.substring(0, 100)
-          });
-          return newState;
         });
       } catch (error) {
-        console.error('[SATURN-DEBUG] WebSocket parse error:', error, 'Raw data:', evt.data);
+        console.error('[Saturn] WebSocket parse error:', error, 'payload:', evt.data);
       }
     };
+  }, [closeSocket]);
 
-    sock.onclose = () => {
-      // If we closed while still running, keep last state; otherwise no-op
-    };
+  const start = useCallback(
+    async (options?: SaturnOptions) => {
+      if (!taskId) return;
 
-  }, [taskId, closeSocket]);
+      closeSocket();
+      closeEventSource();
 
-  // Cleanup on unmount
+      setState({
+        status: 'running',
+        phase: 'initializing',
+        step: 0,
+        totalSteps: options?.maxSteps,
+        galleryImages: [],
+        logLines: [],
+        reasoningHistory: [],
+        streamingStatus: streamingEnabled ? 'starting' : 'idle',
+        streamingText: undefined,
+        streamingReasoning: undefined,
+        streamingMessage: undefined,
+      });
+
+      const modelKey = options?.model || 'gpt-5-nano-2025-08-07';
+
+      if (streamingEnabled) {
+        const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
+        const apiUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+
+        const query = new URLSearchParams();
+        query.set('temperature', String(options?.temperature ?? 0.2));
+        query.set('promptId', 'solver');
+        if (options?.previousResponseId) query.set('previousResponseId', options.previousResponseId);
+        if (options?.reasoningEffort) query.set('reasoningEffort', options.reasoningEffort);
+        if (options?.reasoningVerbosity) query.set('reasoningVerbosity', options.reasoningVerbosity);
+        if (options?.reasoningSummaryType) query.set('reasoningSummaryType', options.reasoningSummaryType);
+
+        const streamUrl = `${apiUrl}/api/stream/saturn/${taskId}/${encodeURIComponent(modelKey)}${
+          query.toString() ? `?${query.toString()}` : ''
+        }`;
+
+        const eventSource = new EventSource(streamUrl);
+        sseRef.current = eventSource;
+
+        eventSource.addEventListener('stream.init', (evt) => {
+          try {
+            const payload = JSON.parse((evt as MessageEvent<string>).data) as {
+              sessionId: string;
+              taskId: string;
+              modelKey: string;
+              createdAt: string;
+            };
+            setSessionId(payload.sessionId);
+            setState((prev) => ({
+              ...prev,
+              streamingStatus: 'starting',
+              status: 'running',
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse init payload:', error);
+          }
+        });
+
+        eventSource.addEventListener('stream.status', (evt) => {
+          try {
+            const status = JSON.parse((evt as MessageEvent<string>).data) as {
+              state?: SaturnProgressState['streamingStatus'];
+              phase?: string;
+              message?: string;
+            };
+            setState((prev) => ({
+              ...prev,
+              streamingStatus: status.state ?? prev.streamingStatus ?? 'idle',
+              streamingPhase: status.phase ?? prev.streamingPhase,
+              streamingMessage: status.message ?? prev.streamingMessage,
+              status: status.state === 'failed' ? 'error' : prev.status,
+              phase: status.phase ?? prev.phase,
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse status payload:', error);
+          }
+        });
+
+        eventSource.addEventListener('stream.chunk', (evt) => {
+          try {
+            const chunk = JSON.parse((evt as MessageEvent<string>).data) as {
+              type?: string;
+              delta?: string;
+              content?: string;
+            };
+            setState((prev) => ({
+              ...prev,
+              streamingText:
+                chunk.type === 'text'
+                  ? (prev.streamingText ?? '') + (chunk.delta ?? chunk.content ?? '')
+                  : prev.streamingText,
+              streamingReasoning:
+                chunk.type === 'reasoning'
+                  ? (prev.streamingReasoning ?? '') + (chunk.delta ?? chunk.content ?? '')
+                  : prev.streamingReasoning,
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse chunk payload:', error);
+          }
+        });
+
+        eventSource.addEventListener('stream.complete', (evt) => {
+          try {
+            const summary = JSON.parse((evt as MessageEvent<string>).data) as {
+              responseSummary?: Record<string, unknown>;
+              metadata?: { tokenUsage?: { input?: number; output?: number; reasoning?: number } };
+            };
+            setState((prev) => ({
+              ...prev,
+              status: 'completed',
+              streamingStatus: 'completed',
+              result: summary.responseSummary ?? summary,
+              streamingTokenUsage: summary.metadata?.tokenUsage,
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse completion payload:', error);
+            setState((prev) => ({
+              ...prev,
+              status: 'error',
+              streamingStatus: 'failed',
+              streamingMessage: 'Streaming completion parse error',
+            }));
+          } finally {
+            closeEventSource();
+          }
+        });
+
+        eventSource.addEventListener('stream.error', (evt) => {
+          try {
+            const payload = JSON.parse((evt as MessageEvent<string>).data) as { message?: string };
+            setState((prev) => ({
+              ...prev,
+              status: 'error',
+              streamingStatus: 'failed',
+              streamingMessage: payload.message ?? 'Streaming error',
+            }));
+          } catch (error) {
+            console.error('[SaturnStream] Failed to parse error payload:', error);
+          } finally {
+            closeEventSource();
+          }
+        });
+
+        eventSource.onerror = () => {
+          setState((prev) => ({
+            ...prev,
+            status: 'error',
+            streamingStatus: 'failed',
+            streamingMessage: 'Streaming connection lost',
+          }));
+          closeEventSource();
+        };
+
+        return;
+      }
+
+      // Legacy WebSocket path
+      const endpoint = `/api/saturn/analyze/${taskId}`;
+      const requestBody = {
+        modelKey,
+        temperature: options?.temperature ?? 0.2,
+        promptId: 'solver',
+        ...(options?.previousResponseId && { previousResponseId: options.previousResponseId }),
+        captureReasoning: true,
+        reasoningEffort: options?.reasoningEffort || 'high',
+        reasoningVerbosity: options?.reasoningVerbosity || 'high',
+        reasoningSummaryType: options?.reasoningSummaryType || 'detailed',
+      };
+
+      const res = await apiRequest('POST', endpoint, requestBody);
+      const json = await res.json();
+      const sid = json?.data?.sessionId as string;
+      setSessionId(sid);
+      openWebSocket(sid);
+    },
+    [closeEventSource, closeSocket, openWebSocket, streamingEnabled, taskId]
+  );
+
   useEffect(() => {
     return () => {
       closeSocket();
+      closeEventSource();
     };
-  }, [closeSocket]);
+  }, [closeEventSource, closeSocket]);
 
   return { sessionId, state, start };
 }

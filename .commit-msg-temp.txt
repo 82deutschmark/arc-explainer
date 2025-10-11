@@ -1,48 +1,23 @@
-feat: Grover snapshot hydration for instant progress display
+Fix: Model comparison architecture - eliminate DRY/SRP violations
 
-Author: Cascade using Claude Sonnet 4.5
-Date: 2025-10-09T22:36:00-04:00
+PROBLEM: Model comparison returning 0 or incomplete results when comparing models on specific datasets.
 
-PROBLEM:
-- Grover page showed nothing for 30-60 seconds, then everything appeared at once
-- Reloading mid-run lost all progress, showing blank cards
-- Users had no feedback that analysis was running
+ROOT CAUSE: DRY and SRP violations in dataset puzzle ID retrieval.
+- MetricsRepository had its own implementation using puzzleLoader with source mapping
+- ModelDatasetRepository had correct filesystem-based implementation (private)
+- puzzleLoader uses priority-based deduplication (wrong semantic for model comparison)
+- Model comparison needs ALL puzzles in directory, not priority-filtered subset
 
-ROOT CAUSE:
-- No snapshot hydration: UI waited for first WebSocket message
-- If early progress fired before socket ready, nothing rendered until much later
-- Page reload had no way to recover state from running session
+THE BUG: When dataset has 120 puzzles but 20 also exist in higher-priority dataset,
+puzzleLoader returns only 100 (excludes 20 due to priority) while filesystem approach returns all 120 (correct).
 
-SOLUTION:
-Implemented dual-path snapshot hydration mirroring Saturn pattern:
+FIX:
+1. Made ModelDatasetRepository.getPuzzleIdsFromDataset() PUBLIC (canonical API for dataset operations)
+2. Updated MetricsRepository.getPuzzleIdsForDataset() to delegate (removed puzzleLoader logic)
+3. Updated documentation in both repositories
 
-1. Immediate Hydration After Start
-   - Fetch snapshot right after receiving sessionId
-   - Hydrate state before WebSocket connects
-   - Prevents blank screen during socket connection delay
-   - Lines 116-136 in useGroverProgress.ts
+BENEFITS: Correctness, SRP compliance, DRY compliance, better maintainability
 
-2. Reload Hydration
-   - Poll snapshot on mount if sessionId exists but state is empty
-   - Rehydrates progress after page reload mid-run
-   - Lines 307-337 in useGroverProgress.ts
+FILES: MetricsRepository.ts, ModelDatasetRepository.ts, 2 analysis docs
 
-BACKEND:
-- Endpoint already existed: GET /api/grover/status/:sessionId (line 172 routes.ts)
-- groverController.getStatus uses wsService.getSessionSnapshot (lines 131-139)
-- No backend changes needed
-
-IMPACT:
-- Progress visible within 1-2 seconds instead of 30-60 seconds
-- Iteration cards update incrementally, not in final burst
-- Page reload preserves all progress via snapshot
-- Active iteration highlighting works immediately
-
-VERIFICATION:
-- Start run: Header shows "initializing/iteration_start" within 1-2s
-- Activity stream logs appear immediately
-- Iteration cards update as data arrives
-- Reload mid-run: State rehydrates from snapshot
-
-FILES MODIFIED:
-- client/src/hooks/useGroverProgress.ts (snapshot hydration implementation)
+VERIFIED: No breaking changes - API contract unchanged, isolated fix

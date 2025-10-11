@@ -13,14 +13,22 @@
  * @assessed_on 2025-09-09
  */
 
-import OpenAI from "openai";
+import OpenAI, { APIUserAbortError } from "openai";
 import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
 const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
-import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
+import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
+import type { ResponseStreamEvent } from "openai/resources/responses/responses";
+
+type OpenAIStreamAggregates = {
+  text: string;
+  reasoning: string;
+  summary: string;
+  refusal: string;
+};
 
 // Import centralized model configuration
 import { 
@@ -46,6 +54,14 @@ export class OpenAIService extends BaseAIService {
     "gpt-5-chat-latest": "gpt-5-chat-latest",
     // Add other models as needed
   };
+
+  supportsStreaming(modelKey: string): boolean {
+    return [
+      "gpt-5-mini-2025-08-07",
+      "gpt-5-nano-2025-08-07",
+      "gpt-5-2025-08-07"
+    ].includes(modelKey);
+  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -108,7 +124,129 @@ export class OpenAIService extends BaseAIService {
     }
   }
 
-  getModelInfo(modelKey: string): ModelInfo {
+
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId: string = DEFAULT_PROMPT_ID,
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    if (!this.supportsStreaming(modelKey)) {
+      return super.analyzePuzzleWithStreaming(
+        task,
+        modelKey,
+        taskId,
+        temperature,
+        promptId,
+        customPrompt,
+        options,
+        serviceOpts
+      );
+    }
+
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
+
+    const harness = serviceOpts.stream;
+    const controller = this.registerStream(harness);
+    const startedAt = Date.now();
+
+    try {
+      const { body } = this.buildResponsesRequestBody(
+        promptPackage,
+        modelKey,
+        temperature,
+        serviceOpts,
+        taskId
+      );
+
+      this.emitStreamEvent(harness, "stream.status", { state: "requested" });
+
+      const stream = openai.responses.stream(
+        { ...body, stream: true },
+        { signal: controller?.signal }
+      );
+
+      const aggregates: OpenAIStreamAggregates = {
+        text: "",
+        reasoning: "",
+        summary: "",
+        refusal: ""
+      };
+
+      for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
+        this.handleStreamingEvent(event, harness, aggregates);
+      }
+
+      const finalResponse = await stream.finalResponse();
+      const parsedResponse = this.normalizeOpenAIResponse(finalResponse, modelKey);
+
+      const captureReasoning = serviceOpts.captureReasoning !== false;
+      const {
+        result,
+        tokenUsage,
+        reasoningLog,
+        reasoningItems,
+        status,
+        incomplete,
+        incompleteReason,
+        responseId
+      } = this.parseProviderResponse(parsedResponse, modelKey, captureReasoning, taskId);
+
+      const completeness = this.validateResponseCompleteness(parsedResponse, modelKey);
+
+      const finalModelResponse = this.buildStandardResponse(
+        modelKey,
+        temperature,
+        result,
+        tokenUsage,
+        serviceOpts,
+        reasoningLog,
+        !!reasoningLog,
+        reasoningItems,
+        status || (completeness.isComplete ? "complete" : "incomplete"),
+        incomplete ?? !completeness.isComplete,
+        incompleteReason || completeness.suggestion,
+        promptPackage,
+        promptId,
+        customPrompt,
+        responseId
+      );
+
+      this.finalizeStream(harness, {
+        status: "success",
+        durationMs: Date.now() - startedAt,
+        metadata: {
+          responseId,
+          tokenUsage
+        },
+        responseSummary: {
+          outputText: parsedResponse.output_text,
+          reasoningLog,
+          accumulatedText: aggregates.text,
+          accumulatedReasoning: aggregates.reasoning,
+          refusal: aggregates.refusal,
+          analysis: finalModelResponse
+        }
+      });
+
+      return finalModelResponse;
+    } catch (error) {
+      if (harness?.sessionId) {
+        this.cleanupStream(harness.sessionId);
+      }
+
+      if (error instanceof APIUserAbortError) {
+        throw error;
+      }
+
+      this.handleAnalysisError(error, modelKey, task);
+    }
+  }  getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey);
     const isReasoning = MODELS_WITH_REASONING.has(modelKey);
     const modelConfig = getModelConfig(modelKey);
@@ -197,6 +335,97 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
+  private buildResponsesRequestBody(
+    promptPackage: PromptPackage,
+    modelKey: string,
+    temperature: number,
+    serviceOpts: ServiceOptions,
+    taskId?: string
+  ) {
+    const modelName = getApiModelName(modelKey);
+    const systemMessage = promptPackage.systemPrompt;
+    const userMessage = promptPackage.userPrompt;
+
+    const isContinuation = !!serviceOpts.previousResponseId;
+    const messages: Array<{ role: string; content: string }> = [];
+
+    if (isContinuation) {
+      console.log('[OpenAI] >> Continuation mode - sending ONLY new user message');
+      messages.push({ role: "user", content: userMessage });
+    } else {
+      console.log('[OpenAI] >> Initial mode - sending system + user messages');
+      if (systemMessage) {
+        messages.push({ role: "system", content: systemMessage });
+      }
+      messages.push({ role: "user", content: userMessage });
+    }
+
+    const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
+    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+
+    let reasoningConfig: Record<string, unknown> | undefined;
+    let textConfig: Record<string, unknown> | undefined;
+
+    if (isReasoningModel) {
+      if (isGPT5Model) {
+        reasoningConfig = {
+          effort: serviceOpts.reasoningEffort || "high",
+          summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || "detailed"
+        };
+        textConfig = {
+          verbosity: serviceOpts.reasoningVerbosity || "high"
+        };
+      } else if (isO3O4Model) {
+        reasoningConfig = {
+          summary: serviceOpts.reasoningSummary || "auto"
+        };
+      }
+    }
+
+    const supportsStructuredOutput =
+      !modelName.includes("gpt-5-chat-latest") && !modelName.includes("gpt-5-nano");
+
+    const baseText = textConfig ? { ...textConfig } : undefined;
+    const structuredFormat = supportsStructuredOutput
+      ? {
+          type: "json_schema",
+          name: ARC_JSON_SCHEMA.name,
+          strict: ARC_JSON_SCHEMA.strict,
+          schema: ARC_JSON_SCHEMA.schema
+        }
+      : undefined;
+
+    const textPayload =
+      structuredFormat || baseText
+        ? {
+            ...(baseText ?? {}),
+            ...(structuredFormat ? { format: structuredFormat } : {})
+          }
+        : undefined;
+
+    const payload: Record<string, any> = {
+      model: modelName,
+      input: messages,
+      reasoning: reasoningConfig,
+      ...(textPayload ? { text: textPayload } : {}),
+      temperature: modelSupportsTemperature(modelKey) ? (temperature ?? 0.2) : undefined,
+      top_p:
+        modelSupportsTemperature(modelKey) && isGPT5ChatModel
+          ? 1
+          : undefined,
+      previous_response_id: serviceOpts.previousResponseId,
+      store: serviceOpts.store !== false,
+      parallel_tool_calls: false,
+      truncation: "auto",
+      max_steps: serviceOpts.maxSteps,
+      max_output_tokens: serviceOpts.maxOutputTokens,
+      metadata: taskId ? { taskId } : undefined
+    };
+
+    return { body: payload, isContinuation };
+  }
   protected async callProviderAPI(
     promptPackage: PromptPackage,
     modelKey: string,
@@ -215,12 +444,14 @@ export class OpenAIService extends BaseAIService {
     
     if (isContinuation) {
       // Continuation: API loads context from previous_response_id
-      // ONLY send the new message
-      console.log('[OpenAI] 🔄 Continuation mode - sending ONLY new user message');
+      // send the new message (we should include the system message too!!!)
+      // Make sure we are sending the previous_response_id too!!  That is the point of this!!
+      // The point isnt saving tokens, it is preserving the context chain!!!
+      console.log('[OpenAI] =↪➡🤔🤨 Continuation mode - sending with previous_response_id');
       messages.push({ role: "user", content: userMessage });
     } else {
       // Initial: Send full conversation
-      console.log('[OpenAI] 📄 Initial mode - sending system + user messages');
+      console.log('[OpenAI] =🚀📝🧩 Initial mode - sending system + user messages (puzzle grids)');
       if (systemMessage) {
         messages.push({ role: "system", content: systemMessage });
       }
@@ -403,7 +634,7 @@ export class OpenAIService extends BaseAIService {
       // Use JSON.stringify instead of String() to avoid "[object Object]" corruption
       try {
         reasoningLog = JSON.stringify(reasoningLog, null, 2);
-        console.log(`🔍 [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+        console.log(`=��� [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
       } catch (error) {
         console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
         reasoningLog = null;
@@ -573,6 +804,127 @@ export class OpenAIService extends BaseAIService {
     }
   }
 
+  private normalizeOpenAIResponse(result: any, modelKey: string) {
+    const usage = result?.usage ?? {};
+    const inputTokens = usage.input_tokens ?? 0;
+    const outputTokens = usage.output_tokens ?? 0;
+    const reasoningTokens = usage.output_tokens_details?.reasoning_tokens ?? 0;
+
+    const tokenUsage: TokenUsage = {
+      input: inputTokens,
+      output: outputTokens,
+      reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
+    };
+
+    const cost = this.calculateResponseCost(modelKey, tokenUsage);
+
+    return {
+      id: result.id,
+      status: result.status,
+      incomplete_details: result.incomplete_details,
+      output_text: result.output_text ?? this.extractTextFromOutputBlocks(result.output ?? []),
+      output_parsed: result.output_parsed,
+      output_reasoning: {
+        summary: result.output_reasoning?.summary ?? this.extractReasoningFromOutputBlocks(result.output ?? []),
+        items: result.output_reasoning?.items ?? []
+      },
+      raw_response: result,
+      usage: result.usage,
+      tokenUsage,
+      cost
+    };
+  }
+  private handleStreamingEvent(
+    event: ResponseStreamEvent,
+    harness: StreamingHarness | undefined,
+    aggregates: OpenAIStreamAggregates
+  ): void {
+    switch (event.type) {
+      case "response.output_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.text += delta;
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta,
+            content: (event as any).snapshot ?? aggregates.text,
+            metadata: {
+              sequence: event.sequence_number,
+              outputIndex: (event as any).output_index
+            }
+          });
+        }
+        break;
+      }
+      case "response.reasoning_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.reasoning += delta;
+          this.emitStreamChunk(harness, {
+            type: "reasoning",
+            delta,
+            content: aggregates.reasoning,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.reasoning_summary_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.summary += delta;
+          this.emitStreamChunk(harness, {
+            type: "reasoning_summary",
+            delta,
+            content: aggregates.summary,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.refusal.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.refusal += delta;
+          this.emitStreamChunk(harness, {
+            type: "refusal",
+            delta,
+            content: aggregates.refusal,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.in_progress": {
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "in_progress",
+          step: (event as any).step
+        });
+        break;
+      }
+      case "response.completed": {
+        this.emitStreamEvent(harness, "stream.status", { state: "completed" });
+        break;
+      }
+      case "response.failed":
+      case "error": {
+        const message = (event as any).error?.message ?? "Streaming failed";
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "failed",
+          message
+        });
+        break;
+      }
+      default:
+        break;
+    }
+  }
   // Helper methods extracted from original implementation
   private extractTextFromOutputBlocks(output: any[]): string {
     if (!Array.isArray(output)) {
@@ -687,3 +1039,23 @@ export class OpenAIService extends BaseAIService {
 }
 
 export const openaiService = new OpenAIService();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
