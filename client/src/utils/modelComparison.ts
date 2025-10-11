@@ -36,7 +36,7 @@ export const computeUniqueSolves = (summary: ModelComparisonSummary): number => 
     summary.model3OnlyCorrect,
     summary.model4OnlyCorrect,
   ];
-  return counts.reduce((total, value) => total + (value ?? 0), 0);
+  return counts.reduce((total: number, value) => total + (value ?? 0), 0);
 };
 
 /**
