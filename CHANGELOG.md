@@ -1,13 +1,27 @@
 ## [4.0.18] - 2025-10-10
 
 ### Added
-- **PuzzleBrowser: Credits & Acknowledgments Section**
-  - Added beautiful credits card below ARC2 Paper section
-  - **Puzzle Names**: Link to Google ARC-GEN Project task list for puzzle naming credits
-  - **SOTA Solutions**: Links to jerber and epang080516/arc_agi repositories
-  - **Special Thanks**: Recognition for Simon Strandgaard (@neoneye) for invaluable help and support
-  - Green-to-teal gradient design with emoji header and external link icons
-  - Responsive layout with proper spacing and typography
+- **PuzzleBrowser: Beautiful Credits & Acknowledgments Section**
+  - **Design**: Stunning 3-column responsive grid with gradient cards and hover animations
+  - **Header**: Centered with Heart icons, gradient text, and inspirational tagline
+  - **Puzzle Names Card**: 
+    - Sparkles icon with emerald/teal gradient
+    - Links to Google ARC-GEN Project for puzzle naming system
+    - Hover scale effect and shadow transitions
+  - **SOTA Solutions Card**:
+    - Trophy icon with blue/cyan gradient
+    - Two buttons linking to jerber and epang080516/arc_agi
+    - State-of-the-art solving approaches
+  - **Special Thanks Card**:
+    - Filled Heart icon with rose/pink gradient
+    - Simon Strandgaard (@neoneye) recognition
+    - GitHub username display
+  - **Features**:
+    - Each card has white/80 backdrop blur with colored borders
+    - Gradient button backgrounds with hover states
+    - Scale-on-hover (105%) for interactive feel
+    - Shadow elevation on hover
+    - Fully responsive (stacks on mobile, 3 columns on desktop)
 
 ### Fixed
 - **PuzzleBrowser TypeScript Error**
