@@ -1,78 +1,28 @@
 /**
- * Author: Claude Code (original), Claude Code using Sonnet 4.5 (2025-09-30 audit & header update)
- * Date: 2025-08-22 (original), 2025-09-30 (audit completed)
- * PURPOSE: JSON schema definitions and validation functions for solver mode responses where AI
- * predicts puzzle answers. Enforces strict structure for OpenAI structured outputs and provides
- * validation for all providers. Critical for ensuring LLM responses contain properly formatted
- * prediction grids that can be extracted and validated against correct answers.
+ * Author: Claude Code (original), Cascade using Claude Sonnet 4 (2025-10-11 refactor)
+ * Date: 2025-08-22 (original), 2025-10-11 (updated for dynamic schema architecture)
+ * PURPOSE: Validation and extraction utilities for solver mode responses. Provides flexible
+ * prediction extraction from AI responses supporting multiple field naming conventions, numbered
+ * fields (predictedOutput1, predictedOutput2), legacy formats, and array structures.
  *
- * AUDIT STATUS (2025-09-30): ✅ AUDITED - File reviewed as part of debate validation bug investigation.
- * No issues found in this file. The validation logic correctly handles single-test and multi-test
- * cases, supports both old (predictedOutputs) and new (multiplePredictedOutputs) field names for
- * backward compatibility, and properly extracts numbered prediction fields (predictedOutput1,
- * predictedOutput2, etc.) from multi-test responses.
+ * CRITICAL UPDATE (2025-10-11): With dynamic schema generation in core.ts, this file NO LONGER
+ * exports schema constants. It ONLY provides validation and extraction functions used by
+ * responseValidator.ts and streamingValidator.ts.
  *
  * Key Features:
- * - Single-test schema (SINGLE_SOLVER_SCHEMA) for puzzles with one test case
- * - Multi-test schema (MULTI_SOLVER_SCHEMA) for puzzles with multiple test cases
- * - Schema selection helper (getSolverSchema) based on test case count
  * - Validation functions (validateSolverResponse, extractPredictions) for structure checking
  * - Grid validation (validateGrid) ensures 2D arrays of integers 0-9
  * - Backward compatibility with old 'predictedOutputs' field name
- * - Support for dynamic numbered fields (predictedOutput1, predictedOutput2, etc.)
+ * - Support for dynamic numbered fields WITHOUT boolean flags (predictedOutput1, predictedOutput2)
+ * - Field name aliases (predictedOutput, output, solution, answer, result)
  * - OpenAI structured outputs compatibility
  *
  * Used By:
  * - responseValidator.ts (imports extractPredictions for response parsing)
- * - All AI service providers for response structure enforcement
- * - Debate system for validating rebuttal predictions
+ * - streamingValidator.ts (uses extractPredictions via responseValidator)
  *
- * SRP/DRY check: Pass - Single responsibility (schema definition & validation for solver responses)
+ * SRP/DRY check: Pass - Single responsibility (validation & extraction utilities for solver responses)
  */
-
-import { 
-  COMMON_PROPERTIES,
-  PREDICTION_PROPERTIES,
-  createSchema
-} from './common.ts';
-
-/**
- * JSON schema for single test case solver responses
- * NOTE: Supports multiple field names: predictedOutput, output, solution, answer, result
- * Field order does not matter - JSON parsers handle any order
- */
-export const SINGLE_SOLVER_SCHEMA = createSchema(
-  {
-    predictedOutput: PREDICTION_PROPERTIES.predictedOutput,
-    ...COMMON_PROPERTIES
-  },
-  ["predictedOutput"], // Additional required fields beyond base
-  "arc_solver_single"
-);
-
-/**
- * JSON schema for multi test case solver responses
- * NOTE: Supports multiple formats:
- * - multiplePredictedOutputs: true with numbered fields (predictedOutput1, predictedOutput2, etc.)
- * - Direct arrays in any field (output: [[grid1], [grid2]])
- * - Backward compatible with old predictedOutputs field
- * Field order does not matter - JSON parsers handle any order
- */
-export const MULTI_SOLVER_SCHEMA = createSchema(
-  {
-    multiplePredictedOutputs: PREDICTION_PROPERTIES.predictedOutputs, // Renamed from predictedOutputs
-    ...COMMON_PROPERTIES
-  },
-  ["multiplePredictedOutputs"], // Additional required fields beyond base
-  "arc_solver_multi"
-);
-
-/**
- * Select appropriate solver schema based on test case count
- */
-export function getSolverSchema(testCaseCount: number) {
-  return testCaseCount > 1 ? MULTI_SOLVER_SCHEMA : SINGLE_SOLVER_SCHEMA;
-}
 
 /**
  * Validate solver response structure
@@ -101,11 +51,15 @@ export function validateSolverResponse(response: any, testCaseCount: number): {
   // Also support common field name aliases: output, solution, answer, result
   const singleFieldAliases = ['predictedOutput', 'output', 'solution', 'answer', 'result'];
   const hasSingle = singleFieldAliases.some(field => field in response);
-  const hasNewMulti = 'multiplePredictedOutputs' in response;
+  
+  // UPDATED 2025-10-11: Detect numbered fields WITHOUT requiring boolean flag
+  // New dynamic schema generates predictedOutput1, predictedOutput2, etc. directly
+  const hasNumberedFields = 'predictedOutput1' in response;
+  const hasNewMulti = 'multiplePredictedOutputs' in response || hasNumberedFields;
   const hasOldMulti = 'predictedOutputs' in response; // For backward compatibility
 
   if (!hasSingle && !hasNewMulti && !hasOldMulti) {
-    errors.push('Missing required prediction field (e.g., predictedOutput, output, solution, answer, result, multiplePredictedOutputs)');
+    errors.push('Missing required prediction field (e.g., predictedOutput, output, solution, answer, result, predictedOutput1)');
   } else if (hasNewMulti) {
     const collectedGrids = [];
     let i = 1;
@@ -201,8 +155,13 @@ export function extractPredictions(response: any, testCaseCount: number): {
 } {
   console.log(`[EXTRACT] Extracting predictions for ${testCaseCount} test cases from response keys:`, Object.keys(response || {}));
   
-  // Handle new multi-output format - check for boolean true flag or array
-  if (response?.multiplePredictedOutputs === true || (response?.multiplePredictedOutputs && Array.isArray(response.multiplePredictedOutputs))) {
+  // Handle new multi-output format - check for boolean true flag, array, OR numbered fields
+  // UPDATED 2025-10-11: Dynamic schema generates numbered fields without boolean
+  const hasNumberedFields = 'predictedOutput1' in response;
+  
+  if (response?.multiplePredictedOutputs === true || 
+      (response?.multiplePredictedOutputs && Array.isArray(response.multiplePredictedOutputs)) ||
+      hasNumberedFields) {
     const collectedGrids = [];
     let i = 1;
     

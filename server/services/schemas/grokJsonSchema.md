@@ -65,7 +65,7 @@ export const GROK_JSON_SCHEMA = {
       hints: {
         type: "array",
         items: { type: "string" },
-        description: "Three hints even a child could use for understanding the transformation rules."
+        description: "Three hints even a child could use for understanding the transformation rules to create the correct output grid."
       },
       confidence: {
         type: "integer",

@@ -22,7 +22,7 @@ import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
-import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { PredictionIteration } from '@/components/puzzle/PredictionCard';
 import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
@@ -388,26 +388,65 @@ export default function PuzzleDiscussion() {
         </div>
       </div>
 
-      <CompactPuzzleDisplay
-        trainExamples={task!.train}
-        testCases={task!.test}
-        predictions={refinementState.isRefinementActive && refinementState.iterations.length > 0
-          ? refinementState.iterations.map(iter => ({
-              grid: iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]],
-              iterationNumber: iter.iterationNumber,
-              isCorrect: determineCorrectness({
-                modelName: iter.content.modelName,
-                isPredictionCorrect: iter.content.isPredictionCorrect,
-                multiTestAllCorrect: iter.content.multiTestAllCorrect,
-                hasMultiplePredictions: iter.content.hasMultiplePredictions
-              }).isCorrect,
-              modelName: iter.content.modelName,
-              timestamp: iter.timestamp
-            } as PredictionIteration))
-          : undefined
-        }
-        showPredictions={refinementState.isRefinementActive}
-      />
+      {/* Puzzle Grids - Direct Rendering */}
+      <div className="space-y-4">
+        {/* Training Examples */}
+        <div>
+          <div className="text-xs font-semibold text-gray-600 mb-2">Training ({task!.train.length})</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {task!.train.map((ex, i) => (
+              <React.Fragment key={i}>
+                <PuzzleGrid grid={ex.input} title={`Ex${i+1} In`} showEmojis={false} />
+                <PuzzleGrid grid={ex.output} title={`Ex${i+1} Out`} showEmojis={false} />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Test Cases */}
+        <div className="border-t pt-4">
+          <div className="text-xs font-semibold text-gray-600 mb-2">Test Cases ({task!.test.length})</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {task!.test.map((test, i) => (
+              <React.Fragment key={i}>
+                <PuzzleGrid grid={test.input} title={`Test${i+1} In`} showEmojis={false} />
+                <PuzzleGrid grid={test.output} title={`Test${i+1} Out`} showEmojis={false} highlight={true} />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        {/* Prediction Iterations (if in refinement mode) */}
+        {refinementState.isRefinementActive && refinementState.iterations.length > 0 && (
+          <div className="border-t pt-4">
+            <div className="text-xs font-semibold text-purple-700 mb-2">
+              Refinement Iterations ({refinementState.iterations.length})
+            </div>
+            <div className="flex gap-2 overflow-x-auto">
+              {refinementState.iterations.map((iter, i) => {
+                const grid = iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]];
+                const isCorrect = determineCorrectness({
+                  modelName: iter.content.modelName,
+                  isPredictionCorrect: iter.content.isPredictionCorrect,
+                  multiTestAllCorrect: iter.content.multiTestAllCorrect,
+                  hasMultiplePredictions: iter.content.hasMultiplePredictions
+                }).isCorrect;
+                
+                return (
+                  <div key={i} className={`flex-shrink-0 ${isCorrect ? 'ring-2 ring-green-500' : 'ring-1 ring-gray-300'}`}>
+                    <PuzzleGrid 
+                      grid={grid} 
+                      title={`Iter ${iter.iterationNumber}`} 
+                      showEmojis={false} 
+                      highlight={isCorrect}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {

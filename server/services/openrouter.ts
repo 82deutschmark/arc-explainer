@@ -67,9 +67,11 @@ export class OpenRouterService extends BaseAIService {
     
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
+    const testCount = task.test.length;
+
     try {
       // 1. Get the raw response and structured reasoning from the provider
-      const { fullResponseText, fullReasoning } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+      const { fullResponseText, fullReasoning } = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId);
 
       // 2. Let the robust parser handle the raw text and reasoning
       const captureReasoning = serviceOpts.captureReasoning || false;
@@ -103,8 +105,9 @@ export class OpenRouterService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
-  ): Promise<{ fullResponseText: string; fullReasoning: any; }> {
+  ): Promise<{ fullResponseText: string; fullReasoning: any; }>  {
     const modelName = getApiModelName(modelKey);
     
     logger.service('OpenRouter', `Making API call to model: ${modelName}`);

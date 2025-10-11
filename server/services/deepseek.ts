@@ -44,8 +44,10 @@ export class DeepSeekService extends BaseAIService {
     
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
+    const testCount = task.test.length;
+
     try {
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount);
       
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
         this.parseProviderResponse(response, modelKey, true);
@@ -162,7 +164,9 @@ export class DeepSeekService extends BaseAIService {
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    testCount: number,
+    taskId?: string
   ): Promise<any> {
     const modelName = getApiModelName(modelKey) || modelKey;
     const systemMessage = promptPackage.systemPrompt;

@@ -19,7 +19,7 @@ import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
 const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
-import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
+import { getOpenAISchema } from "./schemas/providers/openai.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
 import type { ResponseStreamEvent } from "openai/resources/responses/responses";
 
@@ -55,6 +55,17 @@ export class OpenAIService extends BaseAIService {
     // Add other models as needed
   };
 
+  /**
+   * Override to provide OpenAI-specific schema for structured output
+   * Returns dynamic schema based on test count
+   */
+  protected getSchemaForModel(modelKey: string, testCount: number): any | null {
+    if (this.supportsStructuredOutput(modelKey)) {
+      return getOpenAISchema(testCount);
+    }
+    return null;
+  }
+
   supportsStreaming(modelKey: string): boolean {
     return [
       "gpt-5-mini-2025-08-07",
@@ -82,9 +93,12 @@ export class OpenAIService extends BaseAIService {
     // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
+    // Extract test count for dynamic schema generation
+    const testCount = task.test.length;
+
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId);
       
       // Parse response using provider-specific method
       // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
@@ -156,11 +170,13 @@ export class OpenAIService extends BaseAIService {
     const startedAt = Date.now();
 
     try {
+      const testCount = task.test.length;
       const { body } = this.buildResponsesRequestBody(
         promptPackage,
         modelKey,
         temperature,
         serviceOpts,
+        testCount,
         taskId
       );
 
@@ -340,6 +356,7 @@ export class OpenAIService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ) {
     const modelName = getApiModelName(modelKey);
@@ -388,14 +405,17 @@ export class OpenAIService extends BaseAIService {
       !modelName.includes("gpt-5-chat-latest") && !modelName.includes("gpt-5-nano");
 
     const baseText = textConfig ? { ...textConfig } : undefined;
-    const structuredFormat = supportsStructuredOutput
-      ? {
-          type: "json_schema",
-          name: ARC_JSON_SCHEMA.name,
-          strict: ARC_JSON_SCHEMA.strict,
-          schema: ARC_JSON_SCHEMA.schema
-        }
-      : undefined;
+    let structuredFormat = undefined;
+    
+    if (supportsStructuredOutput) {
+      const schema = getOpenAISchema(testCount);
+      structuredFormat = {
+        type: "json_schema",
+        name: schema.name,
+        strict: schema.strict,
+        schema: schema.schema
+      };
+    }
 
     const textPayload =
       structuredFormat || baseText
@@ -431,6 +451,7 @@ export class OpenAIService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ): Promise<any> {
     const modelName = getApiModelName(modelKey);
@@ -500,7 +521,7 @@ export class OpenAIService extends BaseAIService {
     };
 
 
-    return await this.callResponsesAPI(requestData, modelKey);
+    return await this.callResponsesAPI(requestData, modelKey, testCount);
   }
 
   protected parseProviderResponse(
@@ -683,7 +704,7 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  private async callResponsesAPI(requestData: any, modelKey: string): Promise<any> {
+  private async callResponsesAPI(requestData: any, modelKey: string, testCount: number): Promise<any> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY not configured");
@@ -696,19 +717,23 @@ export class OpenAIService extends BaseAIService {
                                        !requestData.model.includes('gpt-5-nano');
 
       // Prepare the request for OpenAI's Responses API
+      let schemaFormat = undefined;
+      if (supportsStructuredOutput) {
+        const schema = getOpenAISchema(testCount);
+        schemaFormat = {
+          format: {
+            type: "json_schema",
+            name: schema.name,
+            strict: schema.strict,
+            schema: schema.schema
+          }
+        };
+      }
+
       const body = {
         model: requestData.model,
         input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
-        ...(supportsStructuredOutput && {
-          text: {
-            format: {
-              type: "json_schema",
-              name: ARC_JSON_SCHEMA.name,
-              strict: ARC_JSON_SCHEMA.strict,
-              schema: ARC_JSON_SCHEMA.schema
-            }
-          }
-        }),
+        ...(schemaFormat && { text: schemaFormat }),
         reasoning: requestData.reasoning,
         temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
         top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,

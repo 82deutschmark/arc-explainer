@@ -1,3 +1,120 @@
+## [4.3.0] - 2025-10-11 05:50 PM
+### Dynamic Schema System - Test-Count Adaptation
+
+**BREAKING CHANGES:**
+- All provider services now require `testCount` parameter in `callProviderAPI()`
+- Replaced static schema constants with dynamic schema generation functions
+- Provider schemas now adapt to actual test count instead of forcing all possible fields
+
+**Core Architecture:**
+- **NEW:** `server/services/schemas/core.ts` - Single source of truth for prediction schemas
+  - `buildCoreSchema(testCount)` - Dynamically generates schemas based on actual test count
+  - Single test: requires only `predictedOutput` field
+  - Multi-test: requires exactly `predictedOutput1`, `predictedOutput2`, etc. (no unused fields)
+  - All analysis fields optional (solvingStrategy, patternDescription, hints, confidence)
+
+- **NEW:** `server/services/schemas/providers/openai.ts` - OpenAI Responses API format wrapper
+  - `getOpenAISchema(testCount)` - Wraps core schema with {name, strict, schema} format
+  - Replaces static `ARC_JSON_SCHEMA` constant
+
+- **NEW:** `server/services/schemas/providers/grok.ts` - xAI Responses API format wrapper
+  - `getGrokSchema(testCount)` - Wraps core schema with {schema} format (no name/strict)
+  - Replaces static `GROK_JSON_SCHEMA` constant
+
+**Prompt System Updates:**
+- **UPDATED:** `server/services/prompts/components/jsonInstructions.ts`
+  - `buildJsonInstructions(testCount, hasStructuredOutput)` - Now context-aware
+  - Structured output providers (OpenAI, Grok): Minimal instructions (schema enforces structure)
+  - Prompt-based providers (Anthropic, Gemini): Detailed field-specific instructions
+  - Single test: Only mentions `predictedOutput`
+  - Multi test: Lists exact fields needed (predictedOutput1, predictedOutput2, etc.)
+
+- **UPDATED:** `server/services/prompts/components/promptBuilder.ts`
+  - `buildSystemPrompt()` predictionInstructions now optional (callers provide context-specific instructions)
+
+**Base Service Layer:**
+- **UPDATED:** `server/services/base/BaseAIService.ts`
+  - `callProviderAPI()` signature now includes `testCount: number` parameter
+  - `supportsStructuredOutput(modelKey)` helper method added
+  - `getSchemaForModel(modelKey, testCount)` helper method added (overridable by providers)
+
+**Provider Updates:**
+All AI service providers updated to use dynamic schemas:
+
+- **OpenAI Service** (`server/services/openai.ts`):
+  - Extracts `testCount = task.test.length` before API calls
+  - Uses `getOpenAISchema(testCount)` in `buildResponsesRequestBody()` and `callResponsesAPI()`
+  - Streaming and non-streaming paths both use dynamic schema
+  - Overrides `getSchemaForModel()` to return OpenAI-formatted schema
+
+- **Grok Service** (`server/services/grok.ts`):
+  - Extracts `testCount` for both streaming and non-streaming analysis
+  - Uses `getGrokSchema(testCount)` in response_format for Responses API
+  - Preview generation uses dynamic schema
+  - Removed private `supportsStructuredOutput()` (inherited from BaseAIService)
+
+- **Anthropic Service** (`server/services/anthropic.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation (no schema parameter in API)
+
+- **Gemini Service** (`server/services/gemini.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation (no schema parameter in API)
+
+- **DeepSeek Service** (`server/services/deepseek.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation
+
+- **OpenRouter Service** (`server/services/openrouter.ts`):
+  - Extracts `testCount` and passes through API call chain
+  - Handles heterogeneous provider capabilities
+  - Continuation support maintained
+
+- **Saturn & Grover Services**:
+  - Updated `callProviderAPI()` signature for interface compliance
+  - These services delegate to underlying providers
+
+**Schema File Updates:**
+- **DEPRECATED:** `server/services/schemas/arcJsonSchema.ts` - Now thin wrapper with deprecation notice
+- **DEPRECATED:** `server/services/schemas/grokJsonSchema.ts` - Now thin wrapper with deprecation notice
+- Both export dynamic functions for backward compatibility
+
+**Benefits:**
+1. **Cognitive Load Reduction**: Models only see fields they need to populate
+2. **Context Intelligence**: System adapts to what it already knows (test count from puzzle data)
+3. **Provider Flexibility**: Structured output providers (OpenAI/Grok) vs prompt-based (Anthropic/Gemini) handled correctly
+4. **DRY Compliance**: Single core schema builder, provider-specific wrappers
+5. **Continuation Safety**: Dynamic schema generation works correctly with Responses API chaining
+6. **Maintainability**: Schema changes in ONE place propagate automatically
+
+**No Breaking Changes for:**
+- Database schema (unchanged)
+- Response validation (`responseValidator.ts`, `streamingValidator.ts` already flexible)
+- Frontend (client-side code unchanged)
+
+**Documentation:**
+- Created `docs/Schema-Refactor-Plan-2025-10-11.md` with complete implementation roadmap
+- Plan tracks 12 phases, first 5 phases completed
+
+**Next Steps:**
+- Phase 6-12: Validation integration, schema consolidation, comprehensive testing
+
+---
+
+## [4.2.5] - 2025-10-11 04:35 PM
+### Simplified Grok JSON Schema
+
+**Fixed:**
+- Removed complex multi-prediction support from Grok schema
+- Simplified predictedOutput* field descriptions to be more direct
+- Made solvingStrategy description child-friendly
+- Removed unnecessary multiplePredictedOutputs field
+- Fixed TypeScript syntax error (extra brace)
+
+**Result:** Cleaner, more straightforward schema matching actual usage patterns.
+
+---
+
 ## [4.2.4] - 2025-10-11 03:47 PM
 ### Grid Display Component Modularization
 

@@ -63,7 +63,8 @@ export class GeminiService extends BaseAIService {
       if (options?.candidateCount) {
         (serviceOpts as any).candidateCount = options.candidateCount;
       }
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId, options);
+      const testCount = task.test.length;
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId, options);
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
@@ -211,6 +212,7 @@ export class GeminiService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string,
     options?: PromptOptions
   ): Promise<any> {
