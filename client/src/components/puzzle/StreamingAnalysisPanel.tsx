@@ -61,8 +61,7 @@ export function StreamingAnalysisPanel({
   return (
     <Card className="border-blue-200 bg-blue-50">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-          <CardTitle className="text-sm font-semibold text-blue-700">{title}</CardTitle>
+        <div className="space-y-1 flex-1">
           <div className="flex items-center gap-2 text-xs text-blue-600">
             {renderStatusBadge()}
             {phase && <span>Phase: {phase}</span>}
