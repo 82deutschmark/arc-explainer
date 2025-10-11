@@ -1,3 +1,21 @@
+## [4.0.15] - 2025-10-10
+
+### Fixed
+- **Model Comparison Page Loading Issues**
+  - **Problem #1**: TypeScript error in `useAnalysisResults.ts` - payload type mismatch causing build failures
+  - **Problem #2**: ModelComparisonPage not loading data when navigated to from AnalyticsOverview
+  - **Root Cause #1**: Payload was incorrectly typed as `Record<string, unknown>` but mutation expected specific type with `modelKey` required
+  - **Root Cause #2**: Direct access to `window.history.state` doesn't trigger React re-renders, component wouldn't update with state data
+  - **Solutions**:
+    - Removed incorrect type annotation from payload, let TypeScript infer correct type from object literal
+    - Made comparison data reactive using `useState` with initializer function and `useEffect` to update on location changes
+  - **Impact**: Model comparison page now properly loads and displays data, TypeScript build error resolved
+  - **Files Modified**:
+    - `client/src/hooks/useAnalysisResults.ts` - Fixed payload typing for type safety
+    - `client/src/pages/ModelComparisonPage.tsx` - Made state access reactive following React patterns
+
+---
+
 ## [4.0.14] - 2025-10-10
 
 ### Fixed - CRITICAL
