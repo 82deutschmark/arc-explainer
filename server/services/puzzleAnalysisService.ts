@@ -103,7 +103,7 @@ export class PuzzleAnalysisService {
     const aiService = aiServiceFactory.getService(model);
     let resolvedOriginalExplanation = originalExplanation;
     if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
-      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId) || undefined;
     }
     
     // Get retry context if needed
@@ -209,7 +209,7 @@ export class PuzzleAnalysisService {
 
     let resolvedOriginalExplanation = originalExplanation;
     if (!resolvedOriginalExplanation && typeof originalExplanationId === 'number') {
-      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId);
+      resolvedOriginalExplanation = await repositoryService.explanations.getExplanationById(originalExplanationId) || undefined;
     }
 
     const retryContext = retryMode ? await this.getRetryContext(taskId) : null;
