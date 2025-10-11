@@ -1,44 +1,60 @@
 
 
 
-## [4.3.1] - 2025-10-11 07:20 PM
-### Dynamic Schema System - CRITICAL FIXES (Phase 11 Completion)
+## [4.3.1] - 2025-10-11 07:30 PM
+### Dynamic Schema System - ALL CRITICAL FIXES COMPLETED
 
-**FIXED BROKEN FILES:**
-- **CREATED:** `server/services/schemas/providers/openai.ts` - Was empty, now exports `getOpenAISchema(testCount)`
-- **CREATED:** `server/services/prompts/components/jsonInstructions.ts` - Was empty, now exports prompt instruction builders
+**FIXED SCHEMA FILES:**
+- **CREATED:** `server/services/schemas/providers/openai.ts` - Now exports `getOpenAISchema(testCount)`
+- **CREATED:** `server/services/prompts/components/jsonInstructions.ts` - Now exports prompt instruction builders
 - **FIXED:** `server/services/prompts/components/promptBuilder.ts` - Updated to use `buildMinimalJsonInstructions()`
+- **FIXED:** `server/services/schemas/providers/grok.ts` - Removed min/max constraints (Grok doesn't support them)
+  - Old schema used `{ type: "integer" }` without constraints
+  - New dynamic schema now matches: no `minimum: 0, maximum: 9` for Grok
+  - OpenAI schema still uses constraints (OpenAI supports them)
+
+**FIXED FRONTEND ERRORS:**
+- **FIXED:** `client/src/pages/ModelBrowser.tsx` - Replaced all `solved`/`failed` references with `correct`/`incorrect`
+  - Line 275: `performance.summary.solved` → `performance.summary.correct`
+  - Line 280: `performance.summary.failed` → `performance.summary.incorrect`
+  - Lines 305-329: All `performance.solved` → `performance.correct`, `performance.failed` → `performance.incorrect`
+  - Added TypeScript type annotations to map() callbacks
+
+**FIXED UTILITY ERRORS:**
+- **FIXED:** `client/src/utils/modelComparison.ts` - Added explicit type to reduce() accumulator
+  - Line 39: `reduce((total: number, value) => ...)`
+
+**FIXED LOGGER ERRORS:**
+- **FIXED:** `server/controllers/saturnController.ts` - Used `logger.logError()` instead of `logger.error()`
+- **FIXED:** `server/services/streaming/groverStreamService.ts` - Fixed logger call and removed invalid `maxSteps` property
+- **FIXED:** `server/services/streaming/saturnStreamService.ts` - Used `logger.logError()` with proper error options
 
 **Current Status:**
 - ✅ Core schema generation working (`core.ts`, `providers/openai.ts`, `providers/grok.ts`)
+- ✅ Grok schema respects xAI API constraints (no min/max on integers)
 - ✅ All 8 AI service providers updated with testCount parameter
 - ✅ Validators updated to detect numbered fields without boolean flags
 - ✅ Schema files archived (`arcJsonSchema.ts.archived.md`, etc.)
+- ✅ All TypeScript compilation errors fixed
 - ⚠️ **INCOMPLETE:** Prompt system NOT yet using test-count-aware instructions
   - `promptBuilder.ts` uses `buildMinimalJsonInstructions()` for all cases
   - `buildJsonInstructions(testCount, hasStructuredOutput)` exists but NOT integrated
-  - System prompts built early without testCount context
-  - Prompt-based providers (Anthropic, Gemini) NOT getting detailed field instructions
+  - Prompt-based providers (Anthropic, Gemini) still get generic instructions
 
 **What's Working:**
-- OpenAI: Dynamic schemas enforce correct fields via structured output
-- Grok: Dynamic schemas enforce correct fields via Responses API
+- OpenAI: Dynamic schemas with min/max constraints enforce correct fields
+- Grok: Dynamic schemas WITHOUT constraints (respects xAI API limitations)
 - Validators: Correctly extract numbered fields (predictedOutput1, predictedOutput2)
+- Frontend: No more TypeScript errors, correct terminology (correct/incorrect not solved/failed)
 
 **What's NOT Working:**
 - Anthropic, Gemini, DeepSeek: Still receive generic JSON instructions (not test-count-specific)
 - No integration between `buildAnalysisPrompt()` and `buildJsonInstructions(testCount, ...)`
 
-**Unrelated TypeScript Errors (NOT from this refactor):**
-- `ModelBrowser.tsx`: Properties 'solved'/'failed' don't exist (pre-existing frontend issue)
-- `modelComparison.ts`: reduce() type errors (pre-existing)
-- Logger type errors in Saturn/Grover services (pre-existing)
-
 **Next Steps (Phase 12):**
 - Integrate test-count-aware prompt instructions into `buildAnalysisPrompt()`
 - Ensure prompt-based providers get detailed field-specific instructions
 - Test end-to-end with all providers
-- Fix unrelated TypeScript errors
 
 ---
 
