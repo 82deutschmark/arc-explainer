@@ -1,27 +1,22 @@
 ## [4.0.18] - 2025-10-10
 
 ### Added
-- **PuzzleBrowser: Beautiful Credits & Acknowledgments Section**
-  - **Design**: Stunning 3-column responsive grid with gradient cards and hover animations
-  - **Header**: Centered with Heart icons, gradient text, and inspirational tagline
-  - **Puzzle Names Card**: 
-    - Sparkles icon with emerald/teal gradient
-    - Links to Google ARC-GEN Project for puzzle naming system
-    - Hover scale effect and shadow transitions
-  - **SOTA Solutions Card**:
-    - Trophy icon with blue/cyan gradient
-    - Two buttons linking to jerber and epang080516/arc_agi
-    - State-of-the-art solving approaches
-  - **Special Thanks Card**:
-    - Filled Heart icon with rose/pink gradient
-    - Simon Strandgaard (@neoneye) recognition
-    - GitHub username display
-  - **Features**:
-    - Each card has white/80 backdrop blur with colored borders
-    - Gradient button backgrounds with hover states
-    - Scale-on-hover (105%) for interactive feel
-    - Shadow elevation on hover
-    - Fully responsive (stacks on mobile, 3 columns on desktop)
+- **PuzzleBrowser: Compact "Resources & References" Section**
+  - **Maximum information density** in 4-column grid layout
+  - Same size as original section, all essential links included
+  
+  **Structure (4 columns)**:
+  1. **Research**: ARC2 Paper (arXiv)
+  2. **Data Sources**: HuggingFace ARC Prize, Official ARC-AGI repo
+  3. **SOTA Solutions**: zoecarver, jerber, epang080516
+  4. **Community**: Puzzle Names (Google ARC-GEN), ARC Notes, Datasets (Simon's collection)
+  
+  **Features**:
+  - Simple text links with external link icons
+  - Purple/blue gradient card background
+  - Consolidated Simon acknowledgment in single line at bottom
+  - Responsive: 2 columns mobile, 4 columns desktop
+  - All links open securely in new tabs
 
 ### Fixed
 - **PuzzleBrowser TypeScript Error**

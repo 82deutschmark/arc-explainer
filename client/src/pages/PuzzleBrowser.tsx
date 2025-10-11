@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -199,155 +199,72 @@ export default function PuzzleBrowser() {
           {/* Collapsible Mission Statement */}
           <CollapsibleMission />
 
-          {/* ARC2 Paper Reference */}
+          {/* Resources & References Section */}
           <Card className="shadow-md border-0 bg-gradient-to-r from-purple-50 to-blue-50 backdrop-blur-sm">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="h-6 w-6 text-purple-600 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-gray-900">ARC2 Research Paper</h3>
-                    <p className="text-sm text-gray-600">Learn about the extended ARC-AGI challenge dataset</p>
-                  </div>
-                </div>
-                <Button 
-                  asChild 
-                  variant="outline" 
-                  className="bg-white hover:bg-purple-50 border-purple-200 flex-shrink-0"
-                >
-                  <a 
-                    href="https://www.arxiv.org/pdf/2505.11831" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <span className="hidden sm:inline">Read Paper</span>
-                    <ExternalLink className="h-4 w-4" />
+              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-purple-600" />
+                Resources & References
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                {/* Research */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Research</p>
+                  <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                    ARC2 Paper <ExternalLink className="h-3 w-3" />
                   </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Credits & Acknowledgments - Beautiful Enhanced Section */}
-          <Card className="shadow-xl border-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 backdrop-blur-sm overflow-hidden">
-            <CardContent className="p-6">
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-3 mb-2">
-                  <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
-                    Credits & Acknowledgments
-                  </h3>
-                  <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
                 </div>
-                <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-                  This project stands on the shoulders of giants. We're grateful to these amazing contributors.
-                </p>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Puzzle Names Credit */}
-                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-emerald-100">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-5 w-5 text-amber-500" />
-                    <h4 className="font-bold text-gray-900">Puzzle Names</h4>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-3">
-                    Human-readable puzzle naming system
-                  </p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-emerald-200"
-                  >
-                    <a 
-                      href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <span className="font-medium">Google ARC-GEN</span>
-                      <ExternalLink className="h-3 w-3" />
+                {/* Data Sources */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Data Sources</p>
+                  <div className="space-y-1">
+                    <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      HuggingFace <ExternalLink className="h-3 w-3" />
                     </a>
-                  </Button>
-                </div>
-
-                {/* SOTA Solutions Credit */}
-                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-blue-100">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    <h4 className="font-bold text-gray-900">SOTA Solutions</h4>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-3">
-                    State-of-the-art solving approaches
-                  </p>
-                  <div className="space-y-2">
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border-blue-200"
-                    >
-                      <a 
-                        href="https://github.com/jerber" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <span className="font-medium">jerber</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 border-blue-200"
-                    >
-                      <a 
-                        href="https://github.com/epang080516/arc_agi" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2"
-                      >
-                        <span className="font-medium">epang080516</span>
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Special Thanks Credit */}
-                <div className="bg-white/80 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 border border-rose-100">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Heart className="h-5 w-5 text-rose-500 fill-rose-500" />
-                    <h4 className="font-bold text-gray-900">Special Thanks</h4>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-3">
-                    For invaluable help and support
-                  </p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-200"
-                  >
-                    <a 
-                      href="https://github.com/neoneye" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <span className="font-medium">Simon Strandgaard</span>
-                      <ExternalLink className="h-3 w-3" />
+                    <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Official Repo <ExternalLink className="h-3 w-3" />
                     </a>
-                  </Button>
-                  <p className="text-xs text-gray-500 text-center mt-2">
-                    @neoneye
-                  </p>
+                  </div>
+                </div>
+
+                {/* SOTA Solutions */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">SOTA Solutions</p>
+                  <div className="space-y-1">
+                    <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      zoecarver <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      jerber <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      epang080516 <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Community */}
+                <div>
+                  <p className="font-semibold text-gray-700 mb-1">Community</p>
+                  <div className="space-y-1">
+                    <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Puzzle Names <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      ARC Notes <ExternalLink className="h-3 w-3" />
+                    </a>
+                    <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                      Datasets <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
                 </div>
               </div>
+
+              <p className="text-xs text-gray-600 mt-3 text-center">
+                Special thanks to <strong>Simon Strandgaard (@neoneye)</strong> for invaluable insights and support
+              </p>
             </CardContent>
           </Card>
         </header>
