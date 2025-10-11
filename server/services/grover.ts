@@ -340,7 +340,14 @@ export class GroverService extends BaseAIService {
     };
   }
 
-  protected async callProviderAPI(): Promise<any> {
+  protected async callProviderAPI(
+    _prompt: any,
+    _modelKey: string,
+    _temperature: number,
+    _serviceOpts: any,
+    _testCount: number,
+    _taskId?: string
+  ): Promise<any> {
     throw new Error("Grover uses underlying services - this should not be called directly");
   }
 

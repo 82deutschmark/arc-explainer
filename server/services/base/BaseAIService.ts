@@ -180,12 +180,15 @@ export abstract class BaseAIService {
 
   /**
    * Provider-specific API call - must be implemented by each provider
+   * 
+   * @param testCount - Number of test cases in puzzle (for dynamic schema generation)
    */
   protected abstract callProviderAPI(
     prompt: PromptPackage,
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ): Promise<any>;
 
@@ -198,6 +201,38 @@ export abstract class BaseAIService {
     captureReasoning: boolean,
     puzzleId?: string
   ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string };
+
+  /**
+   * Check if model supports structured output (JSON schema enforcement)
+   * 
+   * @param modelKey - Model identifier
+   * @returns true if model supports native structured output via schema
+   */
+  protected supportsStructuredOutput(modelKey: string): boolean {
+    try {
+      const modelInfo = this.getModelInfo(modelKey);
+      return modelInfo.supportsStructuredOutput;
+    } catch (error) {
+      logger.logError(`Failed to check structured output support for ${modelKey}`, { error, context: this.provider });
+      return false;
+    }
+  }
+
+  /**
+   * Get appropriate schema for model based on provider and test count
+   * 
+   * Returns null for providers that don't support structured output.
+   * Implementations should override this if they need provider-specific schema format.
+   * 
+   * @param modelKey - Model identifier
+   * @param testCount - Number of test cases in puzzle
+   * @returns Schema object or null if provider doesn't use schemas
+   */
+  protected getSchemaForModel(modelKey: string, testCount: number): any | null {
+    // Default implementation returns null
+    // Providers that support structured output (OpenAI, Grok) override this
+    return null;
+  }
 
   /**
    * Build prompt package using centralized prompt builder

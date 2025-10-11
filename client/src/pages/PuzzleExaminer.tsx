@@ -43,7 +43,6 @@ import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
-import { PuzzleExamplesSection } from '@/components/puzzle/examples/PuzzleExamplesSection';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -345,14 +344,52 @@ export default function PuzzleExaminer() {
       </div>
 
 
-      {/* Complete Puzzle Pattern - NEW GALLERY LAYOUT */}
-      <PuzzleExamplesSection
-        trainExamples={task.train}
-        testCases={task.test}
-        showEmojis={showEmojis}
-        emojiSet={emojiSet}
-        defaultOpen={true}
-      />
+      {/* Training Examples - Direct Grid Rendering */}
+      <div className="space-y-3">
+        <div className="text-sm font-semibold text-gray-700">Training Examples ({task.train.length})</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {task.train.map((example, idx) => (
+            <React.Fragment key={idx}>
+              <PuzzleGrid 
+                grid={example.input}
+                title={`Example ${idx + 1} Input`}
+                showEmojis={showEmojis}
+                emojiSet={emojiSet}
+              />
+              <PuzzleGrid 
+                grid={example.output}
+                title={`Example ${idx + 1} Output`}
+                showEmojis={showEmojis}
+                emojiSet={emojiSet}
+              />
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      {/* Test Cases - Direct Grid Rendering */}
+      <div className="space-y-3 mt-6 pt-6 border-t-2 border-gray-300">
+        <div className="text-sm font-semibold text-gray-700">Test Cases ({task.test.length})</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {task.test.map((testCase, idx) => (
+            <React.Fragment key={idx}>
+              <PuzzleGrid 
+                grid={testCase.input}
+                title={`Test ${idx + 1} Input`}
+                showEmojis={showEmojis}
+                emojiSet={emojiSet}
+              />
+              <PuzzleGrid 
+                grid={testCase.output}
+                title={`Test ${idx + 1} Answer`}
+                showEmojis={showEmojis}
+                emojiSet={emojiSet}
+                highlight={true}
+              />
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
 
       {/* Prompt Style */}
       <CollapsibleCard

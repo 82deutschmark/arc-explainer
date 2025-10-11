@@ -8,7 +8,7 @@
  */
 import { Agent, request as undiciRequest } from "undici";
 import { ARCTask } from "../../shared/types.js";
-import { GROK_JSON_SCHEMA } from "./schemas/grokJsonSchema.js";
+import { getGrokSchema } from "./schemas/providers/grok.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
 import type { ResponseStreamEvent } from "openai/resources/responses/responses";
 import { getDefaultPromptId, PromptOptions, PromptPackage } from "./promptBuilder.js";
@@ -64,12 +64,15 @@ export class GrokService extends BaseAIService {
 
     this.logAnalysisStart(modelKey, appliedTemperature, promptPackage.userPrompt.length, serviceOpts);
 
+    const testCount = task.test.length;
+
     try {
       const providerResponse = await this.callProviderAPI(
         promptPackage,
         modelKey,
         appliedTemperature,
         serviceOpts,
+        testCount,
         taskId
       );
 
@@ -138,6 +141,7 @@ export class GrokService extends BaseAIService {
     const harness = serviceOpts.stream;
     const controller = this.registerStream(harness);
     const startedAt = Date.now();
+    const testCount = task.test.length;
 
     try {
       const apiKey = process.env.GROK_API_KEY;
@@ -161,9 +165,10 @@ export class GrokService extends BaseAIService {
       };
 
       if (this.supportsStructuredOutput(modelKey)) {
+        const schema = getGrokSchema(testCount);
         payload.response_format = {
           type: "json_schema",
-          json_schema: GROK_JSON_SCHEMA.schema
+          json_schema: schema.schema
         };
       }
 
@@ -306,7 +311,9 @@ export class GrokService extends BaseAIService {
 
       this.handleAnalysisError(error, modelKey, task);
     }
-  }  getModelInfo(modelKey: string): ModelInfo {
+  }
+
+  getModelInfo(modelKey: string): ModelInfo {
     const modelConfig = getModelConfig(modelKey);
     const modelName = getApiModelName(modelKey);
 
@@ -335,21 +342,28 @@ export class GrokService extends BaseAIService {
     const systemPromptMode = serviceOpts.systemPromptMode || "ARC";
     const structuredPreview = this.supportsStructuredOutput(modelKey);
     const previewTemperature = modelSupportsTemperature(modelKey) ? DEFAULT_TEMPERATURE : undefined;
+    const testCount = task.test.length;
 
     // For preview, assume initial (no continuation in preview)
     const messages = this.buildMessages(promptPackage, false);
+
+    let schemaFormat = undefined;
+    if (structuredPreview) {
+      const schema = getGrokSchema(testCount);
+      schemaFormat = {
+        response_format: {
+          type: "json_schema",
+          json_schema: schema.schema
+        }
+      };
+    }
 
     const messageFormat: Record<string, unknown> = {
       model: modelName,
       input: messages,
       previous_response_id: serviceOpts.previousResponseId,
       store: serviceOpts.store ?? true,
-      ...(structuredPreview && {
-        response_format: {
-          type: "json_schema",
-          json_schema: GROK_JSON_SCHEMA.schema
-        }
-      }),
+      ...schemaFormat,
       ...(previewTemperature !== undefined && { temperature: previewTemperature })
     };
 
@@ -441,6 +455,7 @@ export class GrokService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ): Promise<any> {
     const apiKey = process.env.GROK_API_KEY;
@@ -467,9 +482,10 @@ export class GrokService extends BaseAIService {
     };
 
     if (this.supportsStructuredOutput(modelKey)) {
+      const schema = getGrokSchema(testCount);
       requestPayload.response_format = {
         type: "json_schema",
-        json_schema: GROK_JSON_SCHEMA.schema
+        json_schema: schema.schema
       };
     }
 
@@ -597,11 +613,6 @@ export class GrokService extends BaseAIService {
     }
     
     return messages;
-  }
-
-  private supportsStructuredOutput(modelKey: string): boolean {
-    const modelName = getApiModelName(modelKey);
-    return modelName.startsWith("grok-4");
   }
 
   private async callResponsesApiWithRetry(
