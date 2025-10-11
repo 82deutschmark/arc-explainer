@@ -71,7 +71,7 @@ export function validateStreamingResult(
 
     // Legacy fields for backward compatibility
     validatedResult.predictedOutputGrid = multiValidation.multiplePredictedOutputs;
-    validatedResult.predictionAccuracyScore = multiValidation.multiTestAverageAccuracy;
+    validatedResult.trustworthinessScore = multiValidation.multiTestAverageAccuracy;
     validatedResult.multiValidation = multiValidation.multiTestResults;
 
     logger.debug(`[Streaming Validator] Multi-test validation: ${multiValidation.multiTestAllCorrect ? 'ALL CORRECT' : 'SOME INCORRECT'}`, 'streaming-validator');
@@ -83,7 +83,7 @@ export function validateStreamingResult(
     // Single-test validation results
     validatedResult.predictedOutputGrid = validation.predictedGrid;
     validatedResult.isPredictionCorrect = validation.isPredictionCorrect;
-    validatedResult.predictionAccuracyScore = validation.predictionAccuracyScore;
+    validatedResult.trustworthinessScore = validation.trustworthinessScore;
 
     // Ensure multi-test fields are properly set for single-test cases
     validatedResult.hasMultiplePredictions = false;
