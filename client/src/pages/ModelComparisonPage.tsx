@@ -80,9 +80,19 @@ export default function ModelComparisonPage() {
   const [, params] = useRoute('/model-comparison');
   
   // Get comparison data from location state
-  const comparisonData = (window.history.state?.usr?.comparisonData as ModelComparisonResult | null);
+  const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
+    return (window.history.state?.usr?.comparisonData as ModelComparisonResult | null) || null;
+  });
   
   const [filterType, setFilterType] = useState<FilterType>('all');
+
+  // Update comparison data when location state changes
+  React.useEffect(() => {
+    const stateData = window.history.state?.usr?.comparisonData as ModelComparisonResult | null;
+    if (stateData) {
+      setComparisonData(stateData);
+    }
+  }, []);
 
   if (!comparisonData) {
     return (
