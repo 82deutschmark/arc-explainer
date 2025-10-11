@@ -1,3 +1,35 @@
+## [4.0.16] - 2025-10-10
+
+### Changed - MAJOR REWRITE
+- **Model Comparison: Complete Redesign to Side-by-Side Performance Panels**
+  - **User Request**: Show model performance panels (like AnalyticsOverview) side-by-side, NOT puzzle-by-puzzle matrix
+  - **Previous Approach**: Puzzle-by-puzzle comparison matrix with ✅/❌ icons - completely wrong for the user's need
+  - **New Approach**: Side-by-side display of full performance panels with all stats
+  - **New Component**: `ModelPerformancePanel` - Reusable component extracted from AnalyticsOverview
+    - Shows: Success rate, progress bar, correct/incorrect/not attempted counts
+    - Includes: Metric badges (cost, time, tokens) per category
+    - Displays: Puzzle ID badges in scrollable lists for each category
+    - Reuses: Existing hooks (`useModelDatasetPerformance`, `useModelDatasetMetrics`)
+  - **ModelComparisonPage Rewrite**:
+    - Removed: All puzzle-by-puzzle matrix logic (120+ lines)
+    - Added: Responsive grid layout (1-4 columns) of ModelPerformancePanel instances
+    - Simplified: Receives just `{ models: string[], dataset: string }` from location state
+    - Each panel fetches its own data independently - no complex comparison API needed
+  - **AnalyticsOverview Simplification**:
+    - Removed: API fetch to `/api/metrics/compare`
+    - Changed: Navigate with just model list + dataset, no pre-fetched comparison data
+  - **Impact**: 
+    - User gets exactly what they asked for - same rich panels from AnalyticsOverview, side-by-side
+    - DRY compliance - extracted reusable component
+    - Simpler architecture - no comparison API, just independent model data fetching
+    - Better UX - full performance context for each model, not just correctness icons
+  - **Files Modified**:
+    - NEW: `client/src/components/analytics/ModelPerformancePanel.tsx` (280 lines)
+    - `client/src/pages/ModelComparisonPage.tsx` - Complete rewrite (100 lines, was 345)
+    - `client/src/pages/AnalyticsOverview.tsx` - Simplified navigation logic
+
+---
+
 ## [4.0.15] - 2025-10-10
 
 ### Fixed
