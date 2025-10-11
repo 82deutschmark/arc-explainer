@@ -2,7 +2,7 @@
  * PuzzleExaminer.tsx
  *
  * @author Cascade using Claude Sonnet 4.5
- * @date 2025-10-03T23:35:00-04:00
+ * @date 2025-10-11 3:58 PM
  * @description This is the main page component for examining a single ARC puzzle.
  * It orchestrates the fetching of puzzle data and existing explanations from the database.
  * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
