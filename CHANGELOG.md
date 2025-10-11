@@ -1,4 +1,53 @@
+
+
+
+## [4.3.1] - 2025-10-11 07:20 PM
+### Dynamic Schema System - CRITICAL FIXES (Phase 11 Completion)
+
+**FIXED BROKEN FILES:**
+- **CREATED:** `server/services/schemas/providers/openai.ts` - Was empty, now exports `getOpenAISchema(testCount)`
+- **CREATED:** `server/services/prompts/components/jsonInstructions.ts` - Was empty, now exports prompt instruction builders
+- **FIXED:** `server/services/prompts/components/promptBuilder.ts` - Updated to use `buildMinimalJsonInstructions()`
+
+**Current Status:**
+- ✅ Core schema generation working (`core.ts`, `providers/openai.ts`, `providers/grok.ts`)
+- ✅ All 8 AI service providers updated with testCount parameter
+- ✅ Validators updated to detect numbered fields without boolean flags
+- ✅ Schema files archived (`arcJsonSchema.ts.archived.md`, etc.)
+- ⚠️ **INCOMPLETE:** Prompt system NOT yet using test-count-aware instructions
+  - `promptBuilder.ts` uses `buildMinimalJsonInstructions()` for all cases
+  - `buildJsonInstructions(testCount, hasStructuredOutput)` exists but NOT integrated
+  - System prompts built early without testCount context
+  - Prompt-based providers (Anthropic, Gemini) NOT getting detailed field instructions
+
+**What's Working:**
+- OpenAI: Dynamic schemas enforce correct fields via structured output
+- Grok: Dynamic schemas enforce correct fields via Responses API
+- Validators: Correctly extract numbered fields (predictedOutput1, predictedOutput2)
+
+**What's NOT Working:**
+- Anthropic, Gemini, DeepSeek: Still receive generic JSON instructions (not test-count-specific)
+- No integration between `buildAnalysisPrompt()` and `buildJsonInstructions(testCount, ...)`
+
+**Unrelated TypeScript Errors (NOT from this refactor):**
+- `ModelBrowser.tsx`: Properties 'solved'/'failed' don't exist (pre-existing frontend issue)
+- `modelComparison.ts`: reduce() type errors (pre-existing)
+- Logger type errors in Saturn/Grover services (pre-existing)
+
+**Next Steps (Phase 12):**
+- Integrate test-count-aware prompt instructions into `buildAnalysisPrompt()`
+- Ensure prompt-based providers get detailed field-specific instructions
+- Test end-to-end with all providers
+- Fix unrelated TypeScript errors
+
+---
+
+
 ## [4.3.0] - 2025-10-11 05:50 PM
+
+
+
+
 ### Dynamic Schema System - Test-Count Adaptation
 
 **BREAKING CHANGES:**
@@ -98,47 +147,6 @@ All AI service providers updated to use dynamic schemas:
 
 **Next Steps:**
 - Phase 6-12: Validation integration, schema consolidation, comprehensive testing
-
----
-
-## [4.3.0] - 2025-10-11 07:20 PM
-### Dynamic Schema System - CRITICAL FIXES (Phase 11 Completion)
-
-**FIXED BROKEN FILES:**
-- **CREATED:** `server/services/schemas/providers/openai.ts` - Was empty, now exports `getOpenAISchema(testCount)`
-- **CREATED:** `server/services/prompts/components/jsonInstructions.ts` - Was empty, now exports prompt instruction builders
-- **FIXED:** `server/services/prompts/components/promptBuilder.ts` - Updated to use `buildMinimalJsonInstructions()`
-
-**Current Status:**
-- ✅ Core schema generation working (`core.ts`, `providers/openai.ts`, `providers/grok.ts`)
-- ✅ All 8 AI service providers updated with testCount parameter
-- ✅ Validators updated to detect numbered fields without boolean flags
-- ✅ Schema files archived (`arcJsonSchema.ts.archived.md`, etc.)
-- ⚠️ **INCOMPLETE:** Prompt system NOT yet using test-count-aware instructions
-  - `promptBuilder.ts` uses `buildMinimalJsonInstructions()` for all cases
-  - `buildJsonInstructions(testCount, hasStructuredOutput)` exists but NOT integrated
-  - System prompts built early without testCount context
-  - Prompt-based providers (Anthropic, Gemini) NOT getting detailed field instructions
-
-**What's Working:**
-- OpenAI: Dynamic schemas enforce correct fields via structured output
-- Grok: Dynamic schemas enforce correct fields via Responses API
-- Validators: Correctly extract numbered fields (predictedOutput1, predictedOutput2)
-
-**What's NOT Working:**
-- Anthropic, Gemini, DeepSeek: Still receive generic JSON instructions (not test-count-specific)
-- No integration between `buildAnalysisPrompt()` and `buildJsonInstructions(testCount, ...)`
-
-**Unrelated TypeScript Errors (NOT from this refactor):**
-- `ModelBrowser.tsx`: Properties 'solved'/'failed' don't exist (pre-existing frontend issue)
-- `modelComparison.ts`: reduce() type errors (pre-existing)
-- Logger type errors in Saturn/Grover services (pre-existing)
-
-**Next Steps (Phase 12):**
-- Integrate test-count-aware prompt instructions into `buildAnalysisPrompt()`
-- Ensure prompt-based providers get detailed field-specific instructions
-- Test end-to-end with all providers
-- Fix unrelated TypeScript errors
 
 ---
 

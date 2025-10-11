@@ -272,12 +272,12 @@ export default function ModelBrowser() {
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-green-700">{performance.summary.correct}</div>
                       <div className="text-sm text-green-600">Puzzles CORRECT</div>
-                      <div className="text-xs text-green-500 mt-1">{Math.round((performance.summary.solved / performance.summary.totalPuzzles) * 100)}% success rate</div>
+                      <div className="text-xs text-green-500 mt-1">{Math.round((performance.summary.correct / performance.summary.totalPuzzles) * 100)}% success rate</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-red-50 border-red-200">
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-red-700">{performance.summary.failed}</div>
+                      <div className="text-2xl font-bold text-red-700">{performance.summary.incorrect}</div>
                       <div className="text-sm text-red-600">Puzzles Incorrect</div>
                       <div className="text-xs text-red-500 mt-1">Attempted but got wrong answer</div>
                     </CardContent>
@@ -302,31 +302,31 @@ export default function ModelBrowser() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-green-700 flex items-center gap-2">✅ Correct ({performance.solved.length})</CardTitle>
+                      <CardTitle className="text-green-700 flex items-center gap-2">✅ Correct ({performance.correct.length})</CardTitle>
                       <p className="text-xs text-muted-foreground">is_prediction_correct = true OR multi_test_all_correct = true</p>
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {performance.solved.map(pid => (
+                        {performance.correct.map((pid: string) => (
                           <ClickablePuzzleBadge key={pid} puzzleId={pid} variant="success" />
                         ))}
                       </div>
-                      {performance.solved.length === 0 && (<p className="text-sm text-gray-500 italic">No puzzles solved yet</p>)}
+                      {performance.correct.length === 0 && (<p className="text-sm text-gray-500 italic">No puzzles solved yet</p>)}
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-red-700 flex items-center gap-2">❌ Incorrect ({performance.failed.length})</CardTitle>
+                      <CardTitle className="text-red-700 flex items-center gap-2">❌ Incorrect ({performance.incorrect.length})</CardTitle>
                       <p className="text-xs text-muted-foreground">Attempted but failed (false OR null values count as incorrect)</p>
                     </CardHeader>
                     <CardContent className="max-h-60 overflow-y-auto">
                       <div className="grid grid-cols-2 gap-1 text-xs">
-                        {performance.failed.map(pid => (
+                        {performance.incorrect.map((pid: string) => (
                           <ClickablePuzzleBadge key={pid} puzzleId={pid} variant="error" />
                         ))}
                       </div>
-                      {performance.failed.length === 0 && (<p className="text-sm text-gray-500 italic">No incorrect attempts</p>)}
+                      {performance.incorrect.length === 0 && (<p className="text-sm text-gray-500 italic">No incorrect attempts</p>)}
                     </CardContent>
                   </Card>
 
