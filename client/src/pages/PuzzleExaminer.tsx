@@ -20,6 +20,7 @@ import { usePuzzle } from '@/hooks/usePuzzle';
 import { usePuzzleWithExplanation } from '@/hooks/useExplanation';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -443,11 +444,18 @@ export default function PuzzleExaminer() {
         </div>
       </CollapsibleCard>
 
-
-      {isStreamingActive && (
-        <div className="mt-4">
+      {/* Streaming Modal Dialog - appears as popup */}
+      <Dialog open={isStreamingActive} onOpenChange={(open) => {
+        if (!open && streamingPanelStatus === 'in_progress') {
+          cancelStreamingAnalysis();
+        }
+      }}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}</DialogTitle>
+          </DialogHeader>
           <StreamingAnalysisPanel
-            title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
+            title={`${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}
             status={streamingPanelStatus}
             phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
             message={streamingPanelStatus === 'failed' ? streamError?.message ?? streamingMessage ?? 'Streaming failed' : streamingMessage}
@@ -456,8 +464,8 @@ export default function PuzzleExaminer() {
             tokenUsage={streamingTokenUsage}
             onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
           />
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
 
       {/* Advanced Controls */}
       <CollapsibleCard
