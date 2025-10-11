@@ -467,8 +467,8 @@ export function validateSolverResponse(
 
   // Use clean confidence from arcJsonSchema response or nested structure
   // For external data, confidence will be null
-  const actualConfidence = typeof analysisData.confidence === 'number' 
-    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+  const actualConfidence = typeof analysisData.confidence === 'number'
+    ? analysisData.confidence
     : confidence;
   const hasConfidence = actualConfidence !== null;
 
@@ -585,8 +585,8 @@ export function validateSolverResponseMulti(
 
   // Use clean confidence from arcJsonSchema response or nested structure
   // For external data, confidence will be null
-  const actualConfidence = typeof analysisData.confidence === 'number' 
-    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+  const actualConfidence = typeof analysisData.confidence === 'number'
+    ? analysisData.confidence
     : confidence;
   const hasConfidence = actualConfidence !== null;
 

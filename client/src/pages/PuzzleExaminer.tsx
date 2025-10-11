@@ -43,6 +43,7 @@ import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { useModels } from '@/hooks/useModels';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
+import { PuzzleExamplesSection } from '@/components/puzzle/examples/PuzzleExamplesSection';
 
 export default function PuzzleExaminer() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -344,70 +345,14 @@ export default function PuzzleExaminer() {
       </div>
 
 
-      {/* Complete Puzzle Pattern */}
-      <CollapsibleCard
-        title="Complete Puzzle Pattern"
-        icon={Grid3X3}
+      {/* Complete Puzzle Pattern - NEW GALLERY LAYOUT */}
+      <PuzzleExamplesSection
+        trainExamples={task.train}
+        testCases={task.test}
+        showEmojis={showEmojis}
+        emojiSet={emojiSet}
         defaultOpen={true}
-        headerDescription={
-          <p className="text-sm text-gray-600">Training examples show the pattern, test case shows the question and correct answer</p>
-        }
-      >
-        <div className="space-y-8">
-          {/* Training Examples */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              Training Examples 
-              <Badge variant="outline">{task.train.length} examples</Badge>
-            </h3>
-            <div className="space-y-4">
-              {task.train.map((example, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
-                  <div className="flex items-center justify-center gap-6">
-                    <PuzzleGrid 
-                      grid={example.input}
-                      title="Input"  
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                    />
-                    <div className="text-3xl text-gray-400">→</div>
-                    <PuzzleGrid 
-                      grid={example.output}
-                      title="Output"
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Test Case */}
-          <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">Test Case & Correct Answer</h3>
-            {task.test.map((testCase, index) => (
-              <div key={index} className="flex items-center justify-center gap-6">
-                <PuzzleGrid 
-                  grid={testCase.input}
-                  title="Test Question"
-                  showEmojis={showEmojis}
-                  emojiSet={emojiSet}
-                />
-                <div className="text-3xl text-green-600">→</div>
-                <PuzzleGrid 
-                  grid={testCase.output}
-                  title="Correct Answer"
-                  showEmojis={showEmojis}
-                  emojiSet={emojiSet}
-                  highlight={true}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </CollapsibleCard>
+      />
 
       {/* Prompt Style */}
       <CollapsibleCard
