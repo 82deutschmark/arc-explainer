@@ -1,3 +1,28 @@
+## [4.2.2] - 2025-10-11 12:45 PM
+## ResponseValidator Refactoring - Code Quality & Reliability Improvements
+### Fixed
+- **Inconsistent null handling**: `calculateTrustworthinessScore` now properly validates confidence parameter before math operations, preventing NaN results and silent failures
+- **Silent failures**: `extractAllGridsFromText` now logs specific parsing errors instead of silently returning empty arrays, making debugging easier
+- **Inefficient regex**: Fixed regex `.exec()` loops by resetting `lastIndex` for global regexes, preventing missed matches on subsequent calls
+- **Misleading naming**: Renamed `predictionAccuracyScore` to `trustworthinessScore` across all interfaces and implementations for clarity and consistency with function naming
+- **Test code in production**: Removed unnecessary test code block from `extractGridFromText` that served no production purpose
+
+### Technical Details
+- **Robustness**: Added finite number checks for confidence values to prevent mathematical errors
+- **Debugging**: Enhanced error logging throughout grid extraction pipeline with specific failure reasons
+- **Performance**: Fixed regex state management to ensure consistent behavior across multiple function calls
+- **Type Safety**: Updated all TypeScript interfaces and implementations to use consistent naming
+- **Code Quality**: Removed dead code and improved maintainability
+
+### Files Modified
+- `server/services/responseValidator.ts` - Core refactoring of validation logic
+- `server/services/puzzleAnalysisService.ts` - Updated property references
+- `server/services/streamingValidator.ts` - Updated property references
+- `server/repositories/interfaces/IExplanationRepository.ts` - Updated interface definitions
+- `server/repositories/ExplanationRepository.ts` - Updated SQL queries and property mappings
+
+---
+
 ## [4.2.1] - 2025-10-11 02:00 AM
 ## Version bump
 ### Fixed
