@@ -270,7 +270,7 @@ export default function ModelBrowser() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <Card className="bg-green-50 border-green-200">
                     <CardContent className="p-4">
-                      <div className="text-2xl font-bold text-green-700">{performance.summary.solved}</div>
+                      <div className="text-2xl font-bold text-green-700">{performance.summary.correct}</div>
                       <div className="text-sm text-green-600">Puzzles CORRECT</div>
                       <div className="text-xs text-green-500 mt-1">{Math.round((performance.summary.solved / performance.summary.totalPuzzles) * 100)}% success rate</div>
                     </CardContent>
