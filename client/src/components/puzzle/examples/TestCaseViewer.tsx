@@ -1,17 +1,17 @@
 /**
  * TestCaseViewer.tsx
  * 
- * Author: Cascade using Sonnet 4
- * Date: 2025-10-11T19:30:00Z
- * PURPOSE: Displays test cases with optional answer reveal.
- * Compact layout showing inputs prominently, with toggle to show/hide correct outputs.
- * SRP: Single responsibility = render test cases with answer reveal controls
- * DRY: Reuses PuzzleGrid, no duplication
- * shadcn/ui: Uses Switch for toggle, Badge for counts
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-11 (Refactored for grid modularization)
+ * PURPOSE: Displays test cases with optional answer reveal toggle.
+ * Uses modular grid components (InputGridDisplay, OutputGridDisplay) for consistency.
+ * SRP: Single responsibility = orchestrate test case display with answer reveal
+ * DRY: Delegates grid rendering to specialized components
+ * shadcn/ui: Uses Switch, Badge, Label
  */
 
 import React, { useState } from 'react';
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { GridDisplay } from '@/components/puzzle/grids/GridDisplay';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -59,30 +59,27 @@ export function TestCaseViewer({
         </div>
       </div>
 
-      {/* Test cases grid */}
+      {/* Test cases grid - now using modular GridDisplay */}
       <div className="space-y-4">
         {testCases.map((testCase, index) => (
           <div key={index} className="flex items-center justify-center gap-6 p-3 bg-gray-50 rounded-lg">
-            <div>
-              <PuzzleGrid 
-                grid={testCase.input}
-                title={`Test ${index + 1} - Input`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-              />
-            </div>
+            <GridDisplay 
+              grid={testCase.input}
+              label={`Test ${index + 1} - Input`}
+              sizeClass="max-w-[20rem] max-h-[20rem]"
+              showDimensions={true}
+            />
 
             {showAnswers && (
               <>
                 <ArrowRight className="h-6 w-6 text-green-600" />
                 
-                <div>
-                  <PuzzleGrid 
+                <div className="bg-green-50 p-2 rounded-lg border-2 border-green-300">
+                  <GridDisplay 
                     grid={testCase.output}
-                    title={`Test ${index + 1} - Correct Answer`}
-                    showEmojis={showEmojis}
-                    emojiSet={emojiSet}
-                    highlight={true}
+                    label={`Test ${index + 1} - Correct Answer`}
+                    sizeClass="max-w-[20rem] max-h-[20rem]"
+                    showDimensions={true}
                   />
                 </div>
               </>
