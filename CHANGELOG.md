@@ -1,5 +1,5 @@
-## [4.0.20] - 2025-10-11
-
+## [4.2.1] - 2025-10-11 02:00 AM
+## Version bump
 ### Fixed
 - **Flexible Grid Extraction for Multi-Test Predictions**
   - **Problem**: Validators hardcoded to look for exact field names (`predictedOutput1-3`), rejecting valid grids with different formats or partial data
