@@ -74,7 +74,6 @@ export const GROK_JSON_SCHEMA = {
     },
     // Match OpenAI required fields for consistency across providers
     required: [
-      "multiplePredictedOutputs",
       "predictedOutput",
       "predictedOutput1",
       "predictedOutput2",
