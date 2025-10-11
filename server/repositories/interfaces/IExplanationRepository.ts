@@ -28,7 +28,7 @@ export interface ExplanationData {
   saturnSuccess?: boolean | null;
   predictedOutputGrid?: any | null;
   isPredictionCorrect?: boolean | null;
-  predictionAccuracyScore?: number | null;
+  trustworthinessScore?: number | null;
   providerRawResponse?: any | null;
   reasoningItems?: any | null;
   temperature?: number | null;
@@ -80,7 +80,7 @@ export interface ExplanationResponse {
   saturnSuccess: boolean | null;
   predictedOutputGrid: number[][] | null;
   isPredictionCorrect: boolean | null;
-  predictionAccuracyScore: number | null;
+  trustworthinessScore: number | null;
   providerRawResponse: any | null;
   reasoningItems: any | null;
   temperature: number | null;
@@ -134,7 +134,7 @@ export interface BulkExplanationStatus {
     saturnSuccess: boolean | null;
     predictedOutputGrid: any | null;
     isPredictionCorrect: boolean | null;
-    predictionAccuracyScore: number | null;
+    trustworthinessScore: number | null;
     providerRawResponse: any | null;
     reasoningItems: any | null;
     temperature: number | null;
