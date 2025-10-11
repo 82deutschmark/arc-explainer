@@ -377,7 +377,7 @@ export function useAnalysisResults({
 
       setCurrentModelKey(modelKey);
 
-      const payload: Record<string, unknown> = {
+      const payload = {
         modelKey,
         ...(supportsTemperature ? { temperature, topP, candidateCount } : {}),
         thinkingBudget,
