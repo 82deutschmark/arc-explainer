@@ -144,13 +144,19 @@ client/src/components/puzzle/
     └── TestCaseZoomModal.tsx        (75 lines)
 ```
 
-## Files Modified (1)
+## Files Modified (2)
 
 ```
 client/src/components/puzzle/CompactPuzzleDisplay.tsx
 - Before: 197 lines (inline grid rendering)
 - After: 145 lines (pure orchestration)
 - Reduction: 52 lines (26%)
+
+client/src/components/puzzle/examples/TestCaseViewer.tsx
+- Before: 96 lines (inline PuzzleGrid usage)
+- After: 93 lines (uses GridDisplay)
+- Reduction: 3 lines
+- Now consistent with modular grid architecture
 ```
 
 ## Performance Impact
@@ -181,8 +187,15 @@ client/src/components/puzzle/CompactPuzzleDisplay.tsx
 
 Successfully transformed monolithic inline grid rendering into a composable, reusable component architecture. All components follow SRP/DRY principles and use shadcn/ui consistently. The codebase is now more maintainable, testable, and extensible.
 
+### Impact Across Application
+
+**PuzzleDiscussion page**: Uses CompactPuzzleDisplay → TestCaseGallery (fully modularized)  
+**PuzzleExaminer page**: Uses PuzzleExamplesSection → TestCaseViewer → GridDisplay (now modularized)
+
+Both major puzzle display pages now use the same modular grid components, ensuring consistency across the application.
+
 ---
 
-**Commit Hash**: (To be filled after commit)  
+**Commit Hash**: f23910aa (initial), pending (TestCaseViewer update)  
 **Branch**: main  
 **Related Issues**: Grid display improvements, component modularization
