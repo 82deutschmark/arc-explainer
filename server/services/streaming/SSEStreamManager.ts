@@ -59,22 +59,32 @@ class SSEStreamManager {
   sendEvent<T>(sessionId: string, event: string, payload: T): void {
     const connection = this.connections.get(sessionId);
     if (!connection || connection.closed) {
-      logger.warn(`Attempted to send event on closed session ${sessionId}`, "sse-manager");
+      // Silently ignore - this is normal when async operations complete after stream ends
       return;
     }
 
-    const serialized = JSON.stringify(payload ?? {});
-    connection.response.write(`event: ${event}\n`);
-    connection.response.write(`data: ${serialized}\n\n`);
+    try {
+      const serialized = JSON.stringify(payload ?? {});
+      connection.response.write(`event: ${event}\n`);
+      connection.response.write(`data: ${serialized}\n\n`);
+    } catch (error) {
+      // Connection may have closed between the check and write - this is fine
+      logger.debug(`Failed to send event to ${sessionId}: ${error}`, "sse-manager");
+    }
   }
 
   sendChunk(sessionId: string, chunk: string): void {
     const connection = this.connections.get(sessionId);
     if (!connection || connection.closed) {
-      logger.warn(`Attempted to send chunk on closed session ${sessionId}`, "sse-manager");
+      // Silently ignore - this is normal when async operations complete after stream ends
       return;
     }
-    connection.response.write(chunk.endsWith("\n\n") ? chunk : `${chunk}\n\n`);
+    try {
+      connection.response.write(chunk.endsWith("\n\n") ? chunk : `${chunk}\n\n`);
+    } catch (error) {
+      // Connection may have closed between the check and write - this is fine
+      logger.debug(`Failed to send chunk to ${sessionId}: ${error}`, "sse-manager");
+    }
   }
 
   sendComment(sessionId: string, comment: string): void {
@@ -116,7 +126,11 @@ class SSEStreamManager {
 
   error(sessionId: string, code: string, message: string, details?: Record<string, unknown>): void {
     const connection = this.connections.get(sessionId);
-    if (!connection || connection.closed) return;
+    if (!connection || connection.closed) {
+      // Session already closed - log for debugging but don't warn
+      logger.debug(`Attempted to send error to closed session ${sessionId}: ${code}`, "sse-manager");
+      return;
+    }
     this.sendEvent(sessionId, "stream.error", { code, message, ...(details ?? {}) });
     this.teardown(sessionId, code);
   }
