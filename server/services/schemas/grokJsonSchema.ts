@@ -14,18 +14,19 @@ export const GROK_JSON_SCHEMA = {
     type: "object",
     additionalProperties: false,
     properties: {
-      // Multi-prediction support (matches OpenAI schema)
+      /* Multi-prediction support THIS IS WRONG!!!!  WE DONT WANT TO BE COMPLICATING THIS!!!
       multiplePredictedOutputs: {
         type: "boolean",
         description: "False if there is only one test input, true otherwise"
       },
+      */
       predictedOutput: {
         type: "array",
         items: {
           type: "array",
           items: { type: "integer" }
         },
-        description: "Single output grid (2D array of integers) for tasks with only one test input, empty array if multiple test inputs"
+        description: "Your predicted output grid for the first test case as a 2D array of integers."
       },
       predictedOutput1: {
         type: "array",
@@ -33,7 +34,7 @@ export const GROK_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "If the task has more than a single test input, First predicted output grid for first test input"
+        description: "Your predicted output grid for the second test case, if there is one."
       },
       predictedOutput2: {
         type: "array",
@@ -41,7 +42,7 @@ export const GROK_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "If the task has more than a single test input, this is the second predicted output grid for second test input"
+        description: "Your predicted output grid for the third test case, if there is one."
       },
       predictedOutput3: {
         type: "array",
@@ -49,13 +50,13 @@ export const GROK_JSON_SCHEMA = {
           type: "array",
           items: { type: "integer" }
         },
-        description: "If the task has more than two test inputs, this is the third predicted output grid for third test input"
+        description: "Your predicted output grid for the fourth test case, if there is one."
       },
 
       // Analysis fields (matches OpenAI schema)
       solvingStrategy: {
         type: "string",
-        description: "Clear explanation of the solving approach, written as pseudo-code"
+        description: "Clear explanation of the solving approach, simple enough that a child could understand."
       },
       patternDescription: {
         type: "string",
