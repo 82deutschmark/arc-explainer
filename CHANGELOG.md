@@ -1,3 +1,42 @@
+## [4.0.14] - 2025-10-10
+
+### Fixed - CRITICAL
+- **Streaming Analysis Validation Bug (SYSTEMIC)**
+  - **Impact**: ALL streaming analysis endpoints (standard, Saturn, Grover) were saving NULL prediction grids and incorrect accuracy flags to database
+  - **Root Cause**: Streaming responses bypassed `validateAndEnrichResult()` entirely, skipping prediction grid extraction and correctness calculation
+  - **Solution**: Single centralized fix in `puzzleAnalysisService.analyzePuzzleStreaming()` using validation harness wrapper pattern
+  - **How It Works**: 
+    - Wraps streaming harness to intercept `end()` completion event
+    - Calls `validateStreamingResult()` before sending to client
+    - Extracts prediction grids, calculates correctness flags, sets accuracy scores
+    - Ensures streaming results match database schema expectations
+  - **Affected Endpoints** (all automatically fixed):
+    - `/api/stream/analyze/:taskId/:modelKey` - Standard puzzle analysis (PuzzleExaminer)
+    - `/api/stream/saturn/:taskId/:modelKey` - Saturn Visual Solver
+    - `/api/stream/grover/:taskId/:modelKey` - Grover Iterative Solver
+  - **Database Impact**:
+    - Before: `predicted_output_grid = NULL`, `is_prediction_correct = false`, `prediction_accuracy_score = 0` for ALL streaming
+    - After: Correct values calculated and stored, identical to non-streaming analysis
+  - **Files Modified**:
+    - NEW: `server/services/streamingValidator.ts` - Validation utility mirroring validateAndEnrichResult logic
+    - `server/services/puzzleAnalysisService.ts` - Added validation harness wrapper in analyzePuzzleStreaming()
+  - **Technical Details**: See `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` for complete architecture flow
+
+### Fixed - UI
+- **Streaming Modal Positioning**
+  - **Issue**: StreamingAnalysisPanel rendered inline instead of as popup modal
+  - **Solution**: Wrapped panel in shadcn/ui Dialog component for proper modal behavior
+  - **Changes**:
+    - `client/src/pages/PuzzleExaminer.tsx` - Added Dialog wrapper with proper sizing (max-w-3xl, 80vh)
+    - `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Removed duplicate title (now in dialog header)
+  - **User Experience**: Modal now appears centered as overlay with proper close/cancel handlers
+
+### Documentation
+- Added `docs/10Oct2025-Streaming-Modal-Save-Fix.md` - Detailed technical documentation of the fix
+- Added `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` - Complete architecture analysis of all streaming endpoints
+
+---
+
 ## [4.0.13] - 2025-10-10
 
 ### Added
