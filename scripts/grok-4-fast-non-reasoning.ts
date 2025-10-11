@@ -161,12 +161,12 @@ async function analyzePuzzle(puzzleId: string, index: number, total: number): Pr
     
     console.log(`✅ Analysis complete!`);
     console.log(`   📊 Confidence: ${analysisData.confidence || 'N/A'}%`);
-    console.log(`   🎯 Predicted Output: ${analysisData.predictedOutput ? 'Present' : 'Missing'}`);
+    console.log(`   🎲 Predicted Output: ${analysisData.predictedOutput ? 'Present' : 'Missing'}`);
     console.log(`   ✓  Single-Test Correct: ${analysisData.isPredictionCorrect !== undefined ? analysisData.isPredictionCorrect : 'N/A'}`);
-    console.log(`   ✓  Multi-Test All Correct: ${analysisData.multiTestAllCorrect !== undefined ? analysisData.multiTestAllCorrect : 'N/A'}`);
-    console.log(`   📈 Accuracy Score: ${analysisData.predictionAccuracyScore !== undefined ? analysisData.predictionAccuracyScore.toFixed(3) : 'N/A'}`);
+    console.log(`   ✓✓  Multi-Test All Correct: ${analysisData.multiTestAllCorrect !== undefined ? analysisData.multiTestAllCorrect : 'N/A'}`);
+    console.log(`   ⚖ Trustworthiness Score: ${analysisData.predictionAccuracyScore !== undefined ? analysisData.predictionAccuracyScore.toFixed(3) : 'N/A'}`);
     console.log(`   💰 Estimated Cost: $${analysisData.estimatedCost !== undefined ? analysisData.estimatedCost.toFixed(6) : 'N/A'}`);
-    console.log(`   🪙 Tokens: ${analysisData.totalTokens || 'N/A'} (in: ${analysisData.inputTokens || 'N/A'}, out: ${analysisData.outputTokens || 'N/A'})`);
+    console.log(`   ⏺ Tokens: ${analysisData.totalTokens || 'N/A'} (in: ${analysisData.inputTokens || 'N/A'}, out: ${analysisData.outputTokens || 'N/A'})`);
 
     // Step 2: Save to database
     const explanationToSave = {
