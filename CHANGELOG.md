@@ -1,3 +1,38 @@
+## [4.0.17] - 2025-10-10
+
+### Changed
+- **Grok-4-Fast-Non-Reasoning Script: Complete Rewrite for Verbose Logging**
+  - **User Request**: Rewrite script to be concurrent (NOT sequential), 2s stagger between starts, verbose console output
+  - **Previous Approach**: Complex worker pool with MAX_CONCURRENCY limiting, minimal logging
+  - **New Approach**: 
+    - Concurrent execution with staggered starts (pattern from grok-4-progressive-reasoning.ts)
+    - All puzzles fire simultaneously with 2-second delays between starts (rate limiting)
+    - Extensive verbose logging at every step of the process
+  - **Validation Flow** (follows `Analysis_Data_Flow_Trace.md`):
+    1. `/api/puzzle/analyze` - Backend validates response & calculates correctness
+    2. `/api/puzzle/save-explained` - Persist validated data to database
+    3. Correctness determined by `shared/utils/correctness.ts` logic
+  - **Console Output Improvements**:
+    - **Per-Puzzle Detail**: Shows puzzle N/total, timestamps, model config, timeout
+    - **Step-by-Step Progress**: Verbose logging for analyze step and save step
+    - **Validation Results**: Displays confidence, correctness flags, accuracy score, tokens, cost
+    - **Timing Stats**: Min/max/average times, total duration
+    - **Summary Reports**: Success/fail counts, failed puzzle list with errors
+  - **Configuration**:
+    - Model: `grok-4-fast-non-reasoning`
+    - Stagger: 2 seconds between puzzle starts
+    - Timeout: 45 minutes per puzzle
+    - Prompt: `solver` template
+  - **Usage**:
+    ```bash
+    node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc1  # 400 puzzles
+    node --import tsx scripts/grok-4-fast-non-reasoning.ts --dataset arc2  # 120 puzzles
+    ```
+  - **Files Modified**:
+    - `scripts/grok-4-fast-non-reasoning.ts` - Complete rewrite with verbose logging
+
+---
+
 ## [4.0.16] - 2025-10-10
 
 ### Changed - MAJOR REWRITE
