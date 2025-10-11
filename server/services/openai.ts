@@ -444,12 +444,14 @@ export class OpenAIService extends BaseAIService {
     
     if (isContinuation) {
       // Continuation: API loads context from previous_response_id
-      // ONLY send the new message
-      console.log('[OpenAI] =ƒöä Continuation mode - sending ONLY new user message');
+      // send the new message (we should include the system message too!!!)
+      // Make sure we are sending the previous_response_id too!!  That is the point of this!!
+      // The point isnt saving tokens, it is preserving the context chain!!!
+      console.log('[OpenAI] =â†ªâ¡ğŸ¤”ğŸ¤¨ Continuation mode - sending with previous_response_id');
       messages.push({ role: "user", content: userMessage });
     } else {
       // Initial: Send full conversation
-      console.log('[OpenAI] =ƒôä Initial mode - sending system + user messages');
+      console.log('[OpenAI] =ğŸš€ğŸ“ğŸ§© Initial mode - sending system + user messages (puzzle grids)');
       if (systemMessage) {
         messages.push({ role: "system", content: systemMessage });
       }
@@ -632,7 +634,7 @@ export class OpenAIService extends BaseAIService {
       // Use JSON.stringify instead of String() to avoid "[object Object]" corruption
       try {
         reasoningLog = JSON.stringify(reasoningLog, null, 2);
-        console.log(`=ƒöì [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+        console.log(`=ï¿½ï¿½ï¿½ [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
       } catch (error) {
         console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
         reasoningLog = null;
