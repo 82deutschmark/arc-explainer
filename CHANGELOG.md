@@ -23,17 +23,32 @@
   - **Technical Details**: See `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` for complete architecture flow
 
 ### Fixed - UI
-- **Streaming Modal Positioning**
-  - **Issue**: StreamingAnalysisPanel rendered inline instead of as popup modal
-  - **Solution**: Wrapped panel in shadcn/ui Dialog component for proper modal behavior
-  - **Changes**:
-    - `client/src/pages/PuzzleExaminer.tsx` - Added Dialog wrapper with proper sizing (max-w-3xl, 80vh)
-    - `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Removed duplicate title (now in dialog header)
-  - **User Experience**: Modal now appears centered as overlay with proper close/cancel handlers
+- **Streaming Modal UX Improvements**
+  - **Issue #1**: StreamingAnalysisPanel rendered inline instead of as popup modal
+  - **Issue #2**: Modal too small for large text output (was max-w-3xl)
+  - **Issue #3**: Modal auto-closed on completion, too fast to read results
+  - **Issue #4**: Text areas too small (40px/32px height) causing excessive scrolling
+  - **Solutions**:
+    - Wrapped panel in shadcn/ui Dialog component for proper modal behavior
+    - **Increased modal size to 95vw x 90vh** (uses nearly full screen)
+    - **Added manual Close button** - modal no longer auto-closes on completion
+    - **Increased text area heights to 500px/400px** for comfortable viewing
+    - Added monospace font for better code/output readability
+  - **Files Modified**:
+    - `client/src/pages/PuzzleExaminer.tsx` - Dialog wrapper with large sizing, onClose callback
+    - `client/src/components/puzzle/StreamingAnalysisPanel.tsx` - Close button, larger text areas
+    - `client/src/hooks/useAnalysisResults.ts` - closeStreamingModal function
+  - **User Experience**: 
+    - Modal appears as large popup (95% screen)
+    - Users can review full results at their own pace
+    - Manual close button prevents premature dismissal
+    - Much less scrolling required
 
 ### Documentation
 - Added `docs/10Oct2025-Streaming-Modal-Save-Fix.md` - Detailed technical documentation of the fix
 - Added `docs/10Oct2025-Streaming-Validation-Complete-Analysis.md` - Complete architecture analysis of all streaming endpoints
+- Added `docs/10Oct2025-Modal-UX-Improvements.md` - Summary of modal sizing and UX improvements
+- Added `docs/10Oct2025-Task-Complete-Summary.md` - Complete task summary and testing guide
 
 ---
 
