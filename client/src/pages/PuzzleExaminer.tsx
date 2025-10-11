@@ -130,6 +130,7 @@ export default function PuzzleExaminer() {
     streamingTokenUsage,
     streamError,
     cancelStreamingAnalysis,
+    closeStreamingModal,
     canStreamModel,
     // GPT-5 reasoning parameters
     reasoningEffort,
@@ -446,11 +447,15 @@ export default function PuzzleExaminer() {
 
       {/* Streaming Modal Dialog - appears as popup */}
       <Dialog open={isStreamingActive} onOpenChange={(open) => {
-        if (!open && streamingPanelStatus === 'in_progress') {
-          cancelStreamingAnalysis();
+        // Only allow closing if completed/failed, or cancel during progress
+        if (!open) {
+          if (streamingPanelStatus === 'in_progress') {
+            cancelStreamingAnalysis();
+          }
+          // For completed/failed, the close button in the panel handles it
         }
       }}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Analysis'}`}</DialogTitle>
           </DialogHeader>
@@ -463,6 +468,7 @@ export default function PuzzleExaminer() {
             reasoning={streamingReasoning}
             tokenUsage={streamingTokenUsage}
             onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
+            onClose={closeStreamingModal}
           />
         </DialogContent>
       </Dialog>
