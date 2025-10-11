@@ -2,21 +2,20 @@
  * CompactPuzzleDisplay.tsx
  *
  * Author: Cascade using Claude Sonnet 4 on 2025-10-07
- * Last Modified: Cascade using Claude Sonnet 4.5 on 2025-10-11
+ * Last Modified: Cascade using Sonnet 4 on 2025-10-11 (Gallery refactor)
  * Date: 2025-10-07T21:12:05-04:00
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
  * NOW SUPPORTS MULTIPLE TEST CASES for multi-test puzzles like 195c6913.
- * Shows all test inputs and correct outputs, with training examples collapsed.
- * Uses shadcn/ui Collapsible component for training examples toggle.
+ * REFACTORED: Now uses TrainingPairGallery for improved information density.
  * 
- * DESIGN FIXES:
- * - Removed internal overflow-x-auto scrollbars (major UX violation)
- * - FIXED: Removed aspect-square constraints that destroyed non-square grids (1x30, 30x1, etc)
- * - Grids now render at natural aspect ratios with max-width/max-height constraints
- * - Content flows naturally, letting page-level scrolling handle overflow
+ * DESIGN IMPROVEMENTS (Oct 11, 2025):
+ * - Replaced vertical training examples with gallery-style layout
+ * - Uses new TrainingPairGallery component (3-6 cards per row)
+ * - Maintains collapsible behavior with improved space efficiency
+ * - Grids render at natural aspect ratios with max-width/max-height constraints
  * 
  * Single responsibility: Puzzle visualization only - highly reusable across app.
- * SRP/DRY check: Pass - Focused only on puzzle display concerns, reuses TinyGrid
+ * SRP/DRY check: Pass - Delegates to TrainingPairGallery, reuses components
  * shadcn/ui: Pass - Uses shadcn/ui Collapsible, Card, Badge components
  */
 
@@ -30,6 +29,7 @@ import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
 // Reuse existing components
 import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { PredictionCard, PredictionIteration } from '@/components/puzzle/PredictionCard';
+import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
 
 // Types
 import type { ARCExample } from '@shared/types';
@@ -94,46 +94,34 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className="p-1">
-        <div className="flex flex-wrap items-start gap-6">
-          {/* Training Examples - COLLAPSIBLE (LEFT SIDE) */}
-          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen} className="min-w-fit">
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="p-1 h-auto hover:bg-gray-100">
-                <div className="flex items-center">
-                  {isTrainingOpen ? (
-                    <ChevronDown className="h-3 w-3" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3" />
-                  )}
-                  <span className="text-[10px] font-semibold ml-1">
-                    Train
-                    <Badge variant="outline" className="text-[9px] px-1 py-0 ml-1">
+      <CardContent className="p-3">
+        <div className="space-y-4">
+          {/* Training Examples - GALLERY LAYOUT IN COLLAPSIBLE */}
+          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen}>
+            <div className="flex items-center justify-between mb-2">
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2 h-auto hover:bg-gray-100">
+                  <div className="flex items-center gap-2">
+                    {isTrainingOpen ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                    <span className="text-sm font-semibold">Training Examples</span>
+                    <Badge variant="outline" className="text-xs">
                       {trainExamples.length}
                     </Badge>
-                  </span>
-                </div>
-              </Button>
-            </CollapsibleTrigger>
+                  </div>
+                </Button>
+              </CollapsibleTrigger>
+            </div>
             <CollapsibleContent>
-              <div className="flex flex-wrap gap-4 p-1">
-                {displayedExamples.map((example, index) => (
-                  <div key={index} className="flex items-center gap-4 min-w-fit">
-                    <div className="text-[10px] text-gray-500">{index + 1}.</div>
-                    <div className="min-w-[4rem] max-w-[16rem] max-h-[12rem] border border-white/30 p-0.5 bg-gray-900/5 flex items-center justify-center overflow-hidden">
-                      <TinyGrid grid={example.input} />
-                    </div>
-                    <div className="text-[10px] text-gray-400">→</div>
-                    <div className="min-w-[4rem] max-w-[16rem] max-h-[12rem] border border-white/30 p-0.5 bg-gray-900/5 flex items-center justify-center overflow-hidden">
-                      <TinyGrid grid={example.output} />
-                    </div>
-                  </div>
-                ))}
-                {trainExamples.length > maxTrainingExamples && (
-                  <div className="text-[10px] text-gray-500 min-w-fit">
-                    +{trainExamples.length - maxTrainingExamples}
-                  </div>
-                )}
+              <div className="pl-2">
+                <TrainingPairGallery
+                  trainExamples={trainExamples}
+                  showEmojis={showEmojis}
+                  showHeader={false}
+                />
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -177,32 +165,32 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Refinement History - HORIZONTAL with better visibility */}
-        {hasPredictions && (
-          <div className="w-full border-t-2 border-purple-400 pt-4 mt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Brain className="h-4 w-4 text-purple-600" />
-              <h3 className="text-sm font-bold text-purple-900">
-                Refinement History
-              </h3>
-              <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700">
-                {predictions!.length} iteration{predictions!.length > 1 ? 's' : ''}
-              </Badge>
+          {/* Refinement History - HORIZONTAL with better visibility */}
+          {hasPredictions && (
+            <div className="w-full border-t-2 border-purple-400 pt-4 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Brain className="h-4 w-4 text-purple-600" />
+                <h3 className="text-sm font-bold text-purple-900">
+                  Refinement History
+                </h3>
+                <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700">
+                  {predictions!.length} iteration{predictions!.length > 1 ? 's' : ''}
+                </Badge>
+              </div>
+              <div className="flex overflow-x-auto gap-3 pb-2">
+                {predictions!.map((pred, index) => (
+                  <div key={index} className="flex-shrink-0">
+                    <PredictionCard
+                      prediction={pred}
+                      isLatest={index === predictions!.length - 1}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex overflow-x-auto gap-3 pb-2">
-              {predictions!.map((pred, index) => (
-                <div key={index} className="flex-shrink-0">
-                  <PredictionCard
-                    prediction={pred}
-                    isLatest={index === predictions!.length - 1}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

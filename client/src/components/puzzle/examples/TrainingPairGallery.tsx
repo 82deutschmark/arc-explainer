@@ -21,6 +21,7 @@ interface TrainingPairGalleryProps {
   trainExamples: Array<{ input: number[][]; output: number[][] }>;
   showEmojis: boolean;
   emojiSet?: EmojiSet;
+  showHeader?: boolean; // Optional header with title and count badge
 }
 
 /**
@@ -31,18 +32,21 @@ interface TrainingPairGalleryProps {
 export function TrainingPairGallery({
   trainExamples,
   showEmojis,
-  emojiSet
+  emojiSet,
+  showHeader = true
 }: TrainingPairGalleryProps) {
   const [zoomedIndex, setZoomedIndex] = useState<number | null>(null);
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-base font-semibold">Training Examples</h3>
-        <Badge variant="outline" className="text-xs">
-          {trainExamples.length} {trainExamples.length === 1 ? 'example' : 'examples'}
-        </Badge>
-      </div>
+      {showHeader && (
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-base font-semibold">Training Examples</h3>
+          <Badge variant="outline" className="text-xs">
+            {trainExamples.length} {trainExamples.length === 1 ? 'example' : 'examples'}
+          </Badge>
+        </div>
+      )}
 
       {/* Responsive grid: auto-fit cards, min 200px, max 1fr */}
       <div className="grid gap-3" style={{
