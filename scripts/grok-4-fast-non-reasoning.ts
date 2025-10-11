@@ -123,18 +123,20 @@ async function analyzePuzzle(puzzleId: string, index: number, total: number): Pr
     console.log(`⏱️  Start Time: ${new Date().toISOString()}`);
     console.log(`🤖 Model: ${GROK_MODEL}`);
     console.log(`📝 Prompt: solver (standard puzzle-solving prompt)`);
-    console.log(`🌡️  Temperature: 0.99`);
+    
     console.log(`⏳ Timeout: ${PUZZLE_TIMEOUT_MS / 60000} minutes`);
 
     // Prepare analysis request following frontend pattern
     const requestBody: AnalysisRequest = {
-      temperature: 0.99,
+      temperature: 0.97,
       promptId: 'solver',
       systemPromptMode: 'ARC',
       omitAnswer: true,
       retryMode: false
     };
-
+      console.log(`🌡️  Temperature: ${requestBody.temperature}`);
+      console.log(`📝 Prompt: ${requestBody.promptId}`);
+      
     const encodedModelKey = encodeURIComponent(GROK_MODEL);
     
     console.log(`\n📡 STEP 1/2: Sending analysis request to backend...`);
