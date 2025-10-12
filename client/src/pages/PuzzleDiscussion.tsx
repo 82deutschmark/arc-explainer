@@ -18,13 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
-import { PredictionIteration } from '@/components/puzzle/PredictionCard';
-import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
+import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
@@ -76,6 +77,8 @@ export default function PuzzleDiscussion() {
     analyzerErrors,
     promptId,
     setPromptId,
+    customPrompt,
+    setCustomPrompt,
     temperature,
     setTemperature,
     isGPT5ReasoningModel,
@@ -86,8 +89,11 @@ export default function PuzzleDiscussion() {
     reasoningSummaryType,
     setReasoningSummaryType,
     topP,
+    setTopP,
     candidateCount,
+    setCandidateCount,
     thinkingBudget,
+    setThinkingBudget,
     streamingModelKey,
     streamStatus,
     streamingText,
@@ -394,65 +400,65 @@ export default function PuzzleDiscussion() {
         </div>
       </div>
 
-      {/* Puzzle Grids - Direct Rendering */}
-      <div className="space-y-4">
-        {/* Training Examples */}
-        <div>
-          <div className="text-xs font-semibold text-gray-600 mb-2">Training ({task!.train.length})</div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {task!.train.map((ex, i) => (
-              <React.Fragment key={i}>
-                <PuzzleGrid grid={ex.input} title={`Ex${i+1} In`} showEmojis={false} />
-                <PuzzleGrid grid={ex.output} title={`Ex${i+1} Out`} showEmojis={false} />
-              </React.Fragment>
-            ))}
+      {/* Compact Puzzle Display */}
+      <CollapsibleCard
+        title="Puzzle Overview"
+        defaultOpen={false}
+        headerDescription={
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Badge variant="outline" className="text-xs">{task!.train.length} training</Badge>
+            <Badge variant="outline" className="text-xs">{task!.test.length} test</Badge>
           </div>
-        </div>
-
-        {/* Test Cases */}
-        <div className="border-t pt-4">
-          <div className="text-xs font-semibold text-gray-600 mb-2">Test Cases ({task!.test.length})</div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {task!.test.map((test, i) => (
-              <React.Fragment key={i}>
-                <PuzzleGrid grid={test.input} title={`Test${i+1} In`} showEmojis={false} />
-                <PuzzleGrid grid={test.output} title={`Test${i+1} Out`} showEmojis={false} highlight={true} />
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* Prediction Iterations (if in refinement mode) */}
-        {refinementState.isRefinementActive && refinementState.iterations.length > 0 && (
-          <div className="border-t pt-4">
-            <div className="text-xs font-semibold text-purple-700 mb-2">
-              Refinement Iterations ({refinementState.iterations.length})
-            </div>
-            <div className="flex gap-2 overflow-x-auto">
-              {refinementState.iterations.map((iter, i) => {
-                const grid = iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]];
-                const isCorrect = determineCorrectness({
-                  modelName: iter.content.modelName,
-                  isPredictionCorrect: iter.content.isPredictionCorrect,
-                  multiTestAllCorrect: iter.content.multiTestAllCorrect,
-                  hasMultiplePredictions: iter.content.hasMultiplePredictions
-                }).isCorrect;
-                
-                return (
-                  <div key={i} className={`flex-shrink-0 ${isCorrect ? 'ring-2 ring-green-500' : 'ring-1 ring-gray-300'}`}>
-                    <PuzzleGrid 
-                      grid={grid} 
-                      title={`Iter ${iter.iterationNumber}`} 
-                      showEmojis={false} 
-                      highlight={isCorrect}
-                    />
+        }
+      >
+        <div className="space-y-3">
+          {/* Training Examples - Compact */}
+          <div>
+            <div className="text-xs font-semibold text-gray-600 mb-1">Training Examples</div>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {task!.train.map((ex, i) => (
+                <div key={i} className="flex gap-1 flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={ex.input} />
+                    </div>
                   </div>
-                );
-              })}
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">Out</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={ex.output} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Test Cases - Compact */}
+          <div className="border-t pt-2">
+            <div className="text-xs font-semibold text-gray-600 mb-1">Test Cases</div>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {task!.test.map((test, i) => (
+                <div key={i} className="flex gap-1 flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={test.input} />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[10px] text-green-600 mb-0.5 font-semibold">✓</div>
+                    <div className="w-20 h-20 border-2 border-green-500 rounded">
+                      <TinyGrid grid={test.output} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CollapsibleCard>
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {
@@ -470,43 +476,50 @@ export default function PuzzleDiscussion() {
           return (
             <>
               {isStreamingActive && refinementState.activeModel && (
-                <div className="mb-4">
-                  <StreamingAnalysisPanel
-                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-                    status={streamingPanelStatus}
-                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                    message={
-                      streamingPanelStatus === 'failed'
-                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                        : streamingMessage
-                    }
-                    text={streamingText}
-                    reasoning={streamingReasoning}
-                    tokenUsage={streamingTokenUsage}
-                    onCancel={
-                      streamingPanelStatus === 'in_progress'
-                        ? () => {
-                            cancelStreamingAnalysis();
-                            setPendingStream(null);
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
+                <StreamingAnalysisPanel
+                  title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+                  status={streamingPanelStatus}
+                  phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+                  message={
+                    streamingPanelStatus === 'failed'
+                      ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                      : streamingMessage
+                  }
+                  text={streamingText}
+                  reasoning={streamingReasoning}
+                  tokenUsage={streamingTokenUsage}
+                  onCancel={
+                    streamingPanelStatus === 'in_progress'
+                      ? () => {
+                          cancelStreamingAnalysis();
+                          setPendingStream(null);
+                        }
+                      : undefined
+                  }
+                />
               )}
-              <RefinementThread
-                originalExplanation={selectedExplanation}
+              <ProfessionalRefinementUI
                 iterations={refinementState.iterations}
                 taskId={taskId}
+                task={task!}
                 testCases={task!.test}
                 models={models}
-                task={task!}
                 activeModel={refinementState.activeModel}
                 userGuidance={refinementState.userGuidance}
                 isProcessing={processingModels.has(refinementState.activeModel)}
                 error={analyzerErrors.get(refinementState.activeModel) || null}
+                promptId={promptId}
+                setPromptId={setPromptId}
+                customPrompt={customPrompt}
+                setCustomPrompt={setCustomPrompt}
                 temperature={temperature}
                 setTemperature={setTemperature}
+                topP={topP}
+                setTopP={setTopP}
+                candidateCount={candidateCount}
+                setCandidateCount={setCandidateCount}
+                thinkingBudget={thinkingBudget}
+                setThinkingBudget={setThinkingBudget}
                 reasoningEffort={reasoningEffort}
                 setReasoningEffort={setReasoningEffort}
                 reasoningVerbosity={reasoningVerbosity}
@@ -514,7 +527,6 @@ export default function PuzzleDiscussion() {
                 reasoningSummaryType={reasoningSummaryType}
                 setReasoningSummaryType={setReasoningSummaryType}
                 isGPT5ReasoningModel={isGPT5ReasoningModel}
-                promptId={promptId}
                 onBackToList={refinementState.endRefinement}
                 onResetRefinement={refinementState.resetRefinement}
                 onUserGuidanceChange={refinementState.setUserGuidance}

@@ -1,3 +1,9 @@
+ChatCompletions API will be deprecated VERY SOON!  Switching to Responses API is STRONGLY RECOMMENDED.
+
+OpenAI and Grok (xAI) use Responses API when we call directly via their API.  (WHICH WE ALWAYS WANT TO DO)
+OpenRouter (including xAI legacy models) still use the old ChatCompletions API. (Fine for now)
+
+
 Missing / wrong things that cause Responses POSTs to fail:
 1. Using `messages` / Chat Completions body instead of `input` for Responses — Requests must use `input` (role/content) when calling `/v1/responses`.
 2. Not passing a `reasoning` param when you expect structured reasoning (e.g. `reasoning: { "summary": "auto" }` or `reasoning.effort`). If omitted, you may only see internal reasoning IDs or no summary.
@@ -24,11 +30,14 @@ Minimal, exact request shape to test right now (POST `/v1/responses`, JSON body)
 
 Notes on `store` / encrypted flows:
 
-* If your org enforces ZDR (`store=false`), repeat with `"include":["reasoning.encrypted_content"]` and ensure you can decrypt/handle that content in follow-ups.
+* WE ARE NOT ZDR!!!
+
+Grok does NOT output any human readable reasoning!!
+OpenAI only outputs it in the very specific strange way described.
 
 What to inspect in the raw response JSON (keys and where to look):
 
-* `id` → persist for chaining.
+* `id` → persist for chaining. (providerResponseId?)
 * `output` array → find items with `type: "reasoning"` and `type: "message"`; inside `message.content[]` look for `type: "output_text"`.
 * `output_reasoning` / reasoning summaries (if present) or `output[].summary`.
 * `usage.output_tokens_details.reasoning_tokens` to see token split.

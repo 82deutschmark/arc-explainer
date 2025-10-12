@@ -68,9 +68,10 @@ export class OpenAIService extends BaseAIService {
 
   supportsStreaming(modelKey: string): boolean {
     return [
+      "gpt-5-2025-08-07",
       "gpt-5-mini-2025-08-07",
       "gpt-5-nano-2025-08-07",
-      "gpt-5-2025-08-07"
+      "gpt-5-chat-latest"
     ].includes(modelKey);
   }
 

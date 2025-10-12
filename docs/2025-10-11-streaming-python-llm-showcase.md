@@ -1,3 +1,10 @@
+##  Determined this was overboard for now.  Might need if SSE fails.
+Date: 2025-10-11
+
+
+
+
+
 1. Shared Streaming Contract (EventEnvelope v1)
 TypeScript (shared/eventEnvelope.ts):
 ```ts

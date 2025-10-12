@@ -2,30 +2,24 @@
 """
 Author: Cascade using Sonnet 4.5
 Date: 2025-10-09
+Updated: 2025-10-11 by Sonnet 4.5
 PURPOSE: Grover code execution sandbox - executes LLM-generated Python code safely.
 Supports two modes:
   1. Training mode: {"programs": [...], "training_inputs": [...]}
   2. Test mode: {"mode": "test", "program": "...", "test_inputs": [...]}
 Writes stdout: NDJSON events with execution results
 SRP/DRY check: Pass - Single responsibility (safe code execution only)
+CROSS-PLATFORM: Uses threading for timeout (works on Windows + Unix)
 """
 import sys
 import json
 import ast
-import platform
-from typing import Dict, List, Any
-
-# Timeout support only on Unix (Windows doesn't have signal.SIGALRM)
-IS_UNIX = platform.system() != 'Windows'
-if IS_UNIX:
-    import signal
+import threading
+from typing import Dict, List, Any, Optional
 
 class ExecutionTimeout(Exception):
     """Raised when code execution exceeds timeout"""
     pass
-
-def timeout_handler(signum, frame):
-    raise ExecutionTimeout("Execution timeout (5s)")
 
 def validate_ast(code: str) -> tuple[bool, str]:
     """Validate Python code AST - block dangerous operations"""
@@ -49,7 +43,7 @@ def validate_ast(code: str) -> tuple[bool, str]:
 
 def execute_program(code: str, inputs: List[List[List[int]]]) -> Dict[str, Any]:
     """
-    Execute program on training inputs with 5s timeout (Unix only)
+    Execute program on training inputs with 5s timeout (cross-platform via threading)
 
     Args:
         code: Python code defining transform(grid) function
@@ -63,43 +57,52 @@ def execute_program(code: str, inputs: List[List[List[int]]]) -> Dict[str, Any]:
     if not valid:
         return {"outputs": [], "error": f"AST validation failed: {error_msg}"}
 
-    # Set timeout (Unix only - Windows doesn't support SIGALRM)
-    if IS_UNIX:
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(5)
+    # Execution state shared between threads
+    result: Dict[str, Any] = {"outputs": [], "error": None}
+    exception_holder: List[Optional[Exception]] = [None]
 
-    try:
-        # Create isolated namespace
-        namespace = {}
-        exec(code, namespace)
+    def _run_execution():
+        """Inner function that runs in separate thread"""
+        try:
+            # Create isolated namespace
+            namespace = {}
+            exec(code, namespace)
 
-        # Check for transform function
-        if 'transform' not in namespace:
-            return {"outputs": [], "error": "Code must define transform(grid) function"}
+            # Check for transform function
+            if 'transform' not in namespace:
+                exception_holder[0] = ValueError("Code must define transform(grid) function")
+                return
 
-        transform_fn = namespace['transform']
+            transform_fn = namespace['transform']
 
-        # Execute on all inputs
-        outputs = []
-        for input_grid in inputs:
-            try:
+            # Execute on all inputs
+            outputs = []
+            for input_grid in inputs:
                 output = transform_fn(input_grid)
                 outputs.append(output)
-            except Exception as e:
-                return {"outputs": outputs, "error": f"Transform error: {type(e).__name__}: {str(e)}"}
 
-        if IS_UNIX:
-            signal.alarm(0)  # Cancel timeout
-        return {"outputs": outputs, "error": None}
+            result["outputs"] = outputs
+            result["error"] = None
 
-    except ExecutionTimeout:
-        if IS_UNIX:
-            signal.alarm(0)
+        except Exception as e:
+            exception_holder[0] = e
+
+    # Run execution in separate thread with timeout
+    execution_thread = threading.Thread(target=_run_execution, daemon=True)
+    execution_thread.start()
+    execution_thread.join(timeout=5.0)
+
+    # Check if timeout occurred
+    if execution_thread.is_alive():
+        # Timeout - thread is still running
         return {"outputs": [], "error": "Execution timeout (5s)"}
-    except Exception as e:
-        if IS_UNIX:
-            signal.alarm(0)
+
+    # Check if exception occurred
+    if exception_holder[0]:
+        e = exception_holder[0]
         return {"outputs": [], "error": f"{type(e).__name__}: {str(e)}"}
+
+    return result
 
 def main():
     """Main entry point - reads stdin, executes, writes stdout"""
