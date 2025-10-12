@@ -240,11 +240,13 @@ export class PythonBridge {
    * Execute Grover-generated programs in Python sandbox
    * @param programs - Array of Python code strings
    * @param trainingInputs - Training input grids
+   * @param onLog - Optional callback to stream Python log messages in real-time
    * @returns Execution results with scores
    */
   async runGroverExecution(
     programs: string[],
-    trainingInputs: number[][][]
+    trainingInputs: number[][][],
+    onLog?: (message: string) => void
   ): Promise<{ results: any[] }> {
     return new Promise((resolve, reject) => {
       const pythonBin = this.resolvePythonBin();
@@ -264,20 +266,38 @@ export class PythonBridge {
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
 
-      let stdoutData = '';
+      let finalResults: any = null;
       let stderrData = '';
 
-      child.stdout.on('data', (chunk) => {
-        stdoutData += chunk;
+      // STREAM LIKE SATURN - process line by line
+      const rl = readline.createInterface({ input: child.stdout });
+      rl.on('line', (line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        try {
+          const evt = JSON.parse(trimmed);
+
+          if (evt.type === 'log' && onLog) {
+            // Forward Python log messages to callback
+            onLog(evt.message);
+          } else if (evt.type === 'execution_results') {
+            // Save final results
+            finalResults = evt;
+          }
+        } catch {
+          // Non-JSON output - forward as-is
+          if (onLog) onLog(trimmed);
+        }
       });
 
       child.stderr.on('data', (chunk) => {
         stderrData += chunk;
+        if (onLog) onLog(`[stderr] ${chunk}`);
       });
 
       child.on('close', (code) => {
         if (code !== 0) {
-          // Parse stderr for structured error if possible
           let errorDetail = stderrData.trim();
           try {
             const errorJson = JSON.parse(stderrData);
@@ -287,31 +307,15 @@ export class PythonBridge {
           } catch {
             // Not JSON, use raw stderr
           }
-          
+
           return reject(new Error(`Python executor failed (exit code ${code}): ${errorDetail}`));
         }
 
-        try {
-          const lines = stdoutData.trim().split('\n');
-          if (lines.length === 0) {
-            return reject(new Error('Python executor produced no output'));
-          }
-          
-          const lastLine = lines[lines.length - 1];
-          const result = JSON.parse(lastLine);
-
-          if (result.type === 'execution_results') {
-            resolve({ results: result.results });
-          } else if (result.type === 'error') {
-            reject(new Error(`Python execution error: ${result.message}`));
-          } else {
-            reject(new Error(`Unexpected Python response type: ${result.type}`));
-          }
-        } catch (err) {
-          const parseError = err instanceof Error ? err.message : String(err);
-          const preview = stdoutData.substring(0, 200);
-          reject(new Error(`Failed to parse Python executor output: ${parseError}\nOutput preview: ${preview}`));
+        if (!finalResults) {
+          return reject(new Error('Python executor did not return execution_results'));
         }
+
+        resolve({ results: finalResults.results });
       });
 
       child.on('error', (err) => {
@@ -329,11 +333,13 @@ export class PythonBridge {
    * Execute a single Grover program on test inputs to generate predictions
    * @param program - Python code string defining transform() function
    * @param testInputs - Test input grids to generate predictions for
+   * @param onLog - Optional callback to stream Python log messages in real-time
    * @returns Array of predicted output grids (or null for errors)
    */
   async runGroverTestExecution(
     program: string,
-    testInputs: number[][][]
+    testInputs: number[][][],
+    onLog?: (message: string) => void
   ): Promise<{ outputs: (number[][] | null)[]; error: string | null }> {
     return new Promise((resolve, reject) => {
       const pythonBin = this.resolvePythonBin();
@@ -353,15 +359,34 @@ export class PythonBridge {
       child.stdout.setEncoding('utf8');
       child.stderr.setEncoding('utf8');
 
-      let stdoutData = '';
+      let finalResult: any = null;
       let stderrData = '';
 
-      child.stdout.on('data', (chunk) => {
-        stdoutData += chunk;
+      // STREAM LIKE SATURN - process line by line
+      const rl = readline.createInterface({ input: child.stdout });
+      rl.on('line', (line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        try {
+          const evt = JSON.parse(trimmed);
+
+          if (evt.type === 'log' && onLog) {
+            // Forward Python log messages to callback
+            onLog(evt.message);
+          } else if (evt.type === 'test_execution_result') {
+            // Save final result
+            finalResult = evt;
+          }
+        } catch {
+          // Non-JSON output - forward as-is
+          if (onLog) onLog(trimmed);
+        }
       });
 
       child.stderr.on('data', (chunk) => {
         stderrData += chunk;
+        if (onLog) onLog(`[stderr] ${chunk}`);
       });
 
       child.on('close', (code) => {
@@ -375,31 +400,15 @@ export class PythonBridge {
           } catch {
             // Not JSON, use raw stderr
           }
-          
+
           return reject(new Error(`Python test executor failed (exit code ${code}): ${errorDetail}`));
         }
 
-        try {
-          const lines = stdoutData.trim().split('\n');
-          if (lines.length === 0) {
-            return reject(new Error('Python test executor produced no output'));
-          }
-          
-          const lastLine = lines[lines.length - 1];
-          const result = JSON.parse(lastLine);
-
-          if (result.type === 'test_execution_result') {
-            resolve({ outputs: result.outputs, error: result.error });
-          } else if (result.type === 'error') {
-            reject(new Error(`Python test execution error: ${result.message}`));
-          } else {
-            reject(new Error(`Unexpected Python response type: ${result.type}`));
-          }
-        } catch (err) {
-          const parseError = err instanceof Error ? err.message : String(err);
-          const preview = stdoutData.substring(0, 200);
-          reject(new Error(`Failed to parse Python test executor output: ${parseError}\nOutput preview: ${preview}`));
+        if (!finalResult) {
+          return reject(new Error('Python test executor did not return test_execution_result'));
         }
+
+        resolve({ outputs: finalResult.outputs, error: finalResult.error });
       });
 
       child.on('error', (err) => {
@@ -407,10 +416,10 @@ export class PythonBridge {
       });
 
       // Send test execution payload (different structure than training)
-      const payload = JSON.stringify({ 
+      const payload = JSON.stringify({
         mode: 'test',
-        program, 
-        test_inputs: testInputs 
+        program,
+        test_inputs: testInputs
       });
       child.stdin.write(payload);
       child.stdin.end();
