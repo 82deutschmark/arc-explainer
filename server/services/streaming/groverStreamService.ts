@@ -50,18 +50,17 @@ class GroverStreamService {
           promptId: 'grover',
           captureReasoning: true,
           previousResponseId,
-          maxSteps: maxIterations,
         },
         harness,
         {
           sessionId,
           previousResponseId,
-          maxSteps: maxIterations,
+          maxSteps: maxIterations,  // FIXED: Pass maxIterations to control iteration count
         }
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      logger.error(`[GroverStream] Failed to run streaming analysis: ${message}`, error);
+      logger.logError(`[GroverStream] Failed to run streaming analysis: ${message}`, { error, context: 'GroverStream' });
       sseStreamManager.error(sessionId, 'GROVER_STREAM_ERROR', message);
     }
   }

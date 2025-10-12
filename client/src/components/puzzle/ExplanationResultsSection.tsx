@@ -142,9 +142,9 @@ export function ExplanationResultsSection({ taskId }: ExplanationResultsSectionP
                       {explanation.estimatedCost !== null && explanation.estimatedCost !== undefined && (
                         <div>{formatCost(explanation.estimatedCost)}</div>
                       )}
-                      {explanation.predictionAccuracyScore !== null && explanation.predictionAccuracyScore !== undefined && (
+                      {explanation.trustworthinessScore !== null && explanation.trustworthinessScore !== undefined && (
                         <div className="text-xs text-blue-600">
-                          Trustworthiness: {explanation.predictionAccuracyScore.toFixed(3)}
+                          Trustworthiness: {explanation.trustworthinessScore.toFixed(3)}
                         </div>
                       )}
                     </div>

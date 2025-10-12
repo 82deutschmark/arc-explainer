@@ -85,6 +85,12 @@ export function buildAnalysisPrompt(
     customChallenge
   } = options;
   
+  // PHASE 12: Extract test count for dynamic prompt instructions
+  const testCount = task.test?.length || 1;
+  const hasStructuredOutput = useStructuredOutput ?? false;
+  
+  logger.service('PromptBuilder', `📊 Test count: ${testCount}, Structured output: ${hasStructuredOutput}`);
+  
   // PHASE 1-2: Context-aware prompt detection
   const promptContext = determinePromptContext(promptId, options, serviceOpts, task, customPrompt);
   const useContinuation = shouldUseContinuationPrompt(promptContext);
@@ -109,7 +115,12 @@ export function buildAnalysisPrompt(
   const isSolver = isSolverMode(promptId);
   const selectedTemplate = isCustom ? null : (PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation);
   
-  logger.service('PromptBuilder', `Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
+  // CRITICAL DATA LEAKAGE CHECK
+  const includeAnswers = !omitAnswer;
+  logger.service('PromptBuilder', `🔒 DATA LEAKAGE CHECK:`);
+  logger.service('PromptBuilder', `   - Solver Mode: ${isSolver} (${isSolver ? 'NO answers sent' : 'answers MAY be sent'})`);
+  logger.service('PromptBuilder', `   - includeAnswers: ${includeAnswers} (${includeAnswers ? '⚠️ TEST OUTPUTS WILL BE SENT' : '✅ Test outputs withheld'})`);
+  logger.service('PromptBuilder', `   - Mode: ${promptId}${isCustom ? ' (Custom)' : ''}`);
 
   // PHASE 1-2: Use continuation prompt if this is a continuation turn
   if (useContinuation) {
@@ -180,7 +191,8 @@ export function buildAnalysisPrompt(
       logger.service('PromptBuilder', 'No custom text provided, using minimal system prompt');
       systemPrompt = "Provide your prediction for the correct Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules at place in the examples that led to your prediction. ";
     } else {
-      systemPrompt = getSystemPrompt(promptId);
+      // Phase 12: Pass testCount and hasStructuredOutput for dynamic instructions
+      systemPrompt = getSystemPrompt(promptId, testCount, hasStructuredOutput);
       
       // Add retry enhancement to system prompt
       if (retryMode) {
@@ -205,8 +217,8 @@ export function buildAnalysisPrompt(
           if (previousAnalysis.isPredictionCorrect === false) {
             systemPrompt += `\nPrediction Result: INCORRECT`;
           }
-          if (previousAnalysis.predictionAccuracyScore !== undefined) {
-            systemPrompt += `\nTrustworthiness Score: ${Math.round(previousAnalysis.predictionAccuracyScore * 100)}%`;
+          if (previousAnalysis.trustworthinessScore !== undefined) {
+            systemPrompt += `\nTrustworthiness Score: ${Math.round(previousAnalysis.trustworthinessScore * 100)}%`;
           }
           if (previousAnalysis.confidence) {
             systemPrompt += `\nModel Confidence: ${previousAnalysis.confidence}%`;
@@ -232,7 +244,7 @@ export function buildAnalysisPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey,
     omitAnswer,
-    useEmojis: (!!emojiSetKey) || isAlien, // Use emojis if explicit toggle selected (emojiSetKey) OR alien mode
+    useEmojis: !!emojiSetKey,
     isSolverMode: isSolver,
     isMultiTest: task.test.length > 1
   };
@@ -283,7 +295,7 @@ function buildLegacyPrompt(
   const userPromptOptions: UserPromptOptions = {
     emojiSetKey: options.emojiSetKey,
     omitAnswer: options.omitAnswer,
-    useEmojis: (!!options.emojiSetKey) || (selectedTemplate?.emojiMapIncluded || false), // Emoji when toggle set OR template requires
+    useEmojis: !!options.emojiSetKey,
     isSolverMode: isSolverMode(promptId),
     isMultiTest: task.test.length > 1
   };

@@ -1,126 +1,106 @@
 /**
  * server/services/prompts/components/jsonInstructions.ts
  * 
- * Author: Cascade (Claude Sonnet 4)
- * Date: 2025-10-08
+ * Author: Cascade using Claude Sonnet 4
+ * Date: 2025-10-11
  * 
- * PURPOSE: 
- * Single source of truth for JSON output formatting rules.
- * Eliminates redundant grid format examples and JSON structure warnings
- * that were scattered across basePrompts.ts (lines 30, 33-47, 62-68)
- * and promptBuilder.ts (lines 128-131).
+ * PURPOSE:
+ * Context-aware JSON instruction builder that adapts to:
+ * 1. Test count (single vs multi-test puzzles)
+ * 2. Provider capabilities (structured output vs prompt-based)
  * 
- * SRP/DRY Check: PASS
- * - Single responsibility: JSON output format specifications
- * - Eliminates 3 duplicate grid format examples
- * - Consolidates 3 scattered JSON structure warnings
+ * For structured output providers (OpenAI, Grok): Minimal instructions (schema enforces structure)
+ * For prompt-based providers (Anthropic, Gemini, DeepSeek): Detailed field-specific instructions
  * 
- * Referenced Issues:
- * - docs/08102025-Prompt-Architecture-Analysis.md Section 3
- * - User concern: "Grid format repeated 3 times in single prompt"
+ * SRP/DRY Check: PASS - Single responsibility (JSON format instructions generation)
  */
 
 /**
- * Grid format specification - SINGLE DEFINITION
- * Used across all prompt modes to ensure consistent grid formatting
- */
-export const GRID_FORMAT = {
-  description: 'Each grid must be a 2D array where outer array contains rows, each row is array of integers 0-9',
-  exampleCorrect: '[[0,1,2],[3,4,5]]',
-  examplesWrong: ['[[[0,1],[2,3]]]', '[[0],[1],[2]]'],
-  
-  // Generate formatted instruction text
-  toInstruction(): string {
-    return `Grid format: 2D array where outer array contains rows, each row is array of integers 0-9
-  * Example CORRECT: ${this.exampleCorrect}
-  * Example WRONG: ${this.examplesWrong.join(' or ')}`;
-  }
-};
-
-/**
- * JSON structure requirements - SINGLE DEFINITION
- * Ensures valid JSON output without markdown or code blocks
- */
-export const JSON_STRUCTURE = {
-  warning: 'Return valid JSON only (no markdown, code blocks, or special characters)',
-  answerFirst: 'Put the prediction field FIRST in your JSON response',
-  
-  // Generate formatted instruction text
-  toInstruction(): string {
-    return `${this.warning}. ${this.answerFirst}.`;
-  }
-};
-
-/**
- * Field definitions for JSON response
- */
-export const JSON_FIELDS = {
-  prediction: {
-    single: 'predictedOutput',
-    multi: ['predictedOutput1', 'predictedOutput2', 'predictedOutput3']
-  },
-  optional: [
-    'solvingStrategy: Domain-specific language to solve the puzzle',
-    'patternDescription: Transformation rules (2-3 short imperatives)',
-    'hints: Array of 3 simple hints so even a child could understand how to solve the puzzle',
-    'confidence: Your certainty level expressed as a percentage (1-100) certain that you are correct.'
-  ],
-  
-  // Generate formatted instruction text
-  toInstruction(isMultiTest: boolean = false): string {
-    if (isMultiTest) {
-      return `- Multi-test predictions: "${this.prediction.multi.join('", "')}"
-- Optional: ${this.optional.join(', ')}`;
-    }
-    return `- Single-test prediction: "${this.prediction.single}": ${GRID_FORMAT.exampleCorrect}
-- Optional: ${this.optional.join(', ')}`;
-  }
-};
-
-/**
- * Build complete JSON instructions (consolidated from 3 separate constants)
- * Replaces: JSON_HEADER, JSON_FIELDS_INSTRUCTIONS, PREDICTION_FIELD_INSTRUCTIONS
+ * Build context-aware JSON instructions based on test count and provider capabilities
  * 
- * @param includeExamples - Include grid format examples (default: true)
- * @param isMultiTest - Whether puzzle has multiple test cases (default: false)
+ * @param testCount - Number of test cases in the puzzle (from task.test.length)
+ * @param hasStructuredOutput - Whether provider uses structured output (schema enforcement)
+ * @returns JSON format instructions string
  */
-export function buildJsonInstructions(
-  includeExamples: boolean = true,
-  isMultiTest: boolean = false
-): string {
-  const parts = [
-    `JSON OUTPUT REQUIREMENTS:`,
-    `- ${JSON_STRUCTURE.warning}`,
-    `- ${JSON_STRUCTURE.answerFirst}`,
-  ];
-  
-  if (includeExamples) {
-    parts.push(`- Grid format: 2D array where outer array contains rows, each row is array of integers 0-9`);
-    
-    // CRITICAL: Explain both single and multi-test scenarios
-    parts.push(`- If puzzle has ONE test case:`);
-    parts.push(`  Use field "predictedOutput" with your grid: ${GRID_FORMAT.exampleCorrect}`);
-    parts.push(`- If puzzle has MULTIPLE test cases (2 or 3):`);
-    parts.push(`  Use fields "predictedOutput1", "predictedOutput2", "predictedOutput3"`);
-    parts.push(`  Provide a grid for EACH test case you see in the puzzle`);
+export function buildJsonInstructions(testCount: number, hasStructuredOutput: boolean): string {
+  // Structured output providers have schema enforcement - minimal instructions needed
+  if (hasStructuredOutput) {
+    return buildMinimalJsonInstructions();
   }
   
-  parts.push(`- Optional fields: ${JSON_FIELDS.optional.map(f => f.split(':')[0]).join(', ')}`);
-  
-  // Enhanced: Add strict JSON enforcement for problematic models
-  parts.push(`CRITICAL: Return ONLY valid JSON with no additional text, explanations, or formatting after the closing brace.`);
-  
-  return parts.join('\n');
+  // Prompt-based providers need detailed field-specific instructions
+  return buildDetailedJsonInstructions(testCount);
 }
 
 /**
- * Build minimal JSON instructions for custom prompts
- * Replaces logic in promptBuilder.ts buildCustomPrompt()
+ * Minimal JSON instructions for structured output providers (OpenAI, Grok)
+ * Schema handles structure enforcement - just remind about JSON format
  */
 export function buildMinimalJsonInstructions(): string {
-  return [
-    JSON_STRUCTURE.toInstruction(),
-    `Grid format: ${GRID_FORMAT.exampleCorrect}`,
-    `IMPORTANT: Return ONLY valid JSON. Do not add explanatory text, comments, or markdown formatting after the JSON.`
-  ].join('\n');
+  return `OUTPUT FORMAT: Return ONLY valid JSON. Your response must be parseable JSON with all required fields.`;
+}
+
+/**
+ * Detailed JSON instructions for prompt-based providers (Anthropic, Gemini, DeepSeek)
+ * Must explicitly describe all fields since no schema enforcement exists
+ */
+function buildDetailedJsonInstructions(testCount: number): string {
+  const predictionFields = buildPredictionFieldInstructions(testCount);
+  
+  return `OUTPUT FORMAT: Return ONLY valid JSON with the following structure:
+
+${predictionFields}
+
+**Analysis Fields** (optional but recommended):
+- "solvingStrategy": Clear explanation of your solving approach
+- "patternDescription": Description of transformation rules (1-2 sentences)
+- "hints": Array of 3 helpful hints for understanding the transformation
+- "confidence": Integer 1-100 indicating confidence in solution correctness
+
+Example JSON structure:
+{
+${buildExampleJson(testCount)}
+}
+
+CRITICAL: Your entire response must be valid, parseable JSON. Do not include markdown, explanations, or text outside the JSON object.`;
+}
+
+/**
+ * Build prediction field instructions based on test count
+ */
+function buildPredictionFieldInstructions(testCount: number): string {
+  if (testCount === 1) {
+    return `**Required Prediction Field:**
+- "predictedOutput": Your predicted output grid as 2D array of integers 0-9`;
+  } else {
+    const fields = Array.from({length: testCount}, (_, i) => 
+      `- "predictedOutput${i + 1}": Your predicted output grid for test case ${i + 1} (2D array of integers 0-9)`
+    ).join('\n');
+    
+    return `**Required Prediction Fields** (one per test case):
+${fields}`;
+  }
+}
+
+/**
+ * Build example JSON based on test count
+ */
+function buildExampleJson(testCount: number): string {
+  if (testCount === 1) {
+    return `  "predictedOutput": [[0, 1], [2, 3]],
+  "solvingStrategy": "Apply rotation transformation...",
+  "patternDescription": "Grid rotates 90 degrees clockwise",
+  "hints": ["Look for rotation", "Colors unchanged", "Spatial arrangement changes"],
+  "confidence": 55`;
+  } else {
+    const predictions = Array.from({length: testCount}, (_, i) => 
+      `  "predictedOutput${i + 1}": [[0, 1], [2, 3]]`
+    ).join(',\n');
+    
+    return `${predictions},
+  "solvingStrategy": "Apply rotation transformation...",
+  "patternDescription": "Grid rotates 90 degrees clockwise",
+  "hints": ["Look for rotation", "Colors unchanged", "Spatial arrangement changes"],
+  "confidence": 55`;
+  }
 }

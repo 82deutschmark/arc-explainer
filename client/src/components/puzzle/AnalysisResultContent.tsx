@@ -136,17 +136,17 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 Confidence: {formatConfidence(result.confidence)}
               </Badge>
             )}
-            {!eloMode && !isSaturnResult && result.predictionAccuracyScore !== undefined && result.predictionAccuracyScore !== null && (
+            {!eloMode && !isSaturnResult && result.trustworthinessScore !== undefined && result.trustworthinessScore !== null && (
               <Badge
                 variant="outline"
                 className={`text-xs ${
-                  result.predictionAccuracyScore >= 0.8 
+                  result.trustworthinessScore >= 0.8 
                     ? 'bg-green-50 border-green-200 text-green-700' 
-                    : result.predictionAccuracyScore >= 0.5 
+                    : result.trustworthinessScore >= 0.5 
                       ? 'bg-yellow-50 border-yellow-200 text-yellow-700' 
                       : 'bg-red-50 border-red-200 text-red-700'
                 }`}>
-                Trustworthiness: {Math.round(result.predictionAccuracyScore * 100)}%
+                Trustworthiness: {Math.round(result.trustworthinessScore * 100)}%
               </Badge>
             )}
             {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (

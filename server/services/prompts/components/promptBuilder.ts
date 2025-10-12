@@ -38,6 +38,10 @@ export interface PromptConfig {
   predictionInstructions?: string;
   /** Additional mode-specific instructions */
   additionalInstructions?: string;
+  /** Number of test cases in the puzzle (for test-count-aware instructions) */
+  testCount?: number;
+  /** Whether provider uses structured output (schema enforcement) */
+  hasStructuredOutput?: boolean;
 }
 
 /**
@@ -52,12 +56,15 @@ export function buildSystemPrompt(config: PromptConfig): string {
     basePrompt = BASE_SYSTEM_PROMPT,
     taskDescription,
     predictionInstructions, // Now optional - use consolidated JSON instructions if not provided
-    additionalInstructions = ''
+    additionalInstructions = '',
+    testCount = 1,  // Default to single test case
+    hasStructuredOutput = false  // Default to prompt-based (no schema enforcement)
   } = config;
 
-  // Use consolidated JSON instructions (eliminates redundancy)
-  // Only use predictionInstructions if explicitly provided (for backwards compatibility)
-  const jsonInstructions = predictionInstructions || buildJsonInstructions(true, false);
+  // Use test-count-aware JSON instructions (Phase 12 integration)
+  // If predictionInstructions explicitly provided, use those (for backwards compatibility)
+  // Otherwise, use buildJsonInstructions which adapts to testCount and provider capabilities
+  const jsonInstructions = predictionInstructions || buildJsonInstructions(testCount, hasStructuredOutput);
 
   // Compose all sections, filtering out empty ones
   return [
@@ -104,8 +111,8 @@ export function buildCustomPrompt(): string {
   const jsonInstructions = buildMinimalJsonInstructions();
 
   return buildSystemPrompt({
-    basePrompt: `You are an expert at analyzing ARC-AGI puzzles.\nThe user will provide custom analysis instructions.`,
-    taskDescription: `TASK: Follow the user's custom analysis instructions while ensuring structured output.`,
+    basePrompt: `Learn the rules of the puzzle and produce the correct output grid for the test case(s).`,
+    taskDescription: `TASK: Learn the required rules to produce the correct output grid for the test case(s) while ensuring structured output.`,
     predictionInstructions: jsonInstructions,
     additionalInstructions: ``
   });

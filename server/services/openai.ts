@@ -19,7 +19,7 @@ import { ARCTask } from "../../shared/types.js";
 // Default prompt ID to use when none is specified
 const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
-import { ARC_JSON_SCHEMA } from "./schemas/arcJsonSchema.js";
+import { getOpenAISchema } from "./schemas/providers/openai.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
 import type { ResponseStreamEvent } from "openai/resources/responses/responses";
 
@@ -55,11 +55,23 @@ export class OpenAIService extends BaseAIService {
     // Add other models as needed
   };
 
+  /**
+   * Override to provide OpenAI-specific schema for structured output
+   * Returns dynamic schema based on test count
+   */
+  protected getSchemaForModel(modelKey: string, testCount: number): any | null {
+    if (this.supportsStructuredOutput(modelKey)) {
+      return getOpenAISchema(testCount);
+    }
+    return null;
+  }
+
   supportsStreaming(modelKey: string): boolean {
     return [
+      "gpt-5-2025-08-07",
       "gpt-5-mini-2025-08-07",
       "gpt-5-nano-2025-08-07",
-      "gpt-5-2025-08-07"
+      "gpt-5-chat-latest"
     ].includes(modelKey);
   }
 
@@ -77,14 +89,18 @@ export class OpenAIService extends BaseAIService {
 
 
     // Build prompt package using inherited method
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     
     // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
+    // Extract test count for dynamic schema generation
+    const testCount = task.test.length;
+
     try {
       // Call provider-specific API
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId);
       
       // Parse response using provider-specific method
       // CRITICAL FIX: Pass captureReasoning=true to enable reasoning extraction
@@ -148,7 +164,8 @@ export class OpenAIService extends BaseAIService {
       );
     }
 
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
 
     const harness = serviceOpts.stream;
@@ -156,11 +173,13 @@ export class OpenAIService extends BaseAIService {
     const startedAt = Date.now();
 
     try {
+      const testCount = task.test.length;
       const { body } = this.buildResponsesRequestBody(
         promptPackage,
         modelKey,
         temperature,
         serviceOpts,
+        testCount,
         taskId
       );
 
@@ -272,7 +291,8 @@ export class OpenAIService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey);
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
@@ -340,6 +360,7 @@ export class OpenAIService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ) {
     const modelName = getApiModelName(modelKey);
@@ -388,14 +409,17 @@ export class OpenAIService extends BaseAIService {
       !modelName.includes("gpt-5-chat-latest") && !modelName.includes("gpt-5-nano");
 
     const baseText = textConfig ? { ...textConfig } : undefined;
-    const structuredFormat = supportsStructuredOutput
-      ? {
-          type: "json_schema",
-          name: ARC_JSON_SCHEMA.name,
-          strict: ARC_JSON_SCHEMA.strict,
-          schema: ARC_JSON_SCHEMA.schema
-        }
-      : undefined;
+    let structuredFormat = undefined;
+    
+    if (supportsStructuredOutput) {
+      const schema = getOpenAISchema(testCount);
+      structuredFormat = {
+        type: "json_schema",
+        name: schema.name,
+        strict: schema.strict,
+        schema: schema.schema
+      };
+    }
 
     const textPayload =
       structuredFormat || baseText
@@ -420,6 +444,9 @@ export class OpenAIService extends BaseAIService {
       parallel_tool_calls: false,
       truncation: "auto",
       max_steps: serviceOpts.maxSteps,
+      // IMPORTANT: Reasoning models need high max_output_tokens (16K+ recommended)
+      // Reasoning can consume 50-80% of total tokens internally, leaving little for visible output
+      // If not set, model may run out of tokens before returning structured predictions
       max_output_tokens: serviceOpts.maxOutputTokens,
       metadata: taskId ? { taskId } : undefined
     };
@@ -431,6 +458,7 @@ export class OpenAIService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string
   ): Promise<any> {
     const modelName = getApiModelName(modelKey);
@@ -500,7 +528,7 @@ export class OpenAIService extends BaseAIService {
     };
 
 
-    return await this.callResponsesAPI(requestData, modelKey);
+    return await this.callResponsesAPI(requestData, modelKey, testCount);
   }
 
   protected parseProviderResponse(
@@ -593,37 +621,68 @@ export class OpenAIService extends BaseAIService {
     result._providerRawResponse = rawResponse;
 
     // Extract reasoning log from API response
-    if (captureReasoning && response.output_reasoning?.summary) {
-      const summary = response.output_reasoning.summary;
-      
-      if (Array.isArray(summary)) {
-        reasoningLog = summary.map((s: any) => {
-          if (typeof s === 'string') return s;
-          if (s && typeof s === 'object' && s.text) return s.text;
-          if (s && typeof s === 'object' && s.content) return s.content;
-          return typeof s === 'object' ? JSON.stringify(s) : String(s);
-        }).filter(Boolean).join('\n\n');
-      } else if (typeof summary === 'string') {
-        reasoningLog = summary;
-      } else if (summary && typeof summary === 'object') {
-        // Handle object summary (this was the missing case causing [object Object])
-        if (summary.text) {
-          reasoningLog = summary.text;
-        } else if (summary.content) {
-          reasoningLog = summary.content;
-        } else {
-          reasoningLog = JSON.stringify(summary, null, 2);
+    // CRITICAL FIX: Always attempt reasoning extraction when captureReasoning is true
+    // Reasoning can appear in output_reasoning.summary OR in output[] array items
+    if (captureReasoning) {
+      // Try output_reasoning.summary first (primary location)
+      if (response.output_reasoning?.summary) {
+        const summary = response.output_reasoning.summary;
+        
+        if (Array.isArray(summary)) {
+          reasoningLog = summary.map((s: any) => {
+            if (typeof s === 'string') return s;
+            if (s && typeof s === 'object' && s.text) return s.text;
+            if (s && typeof s === 'object' && s.content) return s.content;
+            return typeof s === 'object' ? JSON.stringify(s) : String(s);
+          }).filter(Boolean).join('\n\n');
+        } else if (typeof summary === 'string') {
+          reasoningLog = summary;
+        } else if (summary && typeof summary === 'object') {
+          // Handle object summary (this was the missing case causing [object Object])
+          if (summary.text) {
+            reasoningLog = summary.text;
+          } else if (summary.content) {
+            reasoningLog = summary.content;
+          } else {
+            reasoningLog = JSON.stringify(summary, null, 2);
+          }
         }
+      }
+      
+      // Fallback: Scan output[] array for reasoning blocks (per Oct 2025 Responses API docs)
+      // GPT-5 models (especially nano and chat-latest) often return reasoning here
+      if (!reasoningLog && response.output && Array.isArray(response.output)) {
+        reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
       }
     }
 
     // Extract reasoning items and convert them to an array of strings
-    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-      reasoningItems = response.output_reasoning.items.map((item: any) => {
-        if (typeof item === 'string') return item;
-        if (item && typeof item === 'object' && item.text) return item.text;
-        return JSON.stringify(item);
-      });
+    if (captureReasoning) {
+      // Try output_reasoning.items first (primary location)
+      if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+        reasoningItems = response.output_reasoning.items.map((item: any) => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object' && item.text) return item.text;
+          return JSON.stringify(item);
+        });
+      } else if (response.output && Array.isArray(response.output)) {
+        // Fallback: Extract reasoning items from output[] array
+        const reasoningBlocks = response.output.filter((block: any) => 
+          block.type === 'reasoning' || 
+          block.type === 'Reasoning'
+        );
+        
+        reasoningItems = reasoningBlocks.map((block: any) => {
+          if (typeof block.content === 'string') return block.content;
+          if (Array.isArray(block.content)) {
+            const textContent = block.content.find((c: any) => c.type === 'text');
+            return textContent?.text || JSON.stringify(block.content);
+          }
+          return JSON.stringify(block);
+        }).filter(Boolean);
+      } else {
+        reasoningItems = [];
+      }
     } else {
       reasoningItems = [];
     }
@@ -683,7 +742,7 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  private async callResponsesAPI(requestData: any, modelKey: string): Promise<any> {
+  private async callResponsesAPI(requestData: any, modelKey: string, testCount: number): Promise<any> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY not configured");
@@ -696,19 +755,23 @@ export class OpenAIService extends BaseAIService {
                                        !requestData.model.includes('gpt-5-nano');
 
       // Prepare the request for OpenAI's Responses API
+      let schemaFormat = undefined;
+      if (supportsStructuredOutput) {
+        const schema = getOpenAISchema(testCount);
+        schemaFormat = {
+          format: {
+            type: "json_schema",
+            name: schema.name,
+            strict: schema.strict,
+            schema: schema.schema
+          }
+        };
+      }
+
       const body = {
         model: requestData.model,
         input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
-        ...(supportsStructuredOutput && {
-          text: {
-            format: {
-              type: "json_schema",
-              name: ARC_JSON_SCHEMA.name,
-              strict: ARC_JSON_SCHEMA.strict,
-              schema: ARC_JSON_SCHEMA.schema
-            }
-          }
-        }),
+        ...(schemaFormat && { text: schemaFormat }),
         reasoning: requestData.reasoning,
         temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
         top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
@@ -1039,23 +1102,3 @@ export class OpenAIService extends BaseAIService {
 }
 
 export const openaiService = new OpenAIService();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

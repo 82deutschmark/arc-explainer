@@ -260,7 +260,7 @@ export class GroverService extends BaseAIService {
       if (task.test.length === 1) {
         const validation = validateSolverResponse(finalResponse, task.test[0].output, 'solver', confidence);
         Object.assign(finalResponse, validation, { hasMultiplePredictions: false });
-        log(`Validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'} (score: ${validation.predictionAccuracyScore.toFixed(2)})`);
+        log(`Validation: ${validation.isPredictionCorrect ? 'CORRECT' : 'INCORRECT'} (score: ${validation.trustworthinessScore.toFixed(2)})`);
       } else {
         const multiValidation = validateSolverResponseMulti(finalResponse, task.test.map(t => t.output), 'solver', confidence);
         Object.assign(finalResponse, multiValidation);
@@ -340,7 +340,14 @@ export class GroverService extends BaseAIService {
     };
   }
 
-  protected async callProviderAPI(): Promise<any> {
+  protected async callProviderAPI(
+    _prompt: any,
+    _modelKey: string,
+    _temperature: number,
+    _serviceOpts: any,
+    _testCount: number,
+    _taskId?: string
+  ): Promise<any> {
     throw new Error("Grover uses underlying services - this should not be called directly");
   }
 

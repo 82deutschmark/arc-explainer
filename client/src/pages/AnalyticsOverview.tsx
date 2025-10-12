@@ -93,8 +93,6 @@ export default function AnalyticsOverview() {
   // Model dataset performance state
   const [selectedModelForDataset, setSelectedModelForDataset] = useState<string>('');
   const [selectedModelForComparison, setSelectedModelForComparison] = useState<string>('');
-  const [selectedModel3, setSelectedModel3] = useState<string>('');
-  const [selectedModel4, setSelectedModel4] = useState<string>('');
   const [selectedDataset, setSelectedDataset] = useState<string>('');
 
   // Model comparison state
@@ -124,36 +122,26 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select gpt-5-pro-2025-10-06-attempt1 model if available, fallback to first model
+  // Auto-select Grok-4 as the model if available, fallback to first model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
-      const targetModel = 'gpt-5-pro-2025-10-06-attempt1';
-      const gpt5Pro = availableModels.includes(targetModel)
-        ? targetModel
-        : availableModels.find(m => m.includes('gpt-5-pro-2025-10-06-attempt1'));
-      setSelectedModelForDataset(gpt5Pro || availableModels[0]);
+      const grok4 = availableModels.find(m => m.includes('grok-4'));
+      setSelectedModelForDataset(grok4 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
-  // Auto-select Grok-4 as 2nd model if available
+  // Auto-select a second model different from primary for comparison
   React.useEffect(() => {
-    if (availableModels.length > 0 && !selectedModelForComparison) {
-      const grok4 = availableModels.find(m => m.includes('grok-4')) || availableModels[1];
-      if (grok4 && grok4 !== selectedModelForDataset) {
-        setSelectedModelForComparison(grok4);
+    if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
+      const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
+      if (availableForComparison.length > 0) {
+        // Use a small delay to ensure the state update doesn't conflict
+        setTimeout(() => {
+          setSelectedModelForComparison(availableForComparison[0]);
+        }, 100);
       }
     }
-  }, [availableModels, selectedModelForDataset, selectedModelForComparison]);
-
-  // Auto-select Claude Sonnet 4.5 as 3rd model if available
-  React.useEffect(() => {
-    if (availableModels.length > 0 && !selectedModel3) {
-      const claudeSonnet = availableModels.find(m => m.includes('claude') && m.includes('sonnet') && m.includes('4.5'));
-      if (claudeSonnet && claudeSonnet !== selectedModelForDataset && claudeSonnet !== selectedModelForComparison) {
-        setSelectedModel3(claudeSonnet);
-      }
-    }
-  }, [availableModels, selectedModelForDataset, selectedModelForComparison, selectedModel3]);
+  }, [availableModels, selectedModelForDataset]);
 
 
   // Navigate to comparison page with data
@@ -164,29 +152,37 @@ export default function AnalyticsOverview() {
 
     try {
       const models = [
-        selectedModelForDataset, 
-        selectedModelForComparison, 
-        selectedModel3 === '__none__' ? '' : selectedModel3, 
-        selectedModel4 === '__none__' ? '' : selectedModel4
+        selectedModelForDataset,
+        selectedModelForComparison
       ].filter(Boolean);
-      
+
+      console.log('Starting comparison with models:', models, 'dataset:', selectedDataset);
+
       const queryParams = new URLSearchParams({
         model1: models[0] || '',
         ...(models[1] && { model2: models[1] }),
-        ...(models[2] && { model3: models[2] }),
-        ...(models[3] && { model4: models[3] }),
         dataset: selectedDataset
       });
-      
+
+      console.log('Making API call to:', `/api/metrics/compare?${queryParams.toString()}`);
+
       const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch comparison data');
       }
       const result = await response.json();
-      
-      // Navigate to dedicated comparison page with data
-      navigate('/model-comparison', { state: { comparisonData: result.data } });
+
+      console.log('API response received:', result);
+
+      if (!result.data) {
+        throw new Error('No data in API response');
+      }
+
+      // Navigate to dedicated comparison page with data and URL params
+      navigate(`/model-comparison?model1=${encodeURIComponent(models[0])}&model2=${encodeURIComponent(models[1] || '')}&dataset=${encodeURIComponent(selectedDataset)}`, { state: { comparisonData: result.data } });
+
+      console.log('Navigation completed');
     } catch (error) {
       console.error('Comparison error:', error);
       // You could show a toast here if needed
@@ -230,43 +226,37 @@ export default function AnalyticsOverview() {
               Select a model to see which ARC puzzles it got right, got incorrect, or hasn't attempted yet. Uses real database queries.
             </p>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label htmlFor="dataset-select" className="text-sm font-medium mb-2 block">Dataset:</label>
-                <Select 
-                  value={selectedDataset} 
+                <label className="text-sm font-medium mb-1 block">Dataset:</label>
+                <Select
+                  value={selectedDataset}
                   onValueChange={setSelectedDataset}
                   disabled={loadingDatasets}
                 >
-                  <SelectTrigger id="dataset-select">
-                    <SelectValue placeholder={loadingDatasets ? "Loading datasets..." : datasetsError ? "Error loading datasets" : "Choose dataset"} />
+                  <SelectTrigger>
+                    <SelectValue placeholder={loadingDatasets ? "Loading..." : "Choose dataset"} />
                   </SelectTrigger>
                   <SelectContent>
                     {datasetOptions.map((dataset) => (
                       <SelectItem key={dataset.name} value={dataset.name}>
-                        {dataset.displayName} ({dataset.puzzleCount} puzzles)
+                        {dataset.displayName} ({dataset.puzzleCount})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {datasetsError && (
-                  <p className="text-sm text-red-500 mt-1">Error: {datasetsError}</p>
-                )}
-                {!loadingDatasets && availableDatasets.length === 0 && !datasetsError && (
-                  <p className="text-sm text-yellow-600 mt-1">No datasets found in data/ directory</p>
-                )}
               </div>
 
               <div>
-                <label htmlFor="model-select" className="text-sm font-medium mb-2 block">Model 1 (Primary):</label>
-                <Select 
-                  value={selectedModelForDataset} 
+                <label className="text-sm font-medium mb-1 block">Primary Model:</label>
+                <Select
+                  value={selectedModelForDataset}
                   onValueChange={setSelectedModelForDataset}
                   disabled={loadingModels || !selectedDataset}
                 >
-                  <SelectTrigger id="model-select">
-                    <SelectValue placeholder={loadingModels ? "Loading models..." : modelsError ? "Error loading models" : selectedDataset ? "Choose a model to analyze" : "Select dataset first"} />
+                  <SelectTrigger>
+                    <SelectValue placeholder={loadingModels ? "Loading..." : "Choose model"} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableModels.map((model) => (
@@ -276,23 +266,17 @@ export default function AnalyticsOverview() {
                     ))}
                   </SelectContent>
                 </Select>
-                {modelsError && (
-                  <p className="text-sm text-red-500 mt-1">Error: {modelsError}</p>
-                )}
-                {!loadingModels && availableModels.length === 0 && !modelsError && (
-                  <p className="text-sm text-yellow-600 mt-1">No models found with database entries</p>
-                )}
               </div>
 
               <div>
-                <label htmlFor="model-compare-select" className="text-sm font-medium mb-2 block">Model 2 (Grok-4):</label>
-                <Select 
-                  value={selectedModelForComparison} 
+                <label className="text-sm font-medium mb-1 block">Compare With:</label>
+                <Select
+                  value={selectedModelForComparison}
                   onValueChange={setSelectedModelForComparison}
                   disabled={loadingModels || !selectedDataset}
                 >
-                  <SelectTrigger id="model-compare-select">
-                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose a model to compare" : "Select dataset first"} />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Compare model" />
                   </SelectTrigger>
                   <SelectContent>
                     {availableModels.filter(m => m !== selectedModelForDataset).map((model) => (
@@ -304,57 +288,28 @@ export default function AnalyticsOverview() {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="model3-select" className="text-sm font-medium mb-2 block">Model 3 (Optional):</label>
-                <Select 
-                  value={selectedModel3} 
-                  onValueChange={setSelectedModel3}
-                  disabled={loadingModels || !selectedDataset}
-                >
-                  <SelectTrigger id="model3-select">
-                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose third model (optional)" : "Select dataset first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">None</SelectItem>
-                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison).map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div>
-                <label htmlFor="model4-select" className="text-sm font-medium mb-2 block">Model 4 (Optional):</label>
-                <Select 
-                  value={selectedModel4} 
-                  onValueChange={setSelectedModel4}
-                  disabled={loadingModels || !selectedDataset}
+            <div className="flex justify-center">
+              <div className="space-y-2">
+                <Button
+                  onClick={handleCompare}
+                  disabled={!selectedModelForDataset || !selectedDataset || loadingComparison || !selectedModelForComparison}
                 >
-                  <SelectTrigger id="model4-select">
-                    <SelectValue placeholder={loadingModels ? "Loading..." : selectedDataset ? "Choose fourth model (optional)" : "Select dataset first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">None</SelectItem>
-                    {availableModels.filter(m => m !== selectedModelForDataset && m !== selectedModelForComparison && m !== selectedModel3).map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex justify-center pt-4">
-                <Button 
-                    onClick={handleCompare}
-                    disabled={!selectedModelForDataset || !selectedDataset || loadingComparison}
-                    size="lg"
-                >
-                    {loadingComparison ? 'Comparing...' : 'Compare Models'}
+                  {loadingComparison ? 'Comparing...' : 'Compare Models'}
                 </Button>
+
+                {!selectedModelForComparison && selectedModelForDataset && selectedDataset && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Note: Only comparing one model. Select a second model for full comparison.
+                  </p>
+                )}
+
+                {selectedModelForComparison && selectedModelForDataset === selectedModelForComparison && (
+                  <p className="text-xs text-amber-600 text-center">
+                    Warning: Comparing the same model against itself may show limited results.
+                  </p>
+                )}
+              </div>
             </div>
 
             {loadingPerformance && selectedModelForDataset && (

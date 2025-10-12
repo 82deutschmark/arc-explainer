@@ -221,7 +221,7 @@ export default function PuzzleFeedback() {
       createdAt: new Date().toISOString(),
       predictedOutputGrid: parsedGrid,
       isPredictionCorrect: isCorrect,
-      predictionAccuracyScore: isCorrect ? 1.0 : 0.0,
+      trustworthinessScore: isCorrect ? 1.0 : 0.0,
       extractionMethod: 'user_input_direct'
     };
   }, [task, parsedGrid, isValidFormat, puzzleId, isCorrect]);

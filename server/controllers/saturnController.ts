@@ -232,7 +232,7 @@ export const saturnController = {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      logger.error(`[SaturnStream] Controller failure: ${message}`, error);
+      logger.logError(`[SaturnStream] Controller failure: ${message}`, { error, context: 'SaturnStream' });
       sseStreamManager.error(sessionId, 'SATURN_STREAM_ERROR', message);
     }
   },

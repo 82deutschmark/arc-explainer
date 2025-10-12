@@ -26,7 +26,7 @@ import { isSolverMode } from './prompts/systemPrompts.js';
 export interface ValidationResult {
   predictedGrid: number[][] | null;
   isPredictionCorrect: boolean;
-  predictionAccuracyScore: number;
+  trustworthinessScore: number;
   extractionMethod?: string;
 }
 
@@ -64,19 +64,6 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
 
   // Debug logging
   logger.info(`Attempting to extract grid from text: ${text.substring(0, 200)}...`, 'validator');
-
-  // Test specific patterns against known examples for debugging
-  const testCases = [
-    'Predicted Output Grid: [[8,8,2], [8,2,2], [8,8,8]]',
-    'Predicted Output Grid: [[2,2,2],[2,8,8],[8,8,8]]'
-  ];
-  
-  for (const testCase of testCases) {
-    if (text.includes('Predicted Output Grid:')) {
-      logger.info(`Testing against pattern, found similar text in response`, 'validator');
-      break;
-    }
-  }
 
   // Strategy 1: Simple approach - extract any text that starts with [[ and ends with ]]
   // Look for the pattern after common keywords
@@ -177,6 +164,7 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
   // This handles both plain ``` and language-specified blocks like ```json, ```python, etc.
   const codeBlockRegex = /```(?:[a-z]*\s*)?[^`]*(\[\[[\s\S]*?\]\])[^`]*```/g;
   let codeBlockMatch;
+  codeBlockRegex.lastIndex = 0; // Reset for safety
   while ((codeBlockMatch = codeBlockRegex.exec(text)) !== null) {
     const gridText = codeBlockMatch[1];
     if (/^[\[\]\d\s,]+$/.test(gridText)) {
@@ -208,7 +196,7 @@ function extractGridFromText(text: string): { grid: number[][] | null; method: s
 
   // Fallback regex patterns optimized for numeric grids only
   const patterns = [
-    /(\[\[\d+(?:\s*,\s*\d+)*\](?:\s*,\s*\[\d+(?:\s*,\s*\d+)*\])*\])/g
+    /(\[\[\d+(?:\s*,\s*\d+)*\](?:\s*,\s*\[\d+(?:\s*,\s*\d+)*\])*\])/ // Removed 'g' flag
   ];
 
   for (let i = 0; i < patterns.length; i++) {
@@ -310,19 +298,21 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
   // 1) Scan markdown code blocks first (may contain multiple blocks)
   const codeBlockRegex = /```(?:[a-z]*\s*)?[^`]*?(\[\[[\s\S]*?\]\])[^`]*?```/g;
   let blockMatch: RegExpExecArray | null;
+  codeBlockRegex.lastIndex = 0; // Reset before loop
   while ((blockMatch = codeBlockRegex.exec(text)) !== null) {
     const candidate = blockMatch[1];
-    if (/^[\[\]\d\s,]+$/.test(candidate)) {
+    if (/^[\s\S]*?\[\[[\s\S]*?\]\][\s\S]*?$/.test(candidate)) {
       try {
         const cleaned = candidate
           .replace(/\s+/g, ' ')
           .replace(/,\s*]/g, ']')
           .replace(/,\s*,/g, ',')
           .replace(/\[\s+/g, '[')
-          .replace(/\s+\]/g, ']');
+          .replace(/\s+]/g, ']');
         const result = jsonParser.parse(cleaned);
         if (!result.success) {
-          return { grids: [], method: 'parse_failed' };
+          logger.warn(`Failed to parse grid from markdown block: ${result.error}`, 'validator');
+          continue; // Don't stop, just skip this candidate
         }
         const grid = result.data;
         if (Array.isArray(grid) && Array.isArray(grid[0])) {
@@ -332,13 +322,16 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
             method = 'markdown_code_block_multi';
           }
         }
-      } catch {}
+      } catch (e: any) {
+        logger.warn(`Exception while parsing grid from markdown block: ${e.message}`, 'validator');
+      }
     }
   }
 
   // 2) Generic pattern match throughout text
   const pattern = /(\[\[\d+(?:\s*,\s*\d+)*\](?:\s*,\s*\[\d+(?:\s*,\s*\d+)*\])*\])/g;
   let m: RegExpExecArray | null;
+  pattern.lastIndex = 0; // Reset before loop
   while ((m = pattern.exec(text)) !== null) {
     try {
       const cleaned = m[1]
@@ -347,7 +340,8 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
         .replace(/,\s*,/g, ',');
       const result = jsonParser.parse(cleaned);
       if (!result.success) {
-        return { grids: [], method: 'parse_failed' };
+        logger.warn(`Failed to parse grid from pattern match: ${result.error}`, 'validator');
+        continue; // Skip this candidate
       }
       const grid = result.data;
       if (Array.isArray(grid) && Array.isArray(grid[0])) {
@@ -357,7 +351,9 @@ function extractAllGridsFromText(text: string): { grids: number[][][]; method: s
           if (method === 'not_found') method = 'pattern_multi';
         }
       }
-    } catch {}
+    } catch (e: any) {
+      logger.warn(`Exception while parsing grid from pattern match: ${e.message}`, 'validator');
+    }
   }
 
   return { grids, method };
@@ -413,7 +409,7 @@ function calculateTrustworthinessScore(
   hasConfidence: boolean = true
 ): number {
   // For external data without confidence, return pure correctness
-  if (!hasConfidence || confidence === null) {
+  if (!hasConfidence || typeof confidence !== 'number' || !Number.isFinite(confidence)) {
     return isCorrect ? 1.0 : 0.0;
   }
   
@@ -460,7 +456,7 @@ export function validateSolverResponse(
     return {
       predictedGrid: null,
       isPredictionCorrect: true,
-      predictionAccuracyScore: 1.0,
+      trustworthinessScore: 1.0,
       extractionMethod: 'not_solver_mode'
     };
   }
@@ -471,8 +467,8 @@ export function validateSolverResponse(
 
   // Use clean confidence from arcJsonSchema response or nested structure
   // For external data, confidence will be null
-  const actualConfidence = typeof analysisData.confidence === 'number' 
-    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+  const actualConfidence = typeof analysisData.confidence === 'number'
+    ? analysisData.confidence
     : confidence;
   const hasConfidence = actualConfidence !== null;
 
@@ -529,7 +525,7 @@ export function validateSolverResponse(
     return {
       predictedGrid: null,
       isPredictionCorrect: false,
-      predictionAccuracyScore: calculateTrustworthinessScore(false, actualConfidence, hasConfidence),
+      trustworthinessScore: calculateTrustworthinessScore(false, actualConfidence, hasConfidence),
       extractionMethod: 'all_methods_failed'
     };
   }
@@ -537,12 +533,12 @@ export function validateSolverResponse(
   // Validate dimensions and correctness
   const dimensionsMatch = validateGridDimensions(predictedGrid, correctAnswer);
   const isCorrect = dimensionsMatch && gridsAreEqual(predictedGrid, correctAnswer);
-  const accuracyScore = calculateTrustworthinessScore(isCorrect, actualConfidence, hasConfidence);
+  const trustworthiness = calculateTrustworthinessScore(isCorrect, actualConfidence, hasConfidence);
 
   return {
     predictedGrid,
     isPredictionCorrect: isCorrect,
-    predictionAccuracyScore: accuracyScore,
+    trustworthinessScore: trustworthiness,
     extractionMethod
   };
 }
@@ -589,8 +585,8 @@ export function validateSolverResponseMulti(
 
   // Use clean confidence from arcJsonSchema response or nested structure
   // For external data, confidence will be null
-  const actualConfidence = typeof analysisData.confidence === 'number' 
-    ? (analysisData.confidence === 0 ? 50 : analysisData.confidence) 
+  const actualConfidence = typeof analysisData.confidence === 'number'
+    ? analysisData.confidence
     : confidence;
   const hasConfidence = actualConfidence !== null;
 
@@ -669,7 +665,7 @@ export function validateSolverResponseMulti(
         index: i,
         predictedGrid: null,
         isPredictionCorrect: false,
-        predictionAccuracyScore: score,
+        trustworthinessScore: score,
         extractionMethod: extractionMethodSummary,
         expectedDimensions: { rows: expected?.length || 0, cols: expected?.[0]?.length || 0 }
       });
@@ -686,7 +682,7 @@ export function validateSolverResponseMulti(
       index: i,
       predictedGrid: predicted,
       isPredictionCorrect: isCorrect,
-      predictionAccuracyScore: score,
+      trustworthinessScore: score,
       extractionMethod: extractionMethodSummary,
       expectedDimensions: { rows: expected.length, cols: expected[0]?.length || 0 }
     });
