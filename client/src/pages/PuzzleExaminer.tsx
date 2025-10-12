@@ -1,4 +1,4 @@
-/**
+/**NEEDS AUDIT!    In fact...  this seems really bloated and not DRY or SRP??
  * PuzzleExaminer.tsx
  *
  * @author Cascade using Claude Sonnet 4.5
@@ -245,11 +245,11 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-3 max-w-6xl space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-2 max-w-6xl space-y-2">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between mb-1">
         <div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl font-bold">
             Puzzle {getPuzzleName(taskId) ? `${taskId} - ${getPuzzleName(taskId)}` : taskId}
             {task?.source && (
               <Badge variant="outline" className={`ml-2 ${
@@ -269,12 +269,12 @@ export default function PuzzleExaminer() {
               </Badge>
             )}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm text-gray-600">
             {isRetryMode ? "Enhanced Analysis - Previous attempt was incorrect" : "ARC Task Examiner"}
           </p>
         </div>
         
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -344,50 +344,290 @@ export default function PuzzleExaminer() {
       </div>
 
 
-      {/* Training Examples - Direct Grid Rendering */}
-      <div className="space-y-3">
-        <div className="text-sm font-semibold text-gray-700">Training Examples ({task.train.length})</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {task.train.map((example, idx) => (
-            <React.Fragment key={idx}>
-              <PuzzleGrid 
-                grid={example.input}
-                title={`Example ${idx + 1} Input`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-              />
-              <PuzzleGrid 
-                grid={example.output}
-                title={`Example ${idx + 1} Output`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-              />
-            </React.Fragment>
-          ))}
+      {/* Puzzle Overview - Tiered Responsive Layout System */}
+      <div className="bg-white border border-gray-200 rounded p-2">
+        <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+          <Grid3X3 className="h-4 w-4" />
+          Puzzle Grids
+          <span className="text-xs font-normal text-gray-500">
+            ({task.train.length} train, {task.test.length} test)
+          </span>
         </div>
-      </div>
 
-      {/* Test Cases - Direct Grid Rendering */}
-      <div className="space-y-3 mt-6 pt-6 border-t-2 border-gray-300">
-        <div className="text-sm font-semibold text-gray-700">Test Cases ({task.test.length})</div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {task.test.map((testCase, idx) => (
-            <React.Fragment key={idx}>
-              <PuzzleGrid 
-                grid={testCase.input}
-                title={`Test ${idx + 1} Input`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-              />
-              <PuzzleGrid 
-                grid={testCase.output}
-                title={`Test ${idx + 1} Answer`}
-                showEmojis={showEmojis}
-                emojiSet={emojiSet}
-                highlight={true}
-              />
-            </React.Fragment>
-          ))}
+        {/* TRAINING EXAMPLES - Stratified Layout */}
+        <div className="mb-3">
+          <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
+            <span className="inline-block w-1 h-1 rounded-full bg-blue-500"></span>
+            Training
+          </div>
+          
+          {(() => {
+            // Pre-computation: Classify pairs into buckets based on dimensions
+            const standardPairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            const widePairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            const tallPairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            
+            task.train.forEach((example, idx) => {
+              const inputRows = example.input.length;
+              const inputCols = example.input[0]?.length || 0;
+              const outputRows = example.output.length;
+              const outputCols = example.output[0]?.length || 0;
+              
+              const maxHeight = Math.max(inputRows, outputRows);
+              const combinedWidth = inputCols + outputCols;
+              const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
+              
+              // Classification logic
+              if (maxHeight > 20) {
+                tallPairs.push({ example, idx });
+              } else if (combinedWidth > 40 || maxDim > 18) {
+                widePairs.push({ example, idx });
+              } else {
+                standardPairs.push({ example, idx });
+              }
+            });
+            
+            return (
+              <div className="space-y-2">
+                {/* Standard Pairs: Flex wrap with align-items-start */}
+                {standardPairs.length > 0 && (
+                  <div className="flex flex-wrap gap-1 items-start">
+                    {standardPairs.map(({ example, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 max-w-[400px]"
+                      >
+                        <PuzzleGrid 
+                          grid={example.input}
+                          title={`Training Example ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={example.output}
+                          title={`Training Example ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Wide Pairs: Full-width blocks */}
+                {widePairs.length > 0 && (
+                  <div className="space-y-1">
+                    {widePairs.map(({ example, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 w-full"
+                      >
+                        <PuzzleGrid 
+                          grid={example.input}
+                          title={`Training Example ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={example.output}
+                          title={`Training Example ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Tall Pairs: Horizontal scroll */}
+                {tallPairs.length > 0 && (
+                  <div className="overflow-x-auto -mx-2 px-2">
+                    <div className="flex gap-1" style={{ width: 'max-content' }}>
+                      {tallPairs.map(({ example, idx }) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center gap-0.5 p-1 flex-shrink-0"
+                        >
+                          <PuzzleGrid 
+                            grid={example.input}
+                            title={`Training Example ${idx + 1} Input`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                          <span className="text-xs text-gray-400">→</span>
+                          <PuzzleGrid 
+                            grid={example.output}
+                            title={`Training Example ${idx + 1} Output`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* TEST CASES - Stratified Layout */}
+        <div>
+          <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
+            <span className="inline-block w-1 h-1 rounded-full bg-green-500"></span>
+            Test
+          </div>
+          
+          {(() => {
+            // Pre-computation: Classify test pairs
+            const standardPairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            const widePairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            const tallPairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            
+            task.test.forEach((testCase, idx) => {
+              const inputRows = testCase.input.length;
+              const inputCols = testCase.input[0]?.length || 0;
+              const outputRows = testCase.output.length;
+              const outputCols = testCase.output[0]?.length || 0;
+              
+              const maxHeight = Math.max(inputRows, outputRows);
+              const combinedWidth = inputCols + outputCols;
+              const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
+              
+              if (maxHeight > 20) {
+                tallPairs.push({ testCase, idx });
+              } else if (combinedWidth > 40 || maxDim > 18) {
+                widePairs.push({ testCase, idx });
+              } else {
+                standardPairs.push({ testCase, idx });
+              }
+            });
+            
+            return (
+              <div className="space-y-2">
+                {/* Standard Test Pairs */}
+                {standardPairs.length > 0 && (
+                  <div className="flex flex-wrap gap-1 items-start">
+                    {standardPairs.map(({ testCase, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 max-w-[400px]"
+                      >
+                        <PuzzleGrid 
+                          grid={testCase.input}
+                          title={`Test ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={testCase.output}
+                          title={`Test ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          highlight={true}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Wide Test Pairs */}
+                {widePairs.length > 0 && (
+                  <div className="space-y-1">
+                    {widePairs.map(({ testCase, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 w-full"
+                      >
+                        <PuzzleGrid 
+                          grid={testCase.input}
+                          title={`Test ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={testCase.output}
+                          title={`Test ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          highlight={true}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Tall Test Pairs */}
+                {tallPairs.length > 0 && (
+                  <div className="overflow-x-auto -mx-2 px-2">
+                    <div className="flex gap-1" style={{ width: 'max-content' }}>
+                      {tallPairs.map(({ testCase, idx }) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center gap-0.5 p-1 flex-shrink-0"
+                        >
+                          <PuzzleGrid 
+                            grid={testCase.input}
+                            title={`Test ${idx + 1} Input`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                          <span className="text-xs text-gray-400">→</span>
+                          <PuzzleGrid 
+                            grid={testCase.output}
+                            title={`Test ${idx + 1} Output`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            highlight={true}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -686,10 +926,10 @@ export default function PuzzleExaminer() {
       {/* Analysis Results - THE FOCUS OF THE PAGE (separate from AI Model Testing) */}
       {(allResults.length > 0 || isAnalyzing) && (
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Brain className="h-4 w-4" />
                 Analysis Results ({explanations.length})
               </CardTitle>
                 
@@ -727,18 +967,18 @@ export default function PuzzleExaminer() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
               {/* Show loading state when analysis is in progress */}
               {isAnalyzing && (
-                <div className="mb-3 p-4 border rounded-lg bg-blue-50 border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                <div className="mb-2 p-2 border rounded bg-blue-50 border-blue-200">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                     <div>
-                      <p className="text-sm font-medium text-blue-800">
+                      <p className="text-xs font-medium text-blue-800">
                         Analysis in progress...
                       </p>
                       {currentModel && (
-                        <p className="text-xs text-blue-600">
+                        <p className="text-[10px] text-blue-600">
                           Running {currentModel.name}
                           {currentModel.responseTime && (
                             <span className="ml-2">
@@ -754,7 +994,7 @@ export default function PuzzleExaminer() {
 
               {/* Show existing results */}
               {filteredResults.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {filteredResults.map((result) => (
                     <AnalysisResultCard
                       key={`${result.id}-${result.modelName}`}

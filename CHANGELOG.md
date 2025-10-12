@@ -1,4 +1,55 @@
 
+## [4.4.0] - 2025-10-11 08:30 PM
+### Phase 12: Test-Count-Aware Prompt Integration - COMPLETE
+
+**BREAKING CHANGES:**
+- System prompt functions now accept `testCount` and `hasStructuredOutput` parameters
+- All parameters have safe defaults for backward compatibility
+
+**Core Prompt System Updates:**
+- ✅ `buildSystemPrompt()`: Added `testCount` and `hasStructuredOutput` params (defaults: 1, false)
+- ✅ `getSystemPrompt()`: Now accepts and forwards `testCount` and `hasStructuredOutput`
+- ✅ `buildAnalysisPrompt()`: Extracts `testCount` from `task.test.length` early
+- ✅ `BaseAIService.buildPromptPackage()`: Detects structured output via `supportsStructuredOutput(modelKey)`
+
+**Provider Integration (All 8 Services):**
+- ✅ OpenAI: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Grok: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Anthropic: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Gemini: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ DeepSeek: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ OpenRouter: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Saturn: Inherits from BaseAIService (already compatible)
+- ✅ Grover: Inherits from BaseAIService (already compatible)
+
+**Result - Dynamic Prompt Instructions:**
+- **Prompt-based providers** (Anthropic, Gemini, DeepSeek): Now receive detailed, test-count-specific JSON instructions
+  - Single-test puzzle: "predictedOutput: Your predicted output grid..."
+  - 2-test puzzle: "predictedOutput1: ..., predictedOutput2: ..."
+  - Example includes correct number of fields
+- **Structured output providers** (OpenAI, Grok): Still receive minimal instructions
+  - Schema enforcement handles structure
+  - No cognitive overhead from detailed field descriptions
+
+**Logging:**
+- Added log line: "📊 Test count: X, Structured output: true/false"
+- Helps debug which instruction path is taken
+
+**Documentation:**
+- **NEW:** `docs/Phase-12-Prompt-Integration-Plan.md` - Complete implementation plan with step-by-step breakdown
+
+**Impact:**
+- ✅ Eliminates cognitive load from unused fields (no predictedOutput3 when puzzle has 2 tests)
+- ✅ Prompt-based providers get explicit field-level guidance
+- ✅ Structured output providers stay minimal (schema does the work)
+- ✅ Completes the dynamic schema refactor initiated in v4.3.0
+
+**Backward Compatibility:**
+- All new parameters have safe defaults
+- Custom prompts bypass dynamic instructions (unchanged behavior)
+- Existing code continues to function without modifications
+
+---
 
 
 ## [4.3.1] - 2025-10-11 07:30 PM
