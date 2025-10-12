@@ -100,7 +100,7 @@ export default function PuzzleDiscussion() {
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
-    omitAnswer: false,
+    omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode to prevent data leakage
     originalExplanation: selectedExplanation,
     customChallenge: refinementState.userGuidance,
     previousResponseId: refinementState.getLastResponseId() // Single-model chaining
