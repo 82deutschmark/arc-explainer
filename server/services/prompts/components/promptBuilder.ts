@@ -38,6 +38,10 @@ export interface PromptConfig {
   predictionInstructions?: string;
   /** Additional mode-specific instructions */
   additionalInstructions?: string;
+  /** Number of test cases in the puzzle (for test-count-aware instructions) */
+  testCount?: number;
+  /** Whether provider uses structured output (schema enforcement) */
+  hasStructuredOutput?: boolean;
 }
 
 /**
@@ -52,14 +56,15 @@ export function buildSystemPrompt(config: PromptConfig): string {
     basePrompt = BASE_SYSTEM_PROMPT,
     taskDescription,
     predictionInstructions, // Now optional - use consolidated JSON instructions if not provided
-    additionalInstructions = ''
+    additionalInstructions = '',
+    testCount = 1,  // Default to single test case
+    hasStructuredOutput = false  // Default to prompt-based (no schema enforcement)
   } = config;
 
-  // Use consolidated JSON instructions (eliminates redundancy)
-  // Only use predictionInstructions if explicitly provided (for backwards compatibility)
-  // NOTE: Using minimal instructions here since system prompts are built early without testCount
-  // Test-count-aware instructions are handled by dynamic schemas (structured output providers)
-  const jsonInstructions = predictionInstructions || buildMinimalJsonInstructions();
+  // Use test-count-aware JSON instructions (Phase 12 integration)
+  // If predictionInstructions explicitly provided, use those (for backwards compatibility)
+  // Otherwise, use buildJsonInstructions which adapts to testCount and provider capabilities
+  const jsonInstructions = predictionInstructions || buildJsonInstructions(testCount, hasStructuredOutput);
 
   // Compose all sections, filtering out empty ones
   return [
