@@ -114,17 +114,40 @@ def main():
             # Test execution mode: single program on test inputs
             program = payload.get('program', '')
             test_inputs = payload.get('test_inputs', [])
-            
+
             if not program:
                 raise ValueError("Test mode requires 'program' field")
             if not test_inputs:
                 raise ValueError("Test mode requires 'test_inputs' field")
-            
+
+            # Emit start event
+            sys.stdout.write(json.dumps({
+                "type": "log",
+                "level": "info",
+                "message": f"🎯 Executing best program on {len(test_inputs)} test input(s)..."
+            }) + "\n")
+            sys.stdout.flush()
+
             result = execute_program(program, test_inputs)
-            
+
+            # Emit completion event
+            if result["error"]:
+                sys.stdout.write(json.dumps({
+                    "type": "log",
+                    "level": "error",
+                    "message": f"❌ Test execution failed: {result['error']}"
+                }) + "\n")
+            else:
+                sys.stdout.write(json.dumps({
+                    "type": "log",
+                    "level": "info",
+                    "message": f"✅ Generated predictions for {len(result['outputs'])} test case(s)"
+                }) + "\n")
+            sys.stdout.flush()
+
             # Output test execution result
             sys.stdout.write(json.dumps({
-                "type": "test_execution_result", 
+                "type": "test_execution_result",
                 "outputs": result["outputs"],
                 "error": result["error"]
             }) + "\n")
@@ -138,14 +161,38 @@ def main():
 
             results = []
             for idx, code in enumerate(programs):
+                # Emit start event BEFORE execution
+                sys.stdout.write(json.dumps({
+                    "type": "log",
+                    "level": "info",
+                    "message": f"⚙️  Executing program {idx + 1} of {len(programs)}..."
+                }) + "\n")
+                sys.stdout.flush()
+
                 result = execute_program(code, training_inputs)
+
+                # Emit result event AFTER execution
+                if result["error"]:
+                    sys.stdout.write(json.dumps({
+                        "type": "log",
+                        "level": "warn",
+                        "message": f"❌ Program {idx + 1} failed: {result['error']}"
+                    }) + "\n")
+                else:
+                    sys.stdout.write(json.dumps({
+                        "type": "log",
+                        "level": "info",
+                        "message": f"✅ Program {idx + 1} executed successfully"
+                    }) + "\n")
+                sys.stdout.flush()
+
                 results.append({
                     "programIdx": idx,
                     "code": code,
                     **result
                 })
 
-            # Output NDJSON
+            # Output final results
             sys.stdout.write(json.dumps({"type": "execution_results", "results": results}) + "\n")
             sys.stdout.flush()
             return 0

@@ -1,3 +1,81 @@
+## [4.7.1] - 2025-10-12 6:00 PM
+### 🎯 CRITICAL FIX: Grover Live Streaming - Complete Terminal Experience
+
+**SEVERITY:** P0 - Complete absence of real-time Python execution feedback
+
+**ROOT CAUSE:**
+The fundamental issue was NOT in the streaming infrastructure (SSE, WebSocket, harness) - those all work perfectly. The problem was that **Python execution was a black hole**. Users couldn't see what was happening during the 30-60 second execution periods.
+
+**WHAT WAS MISSING:**
+1. ❌ Generated Python code from each iteration
+2. ❌ Real-time Python execution progress ("Executing program 1 of 3...")
+3. ❌ Individual program pass/fail status during execution
+4. ❌ Execution results and scores
+5. ❌ The winning program highlighted after each iteration
+6. ❌ Best program evolution across iterations
+
+**THE FIX - Terminal-Style Live Output:**
+
+**1. Python Executor Streaming (`grover_executor.py`)**
+- Added progress events DURING execution (not just at the end)
+- Emits `{"type": "log", "message": "⚙️ Executing program 1 of 3..."}` before each program
+- Emits success/failure status after each execution
+- Works for both training mode (multiple programs) and test mode (best program on test cases)
+- All events are NDJSON (one JSON object per line) for line-by-line streaming
+
+**2. Python Bridge Streaming (`pythonBridge.ts`)**
+- `runGroverExecution()` now uses `readline.createInterface()` like Saturn
+- Processes stdout line-by-line in real-time (not buffered)
+- Added optional `onLog` callback parameter to forward Python logs immediately
+- `runGroverTestExecution()` gets same streaming treatment
+- Python log events are forwarded to the callback as they arrive
+
+**3. Grover Service Display (`grover.ts`)**
+- Shows generated Python code from LLM with visual separators
+- Displays execution results table after Python runs
+- Highlights new best programs with trophy emoji 🏆
+- Python execution logs stream in real-time through `sendProgress` callback
+- All logs flow to both WebSocket (legacy) and SSE (streaming) paths
+
+**WHAT USERS NOW SEE:**
+```
+✅ LLM generates 3 Python programs → CODE DISPLAYED IMMEDIATELY
+✅ "⚙️ Executing program 1 of 3..." → LIVE PYTHON PROGRESS
+✅ "✅ Program 1 executed successfully" → INSTANT FEEDBACK
+✅ Execution results table → SCORES & ERRORS
+✅ 🏆 NEW BEST PROGRAM! → WINNING CODE HIGHLIGHTED
+✅ Iteration summary → PROGRESS TRACKING
+```
+
+**WHY THIS FIXES THE BLANK SCREEN:**
+- Frontend hooks (`useSaturnProgress`, `useGroverProgress`) already append logs to `logLines`
+- UI components already render `logLines` in terminal-style panels
+- The missing piece was **THE SOURCE** - Python wasn't emitting anything to stream
+- Now Python emits progress → Bridge streams it → Grover forwards it → SSE delivers it → UI displays it
+
+**FILES CHANGED:**
+- `server/python/grover_executor.py`: Added NDJSON log events during execution (lines 123-164)
+- `server/services/pythonBridge.ts`: Changed from buffering to line-by-line streaming (lines 246-330, 339-427)
+- `server/services/grover.ts`: Added code display, execution results, best program highlighting (lines 231-277, 523-527, 612-619)
+
+**TESTING INSTRUCTIONS:**
+1. Navigate to Grover Solver page
+2. Select a puzzle and click "Start Grover Analysis"
+3. Watch the terminal panel fill with:
+   - Iteration start messages
+   - Generated Python code blocks
+   - Real-time execution progress
+   - Success/failure status per program
+   - Execution results table
+   - Best program highlights
+4. Verify logs appear **AS THEY HAPPEN** (not all at the end)
+5. Verify you can see the evolution of code across iterations
+
+**AUTHOR:** Sonnet 4.5
+**PRIORITY:** P0 (Critical UX Failure)
+
+---
+
 ## [4.7.0] - 2025-10-12 5:45 PM
 ### ✨ FEATURE: Complete DaisyUI Conversion - Dependency Components (15/15)
 
