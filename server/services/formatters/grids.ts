@@ -144,7 +144,7 @@ export function formatTestSection(
   task: ARCTask,
   useEmojis: boolean = false,
   emojiPalette?: string[],
-  includeAnswers: boolean = true,
+  includeAnswers: boolean = false,  // CRITICAL: Default is NO ANSWERS for research integrity
   isSolverMode: boolean = false
 ): string {
   const testCases = formatTestCases(task, useEmojis, emojiPalette, includeAnswers);

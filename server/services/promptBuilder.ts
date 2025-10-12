@@ -34,18 +34,18 @@ import { logger } from "../utils/broadcastLogger.js";
  */
 export interface PromptOptions {
   emojiSetKey?: string;
-  omitAnswer?: boolean;
+  omitAnswer?: boolean;     // THIS IS CRITICAL!  We should always be omitting answers! It should be set to true and it should take great effort to set it to false. 
   systemPromptMode?: 'ARC' | 'None';
   useStructuredOutput?: boolean;
-  temperature?: number;
-  topP?: number;
-  candidateCount?: number;
-  thinkingBudget?: number; // Gemini thinking budget: -1 = dynamic, 0 = disabled, >0 = specific tokens
-  retryMode?: boolean; // Enhanced prompting for retry analysis
-  previousAnalysis?: any; // Previous failed analysis data
-  originalExplanation?: any; // For debate mode: the original explanation to challenge
-  customChallenge?: string; // For debate mode: human guidance on what to focus on
-  badFeedback?: any[]; // Feedback entries influencing retry prompts
+  temperature?: number;       // Used specifically for non-reasoning models from OpenAI, all models from Grok, Gemini, Anthropic only allows it to go up to 1, all others allow it to go up to 2 in hundredths.  Anything above 1.25 usually produces very unreliable and funny results.
+  topP?: number;            // Gemini only feature, ranges from 0 to 1, higher values allow for more diverse and creative responses, but may also produce less coherent or less accurate results.
+  candidateCount?: number;  // Gemini candidate count
+  thinkingBudget?: number; // Gemini and Anthropic thinking budget: -1 = dynamic, 0 = disabled, >0 = specific tokens
+  retryMode?: boolean; // THIS REFERS TO WHEN USERS CLICK `NOT HELPFUL` ON THE FEEDBACK
+  previousAnalysis?: any; // Previous failed analysis data??? WHAT EXACTLY IS THIS???  WHAT DOES IT INCLUDE?!
+  originalExplanation?: any; // For debate and discussion modes: the original explanation to challenge
+  customChallenge?: string; // For debate/discussion modes: human guidance on what to focus on
+  badFeedback?: any[]; // Feedback entries influencing retry prompts (essentially the same as customChallenge ??)
 }
 
 /**
@@ -75,7 +75,7 @@ export function buildAnalysisPrompt(
   
   const {
     emojiSetKey,
-    omitAnswer = false,
+    omitAnswer = true,   // THIS IS CRITICAL!  We should always be omitting answers! It should be set to true and it should take great effort to set it to false. 
     systemPromptMode = 'ARC',
     useStructuredOutput = true,
     retryMode = false,
@@ -127,8 +127,8 @@ export function buildAnalysisPrompt(
     let continuationPrompt: string;
     let iterationCount = 1; // Default iteration
     
-    // Try to infer iteration count from context (could be enhanced in Phase 3)
-    // For now, just use a simple continuation prompt
+    // Try to infer iteration count from context (could be enhanced in Phase 3) WTF IS THIS??!?!?!
+    // For now, just use a simple continuation prompt  WTF IS THIS???
     
     switch (promptId) {
       case 'discussion':

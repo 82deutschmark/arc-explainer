@@ -25,6 +25,7 @@ import type { ResponseStreamEvent } from "openai/resources/responses/responses";
 
 type OpenAIStreamAggregates = {
   text: string;
+  parsed: string;  // Structured JSON output (output_parsed.delta)
   reasoning: string;
   summary: string;
   refusal: string;
@@ -174,7 +175,7 @@ export class OpenAIService extends BaseAIService {
 
     try {
       const testCount = task.test.length;
-      const { body } = this.buildResponsesRequestBody(
+      const { body } = this.buildResponsesAPIPayload(
         promptPackage,
         modelKey,
         temperature,
@@ -192,6 +193,7 @@ export class OpenAIService extends BaseAIService {
 
       const aggregates: OpenAIStreamAggregates = {
         text: "",
+        parsed: "",  // Accumulates structured JSON output
         reasoning: "",
         summary: "",
         refusal: ""
@@ -355,62 +357,87 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  private buildResponsesRequestBody(
+  // ========================================
+  // Phase 2: DRY Helper Methods
+  // ========================================
+
+  /**
+   * DRY Helper: Build message array for API request
+   * Handles initial vs continuation conversation modes
+   */
+  private buildMessageArray(
     promptPackage: PromptPackage,
-    modelKey: string,
-    temperature: number,
-    serviceOpts: ServiceOptions,
-    testCount: number,
-    taskId?: string
-  ) {
-    const modelName = getApiModelName(modelKey);
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
-
-    const isContinuation = !!serviceOpts.previousResponseId;
+    isContinuation: boolean
+  ): Array<{ role: string; content: string }> {
     const messages: Array<{ role: string; content: string }> = [];
-
+    
     if (isContinuation) {
-      console.log('[OpenAI] >> Continuation mode - sending ONLY new user message');
-      messages.push({ role: "user", content: userMessage });
+      console.log('[OpenAI-Messages] Continuation mode - sending ONLY new user message');
+      messages.push({ role: "user", content: promptPackage.userPrompt });
     } else {
-      console.log('[OpenAI] >> Initial mode - sending system + user messages');
-      if (systemMessage) {
-        messages.push({ role: "system", content: systemMessage });
+      console.log('[OpenAI-Messages] Initial mode - sending system + user messages');
+      if (promptPackage.systemPrompt) {
+        messages.push({ role: "system", content: promptPackage.systemPrompt });
       }
-      messages.push({ role: "user", content: userMessage });
+      messages.push({ role: "user", content: promptPackage.userPrompt });
     }
+    
+    return messages;
+  }
 
+  /**
+   * DRY Helper: Build reasoning configuration based on model type
+   */
+  private buildReasoningConfig(
+    modelKey: string,
+    serviceOpts: ServiceOptions
+  ): Record<string, unknown> | undefined {
     const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
+    if (!isReasoningModel) return undefined;
+
     const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
     const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
-    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
 
-    let reasoningConfig: Record<string, unknown> | undefined;
-    let textConfig: Record<string, unknown> | undefined;
-
-    if (isReasoningModel) {
-      if (isGPT5Model) {
-        reasoningConfig = {
-          effort: serviceOpts.reasoningEffort || "high",
-          summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || "detailed"
-        };
-        textConfig = {
-          verbosity: serviceOpts.reasoningVerbosity || "high"
-        };
-      } else if (isO3O4Model) {
-        reasoningConfig = {
-          summary: serviceOpts.reasoningSummary || "auto"
-        };
-      }
+    if (isGPT5Model) {
+      return {
+        effort: serviceOpts.reasoningEffort || "high",
+        summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || "detailed"
+      };
+    } else if (isO3O4Model) {
+      return {
+        summary: serviceOpts.reasoningSummary || "auto"
+      };
     }
 
-    const supportsStructuredOutput =
-      !modelName.includes("gpt-5-chat-latest") && !modelName.includes("gpt-5-nano");
+    return undefined;
+  }
 
-    const baseText = textConfig ? { ...textConfig } : undefined;
-    let structuredFormat = undefined;
+  /**
+   * DRY Helper: Build text configuration including verbosity + JSON schema format
+   * This is CRITICAL - must merge both fields into single text object
+   */
+  private buildTextConfig(
+    modelKey: string,
+    testCount: number,
+    serviceOpts: ServiceOptions
+  ): Record<string, any> | undefined {
+    const modelName = getApiModelName(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
     
+    // Build verbosity config for GPT-5 models
+    let textConfig: Record<string, unknown> | undefined;
+    if (isGPT5Model) {
+      textConfig = {
+        verbosity: serviceOpts.reasoningVerbosity || "high"
+      };
+    }
+
+    // Build JSON schema format if supported
+    const supportsStructuredOutput =
+      !modelName.includes("gpt-5-chat-latest") && 
+      !modelName.includes("gpt-5-nano");
+
+    let structuredFormat = undefined;
     if (supportsStructuredOutput) {
       const schema = getOpenAISchema(testCount);
       structuredFormat = {
@@ -421,6 +448,8 @@ export class OpenAIService extends BaseAIService {
       };
     }
 
+    // CRITICAL: Merge verbosity + schema format into single text object
+    const baseText = textConfig ? { ...textConfig } : undefined;
     const textPayload =
       structuredFormat || baseText
         ? {
@@ -428,6 +457,63 @@ export class OpenAIService extends BaseAIService {
             ...(structuredFormat ? { format: structuredFormat } : {})
           }
         : undefined;
+
+    return textPayload;
+  }
+
+  /**
+   * DRY Helper: Extract token usage from API response
+   */
+  private extractTokenUsage(result: any): TokenUsage {
+    if (!result.usage) {
+      return { input: 0, output: 0 };
+    }
+
+    const inputTokens = result.usage.input_tokens ?? 0;
+    const outputTokens = result.usage.output_tokens ?? 0;
+    const reasoningTokens = result.usage.output_tokens_details?.reasoning_tokens ?? 0;
+
+    return {
+      input: inputTokens,
+      output: outputTokens,
+      reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
+    };
+  }
+
+  // ========================================
+  // Main Payload Builder
+  // ========================================
+
+  /**
+   * CANONICAL REQUEST BUILDER - Single source of truth for Responses API payloads
+   * 
+   * This method is the ONLY place that builds OpenAI Responses API request payloads.
+   * It properly merges text config (verbosity) + JSON schema format to ensure both are sent.
+   * 
+   * Used by:
+   * - Non-streaming flow (callProviderAPI)
+   * - Streaming flow (analyzePuzzleWithStreaming)
+   * 
+   * DRY/SRP: PASS - Uses extracted helper methods
+   * 
+   * @returns { body: payload, isContinuation: boolean }
+   */
+  private buildResponsesAPIPayload(
+    promptPackage: PromptPackage,
+    modelKey: string,
+    temperature: number,
+    serviceOpts: ServiceOptions,
+    testCount: number,
+    taskId?: string
+  ) {
+    const modelName = getApiModelName(modelKey);
+    const isContinuation = !!serviceOpts.previousResponseId;
+    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+
+    // Use DRY helpers to build components
+    const messages = this.buildMessageArray(promptPackage, isContinuation);
+    const reasoningConfig = this.buildReasoningConfig(modelKey, serviceOpts);
+    const textPayload = this.buildTextConfig(modelKey, testCount, serviceOpts);
 
     const payload: Record<string, any> = {
       model: modelName,
@@ -444,16 +530,32 @@ export class OpenAIService extends BaseAIService {
       parallel_tool_calls: false,
       truncation: "auto",
       max_steps: serviceOpts.maxSteps,
-      // IMPORTANT: GPT-5 models support 272K input + 128K output/reasoning = 400K total
+      // CRITICAL: GPT-5 models support 272K input + 128K output/reasoning = 400K total
       // Internal reasoning consumes tokens from max_output_tokens allocation
-      // Recommend setting max_output_tokens: 110000+ to ensure visible output isn't starved
-      // If not set, reasoning may consume all tokens before returning structured predictions
-      max_output_tokens: serviceOpts.maxOutputTokens,
+      // Default 128K ensures reasoning doesn't starve visible output
+      max_output_tokens: serviceOpts.maxOutputTokens || 128000,
       metadata: taskId ? { taskId } : undefined
     };
 
+    // DEBUG: Log payload construction
+    console.log(`[OpenAI-PayloadBuilder] Model: ${modelName}`);
+    console.log(`[OpenAI-PayloadBuilder] Test count: ${testCount}`);
+    console.log(`[OpenAI-PayloadBuilder] Has reasoning: ${!!reasoningConfig}`);
+    console.log(`[OpenAI-PayloadBuilder] Has text config: ${!!textPayload}`);
+    if (textPayload) {
+      console.log(`[OpenAI-PayloadBuilder] - verbosity: ${textPayload.verbosity || 'none'}`);
+      console.log(`[OpenAI-PayloadBuilder] - format: ${textPayload.format?.type || 'none'}`);
+    }
+    console.log(`[OpenAI-PayloadBuilder] max_output_tokens: ${payload.max_output_tokens}`);
+
     return { body: payload, isContinuation };
   }
+  /**
+   * REFACTORED: DRY compliance - delegates to canonical payload builder
+   * 
+   * This method's ONLY responsibility is calling the HTTP layer.
+   * All request construction logic moved to buildResponsesAPIPayload().
+   */
   protected async callProviderAPI(
     promptPackage: PromptPackage,
     modelKey: string,
@@ -462,105 +564,51 @@ export class OpenAIService extends BaseAIService {
     testCount: number,
     taskId?: string
   ): Promise<any> {
-    const modelName = getApiModelName(modelKey);
-    const systemMessage = promptPackage.systemPrompt;
-    const userMessage = promptPackage.userPrompt;
+    // Use canonical payload builder (single source of truth)
+    const { body } = this.buildResponsesAPIPayload(
+      promptPackage,
+      modelKey,
+      temperature,
+      serviceOpts,
+      testCount,
+      taskId
+    );
 
-    // CRITICAL FIX: If continuing conversation, ONLY send new message
-    // API retrieves full context from previous_response_id
-    const isContinuation = !!serviceOpts.previousResponseId;
-    const messages: any[] = [];
-    
-    if (isContinuation) {
-      // Continuation: API loads context from previous_response_id
-      // send the new message (we should include the system message too!!!)
-      // Make sure we are sending the previous_response_id too!!  That is the point of this!!
-      // The point isnt saving tokens, it is preserving the context chain!!!
-      console.log('[OpenAI] =↪➡🤔🤨 Continuation mode - sending with previous_response_id');
-      messages.push({ role: "user", content: userMessage });
-    } else {
-      // Initial: Send full conversation
-      console.log('[OpenAI] =🚀📝🧩 Initial mode - sending system + user messages (puzzle grids)');
-      if (systemMessage) {
-        messages.push({ role: "system", content: systemMessage });
-      }
-      messages.push({ role: "user", content: userMessage });
-    }
-
-    // Build reasoning config based on model type
-    const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
-    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
-    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
-    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
-    const modelConfig = getModelConfig(modelKey);
-
-
-    let reasoningConfig = undefined;
-    let textConfig = undefined;
-    
-    if (isReasoningModel) {
-      if (isGPT5Model) {
-        reasoningConfig = {
-          effort: serviceOpts.reasoningEffort || 'high',
-          summary: serviceOpts.reasoningSummaryType || serviceOpts.reasoningSummary || 'detailed'
-        };
-        textConfig = {
-          verbosity: serviceOpts.reasoningVerbosity || 'high'
-        };
-      } else if (isO3O4Model) {
-        reasoningConfig = {
-          summary: serviceOpts.reasoningSummary || 'auto'
-        };
-      }
-    } else {
-    }
-
-    const requestData = {
-      model: modelName,
-      input: messages,
-      reasoning: reasoningConfig,
-      ...(textConfig && { text: textConfig }),
-      max_steps: serviceOpts.maxSteps,
-      previous_response_id: serviceOpts.previousResponseId,
-      ...(modelSupportsTemperature(modelKey) && {
-        temperature: temperature || 0.2,
-        ...(isGPT5ChatModel && { top_p: 1.00 })
-      }),
-    };
-
-
-    return await this.callResponsesAPI(requestData, modelKey, testCount);
+    // Make the HTTP call
+    return await this.callResponsesAPI(body, modelKey);
   }
 
-  protected parseProviderResponse(
+  // ========================================
+  // Phase 3: SRP Helper Methods
+  // ========================================
+
+  /**
+   * SRP Helper: Extract result from API response
+   * Handles multiple response formats: output_parsed, output_text, output[] array
+   */
+  private extractResultFromResponse(
     response: any,
     modelKey: string,
-    captureReasoning: boolean,
-    puzzleId?: string
-  ): {
-    result: any;
-    tokenUsage: TokenUsage;
-    reasoningLog?: any;
-    reasoningItems?: any[];
-    status?: string;
-    incomplete?: boolean;
-    incompleteReason?: string;
-    responseId?: string;
-  } {
-
-    let result: any = {};
-    let reasoningLog = null;
-    let reasoningItems: any[] = [];
-
-    // CRITICAL FIX: Always preserve raw response FIRST, then attempt parsing
+    supportsStructuredOutput: boolean
+  ): any {
     const rawResponse = response.raw_response || response;
+    let result: any = {};
 
-    // GPT-5-nano returns clean structured data in different fields
+    // Priority 1: output_parsed (structured JSON schema-enforced output)
     if (response.output_parsed) {
       result = response.output_parsed;
-    } else if (response.output_text) {
-      // CRITICAL FIX: Use jsonParser instead of direct JSON.parse to handle markdown-wrapped JSON
-      // GPT-5-chat-latest returns ```json\n{...}\n``` which breaks JSON.parse()
+      console.log(`[${this.provider}] ✅ Structured output received via output_parsed`);
+      result._providerRawResponse = rawResponse;
+      return result;
+    }
+
+    // Priority 2: output_text (fallback when schema fails)
+    if (response.output_text) {
+      if (supportsStructuredOutput) {
+        console.warn(`[${this.provider}] ⚠️ Schema requested for ${modelKey} but received output_text instead of output_parsed`);
+        console.warn(`[${this.provider}] ⚠️ JSON schema enforcement may have failed - model ignored format directive`);
+      }
+
       const parseResult = this.extractJsonFromResponse(response.output_text, modelKey);
       if (parseResult._parsingFailed) {
         console.error(`[${this.provider}] JSON parsing failed for ${modelKey}, preserving raw response`);
@@ -572,17 +620,19 @@ export class OpenAIService extends BaseAIService {
         };
       } else {
         result = parseResult;
-        // Remove internal parsing flags from successful parse
         delete result._rawResponse;
         delete result._parseError;
         delete result._parsingFailed;
         delete result._parseMethod;
       }
-    } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
-      // GPT-5-nano returns structured data in output array
+      result._providerRawResponse = rawResponse;
+      return result;
+    }
+
+    // Priority 3: output[] array (GPT-5-nano format)
+    if (response.output && Array.isArray(response.output) && response.output.length > 0) {
       const outputBlock = response.output[0];
       if (outputBlock && outputBlock.type === 'text' && outputBlock.text) {
-        // CRITICAL FIX: Use jsonParser for output array text as well
         const parseResult = this.extractJsonFromResponse(outputBlock.text, modelKey);
         if (parseResult._parsingFailed) {
           console.error(`[${this.provider}] JSON parsing failed for output block text, preserving raw response`);
@@ -608,129 +658,163 @@ export class OpenAIService extends BaseAIService {
           _parseMethod: 'fallback'
         };
       }
-    } else {
-      console.error(`[${this.provider}] No structured output found in response`);
-      result = {
-        _rawResponse: JSON.stringify(rawResponse),
-        _parseError: 'No structured output found',
-        _parsingFailed: true,
-        _parseMethod: 'fallback'
-      };
+      result._providerRawResponse = rawResponse;
+      return result;
     }
 
-    // ALWAYS preserve raw response for debugging, regardless of parsing success/failure
-    result._providerRawResponse = rawResponse;
+    // No valid output found
+    console.error(`[${this.provider}] No structured output found in response`);
+    result = {
+      _rawResponse: JSON.stringify(rawResponse),
+      _parseError: 'No structured output found',
+      _parsingFailed: true,
+      _parseMethod: 'fallback',
+      _providerRawResponse: rawResponse
+    };
+    return result;
+  }
 
-    // Extract reasoning log from API response
-    // CRITICAL FIX: Always attempt reasoning extraction when captureReasoning is true
-    // Reasoning can appear in output_reasoning.summary OR in output[] array items
-    if (captureReasoning) {
-      // Try output_reasoning.summary first (primary location)
-      if (response.output_reasoning?.summary) {
-        const summary = response.output_reasoning.summary;
-        
-        if (Array.isArray(summary)) {
-          reasoningLog = summary.map((s: any) => {
-            if (typeof s === 'string') return s;
-            if (s && typeof s === 'object' && s.text) return s.text;
-            if (s && typeof s === 'object' && s.content) return s.content;
-            return typeof s === 'object' ? JSON.stringify(s) : String(s);
-          }).filter(Boolean).join('\n\n');
-        } else if (typeof summary === 'string') {
-          reasoningLog = summary;
-        } else if (summary && typeof summary === 'object') {
-          // Handle object summary (this was the missing case causing [object Object])
-          if (summary.text) {
-            reasoningLog = summary.text;
-          } else if (summary.content) {
-            reasoningLog = summary.content;
-          } else {
-            reasoningLog = JSON.stringify(summary, null, 2);
-          }
+  /**
+   * SRP Helper: Extract reasoning from API response
+   * Handles output_reasoning.summary and output[] array scanning
+   */
+  private extractReasoningFromResponse(
+    response: any,
+    captureReasoning: boolean
+  ): { reasoningLog: any; reasoningItems: any[] } {
+    if (!captureReasoning) {
+      return { reasoningLog: null, reasoningItems: [] };
+    }
+
+    let reasoningLog = null;
+    let reasoningItems: any[] = [];
+
+    // Extract reasoning log from output_reasoning.summary
+    if (response.output_reasoning?.summary) {
+      const summary = response.output_reasoning.summary;
+
+      if (Array.isArray(summary)) {
+        reasoningLog = summary.map((s: any) => {
+          if (typeof s === 'string') return s;
+          if (s && typeof s === 'object' && s.text) return s.text;
+          if (s && typeof s === 'object' && s.content) return s.content;
+          return typeof s === 'object' ? JSON.stringify(s) : String(s);
+        }).filter(Boolean).join('\n\n');
+      } else if (typeof summary === 'string') {
+        reasoningLog = summary;
+      } else if (summary && typeof summary === 'object') {
+        if (summary.text) {
+          reasoningLog = summary.text;
+        } else if (summary.content) {
+          reasoningLog = summary.content;
+        } else {
+          reasoningLog = JSON.stringify(summary, null, 2);
         }
       }
-      
-      // Fallback: Scan output[] array for reasoning blocks (per Oct 2025 Responses API docs)
-      // GPT-5 models (especially nano and chat-latest) often return reasoning here
-      if (!reasoningLog && response.output && Array.isArray(response.output)) {
-        reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
-      }
     }
 
-    // Extract reasoning items and convert them to an array of strings
-    if (captureReasoning) {
-      // Try output_reasoning.items first (primary location per Oct 2025 Responses API)
-      if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-        reasoningItems = response.output_reasoning.items.map((item: any) => {
-          if (typeof item === 'string') return item;
-          if (item && typeof item === 'object' && item.text) return item.text;
-          return JSON.stringify(item);
-        });
-      }
-      
-      // Fallback: Scan output[] array if no items found (per Oct 2025 Responses API docs)
-      if ((!reasoningItems || reasoningItems.length === 0) && response.output && Array.isArray(response.output)) {
-        const reasoningBlocks = response.output.filter((block: any) => 
-          block && (
-            block.type === 'reasoning' || 
-            block.type === 'Reasoning' ||
-            (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
-          )
-        );
-        
-        reasoningItems = reasoningBlocks.map((block: any) => {
-          if (typeof block.content === 'string') return block.content;
-          if (Array.isArray(block.content)) {
-            const textContent = block.content.find((c: any) => c.type === 'text');
-            return textContent?.text || JSON.stringify(block.content);
-          }
-          return JSON.stringify(block);
-        }).filter(Boolean);
-      }
-      
-      if (!reasoningItems) {
-        reasoningItems = [];
-      }
-    } else {
-      reasoningItems = [];
+    // Fallback: Scan output[] array for reasoning blocks
+    if (!reasoningLog && response.output && Array.isArray(response.output)) {
+      reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
     }
 
-    // Validate reasoning data types and fix corruption
+    // Extract reasoning items
+    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+      reasoningItems = response.output_reasoning.items.map((item: any) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && item.text) return item.text;
+        return JSON.stringify(item);
+      });
+    }
+
+    // Fallback: Scan output[] array for reasoning items
+    if ((!reasoningItems || reasoningItems.length === 0) && response.output && Array.isArray(response.output)) {
+      const reasoningBlocks = response.output.filter((block: any) =>
+        block && (
+          block.type === 'reasoning' ||
+          block.type === 'Reasoning' ||
+          (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+        )
+      );
+
+      reasoningItems = reasoningBlocks.map((block: any) => {
+        if (typeof block.content === 'string') return block.content;
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          return textContent?.text || JSON.stringify(block.content);
+        }
+        return JSON.stringify(block);
+      }).filter(Boolean);
+    }
+
+    // Validate types and fix corruption
     if (reasoningLog && typeof reasoningLog !== 'string') {
       console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
-      // Use JSON.stringify instead of String() to avoid "[object Object]" corruption
       try {
         reasoningLog = JSON.stringify(reasoningLog, null, 2);
-        console.log(`=��� [${this.provider}-PARSE-DEBUG] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+        console.log(`[${this.provider}] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
       } catch (error) {
         console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
         reasoningLog = null;
       }
     }
-    
+
     if (reasoningItems && !Array.isArray(reasoningItems)) {
       console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
       reasoningItems = [];
     }
 
-    // Fallback: If reasoningLog is empty but we have reasoningItems, create a readable log
+    // Fallback: Create log from items if log is empty
     if (!reasoningLog && reasoningItems && reasoningItems.length > 0) {
       reasoningLog = reasoningItems
         .filter(item => item && typeof item === 'string' && item.trim().length > 0)
         .map((item, index) => `Step ${index + 1}: ${item}`)
         .join('\n\n');
-      
       if (!reasoningLog || reasoningLog.length === 0) {
         reasoningLog = null;
       }
     }
 
-    // Extract token usage
-    const tokenUsage: TokenUsage = {
-      input: response.tokenUsage?.input || 0,
-      output: response.tokenUsage?.output || 0,
-      reasoning: response.tokenUsage?.reasoning
-    };
+    return { reasoningLog, reasoningItems };
+  }
+
+  // ========================================
+  // Main Parser (Orchestrator)
+  // ========================================
+
+  /**
+   * Parse provider response - REFACTORED for SRP compliance
+   * 
+   * This method now ONLY orchestrates extraction - delegates actual work to helpers:
+   * - extractResultFromResponse(): Handles result extraction
+   * - extractReasoningFromResponse(): Handles reasoning extraction
+   * - extractTokenUsage(): Handles token parsing
+   */
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean,
+    puzzleId?: string
+  ): {
+    result: any;
+    tokenUsage: TokenUsage;
+    reasoningLog?: any;
+    reasoningItems?: any[];
+    status?: string;
+    incomplete?: boolean;
+    incompleteReason?: string;
+    responseId?: string;
+  } {
+    // Check if schema enforcement was expected
+    const modelName = getApiModelName(modelKey);
+    const supportsStructuredOutput =
+      !modelName.includes("gpt-5-chat-latest") &&
+      !modelName.includes("gpt-5-nano");
+
+    // Use SRP helpers to extract components
+    const result = this.extractResultFromResponse(response, modelKey, supportsStructuredOutput);
+    const { reasoningLog, reasoningItems } = this.extractReasoningFromResponse(response, captureReasoning);
+    const tokenUsage = this.extractTokenUsage(response);
 
     // Check for incomplete responses
     const status = response.status;
@@ -750,44 +834,28 @@ export class OpenAIService extends BaseAIService {
     };
   }
 
-  private async callResponsesAPI(requestData: any, modelKey: string, testCount: number): Promise<any> {
+  /**
+   * REFACTORED: SRP compliance - ONLY handles HTTP
+   * 
+   * This method's responsibilities:
+   * - API key validation
+   * - HTTP connection setup with extended timeouts
+   * - Making the undici request
+   * - Response parsing
+   * - Error handling
+   * 
+   * Does NOT modify payload - receives complete request body from buildResponsesAPIPayload()
+   */
+  private async callResponsesAPI(payload: any, modelKey: string): Promise<any> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
+    console.log(`[OpenAI-HTTP] Sending request to Responses API`);
+    console.log(`[OpenAI-HTTP] Payload keys: ${Object.keys(payload).join(', ')}`);
 
     try {
-      // Check if model supports structured JSON schema
-      const supportsStructuredOutput = !requestData.model.includes('gpt-5-chat-latest') &&
-                                       !requestData.model.includes('gpt-5-nano');
-
-      // Prepare the request for OpenAI's Responses API
-      let schemaFormat = undefined;
-      if (supportsStructuredOutput) {
-        const schema = getOpenAISchema(testCount);
-        schemaFormat = {
-          format: {
-            type: "json_schema",
-            name: schema.name,
-            strict: schema.strict,
-            schema: schema.schema
-          }
-        };
-      }
-
-      const body = {
-        model: requestData.model,
-        input: Array.isArray(requestData.input) ? requestData.input : [{ role: "user", content: requestData.input }],
-        ...(schemaFormat && { text: schemaFormat }),
-        reasoning: requestData.reasoning,
-        temperature: modelSupportsTemperature(modelKey) ? requestData.temperature : undefined,
-        top_p: modelSupportsTemperature(modelKey) ? 1 : undefined,
-        parallel_tool_calls: false,
-        truncation: "auto",
-        previous_response_id: requestData.previous_response_id,
-        store: requestData.store !== false // Default to true unless explicitly set to false
-      };
 
       // Create custom agent with extended timeouts for long reasoning model responses
       // CRITICAL: Node's undici has separate headers/body timeouts independent of AbortSignal
@@ -804,7 +872,7 @@ export class OpenAIService extends BaseAIService {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),  // Use payload as-is, already complete from builder
         signal: AbortSignal.timeout(2700000), // 45 minutes - overall request timeout
         dispatcher: agent  // Use custom agent with extended undici timeouts
       });
@@ -910,7 +978,30 @@ export class OpenAIService extends BaseAIService {
     harness: StreamingHarness | undefined,
     aggregates: OpenAIStreamAggregates
   ): void {
-    switch (event.type) {
+    // Cast to any for event type checking (SDK types lag behind API docs)
+    const eventType = (event as any).type as string;
+    
+    switch (eventType) {
+      case "response.output_parsed.delta": {
+        // CRITICAL: Structured JSON output for schema-enforced responses
+        // Per Oct 2025 API docs - not yet in SDK types
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.parsed += delta;
+          this.emitStreamChunk(harness, {
+            type: "parsed",
+            delta,
+            content: aggregates.parsed,
+            metadata: {
+              sequence: (event as any).sequence_number,
+              outputIndex: (event as any).output_index,
+              schemaEnforced: true
+            }
+          });
+          console.log(`[OpenAI-Streaming] Received structured JSON delta: ${delta.substring(0, 100)}...`);
+        }
+        break;
+      }
       case "response.output_text.delta": {
         const delta = (event as any).delta ?? "";
         if (delta) {
@@ -993,6 +1084,8 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       default:
+        // Log unhandled event types for debugging
+        console.log(`[OpenAI-Streaming] Unhandled event type: ${eventType}`);
         break;
     }
   }

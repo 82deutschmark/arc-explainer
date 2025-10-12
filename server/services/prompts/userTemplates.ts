@@ -48,16 +48,19 @@ export interface UserPromptOptions {
 }
 
 /**
- * Generate clean user prompt with just puzzle data
+ * Generate user prompt WITH task description (refactored architecture)
+ * User prompt now contains: PROBLEM statement + puzzle data
+ * System prompt contains: AI role/behavior only
  */
 export function buildUserPrompt(
   task: ARCTask,
   options: UserPromptOptions = {},
-  customText?: string
+  customText?: string,
+  taskDescription?: string  // NEW: Task description from TASK_DESCRIPTIONS
 ): string {
   const {
     emojiSetKey,
-    omitAnswer = false,
+    omitAnswer = true,  // CRITICAL: Default is HIDE ANSWERS for research integrity
     useEmojis = false,
     isSolverMode = false,
     isMultiTest = false
@@ -74,8 +77,15 @@ export function buildUserPrompt(
   const testSection = formatTestSection(task, useEmojis, emojiPalette, !omitAnswer, isSolverMode);
   const { trainingLabel, testLabel } = getSectionLabels(useEmojis, isSolverMode, omitAnswer);
 
-  // Build the core prompt
-  let userPrompt = `${trainingLabel}
+  // Build the user prompt with task description FIRST, then data
+  let userPrompt = '';
+  
+  // REFACTORED: Task description goes in user prompt now
+  if (taskDescription) {
+    userPrompt += `${taskDescription}\n\n`;
+  }
+  
+  userPrompt += `${trainingLabel}
 ${trainingExamples}
 
 ${testLabel}
@@ -98,7 +108,7 @@ function buildCustomUserPrompt(
   customText: string,
   options: UserPromptOptions = {}
 ): string {
-  const { isSolverMode = false, omitAnswer = false } = options;
+  const { isSolverMode = false, omitAnswer = true } = options;  // CRITICAL: Default is HIDE ANSWERS
   
   // Always use raw numeric data for custom prompts
   const trainingExamples = formatTrainingExamples(task, false);
@@ -172,17 +182,63 @@ export function buildCustomUserPromptSimple(
 }
 
 /**
+ * Generate discussion mode user prompt (self-refinement)
+ */
+export function buildDiscussionUserPrompt(
+  task: ARCTask,
+  options: UserPromptOptions = {},
+  originalExplanation?: any,
+  customChallenge?: string,
+  taskDescription?: string
+): string {
+  let prompt = '';
+
+  // TASK DESCRIPTION FIRST
+  if (taskDescription) {
+    prompt += `${taskDescription}\n\n`;
+  }
+
+  // PREVIOUS ANALYSIS CONTEXT
+  if (originalExplanation) {
+    prompt += `YOUR PREVIOUS ANALYSIS (INCORRECT/INCOMPLETE):\n`;
+    prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
+    prompt += `Solving Strategy: ${originalExplanation.solvingStrategy}\n`;
+
+    if (originalExplanation.hints && originalExplanation.hints.length > 0) {
+      prompt += `Hints: ${originalExplanation.hints.join(', ')}\n`;
+    }
+
+    if (customChallenge && customChallenge.trim()) {
+      prompt += `\nFOCUS ON: ${customChallenge.trim()}\n`;
+    }
+
+    prompt += `\n---\n\n`;
+  }
+
+  // Add the puzzle data
+  prompt += buildUserPrompt(task, options);
+
+  return prompt;
+}
+
+/**
  * Generate debate mode user prompt with original explanation context
  */
 export function buildDebateUserPrompt(
   task: ARCTask,
   options: UserPromptOptions = {},
   originalExplanation?: any,
-  customChallenge?: string
+  customChallenge?: string,
+  taskDescription?: string
 ): string {
   let prompt = '';
 
-  // DEBATE CONTEXT COMES FIRST - AI needs to know its role before seeing puzzle!
+  // TASK DESCRIPTION FIRST
+  if (taskDescription) {
+    prompt += `${taskDescription}\n\n`;
+  }
+
+  // DEBATE CONTEXT - AI needs to see the flawed explanation
   if (originalExplanation) {
     prompt += `PREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
     prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
@@ -264,6 +320,7 @@ export function getUserPromptBuilder(
 
 /**
  * Quick helper to build user prompt for any template
+ * NOW includes task description in user prompt (refactored architecture)
  */
 export function buildUserPromptForTemplate(
   task: ARCTask,
@@ -271,7 +328,8 @@ export function buildUserPromptForTemplate(
   options: UserPromptOptions = {},
   customText?: string,
   originalExplanation?: any,
-  customChallenge?: string
+  customChallenge?: string,
+  taskDescription?: string  // NEW: Pass task description from TASK_DESCRIPTIONS
 ): string {
   // Handle custom prompt mode
   if (promptId === 'custom' && customText) {
@@ -280,10 +338,14 @@ export function buildUserPromptForTemplate(
 
   // Handle debate mode with explanation context
   if (promptId === 'debate') {
-    return buildDebateUserPrompt(task, options, originalExplanation, customChallenge);
+    return buildDebateUserPrompt(task, options, originalExplanation, customChallenge, taskDescription);
   }
 
-  // Standard template builders
-  const builderFn: (task: ARCTask, options?: UserPromptOptions) => string = getUserPromptBuilder(promptId);
-  return builderFn(task, options);
+  // Handle discussion mode
+  if (promptId === 'discussion') {
+    return buildDiscussionUserPrompt(task, options, originalExplanation, customChallenge, taskDescription);
+  }
+
+  // Standard template builders with task description
+  return buildUserPrompt(task, options, customText, taskDescription);
 }
