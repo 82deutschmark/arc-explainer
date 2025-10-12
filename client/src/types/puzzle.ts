@@ -30,12 +30,14 @@ export interface AnalysisResult {
 }
 
 /**
- * Size classes for grid cells
+ * Size classes for grid cells - now more granular for better density
  */
 export const SIZE_CLASSES = {
-  small: "w-4 h-4 text-xs",
-  normal: "w-6 h-6 text-sm", 
-  large: "w-8 h-8 text-base"
+  tiny: "w-3 h-3 text-[10px]",      // For very large grids (>20x20)
+  small: "w-4 h-4 text-xs",        // For large grids (15-20 dims)
+  normal: "w-6 h-6 text-sm",       // For medium grids (6-14 dims)
+  large: "w-8 h-8 text-base",      // For small grids (3-5 dims)
+  xlarge: "w-10 h-10 text-lg"      // For tiny grids (1-2 dims)
 } as const;
 
 /**
@@ -59,6 +61,10 @@ export interface PuzzleGridProps {
   highlight?: boolean;
   emojiSet?: EmojiSet;
   diffMask?: boolean[][]; // Optional mask to highlight mismatched cells
+  maxWidth?: number;      // Maximum width in pixels (default: none)
+  maxHeight?: number;     // Maximum height in pixels (default: none)
+  preserveAspectRatio?: boolean; // Scale proportionally (default: true)
+  compact?: boolean;      // Use minimal spacing for dense layouts (default: false)
 }
 
 /**
