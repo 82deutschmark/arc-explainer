@@ -124,6 +124,7 @@
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
+    "daisyui": "^5.2.3",
     "drizzle-kit": "^0.18.1",
     "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
