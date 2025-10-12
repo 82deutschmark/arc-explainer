@@ -19,7 +19,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Trophy, Zap, DollarSign, TrendingUp, Target, Clock, Brain, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Trophy, Zap, DollarSign, TrendingUp, Target, Clock, Brain, AlertCircle, Sun, Moon } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelComparisonResult } from './AnalyticsOverview';
@@ -29,6 +29,16 @@ export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>('dark');
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   // Get comparison data from location state or URL params
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
@@ -184,35 +194,41 @@ export default function ModelComparisonPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 p-4">
-      <div className="container mx-auto max-w-7xl space-y-4">
+    <div className="min-h-screen bg-base-200 p-6">
+      <div className="container mx-auto max-w-7xl space-y-6">
 
-        {/* Header with Back Button */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
+        {/* Header with Back Button and Theme Toggle */}
+        <div className="flex items-center justify-between mb-4">
+          <button
             onClick={() => navigate('/analytics')}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost gap-2"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+            <ArrowLeft className="h-5 w-5" />
+            Back to Analytics
+          </button>
+
+          <button
+            onClick={toggleTheme}
+            className="btn btn-circle btn-ghost"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
         </div>
 
         {/* DaisyUI Hero Section */}
         <div className="hero bg-gradient-to-r from-primary to-secondary rounded-box shadow-lg">
-          <div className="hero-content text-center py-8">
+          <div className="hero-content text-center py-12 px-6">
             <div className="max-w-4xl">
-              <h1 className="text-5xl font-bold text-primary-content mb-2">
+              <h1 className="text-5xl font-bold text-primary-content mb-4">
                 Model Battle: {modelPerf[0]?.modelName || 'Model 1'} vs {modelPerf[1]?.modelName || 'Model 2'}
               </h1>
-              <p className="text-xl text-primary-content/80 mb-4">
+              <p className="text-xl text-primary-content/80 mb-6">
                 {summary.dataset.toUpperCase()} Dataset • {summary.totalPuzzles} Puzzles
               </p>
 
               {/* Winner Badges */}
-              <div className="flex justify-center gap-4 flex-wrap">
+              <div className="flex justify-center gap-4 flex-wrap mt-4">
                 {summary.winnerModel && (
                   <div className="badge badge-success badge-lg gap-2">
                     <Trophy className="h-4 w-4" />
@@ -287,21 +303,21 @@ export default function ModelComparisonPage() {
         </div>
 
         {/* Per-Model Performance Cards with Radial Progress */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {modelPerf.map((model, idx) => (
             <div key={model.modelName} className="card bg-base-100 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title">
+              <div className="card-body p-6">
+                <h2 className="card-title mb-4">
                   <Badge variant={idx === 0 ? "default" : "secondary"}>{model.modelName}</Badge>
                   {summary.winnerModel === model.modelName && (
-                    <div className="badge badge-success gap-1">
+                    <div className="badge badge-success gap-1 ml-2">
                       <Trophy className="h-3 w-3" />
                       Winner
                     </div>
                   )}
                 </h2>
 
-                <div className="flex items-center justify-around my-4">
+                <div className="flex items-center justify-around my-6">
                   {/* Radial Progress for Accuracy */}
                   <div className="flex flex-col items-center">
                     <div
@@ -330,39 +346,37 @@ export default function ModelComparisonPage() {
                 </div>
 
                 {/* Detailed Stats */}
-                <div className="divider my-2"></div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="stat-compact">
-                    <div className="text-xs text-base-content/60">Cost per Correct</div>
+                <div className="divider my-4"></div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xs text-base-content/60 mb-1">Cost per Correct</div>
                     <div className="text-lg font-bold text-success">{formatCost(model.costPerCorrectAnswer)}</div>
                   </div>
-                  <div className="stat-compact">
-                    <div className="text-xs text-base-content/60">Total Cost</div>
+                  <div>
+                    <div className="text-xs text-base-content/60 mb-1">Total Cost</div>
                     <div className="text-lg font-bold">{formatCost(model.totalCost)}</div>
                   </div>
-                  <div className="stat-compact">
-                    <div className="text-xs text-base-content/60">Avg Speed</div>
+                  <div>
+                    <div className="text-xs text-base-content/60 mb-1">Avg Speed</div>
                     <div className="text-lg font-bold flex items-center gap-1">
                       <Clock className="h-4 w-4" />
                       {formatTime(model.avgProcessingTime)}
                     </div>
                   </div>
-                  <div className="stat-compact">
-                    <div className="text-xs text-base-content/60">Confidence</div>
+                  <div>
+                    <div className="text-xs text-base-content/60 mb-1">Confidence</div>
                     <div className="text-lg font-bold">{model.avgConfidence.toFixed(1)}%</div>
                   </div>
                   {model.confidenceWhenCorrect !== null && (
-                    <>
-                      <div className="stat-compact col-span-2">
-                        <div className="text-xs text-base-content/60">Trustworthiness (Confidence When Correct)</div>
-                        <div className="text-lg font-bold text-info">{model.confidenceWhenCorrect.toFixed(1)}%</div>
-                      </div>
-                    </>
+                    <div className="col-span-2">
+                      <div className="text-xs text-base-content/60 mb-1">Trustworthiness (Confidence When Correct)</div>
+                      <div className="text-lg font-bold text-info">{model.confidenceWhenCorrect.toFixed(1)}%</div>
+                    </div>
                   )}
                 </div>
 
                 {/* Status Breakdown */}
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-4">
                   <div className="badge badge-success gap-1">
                     ✅ {model.correctCount}
                   </div>
@@ -380,7 +394,7 @@ export default function ModelComparisonPage() {
 
         {/* Comparison Matrix */}
         <div className="card bg-base-100 shadow-xl">
-          <div className="card-body p-4">
+          <div className="card-body p-6">
             <NewModelComparisonResults result={comparisonData} />
           </div>
         </div>
