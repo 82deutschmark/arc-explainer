@@ -826,9 +826,11 @@ export class MetricsRepository extends BaseRepository {
         // Get result for each model
         const results = models.map((modelName) => {
           const isCorrect = modelResults.get(modelName);
-          return isCorrect === null || isCorrect === undefined 
-            ? 'not_attempted' 
-            : (isCorrect ? 'correct' : 'incorrect');
+          
+          // undefined = never attempted (no DB entry), null/false = attempted but wrong/incomplete
+          if (isCorrect === undefined) return 'not_attempted';
+          if (isCorrect === true) return 'correct';
+          return 'incorrect'; // Covers both false AND null cases
         });
 
         // Count correct models for this puzzle
