@@ -1,19 +1,18 @@
 /**
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-12
- * PURPOSE: Pure DaisyUI model comparison dashboard showing comprehensive head-to-head metrics.
- * Displays per-model performance, cost analysis, speed comparison, and puzzle-by-puzzle matrix.
+ * Author: Cascade using Claude Sonnet 4
+ * Date: 2025-10-12T14:09:00-04:00
+ * PURPOSE: Professional model comparison dashboard with maximum information density.
+ * Displays per-model performance metrics and detailed puzzle-by-puzzle comparison matrix.
  *
- * FEATURES:
- * - DaisyUI hero section with winner indicators
- * - Radial progress cards for accuracy visualization
- * - Stats grid with high-impact metrics
- * - Per-model performance cards with detailed breakdowns
- * - Theme toggle using DaisyUI theme-controller
- * - Comparison matrix table
+ * DESIGN PRINCIPLES:
+ * - Light theme only (professional research platform)
+ * - No cartoonish language ("Model Battle" removed)
+ * - Information density maximized
+ * - Clean tabular layouts for data comparison
+ * - Emphasis on statistical accuracy and completeness
  *
  * SRP and DRY check: Pass - Single responsibility is model comparison visualization
- * DaisyUI: Pass - Uses ONLY DaisyUI components, no custom UI or shadcn/ui
+ * DaisyUI: Pass - Uses DaisyUI components with professional styling
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,16 +25,10 @@ export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [theme, setTheme] = useState<string>('dark');
-
-  // Apply theme to document
+  // Force light theme for professional appearance
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+    document.documentElement.setAttribute('data-theme', 'light');
+  }, []);
 
   // Get comparison data from location state or URL params
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
@@ -191,57 +184,36 @@ export default function ModelComparisonPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 p-6">
-      <div className="container mx-auto max-w-7xl space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="container mx-auto max-w-7xl space-y-4">
 
-        {/* Header with Back Button and Theme Toggle */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Professional Header */}
+        <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => navigate('/analytics')}
-            className="btn btn-ghost gap-2"
+            className="btn btn-sm btn-ghost gap-2"
           >
-            <ArrowLeft className="h-5 w-5" />
-            Back to Analytics
-          </button>
-
-          <button
-            onClick={toggleTheme}
-            className="btn btn-circle btn-ghost"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            <ArrowLeft className="h-4 w-4" />
+            Analytics
           </button>
         </div>
 
-        {/* DaisyUI Hero Section */}
-        <div className="hero bg-gradient-to-r from-primary to-secondary rounded-box shadow-xl">
-          <div className="hero-content text-center py-12 px-6">
-            <div className="max-w-4xl">
-              <h1 className="text-5xl font-bold text-primary-content mb-4">
-                Model Battle: {modelPerf[0]?.modelName || 'Model 1'} vs {modelPerf[1]?.modelName || 'Model 2'}
-              </h1>
-              <p className="text-xl text-primary-content/80 mb-6">
-                {summary.dataset.toUpperCase()} Dataset • {summary.totalPuzzles} Puzzles
-              </p>
-
-              {/* Winner Badges */}
-              <div className="flex justify-center gap-4 flex-wrap mt-4">
+        {/* Professional Header Card */}
+        <div className="card bg-white shadow-sm border border-gray-200">
+          <div className="card-body p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-semibold text-gray-900 mb-1">
+                  Model Performance Comparison
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Dataset: {summary.dataset.toUpperCase()} • {summary.totalPuzzles} Total Puzzles • {summary.fullySolvedCount} Solved by ≥1 Model
+                </p>
+              </div>
+              <div className="flex gap-2">
                 {summary.winnerModel && (
-                  <div className="badge badge-success badge-lg gap-2">
-                    <Trophy className="h-4 w-4" />
-                    Accuracy Winner: {summary.winnerModel}
-                  </div>
-                )}
-                {summary.mostEfficientModel && (
-                  <div className="badge badge-info badge-lg gap-2">
-                    <DollarSign className="h-4 w-4" />
-                    Most Efficient: {summary.mostEfficientModel}
-                  </div>
-                )}
-                {summary.fastestModel && (
-                  <div className="badge badge-warning badge-lg gap-2">
-                    <Zap className="h-4 w-4" />
-                    Fastest: {summary.fastestModel}
+                  <div className="text-xs font-medium text-gray-700">
+                    Highest Accuracy: <span className="font-semibold text-green-700">{summary.winnerModel}</span>
                   </div>
                 )}
               </div>
@@ -249,151 +221,95 @@ export default function ModelComparisonPage() {
           </div>
         </div>
 
-        {/* DaisyUI Stats Grid - High-Impact Metrics */}
-        <div className="stats stats-vertical lg:stats-horizontal shadow-xl w-full bg-base-100">
-          <div className="stat">
-            <div className="stat-figure text-success">
-              <Target className="h-8 w-8" />
+        {/* Compact Stats Grid */}
+        <div className="grid grid-cols-5 gap-2">
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Agreement: Both Correct</div>
+              <div className="text-2xl font-bold text-green-600">{summary.allCorrect}</div>
             </div>
-            <div className="stat-title">All Correct</div>
-            <div className="stat-value text-success">{summary.allCorrect}</div>
-            <div className="stat-desc">Both models solved</div>
           </div>
-
-          <div className="stat">
-            <div className="stat-figure text-error">
-              <AlertCircle className="h-8 w-8" />
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Agreement: Both Incorrect</div>
+              <div className="text-2xl font-bold text-red-600">{summary.allIncorrect}</div>
             </div>
-            <div className="stat-title">All Incorrect</div>
-            <div className="stat-value text-error">{summary.allIncorrect}</div>
-            <div className="stat-desc">Both models failed</div>
           </div>
-
-          <div className="stat">
-            <div className="stat-figure text-warning">
-              <TrendingUp className="h-8 w-8" />
-            </div>
-            <div className="stat-title">Disagreements</div>
-            <div className="stat-value text-warning">
-              {summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
-            </div>
-            <div className="stat-desc">Models differ</div>
-          </div>
-
-          <div className="stat">
-            <div className="stat-figure text-info">
-              <Trophy className="h-8 w-8" />
-            </div>
-            <div className="stat-title">Fully Solved</div>
-            <div className="stat-value text-info">{summary.fullySolvedCount}</div>
-            <div className="stat-desc">≥1 model correct</div>
-          </div>
-
-          <div className="stat">
-            <div className="stat-figure text-base-content/50">
-              <Brain className="h-8 w-8" />
-            </div>
-            <div className="stat-title">Unsolved</div>
-            <div className="stat-value">{summary.unsolvedCount}</div>
-            <div className="stat-desc">All failed</div>
-          </div>
-        </div>
-
-        {/* Per-Model Performance Cards with Radial Progress */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {modelPerf.map((model, idx) => (
-            <div key={model.modelName} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="card-body p-6">
-                <h2 className="card-title mb-4">
-                  <div className={`badge ${idx === 0 ? 'badge-primary' : 'badge-secondary'} badge-lg`}>
-                    {model.modelName}
-                  </div>
-                  {summary.winnerModel === model.modelName && (
-                    <div className="badge badge-success gap-1 ml-2">
-                      <Trophy className="h-3 w-3" />
-                      Winner
-                    </div>
-                  )}
-                </h2>
-
-                <div className="flex items-center justify-around my-6">
-                  {/* Radial Progress for Accuracy */}
-                  <div className="flex flex-col items-center">
-                    <div
-                      className="radial-progress text-primary"
-                      style={{ "--value": model.accuracyPercentage, "--size": "8rem", "--thickness": "8px" } as React.CSSProperties}
-                      role="progressbar"
-                    >
-                      <span className="text-2xl font-bold">{model.accuracyPercentage.toFixed(1)}%</span>
-                    </div>
-                    <p className="text-sm font-semibold mt-2">Accuracy</p>
-                    <p className="text-xs text-base-content/60">{model.correctCount}/{model.attempts} correct</p>
-                  </div>
-
-                  {/* Coverage Progress */}
-                  <div className="flex flex-col items-center">
-                    <div
-                      className="radial-progress text-secondary"
-                      style={{ "--value": model.coveragePercentage, "--size": "6rem", "--thickness": "6px" } as React.CSSProperties}
-                      role="progressbar"
-                    >
-                      <span className="text-lg font-bold">{model.coveragePercentage.toFixed(0)}%</span>
-                    </div>
-                    <p className="text-sm font-semibold mt-2">Coverage</p>
-                    <p className="text-xs text-base-content/60">{model.attempts}/{model.totalPuzzlesInDataset} puzzles</p>
-                  </div>
-                </div>
-
-                {/* Detailed Stats */}
-                <div className="divider my-4"></div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="text-xs text-base-content/60 mb-1">Cost per Correct</div>
-                    <div className="text-lg font-bold text-success">{formatCost(model.costPerCorrectAnswer)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-base-content/60 mb-1">Total Cost</div>
-                    <div className="text-lg font-bold">{formatCost(model.totalCost)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-base-content/60 mb-1">Avg Speed</div>
-                    <div className="text-lg font-bold flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {formatTime(model.avgProcessingTime)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-base-content/60 mb-1">Confidence</div>
-                    <div className="text-lg font-bold">{model.avgConfidence.toFixed(1)}%</div>
-                  </div>
-                  {model.confidenceWhenCorrect !== null && (
-                    <div className="col-span-2">
-                      <div className="text-xs text-base-content/60 mb-1">Trustworthiness (Confidence When Correct)</div>
-                      <div className="text-lg font-bold text-info">{model.confidenceWhenCorrect.toFixed(1)}%</div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Status Breakdown */}
-                <div className="flex gap-2 mt-4">
-                  <div className="badge badge-success gap-1">
-                    ✅ {model.correctCount}
-                  </div>
-                  <div className="badge badge-error gap-1">
-                    ❌ {model.incorrectCount}
-                  </div>
-                  <div className="badge badge-ghost gap-1">
-                    ⏳ {model.notAttemptedCount}
-                  </div>
-                </div>
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Disagreements</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
               </div>
             </div>
-          ))}
+          </div>
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Solved (≥1 Model)</div>
+              <div className="text-2xl font-bold text-blue-600">{summary.fullySolvedCount}</div>
+            </div>
+          </div>
+          <div className="card bg-white shadow-sm border border-gray-200">
+            <div className="card-body p-3">
+              <div className="text-xs text-gray-600 mb-1">Unsolved (All Failed)</div>
+              <div className="text-2xl font-bold text-gray-600">{summary.unsolvedCount}</div>
+            </div>
+          </div>
         </div>
 
-        {/* Comparison Matrix */}
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body p-6">
+        {/* Professional Data Table */}
+        <div className="card bg-white shadow-sm border border-gray-200">
+          <div className="card-body p-4">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Model Performance Metrics</h2>
+            <div className="overflow-x-auto">
+              <table className="table table-sm table-zebra">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="font-semibold text-gray-700">Model</th>
+                    <th className="font-semibold text-gray-700 text-center">Accuracy</th>
+                    <th className="font-semibold text-gray-700 text-center">Correct</th>
+                    <th className="font-semibold text-gray-700 text-center">Incorrect</th>
+                    <th className="font-semibold text-gray-700 text-center">Not Attempted</th>
+                    <th className="font-semibold text-gray-700 text-center">Coverage</th>
+                    <th className="font-semibold text-gray-700 text-center">Avg Speed</th>
+                    <th className="font-semibold text-gray-700 text-center">Total Cost</th>
+                    <th className="font-semibold text-gray-700 text-center">Cost/Correct</th>
+                    <th className="font-semibold text-gray-700 text-center">Avg Confidence</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modelPerf.map((model) => (
+                    <tr key={model.modelName} className="hover:bg-gray-50">
+                      <td className="font-medium text-gray-900">
+                        {model.modelName}
+                        {summary.winnerModel === model.modelName && (
+                          <span className="ml-2 text-xs font-semibold text-green-600">★ Highest Accuracy</span>
+                        )}
+                      </td>
+                      <td className="text-center font-semibold text-lg">
+                        <span className={model.accuracyPercentage >= 50 ? "text-green-600" : "text-red-600"}>
+                          {model.accuracyPercentage.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="text-center text-green-600 font-medium">✅ {model.correctCount}</td>
+                      <td className="text-center text-red-600 font-medium">❌ {model.incorrectCount}</td>
+                      <td className="text-center text-gray-500 font-medium">⏳ {model.notAttemptedCount}</td>
+                      <td className="text-center">{model.attempts}/{model.totalPuzzlesInDataset} ({model.coveragePercentage.toFixed(0)}%)</td>
+                      <td className="text-center text-sm">{formatTime(model.avgProcessingTime)}</td>
+                      <td className="text-center text-sm font-medium">{formatCost(model.totalCost)}</td>
+                      <td className="text-center text-sm font-medium text-blue-600">{formatCost(model.costPerCorrectAnswer)}</td>
+                      <td className="text-center text-sm">{model.avgConfidence.toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Puzzle-by-Puzzle Comparison Matrix */}
+        <div className="card bg-white shadow-sm border border-gray-200">
+          <div className="card-body p-4">
             <NewModelComparisonResults result={comparisonData} />
           </div>
         </div>
