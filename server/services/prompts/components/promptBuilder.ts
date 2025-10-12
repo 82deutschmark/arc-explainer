@@ -28,12 +28,11 @@ import { buildJsonInstructions, buildMinimalJsonInstructions } from './jsonInstr
 
 /**
  * Configuration for building system prompts
+ * REFACTORED: taskDescription removed - belongs in USER prompt, not SYSTEM prompt
  */
 export interface PromptConfig {
   /** Base prompt establishing AI role (defaults to BASE_SYSTEM_PROMPT) */
   basePrompt?: string;
-  /** Task description for this prompt mode */
-  taskDescription: string;
   /** Prediction field requirements (defaults to PREDICTION_FIELD_INSTRUCTIONS) */
   predictionInstructions?: string;
   /** Additional mode-specific instructions */
@@ -48,14 +47,16 @@ export interface PromptConfig {
  * Compose system prompts from reusable components
  * ELIMINATES all duplication - single function builds all prompts
  * 
+ * ARCHITECTURE: System prompts contain ONLY AI role + JSON schema + mode rules
+ * Task descriptions now go in USER prompts (OpenAI Responses API best practice)
+ * 
  * @param config Configuration specifying which components to use
  * @returns Complete system prompt string
  */
 export function buildSystemPrompt(config: PromptConfig): string {
   const {
     basePrompt = BASE_SYSTEM_PROMPT,
-    taskDescription,
-    predictionInstructions, // Now optional - use consolidated JSON instructions if not provided
+    predictionInstructions, // Optional - use consolidated JSON instructions if not provided
     additionalInstructions = '',
     testCount = 1,  // Default to single test case
     hasStructuredOutput = false  // Default to prompt-based (no schema enforcement)
@@ -67,11 +68,11 @@ export function buildSystemPrompt(config: PromptConfig): string {
   const jsonInstructions = predictionInstructions || buildJsonInstructions(testCount, hasStructuredOutput);
 
   // Compose all sections, filtering out empty ones
+  // NOTE: taskDescription removed - now goes in user prompt only
   return [
-    basePrompt,
-    taskDescription,
-    jsonInstructions,
-    additionalInstructions
+    basePrompt,           // AI role and behavior
+    jsonInstructions,     // JSON schema enforcement
+    additionalInstructions // Mode-specific rules
   ]
   .filter(section => section.trim().length > 0)
   .join('\n\n');
@@ -80,11 +81,11 @@ export function buildSystemPrompt(config: PromptConfig): string {
 /**
  * Build debate prompt with debate instructions FIRST, then ARC rules
  * The challenger AI needs context about its role before learning puzzle rules
+ * Task description goes in user prompt, not here
  */
 export function buildDebatePrompt(): string {
   return buildSystemPrompt({
     basePrompt: ADDITIONAL_INSTRUCTIONS.debate, // Debate instructions FIRST
-    taskDescription: TASK_DESCRIPTIONS.debate,
     additionalInstructions: BASE_SYSTEM_PROMPT // ARC rules come AFTER debate context
   });
 }
@@ -92,11 +93,11 @@ export function buildDebatePrompt(): string {
 /**
  * Build discussion prompt for AI self-refinement
  * Similar to debate but focused on self-critique and iterative improvement
+ * Task description goes in user prompt, not here
  */
 export function buildDiscussionPrompt(): string {
   return buildSystemPrompt({
     basePrompt: ADDITIONAL_INSTRUCTIONS.discussion, // Self-refinement instructions FIRST
-    taskDescription: TASK_DESCRIPTIONS.discussion,
     additionalInstructions: BASE_SYSTEM_PROMPT // ARC rules come AFTER discussion context
   });
 }
@@ -112,7 +113,6 @@ export function buildCustomPrompt(): string {
 
   return buildSystemPrompt({
     basePrompt: `Learn the rules of the puzzle and produce the correct output grid for the test case(s).`,
-    taskDescription: `TASK: Learn the required rules to produce the correct output grid for the test case(s) while ensuring structured output.`,
     predictionInstructions: jsonInstructions,
     additionalInstructions: ``
   });

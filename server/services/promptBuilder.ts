@@ -262,7 +262,11 @@ function buildAnalysisPromptImpl(
   // Phase 6: Log and return
   logger.service('PromptBuilder', `Generated system prompt: ${systemPrompt.length} chars`);
   logger.service('PromptBuilder', `Generated user prompt: ${userPrompt.length} chars`);
-  logger.service('PromptBuilder', `Security: ${(buildOptions.omitAnswer ?? true) ? '🔒 ANSWERS WITHHELD' : '⚠️ ANSWERS INCLUDED'}`);
+  logger.service('PromptBuilder', `Security: ${(buildOptions.omitAnswer ?? true) ? '\ud83d\udd12 ANSWERS WITHHELD' : '\u26a0\ufe0f ANSWERS INCLUDED'}`);
+  
+  // FULL PROMPT LOGGING for debugging
+  logger.service('PromptBuilder', `\n${'='.repeat(80)}\nSYSTEM PROMPT (${promptId}):\n${'-'.repeat(80)}\n${systemPrompt}\n${'='.repeat(80)}`);
+  logger.service('PromptBuilder', `\n${'='.repeat(80)}\nUSER PROMPT (${promptId}):\n${'-'.repeat(80)}\n${userPrompt}\n${'='.repeat(80)}`);
 
   return {
     systemPrompt,
