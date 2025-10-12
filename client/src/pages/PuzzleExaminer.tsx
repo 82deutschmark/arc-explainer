@@ -1,8 +1,8 @@
-/**
+/**NEEDS AUDIT!    In fact...  this seems really bloated and not DRY or SRP??
  * PuzzleExaminer.tsx
  *
  * @author Cascade using Claude Sonnet 4.5
- * @date 2025-10-03T23:35:00-04:00
+ * @date 2025-10-11 3:58 PM
  * @description This is the main page component for examining a single ARC puzzle.
  * It orchestrates the fetching of puzzle data and existing explanations from the database.
  * NOW USES SHARED CORRECTNESS LOGIC to match AccuracyRepository (no more invented logic!)
@@ -245,11 +245,11 @@ export default function PuzzleExaminer() {
   };
 
   return (
-    <div className="container mx-auto p-3 max-w-6xl space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-2 max-w-6xl space-y-2">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between mb-1">
         <div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl font-bold">
             Puzzle {getPuzzleName(taskId) ? `${taskId} - ${getPuzzleName(taskId)}` : taskId}
             {task?.source && (
               <Badge variant="outline" className={`ml-2 ${
@@ -269,12 +269,12 @@ export default function PuzzleExaminer() {
               </Badge>
             )}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm text-gray-600">
             {isRetryMode ? "Enhanced Analysis - Previous attempt was incorrect" : "ARC Task Examiner"}
           </p>
         </div>
         
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant={showEmojis ? "default" : "outline"}
             size="sm"
@@ -344,70 +344,292 @@ export default function PuzzleExaminer() {
       </div>
 
 
-      {/* Complete Puzzle Pattern */}
-      <CollapsibleCard
-        title="Complete Puzzle Pattern"
-        icon={Grid3X3}
-        defaultOpen={true}
-        headerDescription={
-          <p className="text-sm text-gray-600">Training examples show the pattern, test case shows the question and correct answer</p>
-        }
-      >
-        <div className="space-y-8">
-          {/* Training Examples */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              Training Examples 
-              <Badge variant="outline">{task.train.length} examples</Badge>
-            </h3>
-            <div className="space-y-4">
-              {task.train.map((example, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-3">
-                  <h4 className="text-sm font-medium mb-2 text-center">Example {index + 1}</h4>
-                  <div className="flex items-center justify-center gap-6">
-                    <PuzzleGrid 
-                      grid={example.input}
-                      title="Input"  
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                    />
-                    <div className="text-3xl text-gray-400">→</div>
-                    <PuzzleGrid 
-                      grid={example.output}
-                      title="Output"
-                      showEmojis={showEmojis}
-                      emojiSet={emojiSet}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Test Case */}
-          <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold mb-3 text-center">Test Case & Correct Answer</h3>
-            {task.test.map((testCase, index) => (
-              <div key={index} className="flex items-center justify-center gap-6">
-                <PuzzleGrid 
-                  grid={testCase.input}
-                  title="Test Question"
-                  showEmojis={showEmojis}
-                  emojiSet={emojiSet}
-                />
-                <div className="text-3xl text-green-600">→</div>
-                <PuzzleGrid 
-                  grid={testCase.output}
-                  title="Correct Answer"
-                  showEmojis={showEmojis}
-                  emojiSet={emojiSet}
-                  highlight={true}
-                />
-              </div>
-            ))}
-          </div>
+      {/* Puzzle Overview - Tiered Responsive Layout System */}
+      <div className="bg-white border border-gray-200 rounded p-2">
+        <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+          <Grid3X3 className="h-4 w-4" />
+          Puzzle Grids
+          <span className="text-xs font-normal text-gray-500">
+            ({task.train.length} train, {task.test.length} test)
+          </span>
         </div>
-      </CollapsibleCard>
+
+        {/* TRAINING EXAMPLES - Stratified Layout */}
+        <div className="mb-3">
+          <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
+            <span className="inline-block w-1 h-1 rounded-full bg-blue-500"></span>
+            Training
+          </div>
+          
+          {(() => {
+            // Pre-computation: Classify pairs into buckets based on dimensions
+            const standardPairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            const widePairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            const tallPairs: Array<{example: typeof task.train[0], idx: number}> = [];
+            
+            task.train.forEach((example, idx) => {
+              const inputRows = example.input.length;
+              const inputCols = example.input[0]?.length || 0;
+              const outputRows = example.output.length;
+              const outputCols = example.output[0]?.length || 0;
+              
+              const maxHeight = Math.max(inputRows, outputRows);
+              const combinedWidth = inputCols + outputCols;
+              const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
+              
+              // Classification logic
+              if (maxHeight > 20) {
+                tallPairs.push({ example, idx });
+              } else if (combinedWidth > 40 || maxDim > 18) {
+                widePairs.push({ example, idx });
+              } else {
+                standardPairs.push({ example, idx });
+              }
+            });
+            
+            return (
+              <div className="space-y-2">
+                {/* Standard Pairs: Flex wrap with align-items-start */}
+                {standardPairs.length > 0 && (
+                  <div className="flex flex-wrap gap-1 items-start">
+                    {standardPairs.map(({ example, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 max-w-[400px]"
+                      >
+                        <PuzzleGrid 
+                          grid={example.input}
+                          title={`Training Example ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={example.output}
+                          title={`Training Example ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Wide Pairs: Full-width blocks */}
+                {widePairs.length > 0 && (
+                  <div className="space-y-1">
+                    {widePairs.map(({ example, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 w-full"
+                      >
+                        <PuzzleGrid 
+                          grid={example.input}
+                          title={`Training Example ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={example.output}
+                          title={`Training Example ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Tall Pairs: Horizontal scroll */}
+                {tallPairs.length > 0 && (
+                  <div className="overflow-x-auto -mx-2 px-2">
+                    <div className="flex gap-1" style={{ width: 'max-content' }}>
+                      {tallPairs.map(({ example, idx }) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center gap-0.5 p-1 flex-shrink-0"
+                        >
+                          <PuzzleGrid 
+                            grid={example.input}
+                            title={`Training Example ${idx + 1} Input`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                          <span className="text-xs text-gray-400">→</span>
+                          <PuzzleGrid 
+                            grid={example.output}
+                            title={`Training Example ${idx + 1} Output`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* TEST CASES - Stratified Layout */}
+        <div>
+          <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
+            <span className="inline-block w-1 h-1 rounded-full bg-green-500"></span>
+            Test
+          </div>
+          
+          {(() => {
+            // Pre-computation: Classify test pairs
+            const standardPairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            const widePairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            const tallPairs: Array<{testCase: typeof task.test[0], idx: number}> = [];
+            
+            task.test.forEach((testCase, idx) => {
+              const inputRows = testCase.input.length;
+              const inputCols = testCase.input[0]?.length || 0;
+              const outputRows = testCase.output.length;
+              const outputCols = testCase.output[0]?.length || 0;
+              
+              const maxHeight = Math.max(inputRows, outputRows);
+              const combinedWidth = inputCols + outputCols;
+              const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
+              
+              if (maxHeight > 20) {
+                tallPairs.push({ testCase, idx });
+              } else if (combinedWidth > 40 || maxDim > 18) {
+                widePairs.push({ testCase, idx });
+              } else {
+                standardPairs.push({ testCase, idx });
+              }
+            });
+            
+            return (
+              <div className="space-y-2">
+                {/* Standard Test Pairs */}
+                {standardPairs.length > 0 && (
+                  <div className="flex flex-wrap gap-1 items-start">
+                    {standardPairs.map(({ testCase, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 max-w-[400px]"
+                      >
+                        <PuzzleGrid 
+                          grid={testCase.input}
+                          title={`Test ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={testCase.output}
+                          title={`Test ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          highlight={true}
+                          compact={true}
+                          maxWidth={180}
+                          maxHeight={180}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Wide Test Pairs */}
+                {widePairs.length > 0 && (
+                  <div className="space-y-1">
+                    {widePairs.map(({ testCase, idx }) => (
+                      <div 
+                        key={idx}
+                        className="flex items-start gap-0.5 p-1 w-full"
+                      >
+                        <PuzzleGrid 
+                          grid={testCase.input}
+                          title={`Test ${idx + 1} Input`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                        <span className="text-xs text-gray-400 self-center">→</span>
+                        <PuzzleGrid 
+                          grid={testCase.output}
+                          title={`Test ${idx + 1} Output`}
+                          showEmojis={showEmojis}
+                          emojiSet={emojiSet}
+                          highlight={true}
+                          compact={true}
+                          maxWidth={300}
+                          maxHeight={250}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Tall Test Pairs */}
+                {tallPairs.length > 0 && (
+                  <div className="overflow-x-auto -mx-2 px-2">
+                    <div className="flex gap-1" style={{ width: 'max-content' }}>
+                      {tallPairs.map(({ testCase, idx }) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center gap-0.5 p-1 flex-shrink-0"
+                        >
+                          <PuzzleGrid 
+                            grid={testCase.input}
+                            title={`Test ${idx + 1} Input`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                          <span className="text-xs text-gray-400">→</span>
+                          <PuzzleGrid 
+                            grid={testCase.output}
+                            title={`Test ${idx + 1} Output`}
+                            showEmojis={showEmojis}
+                            emojiSet={emojiSet}
+                            highlight={true}
+                            compact={true}
+                            maxWidth={250}
+                            maxHeight={400}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      </div>
 
       {/* Prompt Style */}
       <CollapsibleCard
@@ -704,10 +926,10 @@ export default function PuzzleExaminer() {
       {/* Analysis Results - THE FOCUS OF THE PAGE (separate from AI Model Testing) */}
       {(allResults.length > 0 || isAnalyzing) && (
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Brain className="h-4 w-4" />
                 Analysis Results ({explanations.length})
               </CardTitle>
                 
@@ -745,18 +967,18 @@ export default function PuzzleExaminer() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-2">
               {/* Show loading state when analysis is in progress */}
               {isAnalyzing && (
-                <div className="mb-3 p-4 border rounded-lg bg-blue-50 border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                <div className="mb-2 p-2 border rounded bg-blue-50 border-blue-200">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                     <div>
-                      <p className="text-sm font-medium text-blue-800">
+                      <p className="text-xs font-medium text-blue-800">
                         Analysis in progress...
                       </p>
                       {currentModel && (
-                        <p className="text-xs text-blue-600">
+                        <p className="text-[10px] text-blue-600">
                           Running {currentModel.name}
                           {currentModel.responseTime && (
                             <span className="ml-2">
@@ -772,7 +994,7 @@ export default function PuzzleExaminer() {
 
               {/* Show existing results */}
               {filteredResults.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {filteredResults.map((result) => (
                     <AnalysisResultCard
                       key={`${result.id}-${result.modelName}`}

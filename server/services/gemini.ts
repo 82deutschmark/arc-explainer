@@ -53,7 +53,8 @@ export class GeminiService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
     // Build prompt package using inherited method
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     
     // Log analysis start using inherited method
     this.logAnalysisStart(modelKey, temperature, promptPackage.userPrompt.length, serviceOpts);
@@ -63,7 +64,8 @@ export class GeminiService extends BaseAIService {
       if (options?.candidateCount) {
         (serviceOpts as any).candidateCount = options.candidateCount;
       }
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, taskId, options);
+      const testCount = task.test.length;
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount, taskId, options);
       
       // Parse response using provider-specific method
       const { result, tokenUsage, reasoningLog, reasoningItems } = 
@@ -121,7 +123,8 @@ export class GeminiService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey) || modelKey;
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
@@ -211,6 +214,7 @@ export class GeminiService extends BaseAIService {
     modelKey: string,
     temperature: number,
     serviceOpts: ServiceOptions,
+    testCount: number,
     taskId?: string,
     options?: PromptOptions
   ): Promise<any> {

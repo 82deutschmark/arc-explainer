@@ -18,13 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { CollapsibleCard } from '@/components/ui/collapsible-card';
 import { Brain, Loader2, AlertTriangle, Search, Sparkles, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Refinement-specific components
-import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
-import { PredictionIteration } from '@/components/puzzle/PredictionCard';
-import { RefinementThread } from '@/components/puzzle/refinement/RefinementThread';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
+import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
+import { ProfessionalRefinementUI } from '@/components/puzzle/refinement/ProfessionalRefinementUI';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { AnalysisSelector } from '@/components/puzzle/refinement/AnalysisSelector';
 
@@ -76,6 +77,8 @@ export default function PuzzleDiscussion() {
     analyzerErrors,
     promptId,
     setPromptId,
+    customPrompt,
+    setCustomPrompt,
     temperature,
     setTemperature,
     isGPT5ReasoningModel,
@@ -86,8 +89,11 @@ export default function PuzzleDiscussion() {
     reasoningSummaryType,
     setReasoningSummaryType,
     topP,
+    setTopP,
     candidateCount,
+    setCandidateCount,
     thinkingBudget,
+    setThinkingBudget,
     streamingModelKey,
     streamStatus,
     streamingText,
@@ -100,7 +106,7 @@ export default function PuzzleDiscussion() {
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
-    omitAnswer: false,
+    omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode to prevent data leakage
     originalExplanation: selectedExplanation,
     customChallenge: refinementState.userGuidance,
     previousResponseId: refinementState.getLastResponseId() // Single-model chaining
@@ -226,14 +232,31 @@ export default function PuzzleDiscussion() {
 
   // Auto-start refinement when ?select= parameter is present
   useEffect(() => {
-    if (selectId && explanations && !refinementState.isRefinementActive) {
+    // Only attempt auto-selection when:
+    // 1. We have a selectId from URL
+    // 2. Explanations are loaded (not loading and exists)
+    // 3. Refinement is not already active (prevent double-activation)
+    if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive) {
+      console.log(`[PuzzleDiscussion] 🔍 Auto-select check: selectId=${selectId}, explanations=${explanations.length}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
+      
       const explanation = explanations.find(e => e.id === selectId);
       if (explanation) {
-        console.log(`[PuzzleDiscussion] Auto-selecting explanation #${selectId} from URL parameter`);
+        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}, starting refinement...`);
+        console.log(`[PuzzleDiscussion] Explanation details: model=${explanation.modelName}, provider=${explanation.providerResponseId ? 'has response ID' : 'NO response ID'}`);
         handleStartRefinement(selectId);
+      } else {
+        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found in ${explanations.length} loaded explanations`);
+        console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
+        toast({
+          title: "Explanation not found",
+          description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
+          variant: "destructive"
+        });
       }
+    } else {
+      console.log(`[PuzzleDiscussion] 🚫 Auto-select skipped: selectId=${selectId}, hasExplanations=${!!explanations}, explanationCount=${explanations?.length ?? 0}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
     }
-  }, [selectId, explanations, refinementState.isRefinementActive]);
+  }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, toast]);
 
   // Loading states
   if (isLoadingTask || isLoadingExplanations) {
@@ -377,26 +400,65 @@ export default function PuzzleDiscussion() {
         </div>
       </div>
 
-      <CompactPuzzleDisplay
-        trainExamples={task!.train}
-        testCases={task!.test}
-        predictions={refinementState.isRefinementActive && refinementState.iterations.length > 0
-          ? refinementState.iterations.map(iter => ({
-              grid: iter.content.predictedOutputGrid || iter.content.multiplePredictedOutputs?.[0] || [[0]],
-              iterationNumber: iter.iterationNumber,
-              isCorrect: determineCorrectness({
-                modelName: iter.content.modelName,
-                isPredictionCorrect: iter.content.isPredictionCorrect,
-                multiTestAllCorrect: iter.content.multiTestAllCorrect,
-                hasMultiplePredictions: iter.content.hasMultiplePredictions
-              }).isCorrect,
-              modelName: iter.content.modelName,
-              timestamp: iter.timestamp
-            } as PredictionIteration))
-          : undefined
+      {/* Compact Puzzle Display */}
+      <CollapsibleCard
+        title="Puzzle Overview"
+        defaultOpen={false}
+        headerDescription={
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Badge variant="outline" className="text-xs">{task!.train.length} training</Badge>
+            <Badge variant="outline" className="text-xs">{task!.test.length} test</Badge>
+          </div>
         }
-        showPredictions={refinementState.isRefinementActive}
-      />
+      >
+        <div className="space-y-3">
+          {/* Training Examples - Compact */}
+          <div>
+            <div className="text-xs font-semibold text-gray-600 mb-1">Training Examples</div>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {task!.train.map((ex, i) => (
+                <div key={i} className="flex gap-1 flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={ex.input} />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">Out</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={ex.output} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Test Cases - Compact */}
+          <div className="border-t pt-2">
+            <div className="text-xs font-semibold text-gray-600 mb-1">Test Cases</div>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {task!.test.map((test, i) => (
+                <div key={i} className="flex gap-1 flex-shrink-0">
+                  <div className="text-center">
+                    <div className="text-[10px] text-gray-500 mb-0.5">In</div>
+                    <div className="w-20 h-20 border border-gray-300 rounded">
+                      <TinyGrid grid={test.input} />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[10px] text-green-600 mb-0.5 font-semibold">✓</div>
+                    <div className="w-20 h-20 border-2 border-green-500 rounded">
+                      <TinyGrid grid={test.output} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CollapsibleCard>
 
       {refinementState.isRefinementActive && explanations ? (
         (() => {
@@ -414,43 +476,50 @@ export default function PuzzleDiscussion() {
           return (
             <>
               {isStreamingActive && refinementState.activeModel && (
-                <div className="mb-4">
-                  <StreamingAnalysisPanel
-                    title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
-                    status={streamingPanelStatus}
-                    phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
-                    message={
-                      streamingPanelStatus === 'failed'
-                        ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
-                        : streamingMessage
-                    }
-                    text={streamingText}
-                    reasoning={streamingReasoning}
-                    tokenUsage={streamingTokenUsage}
-                    onCancel={
-                      streamingPanelStatus === 'in_progress'
-                        ? () => {
-                            cancelStreamingAnalysis();
-                            setPendingStream(null);
-                          }
-                        : undefined
-                    }
-                  />
-                </div>
+                <StreamingAnalysisPanel
+                  title={`Streaming ${streamingModel?.name ?? streamingModelKey ?? 'Refinement'}`}
+                  status={streamingPanelStatus}
+                  phase={typeof streamingPhase === 'string' ? streamingPhase : undefined}
+                  message={
+                    streamingPanelStatus === 'failed'
+                      ? streamError?.message ?? streamingMessage ?? 'Streaming failed'
+                      : streamingMessage
+                  }
+                  text={streamingText}
+                  reasoning={streamingReasoning}
+                  tokenUsage={streamingTokenUsage}
+                  onCancel={
+                    streamingPanelStatus === 'in_progress'
+                      ? () => {
+                          cancelStreamingAnalysis();
+                          setPendingStream(null);
+                        }
+                      : undefined
+                  }
+                />
               )}
-              <RefinementThread
-                originalExplanation={selectedExplanation}
+              <ProfessionalRefinementUI
                 iterations={refinementState.iterations}
                 taskId={taskId}
+                task={task!}
                 testCases={task!.test}
                 models={models}
-                task={task!}
                 activeModel={refinementState.activeModel}
                 userGuidance={refinementState.userGuidance}
                 isProcessing={processingModels.has(refinementState.activeModel)}
                 error={analyzerErrors.get(refinementState.activeModel) || null}
+                promptId={promptId}
+                setPromptId={setPromptId}
+                customPrompt={customPrompt}
+                setCustomPrompt={setCustomPrompt}
                 temperature={temperature}
                 setTemperature={setTemperature}
+                topP={topP}
+                setTopP={setTopP}
+                candidateCount={candidateCount}
+                setCandidateCount={setCandidateCount}
+                thinkingBudget={thinkingBudget}
+                setThinkingBudget={setThinkingBudget}
                 reasoningEffort={reasoningEffort}
                 setReasoningEffort={setReasoningEffort}
                 reasoningVerbosity={reasoningVerbosity}
@@ -458,7 +527,6 @@ export default function PuzzleDiscussion() {
                 reasoningSummaryType={reasoningSummaryType}
                 setReasoningSummaryType={setReasoningSummaryType}
                 isGPT5ReasoningModel={isGPT5ReasoningModel}
-                promptId={promptId}
                 onBackToList={refinementState.endRefinement}
                 onResetRefinement={refinementState.resetRefinement}
                 onUserGuidanceChange={refinementState.setUserGuidance}

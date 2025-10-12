@@ -1,3 +1,655 @@
+## [4.4.6] - 2025-10-11 11:00 PM
+### 🔧 DATABASE CLEANUP: Discussion Mode Data Leakage
+
+**PROBLEM RESOLUTION:**
+Fixed 20 database entries that were incorrectly marked as "correct" due to the data leakage bug documented in v4.4.4.
+
+**AFFECTED ENTRIES:**
+- Date range: 2025-10-08 to 2025-10-11 (before fix at 09:00)
+- Total contaminated: 20 entries out of 588 discussion mode entries
+- All entries had `is_prediction_correct = TRUE` or `multi_test_all_correct = TRUE` but AI had access to test answers
+
+**BREAKDOWN BY MODEL:**
+- grok-4-fast-reasoning: 9 entries
+- gpt-5-mini-2025-08-07: 6 entries
+- gpt-5-2025-08-07: 3 entries
+- grok-4-fast-non-reasoning: 1 entry
+- gpt-4.1-nano-2025-04-14: 1 entry
+
+**FIX APPLIED:**
+```sql
+UPDATE explanations
+SET is_prediction_correct = FALSE, multi_test_all_correct = FALSE
+WHERE id IN (34430, 34420, 34419, 33696, 33680, 30507, 30504, 30193,
+             30074, 30043, 30011, 30003, 29991, 29989, 29983, 29975,
+             29957, 29945, 29885, 29775);
+```
+
+**NEW SCRIPTS:**
+- `server/scripts/audit-discussion-entries.ts` - Read-only audit tool to identify contaminated entries
+- `server/scripts/fix-discussion-data-leakage.ts` - Safe fix with before/after verification
+
+**SCRIPT FEATURES:**
+- Repository pattern for safe database access
+- Before/after state display
+- Complete verification (0 entries still incorrectly marked)
+- No schema changes - only corrected invalid data
+- All other data preserved (trustworthiness scores, confidence, tokens, costs)
+
+**VERIFICATION:**
+```
+Total entries processed: 20
+Now marked INCORRECT: 20
+Still marked CORRECT: 0
+✅ SUCCESS: All contaminated entries fixed!
+```
+
+**AUTHOR:** Claude Code (Sonnet 4.5)
+**PRIORITY:** HIGH - Data integrity restoration
+
+---
+
+## [4.4.5] - 2025-10-11 11:00 PM
+### 🎨 REDESIGN: Professional Data Table Interface for Progressive Reasoning
+
+**DESIGN PHILOSOPHY:** Professional research interface with data-dense tabular presentation, similar to financial terminals, analytics dashboards, and scientific research platforms.
+
+**KEY PRINCIPLES:**
+- **Data First**: Tabular layout showing all key metrics at a glance
+- **Scannable**: Row-based iteration history with expand/collapse for details
+- **Professional**: Matches PuzzleExaminer design patterns for consistency
+- **Metrics Dashboard**: Key statistics prominently displayed (iterations, correct count, tokens)
+- **Expandable Details**: Click to expand full AnalysisResultCard for any iteration
+
+**NEW COMPONENTS:**
+
+**1. IterationDataTable** (`client/src/components/puzzle/refinement/IterationDataTable.tsx`)
+- Professional data table with columns: Iter #, Model, Result, Confidence, Reasoning, Prediction, Pattern Summary, Timestamp
+- TinyGrid preview of predicted output in table cell (80x80px)
+- Color-coded rows: Green tint for correct, red tint for incorrect
+- Click to expand row showing full AnalysisResultCard
+- Hover states and professional styling
+
+**2. ProfessionalRefinementUI** (`client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`)
+- Metrics dashboard at top: Total Iterations | Correct Predictions | Reasoning Tokens | Current Status
+- CollapsibleCard for Advanced Model Parameters (matches PuzzleExaminer pattern)
+- Iteration History table (main focus)
+- Continue Refinement section at bottom with user guidance textarea
+- Success alert when correct answer achieved
+
+**3. Standard Puzzle Display** (PuzzleDiscussion.tsx)
+- Uses regular PuzzleGrid components (not toy-sized TinyGrid)
+- Training examples + Test cases in standard grid layout
+- Professional spacing and labeling
+- Matches PuzzleExaminer grid display pattern
+
+**KEY METRICS DISPLAYED:**
+1. **Total Iterations**: How many refinement cycles
+2. **Correct Predictions**: Count of iterations that got correct answer
+3. **Reasoning Tokens**: Cumulative tokens used across all iterations
+4. **Current Status**: Badge showing if latest iteration is correct (✓/✗)
+
+**TABLE COLUMNS:**
+- Expand/Collapse toggle
+- Iteration number (font-mono)
+- Model name (badge)
+- Result (Correct/Incorrect badge with icon)
+- Confidence percentage
+- Reasoning tokens (if available)
+- Predicted grid (TinyGrid preview)
+- Pattern summary (truncated to 100 chars)
+- Timestamp (formatted)
+
+**USER EXPERIENCE:**
+- Scan table to see progression across iterations
+- Identify which iterations were correct at a glance
+- Compare predictions visually in grid column
+- Expand any row to see full AnalysisResultCard details
+- Professional, data-focused interface for research analysis
+
+**BENEFITS:**
+- **Consistency**: Matches existing PuzzleExaminer interface patterns
+- **Data Density**: See 10+ iterations without scrolling
+- **Professional**: Looks like a research/analytics platform, not consumer app
+- **Expandable**: Full details available on demand
+- **Scannable**: Table format allows quick visual scanning
+
+**FILES CREATED:**
+- `client/src/components/puzzle/refinement/IterationDataTable.tsx`
+- `client/src/components/puzzle/refinement/ProfessionalRefinementUI.tsx`
+
+**FILES MODIFIED:**
+- `client/src/pages/PuzzleDiscussion.tsx` (uses ProfessionalRefinementUI)
+
+**DESIGN PATTERN:**
+Matches PuzzleExaminer's professional layout:
+- Card-based sections
+- CollapsibleCard for advanced controls
+- Data tables with expand/collapse
+- Metrics prominently displayed
+- Clean gray/white color scheme with accent colors for status
+
+**Author:** Cascade using Sonnet 4.5  
+**Priority:** HIGH - Professional UX for research workflow
+
+---
+
+## [4.4.4] - 2025-10-11 10:15 PM
+### 🚨 CRITICAL SECURITY FIX: Progressive Reasoning Data Leakage
+
+**SEVERITY:** CRITICAL - Invalidates all previous progressive reasoning results
+
+**PROBLEM:**
+`PuzzleDiscussion.tsx` was sending **test puzzle answers to the AI on every turn**, completely invalidating the progressive reasoning workflow. The AI wasn't "refining" its analysis through reasoning - it was just rephrasing answers it already knew.
+
+**ROOT CAUSE:**
+Line 103 in PuzzleDiscussion.tsx: `omitAnswer: false`
+
+This caused the prompt builder to include test outputs in every API call:
+```
+Test 1 Input: [[0,0],[1,1]]
+Correct Answer: [[1,1],[0,0]]  ⚠️ LEAKED TO AI!
+```
+
+**DATA FLOW:**
+1. PuzzleDiscussion sets `omitAnswer: false`
+2. useAnalysisResults passes to analysis service
+3. puzzleAnalysisService passes to prompt builder
+4. promptBuilder calculates `includeAnswers = !omitAnswer = true`
+5. grids.ts formatTestSection() includes test outputs (line 172-174)
+
+**IMPACT:**
+- ❌ All progressive reasoning results via UI are scientifically invalid
+- ❌ Cannot distinguish genuine improvement from answer memorization
+- ✅ Script version (`grok-4-progressive-reasoning.ts`) was CORRECT - had `omitAnswer: true`
+
+**FIX:**
+```typescript
+// PuzzleDiscussion.tsx Line 103
+omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode
+```
+
+**DATABASE CONTAMINATION:**
+All explanations with `prompt_template_id = 'discussion'` created before this fix are invalid.
+
+**DOCUMENTATION:**
+Created comprehensive analysis: `docs/CRITICAL-PROGRESSIVE-REASONING-DATA-LEAKAGE.md`
+
+**ADDITIONAL ISSUES IDENTIFIED:**
+1. Continuation turns still resend full puzzle data (wastes 600+ tokens)
+2. PuzzleDiscussion component is 574-line god component (SRP violation)
+3. No integration tests for data leakage prevention
+4. Three different progressive reasoning implementations (UI, script, debate)
+
+**FILES MODIFIED:**
+- `client/src/pages/PuzzleDiscussion.tsx` (Line 103)
+- `docs/CRITICAL-PROGRESSIVE-REASONING-DATA-LEAKAGE.md` (New)
+
+**VERIFICATION:**
+Check server logs for:
+```
+🔒 DATA LEAKAGE CHECK:
+   - includeAnswers: false (✅ Test outputs withheld)
+```
+
+**IMMEDIATE ACTIONS REQUIRED:**
+1. ✅ Fix applied - test answers now withheld
+2. ✅ Database cleanup completed (see v4.4.6 below)
+3. ⏳ Add integration tests
+4. ⏳ Optimize continuation prompts
+5. ⏳ Refactor PuzzleDiscussion component
+
+**Author:** Cascade using Sonnet 4.5  
+**Priority:** CRITICAL - Deploy immediately
+
+---
+
+## [4.4.3] - 2025-10-11 09:45 PM
+### CRITICAL FIX: Data Leakage Logging & URL Parameter Selection
+
+**PROBLEM 1: Missing Critical Data Leakage Visibility**
+Prompt system logs showed irrelevant info (alien mode) but did NOT show whether test outputs were being sent to the AI, making it impossible to verify data leakage prevention.
+
+**PROBLEM 2: URL ?select= Parameter Not Working**
+Navigation to `/discussion/{puzzleId}?select={explanationId}` showed the full list of eligible explanations instead of immediately activating refinement for the specified explanation.
+
+**SOLUTION:**
+
+**1. Enhanced Prompt Data Leakage Logging** (`server/services/promptBuilder.ts`):
+```
+🔒 DATA LEAKAGE CHECK:
+   - Solver Mode: true (NO answers sent)
+   - omitAnswer: false
+   - includeAnswers: false (✅ Test outputs withheld)
+   - Mode: discussion (Custom: false, Alien: false)
+```
+
+**Key Metrics Logged:**
+- `isSolverMode`: Whether answers should never be sent (true for most modes)
+- `omitAnswer`: User-controlled flag to withhold answers
+- `includeAnswers`: **Critical computed flag** - shows if test outputs will be sent to AI
+- Clear visual indicators: ✅ for safe, ⚠️ for data leakage
+
+**2. Enhanced URL Parameter Auto-Selection** (`client/src/pages/PuzzleDiscussion.tsx`):
+- Added detailed logging at every step of auto-selection process
+- Shows selectId, available explanation IDs, loading state, active state
+- Clear error messages if explanation not found
+- Tracks why auto-selection is skipped (no selectId, loading, already active)
+
+**IMPACT:**
+- ✅ **Security:** Developers can now verify data leakage prevention in real-time
+- ✅ **Debugging:** Clear visibility into prompt construction and answer inclusion
+- ✅ **UX:** Better error messages for URL parameter issues
+- ✅ **Traceability:** Full audit trail of auto-selection logic
+
+**FILES MODIFIED:**
+- `server/services/promptBuilder.ts` (lines 112-124)
+- `client/src/pages/PuzzleDiscussion.tsx` (lines 227-253)
+
+**Author:** Cascade using Claude Sonnet 3.5  
+**Next:** Test with actual puzzle to verify logging output
+
+---
+
+## [4.4.2] - 2025-10-11 09:30 PM
+### HOTFIX: Restore Readable Sizing to Advanced Controls
+
+**PROBLEM:**
+v3.7.8.1 reduced Advanced Controls by 80% which made them unusable:
+- 8px-9px fonts (unreadable on most screens)
+- 20px button heights (too small for accurate clicking)  
+- 2.5px icons (barely visible)
+- Overall poor UX due to over-aggressive size reduction
+
+**SOLUTION:**
+Increased to standard readable sizes while maintaining compact design:
+- **Fonts:** 8px-9px → `text-xs` (12px) for all labels and text
+- **Buttons:** `h-5` (20px) → `h-8` (32px) for better clickability
+- **Icons:** `h-2.5/w-2.5` → `h-3.5/w-3.5` and `h-4/w-4` for visibility
+- **Padding:** `p-1` → `p-2` for breathing room
+- **Gaps:** `gap-0.5/gap-1` → `gap-1.5/gap-2` for visual clarity
+- **Section title:** "Advanced" → "Advanced Controls" (restored full label)
+- **Button text:** "Preview" → "Preview Prompt" (restored clarity)
+- **Slider max-width:** 200px → `max-w-xs` (320px) for easier interaction
+
+**IMPACT:**
+- ✅ Controls now readable and clickable
+- ✅ Maintains compact design without sacrificing usability
+- ✅ Temperature slider easier to adjust with precision
+- ✅ GPT-5 reasoning selects clearly labeled and sized
+- ✅ Better accessibility and user experience
+
+**FILES MODIFIED:**
+- `client/src/components/puzzle/refinement/RefinementThread.tsx` (lines 206-310)
+
+**Author:** Cascade using Claude Sonnet 3.5  
+**Commit:** 6d825ea9
+
+---
+
+## [4.4.1] - 2025-10-11 09:00 PM
+### HOTFIX: OpenAI Schema Strict Mode Compliance
+
+**CRITICAL BUG FIXED:**
+OpenAI's `strict: true` mode requires ALL fields in `properties` to be in the `required` array. Our schemas were adding optional analysis fields (solvingStrategy, patternDescription, hints, confidence) to properties but NOT to required, causing validation errors.
+
+**Error Message:**
+```
+"Invalid schema for response_format 'arc_analysis': 
+'required' is required to be supplied and to be an array 
+including every key in properties. Missing 'solvingStrategy'."
+```
+
+**Root Cause:**
+- `buildCoreSchema()` added `OPTIONAL_ANALYSIS_FIELDS` to properties
+- But only prediction grids were added to required array
+- OpenAI strict mode: if field exists in properties → MUST be in required
+
+**Solution:**
+- Added `includeOptionalFields` parameter to `buildCoreSchema()` (default: false)
+- OpenAI wrapper: `buildCoreSchema(testCount, false)` - excludes optional fields
+- Grok wrapper: Also updated to exclude optional fields (same constraint)
+- **Impact:** Prediction grids strictly enforced, analysis fields flexible
+- **Note:** AI can still return solvingStrategy, hints, etc. - just not schema-enforced
+
+**Files Modified:**
+- `server/services/schemas/core.ts` - Added includeOptionalFields parameter
+- `server/services/schemas/providers/openai.ts` - Pass false to exclude optionals
+- `server/services/schemas/providers/grok.ts` - Removed OPTIONAL_ANALYSIS_FIELDS
+
+**Why This Approach:**
+- OpenAI/xAI Responses API don't support truly optional fields in strict mode
+- We want prediction grids to be REQUIRED (core functionality)
+- Analysis fields should be flexible (nice-to-have)
+- Solution: Only schema-enforce prediction grids, let analysis fields flow through naturally
+
+---
+
+## [4.4.0] - 2025-10-11 08:30 PM
+### Phase 12: Test-Count-Aware Prompt Integration - COMPLETE
+
+**BREAKING CHANGES:**
+- System prompt functions now accept `testCount` and `hasStructuredOutput` parameters
+- All parameters have safe defaults for backward compatibility
+
+**Core Prompt System Updates:**
+- ✅ `buildSystemPrompt()`: Added `testCount` and `hasStructuredOutput` params (defaults: 1, false)
+- ✅ `getSystemPrompt()`: Now accepts and forwards `testCount` and `hasStructuredOutput`
+- ✅ `buildAnalysisPrompt()`: Extracts `testCount` from `task.test.length` early
+- ✅ `BaseAIService.buildPromptPackage()`: Detects structured output via `supportsStructuredOutput(modelKey)`
+
+**Provider Integration (All 8 Services):**
+- ✅ OpenAI: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Grok: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Anthropic: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Gemini: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ DeepSeek: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ OpenRouter: Updated to pass `modelKey` to `buildPromptPackage()`
+- ✅ Saturn: Inherits from BaseAIService (already compatible)
+- ✅ Grover: Inherits from BaseAIService (already compatible)
+
+**Result - Dynamic Prompt Instructions:**
+- **Prompt-based providers** (Anthropic, Gemini, DeepSeek): Now receive detailed, test-count-specific JSON instructions
+  - Single-test puzzle: "predictedOutput: Your predicted output grid..."
+  - 2-test puzzle: "predictedOutput1: ..., predictedOutput2: ..."
+  - Example includes correct number of fields
+- **Structured output providers** (OpenAI, Grok): Still receive minimal instructions
+  - Schema enforcement handles structure
+  - No cognitive overhead from detailed field descriptions
+
+**Logging:**
+- Added log line: "📊 Test count: X, Structured output: true/false"
+- Helps debug which instruction path is taken
+
+**Documentation:**
+- **NEW:** `docs/Phase-12-Prompt-Integration-Plan.md` - Complete implementation plan with step-by-step breakdown
+
+**Impact:**
+- ✅ Eliminates cognitive load from unused fields (no predictedOutput3 when puzzle has 2 tests)
+- ✅ Prompt-based providers get explicit field-level guidance
+- ✅ Structured output providers stay minimal (schema does the work)
+- ✅ Completes the dynamic schema refactor initiated in v4.3.0
+
+**Backward Compatibility:**
+- All new parameters have safe defaults
+- Custom prompts bypass dynamic instructions (unchanged behavior)
+- Existing code continues to function without modifications
+
+---
+
+
+## [4.3.1] - 2025-10-11 07:30 PM
+### Dynamic Schema System - ALL CRITICAL FIXES COMPLETED
+
+**FIXED SCHEMA FILES:**
+- **CREATED:** `server/services/schemas/providers/openai.ts` - Now exports `getOpenAISchema(testCount)`
+- **CREATED:** `server/services/prompts/components/jsonInstructions.ts` - Now exports prompt instruction builders
+- **FIXED:** `server/services/prompts/components/promptBuilder.ts` - Updated to use `buildMinimalJsonInstructions()`
+- **FIXED:** `server/services/schemas/providers/grok.ts` - Removed min/max constraints (Grok doesn't support them)
+  - Old schema used `{ type: "integer" }` without constraints
+  - New dynamic schema now matches: no `minimum: 0, maximum: 9` for Grok
+  - OpenAI schema still uses constraints (OpenAI supports them)
+
+**FIXED FRONTEND ERRORS:**
+- **FIXED:** `client/src/pages/ModelBrowser.tsx` - Replaced all `solved`/`failed` references with `correct`/`incorrect`
+  - Line 275: `performance.summary.solved` → `performance.summary.correct`
+  - Line 280: `performance.summary.failed` → `performance.summary.incorrect`
+  - Lines 305-329: All `performance.solved` → `performance.correct`, `performance.failed` → `performance.incorrect`
+  - Added TypeScript type annotations to map() callbacks
+
+**FIXED UTILITY ERRORS:**
+- **FIXED:** `client/src/utils/modelComparison.ts` - Added explicit type to reduce() accumulator
+  - Line 39: `reduce((total: number, value) => ...)`
+
+**FIXED LOGGER ERRORS:**
+- **FIXED:** `server/controllers/saturnController.ts` - Used `logger.logError()` instead of `logger.error()`
+- **FIXED:** `server/services/streaming/groverStreamService.ts` - Fixed logger call and removed invalid `maxSteps` property
+- **FIXED:** `server/services/streaming/saturnStreamService.ts` - Used `logger.logError()` with proper error options
+
+**Current Status:**
+- ✅ Core schema generation working (`core.ts`, `providers/openai.ts`, `providers/grok.ts`)
+- ✅ Grok schema respects xAI API constraints (no min/max on integers)
+- ✅ All 8 AI service providers updated with testCount parameter
+- ✅ Validators updated to detect numbered fields without boolean flags
+- ✅ Schema files archived (`arcJsonSchema.ts.archived.md`, etc.)
+- ✅ All TypeScript compilation errors fixed
+- ⚠️ **INCOMPLETE:** Prompt system NOT yet using test-count-aware instructions
+  - `promptBuilder.ts` uses `buildMinimalJsonInstructions()` for all cases
+  - `buildJsonInstructions(testCount, hasStructuredOutput)` exists but NOT integrated
+  - Prompt-based providers (Anthropic, Gemini) still get generic instructions
+
+**What's Working:**
+- OpenAI: Dynamic schemas with min/max constraints enforce correct fields
+- Grok: Dynamic schemas WITHOUT constraints (respects xAI API limitations)
+- Validators: Correctly extract numbered fields (predictedOutput1, predictedOutput2)
+- Frontend: No more TypeScript errors, correct terminology (correct/incorrect not solved/failed)
+
+**What's NOT Working:**
+- Anthropic, Gemini, DeepSeek: Still receive generic JSON instructions (not test-count-specific)
+- No integration between `buildAnalysisPrompt()` and `buildJsonInstructions(testCount, ...)`
+
+**Next Steps (Phase 12):**
+- Integrate test-count-aware prompt instructions into `buildAnalysisPrompt()`
+- Ensure prompt-based providers get detailed field-specific instructions
+- Test end-to-end with all providers
+
+---
+
+
+## [4.3.0] - 2025-10-11 05:50 PM
+
+
+
+
+### Dynamic Schema System - Test-Count Adaptation
+
+**BREAKING CHANGES:**
+- All provider services now require `testCount` parameter in `callProviderAPI()`
+- Replaced static schema constants with dynamic schema generation functions
+- Provider schemas now adapt to actual test count instead of forcing all possible fields
+
+**Core Architecture:**
+- **NEW:** `server/services/schemas/core.ts` - Single source of truth for prediction schemas
+  - `buildCoreSchema(testCount)` - Dynamically generates schemas based on actual test count
+  - Single test: requires only `predictedOutput` field
+  - Multi-test: requires exactly `predictedOutput1`, `predictedOutput2`, etc. (no unused fields)
+  - All analysis fields optional (solvingStrategy, patternDescription, hints, confidence)
+
+- **NEW:** `server/services/schemas/providers/openai.ts` - OpenAI Responses API format wrapper
+  - `getOpenAISchema(testCount)` - Wraps core schema with {name, strict, schema} format
+  - Replaces static `ARC_JSON_SCHEMA` constant
+
+- **NEW:** `server/services/schemas/providers/grok.ts` - xAI Responses API format wrapper
+  - `getGrokSchema(testCount)` - Wraps core schema with {schema} format (no name/strict)
+  - Replaces static `GROK_JSON_SCHEMA` constant
+
+**Prompt System Updates:**
+- **UPDATED:** `server/services/prompts/components/jsonInstructions.ts`
+  - `buildJsonInstructions(testCount, hasStructuredOutput)` - Now context-aware
+  - Structured output providers (OpenAI, Grok): Minimal instructions (schema enforces structure)
+  - Prompt-based providers (Anthropic, Gemini): Detailed field-specific instructions
+  - Single test: Only mentions `predictedOutput`
+  - Multi test: Lists exact fields needed (predictedOutput1, predictedOutput2, etc.)
+
+- **UPDATED:** `server/services/prompts/components/promptBuilder.ts`
+  - `buildSystemPrompt()` predictionInstructions now optional (callers provide context-specific instructions)
+
+**Base Service Layer:**
+- **UPDATED:** `server/services/base/BaseAIService.ts`
+  - `callProviderAPI()` signature now includes `testCount: number` parameter
+  - `supportsStructuredOutput(modelKey)` helper method added
+  - `getSchemaForModel(modelKey, testCount)` helper method added (overridable by providers)
+
+**Provider Updates:**
+All AI service providers updated to use dynamic schemas:
+
+- **OpenAI Service** (`server/services/openai.ts`):
+  - Extracts `testCount = task.test.length` before API calls
+  - Uses `getOpenAISchema(testCount)` in `buildResponsesRequestBody()` and `callResponsesAPI()`
+  - Streaming and non-streaming paths both use dynamic schema
+  - Overrides `getSchemaForModel()` to return OpenAI-formatted schema
+
+- **Grok Service** (`server/services/grok.ts`):
+  - Extracts `testCount` for both streaming and non-streaming analysis
+  - Uses `getGrokSchema(testCount)` in response_format for Responses API
+  - Preview generation uses dynamic schema
+  - Removed private `supportsStructuredOutput()` (inherited from BaseAIService)
+
+- **Anthropic Service** (`server/services/anthropic.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation (no schema parameter in API)
+
+- **Gemini Service** (`server/services/gemini.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation (no schema parameter in API)
+
+- **DeepSeek Service** (`server/services/deepseek.ts`):
+  - Passes `testCount` through callProviderAPI
+  - Prompt-based validation
+
+- **OpenRouter Service** (`server/services/openrouter.ts`):
+  - Extracts `testCount` and passes through API call chain
+  - Handles heterogeneous provider capabilities
+  - Continuation support maintained
+
+- **Saturn & Grover Services**:
+  - Updated `callProviderAPI()` signature for interface compliance
+  - These services delegate to underlying providers
+
+**Schema File Updates:**
+- **DEPRECATED:** `server/services/schemas/arcJsonSchema.ts` - Now thin wrapper with deprecation notice
+- **DEPRECATED:** `server/services/schemas/grokJsonSchema.ts` - Now thin wrapper with deprecation notice
+- Both export dynamic functions for backward compatibility
+
+**Benefits:**
+1. **Cognitive Load Reduction**: Models only see fields they need to populate
+2. **Context Intelligence**: System adapts to what it already knows (test count from puzzle data)
+3. **Provider Flexibility**: Structured output providers (OpenAI/Grok) vs prompt-based (Anthropic/Gemini) handled correctly
+4. **DRY Compliance**: Single core schema builder, provider-specific wrappers
+5. **Continuation Safety**: Dynamic schema generation works correctly with Responses API chaining
+6. **Maintainability**: Schema changes in ONE place propagate automatically
+
+**No Breaking Changes for:**
+- Database schema (unchanged)
+- Response validation (`responseValidator.ts`, `streamingValidator.ts` already flexible)
+- Frontend (client-side code unchanged)
+
+**Documentation:**
+- Created `docs/Schema-Refactor-Plan-2025-10-11.md` with complete implementation roadmap
+- Plan tracks 12 phases, first 5 phases completed
+
+**Next Steps:**
+- Phase 6-12: Validation integration, schema consolidation, comprehensive testing
+
+---
+
+## [4.2.5] - 2025-10-11 04:35 PM
+### Simplified Grok JSON Schema
+
+**Fixed:**
+- Removed complex multi-prediction support from Grok schema
+- Simplified predictedOutput* field descriptions to be more direct
+- Made solvingStrategy description child-friendly
+- Removed unnecessary multiplePredictedOutputs field
+- Fixed TypeScript syntax error (extra brace)
+
+**Result:** Cleaner, more straightforward schema matching actual usage patterns.
+
+---
+
+## [4.2.4] - 2025-10-11 03:47 PM
+### Grid Display Component Modularization
+
+**Added:**
+- 7 new modular grid components in `client/src/components/puzzle/`:
+  - `grids/GridDisplay.tsx`, `InputGridDisplay.tsx`, `OutputGridDisplay.tsx`
+  - `testcases/TestCaseCard.tsx`, `TestCaseGallery.tsx`, `TestCaseZoomModal.tsx`
+
+**Changed:**
+- `CompactPuzzleDisplay.tsx`: Replaced 52 lines of inline JSX with `<TestCaseGallery>` (197→145 lines)
+- `TestCaseViewer.tsx`: Now uses `GridDisplay` instead of direct `PuzzleGrid` calls
+
+**Benefits:**
+- All grid rendering centralized in reusable components following SRP/DRY
+- PuzzleDiscussion and PuzzleExaminer now share same modular grid architecture
+- Better React memoization and performance optimization
+- Components independently reusable across app (analytics, batch testing, etc.)
+
+---
+
+## [4.2.3] - 2025-10-11 01:11 PM
+## PuzzleDiscussion & CompactPuzzleDisplay UX Fixes
+
+### Fixed
+- **CRITICAL: "Refine This Analysis" Navigation Bug**
+  - **Problem**: Clicking "Refine This Analysis" badge set correct URL parameter (`?select={id}`) but failed to auto-select the explanation
+  - **Root Cause**: Race condition in auto-selection useEffect - ran before explanations were loaded
+  - **Solution**: Added `isLoadingExplanations` guard and proper null checks to ensure explanations are loaded before attempting auto-selection
+  - **Added**: Error toast notification when explanation ID not found (deleted or ineligible)
+  - **Files**: `client/src/pages/PuzzleDiscussion.tsx`
+
+- **CRITICAL: PredictionCard Aspect-Square Destroying Non-Square Grids**
+  - **Problem**: Hardcoded `aspect-square` constraint forced all prediction grids into squares, destroying 1x30, 30x1, and other non-square aspect ratios
+  - **Solution**: Removed aspect-square constraint, added `max-w-[20rem] max-h-[20rem]` with flexbox centering for natural aspect ratios
+  - **Files**: `client/src/components/puzzle/PredictionCard.tsx`
+
+- **CompactPuzzleDisplay Typography & Spacing**
+  - **Problem**: Microscopic fonts (8px-9px) made content unreadable, excessive spacing wasted screen real estate
+  - **Solution**: 
+    - Bumped font sizes from 8px→10px and 9px→11px for readability
+    - Reduced spacing from gap-10→gap-6 and gap-8→gap-4
+    - Added font-medium to Input/Output labels for better hierarchy
+  - **Files**: `client/src/components/puzzle/CompactPuzzleDisplay.tsx`
+
+- **Prediction Evolution → Refinement History Redesign**
+  - **Problem**: Generic title, vertical layout wasted space, tiny fonts made section useless
+  - **Solution**:
+    - Renamed "Prediction Evolution" → "Refinement History" with Brain icon
+    - Changed vertical layout to horizontal scrollable layout for better space utilization
+    - Increased section header from 9px→14px (text-sm font-bold)
+    - Added stronger visual separation with purple-400 border (was purple-300)
+    - Better badge styling with purple-100 background
+  - **Files**: `client/src/components/puzzle/CompactPuzzleDisplay.tsx`, `client/src/components/puzzle/PredictionCard.tsx`
+
+### Technical Details
+- All fixes maintain SRP/DRY principles and shadcn/ui component usage
+- No new dependencies added
+- Backward compatible with existing component usage
+- Improved debugging with console.error for navigation failures
+
+### Files Modified
+- `client/src/pages/PuzzleDiscussion.tsx` - Navigation auto-selection fix
+- `client/src/components/puzzle/PredictionCard.tsx` - Removed aspect-square, improved typography
+- `client/src/components/puzzle/CompactPuzzleDisplay.tsx` - Typography, spacing, and Refinement History redesign
+- `docs/2025-10-11-puzzle-discussion-fixes.md` - Detailed fix plan and testing checklist
+
+---
+
+## [4.2.2] - 2025-10-11 12:45 PM
+## ResponseValidator Refactoring - Code Quality & Reliability Improvements
+### Fixed
+- **Inconsistent null handling**: `calculateTrustworthinessScore` now properly validates confidence parameter before math operations, preventing NaN results and silent failures
+- **Silent failures**: `extractAllGridsFromText` now logs specific parsing errors instead of silently returning empty arrays, making debugging easier
+- **Inefficient regex**: Fixed regex `.exec()` loops by resetting `lastIndex` for global regexes, preventing missed matches on subsequent calls
+- **Misleading naming**: Renamed `predictionAccuracyScore` to `trustworthinessScore` across all interfaces and implementations for clarity and consistency with function naming
+- **Test code in production**: Removed unnecessary test code block from `extractGridFromText` that served no production purpose
+
+### Technical Details
+- **Robustness**: Added finite number checks for confidence values to prevent mathematical errors
+- **Debugging**: Enhanced error logging throughout grid extraction pipeline with specific failure reasons
+- **Performance**: Fixed regex state management to ensure consistent behavior across multiple function calls
+- **Type Safety**: Updated all TypeScript interfaces and implementations to use consistent naming
+- **Code Quality**: Removed dead code and improved maintainability
+
+### Files Modified
+- `server/services/responseValidator.ts` - Core refactoring of validation logic
+- `server/services/puzzleAnalysisService.ts` - Updated property references
+- `server/services/streamingValidator.ts` - Updated property references
+- `server/repositories/interfaces/IExplanationRepository.ts` - Updated interface definitions
+- `server/repositories/ExplanationRepository.ts` - Updated SQL queries and property mappings
+
+---
+
 ## [4.2.1] - 2025-10-11 02:00 AM
 ## Version bump
 ### Fixed

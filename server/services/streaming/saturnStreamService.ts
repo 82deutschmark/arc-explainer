@@ -64,7 +64,7 @@ class SaturnStreamService {
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      logger.error(`[SaturnStream] Failed to run streaming analysis: ${message}`, error);
+      logger.logError(`[SaturnStream] Failed to run streaming analysis: ${message}`, { error, context: 'SaturnStream' });
       sseStreamManager.error(sessionId, 'SATURN_STREAM_ERROR', message);
     }
   }

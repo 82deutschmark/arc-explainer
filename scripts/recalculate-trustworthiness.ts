@@ -106,16 +106,21 @@ function recalculateTrustworthiness(row: DatabaseRow): number {
   // Step 1: Determine correctness
   const isCorrect = determineCorrectness(row);
 
-  // Step 2: Normalize confidence (defaults to 50 if null/undefined)
-  const normalizedConfidence = normalizeConfidence(row.confidence);
+  // Step 2: Use confidence directly (no double normalization)
+  const confidence = row.confidence ?? 50;
 
-  // Step 3: Check if we have confidence data
+  // Fix corrupted entries: if confidence is 0 but trustworthiness is 1.0, recalculate properly
+  if (row.confidence === 0 && row.trustworthiness_score === 1.0) {
+    console.log(`Fixing corrupted entry ${row.id}: confidence=0, trustworthiness=1.0`);
+  }
+
+  // Step 3: Check if we have confidence data (null/undefined only, not 0)
   const hasConfidence = row.confidence !== null && row.confidence !== undefined;
 
   // Step 4: Calculate trustworthiness
   const trustworthiness = calculateTrustworthinessScore(
     isCorrect,
-    normalizedConfidence,
+    confidence,  // Use raw confidence, let calculateTrustworthinessScore handle normalization
     hasConfidence
   );
 
@@ -127,6 +132,7 @@ interface MigrationStats {
   processedCount: number;
   updatedCount: number;
   unchangedCount: number;
+  corruptedCount: number;
   nullConfidenceCount: number;
   correctCount: number;
   incorrectCount: number;
@@ -155,6 +161,7 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
     processedCount: 0,
     updatedCount: 0,
     unchangedCount: 0,
+    corruptedCount: 0,
     nullConfidenceCount: 0,
     correctCount: 0,
     incorrectCount: 0,
@@ -230,8 +237,9 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
           stats.processedCount++;
           trustworthinessSum += newTrustworthiness;
           
-          if (row.confidence === null || row.confidence === undefined) {
-            stats.nullConfidenceCount++;
+          // Track corrupted entries (confidence=0 but trustworthiness=1.0)
+          if (row.confidence === 0 && row.trustworthiness_score === 1.0) {
+            stats.corruptedCount++;
           }
           
           if (determineCorrectness(row)) {
@@ -293,6 +301,7 @@ async function runMigration(dryRun: boolean = false, batchSize: number = 1000): 
     console.log(`Processed:              ${stats.processedCount.toLocaleString()}`);
     console.log(`Updated:                ${stats.updatedCount.toLocaleString()} (${((stats.updatedCount / stats.processedCount) * 100).toFixed(1)}%)`);
     console.log(`Unchanged:              ${stats.unchangedCount.toLocaleString()} (${((stats.unchangedCount / stats.processedCount) * 100).toFixed(1)}%)`);
+    console.log(`Corrupted Fixed:        ${stats.corruptedCount.toLocaleString()} (${((stats.corruptedCount / stats.processedCount) * 100).toFixed(1)}%)`);
     console.log(`Errors:                 ${stats.errors.length}`);
     console.log('');
     console.log('Correctness Distribution:');
@@ -358,7 +367,7 @@ async function verifyDatabaseState(): Promise<void> {
         MIN(trustworthiness_score) as min_trustworthiness,
         MAX(trustworthiness_score) as max_trustworthiness,
         COUNT(*) FILTER (WHERE trustworthiness_score IS NULL) as null_count,
-        COUNT(*) FILTER (WHERE trustworthiness_score = 1.0 AND confidence = 0) as corrupted_count
+        COUNT(*) FILTER (WHERE trustworthiness_score = 1.0 AND confidence = 0 AND (is_prediction_correct = false OR multi_test_all_correct = false)) as corrupted_count
       FROM explanations
     `);
 

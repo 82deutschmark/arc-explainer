@@ -524,7 +524,14 @@ IMPORTANT: Provide your answer as a grid in the exact format with proper JSON st
     };
   }
   
-  protected async callProviderAPI(): Promise<any> {
+  protected async callProviderAPI(
+    _prompt: any,
+    _modelKey: string,
+    _temperature: number,
+    _serviceOpts: any,
+    _testCount: number,
+    _taskId?: string
+  ): Promise<any> {
     throw new Error("Saturn uses underlying services - this should not be called directly");
   }
   

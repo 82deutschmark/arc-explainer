@@ -35,10 +35,13 @@ export class AnthropicService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
+
+    const testCount = task.test.length;
 
     try {
-      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts);
+      const response = await this.callProviderAPI(promptPackage, modelKey, temperature, serviceOpts, testCount);
       const { result, tokenUsage, reasoningLog, reasoningItems, status, incomplete, incompleteReason } = 
         this.parseProviderResponse(response, modelKey, true);
 
@@ -113,7 +116,8 @@ export class AnthropicService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey) || modelKey;
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     
     const systemMessage = promptPackage.systemPrompt;
     const userMessage = promptPackage.userPrompt;
@@ -164,7 +168,9 @@ export class AnthropicService extends BaseAIService {
     promptPackage: PromptPackage,
     modelKey: string,
     temperature: number,
-    serviceOpts: ServiceOptions
+    serviceOpts: ServiceOptions,
+    testCount: number,
+    taskId?: string
   ): Promise<any> {
     const { systemPrompt, userPrompt } = promptPackage;
     const modelConfig = getModelConfig(modelKey);

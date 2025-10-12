@@ -42,14 +42,47 @@ import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePro
 
 /**
  * Map prompt template IDs to their corresponding system prompts
- * Now using the DRY architecture with dedicated custom prompt support
+ * Now using the DRY architecture with Phase 12 test-count-aware instructions
+ * 
+ * @param testCount - Number of test cases in puzzle (for dynamic field instructions)
+ * @param hasStructuredOutput - Whether provider uses schema enforcement
  */
 export const SYSTEM_PROMPT_MAP = {
-  solver: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.solver, additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver }),
-  standardExplanation: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.explanation, additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation }),
-  alienCommunication: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.alienCommunication, additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication }),
-  educationalApproach: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.educational, additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational }),
-  gepa: () => buildSystemPrompt({ taskDescription: TASK_DESCRIPTIONS.gepa, additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa }),
+  solver: (testCount?: number, hasStructuredOutput?: boolean) => 
+    buildSystemPrompt({ 
+      taskDescription: TASK_DESCRIPTIONS.solver, 
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver,
+      testCount,
+      hasStructuredOutput
+    }),
+  standardExplanation: (testCount?: number, hasStructuredOutput?: boolean) => 
+    buildSystemPrompt({ 
+      taskDescription: TASK_DESCRIPTIONS.explanation, 
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation,
+      testCount,
+      hasStructuredOutput
+    }),
+  alienCommunication: (testCount?: number, hasStructuredOutput?: boolean) => 
+    buildSystemPrompt({ 
+      taskDescription: TASK_DESCRIPTIONS.alienCommunication, 
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication,
+      testCount,
+      hasStructuredOutput
+    }),
+  educationalApproach: (testCount?: number, hasStructuredOutput?: boolean) => 
+    buildSystemPrompt({ 
+      taskDescription: TASK_DESCRIPTIONS.educational, 
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational,
+      testCount,
+      hasStructuredOutput
+    }),
+  gepa: (testCount?: number, hasStructuredOutput?: boolean) => 
+    buildSystemPrompt({ 
+      taskDescription: TASK_DESCRIPTIONS.gepa, 
+      additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa,
+      testCount,
+      hasStructuredOutput
+    }),
   debate: () => buildDebatePrompt(), // Uses special builder with debate instructions FIRST
   discussion: () => buildDiscussionPrompt(), // Uses special builder for AI self-refinement
   custom: () => buildCustomPrompt()
@@ -57,10 +90,20 @@ export const SYSTEM_PROMPT_MAP = {
 
 /**
  * Get system prompt for a given template ID
+ * Phase 12: Now accepts testCount and hasStructuredOutput for dynamic instructions
+ * 
+ * @param promptId - Template identifier (solver, explanation, etc.)
+ * @param testCount - Number of test cases in puzzle (optional, defaults to 1)
+ * @param hasStructuredOutput - Whether provider uses structured output (optional, defaults to false)
+ * @returns Complete system prompt string with appropriate JSON instructions
  */
-export function getSystemPrompt(promptId: string): string {
+export function getSystemPrompt(
+  promptId: string, 
+  testCount?: number, 
+  hasStructuredOutput?: boolean
+): string {
   const promptBuilder = SYSTEM_PROMPT_MAP[promptId as keyof typeof SYSTEM_PROMPT_MAP] || SYSTEM_PROMPT_MAP.standardExplanation;
-  return promptBuilder();
+  return promptBuilder(testCount, hasStructuredOutput);
 }
 
 /**

@@ -29,7 +29,7 @@ export function transformExplanation(dbExplanation: DatabaseExplanation): Explan
     saturnSuccess: dbExplanation.saturn_success,
     predictedOutputGrid: dbExplanation.predicted_output_grid,
     isPredictionCorrect: dbExplanation.is_prediction_correct,
-    predictionAccuracyScore: dbExplanation.trustworthiness_score,
+    trustworthinessScore: dbExplanation.trustworthiness_score,
     providerRawResponse: dbExplanation.provider_raw_response,
     reasoningItems: dbExplanation.reasoning_items,
     temperature: dbExplanation.temperature,

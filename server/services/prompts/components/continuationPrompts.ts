@@ -9,7 +9,8 @@
  * These assume the LLM already has full context from the Responses API and only
  * need task-specific instructions, not repeated ARC explanations or JSON rules.
  * 
- * TOKEN SAVINGS: 70% reduction on continuation turns (850 → 250 tokens for Discussion mode)
+ * TOKEN SAVINGS: 70% reduction on continuation turns (850 → 250 tokens for Discussion mode) THIS IS NOT WHAT WE CARE ABOUT!!!!
+ * 
  * 
  * CRITICAL USE CASE: PuzzleDiscussion feature where one model refines its own
  * analysis across multiple iterations. Each iteration should NOT repeat:
@@ -51,7 +52,7 @@ export function buildDiscussionContinuation(
   
   // Minimal reminder of output format (much shorter than full JSON instructions)
   sections.push(
-    `\nProvide your refined analysis in the same JSON format.`
+    `\nProvide your refined analysis in the same format.`
   );
   
   return sections.join('\n');
@@ -80,7 +81,7 @@ export function buildDebateContinuation(
   }
   
   sections.push(
-    `\nProvide your rebuttal in the same JSON format.`
+    `\nProvide your rebuttal in the same format.`
   );
   
   return sections.join('\n');
@@ -96,7 +97,7 @@ export function buildSolverContinuation(
   return [
     `ATTEMPT ${attemptNumber}:`,
     `Your previous prediction was incorrect. Analyze the pattern again with fresh eyes.`,
-    `\nProvide your new prediction in the same JSON format.`
+    `\nProvide your new prediction in the same format.`
   ].join('\n');
 }
 

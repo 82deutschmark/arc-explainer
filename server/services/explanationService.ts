@@ -54,7 +54,7 @@ function transformRawExplanation(sourceData: any, modelKey: string) {
     reasoningLog: finalReasoningLog,
     predictedOutputGrid: analysisData.predictedOutputGrid ?? null,
     isPredictionCorrect: analysisData.isPredictionCorrect ?? false,
-    predictionAccuracyScore: analysisData.predictionAccuracyScore ?? 0,
+    trustworthinessScore: analysisData.trustworthinessScore ?? 0,
     hasMultiplePredictions: hasMultiplePredictions,
     multiplePredictedOutputs: multiplePredictedOutputsForStorage,
     multiTestResults: analysisData.multiTestResults ?? null,

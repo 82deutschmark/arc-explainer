@@ -1,4 +1,4 @@
-/**
+/**OLD AND RARELY USED!!!  DO NOT REFERENCE!
  * server/services/schemas/explanation.ts
  * 
  * JSON schema for explanation mode responses where AI explains why answers are correct.
