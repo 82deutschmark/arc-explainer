@@ -59,6 +59,32 @@ export class SaturnService extends BaseAIService {
     
     // Generate or use provided session ID for WebSocket broadcasting
     const sessionId = (serviceOpts as any).sessionId || randomUUID();
+    const harness = serviceOpts.stream;
+    const controller = this.registerStream(harness);
+    
+    // Helper to send progress to both WebSocket and SSE
+    const sendProgress = (payload: Record<string, any>) => {
+      // WebSocket broadcast
+      if (sessionId) {
+        broadcast(sessionId, { ...payload });
+      }
+      
+      // SSE emission
+      if (harness) {
+        this.emitStreamEvent(harness, "stream.status", {
+          state: "in_progress",
+          phase: payload.phase,
+          message: payload.message,
+        });
+        if (payload.message) {
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta: `${payload.message}\n`,
+            metadata: { phase: payload.phase },
+          });
+        }
+      }
+    };
     
     let previousResponseId: string | undefined = undefined;
     const phases: any[] = [];
@@ -70,7 +96,7 @@ export class SaturnService extends BaseAIService {
     try {
       // Phase 1: Analyze first training example
       logger.service(this.provider, `Phase 1: Analyzing first training example`);
-      broadcast(sessionId, { 
+      sendProgress({ 
         status: 'running', 
         phase: 'saturn_phase1', 
         step: 1,
@@ -104,6 +130,14 @@ export class SaturnService extends BaseAIService {
         images: phase1Images
       });
       
+      // Broadcast completion with images
+      sendProgress({
+        status: 'running',
+        phase: 'saturn_phase1_complete',
+        message: 'Phase 1 complete',
+        images: phase1Images.map(path => ({ path }))
+      });
+      
       totalCost += phase1Response.estimatedCost || 0;
       totalInputTokens += phase1Response.inputTokens || 0;
       totalOutputTokens += phase1Response.outputTokens || 0;
@@ -112,7 +146,7 @@ export class SaturnService extends BaseAIService {
       // Phase 2: Predict second training output (if exists)
       if (task.train.length > 1) {
         logger.service(this.provider, `Phase 2: Predicting second training output`);
-        broadcast(sessionId, { 
+        sendProgress({ 
           status: 'running', 
           phase: 'saturn_phase2',
           step: 2,
@@ -147,17 +181,24 @@ export class SaturnService extends BaseAIService {
           expectedOutput: task.train[1].output
         });
         
+        sendProgress({
+          status: 'running',
+          phase: 'saturn_phase2_complete',
+          message: 'Phase 2 complete',
+          images: phase2Images.map(path => ({ path }))
+        });
+        
         totalCost += phase2Response.estimatedCost || 0;
         totalInputTokens += phase2Response.inputTokens || 0;
         totalOutputTokens += phase2Response.outputTokens || 0;
         totalReasoningTokens += phase2Response.reasoningTokens || 0;
         
-        // Phase 2.5: Show actual second output for correction
-        logger.service(this.provider, `Phase 2.5: Showing actual second training output`);
-        broadcast(sessionId, { 
+        // Phase 2.5: Show actual second output for refinement
+        logger.service(this.provider, `Phase 2.5: Showing actual second output for refinement`);
+        sendProgress({ 
           status: 'running', 
           phase: 'saturn_phase2_correction',
-          step: 2.5,
+          step: 2,
           totalSteps: 3,
           message: 'Refining pattern understanding with actual output...' 
         });
@@ -188,6 +229,13 @@ export class SaturnService extends BaseAIService {
           images: phase25Images
         });
         
+        sendProgress({
+          status: 'running',
+          phase: 'saturn_phase2_correction_complete',
+          message: 'Pattern refinement complete',
+          images: phase25Images.map(path => ({ path }))
+        });
+        
         totalCost += phase25Response.estimatedCost || 0;
         totalInputTokens += phase25Response.inputTokens || 0;
         totalOutputTokens += phase25Response.outputTokens || 0;
@@ -197,7 +245,7 @@ export class SaturnService extends BaseAIService {
       // Show any additional training examples
       for (let i = 2; i < task.train.length; i++) {
         logger.service(this.provider, `Additional training example ${i + 1}`);
-        broadcast(sessionId, { 
+        sendProgress({ 
           status: 'running', 
           phase: `saturn_phase_train${i}`,
           message: `Analyzing training example ${i + 1}...` 
@@ -235,14 +283,14 @@ export class SaturnService extends BaseAIService {
         totalReasoningTokens += additionalResponse.reasoningTokens || 0;
       }
       
-      // Phase 3: Solve test input
-      logger.service(this.provider, `Phase 3: Solving test input`);
-      broadcast(sessionId, { 
+      // Phase 3: Apply to test
+      logger.service(this.provider, `Phase 3: Applying pattern to test input`);
+      sendProgress({ 
         status: 'running', 
         phase: 'saturn_phase3',
         step: 3,
         totalSteps: 3,
-        message: 'Applying learned pattern to test input...' 
+        message: 'Applying pattern to test case...' 
       });
       
       const phase3Prompt = this.buildPhase3Prompt(task);
@@ -265,9 +313,16 @@ export class SaturnService extends BaseAIService {
       
       phases.push({ 
         phase: 3, 
-        name: 'Test Solution',
+        name: 'Test Prediction',
         response: phase3Response,
         images: phase3Images
+      });
+      
+      sendProgress({
+        status: 'running',
+        phase: 'saturn_phase3_complete',
+        message: 'Test prediction complete',
+        images: phase3Images.map(path => ({ path }))
       });
       
       totalCost += phase3Response.estimatedCost || 0;
@@ -326,7 +381,7 @@ export class SaturnService extends BaseAIService {
         promptTemplateId: 'saturn-multi-phase',
       };
       
-      broadcast(sessionId, { 
+      sendProgress({ 
         status: 'complete', 
         phase: 'complete',
         message: 'Saturn analysis complete',
@@ -337,17 +392,38 @@ export class SaturnService extends BaseAIService {
         }
       });
       
+      if (harness) {
+        this.finalizeStream(harness, {
+          status: 'success',
+          responseSummary: finalResponse,
+          metadata: {
+            tokenUsage: {
+              input: totalInputTokens,
+              output: totalOutputTokens,
+              reasoning: totalReasoningTokens
+            }
+          }
+        });
+      }
+      
       return finalResponse;
       
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       logger.error(`[${this.provider}] Saturn analysis failed:`, errorMsg);
       
-      broadcast(sessionId, { 
+      sendProgress({ 
         status: 'error', 
         phase: 'error',
         message: `Saturn analysis failed: ${errorMsg}`
       });
+      
+      if (harness) {
+        this.emitStreamEvent(harness, 'stream.error', {
+          code: 'SATURN_ANALYSIS_ERROR',
+          message: errorMsg
+        });
+      }
       
       throw error;
     }

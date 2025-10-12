@@ -42,6 +42,40 @@ function parseJson<T>(value: unknown): T | undefined {
 }
 
 export const streamController = {
+  async cancel(req: Request, res: Response) {
+    const { sessionId } = req.params as { sessionId: string };
+
+    if (!sessionId) {
+      res.status(400).json({ error: 'Missing sessionId' });
+      return;
+    }
+
+    try {
+      sseStreamManager.error(sessionId, 'CANCELLED_BY_USER', 'Analysis cancelled by user');
+      sseStreamManager.close(sessionId, {
+        status: 'aborted',
+        metadata: { reason: 'user_cancelled' }
+      });
+
+      logger.info(`[StreamCancel] Session ${sessionId} cancelled by user`, 'stream-cancel');
+
+      res.json({
+        success: true,
+        data: {
+          sessionId,
+          status: 'cancelled'
+        }
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error(`[StreamCancel] Failed to cancel session ${sessionId}: ${message}`, 'stream-cancel');
+
+      res.status(500).json({
+        error: `Failed to cancel: ${message}`
+      });
+    }
+  },
+
   async startAnalysisStream(req: Request, res: Response) {
     const { taskId, modelKey } = req.params;
     if (!taskId || !modelKey) {
