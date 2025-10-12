@@ -6,9 +6,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useSolutions } from '@/hooks/useSolutions';
 import { useVoting } from '@/hooks/useVoting';
@@ -31,22 +28,20 @@ export function CommunitySolutionsSection({ puzzleId }: CommunitySolutionsSectio
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
           Community Solutions
           {!isLoading && (
-            <Badge variant="outline" className="ml-2">
+            <div className="badge badge-outline ml-2">
               {solutions.length} solution{solutions.length !== 1 ? 's' : ''}
-            </Badge>
+            </div>
           )}
-        </CardTitle>
+        </h2>
         <p className="text-sm text-gray-600">
           Human-submitted explanations and approaches
         </p>
-      </CardHeader>
-      <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin mr-2" />
@@ -85,10 +80,8 @@ export function CommunitySolutionsSection({ puzzleId }: CommunitySolutionsSectio
                     
                     {/* Voting buttons */}
                     <div className="flex gap-2">
-                      <Button 
-                        variant={solution.userVote === 'helpful' ? "default" : "outline"} 
-                        size="sm" 
-                        className="flex items-center gap-1"
+                      <button 
+                        className={`btn btn-sm flex items-center gap-1 ${solution.userVote === 'helpful' ? "btn-primary" : "btn-outline"}`}
                         onClick={() => handleVote(solution.id, 'helpful')}
                         disabled={isVoting(solution.id)}
                       >
@@ -98,11 +91,9 @@ export function CommunitySolutionsSection({ puzzleId }: CommunitySolutionsSectio
                           <ThumbsUp className="h-4 w-4" />
                         )}
                         <span>Helpful</span>
-                      </Button>
-                      <Button 
-                        variant={solution.userVote === 'not_helpful' ? "default" : "outline"} 
-                        size="sm" 
-                        className="flex items-center gap-1"
+                      </button>
+                      <button 
+                        className={`btn btn-sm flex items-center gap-1 ${solution.userVote === 'not_helpful' ? "btn-primary" : "btn-outline"}`}
                         onClick={() => handleVote(solution.id, 'not_helpful')}
                         disabled={isVoting(solution.id)}
                       >
@@ -112,7 +103,7 @@ export function CommunitySolutionsSection({ puzzleId }: CommunitySolutionsSectio
                           <ThumbsDown className="h-4 w-4" />
                         )}
                         <span>Not Helpful</span>
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -125,7 +116,7 @@ export function CommunitySolutionsSection({ puzzleId }: CommunitySolutionsSectio
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
