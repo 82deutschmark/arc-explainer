@@ -325,14 +325,15 @@ GPT-5 models with `text.format.type: "json_schema"` might:
 
 ### Issue 2: Empty Reasoning Due to Token Limits
 
-Per the docs:
-> "Reasoning can use 50-80% of total tokens internally, leaving little for the final answer if the limit is too low."
+Per OpenAI documentation:
+> GPT-5 models support 272,000 input tokens + 128,000 output/reasoning tokens = 400,000 total context window.
+> Internal reasoning consumes tokens from the `max_output_tokens` allocation.
 
 **Current Settings:**
-- We don't set `max_output_tokens` in most requests
+- We pass `max_output_tokens` through if provided in `serviceOpts`
 - Default may be too low for reasoning models
 
-**Recommendation:** Add `max_output_tokens: 16384` or higher for GPT-5 models in `buildResponsesRequestBody()`.
+**Recommendation:** Add `max_output_tokens: 110000` or higher for GPT-5 models to prevent reasoning from starving visible output.
 
 ---
 
@@ -412,10 +413,11 @@ This is intentional and correct behavior - not a bug.
 
 ### Token Limits and Reasoning
 
-From OpenAI Responses API docs (Oct 2025):
-- Reasoning models can use 50-80% of total tokens for internal thinking
-- If `max_output_tokens` is too low, model may run out before returning predictions
-- **Recommendation:** Set `maxOutputTokens: 16384` or higher for GPT-5 models
+From OpenAI documentation (Oct 2025):
+- GPT-5 models support **272K input + 128K output/reasoning = 400K total**
+- Internal reasoning consumes tokens from `max_output_tokens` allocation
+- If `max_output_tokens` is too low, model may run out before returning visible predictions
+- **Recommendation:** Set `maxOutputTokens: 110000` or higher for GPT-5 models
 
 **Current Implementation:**
 - `max_output_tokens` is passed through if provided in `serviceOpts`
