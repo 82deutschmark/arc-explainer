@@ -12,14 +12,14 @@ import { useModels } from './useModels';
 import { usePuzzle } from './usePuzzle';
 import { usePuzzleWithExplanation } from './useExplanation';
 import type { ARCTask } from '@shared/types';
-import type { ModelConfig } from '@/types/puzzle';
-import type { AnalysisResult } from '@/types/puzzle';
+import type { ModelConfig } from '@shared/types';
+import type { ExplanationData } from '@/types/puzzle';
 
 export interface PuzzleDataResult {
   // Puzzle data
   puzzle: ARCTask | null;
   models: ModelConfig[] | undefined;
-  explanations: AnalysisResult[];
+  explanations: ExplanationData[];
 
   // Loading states - coordinated across all queries
   isLoading: boolean;
@@ -51,12 +51,12 @@ export interface PuzzleDataResult {
 export function usePuzzleData(taskId: string | undefined): PuzzleDataResult {
   // Fetch all data sources
   const { data: models, isLoading: isLoadingModels, error: modelsError } = useModels();
-  const { currentTask: puzzle, isLoadingTask: isLoadingPuzzle, taskError: puzzleError } = usePuzzle(taskId);
+  const { currentTask: puzzle, isLoadingTask: isLoadingPuzzle, taskError: puzzleError } = usePuzzle(taskId ?? undefined);
   const {
     explanations,
     isLoading: isLoadingExplanations,
     refetchExplanations
-  } = usePuzzleWithExplanation(taskId);
+  } = usePuzzleWithExplanation(taskId || null);
 
   // Coordinate loading state - wait for ALL queries
   const isLoading = isLoadingModels || isLoadingPuzzle || (isLoadingExplanations ?? false);

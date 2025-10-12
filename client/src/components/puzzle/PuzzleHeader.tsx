@@ -50,7 +50,7 @@ export function PuzzleHeader({
           Puzzle {puzzleName ? `${taskId} - ${puzzleName}` : taskId}
           {source && (
             <div
-              className={`badge badge-outline ml-2 ${
+              className={`badge badge-lg ml-2 ${
                 source === 'ARC1'
                   ? 'bg-blue-50 text-blue-700'
                   : source === 'ARC1-Eval'
@@ -66,7 +66,7 @@ export function PuzzleHeader({
             </div>
           )}
           {isRetryMode && (
-            <div className="badge badge-outline ml-2 bg-orange-50 text-orange-700 border-orange-200">
+            <div className="badge badge-lg ml-2 bg-orange-50 text-orange-700 border-orange-200">
               <RefreshCw className="h-3 w-3 mr-1" />
               Retry Mode
             </div>
