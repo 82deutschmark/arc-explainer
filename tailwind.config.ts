@@ -91,5 +91,16 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    require("daisyui")
+  ],
+  daisyui: {
+    themes: ["light", "dark", "cupcake", "emerald", "corporate", "retro", "cyberpunk"],
+    darkTheme: "dark",
+    base: true,
+    styled: true,
+    utils: true,
+  },
 } satisfies Config;
