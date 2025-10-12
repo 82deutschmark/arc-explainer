@@ -2,19 +2,17 @@
  * AnalysisResultGrid.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T23:00:00-04:00
+ * Date: 2025-10-12T21:46:00Z
  * PURPOSE: Displays predicted output grids alongside expected outputs for both single-test
  * and multi-test puzzles. Shows correctness badges, grid comparisons, and diff highlighting.
  * FIXED: Removed multiTestAverageAccuracy check in fallback logic - now uses ONLY multiTestAllCorrect flag.
  * Displays "Incorrect" (not "Some Incorrect") when we can't determine exact count without validation data.
  * Handles optimistic UI states with skeleton loaders during analysis/saving.
  * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
- * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ * shadcn/ui: Pass - Converted to DaisyUI badge and button
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
@@ -113,9 +111,9 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
               )}
               {!eloMode && (
                 <div className="md:col-span-2 mt-1">
-                  <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
+                  <button className="btn btn-outline btn-sm" onClick={() => setShowDiff(!showDiff)}>
                     {showDiff ? 'Hide' : 'Show'} Mismatches
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
@@ -133,9 +131,8 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             <div className="flex items-center gap-2 flex-wrap">
               <h5 className="font-semibold text-sm text-gray-800">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
-                <Badge
-                  variant="outline"
-                  className={`flex items-center gap-1 text-xs ${
+                <div
+                  className={`badge badge-outline flex items-center gap-1 text-xs ${
                     multiTestStats.accuracyLevel === 'all_correct' || (!multiTestStats.totalCount && (result.multiTestAllCorrect ?? result.allPredictionsCorrect)) 
                       ? 'bg-green-50 border-green-200 text-green-700' 
                       : multiTestStats.accuracyLevel === 'all_incorrect' || (!multiTestStats.totalCount && result.multiTestAverageAccuracy === 0) 
@@ -165,7 +162,7 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
                     // without detailed validation data, so just show "Incorrect"
                     return 'Incorrect';
                   })()}
-                </Badge>
+                </div>
               )}
             </div>
             {showMultiTest ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -174,9 +171,9 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             <div className="p-2 space-y-2">
               {!eloMode && (
                 <div className="md:col-span-2 mb-1">
-                  <Button onClick={() => setShowDiff(!showDiff)} variant="outline" size="sm">
+                  <button className="btn btn-outline btn-sm" onClick={() => setShowDiff(!showDiff)}>
                     {showDiff ? 'Hide' : 'Show'} Mismatches
-                  </Button>
+                  </button>
                 </div>
               )}
               {expectedOutputGrids.map((expectedGrid, index) => (
