@@ -19,6 +19,7 @@ import { broadcast } from './wsService.js';
 import { logger } from "../utils/logger.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
 import { randomUUID } from 'crypto';
+import { readFile } from 'fs/promises';
 
 export class SaturnService extends BaseAIService {
   protected provider = "Saturn";
@@ -165,12 +166,13 @@ export class SaturnService extends BaseAIService {
         images: phase1Images
       });
       
-      // Broadcast completion with images
+      // Broadcast completion with images (converted to base64 for frontend)
+      const phase1ImagesBase64 = await this.convertImagesToBase64(phase1Images);
       sendProgress({
         status: 'running',
         phase: 'saturn_phase1_complete',
         message: 'Phase 1 complete',
-        images: phase1Images.map(path => ({ path }))
+        images: phase1ImagesBase64
       });
       
       totalCost += phase1Response.estimatedCost || 0;
@@ -216,11 +218,12 @@ export class SaturnService extends BaseAIService {
           expectedOutput: task.train[1].output
         });
         
+        const phase2ImagesBase64 = await this.convertImagesToBase64(phase2Images);
         sendProgress({
           status: 'running',
           phase: 'saturn_phase2_complete',
           message: 'Phase 2 complete',
-          images: phase2Images.map(path => ({ path }))
+          images: phase2ImagesBase64
         });
         
         totalCost += phase2Response.estimatedCost || 0;
@@ -264,11 +267,12 @@ export class SaturnService extends BaseAIService {
           images: phase25Images
         });
         
+        const phase25ImagesBase64 = await this.convertImagesToBase64(phase25Images);
         sendProgress({
           status: 'running',
           phase: 'saturn_phase2_correction_complete',
           message: 'Pattern refinement complete',
-          images: phase25Images.map(path => ({ path }))
+          images: phase25ImagesBase64
         });
         
         totalCost += phase25Response.estimatedCost || 0;
@@ -353,11 +357,12 @@ export class SaturnService extends BaseAIService {
         images: phase3Images
       });
       
+      const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
       sendProgress({
         status: 'running',
         phase: 'saturn_phase3_complete',
         message: 'Test prediction complete',
-        images: phase3Images.map(path => ({ path }))
+        images: phase3ImagesBase64
       });
       
       totalCost += phase3Response.estimatedCost || 0;
@@ -481,6 +486,27 @@ export class SaturnService extends BaseAIService {
       logger.error(`[${this.provider}] Failed to generate grid images:`, errorMsg);
       return [];
     }
+  }
+  
+  /**
+   * Convert image file paths to base64 for streaming to frontend
+   */
+  private async convertImagesToBase64(imagePaths: string[]): Promise<{ path: string; base64: string }[]> {
+    const results: { path: string; base64: string }[] = [];
+    
+    for (const path of imagePaths) {
+      try {
+        const buffer = await readFile(path);
+        const base64 = buffer.toString('base64');
+        results.push({ path, base64 });
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`[${this.provider}] Failed to read image ${path}:`, errorMsg);
+        // Skip this image but continue with others
+      }
+    }
+    
+    return results;
   }
   
   /**
