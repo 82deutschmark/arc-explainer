@@ -1,3 +1,59 @@
+## [4.6.1] - 2025-10-12 11:30 AM
+### 🚨 CRITICAL FIX: SSE Streaming Was Completely Broken
+
+**SEVERITY:** P0 - Total SSE streaming failure for Saturn and Grover
+
+**ROOT CAUSE:**
+Saturn and Grover services never implemented `analyzePuzzleWithStreaming()` override.
+When SSE path called this method, BaseAIService threw "does not support streaming" error.
+Error was silently caught, resulting in blank UI with zero user feedback.
+
+**SYMPTOMS:**
+- User clicks "Start Analysis" → nothing happens
+- No logs appear in terminal panel
+- No images populate in gallery
+- No progress indicators update
+- No error messages shown
+
+**WHY THIS HAPPENED:**
+1. `analyzePuzzleWithModel()` already had streaming logic via `serviceOpts.stream` harness
+2. Assumed this would be called, but SSE uses different entry point
+3. `puzzleAnalysisService.analyzePuzzleStreaming()` → `aiService.analyzePuzzleWithStreaming()`
+4. No override = base class throws error
+5. Error handling swallowed exception → silent failure
+
+**FIXES:**
+- **server/services/saturnService.ts**: Added `analyzePuzzleWithStreaming()` (lines 41-65)
+  - Delegates to `analyzePuzzleWithModel()` with same parameters
+  - Since model method has all streaming logic, this is pure routing
+- **server/services/grover.ts**: Added `analyzePuzzleWithStreaming()` (lines 30-54)
+  - Same delegation pattern
+- **client/src/hooks/useSaturnProgress.ts**: Enhanced SSE event handlers
+  - `stream.init`: Populate logs with session info
+  - `stream.status`: Append messages to logs, add images to gallery
+  - `stream.chunk`: Split text by newlines, add to logs
+  - `stream.error`: Add error messages to logs
+- **server/services/saturnService.ts**: Enhanced `sendProgress()` helper
+  - Now includes images, step, totalSteps, progress in SSE events
+  - Previously only sent phase/message to SSE
+
+**TESTING REQUIRED:**
+- [ ] Navigate to Saturn page
+- [ ] Click "Start Analysis"
+- [ ] Verify logs appear immediately with session info
+- [ ] Verify phase messages stream in real-time
+- [ ] Verify images populate as phases complete
+- [ ] Verify progress bar and step counter update
+
+**COMMITS:**
+- 096c68c5: Frontend log population (incomplete - backend still broken)
+- 794a8a48: Backend routing fix (complete solution)
+
+**AUTHOR:** Cascade using Claude Sonnet 4.5  
+**PRIORITY:** P0 (Complete Feature Failure)
+
+---
+
 ## [4.6.0] - 2025-10-12 2:00 AM
 ### 🔧 SATURN & GROVER PRODUCTION FIXES COMPLETE
 
