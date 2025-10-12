@@ -38,7 +38,7 @@ export const useRefinementState = () => {
     setActiveModel(explanation.modelName); // Lock to this model
     setIterations([{
       id: `original-${explanation.id}`,
-      iterationNumber: 0,
+      iterationNumber: 1, // Start at 1 for display
       content: explanation,
       timestamp: explanation.createdAt
     }]);
@@ -53,19 +53,20 @@ export const useRefinementState = () => {
 
   const resetRefinement = () => {
     // Keep only the original iteration
-    setIterations(prev => prev.filter(iter => iter.iterationNumber === 0));
+    setIterations(prev => prev.filter(iter => iter.iterationNumber === 1));
     setUserGuidance('');
   };
 
-  const addIteration = (refinedExplanation: ExplanationData) => {
-    const newIteration: RefinementIteration = {
-      id: `iteration-${refinedExplanation.id}`,
-      iterationNumber: currentIteration + 1,
-      content: refinedExplanation,
-      timestamp: refinedExplanation.createdAt
-    };
-
-    setIterations(prev => [...prev, newIteration]);
+  const addIteration = (content: ExplanationData) => {
+    setIterations(prev => [
+      ...prev,
+      {
+        id: `iter-${prev.length}`,
+        iterationNumber: prev.length + 1, // 1-indexed for display
+        content,
+        timestamp: new Date().toISOString()
+      }
+    ]);
   };
 
   // Extract provider from model key (e.g., "openai/o4-mini" -> "openai")
@@ -95,12 +96,12 @@ export const useRefinementState = () => {
 
   // Get original iteration
   const getOriginalIteration = (): RefinementIteration | undefined => {
-    return iterations.find(iter => iter.iterationNumber === 0);
+    return iterations.find(iter => iter.iterationNumber === 1);
   };
 
   // Get all refinement iterations (excluding original)
   const getRefinementIterations = (): RefinementIteration[] => {
-    return iterations.filter(iter => iter.iterationNumber > 0);
+    return iterations.filter(iter => iter.iterationNumber > 1);
   };
 
   return {

@@ -50,13 +50,12 @@ class GroverStreamService {
           promptId: 'grover',
           captureReasoning: true,
           previousResponseId,
-          // maxSteps removed - not part of AnalysisOptions type
         },
         harness,
         {
           sessionId,
           previousResponseId,
-          // maxSteps removed - not part of service options
+          maxSteps: maxIterations,  // FIXED: Pass maxIterations to control iteration count
         }
       );
     } catch (error) {

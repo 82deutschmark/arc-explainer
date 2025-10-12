@@ -119,9 +119,8 @@ export function buildAnalysisPrompt(
   const includeAnswers = !omitAnswer;
   logger.service('PromptBuilder', `🔒 DATA LEAKAGE CHECK:`);
   logger.service('PromptBuilder', `   - Solver Mode: ${isSolver} (${isSolver ? 'NO answers sent' : 'answers MAY be sent'})`);
-  logger.service('PromptBuilder', `   - omitAnswer: ${omitAnswer}`);
   logger.service('PromptBuilder', `   - includeAnswers: ${includeAnswers} (${includeAnswers ? '⚠️ TEST OUTPUTS WILL BE SENT' : '✅ Test outputs withheld'})`);
-  logger.service('PromptBuilder', `   - Mode: ${promptId} (Custom: ${isCustom}, Alien: ${isAlien})`);
+  logger.service('PromptBuilder', `   - Mode: ${promptId}${isCustom ? ' (Custom)' : ''}`);
 
   // PHASE 1-2: Use continuation prompt if this is a continuation turn
   if (useContinuation) {
