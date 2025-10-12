@@ -659,17 +659,23 @@ export class OpenAIService extends BaseAIService {
 
     // Extract reasoning items and convert them to an array of strings
     if (captureReasoning) {
-      // Try output_reasoning.items first (primary location)
+      // Try output_reasoning.items first (primary location per Oct 2025 Responses API)
       if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
         reasoningItems = response.output_reasoning.items.map((item: any) => {
           if (typeof item === 'string') return item;
           if (item && typeof item === 'object' && item.text) return item.text;
           return JSON.stringify(item);
         });
-      } else if (response.output && Array.isArray(response.output)) {
-        // Fallback: Extract reasoning items from output[] array
+      }
+      
+      // Fallback: Scan output[] array if no items found (per Oct 2025 Responses API docs)
+      if ((!reasoningItems || reasoningItems.length === 0) && response.output && Array.isArray(response.output)) {
         const reasoningBlocks = response.output.filter((block: any) => 
-          block && (block.type === 'reasoning' || block.type === 'Reasoning')
+          block && (
+            block.type === 'reasoning' || 
+            block.type === 'Reasoning' ||
+            (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+          )
         );
         
         reasoningItems = reasoningBlocks.map((block: any) => {
@@ -680,7 +686,9 @@ export class OpenAIService extends BaseAIService {
           }
           return JSON.stringify(block);
         }).filter(Boolean);
-      } else {
+      }
+      
+      if (!reasoningItems) {
         reasoningItems = [];
       }
     } else {
