@@ -229,20 +229,26 @@ export default function PuzzleDiscussion() {
     // Only attempt auto-selection when:
     // 1. We have a selectId from URL
     // 2. Explanations are loaded (not loading and exists)
-    // 3. Refinement is not already active
+    // 3. Refinement is not already active (prevent double-activation)
     if (selectId && explanations && explanations.length > 0 && !isLoadingExplanations && !refinementState.isRefinementActive) {
+      console.log(`[PuzzleDiscussion] 🔍 Auto-select check: selectId=${selectId}, explanations=${explanations.length}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
+      
       const explanation = explanations.find(e => e.id === selectId);
       if (explanation) {
-        console.log(`[PuzzleDiscussion] Auto-selecting explanation #${selectId} from URL parameter`);
+        console.log(`[PuzzleDiscussion] ✅ Found explanation #${selectId}, starting refinement...`);
+        console.log(`[PuzzleDiscussion] Explanation details: model=${explanation.modelName}, provider=${explanation.providerResponseId ? 'has response ID' : 'NO response ID'}`);
         handleStartRefinement(selectId);
       } else {
-        console.error(`[PuzzleDiscussion] Explanation #${selectId} not found in loaded explanations`);
+        console.error(`[PuzzleDiscussion] ❌ Explanation #${selectId} not found in ${explanations.length} loaded explanations`);
+        console.error(`[PuzzleDiscussion] Available IDs: ${explanations.map(e => e.id).join(', ')}`);
         toast({
           title: "Explanation not found",
           description: `Could not find explanation #${selectId}. It may have been deleted or is not eligible for refinement.`,
           variant: "destructive"
         });
       }
+    } else {
+      console.log(`[PuzzleDiscussion] 🚫 Auto-select skipped: selectId=${selectId}, hasExplanations=${!!explanations}, explanationCount=${explanations?.length ?? 0}, loading=${isLoadingExplanations}, active=${refinementState.isRefinementActive}`);
     }
   }, [selectId, explanations, isLoadingExplanations, refinementState.isRefinementActive, toast]);
 

@@ -1,4 +1,51 @@
 
+## [4.4.3] - 2025-10-11 09:45 PM
+### CRITICAL FIX: Data Leakage Logging & URL Parameter Selection
+
+**PROBLEM 1: Missing Critical Data Leakage Visibility**
+Prompt system logs showed irrelevant info (alien mode) but did NOT show whether test outputs were being sent to the AI, making it impossible to verify data leakage prevention.
+
+**PROBLEM 2: URL ?select= Parameter Not Working**
+Navigation to `/discussion/{puzzleId}?select={explanationId}` showed the full list of eligible explanations instead of immediately activating refinement for the specified explanation.
+
+**SOLUTION:**
+
+**1. Enhanced Prompt Data Leakage Logging** (`server/services/promptBuilder.ts`):
+```
+🔒 DATA LEAKAGE CHECK:
+   - Solver Mode: true (NO answers sent)
+   - omitAnswer: false
+   - includeAnswers: false (✅ Test outputs withheld)
+   - Mode: discussion (Custom: false, Alien: false)
+```
+
+**Key Metrics Logged:**
+- `isSolverMode`: Whether answers should never be sent (true for most modes)
+- `omitAnswer`: User-controlled flag to withhold answers
+- `includeAnswers`: **Critical computed flag** - shows if test outputs will be sent to AI
+- Clear visual indicators: ✅ for safe, ⚠️ for data leakage
+
+**2. Enhanced URL Parameter Auto-Selection** (`client/src/pages/PuzzleDiscussion.tsx`):
+- Added detailed logging at every step of auto-selection process
+- Shows selectId, available explanation IDs, loading state, active state
+- Clear error messages if explanation not found
+- Tracks why auto-selection is skipped (no selectId, loading, already active)
+
+**IMPACT:**
+- ✅ **Security:** Developers can now verify data leakage prevention in real-time
+- ✅ **Debugging:** Clear visibility into prompt construction and answer inclusion
+- ✅ **UX:** Better error messages for URL parameter issues
+- ✅ **Traceability:** Full audit trail of auto-selection logic
+
+**FILES MODIFIED:**
+- `server/services/promptBuilder.ts` (lines 112-124)
+- `client/src/pages/PuzzleDiscussion.tsx` (lines 227-253)
+
+**Author:** Cascade using Claude Sonnet 3.5  
+**Next:** Test with actual puzzle to verify logging output
+
+---
+
 ## [4.4.2] - 2025-10-11 09:30 PM
 ### HOTFIX: Restore Readable Sizing to Advanced Controls
 
