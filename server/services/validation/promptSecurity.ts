@@ -109,24 +109,24 @@ export class PromptSecurityValidator {
   }
   
   /**
-   * Validate that includeAnswers flag matches actual prompt content
+   * Validate that omitAnswer flag matches actual prompt content
    * Double-check that implementation matches intent
    */
   static validateConsistency(
     userPrompt: string,
-    includeAnswers: boolean
+    omitAnswer: boolean
   ): void {
     const hasAnswerPatterns = ANSWER_LEAKAGE_PATTERNS.some(pattern => pattern.test(userPrompt));
     
-    if (includeAnswers && !hasAnswerPatterns) {
-      logger.warn('PromptSecurity', '⚠️ includeAnswers=true but no answer patterns found in prompt');
+    if (!omitAnswer && !hasAnswerPatterns) {
+      logger.warn('PromptSecurity', '⚠️ omitAnswer=false (should show answers) but no answer patterns found in prompt');
     }
     
-    if (!includeAnswers && hasAnswerPatterns) {
+    if (omitAnswer && hasAnswerPatterns) {
       throw new DataLeakageError(
-        'CONSISTENCY VIOLATION: includeAnswers=false but answer patterns found in prompt',
+        'CONSISTENCY VIOLATION: omitAnswer=true (should hide answers) but answer patterns found in prompt',
         {
-          omitAnswer: !includeAnswers,
+          omitAnswer,
           isSolverMode: false,
           leakagePattern: 'Consistency check failed',
           promptLength: userPrompt.length
@@ -153,12 +153,12 @@ export function validateSolverPrompt(userPrompt: string, puzzleId?: string): voi
  */
 export function validateResearchPrompt(
   userPrompt: string,
-  includeAnswers: boolean,
+  omitAnswer: boolean,
   puzzleId?: string
 ): void {
   PromptSecurityValidator.validateNoAnswerLeakage(
     userPrompt,
-    !includeAnswers,  // omitAnswer is opposite of includeAnswers
+    omitAnswer,
     false,  // Not solver mode
     puzzleId
   );

@@ -38,7 +38,7 @@ import { logger } from "../utils/broadcastLogger.js";
  */
 export interface PromptBuildOptions {
   emojiSetKey?: string;
-  includeAnswers: boolean;  // EXPLICIT: Default should be FALSE
+  omitAnswer?: boolean;  // CRITICAL: Default is TRUE (hide answers for research integrity)
 }
 
 /**
@@ -110,7 +110,7 @@ export function buildAnalysisPrompt(
     const oldOptions = options as PromptOptions;
     buildOptions = {
       emojiSetKey: oldOptions.emojiSetKey,
-      includeAnswers: !(oldOptions.omitAnswer ?? true)  // Default is hide answers
+      omitAnswer: oldOptions.omitAnswer ?? true  // Default is hide answers
     };
     
     // Convert augmentation context
@@ -150,7 +150,7 @@ function buildAnalysisPromptImpl(
   task: ARCTask,
   promptId: string = "solver",
   customPrompt?: string,
-  buildOptions: PromptBuildOptions = { includeAnswers: false },
+  buildOptions: PromptBuildOptions = { omitAnswer: true },
   augmentation: PromptAugmentation = null,
   serviceOpts: ServiceOptions = {}
 ): PromptPackage {
@@ -185,7 +185,7 @@ function buildAnalysisPromptImpl(
     const taskDescription = TASK_DESCRIPTIONS[promptId as keyof typeof TASK_DESCRIPTIONS];
     const userPromptOptions: UserPromptOptions = {
       emojiSetKey: buildOptions.emojiSetKey,
-      omitAnswer: !buildOptions.includeAnswers,  // Convert back to omitAnswer for compatibility
+      omitAnswer: buildOptions.omitAnswer ?? true,  // Default: hide answers
       isSolverMode: isSolver
     };
     
@@ -212,7 +212,7 @@ function buildAnalysisPromptImpl(
     const taskDescription = TASK_DESCRIPTIONS[promptId as keyof typeof TASK_DESCRIPTIONS];
     const userPromptOptions: UserPromptOptions = {
       emojiSetKey: buildOptions.emojiSetKey,
-      omitAnswer: !buildOptions.includeAnswers,  // Convert back for compatibility
+      omitAnswer: buildOptions.omitAnswer ?? true,  // Default: hide answers
       isSolverMode: isSolver,
       isMultiTest: testCount > 1
     };
@@ -241,14 +241,14 @@ function buildAnalysisPromptImpl(
   try {
     PromptSecurityValidator.validateNoAnswerLeakage(
       userPrompt,
-      !buildOptions.includeAnswers,  // omitAnswer
+      buildOptions.omitAnswer ?? true,  // Default: hide answers
       isSolver,
       promptId  // Use promptId as identifier since task doesn't have id
     );
     
     PromptSecurityValidator.logSecurityAudit(
       promptId,  // Use promptId as identifier
-      !buildOptions.includeAnswers,
+      buildOptions.omitAnswer ?? true,
       isSolver,
       userPrompt.length,
       promptId
@@ -262,7 +262,7 @@ function buildAnalysisPromptImpl(
   // Phase 6: Log and return
   logger.service('PromptBuilder', `Generated system prompt: ${systemPrompt.length} chars`);
   logger.service('PromptBuilder', `Generated user prompt: ${userPrompt.length} chars`);
-  logger.service('PromptBuilder', `Security: ${buildOptions.includeAnswers ? '⚠️ ANSWERS INCLUDED' : '🔒 ANSWERS WITHHELD'}`);
+  logger.service('PromptBuilder', `Security: ${(buildOptions.omitAnswer ?? true) ? '🔒 ANSWERS WITHHELD' : '⚠️ ANSWERS INCLUDED'}`);
 
   return {
     systemPrompt,
@@ -311,98 +311,4 @@ export function shouldUseSystemPrompts(): boolean {
 
 export function getPromptMode(): string {
   return 'Enterprise';
-}
-  task: ARCTask,
-  promptId: string = "solver",
-  customPrompt?: string,
-  optionsOrBuildOptions?: PromptOptions | PromptBuildOptions,
-  augmentationOrServiceOpts?: PromptAugmentation | ServiceOptions,
-  serviceOptsOptional?: ServiceOptions
-): PromptPackage {
-  // Detect which signature was used
-  const isNewSignature = augmentationOrServiceOpts === null || 
-                         (augmentationOrServiceOpts && 'type' in augmentationOrServiceOpts);
-  
-  if (isNewSignature) {
-    // New signature: buildAnalysisPrompt(task, promptId, customPrompt, buildOptions, augmentation, serviceOpts)
-    const buildOptions = optionsOrBuildOptions as PromptBuildOptions || { includeAnswers: false };
-    const augmentation = augmentationOrServiceOpts as PromptAugmentation;
-    const serviceOpts = serviceOptsOptional || {};
-    
-    return buildAnalysisPromptNew(task, promptId, customPrompt, buildOptions, augmentation, serviceOpts);
-  } else {
-    // Old signature: buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts)
-    const options = optionsOrBuildOptions as PromptOptions || {};
-    const serviceOpts = augmentationOrServiceOpts as ServiceOptions || {};
-    
-    return convertLegacyCall(task, promptId, customPrompt, options, serviceOpts);
-  }
-}
-
-/**
- * NEW ARCHITECTURE - actual implementation
- */
-function buildAnalysisPromptNew(
-  task: ARCTask,
-  promptId: string = "solver",
-  customPrompt?: string,
-  buildOptions: PromptBuildOptions = { includeAnswers: false },
-  augmentation: PromptAugmentation = null,
-  serviceOpts: ServiceOptions = {}
-): PromptPackage {
-  // Convert to new interfaces
-  const buildOptions: PromptBuildOptions = {
-    emojiSetKey: options.emojiSetKey,
-    includeAnswers: !(options.omitAnswer ?? true)  // Default is hide answers
-  };
-  
-  let augmentation: PromptAugmentation = null;
-  
-  if (options.retryMode && options.previousAnalysis) {
-    augmentation = {
-      type: 'retry',
-      context: {
-        previousAnalysis: options.previousAnalysis,
-        userFeedback: options.badFeedback?.join('; ')
-      }
-    };
-  } else if ((promptId === 'discussion' || promptId === 'debate') && options.originalExplanation) {
-    augmentation = {
-      type: 'continuation',
-      context: {
-        originalExplanation: options.originalExplanation,
-        customChallenge: options.customChallenge,
-        iterationNumber: 1  // TODO: Track actual iteration count
-      }
-    };
-  }
-  
-  return buildAnalysisPrompt(
-    task,
-    promptId,
-    customPrompt,
-    buildOptions,
-    augmentation,
-    { ...serviceOpts, useStructuredOutput: options.useStructuredOutput }
-  );
-}
-
-/**
- * Utility functions for backwards compatibility
- */
-export function getDefaultPromptId(): string {
-  return "solver";
-}
-
-export function promptUsesEmojis(promptId: string, customPrompt?: string): boolean {
-  if (customPrompt) return false;
-  return isAlienCommunicationMode(promptId);
-}
-
-export function shouldUseSystemPrompts(options: any = {}): boolean {
-  return true;  // Always use new architecture
-}
-
-export function getPromptMode(options: any = {}): string {
-  return 'Enterprise';  // New architecture
 }

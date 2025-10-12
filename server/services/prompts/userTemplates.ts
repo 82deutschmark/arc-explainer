@@ -74,7 +74,7 @@ export function buildUserPrompt(
   // Get formatted sections
   const emojiPalette = useEmojis ? getEmojiPalette(emojiSetKey) : undefined;
   const trainingExamples = formatTrainingExamples(task, useEmojis, emojiPalette);
-  const testSection = formatTestSection(task, useEmojis, emojiPalette, !omitAnswer, isSolverMode);
+  const testSection = formatTestSection(task, useEmojis, emojiPalette, omitAnswer, isSolverMode);
   const { trainingLabel, testLabel } = getSectionLabels(useEmojis, isSolverMode, omitAnswer);
 
   // Build the user prompt with task description FIRST, then data
@@ -112,7 +112,7 @@ function buildCustomUserPrompt(
   
   // Always use raw numeric data for custom prompts
   const trainingExamples = formatTrainingExamples(task, false);
-  const testSection = formatTestSection(task, false, undefined, !omitAnswer, isSolverMode);
+  const testSection = formatTestSection(task, false, undefined, omitAnswer, isSolverMode);
   
   const isMulti = task.test.length > 1;
   const testLabel = isSolverMode ? "TEST CASE:" : "TEST CASE:";
