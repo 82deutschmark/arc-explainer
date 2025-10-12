@@ -1,25 +1,17 @@
 /**
  * RefinementThread.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-07
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12T22:00:00Z
  * PURPOSE: Main component for displaying progressive refinement thread.
  * Shows original analysis followed by linear progression of refinement iterations.
  * Replaces IndividualDebate with refinement-focused UI and terminology.
  * Single responsibility: Manage refinement thread display and coordination.
  * SRP/DRY check: Pass - Single responsibility (thread coordination), reuses OriginalExplanationCard and delegates to IterationCard
- * shadcn/ui: Pass - Uses shadcn/ui Card, Badge, Button, Alert components
+ * shadcn/ui: Pass - Converted to DaisyUI card, badge, button, textarea, alert, select
  */
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Brain, ArrowLeft, Sparkles, TrendingUp, Send, Loader2, RotateCcw, Eye, Settings } from 'lucide-react';
 
 // Reuse existing components
@@ -143,8 +135,8 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
   return (
     <div className="space-y-1">
       {/* Ultra-Compact Header */}
-      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardContent className="p-1 space-y-0.5">
+      <div className="card border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="card-body p-1 space-y-0.5">
           {/* Title Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
@@ -158,19 +150,18 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
+              <button
+                className="btn btn-outline text-[9px] h-5 px-2 py-0"
                 onClick={onResetRefinement}
                 disabled={iterations.length <= 1 || isProcessing}
-                className="text-[9px] h-5 px-2 py-0"
               >
                 <RotateCcw className="h-2.5 w-2.5 mr-1" />
                 Reset
-              </Button>
-              <Button variant="outline" onClick={onBackToList} className="text-[9px] h-5 px-2 py-0">
+              </button>
+              <button className="btn btn-outline text-[9px] h-5 px-2 py-0" onClick={onBackToList}>
                 <ArrowLeft className="h-2.5 w-2.5 mr-1" />
                 Back
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -180,9 +171,9 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
               {/* Active Model */}
               <div className="flex items-center gap-0.5">
                 <Brain className="h-2.5 w-2.5 text-purple-600" />
-                <Badge variant="outline" className="bg-purple-100 text-purple-900 border-purple-300 font-mono text-[8px] px-1 py-0">
+                <div className="badge badge-outline bg-purple-100 text-purple-900 border-purple-300 font-mono text-[8px] px-1 py-0">
                   {modelDisplayName}
-                </Badge>
+                </div>
               </div>
 
               {/* Total Reasoning */}
@@ -196,9 +187,9 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
               {/* Current Iteration */}
               <div className="flex items-center gap-0.5">
                 <TrendingUp className="h-2.5 w-2.5 text-purple-600" />
-                <Badge variant="secondary" className="text-[8px] font-mono px-1 py-0">
+                <div className="badge badge-secondary text-[8px] font-mono px-1 py-0">
                   #{iterations.length - 1}
-                </Badge>
+                </div>
               </div>
             </div>
           </div>
@@ -216,18 +207,19 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                 {showTemperature && (
                   <div className="p-2 bg-gray-50 border border-gray-200 rounded">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="temperature" className="text-xs font-medium whitespace-nowrap">
+                      <label htmlFor="temperature" className="label text-xs font-medium whitespace-nowrap">
                         Temperature: {temperature.toFixed(2)}
-                      </Label>
+                      </label>
                       <div className="flex-1 max-w-xs">
-                        <Slider
+                        <input
+                          type="range"
                           id="temperature"
-                          min={0.1}
-                          max={2.0}
-                          step={0.05}
-                          value={[temperature]}
-                          onValueChange={(value) => setTemperature(value[0])}
-                          className="w-full"
+                          min="0.1"
+                          max="2.0"
+                          step="0.05"
+                          value={temperature}
+                          onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                          className="range range-xs w-full"
                         />
                       </div>
                     </div>
@@ -240,53 +232,50 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                     <div className="grid grid-cols-3 gap-2">
                       {/* Effort */}
                       <div>
-                        <Label htmlFor="reasoning-effort" className="text-xs font-medium text-blue-700">
+                        <label htmlFor="reasoning-effort" className="label text-xs font-medium text-blue-700">
                           Effort
-                        </Label>
-                        <Select value={reasoningEffort} onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}>
-                          <SelectTrigger className="w-full h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="minimal">Minimal</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        </label>
+                        <select 
+                          className="select select-bordered w-full h-8 text-xs"
+                          value={reasoningEffort}
+                          onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
+                        >
+                          <option value="minimal">Minimal</option>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
                       </div>
 
                       {/* Verbosity */}
                       <div>
-                        <Label htmlFor="reasoning-verbosity" className="text-xs font-medium text-blue-700">
+                        <label htmlFor="reasoning-verbosity" className="label text-xs font-medium text-blue-700">
                           Verbosity
-                        </Label>
-                        <Select value={reasoningVerbosity} onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}>
-                          <SelectTrigger className="w-full h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="low">Low</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="high">High</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        </label>
+                        <select 
+                          className="select select-bordered w-full h-8 text-xs"
+                          value={reasoningVerbosity}
+                          onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
                       </div>
 
                       {/* Summary */}
                       <div>
-                        <Label htmlFor="reasoning-summary" className="text-xs font-medium text-blue-700">
+                        <label htmlFor="reasoning-summary" className="label text-xs font-medium text-blue-700">
                           Summary
-                        </Label>
-                        <Select value={reasoningSummaryType} onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}>
-                          <SelectTrigger className="w-full h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="auto">Auto</SelectItem>
-                            <SelectItem value="detailed">Detailed</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        </label>
+                        <select 
+                          className="select select-bordered w-full h-8 text-xs"
+                          value={reasoningSummaryType}
+                          onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
+                        >
+                          <option value="auto">Auto</option>
+                          <option value="detailed">Detailed</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -294,16 +283,14 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
 
                 {/* Prompt Preview Button */}
                 <div className="flex justify-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <button
+                    className="btn btn-outline btn-sm flex items-center gap-1 h-8 text-xs"
                     onClick={() => setShowPromptPreview(true)}
                     disabled={isProcessing}
-                    className="flex items-center gap-1 h-8 text-xs"
                   >
                     <Eye className="h-3.5 w-3.5" />
                     Preview Prompt
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -317,21 +304,21 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                 <label className="text-xs font-medium mb-1.5 block text-gray-700">
                   User Guidance (Optional)
                 </label>
-                <Textarea
+                <textarea
+                  className="textarea textarea-bordered text-xs resize-none"
                   value={userGuidance}
                   onChange={(e) => onUserGuidanceChange(e.target.value)}
                   placeholder="Leave blank for the model to refine based on its own analysis"
                   rows={2}
-                  className="text-xs resize-none"
                 />
               </div>
 
               {/* Continue Button */}
               <div>
-                <Button
+                <button
+                  className="btn w-full h-[72px] text-sm bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
                   onClick={onContinueRefinement}
                   disabled={isProcessing}
-                  className="w-full h-[72px] text-sm bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 >
                   {isProcessing ? (
                     <>
@@ -344,21 +331,21 @@ export const RefinementThread: React.FC<RefinementThreadProps> = ({
                       Continue Refinement
                     </>
                   )}
-                </Button>
+                </button>
               </div>
             </div>
 
             {/* Error Display */}
             {error && (
-              <Alert variant="destructive" className="mt-3 py-2">
-                <AlertDescription className="text-xs">
+              <div role="alert" className="alert alert-error mt-3 py-2">
+                <span className="text-xs">
                   {error.message}
-                </AlertDescription>
-              </Alert>
+                </span>
+              </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Thread content - full width */}
       <div className="space-y-3">
