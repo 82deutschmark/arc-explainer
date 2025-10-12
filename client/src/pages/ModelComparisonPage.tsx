@@ -1,29 +1,26 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
  * Date: 2025-10-12
- * PURPOSE: Ultra-dense DaisyUI-powered model comparison dashboard showing comprehensive head-to-head metrics.
+ * PURPOSE: Pure DaisyUI model comparison dashboard showing comprehensive head-to-head metrics.
  * Displays per-model performance, cost analysis, speed comparison, and puzzle-by-puzzle matrix.
  *
  * FEATURES:
- * - DaisyUI hero section with dramatic winner/loser indicators
+ * - DaisyUI hero section with winner indicators
  * - Radial progress cards for accuracy visualization
- * - High-density stats grid using DaisyUI stats component
- * - Per-model performance cards with cost/speed/confidence metrics
- * - Enhanced comparison matrix with DaisyUI table styling
- * - Collapsible sections for detailed breakdowns
+ * - Stats grid with high-impact metrics
+ * - Per-model performance cards with detailed breakdowns
+ * - Theme toggle using DaisyUI theme-controller
+ * - Comparison matrix table
  *
  * SRP and DRY check: Pass - Single responsibility is model comparison visualization
- * shadcn/ui + DaisyUI: Pass - Uses both libraries for maximum visual impact
+ * DaisyUI: Pass - Uses ONLY DaisyUI components, no custom UI or shadcn/ui
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
 import { ArrowLeft, Trophy, Zap, DollarSign, TrendingUp, Target, Clock, Brain, AlertCircle, Sun, Moon } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelComparisonResult } from './AnalyticsOverview';
-import { Badge } from '@/components/ui/badge';
 
 export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
@@ -137,8 +134,8 @@ export default function ModelComparisonPage() {
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <span className="loading loading-spinner loading-lg"></span>
-            <p className="text-muted-foreground mt-4">Loading comparison data...</p>
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <p className="mt-4 text-base-content/70">Loading comparison data...</p>
           </div>
         </div>
       </div>
@@ -148,13 +145,14 @@ export default function ModelComparisonPage() {
   if (error) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-        <Button onClick={() => navigate('/analytics')} className="mt-4">
-          <ArrowLeft className="mr-2 h-4 w-4" />
+        <div role="alert" className="alert alert-error shadow-lg">
+          <AlertCircle className="h-6 w-6" />
+          <span>{error}</span>
+        </div>
+        <button onClick={() => navigate('/analytics')} className="btn btn-primary mt-4">
+          <ArrowLeft className="h-5 w-5" />
           Back to Analytics
-        </Button>
+        </button>
       </div>
     );
   }
@@ -162,15 +160,14 @@ export default function ModelComparisonPage() {
   if (!comparisonData) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
-        <Alert variant="destructive">
-          <AlertDescription>
-            No comparison data found. Please run a comparison from the Analytics page.
-          </AlertDescription>
-        </Alert>
-        <Button onClick={() => navigate('/analytics')} className="mt-4">
-          <ArrowLeft className="mr-2 h-4 w-4" />
+        <div role="alert" className="alert alert-warning shadow-lg">
+          <AlertCircle className="h-6 w-6" />
+          <span>No comparison data found. Please run a comparison from the Analytics page.</span>
+        </div>
+        <button onClick={() => navigate('/analytics')} className="btn btn-primary mt-4">
+          <ArrowLeft className="h-5 w-5" />
           Back to Analytics
-        </Button>
+        </button>
       </div>
     );
   }
@@ -217,7 +214,7 @@ export default function ModelComparisonPage() {
         </div>
 
         {/* DaisyUI Hero Section */}
-        <div className="hero bg-gradient-to-r from-primary to-secondary rounded-box shadow-lg">
+        <div className="hero bg-gradient-to-r from-primary to-secondary rounded-box shadow-xl">
           <div className="hero-content text-center py-12 px-6">
             <div className="max-w-4xl">
               <h1 className="text-5xl font-bold text-primary-content mb-4">
@@ -253,7 +250,7 @@ export default function ModelComparisonPage() {
         </div>
 
         {/* DaisyUI Stats Grid - High-Impact Metrics */}
-        <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-100">
+        <div className="stats stats-vertical lg:stats-horizontal shadow-xl w-full bg-base-100">
           <div className="stat">
             <div className="stat-figure text-success">
               <Target className="h-8 w-8" />
@@ -305,10 +302,12 @@ export default function ModelComparisonPage() {
         {/* Per-Model Performance Cards with Radial Progress */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {modelPerf.map((model, idx) => (
-            <div key={model.modelName} className="card bg-base-100 shadow-xl">
+            <div key={model.modelName} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
               <div className="card-body p-6">
                 <h2 className="card-title mb-4">
-                  <Badge variant={idx === 0 ? "default" : "secondary"}>{model.modelName}</Badge>
+                  <div className={`badge ${idx === 0 ? 'badge-primary' : 'badge-secondary'} badge-lg`}>
+                    {model.modelName}
+                  </div>
                   {summary.winnerModel === model.modelName && (
                     <div className="badge badge-success gap-1 ml-2">
                       <Trophy className="h-3 w-3" />
