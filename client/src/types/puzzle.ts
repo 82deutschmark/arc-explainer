@@ -118,7 +118,7 @@ export interface ExplanationData {
   // Solver mode validation fields
   predictedOutputGrid?: number[][] | null; // Grid extracted from AI response
   isPredictionCorrect?: boolean | null; // Whether prediction matches correct answer
-  predictionAccuracyScore?: number | null; // Accuracy score (0-1) based on confidence and correctness
+  trustworthinessScore?: number | null; // Trustworthiness score (0-1) based on confidence and correctness
   extractionMethod?: string; // Method used to extract the grid
   // Multi-test validation fields (set by backend controller for multi-test cases)
   predictedOutputGrids?: (number[][] | null)[]; // Array of predicted grids from validateSolverResponseMulti
@@ -126,12 +126,12 @@ export interface ExplanationData {
     index: number;
     predictedGrid: number[][] | null;
     isPredictionCorrect: boolean;
-    predictionAccuracyScore: number; // Trustworthiness score (0-1) for this specific test
+    trustworthinessScore: number; // Trustworthiness score (0-1) for this specific test
     extractionMethod?: string;
     expectedDimensions?: { rows: number; cols: number };
   }>;
   allPredictionsCorrect?: boolean; // Whether all test predictions are correct (from allCorrect)
-  averagePredictionAccuracyScore?: number; // Average trustworthiness across all tests (from averageAccuracyScore)
+  averageTrustworthinessScore?: number; // Average trustworthiness across all tests (from averageAccuracyScore)
   // Database field names for multi-test data (raw storage format)
   multiplePredictedOutputs?: number[][][] | null; // Raw database field: array of predicted grids
   multiTestResults?: Array<any> | null; // Raw database field: validation results

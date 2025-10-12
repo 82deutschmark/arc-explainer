@@ -372,7 +372,7 @@ export abstract class BaseAIService {
       multiplePredictedOutputs: result?.multiplePredictedOutputs,
       multiTestResults: result?.multiTestResults,
       isPredictionCorrect: result?.isPredictionCorrect,
-      predictionAccuracyScore: result?.predictionAccuracyScore,
+      trustworthinessScore: result?.trustworthinessScore,
       // CRITICAL FIX: Preserve all individual prediction fields (predictedOutput1, predictedOutput2, etc.)
       ...preservedPredictionFields,
       // Preserve raw response and parsing metadata

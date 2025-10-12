@@ -33,7 +33,7 @@ interface ExplanationData {
   apiProcessingTimeMs?: number;
   predictedOutputGrid?: any;
   isPredictionCorrect?: boolean;
-  predictionAccuracyScore?: number;
+  trustworthinessScore?: number;
   temperature?: number;
   reasoningEffort?: string;
   reasoningVerbosity?: string;

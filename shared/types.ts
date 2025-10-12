@@ -57,7 +57,7 @@ export interface PuzzleAnalysis {
   /** Deprecated: prefer predictedOutput/predictedOutputs */
   predictedOutputGrid?: number[][];
   isPredictionCorrect?: boolean;
-  predictionAccuracyScore?: number;
+  trustworthinessScore?: number;
 }
 
 // ELO comparison system types
@@ -215,7 +215,7 @@ export interface ExplanationRecord {
   saturnSuccess: boolean | null;
   predictedOutputGrid: number[][] | null;
   isPredictionCorrect: boolean | null;
-  predictionAccuracyScore: number | null;
+  trustworthinessScore: number | null;
   providerRawResponse: any | null;
   reasoningItems: string[] | null;
   temperature: number | null;

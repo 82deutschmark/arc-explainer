@@ -218,8 +218,8 @@ export function buildAnalysisPrompt(
           if (previousAnalysis.isPredictionCorrect === false) {
             systemPrompt += `\nPrediction Result: INCORRECT`;
           }
-          if (previousAnalysis.predictionAccuracyScore !== undefined) {
-            systemPrompt += `\nTrustworthiness Score: ${Math.round(previousAnalysis.predictionAccuracyScore * 100)}%`;
+          if (previousAnalysis.trustworthinessScore !== undefined) {
+            systemPrompt += `\nTrustworthiness Score: ${Math.round(previousAnalysis.trustworthinessScore * 100)}%`;
           }
           if (previousAnalysis.confidence) {
             systemPrompt += `\nModel Confidence: ${previousAnalysis.confidence}%`;
