@@ -145,6 +145,23 @@ export interface PuzzleComparisonDetail {
   model4Result?: 'correct' | 'incorrect' | 'not_attempted';
 }
 
+export interface ModelPerformanceOnDataset {
+  modelName: string;
+  totalPuzzlesInDataset: number;
+  attempts: number;
+  coveragePercentage: number; // attempts / totalPuzzlesInDataset * 100
+  correctCount: number;
+  incorrectCount: number;
+  notAttemptedCount: number;
+  accuracyPercentage: number; // correctCount / attempts * 100
+  avgProcessingTime: number; // milliseconds
+  totalCost: number;
+  avgCostPerAttempt: number;
+  costPerCorrectAnswer: number | null;
+  avgConfidence: number;
+  confidenceWhenCorrect: number | null; // trustworthiness metric
+}
+
 export interface ModelComparisonSummary {
   totalPuzzles: number;
   model1Name: string;
@@ -165,6 +182,14 @@ export interface ModelComparisonSummary {
   model2OnlyCorrect: number;
   model3OnlyCorrect?: number;
   model4OnlyCorrect?: number;
+  // NEW: Per-model performance metrics
+  modelPerformance: ModelPerformanceOnDataset[];
+  // NEW: Head-to-head insights
+  fullySolvedCount: number; // puzzles where at least one model is correct
+  unsolvedCount: number; // puzzles where all models are incorrect
+  winnerModel: string | null; // model with highest accuracy
+  mostEfficientModel: string | null; // model with best cost per correct
+  fastestModel: string | null; // model with lowest avg processing time
 }
 
 export interface ModelComparisonResult {
@@ -712,6 +737,12 @@ export class MetricsRepository extends BaseRepository {
           allNotAttempted: 0,
           model1OnlyCorrect: 0,
           model2OnlyCorrect: 0,
+          modelPerformance: [],
+          fullySolvedCount: 0,
+          unsolvedCount: 0,
+          winnerModel: null,
+          mostEfficientModel: null,
+          fastestModel: null,
         },
         details: [],
       };
@@ -722,18 +753,24 @@ export class MetricsRepository extends BaseRepository {
       if (puzzleIds.length === 0) {
         logger.warn(`No puzzles found for dataset: ${dataset}`, 'metrics');
         return {
-          summary: { 
-            totalPuzzles: 0, 
+          summary: {
+            totalPuzzles: 0,
             model1Name: models[0] || '',
             model2Name: models[1] || '',
             model3Name: models[2] || '',
             model4Name: models[3] || '',
-            dataset, 
-            allCorrect: 0, 
-            allIncorrect: 0, 
+            dataset,
+            allCorrect: 0,
+            allIncorrect: 0,
             allNotAttempted: 0,
             model1OnlyCorrect: 0,
-            model2OnlyCorrect: 0 
+            model2OnlyCorrect: 0,
+            modelPerformance: [],
+            fullySolvedCount: 0,
+            unsolvedCount: 0,
+            winnerModel: null,
+            mostEfficientModel: null,
+            fastestModel: null,
           },
           details: []
         };
@@ -829,6 +866,43 @@ export class MetricsRepository extends BaseRepository {
 
       logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
+      // Compute enriched per-model performance metrics
+      const modelPerformance = await this.getModelPerformanceOnDataset(models, puzzleIds);
+
+      // Compute head-to-head insights
+      const fullySolvedCount = details.filter(d => {
+        const results = [d.model1Result, d.model2Result, d.model3Result, d.model4Result]
+          .filter(r => r !== undefined);
+        return results.some(r => r === 'correct');
+      }).length;
+
+      const unsolvedCount = details.filter(d => {
+        const results = [d.model1Result, d.model2Result, d.model3Result, d.model4Result]
+          .filter(r => r !== undefined);
+        return results.every(r => r === 'incorrect' || r === 'not_attempted');
+      }).length;
+
+      // Determine winners based on performance metrics
+      const winnerModel = modelPerformance.length > 0
+        ? modelPerformance.reduce((best, curr) =>
+            curr.accuracyPercentage > best.accuracyPercentage ? curr : best
+          ).modelName
+        : null;
+
+      const mostEfficientModel = modelPerformance
+        .filter(m => m.costPerCorrectAnswer !== null && m.correctCount > 0)
+        .reduce((best, curr) =>
+          (curr.costPerCorrectAnswer! < (best.costPerCorrectAnswer ?? Infinity)) ? curr : best,
+          { costPerCorrectAnswer: Infinity } as ModelPerformanceOnDataset
+        ).modelName || null;
+
+      const fastestModel = modelPerformance
+        .filter(m => m.avgProcessingTime > 0)
+        .reduce((best, curr) =>
+          curr.avgProcessingTime < best.avgProcessingTime ? curr : best,
+          { avgProcessingTime: Infinity } as ModelPerformanceOnDataset
+        ).modelName || null;
+
       return {
         summary: {
           totalPuzzles: puzzleIds.length,
@@ -838,6 +912,12 @@ export class MetricsRepository extends BaseRepository {
           model4Name: models[3] || '',
           dataset,
           ...summary,
+          modelPerformance,
+          fullySolvedCount,
+          unsolvedCount,
+          winnerModel,
+          mostEfficientModel,
+          fastestModel,
         },
         details
       };
@@ -853,16 +933,111 @@ export class MetricsRepository extends BaseRepository {
           const result = await this.query('SELECT DISTINCT puzzle_id FROM explanations ORDER BY puzzle_id');
           return result.rows.map(r => r.puzzle_id);
       }
-      
+
       // SRP COMPLIANCE: Delegate to ModelDatasetRepository (single source of truth for dataset operations)
       // ModelDatasetRepository owns dataset-to-directory mapping and filesystem access
       // This fixes the bug where puzzleLoader's priority-based filtering excluded valid puzzles
       const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
       const puzzleIds = modelDatasetRepo.getPuzzleIdsFromDataset(dataset);
-      
+
       logger.info(`getPuzzleIdsForDataset: dataset=${dataset}, found ${puzzleIds.length} puzzles directly from filesystem`, 'metrics');
-      
+
       return puzzleIds;
+  }
+
+  /**
+   * Compute per-model performance metrics for a specific dataset
+   * Uses MetricsQueryBuilder patterns for accurate calculations
+   */
+  private async getModelPerformanceOnDataset(
+    models: string[],
+    puzzleIds: string[]
+  ): Promise<ModelPerformanceOnDataset[]> {
+    if (!this.isConnected() || models.length === 0 || puzzleIds.length === 0) {
+      return [];
+    }
+
+    try {
+      const totalPuzzlesInDataset = puzzleIds.length;
+
+      // Query per-model stats using MetricsQueryBuilder patterns
+      const query = `
+        SELECT
+          e.model_name,
+          COUNT(DISTINCT e.puzzle_id) as attempts,
+          ${MetricsQueryBuilder.correctPredictionsCount()} as correct_count,
+          COUNT(*) FILTER (WHERE NOT (${MetricsQueryBuilder.correctnessCalculation()} = 1)) as incorrect_count,
+          ${MetricsQueryBuilder.accuracyPercentage(
+            MetricsQueryBuilder.correctPredictionsCount(),
+            'COUNT(DISTINCT e.puzzle_id)'
+          )} as accuracy_percentage,
+          AVG(e.api_processing_time_ms) as avg_processing_time,
+          SUM(e.estimated_cost) as total_cost,
+          AVG(e.estimated_cost) as avg_cost_per_attempt,
+          AVG(e.confidence) as avg_confidence,
+          AVG(CASE WHEN (${MetricsQueryBuilder.correctnessCalculation()} = 1) THEN e.confidence END) as confidence_when_correct
+        FROM explanations e
+        WHERE e.model_name = ANY($1::text[])
+          AND e.puzzle_id = ANY($2::text[])
+          AND ${MetricsQueryBuilder.modelFilter()}
+          AND ${MetricsQueryBuilder.solverAttemptFilter()}
+        GROUP BY e.model_name
+      `;
+
+      const result = await this.query(query, [models, puzzleIds]);
+
+      return models.map(modelName => {
+        const row = result.rows.find(r => r.model_name === modelName);
+
+        if (!row) {
+          // Model has no attempts on this dataset
+          return {
+            modelName,
+            totalPuzzlesInDataset,
+            attempts: 0,
+            coveragePercentage: 0,
+            correctCount: 0,
+            incorrectCount: 0,
+            notAttemptedCount: totalPuzzlesInDataset,
+            accuracyPercentage: 0,
+            avgProcessingTime: 0,
+            totalCost: 0,
+            avgCostPerAttempt: 0,
+            costPerCorrectAnswer: null,
+            avgConfidence: 0,
+            confidenceWhenCorrect: null
+          };
+        }
+
+        const attempts = parseInt(row.attempts) || 0;
+        const correctCount = parseInt(row.correct_count) || 0;
+        const incorrectCount = parseInt(row.incorrect_count) || 0;
+        const totalCost = parseFloat(row.total_cost) || 0;
+        const costPerCorrect = correctCount > 0 ? totalCost / correctCount : null;
+
+        return {
+          modelName,
+          totalPuzzlesInDataset,
+          attempts,
+          coveragePercentage: this.round((attempts / totalPuzzlesInDataset) * 100, 2),
+          correctCount,
+          incorrectCount,
+          notAttemptedCount: totalPuzzlesInDataset - attempts,
+          accuracyPercentage: this.round(parseFloat(row.accuracy_percentage) || 0, 2),
+          avgProcessingTime: this.round(parseFloat(row.avg_processing_time) || 0, 0),
+          totalCost: this.round(totalCost, 6),
+          avgCostPerAttempt: this.round(parseFloat(row.avg_cost_per_attempt) || 0, 6),
+          costPerCorrectAnswer: costPerCorrect !== null ? this.round(costPerCorrect, 6) : null,
+          avgConfidence: this.round(parseFloat(row.avg_confidence) || 0, 2),
+          confidenceWhenCorrect: row.confidence_when_correct
+            ? this.round(parseFloat(row.confidence_when_correct), 2)
+            : null
+        };
+      });
+    } catch (error) {
+      logger.error(`Error getting model performance on dataset: ${error instanceof Error ? error.message : String(error)}`, 'metrics');
+      return [];
+    }
   }
 
   // ==================== HELPER METHODS FOR SRP REFACTORING ====================
