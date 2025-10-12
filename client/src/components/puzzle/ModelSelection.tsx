@@ -12,7 +12,8 @@
 
 import React from 'react';
 import { ModelButton } from './ModelButton';
-import type { ModelConfig, AnalysisResult } from '@/types/puzzle';
+import type { ExplanationData } from '@/types/puzzle';
+import type { ModelConfig } from '@shared/types';
 
 interface ModelSelectionProps {
   models: ModelConfig[] | undefined;
@@ -20,7 +21,7 @@ interface ModelSelectionProps {
   streamingModelKey: string | null;
   streamingEnabled: boolean;
   canStreamModel: (modelKey: string) => boolean;
-  explanations: AnalysisResult[];
+  explanations: ExplanationData[];
   onAnalyze: (modelKey: string) => void;
   analyzerErrors: Map<string, Error>;
 }

@@ -15,11 +15,12 @@ import React from 'react';
 import { Brain, Filter, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { AnalysisResultCard } from './AnalysisResultCard';
 import { useFilteredResults, type CorrectnessFilter } from '@/hooks/useFilteredResults';
-import type { AnalysisResult, ModelConfig } from '@/types/puzzle';
+import type { ExplanationData } from '@/types/puzzle';
+import type { ModelConfig } from '@shared/types';
 import type { ARCTask } from '@shared/types';
 
 interface AnalysisResultsProps {
-  allResults: AnalysisResult[];
+  allResults: ExplanationData[];
   correctnessFilter: CorrectnessFilter;
   onFilterChange: (filter: CorrectnessFilter) => void;
   models: ModelConfig[] | undefined;
