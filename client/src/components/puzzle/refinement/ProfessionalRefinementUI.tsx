@@ -122,11 +122,14 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
   const currentIteration = iterations.length;
   const latest = iterations.length > 0 ? iterations[iterations.length - 1] : null;
   
-  const totalCost = iterations.reduce((sum, iter) => sum + (iter.content.estimatedCost || 0), 0);
-  const totalTokens = iterations.reduce((sum, iter) => sum + (iter.content.totalTokens || 0), 0);
-  const totalInputTokens = iterations.reduce((sum, iter) => sum + (iter.content.inputTokens || 0), 0);
-  const totalOutputTokens = iterations.reduce((sum, iter) => sum + (iter.content.outputTokens || 0), 0);
-  const totalReasoningTokens = iterations.reduce((sum, iter) => sum + (iter.content.reasoningTokens || 0), 0);
+  const totalCost = iterations.reduce((sum, iter) => {
+    const cost = Number(iter.content.estimatedCost) || 0;
+    return sum + cost;
+  }, 0);
+  const totalTokens = iterations.reduce((sum, iter) => sum + (Number(iter.content.totalTokens) || 0), 0);
+  const totalInputTokens = iterations.reduce((sum, iter) => sum + (Number(iter.content.inputTokens) || 0), 0);
+  const totalOutputTokens = iterations.reduce((sum, iter) => sum + (Number(iter.content.outputTokens) || 0), 0);
+  const totalReasoningTokens = iterations.reduce((sum, iter) => sum + (Number(iter.content.reasoningTokens) || 0), 0);
   const totalProcessingTime = iterations.reduce((sum, iter) => sum + (iter.content.apiProcessingTimeMs || 0), 0);
   const avgConfidence = iterations.length > 0 
     ? iterations.reduce((sum, iter) => sum + (typeof iter.content.confidence === 'number' ? iter.content.confidence : 0), 0) / iterations.length
@@ -189,7 +192,7 @@ export const ProfessionalRefinementUI: React.FC<ProfessionalRefinementUIProps> =
             </div>
             <div className="text-center">
               <div className="text-gray-500 font-medium mb-0.5">Cost</div>
-              <div className="font-mono font-semibold text-blue-600">${totalCost.toFixed(4)}</div>
+              <div className="font-mono font-semibold text-blue-600">${(totalCost || 0).toFixed(4)}</div>
             </div>
             <div className="text-center">
               <div className="text-gray-500 font-medium mb-0.5">Input Tok</div>
