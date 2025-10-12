@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Settings, Brain } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Settings, Brain, XCircle } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useGroverProgress } from '@/hooks/useGroverProgress';
 import GroverModelSelect, { type GroverModelKey } from '@/components/grover/GroverModelSelect';
@@ -32,7 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { state, start, sessionId } = useGroverProgress(taskId);
+  const { state, start, cancel, sessionId } = useGroverProgress(taskId);
   const [model, setModel] = React.useState<GroverModelKey>('grover-gpt-5-nano');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const [temperature, setTemperature] = React.useState(0.2);
@@ -157,15 +157,27 @@ export default function GroverSolver() {
         </div>
         <div className="flex items-center gap-3">
           <GroverModelSelect value={model} onChange={setModel} disabled={isRunning} />
-          <Button 
-            onClick={onStart} 
-            disabled={isRunning} 
-            size="lg"
-            className="flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-6"
-          >
-            <Rocket className="h-5 w-5" />
-            <span className="text-base">{isRunning ? 'Running…' : 'Start Analysis'}</span>
-          </Button>
+          {isRunning ? (
+            <Button 
+              onClick={cancel}
+              variant="destructive"
+              size="lg"
+              className="flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6"
+            >
+              <XCircle className="h-5 w-5" />
+              Cancel
+            </Button>
+          ) : (
+            <Button 
+              onClick={onStart} 
+              disabled={isRunning} 
+              size="lg"
+              className="flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-6"
+            >
+              <Rocket className="h-5 w-5" />
+              Start Grover Search
+            </Button>
+          )}
         </div>
       </div>
 
