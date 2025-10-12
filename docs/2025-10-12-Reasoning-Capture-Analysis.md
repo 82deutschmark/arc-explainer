@@ -385,6 +385,45 @@ After implementing these fixes:
 
 ---
 
+## Project-Specific Implementation Notes
+
+### Which Services Are Affected
+
+**Responses API Services (Fixed):**
+- ✅ **OpenAI Service** - Uses Responses API, FIXED with output[] fallback scanning
+- ✅ **Grok Service** - Uses Responses API, but correctly returns `reasoningLog: null` because xAI doesn't expose reasoning content (it's encrypted and server-side only)
+
+**Other Services (Not Affected):**
+- ℹ️ **Anthropic** - Uses Messages API, different response structure
+- ℹ️ **Gemini** - Uses Gemini API, different response structure  
+- ℹ️ **DeepSeek** - Uses Chat Completions API, different response structure
+- ℹ️ **OpenRouter** - Uses Chat Completions API for proxy models, different response structure
+
+### Why Grok Doesn't Show Reasoning
+
+Per xAI documentation and our analysis:
+- Grok-4 models DO use internal reasoning (they're reasoning models)
+- BUT: xAI does NOT expose reasoning content in responses
+- Reasoning is encrypted and stored server-side
+- Only accessible via `previous_response_id` for conversation chaining
+- `parseProviderResponse()` in `grok.ts` correctly returns `reasoningLog: null` and `reasoningItems: []`
+
+This is intentional and correct behavior - not a bug.
+
+### Token Limits and Reasoning
+
+From OpenAI Responses API docs (Oct 2025):
+- Reasoning models can use 50-80% of total tokens for internal thinking
+- If `max_output_tokens` is too low, model may run out before returning predictions
+- **Recommendation:** Set `maxOutputTokens: 16384` or higher for GPT-5 models
+
+**Current Implementation:**
+- `max_output_tokens` is passed through if provided in `serviceOpts`
+- Not set by default - caller responsibility
+- Controllers can set this via request parameters
+
+---
+
 ## Commit Message Template
 
 ```

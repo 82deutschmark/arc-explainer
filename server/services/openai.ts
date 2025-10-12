@@ -444,6 +444,9 @@ export class OpenAIService extends BaseAIService {
       parallel_tool_calls: false,
       truncation: "auto",
       max_steps: serviceOpts.maxSteps,
+      // IMPORTANT: Reasoning models need high max_output_tokens (16K+ recommended)
+      // Reasoning can consume 50-80% of total tokens internally, leaving little for visible output
+      // If not set, model may run out of tokens before returning structured predictions
       max_output_tokens: serviceOpts.maxOutputTokens,
       metadata: taskId ? { taskId } : undefined
     };
@@ -618,37 +621,68 @@ export class OpenAIService extends BaseAIService {
     result._providerRawResponse = rawResponse;
 
     // Extract reasoning log from API response
-    if (captureReasoning && response.output_reasoning?.summary) {
-      const summary = response.output_reasoning.summary;
-      
-      if (Array.isArray(summary)) {
-        reasoningLog = summary.map((s: any) => {
-          if (typeof s === 'string') return s;
-          if (s && typeof s === 'object' && s.text) return s.text;
-          if (s && typeof s === 'object' && s.content) return s.content;
-          return typeof s === 'object' ? JSON.stringify(s) : String(s);
-        }).filter(Boolean).join('\n\n');
-      } else if (typeof summary === 'string') {
-        reasoningLog = summary;
-      } else if (summary && typeof summary === 'object') {
-        // Handle object summary (this was the missing case causing [object Object])
-        if (summary.text) {
-          reasoningLog = summary.text;
-        } else if (summary.content) {
-          reasoningLog = summary.content;
-        } else {
-          reasoningLog = JSON.stringify(summary, null, 2);
+    // CRITICAL FIX: Always attempt reasoning extraction when captureReasoning is true
+    // Reasoning can appear in output_reasoning.summary OR in output[] array items
+    if (captureReasoning) {
+      // Try output_reasoning.summary first (primary location)
+      if (response.output_reasoning?.summary) {
+        const summary = response.output_reasoning.summary;
+        
+        if (Array.isArray(summary)) {
+          reasoningLog = summary.map((s: any) => {
+            if (typeof s === 'string') return s;
+            if (s && typeof s === 'object' && s.text) return s.text;
+            if (s && typeof s === 'object' && s.content) return s.content;
+            return typeof s === 'object' ? JSON.stringify(s) : String(s);
+          }).filter(Boolean).join('\n\n');
+        } else if (typeof summary === 'string') {
+          reasoningLog = summary;
+        } else if (summary && typeof summary === 'object') {
+          // Handle object summary (this was the missing case causing [object Object])
+          if (summary.text) {
+            reasoningLog = summary.text;
+          } else if (summary.content) {
+            reasoningLog = summary.content;
+          } else {
+            reasoningLog = JSON.stringify(summary, null, 2);
+          }
         }
+      }
+      
+      // Fallback: Scan output[] array for reasoning blocks (per Oct 2025 Responses API docs)
+      // GPT-5 models (especially nano and chat-latest) often return reasoning here
+      if (!reasoningLog && response.output && Array.isArray(response.output)) {
+        reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
       }
     }
 
     // Extract reasoning items and convert them to an array of strings
-    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-      reasoningItems = response.output_reasoning.items.map((item: any) => {
-        if (typeof item === 'string') return item;
-        if (item && typeof item === 'object' && item.text) return item.text;
-        return JSON.stringify(item);
-      });
+    if (captureReasoning) {
+      // Try output_reasoning.items first (primary location)
+      if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+        reasoningItems = response.output_reasoning.items.map((item: any) => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object' && item.text) return item.text;
+          return JSON.stringify(item);
+        });
+      } else if (response.output && Array.isArray(response.output)) {
+        // Fallback: Extract reasoning items from output[] array
+        const reasoningBlocks = response.output.filter((block: any) => 
+          block.type === 'reasoning' || 
+          block.type === 'Reasoning'
+        );
+        
+        reasoningItems = reasoningBlocks.map((block: any) => {
+          if (typeof block.content === 'string') return block.content;
+          if (Array.isArray(block.content)) {
+            const textContent = block.content.find((c: any) => c.type === 'text');
+            return textContent?.text || JSON.stringify(block.content);
+          }
+          return JSON.stringify(block);
+        }).filter(Boolean);
+      } else {
+        reasoningItems = [];
+      }
     } else {
       reasoningItems = [];
     }
@@ -1068,23 +1102,3 @@ export class OpenAIService extends BaseAIService {
 }
 
 export const openaiService = new OpenAIService();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
