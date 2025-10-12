@@ -1,4 +1,40 @@
 
+## [4.4.2] - 2025-10-11 09:30 PM
+### HOTFIX: Restore Readable Sizing to Advanced Controls
+
+**PROBLEM:**
+v3.7.8.1 reduced Advanced Controls by 80% which made them unusable:
+- 8px-9px fonts (unreadable on most screens)
+- 20px button heights (too small for accurate clicking)  
+- 2.5px icons (barely visible)
+- Overall poor UX due to over-aggressive size reduction
+
+**SOLUTION:**
+Increased to standard readable sizes while maintaining compact design:
+- **Fonts:** 8px-9px → `text-xs` (12px) for all labels and text
+- **Buttons:** `h-5` (20px) → `h-8` (32px) for better clickability
+- **Icons:** `h-2.5/w-2.5` → `h-3.5/w-3.5` and `h-4/w-4` for visibility
+- **Padding:** `p-1` → `p-2` for breathing room
+- **Gaps:** `gap-0.5/gap-1` → `gap-1.5/gap-2` for visual clarity
+- **Section title:** "Advanced" → "Advanced Controls" (restored full label)
+- **Button text:** "Preview" → "Preview Prompt" (restored clarity)
+- **Slider max-width:** 200px → `max-w-xs` (320px) for easier interaction
+
+**IMPACT:**
+- ✅ Controls now readable and clickable
+- ✅ Maintains compact design without sacrificing usability
+- ✅ Temperature slider easier to adjust with precision
+- ✅ GPT-5 reasoning selects clearly labeled and sized
+- ✅ Better accessibility and user experience
+
+**FILES MODIFIED:**
+- `client/src/components/puzzle/refinement/RefinementThread.tsx` (lines 206-310)
+
+**Author:** Cascade using Claude Sonnet 3.5  
+**Commit:** 6d825ea9
+
+---
+
 ## [4.4.1] - 2025-10-11 09:00 PM
 ### HOTFIX: OpenAI Schema Strict Mode Compliance
 
