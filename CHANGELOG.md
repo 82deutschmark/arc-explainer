@@ -1,3 +1,72 @@
+## [4.4.4] - 2025-10-11 10:15 PM
+### 🚨 CRITICAL SECURITY FIX: Progressive Reasoning Data Leakage
+
+**SEVERITY:** CRITICAL - Invalidates all previous progressive reasoning results
+
+**PROBLEM:**
+`PuzzleDiscussion.tsx` was sending **test puzzle answers to the AI on every turn**, completely invalidating the progressive reasoning workflow. The AI wasn't "refining" its analysis through reasoning - it was just rephrasing answers it already knew.
+
+**ROOT CAUSE:**
+Line 103 in PuzzleDiscussion.tsx: `omitAnswer: false`
+
+This caused the prompt builder to include test outputs in every API call:
+```
+Test 1 Input: [[0,0],[1,1]]
+Correct Answer: [[1,1],[0,0]]  ⚠️ LEAKED TO AI!
+```
+
+**DATA FLOW:**
+1. PuzzleDiscussion sets `omitAnswer: false`
+2. useAnalysisResults passes to analysis service
+3. puzzleAnalysisService passes to prompt builder
+4. promptBuilder calculates `includeAnswers = !omitAnswer = true`
+5. grids.ts formatTestSection() includes test outputs (line 172-174)
+
+**IMPACT:**
+- ❌ All progressive reasoning results via UI are scientifically invalid
+- ❌ Cannot distinguish genuine improvement from answer memorization
+- ✅ Script version (`grok-4-progressive-reasoning.ts`) was CORRECT - had `omitAnswer: true`
+
+**FIX:**
+```typescript
+// PuzzleDiscussion.tsx Line 103
+omitAnswer: true, // CRITICAL FIX: Must withhold test answers in solver mode
+```
+
+**DATABASE CONTAMINATION:**
+All explanations with `prompt_template_id = 'discussion'` created before this fix are invalid.
+
+**DOCUMENTATION:**
+Created comprehensive analysis: `docs/CRITICAL-PROGRESSIVE-REASONING-DATA-LEAKAGE.md`
+
+**ADDITIONAL ISSUES IDENTIFIED:**
+1. Continuation turns still resend full puzzle data (wastes 600+ tokens)
+2. PuzzleDiscussion component is 574-line god component (SRP violation)
+3. No integration tests for data leakage prevention
+4. Three different progressive reasoning implementations (UI, script, debate)
+
+**FILES MODIFIED:**
+- `client/src/pages/PuzzleDiscussion.tsx` (Line 103)
+- `docs/CRITICAL-PROGRESSIVE-REASONING-DATA-LEAKAGE.md` (New)
+
+**VERIFICATION:**
+Check server logs for:
+```
+🔒 DATA LEAKAGE CHECK:
+   - includeAnswers: false (✅ Test outputs withheld)
+```
+
+**IMMEDIATE ACTIONS REQUIRED:**
+1. ✅ Fix applied - test answers now withheld
+2. ⏳ Add database flag for contaminated records
+3. ⏳ Add integration tests
+4. ⏳ Optimize continuation prompts
+5. ⏳ Refactor PuzzleDiscussion component
+
+**Author:** Cascade using Sonnet 4.5  
+**Priority:** CRITICAL - Deploy immediately
+
+---
 
 ## [4.4.3] - 2025-10-11 09:45 PM
 ### CRITICAL FIX: Data Leakage Logging & URL Parameter Selection
