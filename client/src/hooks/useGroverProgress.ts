@@ -381,11 +381,33 @@ export function useGroverProgress(taskId: string | undefined) {
     
     fetchSnapshot();
   }, [sessionId]); // Only depend on sessionId, not state
+  const cancel = useCallback(async () => {
+    if (!sessionId) {
+      console.warn('[Grover] Cannot cancel: no active session');
+      return;
+    }
+
+    try {
+      await apiRequest('POST', `/api/stream/cancel/${sessionId}`);
+      
+      closeSocket();
+      
+      setState(prev => ({
+        ...prev,
+        status: 'error',
+        message: 'Analysis cancelled by user',
+        logLines: [...(prev.logLines || []), `[${new Date().toLocaleTimeString()}] ⚠️ Cancelled by user`]
+      }));
+    } catch (error) {
+      console.error('[Grover] Cancel failed:', error);
+    }
+  }, [sessionId, closeSocket]);
+
   useEffect(() => {
     return () => {
       closeSocket();
     };
   }, [closeSocket]);
 
-  return { sessionId, state, start };
+  return { sessionId, state, start, cancel };
 }

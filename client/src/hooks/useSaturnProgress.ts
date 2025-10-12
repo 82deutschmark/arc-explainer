@@ -338,6 +338,30 @@ export function useSaturnProgress(taskId: string | undefined) {
     [closeEventSource, closeSocket, openWebSocket, streamingEnabled, taskId]
   );
 
+  const cancel = useCallback(async () => {
+    if (!sessionId) {
+      console.warn('[Saturn] Cannot cancel: no active session');
+      return;
+    }
+
+    try {
+      await apiRequest('POST', `/api/stream/cancel/${sessionId}`);
+      
+      closeSocket();
+      closeEventSource();
+      
+      setState(prev => ({
+        ...prev,
+        status: 'error',
+        streamingStatus: 'failed',
+        streamingMessage: 'Cancelled by user',
+        message: 'Analysis cancelled by user'
+      }));
+    } catch (error) {
+      console.error('[Saturn] Cancel failed:', error);
+    }
+  }, [sessionId, closeSocket, closeEventSource]);
+
   useEffect(() => {
     return () => {
       closeSocket();
@@ -345,5 +369,5 @@ export function useSaturnProgress(taskId: string | undefined) {
     };
   }, [closeEventSource, closeSocket]);
 
-  return { sessionId, state, start };
+  return { sessionId, state, start, cancel };
 }

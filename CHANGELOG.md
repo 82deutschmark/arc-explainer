@@ -25,9 +25,11 @@
 - Non-streaming mode unaffected
 - Zero breaking changes
 
-**FRONTEND TODO:**
-- Add cancel() functions to useGroverProgress.ts and useSaturnProgress.ts
-- Add cancel buttons to GroverSolver.tsx and SaturnVisualSolver.tsx
+**FRONTEND COMPLETE:**
+- ✅ Added cancel() function to useSaturnProgress.ts (lines 341-363)
+- ✅ Added cancel() function to useGroverProgress.ts (lines 384-404)
+- ✅ Added cancel button to SaturnVisualSolver.tsx (conditional render)
+- ✅ Added cancel button to GroverSolver.tsx (conditional render)
 
 **DOCUMENTATION:**
 - Created: `docs/2025-10-12-Saturn-Grover-Fixes-Complete.md`

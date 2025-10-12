@@ -26,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw, Settings } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw, Settings, XCircle } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import { useModels } from '@/hooks/useModels';
@@ -37,7 +37,7 @@ import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { state, start, sessionId } = useSaturnProgress(taskId);
+  const { state, start, cancel, sessionId } = useSaturnProgress(taskId);
   const { data: models } = useModels();
   
   // Model and parameter states
@@ -367,10 +367,17 @@ export default function SaturnVisualSolver() {
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
-          <Button onClick={onStart} disabled={isRunning} className="flex items-center gap-2">
-            <Rocket className="h-4 w-4" />
-            {isRunning ? 'Running…' : 'Start Analysis'}
-          </Button>
+          {isRunning ? (
+            <Button onClick={cancel} variant="destructive" className="flex items-center gap-2">
+              <XCircle className="h-4 w-4" />
+              Cancel
+            </Button>
+          ) : (
+            <Button onClick={onStart} disabled={isRunning} className="flex items-center gap-2">
+              <Rocket className="h-4 w-4" />
+              Start Analysis
+            </Button>
+          )}
         </div>
       </div>
 
