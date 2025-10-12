@@ -10,14 +10,14 @@
  *
  * CRITICAL FIX (2025-10-10): Fixed streaming validation bug where streaming responses skipped
  * validateAndEnrichResult() entirely, causing NULL predicted_output_grid, isPredictionCorrect=false,
- * and predictionAccuracyScore=0 to be saved to database. Now wraps streaming harness to intercept
+ * and trustworthinessScore=0 to be saved to database. Now wraps streaming harness to intercept
  * completion and validate analysis using validateStreamingResult() before sending to client.
  * This ensures streaming results match database schema expectations just like non-streaming analysis.
  *
  * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded
  * from validateAndEnrichResult() call (line 124). This caused debate rebuttals to skip prediction
  * extraction and validation entirely, resulting in NULL predicted grids and default values
- * (isPredictionCorrect: false, predictionAccuracyScore: 0) being saved to database. Now uses
+ * (isPredictionCorrect: false, trustworthinessScore: 0) being saved to database. Now uses
  * centralized isSolverMode() function from systemPrompts.ts to ensure consistent validation.
  *
  * PREVIOUS FIX (2025-09-29): Added originalExplanation and customChallenge extraction in

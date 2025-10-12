@@ -168,10 +168,10 @@ export class PuzzleFilterService {
       });
     }
     
-    // Filter by prediction accuracy score
+    // Filter by trustworthiness score
     if (predictionAccuracyMin || predictionAccuracyMax) {
       filtered = filtered.filter(exp => {
-        const accuracyScore = exp.predictionAccuracyScore || 0;
+        const accuracyScore = exp.trustworthinessScore || 0;
         if (predictionAccuracyMin && accuracyScore < predictionAccuracyMin) return false;
         if (predictionAccuracyMax && accuracyScore > predictionAccuracyMax) return false;
         return true;
@@ -192,8 +192,8 @@ export class PuzzleFilterService {
       filtered = filtered.filter(exp => exp.isPredictionCorrect === false || exp.multiTestAllCorrect === false);
     } else if (predictionAccuracy === 'low_accuracy') {
       filtered = filtered.filter(exp => {
-        // Check prediction accuracy score (0.0 to 1.0 scale)
-        const accuracyScore = exp.predictionAccuracyScore;
+        // Check trustworthiness score (0.0 to 1.0 scale)
+        const accuracyScore = exp.trustworthinessScore;
         if (accuracyScore !== null && accuracyScore !== undefined) {
           return accuracyScore < 0.25;
         }

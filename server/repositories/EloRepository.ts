@@ -45,7 +45,7 @@ interface ExplanationData {
   apiProcessingTimeMs?: number;
   predictedOutputGrid?: any;
   isPredictionCorrect?: boolean;
-  predictionAccuracyScore?: number;
+  trustworthinessScore?: number;
   temperature?: number;
   reasoningEffort?: string;
   reasoningVerbosity?: string;
@@ -506,7 +506,7 @@ export class EloRepository extends BaseRepository {
       apiProcessingTimeMs: row.api_processing_time_ms,
       predictedOutputGrid: row.predicted_output_grid,
       isPredictionCorrect: row.is_prediction_correct,
-      predictionAccuracyScore: row.prediction_accuracy_score,
+      trustworthinessScore: row.trustworthiness_score,
       temperature: row.temperature,
       reasoningEffort: row.reasoning_effort,
       reasoningVerbosity: row.reasoning_verbosity,
