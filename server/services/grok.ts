@@ -59,7 +59,8 @@ export class GrokService extends BaseAIService {
     options?: PromptOptions,
     serviceOpts: ServiceOptions = {}
   ): Promise<AIResponse> {
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     const appliedTemperature = typeof temperature === "number" ? temperature : DEFAULT_TEMPERATURE;
 
     this.logAnalysisStart(modelKey, appliedTemperature, promptPackage.userPrompt.length, serviceOpts);
@@ -133,7 +134,8 @@ export class GrokService extends BaseAIService {
       );
     }
 
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     const appliedTemperature = typeof temperature === "number" ? temperature : DEFAULT_TEMPERATURE;
 
     this.logAnalysisStart(modelKey, appliedTemperature, promptPackage.userPrompt.length, serviceOpts);
@@ -338,7 +340,8 @@ export class GrokService extends BaseAIService {
     serviceOpts: ServiceOptions = {}
   ): PromptPreview {
     const modelName = getApiModelName(modelKey);
-    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass modelKey for structured output detection
+    const promptPackage = this.buildPromptPackage(task, promptId, customPrompt, options, serviceOpts, modelKey);
     const systemPromptMode = serviceOpts.systemPromptMode || "ARC";
     const structuredPreview = this.supportsStructuredOutput(modelKey);
     const previewTemperature = modelSupportsTemperature(modelKey) ? DEFAULT_TEMPERATURE : undefined;

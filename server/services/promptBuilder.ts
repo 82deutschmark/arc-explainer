@@ -85,6 +85,12 @@ export function buildAnalysisPrompt(
     customChallenge
   } = options;
   
+  // PHASE 12: Extract test count for dynamic prompt instructions
+  const testCount = task.test?.length || 1;
+  const hasStructuredOutput = useStructuredOutput ?? false;
+  
+  logger.service('PromptBuilder', `📊 Test count: ${testCount}, Structured output: ${hasStructuredOutput}`);
+  
   // PHASE 1-2: Context-aware prompt detection
   const promptContext = determinePromptContext(promptId, options, serviceOpts, task, customPrompt);
   const useContinuation = shouldUseContinuationPrompt(promptContext);
@@ -180,7 +186,8 @@ export function buildAnalysisPrompt(
       logger.service('PromptBuilder', 'No custom text provided, using minimal system prompt');
       systemPrompt = "Provide your prediction for the correct Test Output grid or grids in the same format seen in the examples. Then, explain the simple transformation rules at place in the examples that led to your prediction. ";
     } else {
-      systemPrompt = getSystemPrompt(promptId);
+      // Phase 12: Pass testCount and hasStructuredOutput for dynamic instructions
+      systemPrompt = getSystemPrompt(promptId, testCount, hasStructuredOutput);
       
       // Add retry enhancement to system prompt
       if (retryMode) {

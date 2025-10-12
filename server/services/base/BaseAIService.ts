@@ -237,22 +237,38 @@ export abstract class BaseAIService {
   /**
    * Build prompt package using centralized prompt builder
    * PHASE 1-2: Now passes serviceOpts to enable continuation detection
+   * PHASE 12: Now detects structured output support and passes to prompt builder
+   * 
+   * @param modelKey - Optional model key to determine structured output support
    */
   protected buildPromptPackage(
     task: ARCTask,
     promptId: string = getDefaultPromptId(),
     customPrompt?: string,
     options?: PromptOptions,
-    serviceOpts: ServiceOptions = {}
+    serviceOpts: ServiceOptions = {},
+    modelKey?: string
   ): PromptPackage {
-    const systemPromptMode = serviceOpts?.systemPromptMode || 'ARC';
+    // PHASE 12: Determine if this provider/model uses structured output
+    const useStructuredOutput = modelKey 
+      ? this.supportsStructuredOutput(modelKey)
+      : false;
     
-    const systemPrompt = customPrompt 
-      ? buildCustomPrompt() 
-      : getSystemPrompt(promptId);
-
+    // Merge into options for prompt builder
+    const enhancedOptions: PromptOptions = {
+      ...options,
+      useStructuredOutput: useStructuredOutput ?? options?.useStructuredOutput
+    };
+    
     // PHASE 1-2: Pass serviceOpts to enable context-aware continuation prompts
-    const promptPackage: PromptPackage = buildAnalysisPrompt(task, promptId, customPrompt, options, serviceOpts);
+    // PHASE 12: Pass enhancedOptions with useStructuredOutput flag
+    const promptPackage: PromptPackage = buildAnalysisPrompt(
+      task, 
+      promptId, 
+      customPrompt, 
+      enhancedOptions, 
+      serviceOpts
+    );
 
     return promptPackage;
   }
