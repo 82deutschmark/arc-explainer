@@ -11,7 +11,7 @@
  * shadcn/ui: N/A (backend schema utility)
  */
 
-import { OPTIONAL_ANALYSIS_FIELDS } from '../core.js';
+// No imports needed - Grok schema is fully self-contained
 
 /**
  * Grid schema for Grok - NO min/max constraints (Grok doesn't support them)
@@ -29,6 +29,10 @@ const GROK_GRID_SCHEMA = {
  * 
  * xAI uses simplified format without name/strict wrapper:
  * - schema: The actual JSON schema object (direct)
+ * 
+ * CRITICAL: Like OpenAI, xAI's schema validation may require ALL fields in properties to be in required.
+ * We exclude optional analysis fields to avoid validation errors.
+ * The AI can still return solvingStrategy, hints, etc. - they just won't be schema-enforced.
  * 
  * Used in response_format as:
  * response_format: { type: "json_schema", json_schema: getGrokSchema(testCount).schema }
@@ -64,8 +68,9 @@ export function getGrokSchema(testCount: number) {
     }
   }
   
-  // Add optional analysis fields
-  Object.assign(properties, OPTIONAL_ANALYSIS_FIELDS);
+  // REMOVED: Optional analysis fields excluded from schema (xAI Responses API constraint)
+  // The AI can still return solvingStrategy, patternDescription, hints, confidence
+  // They just won't be schema-enforced, allowing more flexibility
   
   return {
     schema: {

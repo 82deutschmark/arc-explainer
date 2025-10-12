@@ -1,4 +1,42 @@
 
+## [4.4.1] - 2025-10-11 09:00 PM
+### HOTFIX: OpenAI Schema Strict Mode Compliance
+
+**CRITICAL BUG FIXED:**
+OpenAI's `strict: true` mode requires ALL fields in `properties` to be in the `required` array. Our schemas were adding optional analysis fields (solvingStrategy, patternDescription, hints, confidence) to properties but NOT to required, causing validation errors.
+
+**Error Message:**
+```
+"Invalid schema for response_format 'arc_analysis': 
+'required' is required to be supplied and to be an array 
+including every key in properties. Missing 'solvingStrategy'."
+```
+
+**Root Cause:**
+- `buildCoreSchema()` added `OPTIONAL_ANALYSIS_FIELDS` to properties
+- But only prediction grids were added to required array
+- OpenAI strict mode: if field exists in properties → MUST be in required
+
+**Solution:**
+- Added `includeOptionalFields` parameter to `buildCoreSchema()` (default: false)
+- OpenAI wrapper: `buildCoreSchema(testCount, false)` - excludes optional fields
+- Grok wrapper: Also updated to exclude optional fields (same constraint)
+- **Impact:** Prediction grids strictly enforced, analysis fields flexible
+- **Note:** AI can still return solvingStrategy, hints, etc. - just not schema-enforced
+
+**Files Modified:**
+- `server/services/schemas/core.ts` - Added includeOptionalFields parameter
+- `server/services/schemas/providers/openai.ts` - Pass false to exclude optionals
+- `server/services/schemas/providers/grok.ts` - Removed OPTIONAL_ANALYSIS_FIELDS
+
+**Why This Approach:**
+- OpenAI/xAI Responses API don't support truly optional fields in strict mode
+- We want prediction grids to be REQUIRED (core functionality)
+- Analysis fields should be flexible (nice-to-have)
+- Solution: Only schema-enforce prediction grids, let analysis fields flow through naturally
+
+---
+
 ## [4.4.0] - 2025-10-11 08:30 PM
 ### Phase 12: Test-Count-Aware Prompt Integration - COMPLETE
 
