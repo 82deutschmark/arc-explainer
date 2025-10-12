@@ -27,6 +27,32 @@ export class GroverService extends BaseAIService {
     "grover-gpt-5-mini": "gpt-5-mini-2025-08-07"
   };
 
+  /**
+   * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
+   */
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId?: string,
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // analyzePuzzleWithModel already handles streaming via serviceOpts.stream
+    return this.analyzePuzzleWithModel(
+      task,
+      modelKey,
+      taskId,
+      temperature,
+      promptId || "grover",
+      customPrompt,
+      options,
+      serviceOpts
+    );
+  }
+
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,

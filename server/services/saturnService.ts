@@ -38,6 +38,32 @@ export class SaturnService extends BaseAIService {
     "grok-4": "grok-4"
   };
 
+  /**
+   * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
+   */
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId?: string,
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // analyzePuzzleWithModel already handles streaming via serviceOpts.stream
+    return this.analyzePuzzleWithModel(
+      task,
+      modelKey,
+      taskId,
+      temperature,
+      promptId || getDefaultPromptId(),
+      customPrompt,
+      options,
+      serviceOpts
+    );
+  }
+
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
