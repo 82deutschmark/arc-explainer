@@ -71,11 +71,20 @@ export class SaturnService extends BaseAIService {
       
       // SSE emission
       if (harness) {
-        this.emitStreamEvent(harness, "stream.status", {
+        // Include images, step, totalSteps, and progress in SSE status events
+        const statusPayload: Record<string, any> = {
           state: "in_progress",
           phase: payload.phase,
           message: payload.message,
-        });
+        };
+        
+        if (payload.images) statusPayload.images = payload.images;
+        if (payload.step !== undefined) statusPayload.step = payload.step;
+        if (payload.totalSteps !== undefined) statusPayload.totalSteps = payload.totalSteps;
+        if (payload.progress !== undefined) statusPayload.progress = payload.progress;
+        
+        this.emitStreamEvent(harness, "stream.status", statusPayload);
+        
         if (payload.message) {
           this.emitStreamChunk(harness, {
             type: "text",
