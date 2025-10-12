@@ -2,14 +2,14 @@
  * AnalysisResultCard.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T23:35:00-04:00
+ * Date: 2025-10-12T21:36:00Z
  * PURPOSE: React card orchestrating puzzle analysis presentation, coordinating reasoning visibility,
  * predicted grid metrics, feedback toggles, and Saturn integrations. FIXED: Multi-test stats now
  * correctly shows "Incorrect" (not "Some Incorrect") when 0/N tests are correct. Simplified fallback
  * logic to rely on multiTestAllCorrect flag when detailed validation data is unavailable.
  * ADDED: Deep linking support - each card has id="explanation-{id}" and data-explanation-id for direct URLs.
  * SRP/DRY check: Pass - Single responsibility (orchestration), reuses child components
- * shadcn/ui: Pass - Uses shadcn/ui Badge component
+ * shadcn/ui: Pass - Converted to DaisyUI badge
  */
 
 import React, { useMemo, useState } from 'react';
@@ -20,7 +20,6 @@ import { AnalysisResultContent } from './AnalysisResultContent';
 import { AnalysisResultGrid } from './AnalysisResultGrid';
 import { AnalysisResultMetrics } from './AnalysisResultMetrics';
 import { AnalysisResultActions } from './AnalysisResultActions';
-import { Badge } from '@/components/ui/badge';
 
 export const AnalysisResultCard = React.memo(function AnalysisResultCard({ modelKey, result, model, testCases, eloMode = false }: AnalysisResultCardProps) {
   const expectedOutputGrids = useMemo(() => testCases.map(tc => tc.output), [testCases]);
@@ -182,9 +181,9 @@ export const AnalysisResultCard = React.memo(function AnalysisResultCard({ model
         <div className="bg-gray-50 border border-gray-200 rounded">
           <div className="p-3 border-b border-gray-200 flex items-center justify-between">
             <h5 className="font-semibold text-gray-800">Raw DB record</h5>
-            <Badge variant="outline" className="text-xs bg-gray-50">
+            <div className="badge badge-outline text-xs bg-gray-50">
               {result.id ? `id: ${result.id}` : 'unsaved'}
-            </Badge>
+            </div>
           </div>
           <div className="p-3 max-h-64 overflow-y-auto">
             <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono leading-relaxed">

@@ -1,18 +1,17 @@
 /**
  * TrainingPairGallery.tsx
  * 
- * Author: Cascade using Sonnet 4
- * Date: 2025-10-11T19:25:00Z
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12T21:22:00Z
  * PURPOSE: Responsive CSS Grid gallery of training examples.
  * Auto-fits 3-6 cards per row based on viewport width.
  * Manages zoom modal state for individual cards.
  * SRP: Single responsibility = layout and orchestrate training pair cards
  * DRY: Delegates rendering to TrainingPairCard, no duplication
- * shadcn/ui: Uses Badge for count display
+ * shadcn/ui: Pass - Converted to DaisyUI badge
  */
 
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { TrainingPairCard } from './TrainingPairCard';
 import { TrainingPairZoomModal } from './TrainingPairZoomModal';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -42,9 +41,9 @@ export function TrainingPairGallery({
       {showHeader && (
         <div className="flex items-center gap-2 mb-3">
           <h3 className="text-base font-semibold">Training Examples</h3>
-          <Badge variant="outline" className="text-xs">
+          <div className="badge badge-outline text-xs">
             {trainExamples.length} {trainExamples.length === 1 ? 'example' : 'examples'}
-          </Badge>
+          </div>
         </div>
       )}
 
