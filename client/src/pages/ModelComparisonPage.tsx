@@ -1,27 +1,29 @@
 /**
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-10T23:51:00-04:00
- * PURPOSE: Dedicated full page for displaying puzzle-by-puzzle model comparison matrix.
- * Shows NewModelComparisonResults component with comparison data from backend.
- * 
+ * Date: 2025-10-12
+ * PURPOSE: Ultra-dense DaisyUI-powered model comparison dashboard showing comprehensive head-to-head metrics.
+ * Displays per-model performance, cost analysis, speed comparison, and puzzle-by-puzzle matrix.
+ *
  * FEATURES:
- * - Puzzle-by-puzzle comparison matrix (✅/❌/⏳)
- * - Summary statistics at the top
- * - Scrollable table with sticky columns
- * - Clickable puzzle badges
- * 
- * SRP and DRY check: Pass - Single responsibility is displaying comparison matrix
- * shadcn/ui: Pass - Uses shadcn/ui components throughout
+ * - DaisyUI hero section with dramatic winner/loser indicators
+ * - Radial progress cards for accuracy visualization
+ * - High-density stats grid using DaisyUI stats component
+ * - Per-model performance cards with cost/speed/confidence metrics
+ * - Enhanced comparison matrix with DaisyUI table styling
+ * - Collapsible sections for detailed breakdowns
+ *
+ * SRP and DRY check: Pass - Single responsibility is model comparison visualization
+ * shadcn/ui + DaisyUI: Pass - Uses both libraries for maximum visual impact
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, GitCompare, Loader2 } from 'lucide-react';
+import { ArrowLeft, Trophy, Zap, DollarSign, TrendingUp, Target, Clock, Brain, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NewModelComparisonResults } from '@/components/analytics/NewModelComparisonResults';
 import { ModelComparisonResult } from './AnalyticsOverview';
-import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 export default function ModelComparisonPage() {
   const [, navigate] = useLocation();
@@ -30,12 +32,8 @@ export default function ModelComparisonPage() {
 
   // Get comparison data from location state or URL params
   const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
-    // First try to get from location state (navigation from AnalyticsOverview)
-    // wouter stores state directly in history.state, not nested under 'usr'
     const stateData = (window.history.state?.comparisonData as ModelComparisonResult | null);
     if (stateData) {
-      console.log('Found state data:', stateData);
-      // Store in localStorage for refresh resilience
       try {
         localStorage.setItem('arc-comparison-data', JSON.stringify(stateData));
       } catch (e) {
@@ -44,62 +42,34 @@ export default function ModelComparisonPage() {
       return stateData;
     }
 
-    console.log('No state data found, checking URL params and localStorage...');
-
-    // If no state data, check URL params for fallback
     const urlParams = new URLSearchParams(window.location.search);
     const model1 = urlParams.get('model1');
     const model2 = urlParams.get('model2');
     const dataset = urlParams.get('dataset');
 
-    console.log('URL params:', { model1, model2, dataset });
-
-    // If we have URL params, return null and fetch below
     if (model1 && dataset) {
-      console.log('URL params found, will fetch data');
-      return null;
+      return null; // Will fetch below
     }
 
-    // Last resort: try localStorage
     try {
       const storedData = localStorage.getItem('arc-comparison-data');
       if (storedData) {
         const parsed = JSON.parse(storedData);
-        console.log('Found localStorage data:', parsed);
-        // More robust validation - check for expected structure
-        if (parsed &&
-            typeof parsed === 'object' &&
-            parsed.summary &&
-            typeof parsed.summary === 'object' &&
-            Array.isArray(parsed.details)) {
-          console.log('localStorage data is valid, using it');
+        if (parsed?.summary && Array.isArray(parsed.details)) {
           return parsed;
-        } else {
-          console.log('localStorage data structure is invalid');
         }
-      } else {
-        console.log('No data found in localStorage');
       }
     } catch (e) {
       console.warn('Failed to retrieve comparison data from localStorage:', e);
     }
 
-    console.log('No data found anywhere');
     return null;
   });
-
-  // Update state when location changes
-  useEffect(() => {
-    const stateData = window.history.state?.comparisonData as ModelComparisonResult | null;
-    if (stateData) {
-      setComparisonData(stateData);
-    }
-  }, []);
 
   // Fetch comparison data when missing
   useEffect(() => {
     const fetchComparisonData = async () => {
-      if (comparisonData) return; // Already have data
+      if (comparisonData) return;
 
       const urlParams = new URLSearchParams(window.location.search);
       const model1 = urlParams.get('model1');
@@ -122,8 +92,6 @@ export default function ModelComparisonPage() {
           dataset
         });
 
-        console.log('Fetching comparison data with params:', queryParams.toString());
-
         const response = await fetch(`/api/metrics/compare?${queryParams.toString()}`);
         if (!response.ok) {
           const errorData = await response.json();
@@ -131,7 +99,6 @@ export default function ModelComparisonPage() {
         }
 
         const result = await response.json();
-        console.log('Received comparison result:', result);
 
         if (!result.data) {
           throw new Error('No data received from server');
@@ -139,7 +106,6 @@ export default function ModelComparisonPage() {
 
         setComparisonData(result.data);
 
-        // Store in localStorage for refresh resilience
         try {
           localStorage.setItem('arc-comparison-data', JSON.stringify(result.data));
         } catch (e) {
@@ -161,8 +127,8 @@ export default function ModelComparisonPage() {
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading comparison data...</p>
+            <span className="loading loading-spinner loading-lg"></span>
+            <p className="text-muted-foreground mt-4">Loading comparison data...</p>
           </div>
         </div>
       </div>
@@ -173,9 +139,7 @@ export default function ModelComparisonPage() {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
         <Alert variant="destructive">
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
         <Button onClick={() => navigate('/analytics')} className="mt-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -202,93 +166,226 @@ export default function ModelComparisonPage() {
   }
 
   const { summary } = comparisonData;
-  const activeModels = [
-    summary.model1Name,
-    summary.model2Name,
-    summary.model3Name,
-    summary.model4Name
-  ].filter(Boolean);
+  const modelPerf = summary.modelPerformance || [];
 
-  return (
-    <div className="container mx-auto p-6 max-w-7xl space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => navigate('/analytics')}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Analytics
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <GitCompare className="h-8 w-8" />
-            Model Comparison
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Comparing {activeModels.join(', ')} on {summary.dataset} dataset ({summary.totalPuzzles} puzzles)
-          </p>
-        </div>
-      </div>
+  // Helper to format costs
+  const formatCost = (cost: number | null | undefined) => {
+    if (cost === null || cost === undefined || cost === 0) return 'Free';
+    if (cost < 0.01) return `${(cost * 1000).toFixed(2)}m`;
+    if (cost < 1) return `${(cost * 100).toFixed(2)}¢`;
+    return `$${cost.toFixed(4)}`;
+  };
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          label="All Correct"
-          value={summary.allCorrect}
-          description="All models solved"
-          variant="success"
-        />
-        <StatCard
-          label="All Incorrect"
-          value={summary.allIncorrect}
-          description="All models failed"
-          variant="error"
-        />
-        <StatCard
-          label="Not Attempted"
-          value={summary.allNotAttempted}
-          description="No model attempted"
-          variant="muted"
-        />
-        <StatCard
-          label="Disagreements"
-          value={summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
-          description="Models disagree"
-          variant="info"
-        />
-      </div>
-
-      {/* Comparison Matrix */}
-      <NewModelComparisonResults result={comparisonData} />
-    </div>
-  );
-}
-
-// Stat Card Component
-interface StatCardProps {
-  label: string;
-  value: number;
-  description: string;
-  variant: 'success' | 'error' | 'info' | 'muted';
-}
-
-const StatCard: React.FC<StatCardProps> = ({ label, value, description, variant }) => {
-  const variants = {
-    success: 'border-green-200 bg-green-50 text-green-700',
-    error: 'border-red-200 bg-red-50 text-red-700',
-    info: 'border-blue-200 bg-blue-50 text-blue-700',
-    muted: 'border-gray-200 bg-gray-50 text-gray-700',
+  // Helper to format time
+  const formatTime = (ms: number | undefined) => {
+    if (!ms || ms === 0) return 'N/A';
+    if (ms < 1000) return `${Math.round(ms)}ms`;
+    return `${(ms / 1000).toFixed(2)}s`;
   };
 
   return (
-    <Card className={`border ${variants[variant]}`}>
-      <CardContent className="p-4">
-        <div className="text-2xl font-bold">{value}</div>
-        <div className="text-sm font-medium mt-1">{label}</div>
-        <div className="text-xs text-muted-foreground mt-2">{description}</div>
-      </CardContent>
-    </Card>
+    <div className="min-h-screen bg-base-200 p-4">
+      <div className="container mx-auto max-w-7xl space-y-4">
+
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/analytics')}
+            className="btn btn-ghost btn-sm"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+        </div>
+
+        {/* DaisyUI Hero Section */}
+        <div className="hero bg-gradient-to-r from-primary to-secondary rounded-box shadow-lg">
+          <div className="hero-content text-center py-8">
+            <div className="max-w-4xl">
+              <h1 className="text-5xl font-bold text-primary-content mb-2">
+                Model Battle: {modelPerf[0]?.modelName || 'Model 1'} vs {modelPerf[1]?.modelName || 'Model 2'}
+              </h1>
+              <p className="text-xl text-primary-content/80 mb-4">
+                {summary.dataset.toUpperCase()} Dataset • {summary.totalPuzzles} Puzzles
+              </p>
+
+              {/* Winner Badges */}
+              <div className="flex justify-center gap-4 flex-wrap">
+                {summary.winnerModel && (
+                  <div className="badge badge-success badge-lg gap-2">
+                    <Trophy className="h-4 w-4" />
+                    Accuracy Winner: {summary.winnerModel}
+                  </div>
+                )}
+                {summary.mostEfficientModel && (
+                  <div className="badge badge-info badge-lg gap-2">
+                    <DollarSign className="h-4 w-4" />
+                    Most Efficient: {summary.mostEfficientModel}
+                  </div>
+                )}
+                {summary.fastestModel && (
+                  <div className="badge badge-warning badge-lg gap-2">
+                    <Zap className="h-4 w-4" />
+                    Fastest: {summary.fastestModel}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* DaisyUI Stats Grid - High-Impact Metrics */}
+        <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-100">
+          <div className="stat">
+            <div className="stat-figure text-success">
+              <Target className="h-8 w-8" />
+            </div>
+            <div className="stat-title">All Correct</div>
+            <div className="stat-value text-success">{summary.allCorrect}</div>
+            <div className="stat-desc">Both models solved</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-error">
+              <AlertCircle className="h-8 w-8" />
+            </div>
+            <div className="stat-title">All Incorrect</div>
+            <div className="stat-value text-error">{summary.allIncorrect}</div>
+            <div className="stat-desc">Both models failed</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-warning">
+              <TrendingUp className="h-8 w-8" />
+            </div>
+            <div className="stat-title">Disagreements</div>
+            <div className="stat-value text-warning">
+              {summary.totalPuzzles - summary.allCorrect - summary.allIncorrect - summary.allNotAttempted}
+            </div>
+            <div className="stat-desc">Models differ</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-info">
+              <Trophy className="h-8 w-8" />
+            </div>
+            <div className="stat-title">Fully Solved</div>
+            <div className="stat-value text-info">{summary.fullySolvedCount}</div>
+            <div className="stat-desc">≥1 model correct</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-base-content/50">
+              <Brain className="h-8 w-8" />
+            </div>
+            <div className="stat-title">Unsolved</div>
+            <div className="stat-value">{summary.unsolvedCount}</div>
+            <div className="stat-desc">All failed</div>
+          </div>
+        </div>
+
+        {/* Per-Model Performance Cards with Radial Progress */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {modelPerf.map((model, idx) => (
+            <div key={model.modelName} className="card bg-base-100 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title">
+                  <Badge variant={idx === 0 ? "default" : "secondary"}>{model.modelName}</Badge>
+                  {summary.winnerModel === model.modelName && (
+                    <div className="badge badge-success gap-1">
+                      <Trophy className="h-3 w-3" />
+                      Winner
+                    </div>
+                  )}
+                </h2>
+
+                <div className="flex items-center justify-around my-4">
+                  {/* Radial Progress for Accuracy */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="radial-progress text-primary"
+                      style={{ "--value": model.accuracyPercentage, "--size": "8rem", "--thickness": "8px" } as React.CSSProperties}
+                      role="progressbar"
+                    >
+                      <span className="text-2xl font-bold">{model.accuracyPercentage.toFixed(1)}%</span>
+                    </div>
+                    <p className="text-sm font-semibold mt-2">Accuracy</p>
+                    <p className="text-xs text-base-content/60">{model.correctCount}/{model.attempts} correct</p>
+                  </div>
+
+                  {/* Coverage Progress */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="radial-progress text-secondary"
+                      style={{ "--value": model.coveragePercentage, "--size": "6rem", "--thickness": "6px" } as React.CSSProperties}
+                      role="progressbar"
+                    >
+                      <span className="text-lg font-bold">{model.coveragePercentage.toFixed(0)}%</span>
+                    </div>
+                    <p className="text-sm font-semibold mt-2">Coverage</p>
+                    <p className="text-xs text-base-content/60">{model.attempts}/{model.totalPuzzlesInDataset} puzzles</p>
+                  </div>
+                </div>
+
+                {/* Detailed Stats */}
+                <div className="divider my-2"></div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="stat-compact">
+                    <div className="text-xs text-base-content/60">Cost per Correct</div>
+                    <div className="text-lg font-bold text-success">{formatCost(model.costPerCorrectAnswer)}</div>
+                  </div>
+                  <div className="stat-compact">
+                    <div className="text-xs text-base-content/60">Total Cost</div>
+                    <div className="text-lg font-bold">{formatCost(model.totalCost)}</div>
+                  </div>
+                  <div className="stat-compact">
+                    <div className="text-xs text-base-content/60">Avg Speed</div>
+                    <div className="text-lg font-bold flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      {formatTime(model.avgProcessingTime)}
+                    </div>
+                  </div>
+                  <div className="stat-compact">
+                    <div className="text-xs text-base-content/60">Confidence</div>
+                    <div className="text-lg font-bold">{model.avgConfidence.toFixed(1)}%</div>
+                  </div>
+                  {model.confidenceWhenCorrect !== null && (
+                    <>
+                      <div className="stat-compact col-span-2">
+                        <div className="text-xs text-base-content/60">Trustworthiness (Confidence When Correct)</div>
+                        <div className="text-lg font-bold text-info">{model.confidenceWhenCorrect.toFixed(1)}%</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Status Breakdown */}
+                <div className="flex gap-2 mt-2">
+                  <div className="badge badge-success gap-1">
+                    ✅ {model.correctCount}
+                  </div>
+                  <div className="badge badge-error gap-1">
+                    ❌ {model.incorrectCount}
+                  </div>
+                  <div className="badge badge-ghost gap-1">
+                    ⏳ {model.notAttemptedCount}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Comparison Matrix */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body p-4">
+            <NewModelComparisonResults result={comparisonData} />
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
-};
+}
