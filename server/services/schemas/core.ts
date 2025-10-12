@@ -59,29 +59,40 @@ export const OPTIONAL_ANALYSIS_FIELDS = {
  * All provider-specific wrappers use this function.
  * 
  * @param testCount - Actual number of test cases in the puzzle (from task.test.length)
+ * @param includeOptionalFields - Whether to include optional analysis fields in schema (default: false for OpenAI strict mode)
  * @returns Schema object with properties and required fields
  * 
- * @example Single test:
- * buildCoreSchema(1) 
+ * @example Single test (strict mode):
+ * buildCoreSchema(1, false) 
  * // Returns schema requiring only "predictedOutput"
  * 
- * @example Multiple tests:
- * buildCoreSchema(2)
- * // Returns schema requiring "predictedOutput1" and "predictedOutput2"
- * // NO predictedOutput3, NO boolean flags, NO empty arrays
+ * @example Multiple tests with optional fields:
+ * buildCoreSchema(2, true)
+ * // Returns schema with predictedOutput1, predictedOutput2 + optional analysis fields
+ * // OpenAI strict mode requires ALL fields to be in required array, so set includeOptionalFields=false
  */
-export function buildCoreSchema(testCount: number) {
+export function buildCoreSchema(testCount: number, includeOptionalFields: boolean = false) {
   if (testCount === 1) {
     // Single test case: only one prediction field needed
+    const properties: Record<string, any> = {
+      predictedOutput: {
+        ...GRID_SCHEMA,
+        description: "Your predicted output grid for the test case (2D array of integers 0-9)"
+      }
+    };
+    
+    const required: string[] = ["predictedOutput"];
+    
+    // Add optional fields if requested (NOT for OpenAI strict mode)
+    if (includeOptionalFields) {
+      Object.assign(properties, OPTIONAL_ANALYSIS_FIELDS);
+      // OpenAI strict mode: if field is in properties, it MUST be in required
+      required.push(...Object.keys(OPTIONAL_ANALYSIS_FIELDS));
+    }
+    
     return {
-      properties: {
-        predictedOutput: {
-          ...GRID_SCHEMA,
-          description: "Your predicted output grid for the test case (2D array of integers 0-9)"
-        },
-        ...OPTIONAL_ANALYSIS_FIELDS
-      },
-      required: ["predictedOutput"]
+      properties,
+      required
     };
   } else {
     // Multiple test cases: create exactly the fields we need
@@ -98,8 +109,12 @@ export function buildCoreSchema(testCount: number) {
       required.push(fieldName);
     }
     
-    // Add optional analysis fields
-    Object.assign(properties, OPTIONAL_ANALYSIS_FIELDS);
+    // Add optional analysis fields if requested
+    if (includeOptionalFields) {
+      Object.assign(properties, OPTIONAL_ANALYSIS_FIELDS);
+      // OpenAI strict mode: if field is in properties, it MUST be in required
+      required.push(...Object.keys(OPTIONAL_ANALYSIS_FIELDS));
+    }
     
     return {
       properties,
