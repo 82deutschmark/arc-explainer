@@ -19,13 +19,6 @@
 
 import React from 'react';
 import { useParams, Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Loader2, ArrowLeft, Rocket, Terminal, Eye, RotateCcw, Settings, XCircle } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
@@ -107,9 +100,9 @@ export default function SaturnVisualSolver() {
   if (!taskId) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <Alert>
-          <AlertDescription>Invalid puzzle ID</AlertDescription>
-        </Alert>
+        <div role="alert" className="alert alert-error">
+          <span>Invalid puzzle ID</span>
+        </div>
       </div>
     );
   }
@@ -130,11 +123,9 @@ export default function SaturnVisualSolver() {
   if (taskError || !task) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <Alert>
-          <AlertDescription>
-            Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
-          </AlertDescription>
-        </Alert>
+        <div role="alert" className="alert alert-error">
+          <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
+        </div>
       </div>
     );
   }
@@ -346,10 +337,10 @@ export default function SaturnVisualSolver() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
           <Link href="/">
-            <Button variant="outline" size="sm">
+            <button className="btn btn-outline btn-sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
-            </Button>
+            </button>
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Saturn Visual Solver</h1>
@@ -358,53 +349,52 @@ export default function SaturnVisualSolver() {
         </div>
         <div className="flex items-center gap-3">
           <SaturnModelSelect value={modelKey} onChange={setModelKey} disabled={isRunning} />
-          <Button
-            variant="outline"
-            size="sm"
+          <button
+            className="btn btn-outline btn-sm"
             onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
             disabled={isRunning}
           >
             <Settings className="h-4 w-4 mr-2" />
             Settings
-          </Button>
+          </button>
           {isRunning ? (
-            <Button onClick={cancel} variant="destructive" className="flex items-center gap-2">
+            <button onClick={cancel} className="btn btn-error flex items-center gap-2">
               <XCircle className="h-4 w-4" />
               Cancel
-            </Button>
+            </button>
           ) : (
-            <Button onClick={onStart} disabled={isRunning} className="flex items-center gap-2">
+            <button onClick={onStart} disabled={isRunning} className="btn btn-primary flex items-center gap-2">
               <Rocket className="h-4 w-4" />
               Start Analysis
-            </Button>
+            </button>
           )}
         </div>
       </div>
 
       {/* Advanced Settings Panel */}
       {showAdvancedSettings && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2">
               <Settings className="h-5 w-5" />
               Advanced Settings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </h2>
+            <div className="space-y-6">
             {/* Temperature Control */}
             {supportsTemperature && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Temperature</Label>
+                  <label className="label text-sm font-medium">Temperature</label>
                   <span className="text-sm text-gray-600">{temperature.toFixed(2)}</span>
                 </div>
-                <Slider
-                  value={[temperature]}
-                  onValueChange={(vals) => setTemperature(vals[0])}
-                  min={0}
-                  max={2}
-                  step={0.05}
-                  className="w-full"
+                <input
+                  type="range"
+                  className="range range-xs w-full"
+                  value={temperature}
+                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                  min="0"
+                  max="2"
+                  step="0.05"
                   disabled={isRunning}
                 />
                 <p className="text-xs text-gray-500">
@@ -417,76 +407,65 @@ export default function SaturnVisualSolver() {
             {isGPT5ReasoningModel(modelKey) && (
               <>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Reasoning Effort</Label>
-                  <Select
+                  <label className="label text-sm font-medium">Reasoning Effort</label>
+                  <select
+                    className="select select-bordered w-full"
                     value={reasoningEffort}
-                    onValueChange={(v) => setReasoningEffort(v as 'minimal' | 'low' | 'medium' | 'high')}
+                    onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
                     disabled={isRunning}
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="minimal">Minimal</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="minimal">Minimal</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
                   <p className="text-xs text-gray-500">
                     How much reasoning the model should perform.
                   </p>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Reasoning Verbosity</Label>
-                  <Select
+                  <label className="label text-sm font-medium">Reasoning Verbosity</label>
+                  <select
+                    className="select select-bordered w-full"
                     value={reasoningVerbosity}
-                    onValueChange={(v) => setReasoningVerbosity(v as 'low' | 'medium' | 'high')}
+                    onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
                     disabled={isRunning}
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
                   <p className="text-xs text-gray-500">
                     Detail level of reasoning output.
                   </p>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Reasoning Summary</Label>
-                  <Select
+                  <label className="label text-sm font-medium">Reasoning Summary</label>
+                  <select
+                    className="select select-bordered w-full"
                     value={reasoningSummaryType}
-                    onValueChange={(v) => setReasoningSummaryType(v as 'auto' | 'detailed')}
+                    onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
                     disabled={isRunning}
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="auto">Auto</SelectItem>
-                      <SelectItem value="detailed">Detailed</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="auto">Auto</option>
+                    <option value="detailed">Detailed</option>
+                  </select>
                   <p className="text-xs text-gray-500">
                     Type of reasoning summary to generate.
                   </p>
                 </div>
               </>
             )}
-          </CardContent>
-        </Card>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Compact Status Overview */}
-      <Card>
-        <CardContent className="py-4">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${
@@ -535,24 +514,23 @@ export default function SaturnVisualSolver() {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
 
       {/* Python Solver Output */}
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card w-full bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <Terminal className="h-5 w-5" />
             Python Solver Output
             {state.logLines && state.logLines.length > 0 && (
-              <Badge variant="outline" className="ml-2">
+              <div className="badge badge-outline ml-2">
                 {state.logLines.length} lines
-              </Badge>
+              </div>
             )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </h2>
+          <div className="space-y-4">
           <div
             ref={logRef}
             className="bg-gray-900 text-green-400 font-mono text-sm border rounded-lg p-4 h-96 overflow-auto space-y-1"
@@ -592,16 +570,16 @@ export default function SaturnVisualSolver() {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        </div>
+      </div>
 
       {/* Collapsible Puzzle Details */}
-      <Card>
-        <CardHeader>
-          <Button 
-            variant="ghost" 
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <button 
+            className="btn btn-ghost w-full justify-between h-auto py-4"
             onClick={() => setShowPuzzleDetails(!showPuzzleDetails)}
-            className="w-full justify-between h-auto py-4"
           >
             <div className="flex items-center gap-2">
               <Eye className="h-4 w-4" />
@@ -610,10 +588,10 @@ export default function SaturnVisualSolver() {
             <div className={`transform transition-transform ${showPuzzleDetails ? 'rotate-180' : ''}`}>
               ▼
             </div>
-          </Button>
-        </CardHeader>
+          </button>
+        </div>
         {showPuzzleDetails && (
-          <CardContent className="pt-0">
+          <div className="card-body pt-0">
             <div className="space-y-6">
               {/* Training Examples */}
               <div>
@@ -653,9 +631,9 @@ export default function SaturnVisualSolver() {
                 </div>
               )}
             </div>
-          </CardContent>
+          </div>
         )}
-      </Card>
+      </div>
 
       {/* Image Gallery */}
       {Array.isArray(state.galleryImages) && state.galleryImages.length > 0 && (
@@ -667,26 +645,24 @@ export default function SaturnVisualSolver() {
 
       {/* Results */}
       {isDone && state.result && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2">
               <RotateCcw className="h-5 w-5" />
               Analysis Results
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
             <div className="bg-gray-50 rounded-lg p-4">
               <pre className="text-sm overflow-auto max-h-96 whitespace-pre-wrap">
                 {JSON.stringify(state.result, null, 2)}
               </pre>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Attribution */}
-      <Alert className="bg-amber-50 border-amber-200">
-        <AlertDescription className="text-center">
+      <div role="alert" className="alert bg-amber-50 border-amber-200">
+        <div className="text-center">
           Powered by the open-source{' '}
           <a
             href="https://github.com/zoecarver/saturn-arc"
@@ -697,8 +673,8 @@ export default function SaturnVisualSolver() {
             Saturn ARC project
           </a>
           {' '}by Zoe Carver
-        </AlertDescription>
-      </Alert>
+        </div>
+      </div>
     </div>
   );
 }

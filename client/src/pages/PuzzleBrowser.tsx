@@ -2,14 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useModels } from '@/hooks/useModels';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
@@ -175,11 +168,9 @@ export default function PuzzleBrowser() {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
         <div className="max-w-4xl mx-auto">
-          <Alert className="border-red-500 bg-red-50">
-            <AlertDescription>
-              Failed to load puzzles. Please check your connection and try again.
-            </AlertDescription>
-          </Alert>
+          <div role="alert" className="alert alert-error">
+            <span>Failed to load puzzles. Please check your connection and try again.</span>
+          </div>
         </div>
       </div>
     );
@@ -200,8 +191,8 @@ export default function PuzzleBrowser() {
           <CollapsibleMission />
 
           {/* Resources & References Section - Enhanced with emojis and better styling */}
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
+          <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+            <div className="card-body p-6">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Sparkles className="h-6 w-6 text-purple-600" />
                 <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
@@ -291,26 +282,25 @@ export default function PuzzleBrowser() {
                   🙏🏻 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🌟
                 </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </header>
 
         {/* Filters */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
+        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2 text-slate-800">
               <Grid3X3 className="h-5 w-5 text-blue-600" />
               Filter Puzzles
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
             {/* Search Bar */}
             <div className="mb-6">
               <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
                 <div className="w-full md:flex-1 space-y-2">
-                  <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
+                  <label htmlFor="puzzleSearch" className="label">Search by Puzzle ID</label>
                   <div className="relative">
-                    <Input
+                    <input
+                      className="input input-bordered w-full pr-24"
                       id="puzzleSearch"
                       placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
                       value={searchQuery}
@@ -318,7 +308,6 @@ export default function PuzzleBrowser() {
                         setSearchQuery(e.target.value);
                         setSearchError(null);
                       }}
-                      className="pr-24"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleSearch();
@@ -330,130 +319,98 @@ export default function PuzzleBrowser() {
                     <p className="text-sm text-red-500">{searchError}</p>
                   )}
                 </div>
-                <Button 
+                <button 
+                  className="btn btn-primary min-w-[120px]"
                   onClick={handleSearch}
-                  className="min-w-[120px]"
                 >
                   Search
-                </Button>
+                </button>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="maxGridSize">Maximum Grid Size</Label>
-                <Select value={maxGridSize} onValueChange={setMaxGridSize}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select max size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any Size</SelectItem>
-                    <SelectItem value="5">5×5 (Very Small)</SelectItem>
-                    <SelectItem value="10">10×10 (Small)</SelectItem>
-                    <SelectItem value="15">15×15 (Medium)</SelectItem>
-                    <SelectItem value="20">20×20 (Large)</SelectItem>
-                    <SelectItem value="30">30×30 (Very Large)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="maxGridSize" className="label">Maximum Grid Size</label>
+                <select className="select select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
+                  <option value="any">Any Size</option>
+                  <option value="5">5×5 (Very Small)</option>
+                  <option value="10">10×10 (Small)</option>
+                  <option value="15">15×15 (Medium)</option>
+                  <option value="20">20×20 (Large)</option>
+                  <option value="30">30×30 (Very Large)</option>
+                </select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="explanationFilter">Explanation Status</Label>
-                <Select value={explanationFilter} onValueChange={setExplanationFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filter by explanation status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Puzzles</SelectItem>
-                    <SelectItem value="unexplained">Unexplained Only</SelectItem>
-                    <SelectItem value="explained">Explained Only</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="explanationFilter" className="label">Explanation Status</label>
+                <select className="select select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
+                  <option value="all">All Puzzles</option>
+                  <option value="unexplained">Unexplained Only</option>
+                  <option value="explained">Explained Only</option>
+                </select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="gridConsistent">Grid Size Consistency</Label>
-                <Select value={gridSizeConsistent} onValueChange={setGridSizeConsistent}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any consistency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any consistency</SelectItem>
-                    <SelectItem value="true">Consistent size only</SelectItem>
-                    <SelectItem value="false">Variable size only</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="gridConsistent" className="label">Grid Size Consistency</label>
+                <select className="select select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
+                  <option value="any">Any consistency</option>
+                  <option value="true">Consistent size only</option>
+                  <option value="false">Variable size only</option>
+                </select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="arcVersion">ARC Version</Label>
-                <Select value={arcVersion} onValueChange={setArcVersion}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any ARC version" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any ARC version</SelectItem>
-                    <SelectItem value="ARC1">ARC1 Training</SelectItem>
-                    <SelectItem value="ARC1-Eval">ARC1 Evaluation</SelectItem>
-                    <SelectItem value="ARC2">ARC2 Training</SelectItem>
-                    <SelectItem value="ARC2-Eval">ARC2 Evaluation</SelectItem>
-                    <SelectItem value="ARC-Heavy">ARC-Heavy Dataset</SelectItem>
-                    <SelectItem value="ConceptARC">ConceptARC Dataset</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="arcVersion" className="label">ARC Version</label>
+                <select className="select select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
+                  <option value="any">Any ARC version</option>
+                  <option value="ARC1">ARC1 Training</option>
+                  <option value="ARC1-Eval">ARC1 Evaluation</option>
+                  <option value="ARC2">ARC2 Training</option>
+                  <option value="ARC2-Eval">ARC2 Evaluation</option>
+                  <option value="ARC-Heavy">ARC-Heavy Dataset</option>
+                  <option value="ConceptARC">ConceptARC Dataset</option>
+                </select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="multiTestFilter">Test Cases</Label>
-                <Select value={multiTestFilter} onValueChange={setMultiTestFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any number of test cases" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any number of test cases</SelectItem>
-                    <SelectItem value="single">Single test case (1 output required)</SelectItem>
-                    <SelectItem value="multi">Multiple test cases (2+ outputs required)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="multiTestFilter" className="label">Test Cases</label>
+                <select className="select select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
+                  <option value="any">Any number of test cases</option>
+                  <option value="single">Single test case (1 output required)</option>
+                  <option value="multi">Multiple test cases (2+ outputs required)</option>
+                </select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="sortBy">Sort By</Label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Unexplained first (recommended)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unexplained_first">Unexplained First (recommended)</SelectItem>
-                    <SelectItem value="default">Default (puzzle order)</SelectItem>
-                    <SelectItem value="least_analysis_data">Analysis Data (fewest first)</SelectItem>
-                    <SelectItem value="processing_time">Processing Time (longest first)</SelectItem>
-                    <SelectItem value="confidence">Confidence (highest first)</SelectItem>
-                    <SelectItem value="cost">Cost (highest first)</SelectItem>
-                    <SelectItem value="created_at">Analysis Date (newest first)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label htmlFor="sortBy" className="label">Sort By</label>
+                <select className="select select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="unexplained_first">Unexplained First (recommended)</option>
+                  <option value="default">Default (puzzle order)</option>
+                  <option value="least_analysis_data">Analysis Data (fewest first)</option>
+                  <option value="processing_time">Processing Time (longest first)</option>
+                  <option value="confidence">Confidence (highest first)</option>
+                  <option value="cost">Cost (highest first)</option>
+                  <option value="created_at">Analysis Date (newest first)</option>
+                </select>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Results */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-slate-800">
+        <div className="card shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <div className="card-body">
+            <h2 className="card-title text-slate-800">
               Local Puzzles 
               {!isLoading && (
-                <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                <div className="badge badge-outline ml-2 bg-blue-50 text-blue-700 border-blue-200">
                   {filteredPuzzles.length} found
-                </Badge>
+                </div>
               )}
-            </CardTitle>
+            </h2>
             <p className="text-sm text-gray-600">
               Puzzles available for examination
             </p>
-          </CardHeader>
-          <CardContent>
             {isLoading ? (
               <div className="text-center py-8">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
@@ -470,8 +427,8 @@ export default function PuzzleBrowser() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                  <Card key={puzzle.id} className="hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02]">
-                    <CardContent className="p-4">
+                  <div key={puzzle.id} className="card hover:shadow-lg transition-all duration-200 border-0 bg-white/90 backdrop-blur-sm hover:bg-white/95 hover:scale-[1.02]">
+                    <div className="card-body p-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
@@ -480,11 +437,11 @@ export default function PuzzleBrowser() {
                           <div className="text-xs flex items-center gap-1">
                             <Grid3X3 className="h-3 w-3" /> {puzzle.maxGridSize}x{puzzle.maxGridSize}
                             {puzzle.gridSizeConsistent ? 
-                              <Badge variant="outline" className="text-xs">Consistent</Badge> : 
-                              <Badge variant="outline" className="text-xs bg-amber-50">Variable</Badge>
+                              <div className="badge badge-outline text-xs">Consistent</div> : 
+                              <div className="badge badge-outline text-xs bg-amber-50">Variable</div>
                             }
                             {puzzle.source && (
-                              <Badge variant="outline" className={`text-xs ${
+                              <div className={`badge badge-outline text-xs ${
                                 puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' : 
                                 puzzle.source === 'ARC1-Eval' ? 'bg-cyan-50 text-cyan-700 font-semibold' : 
                                 puzzle.source === 'ARC2' ? 'bg-purple-50 text-purple-700' : 
@@ -494,7 +451,7 @@ export default function PuzzleBrowser() {
                                 'bg-gray-50 text-gray-700'
                               }`}>
                                 {puzzle.source.replace('-Eval', ' Eval').replace('-Heavy', ' Heavy')}
-                              </Badge>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -503,11 +460,11 @@ export default function PuzzleBrowser() {
                         <div className="flex flex-wrap gap-1 mt-2">
                           {puzzle.hasExplanation ? (
                             <>
-                              <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
+                              <div className="badge badge-outline bg-green-50 text-green-700 text-xs">
                                 ✓ Explained
-                              </Badge>
+                              </div>
                               {puzzle.modelName && (
-                                <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs flex items-center gap-1">
+                                <div className="badge badge-outline bg-blue-50 text-blue-700 text-xs flex items-center gap-1">
                                   <span>{puzzle.modelName}</span>
                                   {(() => {
                                     const model = models.find((m: { name: string }) => m.name === puzzle.modelName);
@@ -517,34 +474,34 @@ export default function PuzzleBrowser() {
                                       </span>
                                     ) : null;
                                   })()}
-                                </Badge>
+                                </div>
                               )}
                               {formatProcessingTime(puzzle.apiProcessingTimeMs) && (
-                                <Badge variant="outline" className="bg-orange-50 text-orange-700 text-xs">
+                                <div className="badge badge-outline bg-orange-50 text-orange-700 text-xs">
                                   {formatProcessingTime(puzzle.apiProcessingTimeMs)}
-                                </Badge>
+                                </div>
                               )}
                               {puzzle.confidence && (
-                                <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
+                                <div className="badge badge-outline bg-purple-50 text-purple-700 text-xs">
                                   {puzzle.confidence}% conf
-                                </Badge>
+                                </div>
                               )}
                               {formatCost(puzzle.estimatedCost) && (
-                                <Badge variant="outline" className="bg-green-50 text-green-600 text-xs">
+                                <div className="badge badge-outline bg-green-50 text-green-600 text-xs">
                                   {formatCost(puzzle.estimatedCost)}
-                                </Badge>
+                                </div>
                               )}
                               {(puzzle.feedbackCount || 0) > 0 && (
-                                <Badge variant="outline" className="bg-pink-50 text-pink-700 flex items-center gap-1 text-xs">
+                                <div className="badge badge-outline bg-pink-50 text-pink-700 flex items-center gap-1 text-xs">
                                   <MessageCircle className="h-3 w-3" />
                                   {puzzle.feedbackCount}
-                                </Badge>
+                                </div>
                               )}
                             </>
                           ) : (
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 text-xs">
+                            <div className="badge badge-outline bg-blue-50 text-blue-700 text-xs">
                               📝 Needs Analysis
-                            </Badge>
+                            </div>
                           )}
                         </div>
                         
@@ -578,28 +535,25 @@ export default function PuzzleBrowser() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button asChild size="sm" className="flex-1">
-                            <Link href={`/puzzle/${puzzle.id}`}>
-                              <Eye className="h-4 w-4 mr-1" />
-                              Examine
-                            </Link>
-                          </Button>
+                          <Link href={`/puzzle/${puzzle.id}`} className="btn btn-sm flex-1">
+                            <Eye className="h-4 w-4 mr-1" />
+                            Examine
+                          </Link>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Instructions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How to Use</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
+        <div className="card">
+          <div className="card-body">
+            <h2 className="card-title">How to Use</h2>
+            <div className="space-y-3 text-sm">
             <p>
               <strong>Goal:</strong> This tool helps you examine ARC-AGI puzzles to understand how they work, 
               rather than trying to solve them yourself, but if you want to do that, visit <Link href="https://human-arc.gptpluspro.com/assessment">Puzzle Browser</Link>.
@@ -609,8 +563,9 @@ export default function PuzzleBrowser() {
               <strong>AI Analysis:</strong> Click "Examine" on any puzzle to see the correct answers (from the .json file) and
               have the AI try (and often fail!) to explain the logic behind the puzzle.
             </p>
-          </CardContent>
-        </Card>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
