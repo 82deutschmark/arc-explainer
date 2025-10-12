@@ -1,6 +1,16 @@
 /**
  * server/services/saturnVisualService.ts
  *
+ * @deprecated This service is deprecated as of v4.6.0
+ * Use saturnService.ts instead, which properly integrates with
+ * the TypeScript service layer (grok.ts/openai.ts) and supports
+ * both WebSocket and SSE streaming.
+ *
+ * This file will be removed in v5.0.0
+ *
+ * See: docs/2025-10-11-Saturn-Grover-Production-Fix-Plan.md
+ * See: docs/2025-10-12-Saturn-Grover-Fixes-Complete.md
+ *
  * Real Saturn Visual Solver service.
  * - Spawns the Python Saturn wrapper via `pythonBridge`.
  * - Streams NDJSON events to clients over WebSocket using `wsService`.
@@ -21,6 +31,7 @@
  *   failures as hard errors.
  * - 2025-08-15: Increase overall Saturn run timeout to 30 minutes to
  *   accommodate longer analyses without premature termination.
+ * - 2025-10-12: DEPRECATED - Use saturnService.ts for new implementations
  */
 
 import fs from 'fs';
