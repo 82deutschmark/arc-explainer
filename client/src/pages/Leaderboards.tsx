@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-05
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12
  * PURPOSE: Dedicated Leaderboards page for model performance analysis
  *
  * Displays comprehensive leaderboards for model performance across three key dimensions:
@@ -12,7 +12,7 @@
  * Uses data from AccuracyRepository, TrustworthinessRepository, and FeedbackRepository
  *
  * SRP and DRY check: Pass - Single responsibility for leaderboard display, reuses existing components
- * shadcn/ui: Pass - Uses shadcn/ui components and reuses LeaderboardSection
+ * DaisyUI: Pass - Converted to pure DaisyUI components
  */
 
 import React from 'react';
@@ -43,19 +43,19 @@ export default function Leaderboards() {
   // Error state
   if (hasAnyError) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-base-200">
         <div className="max-w-full mx-auto">
           <div className="text-center py-16">
-            <BarChart3 className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <BarChart3 className="h-16 w-16 mx-auto mb-4 text-base-content/40" />
+            <h2 className="text-2xl font-bold mb-2">
               Leaderboards Unavailable
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-base-content/70 mb-6">
               Failed to load leaderboard data. Please check your connection and try again.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="btn btn-primary"
             >
               Retry
             </button>
@@ -66,63 +66,71 @@ export default function Leaderboards() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-base-200">
       <div className="max-w-full space-y-6">
 
-        {/* Page Header */}
-        <header className="text-center space-y-4 py-6">
-          <div className="flex items-center justify-center gap-3">
-            <BarChart3 className="h-10 w-10 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">
-              Model Performance Leaderboards
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Comprehensive rankings across three dimensions: overconfidence detection,
-            confidence reliability, and user feedback analysis
-          </p>
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
-              High quality data (&gt;10 samples)
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span>
-              Low sample warning (&lt;10 samples)
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
-              High risk detected
+        {/* Hero Header */}
+        <div className="hero bg-gradient-to-r from-primary to-secondary py-12">
+          <div className="hero-content text-center">
+            <div className="max-w-3xl">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <BarChart3 className="h-10 w-10 text-primary-content" />
+                <h1 className="text-4xl font-bold text-primary-content">
+                  Model Performance Leaderboards
+                </h1>
+              </div>
+              <p className="text-lg text-primary-content/90">
+                Comprehensive rankings across three dimensions: overconfidence detection,
+                confidence reliability, and user feedback analysis
+              </p>
             </div>
           </div>
-        </header>
+        </div>
+
+        {/* Data Quality Legend */}
+        <div className="flex items-center justify-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-3 bg-success rounded-full"></span>
+            <span className="text-base-content/70">High quality data (&gt;10 samples)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-3 bg-warning rounded-full"></span>
+            <span className="text-base-content/70">Low sample warning (&lt;10 samples)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-3 bg-error rounded-full"></span>
+            <span className="text-base-content/70">High risk detected</span>
+          </div>
+        </div>
 
         {/* Metrics Explanation */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-blue-900 mb-3">
-            Understanding the Metrics
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <h3 className="font-medium text-blue-900 mb-1">⚠️ Overconfident Models</h3>
-              <p className="text-blue-800">
-                Models with high confidence (≥80%) but poor accuracy (&lt;50%). These models
-                are dangerous because they express certainty despite being wrong.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium text-blue-900 mb-1">🛡️ Trustworthiness Score</h3>
-              <p className="text-blue-800">
-                Measures how well a model's confidence predicts actual correctness. Higher scores
-                mean the model's confidence is more reliable.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-medium text-blue-900 mb-1">💬 Feedback Analysis</h3>
-              <p className="text-blue-800">
-                User ratings of explanation quality. Shows which models provide the most helpful
-                explanations according to real users.
-              </p>
+        <div role="alert" className="alert alert-info shadow-lg">
+          <div className="w-full">
+            <h2 className="text-lg font-semibold mb-3">
+              Understanding the Metrics
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <h3 className="font-medium mb-1">⚠️ Overconfident Models</h3>
+                <p className="opacity-90">
+                  Models with high confidence (≥80%) but poor accuracy (&lt;50%). These models
+                  are dangerous because they express certainty despite being wrong.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium mb-1">🛡️ Trustworthiness Score</h3>
+                <p className="opacity-90">
+                  Measures how well a model's confidence predicts actual correctness. Higher scores
+                  mean the model's confidence is more reliable.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium mb-1">💬 Feedback Analysis</h3>
+                <p className="opacity-90">
+                  User ratings of explanation quality. Shows which models provide the most helpful
+                  explanations according to real users.
+                </p>
+              </div>
             </div>
           </div>
         </div>
