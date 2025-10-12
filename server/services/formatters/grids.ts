@@ -104,7 +104,7 @@ export function formatTestCases(
   task: ARCTask,
   useEmojis: boolean = false,
   emojiPalette?: string[],
-  includeAnswers: boolean = true
+  omitAnswer: boolean = true  // CRITICAL: Default is TRUE (hide answers for research integrity)
 ): { inputs: string[]; outputs: string[] } {
   const palette = emojiPalette || getEmojiPalette();
   const inputs: string[] = [];
@@ -144,10 +144,10 @@ export function formatTestSection(
   task: ARCTask,
   useEmojis: boolean = false,
   emojiPalette?: string[],
-  includeAnswers: boolean = false,  // CRITICAL: Default is NO ANSWERS for research integrity
+  omitAnswer: boolean = true,  // CRITICAL: Default is TRUE (hide answers for research integrity)
   isSolverMode: boolean = false
 ): string {
-  const testCases = formatTestCases(task, useEmojis, emojiPalette, includeAnswers);
+  const testCases = formatTestCases(task, useEmojis, emojiPalette, omitAnswer);
   const isMultiTest = task.test.length > 1;
   
   if (isSolverMode) {
@@ -159,7 +159,7 @@ export function formatTestSection(
       : `Input: ${testCases.inputs[0]}`;
   } else {
     // Explanation mode: answers provided (unless explicitly omitted)
-    if (!includeAnswers) {
+    if (omitAnswer) {
       return isMultiTest
         ? testCases.inputs
             .map((input, idx) => `Test ${idx + 1} Input: ${input}`)
