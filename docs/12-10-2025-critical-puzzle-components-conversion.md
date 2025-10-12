@@ -1,11 +1,30 @@
 # Critical Puzzle Grid & Refinement UI - DaisyUI Conversion Plan
 **Author:** Claude Sonnet 4.5
 **Date:** 2025-10-12
+**Last Updated:** 2025-10-12 20:10 UTC
 **Priority:** CRITICAL - Core visual components
+**Status:** IN PROGRESS (3/5 components complete)
 
 ## Executive Summary
 
 This is a **focused conversion plan** for the 5 most critical puzzle display components identified by the user. These components handle all puzzle grid visualization, streaming analysis, and refinement interfaces - the core user experience of the application.
+
+## CURRENT STATUS
+
+### ✅ COMPLETED (Commit 466f2cdc)
+1. **PuzzleGrid.tsx** - Badge converted to DaisyUI
+2. **StreamingAnalysisPanel.tsx** - Card/Badge/Button converted
+3. **CollapsibleCard.tsx** - Complete DaisyUI rewrite
+
+### 🔄 IN PROGRESS
+None
+
+### ⏳ REMAINING
+4. **CompactPuzzleDisplay.tsx** (145 lines) - Collapsible + Card/Badge/Button
+5. **RefinementThread.tsx** (414 lines) - Complex forms (Slider, Select, Textarea, Alert)
+
+### ❌ DEFERRED
+- **ProfessionalRefinementUI.tsx** - Requires IterationDataTable, PromptPicker conversion first
 
 **Target Files:**
 1. `PuzzleGrid.tsx` - Core grid rendering (176 lines)
@@ -688,16 +707,161 @@ Once these 5 critical components are successfully converted, we can proceed with
 
 ---
 
-## Conclusion
+## Next Developer Instructions
 
-This focused plan targets the **highest-impact components** for the user experience. By converting these 5 critical files first, we ensure that the core puzzle display and refinement functionality works perfectly with DaisyUI before tackling the broader application.
+### Immediate Next Steps
 
-**Estimated Timeline:**
-- **Phase 1 (Leaf components):** 45 minutes
-- **Phase 2 (CollapsibleCard):** 45 minutes
-- **Phase 3 (CompactPuzzleDisplay):** 45 minutes
-- **Phase 4 (Complex UIs):** 5-7 hours
-- **Testing & Validation:** 2-3 hours
-- **Total:** 1-2 days of focused work
+**1. Convert CompactPuzzleDisplay.tsx**
 
-**Success Indicator:** When these 5 files are converted and tested, we'll have proven the DaisyUI conversion pattern works for the most complex parts of the application, giving high confidence for the remaining conversions.
+Location: `client/src/components/puzzle/CompactPuzzleDisplay.tsx`
+
+**Imports to remove:**
+```tsx
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+```
+
+**Key conversions:**
+- Lines 70-78: Card → `<div className="card">`
+- Lines 81-108: Collapsible → DaisyUI collapse pattern (see CollapsibleCard.tsx for reference)
+- Lines 84-96: CollapsibleTrigger Button → checkbox-controlled collapse
+- Line 92-94: Badge → `<div className="badge">`
+
+**Critical section (lines 81-108):**
+```tsx
+// CURRENT shadcn/ui Collapsible
+<Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen}>
+  <CollapsibleTrigger asChild>
+    <Button variant="ghost" ...>
+      {isTrainingOpen ? <ChevronDown /> : <ChevronRight />}
+    </Button>
+  </CollapsibleTrigger>
+  <CollapsibleContent>...</CollapsibleContent>
+</Collapsible>
+
+// CONVERT TO DaisyUI collapse
+<div className="collapse">
+  <input
+    type="checkbox"
+    checked={isTrainingOpen}
+    onChange={(e) => setIsTrainingOpen(e.target.checked)}
+  />
+  <div className="collapse-title">
+    {/* Content with custom chevron rotation */}
+  </div>
+  <div className="collapse-content">...</div>
+</div>
+```
+
+**2. Convert RefinementThread.tsx**
+
+Location: `client/src/components/puzzle/refinement/RefinementThread.tsx`
+
+**Imports to remove (lines 15-22):**
+- Card, CardContent, CardHeader, CardTitle
+- Badge
+- Button
+- Textarea
+- Alert, AlertDescription
+- Slider
+- Label
+- Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+
+**Major conversion sections:**
+
+A. **Header Card (lines 146-361):**
+- Card → `<div className="card">`
+- Multiple Badge → `<div className="badge badge-*">`
+- Button → `<button className="btn">`
+
+B. **Slider (lines 223-234):**
+```tsx
+// FROM
+<Slider value={[temperature]} onValueChange={(value) => setTemperature(value[0])} />
+// TO
+<input type="range" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} className="range range-primary" />
+```
+
+C. **Select dropdowns (lines 246-257, 264-275, 281-290):**
+```tsx
+// FROM
+<Select value={x} onValueChange={setX}>
+  <SelectTrigger><SelectValue /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="a">A</SelectItem>
+  </SelectContent>
+</Select>
+// TO
+<select value={x} onChange={(e) => setX(e.target.value)} className="select select-bordered">
+  <option value="a">A</option>
+</select>
+```
+
+D. **Textarea (lines 320-327):**
+```tsx
+// FROM
+<Textarea value={x} onChange={(e) => ...} />
+// TO
+<textarea value={x} onChange={(e) => ...} className="textarea textarea-bordered" />
+```
+
+E. **Alert (lines 352-357):**
+```tsx
+// FROM
+<Alert variant="destructive">
+  <AlertDescription>{error.message}</AlertDescription>
+</Alert>
+// TO
+<div role="alert" className="alert alert-error">
+  <svg>...</svg>
+  <span>{error.message}</span>
+</div>
+```
+
+### Build Verification
+
+After each conversion:
+1. Run `npm run build`
+2. Check for TypeScript errors
+3. Verify build succeeds
+
+### Commit Template
+
+```
+feat: Convert [ComponentName] to DaisyUI
+
+**Changes:**
+- Removed shadcn/ui imports: [list]
+- Converted [component] to DaisyUI [equivalent]
+- Updated [specific sections]
+
+**Build status:** ✓ Zero TypeScript errors
+**Visual testing:** [User responsibility]
+```
+
+### Known Good Patterns
+
+Reference these completed files for patterns:
+- **Badge conversion:** See PuzzleGrid.tsx (line 161)
+- **Card conversion:** See StreamingAnalysisPanel.tsx (lines 61-106)
+- **Collapsible conversion:** See CollapsibleCard.tsx (complete file)
+- **Button conversion:** See StreamingAnalysisPanel.tsx (lines 72-79)
+
+### Deferred Work
+
+**ProfessionalRefinementUI.tsx** requires these conversions first:
+- IterationDataTable component
+- PromptPicker component
+
+Do not attempt until dependencies are resolved.
+
+---
+
+## Build Status
+
+**Last Build:** Success ✓ (466f2cdc)
+**TypeScript Errors:** 0
+**Components Remaining:** 2 (CompactPuzzleDisplay, RefinementThread)
+**Components Deferred:** 1 (ProfessionalRefinementUI)
