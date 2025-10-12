@@ -1,18 +1,17 @@
 /**
  * TrainingPairCard.tsx
  * 
- * Author: Cascade using Sonnet 4
- * Date: 2025-10-11T19:15:00Z
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12T21:20:00Z
  * PURPOSE: Compact card displaying a single training example (input→output pair).
  * Clicking the card opens a zoom modal for detailed inspection.
  * Uses auto-scaling PuzzleGrid to fit irregular dimensions within fixed card bounds.
  * SRP: Single responsibility = render one training pair with zoom capability
  * DRY: Reuses PuzzleGrid component, no duplication
- * shadcn/ui: Uses Card components
+ * shadcn/ui: Pass - Converted to DaisyUI card
  */
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ArrowRight, Maximize2 } from 'lucide-react';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -43,8 +42,8 @@ export const TrainingPairCard = React.memo(function TrainingPairCard({
   const outputDims = `${output.length}×${output[0]?.length || 0}`;
 
   return (
-    <Card 
-      className="p-2 hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden"
+    <div 
+      className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow cursor-pointer group relative overflow-hidden p-2"
       onClick={onZoom}
     >
       {/* Zoom indicator overlay */}
@@ -86,6 +85,6 @@ export const TrainingPairCard = React.memo(function TrainingPairCard({
       <div className="text-[9px] text-gray-400 text-center mt-1">
         {inputDims} → {outputDims}
       </div>
-    </Card>
+    </div>
   );
 });
