@@ -115,7 +115,13 @@ export function buildAnalysisPrompt(
   const isSolver = isSolverMode(promptId);
   const selectedTemplate = isCustom ? null : (PROMPT_TEMPLATES[promptId] || PROMPT_TEMPLATES.standardExplanation);
   
-  logger.service('PromptBuilder', `Mode analysis - Custom: ${isCustom}, Alien: ${isAlien}, Solver: ${isSolver}`);
+  // CRITICAL DATA LEAKAGE CHECK
+  const includeAnswers = !omitAnswer;
+  logger.service('PromptBuilder', `🔒 DATA LEAKAGE CHECK:`);
+  logger.service('PromptBuilder', `   - Solver Mode: ${isSolver} (${isSolver ? 'NO answers sent' : 'answers MAY be sent'})`);
+  logger.service('PromptBuilder', `   - omitAnswer: ${omitAnswer}`);
+  logger.service('PromptBuilder', `   - includeAnswers: ${includeAnswers} (${includeAnswers ? '⚠️ TEST OUTPUTS WILL BE SENT' : '✅ Test outputs withheld'})`);
+  logger.service('PromptBuilder', `   - Mode: ${promptId} (Custom: ${isCustom}, Alien: ${isAlien})`);
 
   // PHASE 1-2: Use continuation prompt if this is a continuation turn
   if (useContinuation) {
