@@ -10,12 +10,12 @@
 
 import { useMemo } from 'react';
 import { determineCorrectness } from '@shared/utils/correctness';
-import type { AnalysisResult } from '@/types/puzzle';
+import type { ExplanationData } from '@/types/puzzle';
 
 export type CorrectnessFilter = 'all' | 'correct' | 'incorrect';
 
 export interface FilteredResultsData {
-  filtered: AnalysisResult[];
+  filtered: ExplanationData[];
   counts: {
     all: number;
     correct: number;
@@ -37,7 +37,7 @@ export interface FilteredResultsData {
  * - No recalculation on unrelated state changes (temperature, promptId, etc.)
  */
 export function useFilteredResults(
-  allResults: AnalysisResult[],
+  allResults: ExplanationData[],
   filter: CorrectnessFilter
 ): FilteredResultsData {
   // Cache correctness determination for each result

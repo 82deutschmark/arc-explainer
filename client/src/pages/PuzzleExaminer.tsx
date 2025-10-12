@@ -183,7 +183,7 @@ export default function PuzzleExaminer() {
     }
   })();
 
-  const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) : null;
+  const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) ?? null : null;
 
   // Handle model selection
   const handleAnalyzeWithModel = (modelKey: string) => {
