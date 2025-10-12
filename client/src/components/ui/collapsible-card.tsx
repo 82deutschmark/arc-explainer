@@ -1,18 +1,16 @@
 /**
  * collapsible-card.tsx
- * 
- * A reusable collapsible card component that extends the existing Card UI pattern.
+ *
+ * A reusable collapsible card component using DaisyUI collapse.
  * Follows Single Responsibility Principle by handling only collapsible card presentation.
- * Reuses existing Radix UI Collapsible primitives and Card components for consistency.
- * 
+ * Converted from shadcn/ui to DaisyUI.
+ *
  * @author Claude Code
+ * @date 2025-10-12 (Converted to DaisyUI)
  */
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CollapsibleCardProps {
@@ -35,38 +33,36 @@ export function CollapsibleCard({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className={cn("w-full", className)}>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-3">
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-between p-0 h-auto hover:bg-transparent"
-            >
-              <CardTitle className="flex items-center gap-2 text-left">
+    <div className={cn("card bg-base-100 shadow-sm border border-base-300", className)}>
+      <div className="collapse">
+        <input
+          type="checkbox"
+          checked={isOpen}
+          onChange={(e) => setIsOpen(e.target.checked)}
+          className="min-h-0"
+        />
+        <div className="collapse-title min-h-0 py-4 px-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 {Icon && <Icon className="h-5 w-5" />}
                 {title}
-              </CardTitle>
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </h3>
+              {headerDescription && (
+                <div className="mt-2">
+                  {headerDescription}
+                </div>
               )}
-            </Button>
-          </CollapsibleTrigger>
-          {headerDescription && (
-            <div className="mt-2">
-              {headerDescription}
             </div>
-          )}
-        </CardHeader>
-        
-        <CollapsibleContent>
-          <CardContent className="pt-0">
-            {children}
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
+            <div className={`transition-transform duration-200 ${isOpen ? 'rotate-0' : '-rotate-90'}`}>
+              <ChevronDown className="h-4 w-4 text-base-content/60" />
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content px-6 pb-4">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,24 +1,23 @@
 /**
  * PuzzleGrid Component - Enhanced with aspect-ratio-aware sizing
- * 
+ *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-11
+ * Date: 2025-10-12 (Converted to DaisyUI)
  * PURPOSE: Renders ARC puzzle grids with intelligent sizing that adapts to:
  *   - Irregular dimensions (1x1 to 30x30, non-square shapes)
  *   - Edge cases (tiny 1x1, large 30x30, strips 1xN or Nx1)
  *   - Aspect ratio preservation within maxWidth/maxHeight constraints
  *   - Empty/sparse grids (collapse to placeholder)
  *   - Compact mode for dense layouts
- * 
+ *
  * SRP/DRY check: Pass - Single responsibility (grid rendering with adaptive sizing)
- * shadcn/ui: Pass - Uses Badge component
- * 
+ * DaisyUI: Pass - Uses DaisyUI badge component
+ *
  * Integration: Used by PuzzleExaminer for training examples and test cases
  */
 
 import React, { useMemo } from 'react';
 import { PuzzleGridProps } from '@/types/puzzle';
-import { Badge } from '@/components/ui/badge';
 import { GridCell } from './GridCell';
 
 export const PuzzleGrid = React.memo(function PuzzleGrid({ 
@@ -159,7 +158,7 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
     >
       <div className={`flex items-center justify-center ${compact ? 'gap-0.5' : 'gap-1'} ${compact ? 'mb-0.5' : 'mb-1'}`}>
         <h3 className={`${compact ? 'text-[10px]' : 'text-xs'} font-medium text-gray-700`}>{title}</h3>
-        <Badge variant="outline" className="text-[10px] px-1 py-0 bg-gray-50">{gridMetadata.rows}×{gridMetadata.cols}</Badge>
+        <div className="badge badge-outline badge-sm text-[10px] px-1 py-0 bg-base-200">{gridMetadata.rows}×{gridMetadata.cols}</div>
       </div>
       <div 
         className={`inline-block border ${compact ? 'border-gray-300' : 'border-gray-400'} rounded ${gridMetadata.isEmpty ? 'bg-gray-50' : ''} origin-top-left`}
