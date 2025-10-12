@@ -1,3 +1,54 @@
+## [4.4.6] - 2025-10-11 11:00 PM
+### 🔧 DATABASE CLEANUP: Discussion Mode Data Leakage
+
+**PROBLEM RESOLUTION:**
+Fixed 20 database entries that were incorrectly marked as "correct" due to the data leakage bug documented in v4.4.4.
+
+**AFFECTED ENTRIES:**
+- Date range: 2025-10-08 to 2025-10-11 (before fix at 09:00)
+- Total contaminated: 20 entries out of 588 discussion mode entries
+- All entries had `is_prediction_correct = TRUE` or `multi_test_all_correct = TRUE` but AI had access to test answers
+
+**BREAKDOWN BY MODEL:**
+- grok-4-fast-reasoning: 9 entries
+- gpt-5-mini-2025-08-07: 6 entries
+- gpt-5-2025-08-07: 3 entries
+- grok-4-fast-non-reasoning: 1 entry
+- gpt-4.1-nano-2025-04-14: 1 entry
+
+**FIX APPLIED:**
+```sql
+UPDATE explanations
+SET is_prediction_correct = FALSE, multi_test_all_correct = FALSE
+WHERE id IN (34430, 34420, 34419, 33696, 33680, 30507, 30504, 30193,
+             30074, 30043, 30011, 30003, 29991, 29989, 29983, 29975,
+             29957, 29945, 29885, 29775);
+```
+
+**NEW SCRIPTS:**
+- `server/scripts/audit-discussion-entries.ts` - Read-only audit tool to identify contaminated entries
+- `server/scripts/fix-discussion-data-leakage.ts` - Safe fix with before/after verification
+
+**SCRIPT FEATURES:**
+- Repository pattern for safe database access
+- Before/after state display
+- Complete verification (0 entries still incorrectly marked)
+- No schema changes - only corrected invalid data
+- All other data preserved (trustworthiness scores, confidence, tokens, costs)
+
+**VERIFICATION:**
+```
+Total entries processed: 20
+Now marked INCORRECT: 20
+Still marked CORRECT: 0
+✅ SUCCESS: All contaminated entries fixed!
+```
+
+**AUTHOR:** Claude Code (Sonnet 4.5)
+**PRIORITY:** HIGH - Data integrity restoration
+
+---
+
 ## [4.4.5] - 2025-10-11 10:30 PM
 ### 🎨 REDESIGN: Chat-Style Progressive Reasoning UI
 
@@ -145,7 +196,7 @@ Check server logs for:
 
 **IMMEDIATE ACTIONS REQUIRED:**
 1. ✅ Fix applied - test answers now withheld
-2. ⏳ Add database flag for contaminated records
+2. ✅ Database cleanup completed (see v4.4.6 below)
 3. ⏳ Add integration tests
 4. ⏳ Optimize continuation prompts
 5. ⏳ Refactor PuzzleDiscussion component
