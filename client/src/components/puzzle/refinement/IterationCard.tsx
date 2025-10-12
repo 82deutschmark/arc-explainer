@@ -1,20 +1,16 @@
 /**
  * IterationCard.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-07
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12T21:42:00Z
  * PURPOSE: Display component for single refinement iteration in progressive reasoning.
  * Shows one iteration of model's self-refinement with positive/progressive styling.
  * Wraps AnalysisResultCard which handles all grid scaling naturally via PuzzleGrid component.
  * SRP/DRY check: Pass - Single responsibility (iteration display), reuses AnalysisResultCard
- * shadcn/ui: Pass - Uses shadcn/ui Card, Badge, Collapsible components
+ * shadcn/ui: Pass - Converted to DaisyUI card and badge
  */
 
 import React, { useState } from 'react';
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Brain, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
 import type { ExplanationData } from '@/types/puzzle';
@@ -55,29 +51,29 @@ export const IterationCard: React.FC<IterationCardProps> = ({
     : 'No pattern description available';
 
   return (
-    <Card className="border-2 border-purple-200 bg-purple-50/30 overflow-visible">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="p-3 bg-gradient-to-r from-purple-100/50 to-blue-100/50">
-          <CardTitle className="flex items-center gap-2 text-sm flex-wrap">
+    <div className="card border-2 border-purple-200 bg-purple-50/30 overflow-visible">
+      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'}`}>
+        <div className="collapse-title p-3 bg-gradient-to-r from-purple-100/50 to-blue-100/50 min-h-0">
+          <div className="flex items-center gap-2 text-sm flex-wrap font-bold">
             <Brain className="h-5 w-5 text-purple-600" />
             <span className="text-purple-900 font-semibold">Iteration #{iterationNumber}</span>
-            <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">
+            <div className="badge badge-outline text-xs bg-purple-100 text-purple-800 border-purple-300">
               {explanation.modelName}
-            </Badge>
+            </div>
             {isExplicitlyCorrect && (
-              <Badge variant="default" className="text-xs bg-green-600">
+              <div className="badge text-xs bg-green-600 text-white">
                 ✓ Correct
-              </Badge>
+              </div>
             )}
             {(hasMultiTest ? explanation.multiTestAllCorrect : explanation.isPredictionCorrect) === false && (
-              <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800">
+              <div className="badge badge-secondary text-xs bg-amber-100 text-amber-800">
                 Needs Refinement
-              </Badge>
+              </div>
             )}
             <span className="ml-auto text-[10px] text-gray-500 font-normal">
               {new Date(timestamp).toLocaleTimeString()}
             </span>
-          </CardTitle>
+          </div>
 
           {/* Brief summary - always visible */}
           <p className="text-sm text-gray-700 mt-2 line-clamp-2 italic">
@@ -115,39 +111,34 @@ export const IterationCard: React.FC<IterationCardProps> = ({
           )}
 
           {/* Toggle button */}
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2 h-8 text-xs justify-center hover:bg-purple-100"
-            >
-              {isOpen ? (
-                <>
-                  <ChevronUp className="h-3 w-3 mr-1" />
-                  Hide details
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-3 w-3 mr-1" />
-                  Show details
-                </>
-              )}
-            </Button>
-          </CollapsibleTrigger>
-        </CardHeader>
+          <button
+            className="btn btn-ghost btn-sm w-full mt-2 h-8 text-xs justify-center hover:bg-purple-100"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? (
+              <>
+                <ChevronUp className="h-3 w-3 mr-1" />
+                Hide details
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-3 w-3 mr-1" />
+                Show details
+              </>
+            )}
+          </button>
+        </div>
 
-        <CollapsibleContent>
-          <CardContent className="p-3 overflow-x-auto">
-            <AnalysisResultCard
-              result={explanation}
-              modelKey={explanation.modelName}
-              model={models?.find(m => m.key === explanation.modelName)}
-              testCases={testCases}
-              eloMode={false}
-            />
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
+        <div className="collapse-content p-3 overflow-x-auto">
+          <AnalysisResultCard
+            result={explanation}
+            modelKey={explanation.modelName}
+            model={models?.find(m => m.key === explanation.modelName)}
+            testCases={testCases}
+            eloMode={false}
+          />
+        </div>
+      </div>
+    </div>
   );
 };

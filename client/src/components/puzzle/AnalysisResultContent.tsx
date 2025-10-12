@@ -2,18 +2,16 @@
  * AnalysisResultContent.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T22:50:00-04:00
+ * Date: 2025-10-12T21:44:00Z
  * PURPOSE: Displays the main content of analysis results including pattern descriptions,
  * solving strategies, hints, alien meanings, and AI reasoning. Handles Saturn results and
  * optimistic update states (analyzing, saving, error). Shows trustworthiness badge for
  * non-ELO, non-debate, non-Saturn results only (predictionAccuracyScore).
- * SRP/DRY check: Pass - Single responsibility (content display), reuses Badge/Button components
- * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ * SRP/DRY check: Pass - Single responsibility (content display)
+ * shadcn/ui: Pass - Converted to DaisyUI badge and button
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Brain, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
 
@@ -132,14 +130,13 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
               {isSaturnResult ? '🪐 Saturn Visual Analysis' : isGroverResult ? '🔄 Grover Iterative Analysis' : 'Pattern Description'}
             </h5>
             {!isSaturnResult && result.confidence && (
-              <Badge variant="outline" className="text-xs">
+              <div className="badge badge-outline text-xs">
                 Confidence: {formatConfidence(result.confidence)}
-              </Badge>
+              </div>
             )}
             {!eloMode && !isSaturnResult && result.trustworthinessScore !== undefined && result.trustworthinessScore !== null && (
-              <Badge
-                variant="outline"
-                className={`text-xs ${
+              <div
+                className={`badge badge-outline text-xs ${
                   result.trustworthinessScore >= 0.8 
                     ? 'bg-green-50 border-green-200 text-green-700' 
                     : result.trustworthinessScore >= 0.5 
@@ -147,14 +144,13 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                       : 'bg-red-50 border-red-200 text-red-700'
                 }`}>
                 Trustworthiness: {Math.round(result.trustworthinessScore * 100)}%
-              </Badge>
+              </div>
             )}
             {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
-              <Badge 
-                variant="outline" 
-                className={`text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
+              <div 
+                className={`badge badge-outline text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
                 {result.saturnSuccess ? 'Puzzle Solved Successfully' : 'Solution Attempt Failed'}
-              </Badge>
+              </div>
             )}
           </div>
           <p className="text-gray-600">{result.patternDescription}</p>
@@ -186,9 +182,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
           >
             <div className="flex items-center gap-2">
               <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
-              <Badge variant="outline" className="text-xs bg-purple-50">
+              <div className="badge badge-outline text-xs bg-purple-50">
                 Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
-              </Badge>
+              </div>
             </div>
             {showAlienMeaning ? (
               <ChevronUp className="h-4 w-4 text-purple-600" />
@@ -216,17 +212,17 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 <>
                   <span className="text-sm">🪐</span>
                   <h5 className="font-semibold text-indigo-800">Saturn Visual Reasoning</h5>
-                  <Badge variant="outline" className="text-xs bg-indigo-50 border-indigo-200">
+                  <div className="badge badge-outline text-xs bg-indigo-50 border-indigo-200">
                     Multi-stage visual analysis
-                  </Badge>
+                  </div>
                 </>
               ) : (
                 <>
                   <Brain className="h-4 w-4 text-blue-600" />
                   <h5 className="font-semibold text-blue-800">AI Reasoning Process</h5>
-                  <Badge variant="outline" className="text-xs bg-blue-50">
+                  <div className="badge badge-outline text-xs bg-blue-50">
                     Step-by-step analysis
-                  </Badge>
+                  </div>
                 </>
               )}
             </div>
@@ -334,9 +330,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-sm">🔄</span>
               <h5 className="font-semibold text-green-800">Discovered Python Program</h5>
-              <Badge variant="outline" className="text-xs bg-green-50 border-green-200">
+              <div className="badge badge-outline text-xs bg-green-50 border-green-200">
                 Best of {result.iterationCount || '?'} iterations
-              </Badge>
+              </div>
             </div>
             {showGroverProgram ? (
               <ChevronUp className="h-4 w-4 text-green-600" />
