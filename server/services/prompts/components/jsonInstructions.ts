@@ -51,16 +51,11 @@ function buildDetailedJsonInstructions(testCount: number): string {
 
 ${predictionFields}
 
-**Analysis Fields** (optional but recommended):
+Analysis Fields (optional but recommended):
 - "solvingStrategy": Clear explanation of your solving approach
 - "patternDescription": Description of transformation rules (1-2 sentences)
 - "hints": Array of 3 helpful hints for understanding the transformation
 - "confidence": Integer 1-100 indicating confidence in solution correctness
-
-Example JSON structure:
-{
-${buildExampleJson(testCount)}
-}
 
 CRITICAL: Your entire response must be valid, parseable JSON. Do not include markdown, explanations, or text outside the JSON object.`;
 }
@@ -70,37 +65,14 @@ CRITICAL: Your entire response must be valid, parseable JSON. Do not include mar
  */
 function buildPredictionFieldInstructions(testCount: number): string {
   if (testCount === 1) {
-    return `**Required Prediction Field:**
-- "predictedOutput": Your predicted output grid as 2D array of integers 0-9`;
+    return `Required Prediction Field:
+"predictedOutput" - Your predicted output grid as 2D array of integers 0-9`;
   } else {
     const fields = Array.from({length: testCount}, (_, i) => 
-      `- "predictedOutput${i + 1}": Your predicted output grid for test case ${i + 1} (2D array of integers 0-9)`
+      `"predictedOutput${i + 1}" - Your predicted output grid for test case ${i + 1} (2D array of integers 0-9)`
     ).join('\n');
     
-    return `**Required Prediction Fields** (one per test case):
+    return `Required Prediction Fields (one per test case):
 ${fields}`;
-  }
-}
-
-/**
- * Build example JSON based on test count
- */
-function buildExampleJson(testCount: number): string {
-  if (testCount === 1) {
-    return `  "predictedOutput": [[0, 1], [2, 3]],
-  "solvingStrategy": "Apply rotation transformation...",
-  "patternDescription": "Grid rotates 90 degrees clockwise",
-  "hints": ["Look for rotation", "Colors unchanged", "Spatial arrangement changes"],
-  "confidence": 55`;
-  } else {
-    const predictions = Array.from({length: testCount}, (_, i) => 
-      `  "predictedOutput${i + 1}": [[0, 1], [2, 3]]`
-    ).join(',\n');
-    
-    return `${predictions},
-  "solvingStrategy": "Apply rotation transformation...",
-  "patternDescription": "Grid rotates 90 degrees clockwise",
-  "hints": ["Look for rotation", "Colors unchanged", "Spatial arrangement changes"],
-  "confidence": 55`;
   }
 }

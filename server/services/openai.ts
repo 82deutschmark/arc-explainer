@@ -444,9 +444,10 @@ export class OpenAIService extends BaseAIService {
       parallel_tool_calls: false,
       truncation: "auto",
       max_steps: serviceOpts.maxSteps,
-      // IMPORTANT: Reasoning models need high max_output_tokens (16K+ recommended)
-      // Reasoning can consume 50-80% of total tokens internally, leaving little for visible output
-      // If not set, model may run out of tokens before returning structured predictions
+      // IMPORTANT: GPT-5 models support 272K input + 128K output/reasoning = 400K total
+      // Internal reasoning consumes tokens from max_output_tokens allocation
+      // Recommend setting max_output_tokens: 110000+ to ensure visible output isn't starved
+      // If not set, reasoning may consume all tokens before returning structured predictions
       max_output_tokens: serviceOpts.maxOutputTokens,
       metadata: taskId ? { taskId } : undefined
     };
@@ -580,7 +581,7 @@ export class OpenAIService extends BaseAIService {
     } else if (response.output && Array.isArray(response.output) && response.output.length > 0) {
       // GPT-5-nano returns structured data in output array
       const outputBlock = response.output[0];
-      if (outputBlock.type === 'text' && outputBlock.text) {
+      if (outputBlock && outputBlock.type === 'text' && outputBlock.text) {
         // CRITICAL FIX: Use jsonParser for output array text as well
         const parseResult = this.extractJsonFromResponse(outputBlock.text, modelKey);
         if (parseResult._parsingFailed) {
@@ -658,18 +659,23 @@ export class OpenAIService extends BaseAIService {
 
     // Extract reasoning items and convert them to an array of strings
     if (captureReasoning) {
-      // Try output_reasoning.items first (primary location)
+      // Try output_reasoning.items first (primary location per Oct 2025 Responses API)
       if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
         reasoningItems = response.output_reasoning.items.map((item: any) => {
           if (typeof item === 'string') return item;
           if (item && typeof item === 'object' && item.text) return item.text;
           return JSON.stringify(item);
         });
-      } else if (response.output && Array.isArray(response.output)) {
-        // Fallback: Extract reasoning items from output[] array
+      }
+      
+      // Fallback: Scan output[] array if no items found (per Oct 2025 Responses API docs)
+      if ((!reasoningItems || reasoningItems.length === 0) && response.output && Array.isArray(response.output)) {
         const reasoningBlocks = response.output.filter((block: any) => 
-          block.type === 'reasoning' || 
-          block.type === 'Reasoning'
+          block && (
+            block.type === 'reasoning' || 
+            block.type === 'Reasoning' ||
+            (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+          )
         );
         
         reasoningItems = reasoningBlocks.map((block: any) => {
@@ -680,7 +686,9 @@ export class OpenAIService extends BaseAIService {
           }
           return JSON.stringify(block);
         }).filter(Boolean);
-      } else {
+      }
+      
+      if (!reasoningItems) {
         reasoningItems = [];
       }
     } else {
@@ -996,7 +1004,7 @@ export class OpenAIService extends BaseAIService {
     
     // Look for Assistant blocks first
     const assistantBlock = output.find(block => 
-      block.type === 'Assistant' || block.role === 'assistant'
+      block && (block.type === 'Assistant' || block.role === 'assistant')
     );
     
     if (assistantBlock) {
@@ -1012,6 +1020,7 @@ export class OpenAIService extends BaseAIService {
     
     // Look for other message blocks
     for (const block of output) {
+      if (!block) continue;
       if (block.type === 'message' && block.content) {
         if (Array.isArray(block.content)) {
           const textContent = block.content.find((c: any) => 
@@ -1027,7 +1036,7 @@ export class OpenAIService extends BaseAIService {
     
     // Fallback: join all text-like content
     return output
-      .filter(block => block.content || block.text)
+      .filter(block => block && (block.content || block.text))
       .map(block => {
         if (Array.isArray(block.content)) {
           const textContent = block.content.find((c: any) => 
@@ -1060,9 +1069,11 @@ export class OpenAIService extends BaseAIService {
     if (!Array.isArray(output)) return '';
     
     const reasoningBlocks = output.filter(block => 
-      block.type === 'reasoning' || 
-      block.type === 'Reasoning' ||
-      (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+      block && (
+        block.type === 'reasoning' || 
+        block.type === 'Reasoning' ||
+        (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+      )
     );
     
     const reasoningText = reasoningBlocks
