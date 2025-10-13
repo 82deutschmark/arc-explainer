@@ -24,6 +24,6 @@ export const useModels = () => {
   return useQuery<ModelConfig[], Error>({
     queryKey: ['models'],
     queryFn: fetchModels,
-    staleTime: 5 * 60 * 1000 // Cache for 5 minutes, then refetch to catch new models
+    staleTime: 60 * 60 * 1000 // Cache for 1 hour - models config rarely changes
   });
 };
