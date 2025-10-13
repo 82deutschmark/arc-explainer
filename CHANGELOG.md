@@ -1,3 +1,71 @@
+## [4.8.0] - 2025-10-12 8:45 PM
+### 🎨 MAJOR UX OVERHAUL: Data-Dense Layout & Explicit Grid Labeling
+
+**THREE MAJOR IMPROVEMENTS:**
+
+#### 1. 📊 Grid Pair Redesign - Explicit INPUT/OUTPUT Labels
+**Problem:** Users couldn't clearly see which grid was input vs output, especially with multiple test outputs.
+
+**Solution - New `GridPair` Component:**
+- **Explicit labels:** "📥 INPUT" and "📤 OUTPUT" badges above each grid
+- **Split container design:** Vertical divider between input and output sections
+- **Multi-output support:** Displays "N outputs" badge and labels as "OUTPUT 1", "OUTPUT 2", etc.
+- **Color-coded sections:**
+  - Training pairs: Blue input bg, amber output bg, gray borders
+  - Test pairs: Blue input bg, green output bg, green borders with title bar
+- **Title bar:** Shows "Training Example N" or "Test N" with multi-output indicator
+
+**Impact:** Eliminates ambiguity about which grid transforms into which, especially critical for multi-output test cases.
+
+#### 2. 📋 Model Table Improvements - Sticky Header & Smart Sorting
+**Problem:** 
+- Scrolling long model lists lost header context
+- Models unsorted, newest models buried at bottom
+- "Runs" and "Streaming" columns had poor visual clarity
+
+**Solutions:**
+- **Sticky header:** Table header stays visible during scroll (max-height: 600px)
+- **Smart sorting:** Models sorted by release date (newest first), then alphabetically
+  - Models without release dates pushed to bottom
+  - GPT-4.1, o4-mini, latest models now appear at top
+- **Better column display:**
+  - "Runs" column: Shows "0" instead of "-", green badge for completed runs
+  - "Stream" column: Blue badge "Yes"/"LIVE" or "No" (was text-only)
+  - Header renamed "Streaming" → "Stream" for compactness
+
+**Impact:** Users immediately see newest models and header context never lost.
+
+#### 3. 🗜️ Data-Dense Compact Controls
+**From previous commits:**
+- Merged 3 CollapsibleCard sections into 2 compact panels
+- Prompt controls in single row: dropdown + toggles + preview button
+- Advanced parameters collapsible but always accessible
+- ~75% less vertical space while preserving all functionality
+
+**FILES CHANGED:**
+- `client/src/components/puzzle/GridPair.tsx` - **NEW** (119 lines)
+- `client/src/components/puzzle/PuzzleGridDisplay.tsx` - Refactored to use GridPair
+- `client/src/components/puzzle/ModelTable.tsx` - Sticky header, sorting, badge columns
+- `client/src/components/puzzle/CompactControls.tsx` - From earlier commit
+- `server/routes/models.ts` - Added releaseDate to API responses
+- `client/src/components/puzzle/PuzzleGrid.tsx` - Removed confusing highlight prop
+
+**TECHNICAL DETAILS:**
+- GridPair component handles single and multiple outputs
+- Responsive classification preserved (standard/wide/tall grid layouts)
+- DaisyUI badges and sticky positioning used throughout
+- No breaking changes to existing props or types
+
+**UX WINS:**
+✅ Input/output relationship crystal clear with explicit labels  
+✅ Multi-output test cases unambiguous with numbered outputs  
+✅ Model table header always visible when scrolling  
+✅ Newest models at top of list (2025-04 releases first)  
+✅ Cleaner badge-based column styling  
+✅ 75% reduction in control panel vertical space  
+
+---
+
 ## [4.7.1] - 2025-10-12 6:00 PM
 ### 🎯 CRITICAL FIX: Grover Live Streaming - Complete Terminal Experience
 
