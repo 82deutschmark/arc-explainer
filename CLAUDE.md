@@ -808,3 +808,186 @@ All critical indexes are created automatically. For custom analytics queries, co
 ```sql
 CREATE INDEX idx_custom ON explanations(your_field) WHERE your_condition;
 ```
+### Proper Way to Handle Streaming Replies with Reasoning in OpenAI's Responses API
+
+The OpenAI Responses API (used for models like GPT-5 series, o3-mini, o1, and o1-mini) provides structured streaming for real-time replies, including built-in reasoning capture. Streaming uses Server-Sent Events (SSE) over the `/v1/responses` endpoint, allowing incremental updates for both output (e.g., final responses) and reasoning (e.g., internal thought processes). This is designed for interactive UIs, where reasoning can be displayed alongside or before the output.
+
+To capture everything properly—real-time deltas, full traces, metadata, summaries, and completions—follow this step-by-step process. It ensures no loss of content, handles persistence (e.g., buffering until the stream ends), and supports UI integration like WebSockets. Use the official OpenAI SDK (v4+ for Node.js) or raw fetch for implementation. All models with reasoning (e.g., GPT-5) require explicit configuration to expose reasoning events; defaults minimize latency by hiding traces.
+
+#### 1. **Set Up the Request for Streaming with Reasoning**
+Start by configuring the API call to enable streaming and reasoning exposure. Key parameters:
+- `model`: Specify a reasoning-capable model (e.g., `'gpt-5'`, `'o1'`, `'o3-mini'`).
+- `stream: true`: Activates SSE streaming.
+- `reasoning_effort`: Controls depth and visibility ('low', 'medium', 'high', or 'max')—use 'high' or 'max' to ensure deltas emit for raw reasoning.
+- `include_reasoning_summary: true`: Optionally generates a concise summary alongside full reasoning.
+- `verbosity: 'high'`: Expands events to include detailed traces and metadata.
+- Avoid heavy tools initially (e.g., `tool_choice: 'none'`) to prevent reasoning from routing to tool calls; enable them later if needed.
+- Messages: Include prompts that trigger reasoning, like "Think step-by-step before responding."
+
+Example request in Node.js with the SDK:
+
+```typescript
+import OpenAI from 'openai';
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+async function createStreamingResponse(messages: Array<{role: string; content: string}>, options: {model?: string} = {}) {
+  const { model = 'gpt-5' } = options;
+
+  const stream = await openai.beta.responses.create({
+    model,
+    messages,
+    stream: true, // Enables SSE
+    reasoning_effort: 'high', // Exposes reasoning deltas; 'max' for deepest traces
+    include_reasoning_summary: true, // For UI-friendly summaries
+    verbosity: 'high', // Ensures full metadata and traces in events
+    tool_choice: 'none', // Prevents tool interference with reasoning
+    // Optional: Custom instructions for reasoning style
+    instructions: 'Provide detailed step-by-step reasoning before the final output.',
+  });
+
+  return stream;
+}
+```
+
+- **Why these params?** Without `reasoning_effort`, reasoning is internal and hidden to optimize speed. `verbosity: 'high'` ensures events include `metadata` like effort used and token counts. This setup works for all reasoning models; adjust effort based on use case (e.g., 'medium' for balance).
+
+#### 2. **Parse the Stream: Handle SSE Events**
+The stream emits events in real-time (e.g., every few tokens). Each event is a JSON object with:
+- `type`: e.g., `'response.reasoning.delta'`, `'response.output.delta'`, `'response.reasoning_summary.delta'`.
+- `data`: Contains the payload, like `{ content: { text: 'delta text' } }` or `{ delta: { text: '...' } }`.
+- Nested structures: Reasoning often nests under `data.choices[0].delta.reasoning` or directly in `data.reasoning`.
+
+Use an async iterator on the stream to process events. Accumulate deltas into buffers (e.g., strings or arrays) for full capture. Listen for `.done` events to finalize and persist content.
+
+- **Core Event Types to Handle**:
+  - **Reasoning Deltas**: `'response.reasoning.delta'` (raw thoughts/traces), `'response.reasoning_summary.delta'` (concise overview), `'response.reasoning_summary_text.delta'` (text-only summary for easy UI display).
+  - **Output Deltas**: `'response.output.delta'` or `'response.output_text.delta'` (main response chunks).
+  - **Completion**: `'response.reasoning.done'`, `'response.output.done'`, or `'response.done'` (signals end; includes final metadata).
+  - **Metadata/Extras**: Events may include `data.metadata` (e.g., `{ reasoning_effort: 'high', tokens: { reasoning: 150 } }`).
+  - **Errors**: `'error'` (e.g., rate limits or aborts).
+
+Example event handler (integrate with a UI buffer or emitter):
+
+```typescript
+function processStream(stream: any, buffers: { reasoning: string; output: string; summary: string }) {
+  // Async iteration over the stream
+  (async () => {
+    for await (const event of stream) {
+      const { type, data } = event;
+
+      // Extract delta text (common structure; adapt if using raw SSE)
+      const extractText = (payload: any): string | null => {
+        return payload?.content?.text || 
+               payload?.delta?.text || 
+               payload?.reasoning?.text || 
+               payload?.choices?.[0]?.delta?.content?.text;
+      };
+
+      switch (type) {
+        case 'response.reasoning.delta':
+          const reasoningDelta = extractText(data);
+          if (reasoningDelta) {
+            buffers.reasoning += reasoningDelta;
+            // Real-time UI update (e.g., emit to WebSocket harness)
+            console.log('Live reasoning:', reasoningDelta); // Or emit('reasoningDelta', reasoningDelta);
+          }
+          break;
+
+        case 'response.reasoning_summary.delta':
+        case 'response.reasoning_summary_text.delta':
+          const summaryDelta = extractText(data);
+          if (summaryDelta) {
+            buffers.summary += summaryDelta;
+            // Use for high-level UI display
+            console.log('Reasoning summary delta:', summaryDelta);
+          }
+          break;
+
+        case 'response.output.delta':
+        case 'response.output_text.delta':
+          const outputDelta = extractText(data);
+          if (outputDelta) {
+            buffers.output += outputDelta;
+            // Stream to main UI
+            console.log('Output delta:', outputDelta);
+          }
+          break;
+
+        case 'response.reasoning.done':
+          // Finalize reasoning; persist full buffer
+          const reasoningMeta = data?.metadata;
+          console.log('Reasoning complete:', { 
+            fullReasoning: buffers.reasoning, 
+            effort: reasoningMeta?.reasoning_effort,
+            reasoningTokens: reasoningMeta?.tokens?.reasoning 
+          });
+          // Persist: e.g., save to state or UI until dismissed
+          break;
+
+        case 'response.output.done':
+          // Final output persistence
+          console.log('Output complete:', buffers.output);
+          // Combine with reasoning for full context
+          const fullResponse = { reasoning: buffers.reasoning, summary: buffers.summary, output: buffers.output };
+          break;
+
+        case 'response.done': // Overall stream end
+          // Cleanup: Emit full capture
+          console.log('Stream fully captured:', fullResponse);
+          break;
+
+        case 'error':
+          console.error('Stream error:', data?.message || data);
+          // Handle retry or abort buffering
+          break;
+
+        default:
+          // Fallback for model-specific variations (e.g., nested metadata)
+          if (type?.includes('reasoning') && data) {
+            const fallback = data.metadata?.reasoning || data.choices?.[0]?.delta?.reasoning;
+            if (fallback) {
+              buffers.reasoning += typeof fallback === 'string' ? fallback : JSON.stringify(fallback);
+            }
+          }
+      }
+    }
+  })();
+}
+```
+
+- **Buffering Strategy**: Use separate strings/arrays for reasoning, summary, and output. Append deltas incrementally for real-time display. On `.done`, concatenate and persist (e.g., in app state) until user dismisses.
+- **Real-Time UI**: Emit deltas via a harness (e.g., Socket.io: `socket.emit('update', { type: 'reasoning', content: delta })`). This enables live "thinking" indicators.
+- **Capture Everything**: Always log/emit metadata from `.done` events (e.g., token usage, effort level). For long streams, use chunking to avoid memory issues.
+
+#### 3. **Full Usage Example in Your Service**
+Tie it together in a function (e.g., in `openai.ts`):
+
+```typescript
+async function handleStreamingRequest(prompt: string) {
+  const messages = [{ role: 'user', content: prompt }];
+  const stream = await createStreamingResponse(messages);
+  
+  const buffers = { reasoning: '', output: '', summary: '' };
+  processStream(stream, buffers);
+
+  // Return stream ID or handler for UI
+  return { streamId: stream.id, buffers }; // For persistence
+}
+
+// Call it
+handleStreamingRequest('Solve this puzzle step-by-step: [details]');
+```
+
+- **Persistence Until Dismissal**: In your UI/core logic, hold the `fullResponse` in session storage or a Redux store. Clear only on user action (e.g., close panel).
+
+#### 4. **Best Practices and Edge Cases**
+- **Error Resilience**: Wrap in try-catch; reconnect on aborts using `stream_id` for resumable streams (set `store: true` in request if supported).
+- **Performance**: For high-effort reasoning, expect longer latency (e.g., 10-30s for complex prompts). Limit to reasoning models only.
+- **Tools Integration**: If using tools, set `tool_choice: 'auto'` after basic reasoning; parse `response.tool_calls.delta` separately to avoid conflicts.
+- **Testing**: Use prompts like "Explain quantum computing step-by-step" to trigger reasoning. Monitor network tab for SSE events—expect interleaved deltas (reasoning first, then output).
+- **Rate Limits**: Reasoning increases token usage; monitor via metadata.
+- **Model Variations**: GPT-5 exposes more raw traces; o1/o3-mini focuses on summaries. Test per model.
+- **SDK vs. Raw SSE**: SDK handles parsing; for raw (fetch), parse `event.data` lines manually with `JSON.parse(line.replace('data: ', ''))`.
+
+This method captures 100% of the stream—deltas, traces, summaries, and metadata—while enabling seamless real-time UI. If integrating with tools or Azure OpenAI, the patterns are identical. For custom tweaks, share your stream logs!

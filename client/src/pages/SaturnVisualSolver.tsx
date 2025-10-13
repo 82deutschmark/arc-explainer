@@ -15,11 +15,10 @@ import { useParams, Link } from 'wouter';
 import { Loader2, ArrowLeft, Rocket, Square } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
-import SaturnHeader from '@/components/saturn/SaturnHeader';
 import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnRadarCanvas from '@/components/saturn/SaturnRadarCanvas';
-import SaturnControlPanel from '@/components/saturn/SaturnControlPanel';
+import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
@@ -49,9 +48,9 @@ export default function SaturnVisualSolver() {
   // Error states
   if (!taskId) {
     return (
-      <div className="h-screen overflow-hidden bg-black text-white flex flex-col">
+      <div className="h-screen overflow-hidden bg-white text-gray-900 flex flex-col">
         <div className="p-4">
-          <div className="text-red-400 text-sm">⚠️ INVALID PUZZLE ID</div>
+          <div className="text-red-600 text-sm font-bold">⚠️ INVALID PUZZLE ID</div>
         </div>
       </div>
     );
@@ -59,9 +58,9 @@ export default function SaturnVisualSolver() {
 
   if (isLoadingTask) {
     return (
-      <div className="h-screen overflow-hidden bg-black text-white flex flex-col">
+      <div className="h-screen overflow-hidden bg-white text-gray-900 flex flex-col">
         <div className="p-4">
-          <div className="text-yellow-400 text-sm">🔄 LOADING PUZZLE...</div>
+          <div className="text-amber-600 text-sm font-bold">🔄 LOADING PUZZLE...</div>
         </div>
       </div>
     );
@@ -69,10 +68,10 @@ export default function SaturnVisualSolver() {
 
   if (taskError || !task) {
     return (
-      <div className="h-screen overflow-hidden bg-black text-white flex flex-col">
+      <div className="h-screen overflow-hidden bg-white text-gray-900 flex flex-col">
         <div className="p-4">
-          <div className="text-red-400 text-sm">❌ PUZZLE NOT FOUND</div>
-          <div className="text-gray-400 text-xs mt-1">{taskError?.message || 'Puzzle could not be loaded'}</div>
+          <div className="text-red-600 text-sm font-bold">❌ PUZZLE NOT FOUND</div>
+          <div className="text-gray-600 text-xs mt-1">{taskError?.message || 'Puzzle could not be loaded'}</div>
         </div>
       </div>
     );
@@ -137,6 +136,14 @@ export default function SaturnVisualSolver() {
             <SaturnRadarCanvas
               state={state}
               isRunning={isRunning}
+              model={model}
+              setModel={setModel}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              onStart={onStart}
+              onCancel={cancel}
             />
           </aside>
         </div>
@@ -166,6 +173,14 @@ export default function SaturnVisualSolver() {
               state={state}
               isRunning={isRunning}
               compact
+              model={model}
+              setModel={setModel}
+              temperature={temperature}
+              setTemperature={setTemperature}
+              reasoningEffort={reasoningEffort}
+              setReasoningEffort={setReasoningEffort}
+              onStart={onStart}
+              onCancel={cancel}
             />
 
             {/* Work Table */}
