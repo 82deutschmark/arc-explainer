@@ -1,3 +1,48 @@
+## [4.8.5] - 2025-10-13
+### ✨ UX IMPROVEMENT: Smart Prompt Preview (Show Once Per Config)
+
+**Enhanced prompt preview to reduce repetitive confirmations**
+
+#### Previous Behavior
+- Prompt preview modal appeared **every time** user clicked "Preview & Run"
+- Users had to confirm the same prompt repeatedly when running multiple models
+- Became tedious when testing multiple models with same prompt configuration
+
+#### New Behavior
+- Preview modal shows **only on first run** for a given prompt configuration
+- Button changes from "Preview & Run" → "Run" after first confirmation
+- Preview reappears automatically when user changes:
+  - Prompt template (solver, explanation, etc.)
+  - Custom prompt text
+  - Emoji settings (on/off, emoji set)
+  - Omit answer option
+
+#### Implementation
+**Smart Configuration Tracking (client/src/components/puzzle/ModelTable.tsx:64-96):**
+- Tracks prompt configuration hash (promptId + customPrompt + options)
+- Detects configuration changes via `useEffect` hook
+- Resets preview state when config changes
+- Updates button label based on preview state
+
+**User Flow:**
+1. First run: Shows "Preview & Run" → Opens modal → Confirm → Runs model
+2. Subsequent runs: Shows "Run" → Runs directly (no modal)
+3. Change prompt template: Resets to "Preview & Run" → Shows modal again
+
+#### Benefits
+- ✅ Preserves safety on first run (prevents accidental expensive calls)
+- ✅ Reduces friction for batch testing multiple models
+- ✅ Automatically prompts review when configuration changes
+- ✅ Clear visual feedback via button label change
+
+**Files Modified:**
+- `client/src/components/puzzle/ModelTable.tsx` - Added config tracking + smart preview logic
+
+**Author**: Claude Code (Sonnet 4.5)
+**Date**: 2025-10-13
+
+---
+
 ## [4.8.4] - 2025-10-13
 ### 🔧 OPENAI STREAMING EVENT FIELD ACCESS FIX
 
