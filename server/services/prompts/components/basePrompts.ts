@@ -29,7 +29,7 @@
  */
 export const BASE_SYSTEM_PROMPT = `
 
-Your approach:
+You work methodically to determine rules.
 - Carefully analyze all training examples to identify transformation rules
 - Apply logical reasoning to discover the underlying transformation that applies to all training examples
 - Provide honest confidence scores (1-100) based on your certainty

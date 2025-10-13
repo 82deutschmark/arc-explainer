@@ -77,14 +77,10 @@ export function buildUserPrompt(
   const testSection = formatTestSection(task, useEmojis, emojiPalette, omitAnswer, isSolverMode);
   const { trainingLabel, testLabel } = getSectionLabels(useEmojis, isSolverMode, omitAnswer);
 
-  // Build the user prompt with task description FIRST, then data
+  // Build the user prompt with puzzle data FIRST, then task description
   let userPrompt = '';
-  
-  // REFACTORED: Task description goes in user prompt now
-  if (taskDescription) {
-    userPrompt += `${taskDescription}\n\n`;
-  }
-  
+
+  // PUZZLE DATA FIRST: Show training examples and test cases
   userPrompt += `${trainingLabel}
 ${trainingExamples}
 
@@ -95,6 +91,11 @@ ${testSection}`;
   if (useEmojis && emojiPalette) {
     const emojiLegend = createEmojiMapLegend(emojiPalette);
     userPrompt += `\n${emojiLegend}`;
+  }
+
+  // TASK DESCRIPTION AFTER: Instructions come after showing the data
+  if (taskDescription) {
+    userPrompt += `\n\n${taskDescription}`;
   }
 
   return userPrompt;
