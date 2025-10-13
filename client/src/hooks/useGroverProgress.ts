@@ -623,8 +623,9 @@ export function useGroverProgress(taskId: string | undefined) {
   useEffect(() => {
     return () => {
       closeSocket();
+      closeEventSource();
     };
-  }, [closeSocket]);
+  }, [closeSocket, closeEventSource]);
 
   return { sessionId, state, start, cancel };
 }
