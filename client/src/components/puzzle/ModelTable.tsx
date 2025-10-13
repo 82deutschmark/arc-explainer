@@ -12,10 +12,12 @@
  * DaisyUI: Pass - Uses DaisyUI table component
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Loader2, AlertTriangle, Zap, Clock, DollarSign, Calendar } from 'lucide-react';
 import type { ExplanationData } from '@/types/puzzle';
 import type { ModelConfig } from '@shared/types';
+import type { ARCTask } from '@shared/types';
+import { PromptPreviewModal } from '@/components/PromptPreviewModal';
 
 interface ModelTableProps {
   models: ModelConfig[] | undefined;
@@ -26,6 +28,16 @@ interface ModelTableProps {
   explanations: ExplanationData[];
   onAnalyze: (modelKey: string) => void;
   analyzerErrors: Map<string, Error>;
+  // Props for prompt preview modal
+  task: ARCTask;
+  taskId: string;
+  promptId: string;
+  customPrompt: string;
+  promptOptions: {
+    emojiSetKey?: string;
+    omitAnswer?: boolean;
+    sendAsEmojis?: boolean;
+  };
 }
 
 /**
@@ -39,9 +51,15 @@ export function ModelTable({
   canStreamModel,
   explanations,
   onAnalyze,
-  analyzerErrors
+  analyzerErrors,
+  task,
+  taskId,
+  promptId,
+  customPrompt,
+  promptOptions
 }: ModelTableProps) {
   const isStreamingActive = streamingModelKey !== null;
+  const [previewingModelKey, setPreviewingModelKey] = useState<string | null>(null);
 
   if (!models) {
     return null;
@@ -216,7 +234,7 @@ export function ModelTable({
                 <td className="text-center">
                   <button
                     className={`btn btn-xs ${error ? 'btn-error' : 'btn-primary'}`}
-                    onClick={() => onAnalyze(model.key)}
+                    onClick={() => setPreviewingModelKey(model.key)}
                     disabled={isProcessing || disableDueToStreaming}
                   >
                     {isProcessing ? (
@@ -227,7 +245,7 @@ export function ModelTable({
                     ) : error ? (
                       'Retry'
                     ) : (
-                      'Run'
+                      'Preview & Run'
                     )}
                   </button>
                 </td>
@@ -236,6 +254,29 @@ export function ModelTable({
           })}
         </tbody>
       </table>
+
+      {/* Prompt Preview Modal with Confirmation */}
+      {previewingModelKey && (
+        <PromptPreviewModal
+          isOpen={true}
+          onClose={() => setPreviewingModelKey(null)}
+          task={task}
+          taskId={taskId}
+          promptId={promptId}
+          customPrompt={customPrompt}
+          options={{
+            emojiSetKey: promptOptions.sendAsEmojis ? promptOptions.emojiSetKey : undefined,
+            omitAnswer: promptOptions.omitAnswer,
+            sendAsEmojis: promptOptions.sendAsEmojis
+          }}
+          confirmMode={true}
+          onConfirm={() => {
+            onAnalyze(previewingModelKey);
+            setPreviewingModelKey(null);
+          }}
+          confirmButtonText="Confirm & Run Analysis"
+        />
+      )}
     </div>
   );
 }
