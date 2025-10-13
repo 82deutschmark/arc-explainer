@@ -18,29 +18,44 @@ class AIServiceFactory {
   private openrouterService: any;
   private groverService: any;
   private saturnService: any;
+  private jjoshService: any;
 
   /**
    * Initialize the factory by loading all AI services once at startup
    */
   async initialize() {
-    // Import services once at startup
-    const { anthropicService } = await import('./anthropic');
-    const { openaiService } = await import('./openai');
-    const { grokService } = await import('./grok');
-    const { geminiService } = await import('./gemini');
-    const { deepseekService } = await import('./deepseek');
-    const { openrouterService } = await import('./openrouter');
-    const { groverService } = await import('./grover');
-    const { saturnService } = await import('./saturnService');
+    try {
+      // Import services once at startup
+      const { anthropicService } = await import('./anthropic');
+      const { openaiService } = await import('./openai');
+      const { grokService } = await import('./grok');
+      const { geminiService } = await import('./gemini');
+      const { deepseekService } = await import('./deepseek');
+      const { openrouterService } = await import('./openrouter');
+      const { groverService } = await import('./grover');
+      const { saturnService } = await import('./saturnService');
 
-    this.anthropicService = anthropicService;
-    this.openaiService = openaiService;
-    this.grokService = grokService;
-    this.geminiService = geminiService;
-    this.deepseekService = deepseekService;
-    this.openrouterService = openrouterService;
-    this.groverService = groverService;
-    this.saturnService = saturnService;
+      this.anthropicService = anthropicService;
+      this.openaiService = openaiService;
+      this.grokService = grokService;
+      this.geminiService = geminiService;
+      this.deepseekService = deepseekService;
+      this.openrouterService = openrouterService;
+      this.groverService = groverService;
+      this.saturnService = saturnService;
+
+      // Optional external solver - only import if file exists
+      try {
+        const { jjoshService } = await import('./jjosh');
+        this.jjoshService = jjoshService;
+      } catch (error) {
+        console.log('[Factory] jjosh service not available, skipping...');
+        this.jjoshService = null;
+      }
+    } catch (error) {
+      console.error('[Factory] Error initializing services:', error);
+      throw error;
+    }
   }
 
   /**
@@ -59,11 +74,13 @@ class AIServiceFactory {
       return this.anthropicService;
     }
     
-    // Saturn visual solver (uses underlying models with visual analysis)
-    if (model.startsWith('saturn-')) {
-      console.log('   -> Saturn service');
-      return this.saturnService;
+    // jjosh ARC AGI solver (external Python solver)
+    if (model.startsWith('jjosh-')) {
+      console.log('   -> jjosh service');
+      return this.jjoshService;
     }
+
+    // Anthropic Claude models
     
     // Grover iterative solver (uses underlying models)
     if (model.startsWith('grover-')) {
