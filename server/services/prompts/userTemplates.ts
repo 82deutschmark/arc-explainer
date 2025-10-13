@@ -194,12 +194,7 @@ export function buildDiscussionUserPrompt(
 ): string {
   let prompt = '';
 
-  // TASK DESCRIPTION FIRST
-  if (taskDescription) {
-    prompt += `${taskDescription}\n\n`;
-  }
-
-  // PREVIOUS ANALYSIS CONTEXT
+  // PREVIOUS ANALYSIS CONTEXT FIRST
   if (originalExplanation) {
     prompt += `YOUR PREVIOUS ANALYSIS (INCORRECT/INCOMPLETE):\n`;
     prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
@@ -216,8 +211,13 @@ export function buildDiscussionUserPrompt(
     prompt += `\n---\n\n`;
   }
 
-  // Add the puzzle data
+  // Add the puzzle data (without task description)
   prompt += buildUserPrompt(task, options);
+
+  // TASK DESCRIPTION AFTER PUZZLE DATA
+  if (taskDescription) {
+    prompt += `\n\n${taskDescription}`;
+  }
 
   return prompt;
 }
@@ -234,12 +234,7 @@ export function buildDebateUserPrompt(
 ): string {
   let prompt = '';
 
-  // TASK DESCRIPTION FIRST
-  if (taskDescription) {
-    prompt += `${taskDescription}\n\n`;
-  }
-
-  // DEBATE CONTEXT - AI needs to see the flawed explanation
+  // DEBATE CONTEXT FIRST - AI needs to see the flawed explanation
   if (originalExplanation) {
     prompt += `PREVIOUS AI EXPLANATION TO CRITIQUE:\n`;
     prompt += `Pattern Description: ${originalExplanation.patternDescription}\n`;
@@ -257,7 +252,7 @@ export function buildDebateUserPrompt(
     prompt += `\n---\n\n`;
   }
 
-  // Add the puzzle data (training examples)
+  // Add the puzzle data (training examples) - without task description
   prompt += buildSolverUserPrompt(task, options);
 
   // PREDICTED OUTPUT COMES AFTER TRAINING EXAMPLES
@@ -292,6 +287,11 @@ export function buildDebateUserPrompt(
         prompt += `No valid prediction was provided\n`;
       }
     }
+  }
+
+  // TASK DESCRIPTION AFTER ALL PUZZLE DATA AND PREDICTED OUTPUT
+  if (taskDescription) {
+    prompt += `\n\n${taskDescription}`;
   }
 
   return prompt;
