@@ -47,23 +47,41 @@ export function ModelTable({
     return null;
   }
 
+  // Sort models by release date (newest first), then by name
+  const sortedModels = [...models].sort((a, b) => {
+    // Models without release dates go to bottom
+    if (!a.releaseDate && !b.releaseDate) return a.name.localeCompare(b.name);
+    if (!a.releaseDate) return 1;
+    if (!b.releaseDate) return -1;
+    
+    // Parse release dates (format: "YYYY-MM" or similar)
+    const dateA = new Date(a.releaseDate + '-01').getTime();
+    const dateB = new Date(b.releaseDate + '-01').getTime();
+    
+    // Newest first (descending)
+    if (dateB !== dateA) return dateB - dateA;
+    
+    // If same date, sort by name
+    return a.name.localeCompare(b.name);
+  });
+
   return (
-    <div className="overflow-x-auto">
-      <table className="table table-xs table-pin-rows">
-        <thead>
-          <tr className="bg-base-200">
-            <th className="w-8"></th>
-            <th className="min-w-[160px]">Model Name</th>
-            <th className="min-w-[60px] text-center">Runs</th>
-            <th className="min-w-[100px]">Streaming</th>
-            <th className="min-w-[100px]">Cost</th>
-            <th className="min-w-[80px]">Speed</th>
-            <th className="min-w-[100px]">Released</th>
-            <th className="min-w-[80px] text-center">Action</th>
+    <div className="overflow-x-auto max-h-[600px] relative">
+      <table className="table table-xs">
+        <thead className="sticky top-0 z-10">
+          <tr className="bg-base-300 shadow-sm">
+            <th className="w-8 bg-base-300"></th>
+            <th className="min-w-[160px] bg-base-300">Model Name</th>
+            <th className="min-w-[60px] text-center bg-base-300">Runs</th>
+            <th className="min-w-[100px] bg-base-300">Stream</th>
+            <th className="min-w-[100px] bg-base-300">Cost</th>
+            <th className="min-w-[80px] bg-base-300">Speed</th>
+            <th className="min-w-[100px] bg-base-300">Released</th>
+            <th className="min-w-[80px] text-center bg-base-300">Action</th>
           </tr>
         </thead>
         <tbody>
-          {models.map((model) => {
+          {sortedModels.map((model) => {
             const isProcessing = processingModels.has(model.key);
             const isStreamingThisModel = streamingModelKey === model.key;
             const disableDueToStreaming = isStreamingActive && !isStreamingThisModel;
@@ -119,28 +137,28 @@ export function ModelTable({
                 {/* Explanation Count */}
                 <td className="text-center">
                   {explanationCount > 0 ? (
-                    <div 
-                      className="badge badge-success badge-sm"
-                      title={`${explanationCount} ${explanationCount === 1 ? 'analysis' : 'analyses'} available`}
-                    >
-                      {explanationCount}
+                    <div className="flex items-center justify-center gap-1">
+                      <div 
+                        className="badge badge-success badge-sm font-semibold"
+                        title={`${explanationCount} ${explanationCount === 1 ? 'run' : 'runs'} completed`}
+                      >
+                        {explanationCount}
+                      </div>
                     </div>
                   ) : (
-                    <span className="text-xs opacity-40">-</span>
+                    <span className="text-xs opacity-40">0</span>
                   )}
                 </td>
 
                 {/* Streaming Status */}
                 <td>
                   {canStream ? (
-                    <div className="flex items-center gap-1">
-                      <Zap className={`h-3 w-3 ${isStreamingThisModel ? 'text-blue-600' : 'text-blue-400'}`} />
-                      <span className={`text-xs ${isStreamingThisModel ? 'text-blue-600 font-medium' : 'text-blue-400'}`}>
-                        {isStreamingThisModel ? 'Live' : 'Ready'}
-                      </span>
+                    <div className="badge badge-sm gap-1 border-blue-400 bg-blue-50 text-blue-700">
+                      <Zap className="h-3 w-3" />
+                      {isStreamingThisModel ? 'LIVE' : 'Yes'}
                     </div>
                   ) : (
-                    <span className="text-xs opacity-40">-</span>
+                    <span className="text-xs opacity-40">No</span>
                   )}
                 </td>
 
