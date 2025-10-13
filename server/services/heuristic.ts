@@ -14,6 +14,7 @@
 import { ARCTask } from "../../shared/types.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo } from "./base/BaseAIService.js";
 import type { PromptOptions } from "./promptBuilder.js";
+import { logger } from '../utils/logger.js';
 import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs/promises';
@@ -147,23 +148,32 @@ export class HeuristicService extends BaseAIService {
   }
 
   /**
-   * Preview prompt (not applicable for heuristic solver)
+   * Generate prompt preview (not applicable for heuristic solver)
    */
-  async generatePromptPreview(
+  generatePromptPreview(
     task: ARCTask,
     modelKey: string,
     promptId?: string,
     customPrompt?: string,
     options?: PromptOptions,
     serviceOpts?: ServiceOptions
-  ): Promise<PromptPreview> {
+  ): PromptPreview {
     return {
-      systemPrompt: "Heuristic ARC solver - no prompt preview available",
-      userPrompt: "Internal solver uses primitive operations and composition",
-      model: modelKey,
-      temperature: 0.2,
-      estimatedTokens: 0,
-      estimatedCost: 0
+      provider: this.provider,
+      modelName: this.models[modelKey],
+      promptText: "Heuristic ARC solver - uses primitive operations and composition",
+      messageFormat: {},
+      templateInfo: {
+        id: "heuristic-solver",
+        name: "Heuristic Solver",
+        usesEmojis: false
+      },
+      promptStats: {
+        characterCount: 0,
+        wordCount: 0,
+        lineCount: 0
+      },
+      providerSpecificNotes: "Internal solver uses primitive operations and composition, no LLM prompts"
     };
   }
 
@@ -172,11 +182,40 @@ export class HeuristicService extends BaseAIService {
    */
   getModelInfo(modelKey: string): ModelInfo {
     return {
-      name: "heuristic-solver",
-      provider: "heuristic",
-      type: "internal-solver",
-      description: "Internal heuristic ARC solver using primitive operations and composition"
+      name: this.models[modelKey],
+      isReasoning: false,
+      supportsTemperature: false,
+      supportsFunctionCalling: false,
+      supportsSystemPrompts: false,
+      supportsStructuredOutput: false,
+      supportsVision: false
     };
+  }
+
+  /**
+   * Provider-specific API call - not applicable for heuristic solver
+   */
+  protected async callProviderAPI(
+    _prompt: any,
+    _modelKey: string,
+    _temperature: number,
+    _serviceOpts: ServiceOptions,
+    _testCount: number,
+    _taskId?: string
+  ): Promise<any> {
+    throw new Error("Heuristic solver uses direct Python execution - this should not be called");
+  }
+
+  /**
+   * Parse provider response - not applicable for heuristic solver
+   */
+  protected parseProviderResponse(
+    _response: any,
+    _modelKey: string,
+    _captureReasoning: boolean,
+    _puzzleId?: string
+  ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string } {
+    throw new Error("Heuristic solver uses direct Python execution - this should not be called");
   }
 
   /**
