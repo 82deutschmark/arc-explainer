@@ -1,3 +1,45 @@
+## [4.8.1] - 2025-10-12 11:00 PM
+### 💰 COST CONTROL: Prompt Preview Confirmation + Prompt Order Fix
+
+**TWO CRITICAL IMPROVEMENTS:**
+
+#### 1. 🔍 Mandatory Prompt Preview Before Expensive API Calls
+**Problem:** Users could accidentally trigger expensive LLM API calls without seeing what prompt would be sent.
+
+**Solution - Two-Step Confirmation Flow:**
+- **"Preview & Run" buttons** replace direct "Run" buttons in ModelTable
+- **Confirmation modal** shows complete prompt before execution:
+  - System prompt (AI role/behavior)
+  - User prompt (puzzle data + instructions)
+  - Estimated token count and character count
+  - Template info and mode badges
+- **User must confirm** by clicking "Confirm & Run" button
+- **Can cancel** without any API call or charges
+- **Loading state** shown while analysis starts
+
+**Files Changed:**
+- `client/src/components/PromptPreviewModal.tsx` - Added confirmation mode with confirm/cancel buttons
+- `client/src/components/puzzle/ModelTable.tsx` - Integrated preview modal, changed Run → Preview & Run
+- `client/src/pages/PuzzleExaminer.tsx` - Pass prompt configuration props to ModelTable
+
+**Impact:** Prevents accidental expensive API calls. Users verify prompt correctness before spending money.
+
+#### 2. 📝 Fixed Prompt Order: Data Before Instructions
+**Problem:** Task descriptions came BEFORE puzzle data, making prompts confusing ("analyze the examples below" but examples came after).
+
+**Solution - Reordered User Prompts:**
+1. Training examples (data)
+2. Test cases (data)
+3. Emoji legend (if applicable)
+4. Task description (instructions)
+
+**Files Changed:**
+- `server/services/prompts/userTemplates.ts` - Moved task description to end in all prompt modes (solver, explanation, discussion, debate)
+
+**Impact:** Improved prompt clarity - AI sees the data first, then reads instructions on what to do with it.
+
+---
+
 ## [4.8.0] - 2025-10-12 8:45 PM
 ### 🎨 MAJOR UX OVERHAUL: Data-Dense Layout & Explicit Grid Labeling
 
