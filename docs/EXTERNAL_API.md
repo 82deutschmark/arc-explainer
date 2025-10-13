@@ -4,6 +4,64 @@ This document describes the public APIs that external applications rely on. Thes
 
 **🔄 Recent Changes (Sept 2025):** All artificial API result limits have been removed or significantly increased to support external applications.
 
+## 🚀 NEW: ARC API Client for Python Researchers
+
+**Simple Python client for contributing analyses to ARC Explainer encyclopedia.**
+
+### Installation & Usage
+```bash
+# Copy to your project
+cp tools/api-client/arc_client.py your_project/
+```
+
+```python
+from arc_client import contribute_to_arc_explainer
+
+# One-line contribution to encyclopedia
+result = contribute_to_arc_explainer(
+    "3a25b0d8", analysis_result, "grok-4-2025-10-13",
+    "https://arc-explainer-staging.up.railway.app", "your-api-key"
+)
+```
+
+**Features:**
+- ✅ One-line integration for any Python researcher
+- ✅ Current October 2025 model names (no deprecated models)
+- ✅ Uses existing `POST /api/puzzle/save-explained/:puzzleId` endpoint
+- ✅ Model-specific functions: `contribute_grok4_analysis()`, `contribute_gpt5_analysis()`
+- ✅ Batch processing for multiple puzzles
+- ✅ Zero external dependencies (only `requests`)
+
+**Complete Documentation:** `tools/api-client/README.md`
+
+---
+
+## Authentication
+
+**NEW (Oct 2025):** API key authentication now available for contribution endpoints.
+
+### API Key Authentication
+Some endpoints now require API key authentication via `Authorization: Bearer <api-key>` header.
+
+**Available API Keys:**
+- `arc-explainer-public-key-2025` - Public access key for researchers
+- `researcher-access-key-001` - Researcher access key
+- `demo-api-key-for-researchers` - Demo key for testing
+
+**Endpoints Requiring Authentication:**
+- `POST /api/puzzle/save-explained/:puzzleId` - Save AI-generated explanation
+- `POST /api/feedback` - Submit user feedback
+- `POST /api/puzzles/:puzzleId/solutions` - Submit community solution
+- `POST /api/solutions/:solutionId/vote` - Vote on community solutions
+
+**Endpoints Open (No Authentication Required):**
+- `GET /api/puzzle/list` - Get puzzle list
+- `GET /api/puzzle/task/:taskId` - Get puzzle data
+- `GET /api/puzzle/:puzzleId/explanations` - Get explanations
+- `GET /api/models` - List available models
+- `GET /api/metrics/*` - Performance statistics
+- All analytics and read-only endpoints
+
 ## Core Data Endpoints SUPER IMPORTANT!!
 
 ### Puzzle Management

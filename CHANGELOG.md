@@ -1,3 +1,38 @@
+## [4.8.8] - 2025-10-13
+### 🚀 NEW: ARC API Client for External Researchers
+
+**Problem:** Python researchers needed simple way to contribute analyses to ARC Explainer encyclopedia using existing API endpoints.
+
+**Solution:** Created simple Python client (`tools/api-client/`) that provides one-line integration for researchers to contribute ARC puzzle analyses.
+
+**Features:**
+- **One-line contribution:** `contribute_to_arc_explainer(puzzle_id, analysis, model, url, key)`
+- **Current model support:** Uses October 2025 model names (grok-4-2025-10-13, gpt-5-turbo-2025-10-13, etc.)
+- **Existing API integration:** Calls `POST /api/puzzle/save-explained/:puzzleId` endpoint
+- **Model-specific functions:** `contribute_grok4_analysis()`, `contribute_gpt5_analysis()`, `contribute_claude_analysis()`
+- **Batch processing:** `contribute_batch_analyses()` for multiple puzzles
+- **Zero dependencies:** Only requires `requests` library
+
+**Files:**
+- `tools/api-client/arc_client.py` - Main API client
+- `tools/api-client/examples.py` - Usage examples
+- `tools/api-client/README.md` - Complete documentation
+
+**Usage:**
+```python
+from arc_client import contribute_to_arc_explainer
+
+# One-line contribution to encyclopedia
+result = contribute_to_arc_explainer(
+    "3a25b0d8", analysis_result, "grok-4-2025-10-13",
+    "https://arc-explainer-staging.up.railway.app", "your-api-key"
+)
+```
+
+**Impact:** Enables Python researchers to easily contribute to ARC puzzle encyclopedia using current SOTA models.
+
+---
+
 ## [4.8.7] - 2025-10-13
 ### 🐛 FIX: Saturn Solver SSE Streaming Issues
 
