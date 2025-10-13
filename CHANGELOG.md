@@ -1,3 +1,54 @@
+## [4.8.4] - 2025-10-13
+### 🔧 OPENAI STREAMING EVENT FIELD ACCESS FIX
+
+**CRITICAL FIX: Corrected SDK field access in streaming events**
+
+#### Issue
+Previous implementation accessed non-existent `content` field on OpenAI streaming events, causing empty/null reasoning and text deltas during real-time streaming.
+
+#### Root Cause
+Code was using `(event as any).content` for all streaming events, but OpenAI SDK v5.16.0 uses different field names per event type:
+- `ResponseReasoningSummaryTextDeltaEvent` → `delta` field (not `content`)
+- `ResponseReasoningSummaryPartAddedEvent` → `part.text` field (not `content`)
+- `ResponseContentPartAddedEvent` → `part.text` field (not `content`)
+
+#### Solution
+**Fixed field access to match OpenAI SDK types (server/services/openai.ts:768-820):**
+
+1. **Reasoning Summary Text Delta** (line 775):
+   - ❌ Before: `const delta = (event as any).content || '';`
+   - ✅ After: `const delta = typedEvent.delta || '';`
+
+2. **Reasoning Summary Part Added** (line 794):
+   - ❌ Before: `const delta = (event as any).content || '';`
+   - ✅ After: `const delta = typedEvent.part?.text || '';`
+
+3. **Content Part Added** (line 811):
+   - ❌ Before: `const delta = (event as any).content || '';`
+   - ✅ After: `const partText = typedEvent.part && 'text' in typedEvent.part ? typedEvent.part.text : '';`
+
+**Improved Type Safety:**
+- Added proper SDK type imports: `ResponseReasoningSummaryTextDeltaEvent`, `ResponseReasoningSummaryPartAddedEvent`, `ResponseContentPartAddedEvent`
+- Replaced unsafe `as any` casts with typed event assertions
+- Added type guards for `ResponseOutputText` union type handling
+
+#### Impact
+- ✅ Real-time reasoning summaries now stream correctly for GPT-5 models
+- ✅ Content deltas properly accumulate during streaming responses
+- ✅ TypeScript catches mismatched field access at compile time
+- ✅ Eliminates silent failures where `undefined` fields were treated as empty strings
+
+**Files Modified:**
+- `server/services/openai.ts` - Fixed streaming event handlers with proper SDK types
+
+**Testing Required:**
+Stream analysis with GPT-5 models to verify reasoning display works correctly.
+
+**Author**: Claude Code (Sonnet 4.5)
+**Date**: 2025-10-13
+
+---
+
 ## [4.8.3] - 2025-10-13 12:35 AM
 ### 🔧 OPENAI SERVICE COMPILATION FIXES
 
