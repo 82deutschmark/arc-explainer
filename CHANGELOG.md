@@ -1,96 +1,37 @@
 ## [4.8.5] - 2025-10-13
-### ✨ UX IMPROVEMENT: Smart Prompt Preview (Show Once Per Config)
+### ✨ UX: Smart Prompt Preview (Show Once Per Config)
 
-**Enhanced prompt preview to reduce repetitive confirmations**
+**Problem:** Preview modal appeared every time, tedious when testing multiple models with same prompt.
 
-#### Previous Behavior
-- Prompt preview modal appeared **every time** user clicked "Preview & Run"
-- Users had to confirm the same prompt repeatedly when running multiple models
-- Became tedious when testing multiple models with same prompt configuration
+**Solution:**
+- Preview shows only on **first run** for a given prompt configuration
+- Button changes: "Preview & Run" → "Run" after first confirmation
+- Resets automatically when prompt template/settings change
 
-#### New Behavior
-- Preview modal shows **only on first run** for a given prompt configuration
-- Button changes from "Preview & Run" → "Run" after first confirmation
-- Preview reappears automatically when user changes:
-  - Prompt template (solver, explanation, etc.)
-  - Custom prompt text
-  - Emoji settings (on/off, emoji set)
-  - Omit answer option
+**Impact:** Preserves safety on first run, removes friction for batch model testing.
 
-#### Implementation
-**Smart Configuration Tracking (client/src/components/puzzle/ModelTable.tsx:64-96):**
-- Tracks prompt configuration hash (promptId + customPrompt + options)
-- Detects configuration changes via `useEffect` hook
-- Resets preview state when config changes
-- Updates button label based on preview state
-
-**User Flow:**
-1. First run: Shows "Preview & Run" → Opens modal → Confirm → Runs model
-2. Subsequent runs: Shows "Run" → Runs directly (no modal)
-3. Change prompt template: Resets to "Preview & Run" → Shows modal again
-
-#### Benefits
-- ✅ Preserves safety on first run (prevents accidental expensive calls)
-- ✅ Reduces friction for batch testing multiple models
-- ✅ Automatically prompts review when configuration changes
-- ✅ Clear visual feedback via button label change
-
-**Files Modified:**
-- `client/src/components/puzzle/ModelTable.tsx` - Added config tracking + smart preview logic
-
-**Author**: Claude Code (Sonnet 4.5)
-**Date**: 2025-10-13
+**Files:** `client/src/components/puzzle/ModelTable.tsx`
 
 ---
 
 ## [4.8.4] - 2025-10-13
-### 🔧 OPENAI STREAMING EVENT FIELD ACCESS FIX
+### 🔧 CRITICAL: OpenAI Streaming Event Field Access Fix
 
-**CRITICAL FIX: Corrected SDK field access in streaming events**
+**Problem:** Code accessed non-existent `content` field on streaming events, causing empty reasoning/text deltas.
 
-#### Issue
-Previous implementation accessed non-existent `content` field on OpenAI streaming events, causing empty/null reasoning and text deltas during real-time streaming.
+**Root Cause:** OpenAI SDK v5.16.0 uses different field names per event type:
+- `ResponseReasoningSummaryTextDeltaEvent` → `delta` (not `content`)
+- `ResponseReasoningSummaryPartAddedEvent` → `part.text` (not `content`)
+- `ResponseContentPartAddedEvent` → `part.text` (not `content`)
 
-#### Root Cause
-Code was using `(event as any).content` for all streaming events, but OpenAI SDK v5.16.0 uses different field names per event type:
-- `ResponseReasoningSummaryTextDeltaEvent` → `delta` field (not `content`)
-- `ResponseReasoningSummaryPartAddedEvent` → `part.text` field (not `content`)
-- `ResponseContentPartAddedEvent` → `part.text` field (not `content`)
+**Solution:**
+- Fixed field access in `handleStreamingEvent()` to match SDK types
+- Added proper type imports and replaced `as any` casts
+- Added type guards for union type handling
 
-#### Solution
-**Fixed field access to match OpenAI SDK types (server/services/openai.ts:768-820):**
+**Impact:** Real-time reasoning/content now streams correctly for GPT-5 models.
 
-1. **Reasoning Summary Text Delta** (line 775):
-   - ❌ Before: `const delta = (event as any).content || '';`
-   - ✅ After: `const delta = typedEvent.delta || '';`
-
-2. **Reasoning Summary Part Added** (line 794):
-   - ❌ Before: `const delta = (event as any).content || '';`
-   - ✅ After: `const delta = typedEvent.part?.text || '';`
-
-3. **Content Part Added** (line 811):
-   - ❌ Before: `const delta = (event as any).content || '';`
-   - ✅ After: `const partText = typedEvent.part && 'text' in typedEvent.part ? typedEvent.part.text : '';`
-
-**Improved Type Safety:**
-- Added proper SDK type imports: `ResponseReasoningSummaryTextDeltaEvent`, `ResponseReasoningSummaryPartAddedEvent`, `ResponseContentPartAddedEvent`
-- Replaced unsafe `as any` casts with typed event assertions
-- Added type guards for `ResponseOutputText` union type handling
-
-#### Impact
-- ✅ Real-time reasoning summaries now stream correctly for GPT-5 models
-- ✅ Content deltas properly accumulate during streaming responses
-- ✅ TypeScript catches mismatched field access at compile time
-- ✅ Eliminates silent failures where `undefined` fields were treated as empty strings
-
-**Files Modified:**
-- `server/services/openai.ts` - Fixed streaming event handlers with proper SDK types
-
-**Testing Required:**
-Stream analysis with GPT-5 models to verify reasoning display works correctly.
-
-**Author**: Claude Code (Sonnet 4.5)
-**Date**: 2025-10-13
+**Files:** `server/services/openai.ts`
 
 ---
 
