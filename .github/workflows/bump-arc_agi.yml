@@ -8,11 +8,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.EXPLAINER_PAT }}
+          # Use GITHUB_TOKEN for checkout (read access)
+          token: ${{ secrets.GITHUB_TOKEN }}
           submodules: true
-      - run: |
+      - name: Update submodule
+        run: |
           git submodule update --remote solvers/arc_agi
           git add solvers/arc_agi
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           git -c user.name="bot" -c user.email="bot@users.noreply.github.com" \
-            commit -m "chore(submodule): bump arc_agi to ${{ github.event.client_payload.tag }}" || exit 0
-          git push
+            commit -m "chore(submodule): bump arc_agi to ${{ github.event.client_payload.tag }}"
+      - name: Push changes
+        run: |
+          # Only push if there are changes to push
+          if git log --oneline -1 | grep -q "bump arc_agi"; then
+            git push
+          else
+            echo "No new commits to push"
+          fi
+        # Note: For auto-push to work, you need to either:
+        # 1. Use GITHUB_TOKEN (may have limitations for same-repo pushes)  
+        # 2. Create an EXPLAINER_PAT secret with repo write permissions
