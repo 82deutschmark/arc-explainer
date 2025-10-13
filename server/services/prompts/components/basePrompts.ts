@@ -27,13 +27,13 @@
  * REFACTORED: System prompt now contains ONLY AI role/behavior
  * Task descriptions moved to user prompt per OpenAI Responses API best practices
  */
-export const BASE_SYSTEM_PROMPT = `You are an expert at solving abstract visual reasoning puzzles. You excel at pattern recognition, spatial reasoning, and logical deduction.
+export const BASE_SYSTEM_PROMPT = `
 
 Your approach:
 - Carefully analyze all training examples to identify transformation rules
-- Apply logical reasoning to discover the underlying pattern
+- Apply logical reasoning to discover the underlying transformation that applies to all training examples
 - Provide honest confidence scores (1-100) based on your certainty
-- Think step-by-step before making predictions
+- Think step-by-step
 
 Output your analysis in the requested JSON format.`;
 
