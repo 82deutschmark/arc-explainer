@@ -21,7 +21,12 @@ const DEFAULT_PROMPT_ID = 'solver';
 import type { PromptOptions, PromptPackage } from "./promptBuilder.js";
 import { getOpenAISchema } from "./schemas/providers/openai.js";
 import { BaseAIService, ServiceOptions, TokenUsage, AIResponse, PromptPreview, ModelInfo, StreamingHarness } from "./base/BaseAIService.js";
-import type { ResponseStreamEvent } from "openai/resources/responses/responses";
+import type {
+  ResponseStreamEvent,
+  ResponseReasoningSummaryTextDeltaEvent,
+  ResponseReasoningSummaryPartAddedEvent,
+  ResponseContentPartAddedEvent
+} from "openai/resources/responses/responses";
 
 type OpenAIStreamAggregates = {
   text: string;
@@ -766,8 +771,9 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       case "response.reasoning_summary_text.delta": {
-        // This is the main reasoning content being streamed
-        const delta = (event as any).content || '';
+        // SDK Type: ResponseReasoningSummaryTextDeltaEvent has 'delta: string' field
+        const typedEvent = event as ResponseReasoningSummaryTextDeltaEvent;
+        const delta = typedEvent.delta || '';
         aggregates.reasoningSummary = (aggregates.reasoningSummary || '') + delta;
         this.emitStreamChunk(harness, {
           type: "reasoning",
@@ -783,7 +789,9 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       case "response.reasoning_summary_part.added": {
-        const delta = (event as any).content || '';
+        // SDK Type: ResponseReasoningSummaryPartAddedEvent has 'part: { text: string }' field
+        const typedEvent = event as ResponseReasoningSummaryPartAddedEvent;
+        const delta = typedEvent.part?.text || '';
         aggregates.reasoningSummary = (aggregates.reasoningSummary || '') + delta;
         this.emitStreamChunk(harness, {
           type: "reasoning",
@@ -798,11 +806,13 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       case "response.content_part.added": {
-        const delta = (event as any).content || '';
-        aggregates.text += delta;
+        // SDK Type: ResponseContentPartAddedEvent has 'part: ResponseOutputText' with 'text: string' field
+        const typedEvent = event as ResponseContentPartAddedEvent;
+        const partText = typedEvent.part && 'text' in typedEvent.part ? typedEvent.part.text : '';
+        aggregates.text += partText;
         this.emitStreamChunk(harness, {
           type: "text",
-          delta,
+          delta: partText,
           content: aggregates.text,
           metadata: { type: 'content' }
         });
