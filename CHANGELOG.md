@@ -1,3 +1,27 @@
+## [4.8.7] - 2025-10-13
+### 🐛 FIX: Saturn Solver SSE Streaming Issues
+
+**Problems:**
+1. Redundant `emitStreamChunk()` calls in `sendProgress` helper
+2. Missing `analysis` wrapper in `finalizeStream()` causing frontend to not find saved data
+
+**Solutions:**
+- Removed redundant `emitStreamChunk()` from `sendProgress` helper (lines 115-118)
+  - Status messages already emitted via `emitStreamEvent()` with proper payload
+  - `emitStreamChunk()` is for content deltas only (like OpenAI text streaming)
+- Wrapped `finalResponse` in `analysis` field in `finalizeStream()` call (line 434-436)
+  - Frontend expects `summary?.responseSummary?.analysis` structure
+  - Ensures Saturn streaming matches OpenAI/Grok streaming format
+
+**Benefits:**
+- ✅ Eliminates duplicate status messages in SSE stream
+- ✅ Frontend correctly displays and saves Saturn streaming results
+- ✅ Consistent streaming architecture across all services
+
+**Files:** `server/services/saturnService.ts`
+
+---
+
 ## [4.8.6] - 2025-10-13
 ### 🐛 FIX: Streaming Modal Stays Open After Completion
 

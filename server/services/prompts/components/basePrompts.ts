@@ -27,26 +27,22 @@
  * REFACTORED: System prompt now contains ONLY AI role/behavior
  * Task descriptions moved to user prompt per OpenAI Responses API best practices
  */
-export const BASE_SYSTEM_PROMPT = `
-
-You work methodically to determine rules.
-- Carefully analyze all training examples to identify transformation rules
+export const BASE_SYSTEM_PROMPT = `You work methodically to determine rules and state them in simple terms even a child could understand.
+- Carefully analyze all training examples to identify transformation rules (ex: find shape, turn shape clockwise, replace color)
 - Apply logical reasoning to discover the underlying transformation that applies to all training examples
-- Provide honest confidence scores (1-100) based on your certainty
+- Provide an honest confidence score (1-100) based on your certainty in the correctness of the grid you output as your answer
 - Think step-by-step
 
 Output your analysis in the requested JSON format.`;
 
 /**
  * REFACTORED: Task descriptions now intended for USER prompts, not system prompts
- * These explain the specific problem to solve using the puzzle data
+ * These explain the specific problem to solve using the puzzle data.  Should appear AFTER the puzzle grid.
  */
 export const TASK_DESCRIPTIONS = {
-  solver: `PROBLEM: Analyze the training examples below to identify the transformation pattern. Then predict the correct output grid(s) for the test case(s).
+  solver: `Task: Provide the correct output grid(s) for the test case(s). Briefly explain your logic in the JSON output as instructed`,
 
-Each puzzle shows you training examples (input → output transformations). Your job is to discover the rule and apply it to predict the test output.`,
-
-  explanation: `PROBLEM: Analyze the training examples below to identify and explain the transformation pattern. Then predict and explain the correct output for the test case(s).
+  explanation: `PROBLEM: Analyze the training examples to identify and explain the transformation pattern. Then predict and explain the correct output for the test case(s).
 
 Each puzzle shows you training examples (input → output transformations). Discover the rule, explain it clearly, and apply it to the test case.`,
 
@@ -69,7 +65,7 @@ PROBLEM: Study the training examples to identify the transformation pattern. The
 
 Then predict the output for the test case(s).`,
 
-  debate: `PROBLEM: Another AI model provided an INCORRECT analysis of this puzzle. You will see their explanation below.
+  debate: `PROBLEM: Another AI model provided an INCORRECT analysis of this puzzle. You will see their explanation.
 
 Your task:
 1. Study the training examples yourself
@@ -77,7 +73,7 @@ Your task:
 3. Provide a superior analysis with the correct pattern
 4. Predict the correct output with proper reasoning`,
 
-  discussion: `PROBLEM: Your previous analysis of this puzzle was incorrect or incomplete.
+  discussion: `PROBLEM: Your previous analysis of this puzzle was incorrect or you failed to output the required grid.
 Your task:
 1. Re-examine the training examples
 2. Identify what you missed or got wrong
