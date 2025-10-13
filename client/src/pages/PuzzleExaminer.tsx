@@ -328,6 +328,15 @@ export default function PuzzleExaminer() {
           explanations={explanations}
           onAnalyze={handleAnalyzeWithModel}
           analyzerErrors={analyzerErrors}
+          task={task}
+          taskId={taskId}
+          promptId={promptId}
+          customPrompt={customPrompt}
+          promptOptions={{
+            emojiSetKey: emojiSet,
+            omitAnswer,
+            sendAsEmojis
+          }}
         />
       </div>
 
