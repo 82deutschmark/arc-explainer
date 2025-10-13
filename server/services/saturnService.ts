@@ -109,16 +109,12 @@ export class SaturnService extends BaseAIService {
         if (payload.step !== undefined) statusPayload.step = payload.step;
         if (payload.totalSteps !== undefined) statusPayload.totalSteps = payload.totalSteps;
         if (payload.progress !== undefined) statusPayload.progress = payload.progress;
-        
+
         this.emitStreamEvent(harness, "stream.status", statusPayload);
-        
-        if (payload.message) {
-          this.emitStreamChunk(harness, {
-            type: "text",
-            delta: `${payload.message}\n`,
-            metadata: { phase: payload.phase },
-          });
-        }
+
+        // Note: Message is already included in statusPayload above.
+        // emitStreamChunk is for content deltas only (like OpenAI text streaming),
+        // NOT for progress messages. Removed redundant chunk emission.
       }
     };
     
@@ -435,7 +431,9 @@ export class SaturnService extends BaseAIService {
       if (harness) {
         this.finalizeStream(harness, {
           status: 'success',
-          responseSummary: finalResponse,
+          responseSummary: {
+            analysis: finalResponse  // Wrap in analysis field for frontend compatibility
+          },
           metadata: {
             tokenUsage: {
               input: totalInputTokens,
