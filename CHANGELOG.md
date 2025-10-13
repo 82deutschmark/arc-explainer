@@ -1,3 +1,52 @@
+## [4.8.2] - 2025-10-12 11:20 PM
+### 🔧 HEURISTIC ARC SOLVER INTEGRATION
+
+**NEW INTERNAL SOLVER ADDED:**
+
+#### Heuristic Solver Package (`solver/heuristic/`)
+**Modular Python package with SRP (Single Responsibility Principle) design:**
+
+- **`grids.py`** - Grid operations and utilities (trim, rotate, flip, color mapping, connected components)
+- **`prims.py`** - Parameterized transform primitives (geometry, object ops, learned color mappings)
+- **`program.py`** - Program search and composition logic (single → composition → fallback strategy)
+- **`cli.py`** - JSON contract interface for backend integration
+
+**Key Features:**
+- **Learning Strategy**: Learns transformations from training examples using primitive operations
+- **Search Algorithm**: Single transforms → Two-step compositions → Trim+transform → Fallback
+- **Shape Handling**: Median target shape from training outputs with padding/trimming
+- **Performance**: Very fast (< 1s) using only numpy, no external API calls
+- **Integration**: `heuristic-solver` model key routes to internal Python execution
+
+**Backend Integration:**
+- **Service**: `HeuristicService` extends `BaseAIService` (same pattern as Grover/Saturn)
+- **Factory Routing**: `model.startsWith('heuristic-')` → `heuristicService`
+- **Database**: Full compatibility with existing schema and validation
+- **Error Handling**: Proper error propagation and fallback strategies
+
+**Files Added:**
+- `solver/heuristic/__init__.py` - Package initialization
+- `solver/heuristic/grids.py` - Grid manipulation utilities
+- `solver/heuristic/prims.py` - Transform primitive definitions
+- `solver/heuristic/program.py` - Learning and composition logic
+- `solver/heuristic/cli.py` - JSON contract interface
+- `solver/heuristic_solver.py` - Single-file version for easy deployment
+- `server/services/heuristic.ts` - Backend service integration
+- `docs/2025-10-12-plan-heuristic-solver.md` - Complete integration documentation
+
+**Usage:**
+```bash
+# Test individual puzzle
+python solver/heuristic_solver.py data/arc-heavy/50846271.json
+
+# Backend integration (saves to database)
+POST /api/puzzle/analyze/50846271/heuristic-solver
+```
+
+**Impact:** Provides fast, reliable baseline solver for obvious ARC patterns. Ready for jjosh library integration via `merge()`/`diff()` adapters.
+
+---
+
 ## [4.8.1] - 2025-10-12 11:00 PM
 ### 💰 COST CONTROL: Prompt Preview Confirmation + Prompt Order Fix
 
