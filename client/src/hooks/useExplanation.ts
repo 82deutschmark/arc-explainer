@@ -72,6 +72,10 @@ export function useExplanations(puzzleId: string | null) {
           explanationId: raw.id, // Ensure explanationId is mapped
           // Map conversation chaining field
           providerResponseId: (raw as any).providerResponseId,
+          // Map prompt transparency fields (what was actually sent to AI)
+          systemPromptUsed: (raw as any).system_prompt_used,
+          userPromptUsed: (raw as any).user_prompt_used,
+          promptTemplateId: (raw as any).prompt_template_id,
           // Map multi-test database field names to frontend field names
           multiplePredictedOutputs: (raw as any).multiplePredictedOutputs,
           multiTestResults: (raw as any).multiTestResults,
