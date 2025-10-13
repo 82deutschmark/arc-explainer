@@ -29,6 +29,7 @@ type OpenAIStreamAggregates = {
   reasoning: string;
   summary: string;
   refusal: string;
+  reasoningSummary?: string;  // Added for reasoning summary accumulation
 };
 
 // Import centralized model configuration
@@ -282,6 +283,15 @@ export class OpenAIService extends BaseAIService {
       supportsStructuredOutput: !modelName.includes('gpt-5-chat-latest'),
       supportsVision: false // Update based on actual capabilities
     };
+  }
+
+  /**
+   * SRP Helper: Normalize OpenAI response for consistent processing
+   */
+  private normalizeOpenAIResponse(response: any, modelKey: string): any {
+    // Add any normalization logic here if needed
+    // For now, return the response as-is since OpenAI responses are already well-formed
+    return response;
   }
 
   generatePromptPreview(
@@ -697,35 +707,80 @@ export class OpenAIService extends BaseAIService {
         reasoningLog = summary.map((s: any) => {
           if (typeof s === 'string') return s;
           if (s && typeof s === 'object' && s.text) return s.text;
+          return JSON.stringify(s);
+        }).filter(Boolean).join('\n');
+      } else if (typeof summary === 'string') {
+        reasoningLog = summary;
+      } else if (summary && typeof summary === 'object' && summary.text) {
+        reasoningLog = summary.text;
+      } else {
+        reasoningLog = JSON.stringify(summary);
+      }
     }
+
     // Fallback: Scan output[] for reasoning blocks
     if (!reasoningLog && response.output && Array.isArray(response.output)) {
       reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
     }
+
     // Handle multi-test or JSON schema cases
     if (reasoningLog && response.output_text) {
       // Ensure reasoning isn't duplicated if already in output_text
-      const parsedOutput = JSON.parse(response.output_text);
-      if (parsedOutput.reasoning) reasoningLog += '\n\n' + parsedOutput.reasoning;
+      try {
+        const parsedOutput = JSON.parse(response.output_text);
+        if (parsedOutput.reasoning) {
+          reasoningLog = reasoningLog + '\n\n' + parsedOutput.reasoning;
+        }
+      } catch (e) {
+        // Ignore parse errors
+      }
     }
+
+    // Extract reasoning items
+    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+      reasoningItems = response.output_reasoning.items.map((item: any) => 
+        item.text || JSON.stringify(item)
+      );
+    }
+
+    return { reasoningLog, reasoningItems };
   }
 
-  // Replacement for reasoning items extraction
-  if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-    reasoningItems = response.output_reasoning.items.map((item) => 
-      item.text || JSON.stringify(item)
-        const delta = (event as any).delta ?? "";
-        if (delta) {
-          aggregates.refusal += delta;
-          this.emitStreamChunk(harness, {
-            type: "refusal",
-            delta,
-            content: aggregates.refusal,
-            metadata: {
-              sequence: event.sequence_number
-            }
-          });
-        }
+  /**
+   * SRP Helper: Handle streaming events for real-time updates
+   */
+  private handleStreamingEvent(
+    event: ResponseStreamEvent,
+    harness: StreamingHarness | undefined,
+    aggregates: OpenAIStreamAggregates
+  ): void {
+    const eventType = event.type;
+
+    switch (eventType) {
+      case "response.reasoning_summary_part.added": {
+        const delta = (event as any).content || '';
+        aggregates.reasoningSummary = (aggregates.reasoningSummary || '') + delta;
+        this.emitStreamChunk(harness, {
+          type: "reasoning",
+          delta,
+          content: aggregates.reasoningSummary,
+          metadata: { type: 'reasoning_summary' }
+        });
+        break;
+      }
+      case "response.reasoning_summary_text.done": {
+        aggregates.reasoningSummary = aggregates.reasoningSummary || '';
+        break;
+      }
+      case "response.content_part.added": {
+        const delta = (event as any).content || '';
+        aggregates.text += delta;
+        this.emitStreamChunk(harness, {
+          type: "text",
+          delta,
+          content: aggregates.text,
+          metadata: { type: 'content' }
+        });
         break;
       }
       case "response.in_progress": {
@@ -753,6 +808,62 @@ export class OpenAIService extends BaseAIService {
         console.log(`[OpenAI-Streaming] Unhandled event type: ${eventType}`);
         break;
     }
+  }
+
+  /**
+   * SRP Helper: Make HTTP call to OpenAI Responses API
+   */
+  private async callResponsesAPI(body: any, modelKey: string): Promise<any> {
+    const startTime = Date.now();
+    try {
+      const response = await openai.responses.create(body);
+
+      // Add processing time tracking
+      (response as any).processingTime = Date.now() - startTime;
+
+      return response;
+    } catch (error) {
+      console.error(`[OpenAI] API call failed for ${modelKey}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Parse provider response - must be implemented by each provider
+   */
+  protected parseProviderResponse(
+    response: any,
+    modelKey: string,
+    captureReasoning: boolean,
+    puzzleId?: string
+  ): { result: any; tokenUsage: TokenUsage; reasoningLog?: any; reasoningItems?: any[]; status?: string; incomplete?: boolean; incompleteReason?: string; responseId?: string } {
+    // Extract result using provider-specific method
+    const result = this.extractResultFromResponse(response, modelKey, this.supportsStructuredOutput(modelKey));
+
+    // Extract token usage
+    const tokenUsage = this.extractTokenUsage(response);
+
+    // Extract reasoning if requested
+    const { reasoningLog, reasoningItems } = this.extractReasoningFromResponse(response, captureReasoning);
+
+    // Determine status and completeness
+    const status = response.status || 'complete';
+    const incomplete = response.incomplete || false;
+    const incompleteReason = response.incompleteReason || undefined;
+
+    // Extract response ID if available
+    const responseId = response.id || response.responseId || undefined;
+
+    return {
+      result,
+      tokenUsage,
+      reasoningLog,
+      reasoningItems,
+      status,
+      incomplete,
+      incompleteReason,
+      responseId
+    };
   }
   // Helper methods extracted from original implementation
   private extractTextFromOutputBlocks(output: any[]): string {
