@@ -213,7 +213,7 @@ export function CompactControls({
             )}
             <span className="font-medium text-sm">Advanced Parameters</span>
             <span className="text-xs opacity-60">
-              (Temperature, Reasoning, Gemini-specific)
+              (Model-specific settings)
             </span>
           </div>
         </button>
@@ -232,11 +232,11 @@ export function CompactControls({
                 step="0.05"
                 value={temperature}
                 onChange={(e) => onTemperatureChange(parseFloat(e.target.value))}
-                className="range range-xs flex-1"
+                className="range range-xs range-primary flex-1"
               />
               <span className="text-xs font-mono w-12 text-right">{temperature.toFixed(2)}</span>
               <span className="text-xs opacity-60 flex-shrink-0">
-                Gemini & GPT-4.1 only
+                Gemini, GPT-4.1, Grok
               </span>
             </div>
 
@@ -252,7 +252,7 @@ export function CompactControls({
                 step="0.05"
                 value={topP}
                 onChange={(e) => onTopPChange(parseFloat(e.target.value))}
-                className="range range-xs flex-1"
+                className="range range-xs range-primary flex-1"
               />
               <span className="text-xs font-mono w-12 text-right">{topP.toFixed(2)}</span>
               <span className="text-xs opacity-60 flex-shrink-0">
@@ -272,7 +272,7 @@ export function CompactControls({
                 step="1"
                 value={candidateCount}
                 onChange={(e) => onCandidateCountChange(parseInt(e.target.value))}
-                className="range range-xs flex-1"
+                className="range range-xs range-primary flex-1"
               />
               <span className="text-xs font-mono w-12 text-right">{candidateCount}</span>
               <span className="text-xs opacity-60 flex-shrink-0">
