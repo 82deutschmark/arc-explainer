@@ -158,7 +158,8 @@ export function useAnalysisResults({
           next.delete(modelKey);
           return next;
         });
-        resetStreamingState();
+        // Don't reset streaming state immediately - let user see final result
+        // resetStreamingState() will be called when user closes modal manually
         closeStream();
         await refetchExplanations();
       } catch (err) {

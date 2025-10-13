@@ -33,15 +33,8 @@ export function usePuzzle(taskId?: string) {
     enabled: !!taskId,
   });
 
-  // Get AI analysis of the puzzle
-  const { data: analysisResponse, isLoading: analysisLoading, error: analysisError } = useQuery<APIResponse<PuzzleAnalysis>>({
-    queryKey: [`/api/puzzle/analyze/${taskId}`],
-    enabled: !!taskId,
-  });
-  
   // Extract data from response format
   const task = taskResponse?.success ? taskResponse.data : undefined;
-  const analysis = analysisResponse?.success ? analysisResponse.data : undefined;
 
   useEffect(() => {
     if (task) {
@@ -76,11 +69,8 @@ export function usePuzzle(taskId?: string) {
   return {
     currentTask,
     task,
-    analysis,
     isLoadingTask: taskLoading,
-    isLoadingAnalysis: analysisLoading,
     taskError,
-    analysisError,
     submitSolution,
     solutionResult: (solutionMutation.data?.success ? solutionMutation.data.data : undefined) as SolutionValidation | undefined,
     isSolutionSubmitting: solutionMutation.isPending,

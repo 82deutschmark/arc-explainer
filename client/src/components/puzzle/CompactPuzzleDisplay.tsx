@@ -2,8 +2,7 @@
  * CompactPuzzleDisplay.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Last Modified: 2025-10-11 (Complete modularization)
- * Date: 2025-10-07T21:12:05-04:00
+ * Date: 2025-10-12T21:55:00Z
  * PURPOSE: Reusable component for displaying puzzle overview in compact format.
  * Orchestrates training examples, test cases, and prediction history.
  * FULLY MODULARIZED: All grids now use dedicated components (Phase 3 refactor).
@@ -16,14 +15,10 @@
  * 
  * Single responsibility: Orchestration only - no direct grid rendering.
  * SRP/DRY check: Pass - Pure orchestration, delegates all rendering
- * shadcn/ui: Pass - Uses shadcn/ui Collapsible, Card, Badge components
+ * shadcn/ui: Pass - Converted to DaisyUI card, badge, collapse
  */
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight, Brain } from 'lucide-react';
 
 // Reuse existing components
@@ -67,36 +62,37 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
   const hasPredictions = showPredictions && predictions && predictions.length > 0;
 
   return (
-    <Card className="p-0">
+    <div className="card p-0">
       {showTitle && (
-        <CardHeader className="p-1">
-          <CardTitle className="text-xs font-semibold">
+        <div className="card-body p-1">
+          <h2 className="card-title text-xs font-semibold">
             {title}
-          </CardTitle>
-        </CardHeader>
+          </h2>
+        </div>
       )}
-      <CardContent className="p-3">
+      <div className="card-body p-3">
         <div className="space-y-4">
           {/* Training Examples - GALLERY LAYOUT IN COLLAPSIBLE */}
-          <Collapsible open={isTrainingOpen} onOpenChange={setIsTrainingOpen}>
+          <div className={`collapse ${isTrainingOpen ? 'collapse-open' : 'collapse-close'}`}>
             <div className="flex items-center justify-between mb-2">
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2 h-auto hover:bg-gray-100">
-                  <div className="flex items-center gap-2">
-                    {isTrainingOpen ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                    <span className="text-sm font-semibold">Training Examples</span>
-                    <Badge variant="outline" className="text-xs">
-                      {trainExamples.length}
-                    </Badge>
+              <button 
+                className="btn btn-ghost btn-sm p-2 h-auto hover:bg-gray-100"
+                onClick={() => setIsTrainingOpen(!isTrainingOpen)}
+              >
+                <div className="flex items-center gap-2">
+                  {isTrainingOpen ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                  <span className="text-sm font-semibold">Training Examples</span>
+                  <div className="badge badge-outline text-xs">
+                    {trainExamples.length}
                   </div>
-                </Button>
-              </CollapsibleTrigger>
+                </div>
+              </button>
             </div>
-            <CollapsibleContent>
+            <div className="collapse-content">
               <div className="pl-2">
                 <TrainingPairGallery
                   trainExamples={trainExamples}
@@ -104,8 +100,8 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                   showHeader={false}
                 />
               </div>
-            </CollapsibleContent>
-          </Collapsible>
+            </div>
+          </div>
 
           {/* Test Cases - DELEGATED TO TESTCASEGALLERY */}
           <TestCaseGallery
@@ -122,9 +118,9 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
                 <h3 className="text-sm font-bold text-purple-900">
                   Refinement History
                 </h3>
-                <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700">
+                <div className="badge badge-secondary text-xs px-2 py-0.5 bg-purple-100 text-purple-700">
                   {predictions!.length} iteration{predictions!.length > 1 ? 's' : ''}
-                </Badge>
+                </div>
               </div>
               <div className="flex overflow-x-auto gap-3 pb-2">
                 {predictions!.map((pred, index) => (
@@ -139,7 +135,7 @@ export const CompactPuzzleDisplay: React.FC<CompactPuzzleDisplayProps> = ({
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

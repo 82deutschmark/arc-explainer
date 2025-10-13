@@ -1,17 +1,14 @@
 /**
  * About.tsx
  * 
- * Author: Cascade using GPT-4
- * Date: 2025-10-01
+ * Author: Cascade using Claude Sonnet 4.5
+ * Date: 2025-10-12
  * PURPOSE: About page for ARC-AGI Puzzle Explorer with acknowledgments, project information, and links
  * SRP/DRY check: Pass - Single responsibility of displaying project information and credits
- * shadcn/ui: Pass - Uses Card, Button, Badge components from shadcn/ui
+ * DaisyUI: Pass - Converted to pure DaisyUI components
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Github, 
   Heart, 
@@ -30,187 +27,179 @@ export default function About() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-base-200 to-primary/10 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        <header className="text-center space-y-4">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
+        {/* Hero Header */}
+        <header className="text-center space-y-4 py-6">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             About This Project
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg text-base-content/70">
             Built with curiosity, accessibility, and LLMs
           </p>
         </header>
 
         {/* Project Overview */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Sparkles className="h-6 w-6 text-blue-600" />
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">
+              <Sparkles className="h-6 w-6 text-primary" />
               What Is This?
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-700 leading-relaxed">
-              The <strong>ARC-AGI Puzzle Explorer</strong> is a hobby project born from frustration and curiosity. 
-              When I first encountered ARC-AGI puzzles labeled as "easy for humans," I felt anything but smart. 
-              Most of these puzzles made me feel genuinely confused, and I wanted to understand <em>why</em> the answers were correct.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-            
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="bg-blue-50 text-blue-700">Open Source</Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700">Accessibility First</Badge>
-              <Badge variant="outline" className="bg-purple-50 text-purple-700">AI Research</Badge>
-              <Badge variant="outline" className="bg-orange-50 text-orange-700">Hobby Project</Badge>
+            </h2>
+            <div className="space-y-4">
+              <p className="text-base-content/80 leading-relaxed">
+                The <strong>ARC-AGI Puzzle Explorer</strong> is a hobby project born from frustration and curiosity. 
+                When I first encountered ARC-AGI puzzles labeled as "easy for humans," I felt anything but smart. 
+                Most of these puzzles made me feel genuinely confused, and I wanted to understand <em>why</em> the answers were correct.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <div className="badge badge-outline badge-primary">Open Source</div>
+                <div className="badge badge-outline badge-success">Accessibility First</div>
+                <div className="badge badge-outline badge-secondary">AI Research</div>
+                <div className="badge badge-outline badge-accent">Hobby Project</div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Why This Matters */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Heart className="h-6 w-6 text-red-500" />
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">
+              <Heart className="h-6 w-6 text-error" />
               Why Accessibility Matters
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-700 leading-relaxed">
-              I want people from outside of computer science, machine learning, and math to understand the capabilities of AI models.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              I want to explore the kind of reasoning that currently eludes AI.
-            </p>
-          </CardContent>
-        </Card>
+            </h2>
+            <div className="space-y-4">
+              <p className="text-base-content/80 leading-relaxed">
+                I want people from outside of computer science, machine learning, and math to understand the capabilities of AI models.
+              </p>
+              <p className="text-base-content/80 leading-relaxed">
+                I want to explore the kind of reasoning that currently eludes AI.
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Technology Stack */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Code className="h-6 w-6 text-green-600" />
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">
+              <Code className="h-6 w-6 text-success" />
               Technology & Open Source
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-700 leading-relaxed">
-              This project is built with modern web technologies including React, TypeScript, TailwindCSS, 
-              shadcn/ui components, PostgreSQL, and Express. It integrates with multiple AI providers 
-              (OpenAI, Anthropic, Google Gemini, DeepSeek, and more) to test their reasoning capabilities.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild className="flex items-center gap-2">
+            </h2>
+            <div className="space-y-4">
+              <p className="text-base-content/80 leading-relaxed">
+                This project is built with modern web technologies including React, TypeScript, TailwindCSS, 
+                DaisyUI components, PostgreSQL, and Express. It integrates with multiple AI providers 
+                (OpenAI, Anthropic, Google Gemini, DeepSeek, and more) to test their reasoning capabilities.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <a 
                   href="https://github.com/82deutschmark/arc-explainer" 
                   target="_blank" 
                   rel="noopener noreferrer"
+                  className="btn btn-primary gap-2"
                 >
                   <Github className="h-5 w-5" />
                   View on GitHub
                   <ExternalLink className="h-4 w-4" />
                 </a>
-              </Button>
-              <Button asChild variant="outline" className="flex items-center gap-2">
                 <a 
                   href="https://www.arxiv.org/pdf/2505.11831" 
                   target="_blank" 
                   rel="noopener noreferrer"
+                  className="btn btn-outline gap-2"
                 >
                   <BookOpen className="h-5 w-5" />
                   ARC2 Research Paper
                   <ExternalLink className="h-4 w-4" />
                 </a>
-              </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Acknowledgments */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-slate-800">
-              <Users className="h-6 w-6 text-purple-600" />
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">
+              <Users className="h-6 w-6 text-secondary" />
               Acknowledgments & Credits
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">François Chollet & The ARC Prize Team</h4>
-                <p className="text-sm text-gray-600">
-                  For creating the ARC-AGI challenge and pushing the boundaries of what we understand about 
-                  machine intelligence and reasoning.
-                </p>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">The Open Source Community</h4>
-                <p className="text-sm text-gray-600">
-                  This project stands on the shoulders of countless open-source contributors who built the 
-                  amazing tools and libraries that make modern web development possible.
-                </p>
-              </div>
+            </h2>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-base-content mb-1">François Chollet & The ARC Prize Team</h4>
+                  <p className="text-sm text-base-content/70">
+                    For creating the ARC-AGI challenge and pushing the boundaries of what we understand about 
+                    machine intelligence and reasoning.
+                  </p>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-base-content mb-1">The Open Source Community</h4>
+                  <p className="text-sm text-base-content/70">
+                    This project stands on the shoulders of countless open-source contributors who built the 
+                    amazing tools and libraries that make modern web development possible.
+                  </p>
+                </div>
 
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Discord ARC-AGI Community</h4>
-                <p className="text-sm text-gray-600">
-                  For the ongoing work in understanding and improving AI reasoning capabilities, and for making 
-                  these powerful models accessible through APIs.
-                </p>
-              </div>
+                <div>
+                  <h4 className="font-semibold text-base-content mb-1">Discord ARC-AGI Community</h4>
+                  <p className="text-sm text-base-content/70">
+                    For the ongoing work in understanding and improving AI reasoning capabilities, and for making 
+                    these powerful models accessible through APIs.
+                  </p>
+                </div>
 
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-1">You!</h4>
-                <p className="text-sm text-gray-600">
-                  For exploring these puzzles, contributing feedback, and caring about accessibility and 
-                  understanding in AI research.
-                </p>
+                <div>
+                  <h4 className="font-semibold text-base-content mb-1">You!</h4>
+                  <p className="text-sm text-base-content/70">
+                    For exploring these puzzles, contributing feedback, and caring about accessibility and 
+                    understanding in AI research.
+                  </p>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Contact & Links */}
-        <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-purple-50 backdrop-blur-sm">
-          <CardContent className="p-6">
+        <div className="card bg-gradient-to-r from-primary/10 to-secondary/10 shadow-xl">
+          <div className="card-body">
             <div className="text-center space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900">Get Involved</h3>
-              <p className="text-gray-700">
+              <h3 className="text-xl font-semibold">Get Involved</h3>
+              <p className="text-base-content/80">
                 This is a hobby project with a small but dedicated community. Contributions, feedback, 
                 and bug reports are always welcome!
               </p>
               <div className="flex flex-wrap justify-center gap-3 pt-2">
-                <Button asChild variant="outline" size="sm">
-                  <a 
-                    href="https://github.com/82deutschmark/arc-explainer/issues" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <Github className="h-4 w-4" />
-                    Report an Issue
-                  </a>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <a 
-                    href="https://github.com/82deutschmark" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2"
-                  >
-                    <Github className="h-4 w-4" />
-                    Follow on GitHub
-                  </a>
-                </Button>
+                <a 
+                  href="https://github.com/82deutschmark/arc-explainer/issues" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm gap-2"
+                >
+                  <Github className="h-4 w-4" />
+                  Report an Issue
+                </a>
+                <a 
+                  href="https://github.com/82deutschmark" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm gap-2"
+                >
+                  <Github className="h-4 w-4" />
+                  Follow on GitHub
+                </a>
               </div>
-              <p className="text-sm text-gray-600 pt-4">
-                Made with <Heart className="h-4 w-4 inline text-red-500" /> by a hobbyist who just wanted 
+              <p className="text-sm text-base-content/60 pt-4">
+                Made with <Heart className="h-4 w-4 inline text-error" /> by a hobbyist who just wanted 
                 to understand some puzzles.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

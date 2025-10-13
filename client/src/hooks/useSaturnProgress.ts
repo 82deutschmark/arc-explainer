@@ -208,11 +208,23 @@ export function useSaturnProgress(taskId: string | undefined) {
               createdAt: string;
             };
             setSessionId(payload.sessionId);
-            setState((prev) => ({
-              ...prev,
-              streamingStatus: 'starting',
-              status: 'running',
-            }));
+            setState((prev) => {
+              // Add init message to logLines
+              let nextLogs = prev.logLines ? [...prev.logLines] : [];
+              nextLogs.push(`🪐 Saturn Visual Solver initialized`);
+              nextLogs.push(`Session: ${payload.sessionId}`);
+              nextLogs.push(`Task: ${payload.taskId}`);
+              nextLogs.push(`Model: ${payload.modelKey}`);
+              nextLogs.push(`Started at: ${new Date(payload.createdAt).toLocaleTimeString()}`);
+              nextLogs.push('---');
+              
+              return {
+                ...prev,
+                streamingStatus: 'starting',
+                status: 'running',
+                logLines: nextLogs,
+              };
+            });
           } catch (error) {
             console.error('[SaturnStream] Failed to parse init payload:', error);
           }
@@ -224,15 +236,48 @@ export function useSaturnProgress(taskId: string | undefined) {
               state?: SaturnProgressState['streamingStatus'];
               phase?: string;
               message?: string;
+              images?: { path: string; base64?: string }[];
+              step?: number;
+              totalSteps?: number;
+              progress?: number;
             };
-            setState((prev) => ({
-              ...prev,
-              streamingStatus: status.state ?? prev.streamingStatus ?? 'idle',
-              streamingPhase: status.phase ?? prev.streamingPhase,
-              streamingMessage: status.message ?? prev.streamingMessage,
-              status: status.state === 'failed' ? 'error' : prev.status,
-              phase: status.phase ?? prev.phase,
-            }));
+            setState((prev) => {
+              // Add status message to logLines if present
+              let nextLogs = prev.logLines ? [...prev.logLines] : [];
+              if (status.message && typeof status.message === 'string') {
+                nextLogs.push(status.message);
+                if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+              }
+              
+              // Add any new images to gallery
+              let nextGallery = prev.galleryImages ?? [];
+              const incoming = Array.isArray(status.images) ? status.images : [];
+              if (incoming.length > 0) {
+                const seen = new Set(nextGallery.map((i) => i.path));
+                for (const im of incoming) {
+                  if (im?.path && !seen.has(im.path)) {
+                    nextGallery = [...nextGallery, im];
+                    seen.add(im.path);
+                    // Also log that we received an image
+                    nextLogs.push(`📸 Generated image: ${im.path}`);
+                  }
+                }
+              }
+              
+              return {
+                ...prev,
+                streamingStatus: status.state ?? prev.streamingStatus ?? 'idle',
+                streamingPhase: status.phase ?? prev.streamingPhase,
+                streamingMessage: status.message ?? prev.streamingMessage,
+                status: status.state === 'failed' ? 'error' : prev.status,
+                phase: status.phase ?? prev.phase,
+                step: status.step ?? prev.step,
+                totalSteps: status.totalSteps ?? prev.totalSteps,
+                progress: status.progress ?? prev.progress,
+                logLines: nextLogs,
+                galleryImages: nextGallery,
+              };
+            });
           } catch (error) {
             console.error('[SaturnStream] Failed to parse status payload:', error);
           }
@@ -245,17 +290,32 @@ export function useSaturnProgress(taskId: string | undefined) {
               delta?: string;
               content?: string;
             };
-            setState((prev) => ({
-              ...prev,
-              streamingText:
-                chunk.type === 'text'
-                  ? (prev.streamingText ?? '') + (chunk.delta ?? chunk.content ?? '')
-                  : prev.streamingText,
-              streamingReasoning:
-                chunk.type === 'reasoning'
-                  ? (prev.streamingReasoning ?? '') + (chunk.delta ?? chunk.content ?? '')
-                  : prev.streamingReasoning,
-            }));
+            setState((prev) => {
+              // Add text chunks to logLines for live display
+              let nextLogs = prev.logLines ? [...prev.logLines] : [];
+              const chunkText = chunk.delta ?? chunk.content;
+              if (chunk.type === 'text' && chunkText) {
+                // Split by newlines and add each line separately
+                const lines = chunkText.split('\n').filter(line => line.trim());
+                lines.forEach(line => {
+                  nextLogs.push(line);
+                });
+                if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+              }
+              
+              return {
+                ...prev,
+                streamingText:
+                  chunk.type === 'text'
+                    ? (prev.streamingText ?? '') + (chunk.delta ?? chunk.content ?? '')
+                    : prev.streamingText,
+                streamingReasoning:
+                  chunk.type === 'reasoning'
+                    ? (prev.streamingReasoning ?? '') + (chunk.delta ?? chunk.content ?? '')
+                    : prev.streamingReasoning,
+                logLines: nextLogs,
+              };
+            });
           } catch (error) {
             console.error('[SaturnStream] Failed to parse chunk payload:', error);
           }
@@ -290,12 +350,21 @@ export function useSaturnProgress(taskId: string | undefined) {
         eventSource.addEventListener('stream.error', (evt) => {
           try {
             const payload = JSON.parse((evt as MessageEvent<string>).data) as { message?: string };
-            setState((prev) => ({
-              ...prev,
-              status: 'error',
-              streamingStatus: 'failed',
-              streamingMessage: payload.message ?? 'Streaming error',
-            }));
+            setState((prev) => {
+              // Add error message to logLines
+              let nextLogs = prev.logLines ? [...prev.logLines] : [];
+              const errorMsg = payload.message ?? 'Streaming error';
+              nextLogs.push(`ERROR: ${errorMsg}`);
+              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+              
+              return {
+                ...prev,
+                status: 'error',
+                streamingStatus: 'failed',
+                streamingMessage: errorMsg,
+                logLines: nextLogs,
+              };
+            });
           } catch (error) {
             console.error('[SaturnStream] Failed to parse error payload:', error);
           } finally {
@@ -338,6 +407,30 @@ export function useSaturnProgress(taskId: string | undefined) {
     [closeEventSource, closeSocket, openWebSocket, streamingEnabled, taskId]
   );
 
+  const cancel = useCallback(async () => {
+    if (!sessionId) {
+      console.warn('[Saturn] Cannot cancel: no active session');
+      return;
+    }
+
+    try {
+      await apiRequest('POST', `/api/stream/cancel/${sessionId}`);
+      
+      closeSocket();
+      closeEventSource();
+      
+      setState(prev => ({
+        ...prev,
+        status: 'error',
+        streamingStatus: 'failed',
+        streamingMessage: 'Cancelled by user',
+        message: 'Analysis cancelled by user'
+      }));
+    } catch (error) {
+      console.error('[Saturn] Cancel failed:', error);
+    }
+  }, [sessionId, closeSocket, closeEventSource]);
+
   useEffect(() => {
     return () => {
       closeSocket();
@@ -345,5 +438,5 @@ export function useSaturnProgress(taskId: string | undefined) {
     };
   }, [closeEventSource, closeSocket]);
 
-  return { sessionId, state, start };
+  return { sessionId, state, start, cancel };
 }

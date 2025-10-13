@@ -1,6 +1,6 @@
 # ARC-AGI Explainer Platform
 
-**Version 4.0.0** — October 10, 2025
+**Version 4.8.3** — October 13, 2025
 
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
@@ -9,22 +9,34 @@ A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles us
 
 ---
 
-## What's New in v4.0.0
+## What's New in v4.8.3
 
-- Grover solver integration with UI display, WebSocket streaming, and snapshot hydration.
-- ConceptARC dataset support across loaders, APIs, and UI filters.
-- HuggingFace ingestion of GPT-5-PRO results with correctness-only scoring when confidence is absent.
+### 🔧 OpenAI Service Compilation Fixes & Streaming Enhancements
+- **Fixed corrupted OpenAI service** - Resolved syntax errors, missing methods, and TypeScript compilation issues
+- **Corrected streaming events** - Updated to use proper OpenAI Responses API event types for real-time reasoning display
+- **Enhanced response parsing** - Improved handling of structured output, text fallbacks, and reasoning extraction
+- **Fixed method dependencies** - Resolved ordering issues that caused "method does not exist" errors
 
-For Grover solver details, see solver/grover-arc/README.md.
+### 🤖 Heuristic ARC Solver Integration
+- **New internal solver** - Fast, reliable baseline solver using parameterized transform primitives
+- **Modular Python package** - SRP design with grid operations, transform primitives, and program composition
+- **Sub-second performance** - Uses only numpy, no external API calls for instant results
+- **Learning strategy** - Learns transformations from training examples using primitive operations
 
-## What's New in v3.7.7 🎉
+### 💰 Cost Control & UX Improvements
+- **Prompt preview confirmation** - Users must verify prompts before expensive API calls
+- **Fixed prompt ordering** - Data presented before instructions for clearer context
+- **Enhanced batch processing** - Parallel execution with real-time progress tracking
+
+For complete details, see [Changelog](./CHANGELOG.md).
+
+## What's New in v4.8.2 🎉
 
 ### Conversation Chaining & Reasoning Persistence ⭐ NEW
 - **Multi-turn conversations** with full context retention across OpenAI (GPT-5, o-series) and xAI (Grok-4) models
 - **Server-side reasoning persistence** - 30-day encrypted storage means no re-sending of expensive reasoning tokens
 - **PuzzleDiscussion feature** - Models refine their own analyses iteratively with complete context
 - **Provider-aware chaining** - Automatically maintains conversation history within provider boundaries
-- **"Refine This Analysis" badges** - One-click navigation from any result to conversation mode
 
 ### Batch Analysis Web UI
 - **10-20x faster processing** with parallel execution (10 puzzles concurrently)

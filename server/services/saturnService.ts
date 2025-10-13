@@ -19,6 +19,7 @@ import { broadcast } from './wsService.js';
 import { logger } from "../utils/logger.js";
 import { getApiModelName, getModelConfig } from "../config/models/index.js";
 import { randomUUID } from 'crypto';
+import { readFile } from 'fs/promises';
 
 export class SaturnService extends BaseAIService {
   protected provider = "Saturn";
@@ -37,6 +38,32 @@ export class SaturnService extends BaseAIService {
     "gpt-5-2025-08-07": "gpt-5-2025-08-07",
     "grok-4": "grok-4"
   };
+
+  /**
+   * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
+   */
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId?: string,
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // analyzePuzzleWithModel already handles streaming via serviceOpts.stream
+    return this.analyzePuzzleWithModel(
+      task,
+      modelKey,
+      taskId,
+      temperature,
+      promptId || getDefaultPromptId(),
+      customPrompt,
+      options,
+      serviceOpts
+    );
+  }
 
   async analyzePuzzleWithModel(
     task: ARCTask,
@@ -71,18 +98,23 @@ export class SaturnService extends BaseAIService {
       
       // SSE emission
       if (harness) {
-        this.emitStreamEvent(harness, "stream.status", {
+        // Include images, step, totalSteps, and progress in SSE status events
+        const statusPayload: Record<string, any> = {
           state: "in_progress",
           phase: payload.phase,
           message: payload.message,
-        });
-        if (payload.message) {
-          this.emitStreamChunk(harness, {
-            type: "text",
-            delta: `${payload.message}\n`,
-            metadata: { phase: payload.phase },
-          });
-        }
+        };
+        
+        if (payload.images) statusPayload.images = payload.images;
+        if (payload.step !== undefined) statusPayload.step = payload.step;
+        if (payload.totalSteps !== undefined) statusPayload.totalSteps = payload.totalSteps;
+        if (payload.progress !== undefined) statusPayload.progress = payload.progress;
+
+        this.emitStreamEvent(harness, "stream.status", statusPayload);
+
+        // Note: Message is already included in statusPayload above.
+        // emitStreamChunk is for content deltas only (like OpenAI text streaming),
+        // NOT for progress messages. Removed redundant chunk emission.
       }
     };
     
@@ -130,12 +162,13 @@ export class SaturnService extends BaseAIService {
         images: phase1Images
       });
       
-      // Broadcast completion with images
+      // Broadcast completion with images (converted to base64 for frontend)
+      const phase1ImagesBase64 = await this.convertImagesToBase64(phase1Images);
       sendProgress({
         status: 'running',
         phase: 'saturn_phase1_complete',
         message: 'Phase 1 complete',
-        images: phase1Images.map(path => ({ path }))
+        images: phase1ImagesBase64
       });
       
       totalCost += phase1Response.estimatedCost || 0;
@@ -181,11 +214,12 @@ export class SaturnService extends BaseAIService {
           expectedOutput: task.train[1].output
         });
         
+        const phase2ImagesBase64 = await this.convertImagesToBase64(phase2Images);
         sendProgress({
           status: 'running',
           phase: 'saturn_phase2_complete',
           message: 'Phase 2 complete',
-          images: phase2Images.map(path => ({ path }))
+          images: phase2ImagesBase64
         });
         
         totalCost += phase2Response.estimatedCost || 0;
@@ -229,11 +263,12 @@ export class SaturnService extends BaseAIService {
           images: phase25Images
         });
         
+        const phase25ImagesBase64 = await this.convertImagesToBase64(phase25Images);
         sendProgress({
           status: 'running',
           phase: 'saturn_phase2_correction_complete',
           message: 'Pattern refinement complete',
-          images: phase25Images.map(path => ({ path }))
+          images: phase25ImagesBase64
         });
         
         totalCost += phase25Response.estimatedCost || 0;
@@ -318,11 +353,12 @@ export class SaturnService extends BaseAIService {
         images: phase3Images
       });
       
+      const phase3ImagesBase64 = await this.convertImagesToBase64(phase3Images);
       sendProgress({
         status: 'running',
         phase: 'saturn_phase3_complete',
         message: 'Test prediction complete',
-        images: phase3Images.map(path => ({ path }))
+        images: phase3ImagesBase64
       });
       
       totalCost += phase3Response.estimatedCost || 0;
@@ -395,7 +431,9 @@ export class SaturnService extends BaseAIService {
       if (harness) {
         this.finalizeStream(harness, {
           status: 'success',
-          responseSummary: finalResponse,
+          responseSummary: {
+            analysis: finalResponse  // Wrap in analysis field for frontend compatibility
+          },
           metadata: {
             tokenUsage: {
               input: totalInputTokens,
@@ -446,6 +484,27 @@ export class SaturnService extends BaseAIService {
       logger.error(`[${this.provider}] Failed to generate grid images:`, errorMsg);
       return [];
     }
+  }
+  
+  /**
+   * Convert image file paths to base64 for streaming to frontend
+   */
+  private async convertImagesToBase64(imagePaths: string[]): Promise<{ path: string; base64: string }[]> {
+    const results: { path: string; base64: string }[] = [];
+    
+    for (const path of imagePaths) {
+      try {
+        const buffer = await readFile(path);
+        const base64 = buffer.toString('base64');
+        results.push({ path, base64 });
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        logger.error(`[${this.provider}] Failed to read image ${path}:`, errorMsg);
+        // Skip this image but continue with others
+      }
+    }
+    
+    return results;
   }
   
   /**

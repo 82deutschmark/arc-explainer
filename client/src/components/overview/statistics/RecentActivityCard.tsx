@@ -4,7 +4,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 
 interface Activity {
@@ -21,14 +20,12 @@ interface RecentActivityCardProps {
 
 const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ recentActivity = [] }) => {
   return (
-    <Card className="lg:col-span-1">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow lg:col-span-1">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
           Recent Activity
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h2>
         <div className="space-y-2 max-h-80 overflow-y-auto">
           {recentActivity.slice(0, 8).map((activity) => (
             <div key={`${activity.type}-${activity.id}`} className="flex items-center gap-2 text-sm p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
@@ -63,8 +60,8 @@ const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ recentActivity 
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

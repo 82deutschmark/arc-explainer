@@ -4,8 +4,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, DollarSign, Zap, Trophy, HelpCircle } from 'lucide-react';
 import ModelLeaderboard from './ModelLeaderboard';
 import type { AccuracyStats, ModelConfig } from '@shared/types';
@@ -36,21 +34,15 @@ const TopModelsCard: React.FC<TopModelsCardProps> = ({ accuracyStats, models, on
   })) || [];
 
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow lg:col-span-2">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <Trophy className="h-6 w-6 text-yellow-500" />
           Top Model Leaderboards
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="accuracy">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="accuracy">Accuracy</TabsTrigger>
-            <TabsTrigger value="cost">Cost</TabsTrigger>
-            <TabsTrigger value="speed">Speed</TabsTrigger>
-          </TabsList>
-          <TabsContent value="accuracy">
+        </h2>
+        <div role="tablist" className="tabs tabs-lifted">
+          <input type="radio" name="model_tabs" role="tab" className="tab" aria-label="Accuracy" defaultChecked />
+          <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
             <ModelLeaderboard
               title="Top Models by Accuracy"
               icon={<BarChart className="h-4 w-4" />}
@@ -64,8 +56,10 @@ const TopModelsCard: React.FC<TopModelsCardProps> = ({ accuracyStats, models, on
                 message: 'Run analyses to rank models by accuracy.',
               }}
             />
-          </TabsContent>
-          <TabsContent value="cost">
+          </div>
+          
+          <input type="radio" name="model_tabs" role="tab" className="tab" aria-label="Cost" />
+          <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
             <ModelLeaderboard
               title="Top Models by Avg. Cost"
               icon={<DollarSign className="h-4 w-4" />}
@@ -79,8 +73,10 @@ const TopModelsCard: React.FC<TopModelsCardProps> = ({ accuracyStats, models, on
                 message: 'Run analyses to rank models by cost.',
               }}
             />
-          </TabsContent>
-          <TabsContent value="speed">
+          </div>
+          
+          <input type="radio" name="model_tabs" role="tab" className="tab" aria-label="Speed" />
+          <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
             <ModelLeaderboard
               title="Top Models by Avg. Speed"
               icon={<Zap className="h-4 w-4" />}
@@ -94,10 +90,10 @@ const TopModelsCard: React.FC<TopModelsCardProps> = ({ accuracyStats, models, on
                 message: 'Run analyses to rank models by speed.',
               }}
             />
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

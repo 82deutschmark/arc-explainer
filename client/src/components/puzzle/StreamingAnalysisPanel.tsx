@@ -1,14 +1,11 @@
 /**
  * Author: Codex using GPT-5-high
- * Date: 2025-10-10T00:00:00Z
+ * Date: 2025-10-12 (Converted to DaisyUI)
  * PURPOSE: Shared panel to display live token streaming output (text + reasoning) across Saturn/Grover/Puzzle flows.
  * SRP/DRY check: Pass — reusable UI primitive.
- * shadcn/ui: Pass — Card/Badge/Button components only.
+ * DaisyUI: Pass — Uses DaisyUI card, badge, and button components.
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 interface TokenUsageSummary {
@@ -43,68 +40,70 @@ export function StreamingAnalysisPanel({
   const renderStatusBadge = () => {
     switch (status) {
       case 'starting':
-        return <Badge variant="outline" className="text-xs">Starting</Badge>;
+        return <div className="badge badge-outline badge-sm">Starting</div>;
       case 'in_progress':
         return (
-          <Badge variant="default" className="text-xs bg-blue-600">
+          <div className="badge badge-primary badge-sm">
             <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             Streaming
-          </Badge>
+          </div>
         );
       case 'completed':
-        return <Badge className="text-xs bg-emerald-600">Completed</Badge>;
+        return <div className="badge badge-success badge-sm">Completed</div>;
       case 'failed':
-        return <Badge className="text-xs bg-destructive">Failed</Badge>;
+        return <div className="badge badge-error badge-sm">Failed</div>;
       default:
-        return <Badge variant="secondary" className="text-xs">Idle</Badge>;
+        return <div className="badge badge-neutral badge-sm">Idle</div>;
     }
   };
 
   return (
-    <Card className="border-blue-200 bg-blue-50">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="space-y-1 flex-1">
-          <div className="flex items-center gap-2 text-xs text-blue-600">
-            {renderStatusBadge()}
-            {phase && <span>Phase: {phase}</span>}
-            {message && <span className="truncate max-w-sm">{message}</span>}
+    <div className="card bg-blue-50 border border-blue-200 shadow-sm">
+      <div className="card-body p-4">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div className="space-y-1 flex-1">
+            <div className="flex items-center gap-2 text-xs text-blue-600">
+              {renderStatusBadge()}
+              {phase && <span>Phase: {phase}</span>}
+              {message && <span className="truncate max-w-sm">{message}</span>}
+            </div>
           </div>
+          {onCancel && status === 'in_progress' && (
+            <button className="btn btn-ghost btn-sm" onClick={onCancel}>
+              Cancel
+            </button>
+          )}
+          {onClose && (status === 'completed' || status === 'failed') && (
+            <button className="btn btn-primary btn-sm" onClick={onClose}>
+              Close
+            </button>
+          )}
         </div>
-        {onCancel && status === 'in_progress' && (
-          <Button variant="ghost" size="sm" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
-        {onClose && (status === 'completed' || status === 'failed') && (
-          <Button variant="default" size="sm" onClick={onClose}>
-            Close
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4 text-sm text-blue-900">
-        <div>
-          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
-          <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
-            {text?.trim() || 'Waiting for output\u2026'}
-          </pre>
-        </div>
-        {reasoning && reasoning.trim().length > 0 && (
+        <div className="space-y-4 text-sm text-blue-900 pt-2">
           <div>
-            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>
-            <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[400px] overflow-y-auto text-xs text-blue-700 font-mono">
-              {reasoning}
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
+            <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
+              {text?.trim() || 'Waiting for output\u2026'}
             </pre>
           </div>
-        )}
-        {tokenUsage && (tokenUsage.input || tokenUsage.output || tokenUsage.reasoning) && (
-          <div className="text-xs text-blue-500 flex gap-3">
-            {tokenUsage.input !== undefined && <span>Input: {tokenUsage.input}</span>}
-            {tokenUsage.output !== undefined && <span>Output: {tokenUsage.output}</span>}
-            {tokenUsage.reasoning !== undefined && <span>Reasoning: {tokenUsage.reasoning}</span>}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          {reasoning && reasoning.trim().length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>
+              <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[400px] overflow-y-auto text-xs text-blue-700 font-mono">
+                {reasoning}
+              </pre>
+            </div>
+          )}
+          {tokenUsage && (tokenUsage.input || tokenUsage.output || tokenUsage.reasoning) && (
+            <div className="text-xs text-blue-500 flex gap-3">
+              {tokenUsage.input !== undefined && <span>Input: {tokenUsage.input}</span>}
+              {tokenUsage.output !== undefined && <span>Output: {tokenUsage.output}</span>}
+              {tokenUsage.reasoning !== undefined && <span>Reasoning: {tokenUsage.reasoning}</span>}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

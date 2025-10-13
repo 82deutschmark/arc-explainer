@@ -17,9 +17,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ThumbsUp, ThumbsDown, Users, Heart, Star, Info } from 'lucide-react';
 
 interface FeedbackModelStats {
@@ -53,14 +50,14 @@ export function FeedbackLeaderboard({
 }: FeedbackLeaderboardProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-600" />
             Model Feedback Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
+        </div>
+        <div className="card-body">
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
@@ -77,26 +74,26 @@ export function FeedbackLeaderboard({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (!feedbackStats || !feedbackStats.topModels?.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-600" />
             Model Feedback Analysis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
+        </div>
+        <div className="card-body">
           <div className="text-center py-8 text-gray-500">
             No feedback data available
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -128,17 +125,17 @@ export function FeedbackLeaderboard({
     .sort((a, b) => b.helpfulCount - a.helpfulCount); // DESC order by helpfulCount
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow h-full">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <Heart className="h-5 w-5 text-pink-600" />
           User Feedback Leaders
-        </CardTitle>
+        </h2>
         <div className="text-sm text-gray-600">
           Models ranked by positive feedback ({feedbackStats.totalFeedback.toLocaleString()} total ratings)
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="card-body">
         <div className="space-y-2">
             {sortedModels.map((model, index) => {
               const volumeInfo = getVolumeIndicator(model.feedbackCount);
@@ -175,48 +172,14 @@ export function FeedbackLeaderboard({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge
-                            variant="secondary"
-                            className={`text-xs font-medium cursor-help ${getSatisfactionColor(model.helpfulPercentage)}`}
-                          >
-                            {model.helpfulPercentage.toFixed(1)}%
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-sm">
-                            <strong>Helpful Percentage</strong>
-                            <br />
-                            {model.helpfulCount} helpful / {model.feedbackCount} total ratings
-                            <br />
-                            = {model.helpfulPercentage.toFixed(1)}% helpful rate
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
+                    <div className={`badge text-xs font-medium ${getSatisfactionColor(model.helpfulPercentage)}`}>
+                      {model.helpfulPercentage.toFixed(1)}%
+                    </div>
                     {model.feedbackCount < 10 && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
-                              <Info className="h-3 w-3 mr-1" />
-                              Low sample
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-sm">
-                              <strong>Low Sample Size Warning</strong>
-                              <br />
-                              Only {model.feedbackCount} feedback entries - percentage may not be reliable
-                              <br />
-                              Recommended: 10+ feedback entries for confidence
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
+                        <Info className="h-3 w-3 mr-1" />
+                        Low sample
+                      </div>
                     )}
                   </div>
                 </div>
@@ -228,12 +191,12 @@ export function FeedbackLeaderboard({
         <div className="pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Overall Satisfaction:</span>
-            <Badge className={getSatisfactionColor(feedbackStats.helpfulPercentage)}>
+            <div className={`badge ${getSatisfactionColor(feedbackStats.helpfulPercentage)}`}>
               {feedbackStats.helpfulPercentage.toFixed(1)}%
-            </Badge>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

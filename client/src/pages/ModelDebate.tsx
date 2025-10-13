@@ -83,7 +83,7 @@ export default function ModelDebate() {
   } = useAnalysisResults({
     taskId: taskId || '',
     refetchExplanations,
-    omitAnswer: false,
+    omitAnswer: true,  // CRITICAL: Debate mode is SOLVER behavior - models should NOT see correct answers
     originalExplanation: selectedExplanation,
     customChallenge: debateState.customChallenge,
     previousResponseId: debateState.getLastResponseId(debateState.challengerModel), // Provider-aware chaining

@@ -47,38 +47,38 @@ import { TASK_DESCRIPTIONS, ADDITIONAL_INSTRUCTIONS } from './components/basePro
  * @param testCount - Number of test cases in puzzle (for dynamic field instructions)
  * @param hasStructuredOutput - Whether provider uses schema enforcement
  */
+/**
+ * REFACTORED: Task descriptions removed from system prompts
+ * They now go in USER prompts only (OpenAI Responses API best practice)
+ * System prompts contain ONLY: AI role + JSON schema + mode-specific rules
+ */
 export const SYSTEM_PROMPT_MAP = {
   solver: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
-      taskDescription: TASK_DESCRIPTIONS.solver, 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.solver,
       testCount,
       hasStructuredOutput
     }),
   standardExplanation: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
-      taskDescription: TASK_DESCRIPTIONS.explanation, 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.explanation,
       testCount,
       hasStructuredOutput
     }),
   alienCommunication: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
-      taskDescription: TASK_DESCRIPTIONS.alienCommunication, 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.alienCommunication,
       testCount,
       hasStructuredOutput
     }),
   educationalApproach: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
-      taskDescription: TASK_DESCRIPTIONS.educational, 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.educational,
       testCount,
       hasStructuredOutput
     }),
   gepa: (testCount?: number, hasStructuredOutput?: boolean) => 
     buildSystemPrompt({ 
-      taskDescription: TASK_DESCRIPTIONS.gepa, 
       additionalInstructions: ADDITIONAL_INSTRUCTIONS.gepa,
       testCount,
       hasStructuredOutput
