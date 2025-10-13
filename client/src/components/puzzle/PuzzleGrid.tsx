@@ -150,7 +150,7 @@ export const PuzzleGrid = React.memo(function PuzzleGrid({
 
   return (
     <div 
-      className={`text-center ${highlight ? 'bg-green-50 p-1 rounded border border-green-300' : ''} ${compact ? 'space-y-0' : 'space-y-1'}`}
+      className={`text-center ${compact ? 'space-y-0' : 'space-y-1'}`}
       style={{
         maxWidth: maxWidth ? `${maxWidth}px` : undefined,
         maxHeight: maxHeight ? `${maxHeight}px` : undefined

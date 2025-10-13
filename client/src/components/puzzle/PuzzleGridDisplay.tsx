@@ -71,9 +71,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           <div className="space-y-2">
             {/* Standard Pairs: Flex wrap with align-items-start */}
             {classifiedTraining.standard.length > 0 && (
-              <div className="flex flex-wrap gap-1 items-start">
+              <div className="flex flex-wrap gap-2 items-start">
                 {classifiedTraining.standard.map(({ item, idx }) => (
-                  <div key={idx} className="flex items-start gap-0.5 p-1 max-w-[400px]">
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-base-100 border border-base-300 rounded-lg">
                     <PuzzleGrid
                       grid={item.input}
                       title={`Training Example ${idx + 1} Input`}
@@ -83,7 +83,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                       maxWidth={180}
                       maxHeight={180}
                     />
-                    <span className="text-xs opacity-40 self-center">→</span>
+                    <div className="flex flex-col items-center justify-center px-1">
+                      <span className="text-lg font-bold text-blue-600">→</span>
+                    </div>
                     <PuzzleGrid
                       grid={item.output}
                       title={`Training Example ${idx + 1} Output`}
@@ -100,9 +102,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
 
             {/* Wide Pairs: Full-width blocks */}
             {classifiedTraining.wide.length > 0 && (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {classifiedTraining.wide.map(({ item, idx }) => (
-                  <div key={idx} className="flex items-start gap-0.5 p-1 w-full">
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-base-100 border border-base-300 rounded-lg">
                     <PuzzleGrid
                       grid={item.input}
                       title={`Training Example ${idx + 1} Input`}
@@ -112,7 +114,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                       maxWidth={300}
                       maxHeight={250}
                     />
-                    <span className="text-xs opacity-40 self-center">→</span>
+                    <div className="flex flex-col items-center justify-center px-1">
+                      <span className="text-lg font-bold text-blue-600">→</span>
+                    </div>
                     <PuzzleGrid
                       grid={item.output}
                       title={`Training Example ${idx + 1} Output`}
@@ -130,9 +134,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
             {/* Tall Pairs: Horizontal scroll */}
             {classifiedTraining.tall.length > 0 && (
               <div className="overflow-x-auto -mx-2 px-2">
-                <div className="flex gap-1" style={{ width: 'max-content' }}>
+                <div className="flex gap-2" style={{ width: 'max-content' }}>
                   {classifiedTraining.tall.map(({ item, idx }) => (
-                    <div key={idx} className="flex items-center gap-0.5 p-1 flex-shrink-0">
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-base-100 border border-base-300 rounded-lg flex-shrink-0">
                       <PuzzleGrid
                         grid={item.input}
                         title={`Training Example ${idx + 1} Input`}
@@ -142,7 +146,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                         maxWidth={250}
                         maxHeight={400}
                       />
-                      <span className="text-xs opacity-40">→</span>
+                      <div className="flex flex-col items-center justify-center px-1">
+                        <span className="text-lg font-bold text-blue-600">→</span>
+                      </div>
                       <PuzzleGrid
                         grid={item.output}
                         title={`Training Example ${idx + 1} Output`}
@@ -170,9 +176,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
           <div className="space-y-2">
             {/* Standard Test Pairs */}
             {classifiedTest.standard.length > 0 && (
-              <div className="flex flex-wrap gap-1 items-start">
-                {classifiedTest.standard.map(({ item, idx }) => (
-                  <div key={idx} className="flex items-start gap-0.5 p-1 max-w-[400px]">
+              <div className="flex flex-wrap gap-2 items-start">
+                {classifiedTest.standard.map(({ item, idx}) => (
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border-2 border-green-400 rounded-lg">
                     <PuzzleGrid
                       grid={item.input}
                       title={`Test ${idx + 1} Input`}
@@ -182,13 +188,14 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                       maxWidth={180}
                       maxHeight={180}
                     />
-                    <span className="text-xs opacity-40 self-center">→</span>
+                    <div className="flex flex-col items-center justify-center px-1">
+                      <span className="text-lg font-bold text-green-600">→</span>
+                    </div>
                     <PuzzleGrid
                       grid={item.output}
                       title={`Test ${idx + 1} Output`}
                       showEmojis={showEmojis}
                       emojiSet={emojiSet}
-                      highlight={true}
                       compact={true}
                       maxWidth={180}
                       maxHeight={180}
@@ -200,9 +207,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
 
             {/* Wide Test Pairs */}
             {classifiedTest.wide.length > 0 && (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {classifiedTest.wide.map(({ item, idx }) => (
-                  <div key={idx} className="flex items-start gap-0.5 p-1 w-full">
+                  <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border-2 border-green-400 rounded-lg">
                     <PuzzleGrid
                       grid={item.input}
                       title={`Test ${idx + 1} Input`}
@@ -212,13 +219,14 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                       maxWidth={300}
                       maxHeight={250}
                     />
-                    <span className="text-xs opacity-40 self-center">→</span>
+                    <div className="flex flex-col items-center justify-center px-1">
+                      <span className="text-lg font-bold text-green-600">→</span>
+                    </div>
                     <PuzzleGrid
                       grid={item.output}
                       title={`Test ${idx + 1} Output`}
                       showEmojis={showEmojis}
                       emojiSet={emojiSet}
-                      highlight={true}
                       compact={true}
                       maxWidth={300}
                       maxHeight={250}
@@ -231,9 +239,9 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
             {/* Tall Test Pairs */}
             {classifiedTest.tall.length > 0 && (
               <div className="overflow-x-auto -mx-2 px-2">
-                <div className="flex gap-1" style={{ width: 'max-content' }}>
+                <div className="flex gap-2" style={{ width: 'max-content' }}>
                   {classifiedTest.tall.map(({ item, idx }) => (
-                    <div key={idx} className="flex items-center gap-0.5 p-1 flex-shrink-0">
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border-2 border-green-400 rounded-lg flex-shrink-0">
                       <PuzzleGrid
                         grid={item.input}
                         title={`Test ${idx + 1} Input`}
@@ -243,13 +251,14 @@ export function PuzzleGridDisplay({ task, showEmojis, emojiSet }: PuzzleGridDisp
                         maxWidth={250}
                         maxHeight={400}
                       />
-                      <span className="text-xs opacity-40">→</span>
+                      <div className="flex flex-col items-center justify-center px-1">
+                        <span className="text-lg font-bold text-green-600">→</span>
+                      </div>
                       <PuzzleGrid
                         grid={item.output}
                         title={`Test ${idx + 1} Output`}
                         showEmojis={showEmojis}
                         emojiSet={emojiSet}
-                        highlight={true}
                         compact={true}
                         maxWidth={250}
                         maxHeight={400}
