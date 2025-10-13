@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useModels } from '@/hooks/useModels';
-import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode } from 'lucide-react';
+import { Loader2, Grid3X3, Eye, CheckCircle2, MessageCircle, Download, BookOpen, ExternalLink, Heart, Trophy, Sparkles, Database, FileText, Lightbulb, Award, Cpu, User, FileCode, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
@@ -38,6 +38,7 @@ export default function PuzzleBrowser() {
   const [sortBy, setSortBy] = useState<string>('unexplained_first'); // 'default', 'processing_time', 'confidence', 'cost', 'created_at', 'least_analysis_data', 'unexplained_first'
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false); // For collapsible ARC-AGI-2 research section
   const [location, setLocation] = useLocation();
   const { data: models = [] } = useModels();
   const { toast } = useToast();
@@ -261,27 +262,50 @@ export default function PuzzleBrowser() {
                     <p className="font-bold text-orange-800 text-sm">👥 Community</p>
                   </div>
                   <div className="space-y-2">
-                    <div className="mb-3 p-2 bg-orange-50 rounded border-l-4 border-orange-400">
-                      <p className="text-xs font-semibold text-orange-800 mb-1">🎯 Critical ARC-AGI-2 Research</p>
-                      <p className="text-xs text-orange-700 mb-1">
-                        With the dataset complete (<a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-800">github.com/cristianoc/arc-agi-2-abstraction-dataset</a>), made some progress understanding the structure needed to express the forms abstraction composition present in the solutions.
-                      </p>
-                      <p className="text-xs font-medium text-orange-800 mb-1">Statistical Summary (from analysis of 111 tasks):</p>
-                      <div className="text-xs text-orange-700 space-y-1">
-                        <p>• ~40% are pure sequential composition</p>
-                        <p>• ~30% require conditional branching</p>
-                        <p>• ~20% use pattern classification + dispatch</p>
-                        <p>• ~25% involve iteration/loops over collections</p>
-                        <p>• ~15% have nested/hierarchical structure</p>
-                        <p>• ~10% use parallel composition with merge</p>
-                        <p>• ~5% form graph/DAG structures</p>
+                    <div className="mb-3">
+                      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded-lg`}>
+                        <div className="collapse-title p-3">
+                          <button
+                            className="w-full flex justify-between items-center h-auto"
+                            onClick={() => setIsOpen(!isOpen)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-orange-800">🎯 Critical ARC-AGI-2 Research</span>
+                              <span className="text-xs text-orange-600">by cristianoc</span>
+                            </div>
+                            {isOpen ? (
+                              <ChevronUp className="h-4 w-4 text-orange-600" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4 text-orange-600" />
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="collapse-content px-3 pb-3">
+                          <div className="text-xs text-orange-700 space-y-2">
+                            <p>
+                              Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:
+                            </p>
+                            <div className="grid grid-cols-2 gap-1 text-xs">
+                              <p>• 40% sequential composition</p>
+                              <p>• 30% conditional branching</p>
+                              <p>• 20% pattern classification</p>
+                              <p>• 25% iteration/loops</p>
+                              <p>• 15% nested structures</p>
+                              <p>• 10% parallel composition</p>
+                              <p>• 5% graph/DAG structures</p>
+                            </div>
+                            <p className="italic text-orange-600">
+                              A DSL is emerging from these patterns →
+                            </p>
+                            <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
+                               target="_blank" rel="noopener noreferrer"
+                               className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1">
+                              View cristianoc's research <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-xs text-orange-700 mt-2 italic">
-                        (Percentages sum to &gt;100% as some tasks use multiple patterns)
-                      </p>
-                      <p className="text-xs font-semibold text-orange-800 mt-2">
-                        There's a DSL wanting to come out of this.
-                      </p>
                     </div>
                     <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
