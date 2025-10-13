@@ -26,7 +26,8 @@ router.get('/', (req, res) => {
     supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
-    isReasoning: model.isReasoning
+    isReasoning: model.isReasoning,
+    releaseDate: model.releaseDate
   }));
 
   res.json(clientModels);
@@ -58,7 +59,8 @@ router.get('/:modelKey', (req, res) => {
     supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
-    isReasoning: model.isReasoning
+    isReasoning: model.isReasoning,
+    releaseDate: model.releaseDate
   };
 
   res.json(clientModel);
@@ -83,7 +85,8 @@ router.get('/provider/:provider', (req, res) => {
     supportsStreaming: model.supportsStreaming ?? false,
     provider: model.provider,
     responseTime: model.responseTime,
-    isReasoning: model.isReasoning
+    isReasoning: model.isReasoning,
+    releaseDate: model.releaseDate
   }));
 
   res.json(clientModels);
