@@ -1,3 +1,19 @@
+## v1.7.0 (2025-10-13)
+
+### OpenAI Streaming and Reasoning Enhancements
+- **Fixed unhandled streaming events**: Added proper handling for `response.reasoning_summary_part.added` and `response.reasoning_summary_text.done` to assemble reasoning in real-time.
+- **Real-time UI updates**: Reasoning summaries are now accumulated and emitted to the UI via streaming harness for live display.
+- **Improved reasoning capture**: Updated `parseProviderResponse()` with `output[]` fallback for all GPT-5 models, ensuring complete reasoning extraction.
+- **Enhanced token tracking**: Added fallback for `reasoning_tokens` from streaming aggregates and error logging for capture failures.
+- **Database integration**: Reasoning data now correctly populates `reasoning_log`, `reasoning_items`, and `has_reasoning_log` fields.
+
+**Impact**: Streaming now provides real-time reasoning feedback, improving user experience for puzzle analysis with GPT-5 models.
+
+**Author**: Cascade using DeepSeek V3.2 Exp
+**Date**: 2025-10-13
+
+---
+
 ## [4.8.2] - 2025-10-12 11:20 PM
 ### 🔧 HEURISTIC ARC SOLVER INTEGRATION
 
