@@ -1,3 +1,26 @@
+## [4.8.6] - 2025-10-13
+### 🐛 FIX: Streaming Modal Stays Open After Completion
+
+**Problem:** Streaming modal disappeared immediately when analysis completed, before user could see final result or saved explanation.
+
+**Root Cause:** `resetStreamingState()` called immediately after save, setting `streamingModelKey` to null and closing modal.
+
+**Solution:**
+- Removed immediate `resetStreamingState()` call from `handleStreamingComplete()`
+- Modal now stays open when status="completed", showing "Close" button
+- User can review final streaming output before manually closing
+- `resetStreamingState()` only called when user clicks "Close" button
+
+**Benefits:**
+- ✅ User sees completed streaming analysis result
+- ✅ Explanation saves and appears in list while modal still open
+- ✅ User controls when to dismiss the modal
+- ✅ Better UX - no jarring disappearance
+
+**Files:** `client/src/hooks/useAnalysisResults.ts`
+
+---
+
 ## [4.8.5] - 2025-10-13
 ### ✨ UX: Smart Prompt Preview (Show Once Per Config)
 
