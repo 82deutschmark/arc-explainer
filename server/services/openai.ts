@@ -757,6 +757,31 @@ export class OpenAIService extends BaseAIService {
     const eventType = event.type;
 
     switch (eventType) {
+      case "response.created": {
+        // Response creation event - can be ignored for streaming
+        break;
+      }
+      case "response.output_item.added": {
+        // Output item added - can be ignored for streaming
+        break;
+      }
+      case "response.reasoning_summary_text.delta": {
+        // This is the main reasoning content being streamed
+        const delta = (event as any).content || '';
+        aggregates.reasoningSummary = (aggregates.reasoningSummary || '') + delta;
+        this.emitStreamChunk(harness, {
+          type: "reasoning",
+          delta,
+          content: aggregates.reasoningSummary,
+          metadata: { type: 'reasoning_summary' }
+        });
+        break;
+      }
+      case "response.reasoning_summary_part.done": {
+        // Reasoning part completed - finalize the summary
+        aggregates.reasoningSummary = aggregates.reasoningSummary || '';
+        break;
+      }
       case "response.reasoning_summary_part.added": {
         const delta = (event as any).content || '';
         aggregates.reasoningSummary = (aggregates.reasoningSummary || '') + delta;
@@ -804,8 +829,10 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       default:
-        // Log unhandled event types for debugging
-        console.log(`[OpenAI-Streaming] Unhandled event type: ${eventType}`);
+        // Only log truly unexpected event types, not the expected ones we handle above
+        if (!eventType.startsWith('response.')) {
+          console.log(`[OpenAI-Streaming] Unhandled event type: ${eventType}`);
+        }
         break;
     }
   }
