@@ -226,6 +226,9 @@ export default function PuzzleExaminer() {
     );
   }
 
+  // TypeScript guard: task is guaranteed non-null after error check above
+  if (!task) return null;
+
   return (
     <div className="container mx-auto p-2 max-w-6xl space-y-2">
       {/* Header Component */}
