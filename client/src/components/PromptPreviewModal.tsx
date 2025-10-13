@@ -29,6 +29,10 @@ interface PromptPreviewModalProps {
   promptId: string;
   customPrompt?: string;
   options?: PromptOptions;
+  // Confirmation mode - shows "Confirm & Run" button to execute action after preview
+  confirmMode?: boolean;
+  onConfirm?: () => void | Promise<void>;
+  confirmButtonText?: string;
 }
 
 interface PromptPreviewData {
@@ -46,12 +50,16 @@ export function PromptPreviewModal({
   taskId,
   promptId,
   customPrompt,
-  options = {}
+  options = {},
+  confirmMode = false,
+  onConfirm,
+  confirmButtonText = 'Confirm & Run'
 }: PromptPreviewModalProps) {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreviewData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   // Fetch prompt preview from server when modal opens or parameters change
   useEffect(() => {
@@ -113,12 +121,29 @@ export function PromptPreviewModal({
     }
   };
 
+  // Handle confirmation
+  const handleConfirm = async () => {
+    if (!onConfirm) return;
+
+    setIsConfirming(true);
+    try {
+      await onConfirm();
+      onClose(); // Close modal after successful confirmation
+    } catch (error) {
+      console.error('Confirmation failed:', error);
+      // Don't close modal if confirmation fails - let user retry or cancel
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setPromptPreview(null);
       setError(null);
       setCopiedSection(null);
+      setIsConfirming(false);
     }
   }, [isOpen]);
 
@@ -243,7 +268,33 @@ export function PromptPreviewModal({
         </div>
 
         <div className="modal-action">
-          <button className="btn" onClick={onClose}>Close</button>
+          {confirmMode ? (
+            <>
+              <button
+                className="btn btn-ghost"
+                onClick={onClose}
+                disabled={isConfirming}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleConfirm}
+                disabled={isConfirming || !promptPreview || isLoading}
+              >
+                {isConfirming ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Starting...
+                  </>
+                ) : (
+                  confirmButtonText
+                )}
+              </button>
+            </>
+          ) : (
+            <button className="btn" onClick={onClose}>Close</button>
+          )}
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
