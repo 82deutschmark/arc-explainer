@@ -48,6 +48,10 @@ Some endpoints now require API key authentication via `Authorization: Bearer <ap
 - `researcher-access-key-001` - Researcher access key
 - `demo-api-key-for-researchers` - Demo key for testing
 
+**Environment Variables:**
+- `ARC_EXPLAINER_API_KEY` - Master API key (set in `.env`)
+- `PUBLIC_API_KEYS` - Comma-separated list of additional valid keys
+
 **Endpoints Requiring Authentication:**
 - `POST /api/puzzle/save-explained/:puzzleId` - Save AI-generated explanation
 - `POST /api/feedback` - Submit user feedback

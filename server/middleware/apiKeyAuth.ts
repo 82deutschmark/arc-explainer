@@ -12,16 +12,25 @@
 
 import { Request, Response, NextFunction } from 'express';
 
-// Simple in-memory API key storage (in production, use database)
+// Load API keys from environment variables
+const MASTER_API_KEY = process.env.ARC_EXPLAINER_API_KEY;
+const PUBLIC_API_KEYS_STR = process.env.PUBLIC_API_KEYS;
+
+// Parse comma-separated public API keys
 const VALID_API_KEYS = new Set([
-    // Add valid API keys here
+    // Default keys for development/testing
     'arc-explainer-public-key-2025',
     'researcher-access-key-001',
     'demo-api-key-for-researchers'
 ]);
 
-// Environment variable for API key (can be set in .env)
-const API_KEY_FROM_ENV = process.env.ARC_EXPLAINER_API_KEY;
+// Add keys from environment if provided
+if (PUBLIC_API_KEYS_STR) {
+    PUBLIC_API_KEYS_STR.split(',').forEach(key => {
+        const trimmed = key.trim();
+        if (trimmed) VALID_API_KEYS.add(trimmed);
+    });
+}
 
 /**
  * API Key Authentication Middleware
@@ -53,7 +62,7 @@ export const apiKeyAuth = (req: Request, res: Response, next: NextFunction) => {
 
         // Check if key is valid
         const isValidKey = VALID_API_KEYS.has(providedKey) ||
-                          (API_KEY_FROM_ENV && providedKey === API_KEY_FROM_ENV);
+                          (MASTER_API_KEY && providedKey === MASTER_API_KEY);
 
         if (!isValidKey) {
             return res.status(401).json({
@@ -69,6 +78,7 @@ export const apiKeyAuth = (req: Request, res: Response, next: NextFunction) => {
 
         next();
     } catch (error) {
+        console.error('API Key Authentication Error:', error);
         return res.status(500).json({
             success: false,
             error: 'Authentication error',
@@ -91,7 +101,7 @@ export const optionalApiKeyAuth = (req: Request, res: Response, next: NextFuncti
         const providedKey = authHeader.substring(7);
 
         const isValidKey = VALID_API_KEYS.has(providedKey) ||
-                          (API_KEY_FROM_ENV && providedKey === API_KEY_FROM_ENV);
+                          (MASTER_API_KEY && providedKey === MASTER_API_KEY);
 
         if (isValidKey) {
             (req as any).apiKey = providedKey;
@@ -125,8 +135,9 @@ export const adminApiKeyAuth = (req: Request, res: Response, next: NextFunction)
         'admin-access-key-001'
     ]);
 
+    // Check if it's an admin key or the master key contains 'admin'
     const isAdminKey = ADMIN_KEYS.has(providedKey) ||
-                      (API_KEY_FROM_ENV && providedKey === API_KEY_FROM_ENV && API_KEY_FROM_ENV.includes('admin'));
+                      (MASTER_API_KEY && providedKey === MASTER_API_KEY && MASTER_API_KEY.includes('admin'));
 
     if (!isAdminKey) {
         return res.status(403).json({
