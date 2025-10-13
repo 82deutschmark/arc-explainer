@@ -4,7 +4,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Award } from 'lucide-react';
 import type { AccuracyStats } from '@shared/types';
 
@@ -14,14 +13,12 @@ interface SolverPerformanceCardProps {
 
 const SolverPerformanceCard: React.FC<SolverPerformanceCardProps> = ({ accuracyStats }) => {
   return (
-    <Card className="lg:col-span-1">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow lg:col-span-1">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <Award className="h-6 w-6 text-green-600" />
           Solver Performance Overview
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h2>
         {accuracyStats && accuracyStats.totalSolverAttempts > 0 ? (
           <div className="space-y-4">
             <div className="text-center">
@@ -54,8 +51,8 @@ const SolverPerformanceCard: React.FC<SolverPerformanceCardProps> = ({ accuracyS
             <p className="text-xs">Run analyses in solver mode to see performance metrics</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

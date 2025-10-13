@@ -2,19 +2,17 @@
  * AnalysisResultContent.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T22:50:00-04:00
+ * Date: 2025-10-12T21:44:00Z
  * PURPOSE: Displays the main content of analysis results including pattern descriptions,
  * solving strategies, hints, alien meanings, and AI reasoning. Handles Saturn results and
  * optimistic update states (analyzing, saving, error). Shows trustworthiness badge for
  * non-ELO, non-debate, non-Saturn results only (predictionAccuracyScore).
- * SRP/DRY check: Pass - Single responsibility (content display), reuses Badge/Button components
- * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ * SRP/DRY check: Pass - Single responsibility (content display)
+ * shadcn/ui: Pass - Converted to DaisyUI badge and button
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Brain, ChevronDown, ChevronUp } from 'lucide-react';
+import { Brain, ChevronDown, ChevronUp, FileText, Copy, Check } from 'lucide-react';
 import { ExplanationData } from '@/types/puzzle';
 
 export const formatConfidence = (confidence: string | number) => {
@@ -51,8 +49,20 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
   eloMode = false
 }) => {
   const [showGroverProgram, setShowGroverProgram] = React.useState(false);
+  const [showPrompt, setShowPrompt] = React.useState(false);
+  const [copiedSection, setCopiedSection] = React.useState<string | null>(null);
   const isOptimistic = result.isOptimistic;
   const status = result.status;
+
+  const copyToClipboard = async (text: string, section: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedSection(section);
+      setTimeout(() => setCopiedSection(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
   
   // Show skeleton loaders for pending states
   if (isOptimistic && (status === 'analyzing' || status === 'saving')) {
@@ -132,14 +142,13 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
               {isSaturnResult ? '🪐 Saturn Visual Analysis' : isGroverResult ? '🔄 Grover Iterative Analysis' : 'Pattern Description'}
             </h5>
             {!isSaturnResult && result.confidence && (
-              <Badge variant="outline" className="text-xs">
+              <div className="badge badge-outline text-xs">
                 Confidence: {formatConfidence(result.confidence)}
-              </Badge>
+              </div>
             )}
             {!eloMode && !isSaturnResult && result.trustworthinessScore !== undefined && result.trustworthinessScore !== null && (
-              <Badge
-                variant="outline"
-                className={`text-xs ${
+              <div
+                className={`badge badge-outline text-xs ${
                   result.trustworthinessScore >= 0.8 
                     ? 'bg-green-50 border-green-200 text-green-700' 
                     : result.trustworthinessScore >= 0.5 
@@ -147,14 +156,13 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                       : 'bg-red-50 border-red-200 text-red-700'
                 }`}>
                 Trustworthiness: {Math.round(result.trustworthinessScore * 100)}%
-              </Badge>
+              </div>
             )}
             {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
-              <Badge 
-                variant="outline" 
-                className={`text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
+              <div 
+                className={`badge badge-outline text-xs ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-600' : 'bg-orange-50 border-orange-200 text-orange-600'}`}>
                 {result.saturnSuccess ? 'Puzzle Solved Successfully' : 'Solution Attempt Failed'}
-              </Badge>
+              </div>
             )}
           </div>
           <p className="text-gray-600">{result.patternDescription}</p>
@@ -186,9 +194,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
           >
             <div className="flex items-center gap-2">
               <h5 className="font-semibold text-purple-800">🛸 What might the aliens mean?</h5>
-              <Badge variant="outline" className="text-xs bg-purple-50">
+              <div className="badge badge-outline text-xs bg-purple-50">
                 Confidence: {formatConfidence(result.alienMeaningConfidence || result.confidence || '85%')}
-              </Badge>
+              </div>
             </div>
             {showAlienMeaning ? (
               <ChevronUp className="h-4 w-4 text-purple-600" />
@@ -216,17 +224,17 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                 <>
                   <span className="text-sm">🪐</span>
                   <h5 className="font-semibold text-indigo-800">Saturn Visual Reasoning</h5>
-                  <Badge variant="outline" className="text-xs bg-indigo-50 border-indigo-200">
+                  <div className="badge badge-outline text-xs bg-indigo-50 border-indigo-200">
                     Multi-stage visual analysis
-                  </Badge>
+                  </div>
                 </>
               ) : (
                 <>
                   <Brain className="h-4 w-4 text-blue-600" />
                   <h5 className="font-semibold text-blue-800">AI Reasoning Process</h5>
-                  <Badge variant="outline" className="text-xs bg-blue-50">
+                  <div className="badge badge-outline text-xs bg-blue-50">
                     Step-by-step analysis
-                  </Badge>
+                  </div>
                 </>
               )}
             </div>
@@ -334,9 +342,9 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-sm">🔄</span>
               <h5 className="font-semibold text-green-800">Discovered Python Program</h5>
-              <Badge variant="outline" className="text-xs bg-green-50 border-green-200">
+              <div className="badge badge-outline text-xs bg-green-50 border-green-200">
                 Best of {result.iterationCount || '?'} iterations
-              </Badge>
+              </div>
             </div>
             {showGroverProgram ? (
               <ChevronUp className="h-4 w-4 text-green-600" />
@@ -351,6 +359,90 @@ export const AnalysisResultContent: React.FC<AnalysisResultContentProps> = ({
                   {result.groverBestProgram}
                 </pre>
               </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Prompt Sent to AI - Show what was actually sent */}
+      {(result.systemPromptUsed || result.userPromptUsed) && (
+        <div className="border rounded bg-gray-50 border-gray-200">
+          <button
+            onClick={() => setShowPrompt(!showPrompt)}
+            className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 text-gray-600" />
+              <h5 className="font-semibold text-gray-800">Prompt Sent to AI</h5>
+              <div className="badge badge-outline text-xs bg-gray-50">
+                What was actually sent
+              </div>
+            </div>
+            {showPrompt ? (
+              <ChevronUp className="h-4 w-4 text-gray-600" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-gray-600" />
+            )}
+          </button>
+          {showPrompt && (
+            <div className="px-3 pb-3 space-y-3">
+              {/* System Prompt */}
+              {result.systemPromptUsed && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h6 className="font-semibold text-sm text-gray-700">System Prompt:</h6>
+                    <button
+                      onClick={() => copyToClipboard(result.systemPromptUsed!, 'system')}
+                      className="btn btn-xs btn-ghost"
+                      title="Copy to clipboard"
+                    >
+                      {copiedSection === 'system' ? (
+                        <Check className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+                  <pre className="text-xs bg-white p-3 rounded border text-gray-700 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
+                    {result.systemPromptUsed}
+                  </pre>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {result.systemPromptUsed.length} characters
+                  </div>
+                </div>
+              )}
+
+              {/* User Prompt */}
+              {result.userPromptUsed && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h6 className="font-semibold text-sm text-gray-700">User Prompt:</h6>
+                    <button
+                      onClick={() => copyToClipboard(result.userPromptUsed!, 'user')}
+                      className="btn btn-xs btn-ghost"
+                      title="Copy to clipboard"
+                    >
+                      {copiedSection === 'user' ? (
+                        <Check className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+                  <pre className="text-xs bg-white p-3 rounded border text-gray-700 whitespace-pre-wrap font-mono max-h-64 overflow-y-auto">
+                    {result.userPromptUsed}
+                  </pre>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {result.userPromptUsed.length} characters
+                  </div>
+                </div>
+              )}
+
+              {result.promptTemplateId && (
+                <div className="text-xs text-gray-500 mt-2">
+                  Template: <span className="font-mono bg-gray-100 px-1 rounded">{result.promptTemplateId}</span>
+                </div>
+              )}
             </div>
           )}
         </div>

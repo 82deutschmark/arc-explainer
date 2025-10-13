@@ -10,37 +10,32 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Info } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export function CollapsibleMission() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="w-full">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-3">
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-between p-0 h-auto hover:bg-transparent"
-            >
-              <CardTitle className="flex items-center gap-2 text-left">
-                <Info className="h-5 w-5 text-blue-600" />
-                Mission Statement & Project Background
-              </CardTitle>
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              )}
-            </Button>
-          </CollapsibleTrigger>
-        </CardHeader>
+    <div className="card w-full bg-base-100 shadow">
+      <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'}`}>
+        <div className="collapse-title">
+          <button 
+            className="w-full flex justify-between items-center p-0 h-auto"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <h2 className="card-title flex items-center gap-2 text-left">
+              <Info className="h-5 w-5 text-blue-600" />
+              Mission Statement & Project Background
+            </h2>
+            {isOpen ? (
+              <ChevronUp className="h-4 w-4 text-gray-500" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            )}
+          </button>
+        </div>
         
-        <CollapsibleContent>
-          <CardContent className="pt-0 space-y-4 text-sm">
+        <div className="collapse-content">
+          <div className="pt-0 space-y-4 text-sm">
             <div className="space-y-3">
               <p className="text-gray-700 leading-relaxed">
                 I started this project after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite... 
@@ -99,9 +94,9 @@ export function CollapsibleMission() {
                 </a>
               </div>
             </div>
-          </CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

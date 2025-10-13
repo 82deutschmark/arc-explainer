@@ -2,15 +2,14 @@
  * AnalysisResultMetrics.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T22:30:00-04:00
+ * Date: 2025-10-12T21:34:00Z
  * PURPOSE: Displays Saturn Visual Solver-specific metrics including generated images,
  * execution logs, and event traces. Conditionally rendered only for Saturn results.
- * SRP/DRY check: Pass - Single responsibility (Saturn metrics display), reuses Badge component
- * shadcn/ui: Pass - Uses shadcn/ui Badge component
+ * SRP/DRY check: Pass - Single responsibility (Saturn metrics display)
+ * shadcn/ui: Pass - Converted to DaisyUI badge
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { ExplanationData } from '@/types/puzzle';
 
 interface AnalysisResultMetricsProps {
@@ -30,9 +29,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
         <div className="bg-purple-50 border border-purple-200 rounded p-3">
           <h5 className="font-semibold text-purple-800 mb-2 flex items-center gap-2">
             🖼️ Generated Images 
-            <Badge variant="outline" className="text-xs bg-purple-50">
+            <div className="badge badge-outline text-xs bg-purple-50">
               {result.saturnImages.length} image{result.saturnImages.length !== 1 ? 's' : ''}
-            </Badge>
+            </div>
           </h5>
           <div className="text-xs text-purple-600 space-y-1">
             {result.saturnImages.slice(0, 3).map((imagePath, i) => (
@@ -55,9 +54,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
           <div className="p-3 border-b border-gray-200">
             <h5 className="font-semibold text-gray-800 flex items-center gap-2">
               📋 Saturn Execution Log
-              <Badge variant="outline" className="text-xs bg-gray-50">
+              <div className="badge badge-outline text-xs bg-gray-50">
                 {(result.saturnLog.length / 1024).toFixed(1)}KB
-              </Badge>
+              </div>
             </h5>
           </div>
           <div className="p-3 max-h-48 overflow-y-auto">
@@ -73,9 +72,9 @@ export const AnalysisResultMetrics: React.FC<AnalysisResultMetricsProps> = ({ re
         <div className="bg-blue-50 border border-blue-200 rounded p-3">
           <h5 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
             ⚡ Event Trace
-            <Badge variant="outline" className="text-xs bg-blue-50">
+            <div className="badge badge-outline text-xs bg-blue-50">
               NDJSON
-            </Badge>
+            </div>
           </h5>
           <div className="text-xs text-blue-600">
             <div className="bg-white p-2 rounded border font-mono max-h-32 overflow-y-auto">

@@ -1,3 +1,588 @@
+## [4.8.9] - 2025-10-13
+### 🎨 REDESIGN: Saturn Visual Solver with ATC Design System
+
+**Problem:** Saturn Visual Solver UI was cluttered, lacked information density, and didn't follow consistent design patterns.
+
+**Solution:** Complete rebuild using Agent Traffic Control design system with focus on information density and modular architecture.
+
+**Key Design Principles Applied:**
+- **CSS Grid layouts** - 30%/70% column splits for maximum screen density
+- **Monospace terminal logs** - Real-time log streaming with color-coded status
+- **Small modular components** - Each component ~100 lines, single responsibility
+- **Status-based color coding** - Visual indicators for analyzing/generating/complete states
+- **Information-dense** - Show everything at once, no minimalism
+- **Light theme** - Clean white background with amber accents instead of dark theme
+
+**New Components Created:**
+1. **SaturnMonitoringTable.tsx** (~90 lines)
+   - Puzzle ID, status, phase, progress tracking
+   - Status color coding (blue=running, green=complete, red=error)
+   - Information-dense 6-cell grid layout
+
+2. **SaturnWorkTable.tsx** (~110 lines)
+   - Phase history table with status-based row colors
+   - Amber=in-progress, emerald=completed, red=errors
+   - Monospace font, ATC-style table design
+
+3. **SaturnTerminalLogs.tsx** (~100 lines)
+   - Monospace terminal log display with auto-scroll
+   - Color-coded log levels (red=error, yellow=warning, green=success)
+   - Live reasoning display in blue box
+   - Shows line count and connection status
+
+4. **SaturnRadarCanvas.tsx** (~130 lines)
+   - Information-dense image gallery + integrated controls
+   - 180px control panel (model/temp/effort) + image grid
+   - Shows all generated images simultaneously
+   - Master control panel with Execute button
+
+**Page Architecture:**
+- **SaturnVisualSolver.tsx** - Main orchestration page
+- **Desktop Layout:** 30%/70% grid split
+  - Left: Monitoring Table + Work Table (stacked)
+  - Right: Terminal Logs + Radar Canvas (stacked)
+- **Mobile Layout:** Vertical stack with compact views
+- **Light theme** throughout with gray-50 backgrounds
+
+**Files Modified:**
+- `client/src/pages/SaturnVisualSolver.tsx` - Complete rewrite
+- `client/src/components/saturn/SaturnMonitoringTable.tsx` - NEW
+- `client/src/components/saturn/SaturnWorkTable.tsx` - NEW
+- `client/src/components/saturn/SaturnTerminalLogs.tsx` - NEW
+- `client/src/components/saturn/SaturnRadarCanvas.tsx` - NEW
+
+**Impact:** Saturn Visual Solver now has professional, information-dense UI matching Agent Traffic Control design patterns. All components follow SRP, are small and focused, and provide maximum screen real estate utilization.
+
+---
+
+## [4.8.8] - 2025-10-13
+### 🚀 NEW: ARC API Client for External Researchers
+
+**Problem:** Python researchers needed simple way to contribute analyses to ARC Explainer encyclopedia using existing API endpoints.
+
+**Solution:** Created simple Python client (`tools/api-client/`) that provides one-line integration for researchers to contribute ARC puzzle analyses.
+
+**Features:**
+- **One-line contribution:** `contribute_to_arc_explainer(puzzle_id, analysis, model, url, key)`
+- **Current model support:** Uses October 2025 model names (grok-4-2025-10-13, gpt-5-turbo-2025-10-13, etc.)
+- **Existing API integration:** Calls `POST /api/puzzle/save-explained/:puzzleId` endpoint
+- **Model-specific functions:** `contribute_grok4_analysis()`, `contribute_gpt5_analysis()`, `contribute_claude_analysis()`
+- **Batch processing:** `contribute_batch_analyses()` for multiple puzzles
+- **Zero dependencies:** Only requires `requests` library
+
+**Files:**
+- `tools/api-client/arc_client.py` - Main API client
+- `tools/api-client/examples.py` - Usage examples
+- `tools/api-client/README.md` - Complete documentation
+
+**Usage:**
+```python
+from arc_client import contribute_to_arc_explainer
+
+# One-line contribution to encyclopedia
+result = contribute_to_arc_explainer(
+    "3a25b0d8", analysis_result, "grok-4-2025-10-13",
+    "https://arc-explainer-staging.up.railway.app", "your-api-key"
+)
+```
+
+**Impact:** Enables Python researchers to easily contribute to ARC puzzle encyclopedia using current SOTA models.
+
+---
+
+## [4.8.7] - 2025-10-13
+### 🐛 FIX: Saturn Solver SSE Streaming Issues
+
+**Problems:**
+1. Redundant `emitStreamChunk()` calls in `sendProgress` helper
+2. Missing `analysis` wrapper in `finalizeStream()` causing frontend to not find saved data
+
+**Solutions:**
+- Removed redundant `emitStreamChunk()` from `sendProgress` helper (lines 115-118)
+  - Status messages already emitted via `emitStreamEvent()` with proper payload
+  - `emitStreamChunk()` is for content deltas only (like OpenAI text streaming)
+- Wrapped `finalResponse` in `analysis` field in `finalizeStream()` call (line 434-436)
+  - Frontend expects `summary?.responseSummary?.analysis` structure
+  - Ensures Saturn streaming matches OpenAI/Grok streaming format
+
+**Benefits:**
+- ✅ Eliminates duplicate status messages in SSE stream
+- ✅ Frontend correctly displays and saves Saturn streaming results
+- ✅ Consistent streaming architecture across all services
+
+**Files:** `server/services/saturnService.ts`
+
+---
+
+## [4.8.6] - 2025-10-13
+### 🐛 FIX: Streaming Modal Stays Open After Completion
+
+**Problem:** Streaming modal disappeared immediately when analysis completed, before user could see final result or saved explanation.
+
+**Root Cause:** `resetStreamingState()` called immediately after save, setting `streamingModelKey` to null and closing modal.
+
+**Solution:**
+- Removed immediate `resetStreamingState()` call from `handleStreamingComplete()`
+- Modal now stays open when status="completed", showing "Close" button
+- User can review final streaming output before manually closing
+- `resetStreamingState()` only called when user clicks "Close" button
+
+**Benefits:**
+- ✅ User sees completed streaming analysis result
+- ✅ Explanation saves and appears in list while modal still open
+- ✅ User controls when to dismiss the modal
+- ✅ Better UX - no jarring disappearance
+
+**Files:** `client/src/hooks/useAnalysisResults.ts`
+
+---
+
+## [4.8.5] - 2025-10-13
+### ✨ UX: Smart Prompt Preview (Show Once Per Config)
+
+**Problem:** Preview modal appeared every time, tedious when testing multiple models with same prompt.
+
+**Solution:**
+- Preview shows only on **first run** for a given prompt configuration
+- Button changes: "Preview & Run" → "Run" after first confirmation
+- Resets automatically when prompt template/settings change
+
+**Impact:** Preserves safety on first run, removes friction for batch model testing.
+
+**Files:** `client/src/components/puzzle/ModelTable.tsx`
+
+---
+
+## [4.8.4] - 2025-10-13
+### 🔧 CRITICAL: OpenAI Streaming Event Field Access Fix
+
+**Problem:** Code accessed non-existent `content` field on streaming events, causing empty reasoning/text deltas.
+
+**Root Cause:** OpenAI SDK v5.16.0 uses different field names per event type:
+- `ResponseReasoningSummaryTextDeltaEvent` → `delta` (not `content`)
+- `ResponseReasoningSummaryPartAddedEvent` → `part.text` (not `content`)
+- `ResponseContentPartAddedEvent` → `part.text` (not `content`)
+
+**Solution:**
+- Fixed field access in `handleStreamingEvent()` to match SDK types
+- Added proper type imports and replaced `as any` casts
+- Added type guards for union type handling
+
+**Impact:** Real-time reasoning/content now streams correctly for GPT-5 models.
+
+**Files:** `server/services/openai.ts`
+
+---
+
+## [4.8.3] - 2025-10-13 12:35 AM
+### 🔧 OPENAI SERVICE COMPILATION FIXES
+
+**CRITICAL FIXES TO OPENAI SERVICE:**
+
+#### 1. **Fixed Corrupted OpenAI Service File**
+- **Problem**: `server/services/openai.ts` had corrupted syntax, missing method implementations, and TypeScript compilation errors
+- **Root Cause**: Previous edits introduced syntax errors, incomplete method definitions, and corrupted code blocks
+- **Solution**: 
+  - Fixed bracket/brace mismatches and malformed statements
+  - Implemented missing abstract methods (`parseProviderResponse`)
+  - Repaired corrupted code sections (lines 715-754)
+  - Added proper error handling and method signatures
+
+#### 2. **Corrected OpenAI Responses API Streaming Events**
+- **Problem**: Using incorrect event types (`response.reasoning.delta`, `response.output.delta`) that don't exist in OpenAI's API
+- **Solution**: Updated `handleStreamingEvent()` method to use correct event types:
+  - `response.reasoning_summary_part.added` - Accumulates reasoning parts in real-time
+  - `response.reasoning_summary_text.done` - Finalizes reasoning summary
+  - `response.content_part.added` - Handles text content deltas
+- **Impact**: Real-time reasoning display now works correctly for GPT-5 models
+
+#### 3. **Fixed Method Ordering and Dependencies**
+- **Problem**: `normalizeOpenAIResponse()` method was defined after being called
+- **Solution**: Moved method definition before `analyzePuzzleWithStreaming()` method
+- **Impact**: Eliminates "method does not exist" TypeScript errors
+
+#### 4. **Enhanced Response Parsing**
+- **Added**: Complete `parseProviderResponse()` implementation with proper return types
+- **Added**: `callResponsesAPI()` method for HTTP calls to OpenAI Responses API
+- **Fixed**: Token usage extraction and reasoning capture logic
+- **Impact**: OpenAI service now properly handles both streaming and non-streaming responses
+
+#### 5. **Improved Type Safety**
+- **Fixed**: Implicit `any` types in method parameters
+- **Added**: Proper TypeScript type annotations throughout
+- **Impact**: Better IDE support and compile-time error detection
+
+**Files Modified:**
+- `server/services/openai.ts` - Complete overhaul and fixes
+
+**Impact**: OpenAI service now compiles successfully and handles streaming puzzle analysis correctly. Real-time reasoning feedback works as intended.
+
+**Author**: Cascade using DeepSeek V3.2 Exp
+**Date**: 2025-10-13
+
+---
+
+## [4.8.2] - 2025-10-12 11:20 PM
+### 🔧 HEURISTIC ARC SOLVER INTEGRATION
+
+**NEW INTERNAL SOLVER ADDED:**
+
+#### Heuristic Solver Package (`solver/heuristic/`)
+**Modular Python package with SRP (Single Responsibility Principle) design:**
+
+- **`grids.py`** - Grid operations and utilities (trim, rotate, flip, color mapping, connected components)
+- **`prims.py`** - Parameterized transform primitives (geometry, object ops, learned color mappings)
+- **`program.py`** - Program search and composition logic (single → composition → fallback strategy)
+- **`cli.py`** - JSON contract interface for backend integration
+
+**Key Features:**
+- **Learning Strategy**: Learns transformations from training examples using primitive operations
+- **Search Algorithm**: Single transforms → Two-step compositions → Trim+transform → Fallback
+- **Shape Handling**: Median target shape from training outputs with padding/trimming
+- **Performance**: Very fast (< 1s) using only numpy, no external API calls
+- **Integration**: `heuristic-solver` model key routes to internal Python execution
+
+**Backend Integration:**
+- **Service**: `HeuristicService` extends `BaseAIService` (same pattern as Grover/Saturn)
+- **Factory Routing**: `model.startsWith('heuristic-')` → `heuristicService`
+- **Database**: Full compatibility with existing schema and validation
+- **Error Handling**: Proper error propagation and fallback strategies
+
+**Files Added:**
+- `solver/heuristic/__init__.py` - Package initialization
+- `solver/heuristic/grids.py` - Grid manipulation utilities
+- `solver/heuristic/prims.py` - Transform primitive definitions
+- `solver/heuristic/program.py` - Learning and composition logic
+- `solver/heuristic/cli.py` - JSON contract interface
+- `solver/heuristic_solver.py` - Single-file version for easy deployment
+- `server/services/heuristic.ts` - Backend service integration
+- `docs/2025-10-12-plan-heuristic-solver.md` - Complete integration documentation
+
+**Usage:**
+```bash
+# Test individual puzzle
+python solver/heuristic_solver.py data/arc-heavy/50846271.json
+
+# Backend integration (saves to database)
+POST /api/puzzle/analyze/50846271/heuristic-solver
+```
+
+**Impact:** Provides fast, reliable baseline solver for obvious ARC patterns. Ready for jjosh library integration via `merge()`/`diff()` adapters.
+
+---
+
+## [4.8.1] - 2025-10-12 11:00 PM
+### 💰 COST CONTROL: Prompt Preview Confirmation + Prompt Order Fix
+
+**TWO CRITICAL IMPROVEMENTS:**
+
+#### 1. 🔍 Mandatory Prompt Preview Before Expensive API Calls
+**Problem:** Users could accidentally trigger expensive LLM API calls without seeing what prompt would be sent.
+
+**Solution - Two-Step Confirmation Flow:**
+- **"Preview & Run" buttons** replace direct "Run" buttons in ModelTable
+- **Confirmation modal** shows complete prompt before execution:
+  - System prompt (AI role/behavior)
+  - User prompt (puzzle data + instructions)
+  - Estimated token count and character count
+  - Template info and mode badges
+- **User must confirm** by clicking "Confirm & Run" button
+- **Can cancel** without any API call or charges
+- **Loading state** shown while analysis starts
+
+**Files Changed:**
+- `client/src/components/PromptPreviewModal.tsx` - Added confirmation mode with confirm/cancel buttons
+- `client/src/components/puzzle/ModelTable.tsx` - Integrated preview modal, changed Run → Preview & Run
+- `client/src/pages/PuzzleExaminer.tsx` - Pass prompt configuration props to ModelTable
+
+**Impact:** Prevents accidental expensive API calls. Users verify prompt correctness before spending money.
+
+#### 2. 📝 Fixed Prompt Order: Data Before Instructions
+**Problem:** Task descriptions came BEFORE puzzle data, making prompts confusing ("analyze the examples below" but examples came after).
+
+**Solution - Reordered User Prompts:**
+1. Training examples (data)
+2. Test cases (data)
+3. Emoji legend (if applicable)
+4. Task description (instructions)
+
+**Files Changed:**
+- `server/services/prompts/userTemplates.ts` - Moved task description to end in all prompt modes (solver, explanation, discussion, debate)
+
+**Impact:** Improved prompt clarity - AI sees the data first, then reads instructions on what to do with it.
+
+---
+
+## [4.8.0] - 2025-10-12 8:45 PM
+### 🎨 MAJOR UX OVERHAUL: Data-Dense Layout & Explicit Grid Labeling
+
+**THREE MAJOR IMPROVEMENTS:**
+
+#### 1. 📊 Grid Pair Redesign - Explicit INPUT/OUTPUT Labels
+**Problem:** Users couldn't clearly see which grid was input vs output, especially with multiple test outputs.
+
+**Solution - New `GridPair` Component:**
+- **Explicit labels:** "📥 INPUT" and "📤 OUTPUT" badges above each grid
+- **Split container design:** Vertical divider between input and output sections
+- **Multi-output support:** Displays "N outputs" badge and labels as "OUTPUT 1", "OUTPUT 2", etc.
+- **Color-coded sections:**
+  - Training pairs: Blue input bg, amber output bg, gray borders
+  - Test pairs: Blue input bg, green output bg, green borders with title bar
+- **Title bar:** Shows "Training Example N" or "Test N" with multi-output indicator
+
+**Impact:** Eliminates ambiguity about which grid transforms into which, especially critical for multi-output test cases.
+
+#### 2. 📋 Model Table Improvements - Sticky Header & Smart Sorting
+**Problem:** 
+- Scrolling long model lists lost header context
+- Models unsorted, newest models buried at bottom
+- "Runs" and "Streaming" columns had poor visual clarity
+
+**Solutions:**
+- **Sticky header:** Table header stays visible during scroll (max-height: 600px)
+- **Smart sorting:** Models sorted by release date (newest first), then alphabetically
+  - Models without release dates pushed to bottom
+  - GPT-4.1, o4-mini, latest models now appear at top
+- **Better column display:**
+  - "Runs" column: Shows "0" instead of "-", green badge for completed runs
+  - "Stream" column: Blue badge "Yes"/"LIVE" or "No" (was text-only)
+  - Header renamed "Streaming" → "Stream" for compactness
+
+**Impact:** Users immediately see newest models and header context never lost.
+
+#### 3. 🗜️ Data-Dense Compact Controls
+**From previous commits:**
+- Merged 3 CollapsibleCard sections into 2 compact panels
+- Prompt controls in single row: dropdown + toggles + preview button
+- Advanced parameters collapsible but always accessible
+- ~75% less vertical space while preserving all functionality
+
+**FILES CHANGED:**
+- `client/src/components/puzzle/GridPair.tsx` - **NEW** (119 lines)
+- `client/src/components/puzzle/PuzzleGridDisplay.tsx` - Refactored to use GridPair
+- `client/src/components/puzzle/ModelTable.tsx` - Sticky header, sorting, badge columns
+- `client/src/components/puzzle/CompactControls.tsx` - From earlier commit
+- `server/routes/models.ts` - Added releaseDate to API responses
+- `client/src/components/puzzle/PuzzleGrid.tsx` - Removed confusing highlight prop
+
+**TECHNICAL DETAILS:**
+- GridPair component handles single and multiple outputs
+- Responsive classification preserved (standard/wide/tall grid layouts)
+- DaisyUI badges and sticky positioning used throughout
+- No breaking changes to existing props or types
+
+**UX WINS:**
+✅ Input/output relationship crystal clear with explicit labels  
+✅ Multi-output test cases unambiguous with numbered outputs  
+✅ Model table header always visible when scrolling  
+✅ Newest models at top of list (2025-04 releases first)  
+✅ Cleaner badge-based column styling  
+✅ 75% reduction in control panel vertical space  
+
+---
+
+## [4.7.1] - 2025-10-12 6:00 PM
+### 🎯 CRITICAL FIX: Grover Live Streaming - Complete Terminal Experience
+
+**SEVERITY:** P0 - Complete absence of real-time Python execution feedback
+
+**ROOT CAUSE:**
+The fundamental issue was NOT in the streaming infrastructure (SSE, WebSocket, harness) - those all work perfectly. The problem was that **Python execution was a black hole**. Users couldn't see what was happening during the 30-60 second execution periods.
+
+**WHAT WAS MISSING:**
+1. ❌ Generated Python code from each iteration
+2. ❌ Real-time Python execution progress ("Executing program 1 of 3...")
+3. ❌ Individual program pass/fail status during execution
+4. ❌ Execution results and scores
+5. ❌ The winning program highlighted after each iteration
+6. ❌ Best program evolution across iterations
+
+**THE FIX - Terminal-Style Live Output:**
+
+**1. Python Executor Streaming (`grover_executor.py`)**
+- Added progress events DURING execution (not just at the end)
+- Emits `{"type": "log", "message": "⚙️ Executing program 1 of 3..."}` before each program
+- Emits success/failure status after each execution
+- Works for both training mode (multiple programs) and test mode (best program on test cases)
+- All events are NDJSON (one JSON object per line) for line-by-line streaming
+
+**2. Python Bridge Streaming (`pythonBridge.ts`)**
+- `runGroverExecution()` now uses `readline.createInterface()` like Saturn
+- Processes stdout line-by-line in real-time (not buffered)
+- Added optional `onLog` callback parameter to forward Python logs immediately
+- `runGroverTestExecution()` gets same streaming treatment
+- Python log events are forwarded to the callback as they arrive
+
+**3. Grover Service Display (`grover.ts`)**
+- Shows generated Python code from LLM with visual separators
+- Displays execution results table after Python runs
+- Highlights new best programs with trophy emoji 🏆
+- Python execution logs stream in real-time through `sendProgress` callback
+- All logs flow to both WebSocket (legacy) and SSE (streaming) paths
+
+**WHAT USERS NOW SEE:**
+```
+✅ LLM generates 3 Python programs → CODE DISPLAYED IMMEDIATELY
+✅ "⚙️ Executing program 1 of 3..." → LIVE PYTHON PROGRESS
+✅ "✅ Program 1 executed successfully" → INSTANT FEEDBACK
+✅ Execution results table → SCORES & ERRORS
+✅ 🏆 NEW BEST PROGRAM! → WINNING CODE HIGHLIGHTED
+✅ Iteration summary → PROGRESS TRACKING
+```
+
+**WHY THIS FIXES THE BLANK SCREEN:**
+- Frontend hooks (`useSaturnProgress`, `useGroverProgress`) already append logs to `logLines`
+- UI components already render `logLines` in terminal-style panels
+- The missing piece was **THE SOURCE** - Python wasn't emitting anything to stream
+- Now Python emits progress → Bridge streams it → Grover forwards it → SSE delivers it → UI displays it
+
+**FILES CHANGED:**
+- `server/python/grover_executor.py`: Added NDJSON log events during execution (lines 123-164)
+- `server/services/pythonBridge.ts`: Changed from buffering to line-by-line streaming (lines 246-330, 339-427)
+- `server/services/grover.ts`: Added code display, execution results, best program highlighting (lines 231-277, 523-527, 612-619)
+
+**TESTING INSTRUCTIONS:**
+1. Navigate to Grover Solver page
+2. Select a puzzle and click "Start Grover Analysis"
+3. Watch the terminal panel fill with:
+   - Iteration start messages
+   - Generated Python code blocks
+   - Real-time execution progress
+   - Success/failure status per program
+   - Execution results table
+   - Best program highlights
+4. Verify logs appear **AS THEY HAPPEN** (not all at the end)
+5. Verify you can see the evolution of code across iterations
+
+**AUTHOR:** Sonnet 4.5
+**PRIORITY:** P0 (Critical UX Failure)
+
+---
+
+## [4.7.0] - 2025-10-12 5:45 PM
+### ✨ FEATURE: Complete DaisyUI Conversion - Dependency Components (15/15)
+
+**SCOPE:** Converted all 15 assigned dependency components from shadcn/ui to DaisyUI
+
+**GROUP A - Gallery & Modal Components (7 files):**
+- TrainingPairCard.tsx: Card → DaisyUI card
+- TrainingPairGallery.tsx: Badge → DaisyUI badge  
+- TestCaseGallery.tsx: Badge → DaisyUI badge
+- PredictionCard.tsx: Badge → DaisyUI badge
+- TrainingPairZoomModal.tsx: Dialog → DaisyUI modal
+- TestCaseZoomModal.tsx: Dialog → DaisyUI modal
+- PromptPreviewModal.tsx: Dialog + Button → DaisyUI modal + button
+
+**GROUP B - Analysis Result Components (8 files):**
+- AnalysisResultMetrics.tsx: Badge → DaisyUI badge
+- AnalysisResultCard.tsx: Badge → DaisyUI badge
+- AnalysisResultHeader.tsx: Badge + Button → DaisyUI (30+ conversions)
+- AnalysisResultContent.tsx: Badge + Button → DaisyUI
+- AnalysisResultGrid.tsx: Badge + Button → DaisyUI
+- AnalysisResultActions.tsx: No changes needed
+- OriginalExplanationCard.tsx: Card + Badge + Button + Collapsible → DaisyUI
+- IterationCard.tsx: Card + Badge + Button + Collapsible → DaisyUI
+
+**CONVERSION PATTERNS:**
+- Card → `<div className="card">`
+- Badge → `<div className="badge badge-outline">`  
+- Button → `<button className="btn btn-ghost btn-sm">`
+- Dialog → `<dialog className="modal">` with modal-box
+- Collapsible → `<div className="collapse">` with collapse-open/close
+
+**BUILD STATUS:** ✓ Zero TypeScript errors, stable bundle (~882KB)
+
+**COMMITS:**
+- 7f82b3a3: Group A conversion (9/15 complete)
+- 31a51a15: Group B conversion (15/15 complete)
+
+**AUTHOR:** Cascade using Claude Sonnet 4.5
+
+---
+
+## [4.6.2] - 2025-10-12 1:00 PM
+### 🚨 CRITICAL FIX: Saturn Images Not Displaying (Third SSE Streaming Issue)
+
+**SEVERITY:** P0 - Images generating but not visible in UI
+
+**ROOT CAUSE:**
+Backend sent file paths `{ path: '/tmp/saturn_xyz.png' }` but frontend `SaturnImageGallery` component filters for images with `base64` field. Without base64 data, gallery displayed nothing despite Python successfully generating images.
+
+**THE FIX:**
+- Added `convertImagesToBase64()` helper to read image files and encode as base64
+- Updated all 4 phase completion broadcasts to convert images before sending
+- Phase 1, 2, 2.5, and 3 now stream base64-encoded images to frontend
+
+**FILES CHANGED:**
+- `server/services/saturnService.ts`: New helper + 4 conversion points
+
+**COMMITS:**
+- 299eb5cf: Image base64 conversion (complete solution)
+
+**TESTING:**
+Images should now appear in gallery as each Saturn phase completes.
+
+**AUTHOR:** Cascade using Claude Sonnet 4.5  
+**PRIORITY:** P0 (Feature Non-Functional)
+
+---
+
+## [4.6.1] - 2025-10-12 11:30 AM
+### 🚨 CRITICAL FIX: SSE Streaming Was Completely Broken
+
+**SEVERITY:** P0 - Total SSE streaming failure for Saturn and Grover
+
+**ROOT CAUSE:**
+Saturn and Grover services never implemented `analyzePuzzleWithStreaming()` override.
+When SSE path called this method, BaseAIService threw "does not support streaming" error.
+Error was silently caught, resulting in blank UI with zero user feedback.
+
+**SYMPTOMS:**
+- User clicks "Start Analysis" → nothing happens
+- No logs appear in terminal panel
+- No images populate in gallery
+- No progress indicators update
+- No error messages shown
+
+**WHY THIS HAPPENED:**
+1. `analyzePuzzleWithModel()` already had streaming logic via `serviceOpts.stream` harness
+2. Assumed this would be called, but SSE uses different entry point
+3. `puzzleAnalysisService.analyzePuzzleStreaming()` → `aiService.analyzePuzzleWithStreaming()`
+4. No override = base class throws error
+5. Error handling swallowed exception → silent failure
+
+**FIXES:**
+- **server/services/saturnService.ts**: Added `analyzePuzzleWithStreaming()` (lines 41-65)
+  - Delegates to `analyzePuzzleWithModel()` with same parameters
+  - Since model method has all streaming logic, this is pure routing
+- **server/services/grover.ts**: Added `analyzePuzzleWithStreaming()` (lines 30-54)
+  - Same delegation pattern
+- **client/src/hooks/useSaturnProgress.ts**: Enhanced SSE event handlers
+  - `stream.init`: Populate logs with session info
+  - `stream.status`: Append messages to logs, add images to gallery
+  - `stream.chunk`: Split text by newlines, add to logs
+  - `stream.error`: Add error messages to logs
+- **server/services/saturnService.ts**: Enhanced `sendProgress()` helper
+  - Now includes images, step, totalSteps, progress in SSE events
+  - Previously only sent phase/message to SSE
+
+**TESTING REQUIRED:**
+- [ ] Navigate to Saturn page
+- [ ] Click "Start Analysis"
+- [ ] Verify logs appear immediately with session info
+- [ ] Verify phase messages stream in real-time
+- [ ] Verify images populate as phases complete
+- [ ] Verify progress bar and step counter update
+
+**COMMITS:**
+- 096c68c5: Frontend log population (incomplete - backend still broken)
+- 794a8a48: Backend routing fix (complete solution)
+
+**AUTHOR:** Cascade using Claude Sonnet 4.5  
+**PRIORITY:** P0 (Complete Feature Failure)
+
+---
+
 ## [4.6.0] - 2025-10-12 2:00 AM
 ### 🔧 SATURN & GROVER PRODUCTION FIXES COMPLETE
 
@@ -25,9 +610,11 @@
 - Non-streaming mode unaffected
 - Zero breaking changes
 
-**FRONTEND TODO:**
-- Add cancel() functions to useGroverProgress.ts and useSaturnProgress.ts
-- Add cancel buttons to GroverSolver.tsx and SaturnVisualSolver.tsx
+**FRONTEND COMPLETE:**
+- ✅ Added cancel() function to useSaturnProgress.ts (lines 341-363)
+- ✅ Added cancel() function to useGroverProgress.ts (lines 384-404)
+- ✅ Added cancel button to SaturnVisualSolver.tsx (conditional render)
+- ✅ Added cancel button to GroverSolver.tsx (conditional render)
 
 **DOCUMENTATION:**
 - Created: `docs/2025-10-12-Saturn-Grover-Fixes-Complete.md`

@@ -1,26 +1,18 @@
 /**
  * PuzzleDBViewer.tsx
  * 
- * @author Cascade, Claude (redesigned)
+ * @author Cascade using Claude Sonnet 4.5
+ * @date 2025-10-12
  * @description Individual Puzzle Database Viewer showing explanation counts and binary accuracy.
  * Displays puzzle cards with DB record counts to identify difficult puzzles needing more analysis.
+ * SRP/DRY check: Pass - Single responsibility for database viewing and puzzle analysis
+ * DaisyUI: Pass - Converted to pure DaisyUI components
  */
 
 import React, { useState } from 'react';
 import { Link } from 'wouter';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Database, Filter, Grid, AlertTriangle, CheckCircle, XCircle, ChevronDown, ChevronUp, Copy, BarChart3, Loader2, Target, TrendingUp, TrendingDown, DollarSign, Clock, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useLocation } from 'wouter';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Import puzzle DB hooks
 import { usePuzzleDBStats, PuzzleDBStats, PuzzlePerformanceData } from '@/hooks/usePuzzleDBStats';
@@ -350,75 +342,74 @@ export default function PuzzleDBViewer() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Database className="h-6 w-6 text-blue-600" />
+            <Database className="h-6 w-6 text-primary" />
             Puzzle Database Viewer
           </h1>
-          <p className="text-gray-600">
+          <p className="text-base-content/70">
             Individual puzzles with DB record counts and binary accuracy - identify difficult puzzles
           </p>
         </div>
         
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="flex items-center gap-1">
+          <div className="badge badge-outline gap-1">
             <Grid className="h-3 w-3" />
             {filteredPuzzles.length} / {puzzles?.length || 0} Puzzles
-          </Badge>
+          </div>
           {puzzles && puzzles.length > 0 && (
-            <Badge variant="secondary" className="text-xs">
+            <div className="badge badge-secondary text-xs">
               All {puzzles.length} from 5 datasets loaded
-            </Badge>
+            </div>
           )}
           {isLoading && (
-            <Badge variant="outline" className="text-blue-600">
+            <div className="badge badge-outline badge-primary">
               Loading...
-            </Badge>
+            </div>
           )}
         </div>
       </div>
 
       {/* Multi-Puzzle Analysis Section */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-blue-600" />
+      <div className="card bg-info/10 border border-info/30 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title text-lg">
+            <BarChart3 className="h-5 w-5" />
             Analyze Specific Puzzles
-          </CardTitle>
-          <p className="text-sm text-gray-600">
+          </h2>
+          <p className="text-sm text-base-content/70">
             Enter puzzle IDs to see difficulty cards and comprehensive statistics
           </p>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          <div className="space-y-3">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <Label htmlFor="puzzleListInput" className="text-sm font-medium">Puzzle IDs</Label>
-              <Button
-                variant="outline"
-                size="sm"
+              <label htmlFor="puzzleListInput" className="label label-text text-sm font-medium">Puzzle IDs</label>
+              <button
                 onClick={copyExamplePuzzleList}
-                className="flex items-center gap-1 h-7 px-2"
+                className="btn btn-outline btn-sm gap-1 h-7 px-2"
               >
                 <Copy className="h-3 w-3" />
                 Example
-              </Button>
+              </button>
             </div>
-            <Textarea
+            <textarea
               id="puzzleListInput"
               value={puzzleListInput}
               onChange={(e) => setPuzzleListInput(e.target.value)}
-              placeholder="017c7c7b, 19bb5feb, 1a2e2828&#10;Or one per line:&#10;017c7c7b&#10;19bb5feb"
-              className="font-mono text-sm h-20"
+              placeholder="017c7c7b, 19bb5feb, 1a2e2828
+Or one per line:
+017c7c7b
+19bb5feb"
+              className="textarea textarea-bordered w-full font-mono text-sm h-20"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-base-content/60 mt-1">
               Comma, space, or newline separated puzzle IDs
             </p>
           </div>
 
           <div className="flex gap-2">
-            <Button
+            <button
               onClick={handleAnalyzePuzzleList}
               disabled={!puzzleListInput.trim() || isAnalyzing}
-              className="flex-1"
-              size="sm"
+              className="btn btn-primary btn-sm flex-1"
             >
               {isAnalyzing ? (
                 <>
@@ -431,43 +422,41 @@ export default function PuzzleDBViewer() {
                   Analyze Puzzles
                 </>
               )}
-            </Button>
+            </button>
             {selectedPuzzleIds.length > 0 && (
-              <Button
+              <button
                 onClick={clearAnalysis}
-                variant="outline"
-                size="sm"
+                className="btn btn-outline btn-sm"
               >
                 <X className="h-4 w-4 mr-2" />
                 Clear
-              </Button>
+              </button>
             )}
           </div>
 
           {/* Analysis Error */}
           {analysisError && (
-            <Alert className="border-red-200 bg-red-50">
-              <XCircle className="h-4 w-4 text-red-600" />
-              <AlertDescription className="text-sm text-red-700">
+            <div role="alert" className="alert alert-error">
+              <XCircle className="h-4 w-4" />
+              <span className="text-sm">
                 Error: {analysisErrorDetails?.message || 'Failed to analyze puzzles'}
-              </AlertDescription>
-            </Alert>
+              </span>
+            </div>
           )}
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </div>
 
       {/* Aggregate Statistics Dashboard (shown when puzzles are selected) */}
       {aggregateStats && (
         <>
           {/* Aggregate Overview */}
-          <Card className="border-green-200 bg-green-50">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Target className="h-5 w-5 text-green-600" />
+          <div className="card bg-success/10 border border-success/30 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title text-lg">
+                <Target className="h-5 w-5 text-success" />
                 Aggregate Statistics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-700">Total Puzzles</p>
@@ -502,18 +491,16 @@ export default function PuzzleDBViewer() {
                   <p className="text-2xl font-bold text-gray-900">{Object.keys(aggregateStats.datasets).length}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Difficulty Distribution */}
-          <Card className="border-purple-200 bg-purple-50">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Grid className="h-5 w-5 text-purple-600" />
+          <div className="card bg-secondary/10 border border-secondary/30 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title text-lg">
+                <Grid className="h-5 w-5 text-secondary" />
                 Difficulty Distribution
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-red-700">Dangerous</p>
@@ -538,32 +525,30 @@ export default function PuzzleDBViewer() {
               </div>
 
               {/* Dataset Distribution */}
-              <div className="mt-4 pt-4 border-t border-purple-200">
-                <p className="text-sm font-medium text-gray-700 mb-2">Dataset Distribution</p>
+              <div className="mt-4 pt-4 border-t border-secondary/20">
+                <p className="text-sm font-medium mb-2">Dataset Distribution</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(aggregateStats.datasets).map(([dataset, count]) => (
-                    <Badge key={dataset} variant="outline" className="text-sm">
+                    <div key={dataset} className="badge badge-outline text-sm">
                       {dataset}: {count}
-                    </Badge>
+                    </div>
                   ))}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Model×Puzzle Matrix */}
           {puzzleAnalysisData && (
-            <Card className="border-indigo-200 bg-indigo-50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Database className="h-5 w-5 text-indigo-600" />
+            <div className="card bg-primary/10 border border-primary/30 shadow-xl">
+              <div className="card-body">
+                <h2 className="card-title text-lg">
+                  <Database className="h-5 w-5 text-primary" />
                   Model Performance Matrix
-                </CardTitle>
-                <p className="text-sm text-gray-600">
+                </h2>
+                <p className="text-sm text-base-content/70">
                   ✅ = Correct, ❌ = Incorrect, ⏳ = Not Attempted
                 </p>
-              </CardHeader>
-              <CardContent>
                 <div className="mb-4 grid grid-cols-3 gap-2">
                   <div className="bg-green-100 p-2 rounded">
                     <div className="text-xl font-bold text-green-700">{puzzleAnalysisData.summary.perfectModels}</div>
@@ -609,19 +594,17 @@ export default function PuzzleDBViewer() {
                     </tbody>
                   </table>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Comparative Highlights */}
-          <Card className="border-yellow-200 bg-yellow-50">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-yellow-600" />
+          <div className="card bg-warning/10 border border-warning/30 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title text-lg">
+                <TrendingUp className="h-5 w-5 text-warning" />
                 Comparative Highlights
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {/* Hardest Puzzle */}
                 <div className="bg-white p-3 rounded border border-red-200">
@@ -630,81 +613,81 @@ export default function PuzzleDBViewer() {
                     <p className="text-sm font-semibold text-red-700">Hardest Puzzle</p>
                   </div>
                   <Link href={`/puzzle/${aggregateStats.highlights.hardest.id}`}>
-                    <Badge variant="outline" className="font-mono cursor-pointer hover:bg-gray-100">
+                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
                       {aggregateStats.highlights.hardest.id}
-                    </Badge>
+                    </div>
                   </Link>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-base-content/60 mt-1">
                     Accuracy: {Math.round(aggregateStats.highlights.hardest.performanceData.avgAccuracy * 100)}%
                   </p>
                 </div>
 
                 {/* Easiest Puzzle */}
-                <div className="bg-white p-3 rounded border border-green-200">
+                <div className="bg-base-100 p-3 rounded border border-success">
                   <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                    <p className="text-sm font-semibold text-green-700">Easiest Puzzle</p>
+                    <TrendingUp className="h-4 w-4 text-success" />
+                    <p className="text-sm font-semibold text-success">Easiest Puzzle</p>
                   </div>
                   <Link href={`/puzzle/${aggregateStats.highlights.easiest.id}`}>
-                    <Badge variant="outline" className="font-mono cursor-pointer hover:bg-gray-100">
+                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
                       {aggregateStats.highlights.easiest.id}
-                    </Badge>
+                    </div>
                   </Link>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-base-content/60 mt-1">
                     Accuracy: {Math.round(aggregateStats.highlights.easiest.performanceData.avgAccuracy * 100)}%
                   </p>
                 </div>
 
                 {/* Most Expensive */}
-                <div className="bg-white p-3 rounded border border-purple-200">
+                <div className="bg-base-100 p-3 rounded border border-secondary">
                   <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="h-4 w-4 text-purple-600" />
-                    <p className="text-sm font-semibold text-purple-700">Most Expensive</p>
+                    <DollarSign className="h-4 w-4 text-secondary" />
+                    <p className="text-sm font-semibold text-secondary">Most Expensive</p>
                   </div>
                   <Link href={`/puzzle/${aggregateStats.highlights.mostExpensive.id}`}>
-                    <Badge variant="outline" className="font-mono cursor-pointer hover:bg-gray-100">
+                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
                       {aggregateStats.highlights.mostExpensive.id}
-                    </Badge>
+                    </div>
                   </Link>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-base-content/60 mt-1">
                     Cost: {formatCurrency((aggregateStats.highlights.mostExpensive.performanceData.avgCost || 0) * aggregateStats.highlights.mostExpensive.performanceData.totalExplanations)}
                   </p>
                 </div>
 
                 {/* Most Dangerous */}
-                <div className="bg-white p-3 rounded border border-red-200">
+                <div className="bg-base-100 p-3 rounded border border-error">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <p className="text-sm font-semibold text-red-700">Most Dangerous</p>
+                    <AlertTriangle className="h-4 w-4 text-error" />
+                    <p className="text-sm font-semibold text-error">Most Dangerous</p>
                   </div>
                   <Link href={`/puzzle/${aggregateStats.highlights.mostDangerous.id}`}>
-                    <Badge variant="outline" className="font-mono cursor-pointer hover:bg-gray-100">
+                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
                       {aggregateStats.highlights.mostDangerous.id}
-                    </Badge>
+                    </div>
                   </Link>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-base-content/60 mt-1">
                     Confidence-Accuracy Gap: {Math.round(aggregateStats.highlights.mostDangerous.performanceData.avgConfidence - (aggregateStats.highlights.mostDangerous.performanceData.avgAccuracy * 100))}%
                   </p>
                 </div>
 
                 {/* Most Humble */}
-                <div className="bg-white p-3 rounded border border-blue-200">
+                <div className="bg-base-100 p-3 rounded border border-info">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-4 w-4 text-blue-600" />
-                    <p className="text-sm font-semibold text-blue-700">Most Humble</p>
+                    <CheckCircle className="h-4 w-4 text-info" />
+                    <p className="text-sm font-semibold text-info">Most Humble</p>
                   </div>
                   <Link href={`/puzzle/${aggregateStats.highlights.mostHumble.id}`}>
-                    <Badge variant="outline" className="font-mono cursor-pointer hover:bg-gray-100">
+                    <div className="badge badge-outline font-mono cursor-pointer hover:bg-base-200">
                       {aggregateStats.highlights.mostHumble.id}
-                    </Badge>
+                    </div>
                   </Link>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-base-content/60 mt-1">
                     Confidence: {Math.round(aggregateStats.highlights.mostHumble.performanceData.avgConfidence)}%
                   </p>
                 </div>
 
                 {/* Fastest */}
-                <div className="bg-white p-3 rounded border border-green-200">
+                <div className="bg-base-100 p-3 rounded border border-success">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="h-4 w-4 text-green-600" />
                     <p className="text-sm font-semibold text-green-700">Processing Time</p>
@@ -715,19 +698,17 @@ export default function PuzzleDBViewer() {
                   <p className="text-xs text-gray-600 mt-1">Average across selection</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Selected Puzzle Cards */}
-          <Card className="border-gray-300">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Grid className="h-5 w-5 text-gray-600" />
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title text-lg">
+                <Grid className="h-5 w-5" />
                 Selected Puzzle Difficulty Cards
-                <Badge variant="outline">{selectedPuzzles.length} puzzles</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+                <div className="badge badge-outline">{selectedPuzzles.length} puzzles</div>
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {selectedPuzzles.map((puzzle) => {
                   const interestLevel = getPuzzleInterestLevel(puzzle.performanceData);
@@ -736,27 +717,30 @@ export default function PuzzleDBViewer() {
                   const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
                   
                   return (
-                    <Card key={puzzle.id} className={`hover:shadow-md transition-shadow ${
-                      interestLevel.priority === 1 ? 'border-red-200 bg-red-50' :
-                      interestLevel.priority === 2 ? 'border-blue-200 bg-blue-50' :
-                      'border-gray-200'
+                    <div key={puzzle.id} className={`card shadow-lg hover:shadow-xl transition-shadow ${
+                      interestLevel.priority === 1 ? 'border border-error bg-error/5' :
+                      interestLevel.priority === 2 ? 'border border-info bg-info/5' :
+                      'bg-base-100'
                     }`}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-sm font-mono flex items-center gap-2">
+                      <div className="card-body p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="card-title text-sm font-mono flex items-center gap-2">
                             {puzzle.id}
-                            <Badge variant="outline" className="text-xs">
+                            <div className="badge badge-outline text-xs">
                               {puzzle.source}
-                            </Badge>
-                          </CardTitle>
-                          <Badge variant={interestLevel.variant} className="flex items-center gap-1">
+                            </div>
+                          </h3>
+                          <div className={`badge ${
+                            interestLevel.priority === 1 ? 'badge-error' :
+                            interestLevel.priority === 2 ? 'badge-info' :
+                            'badge-outline'
+                          } gap-1`}>
                             <InterestIcon className="h-3 w-3" />
                             {interestLevel.text}
-                          </Badge>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-600">{interestLevel.description}</p>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
+                        <p className="text-xs text-base-content/70">{interestLevel.description}</p>
+                        <div className="space-y-3">
                         {puzzle.performanceData.totalExplanations > 0 ? (
                           <>
                             <div className="grid grid-cols-2 gap-4 text-center">
@@ -809,36 +793,35 @@ export default function PuzzleDBViewer() {
                         )}
                         
                         <Link href={`/puzzle/${puzzle.id}`}>
-                          <Button variant="outline" size="sm" className="w-full">
+                          <button className="btn btn-outline btn-sm w-full">
                             {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
-                          </Button>
+                          </button>
                         </Link>
-                      </CardContent>
-                    </Card>
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </>
       )}
 
       {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">
             <Filter className="h-5 w-5" />
             Filters & Sorting
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
           {/* Search Bar */}
           <div className="mb-6">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
               <div className="w-full md:flex-1 space-y-2">
-                <Label htmlFor="puzzleSearch">Search by Puzzle ID</Label>
+                <label htmlFor="puzzleSearch" className="label label-text">Search by Puzzle ID</label>
                 <div className="relative">
-                  <Input
+                  <input
                     id="puzzleSearch"
                     placeholder="Enter puzzle ID (e.g., 1ae2feb7)"
                     value={searchQuery}
@@ -846,7 +829,7 @@ export default function PuzzleDBViewer() {
                       setSearchQuery(e.target.value);
                       setSearchError(null);
                     }}
-                    className="pr-24"
+                    className="input input-bordered w-full"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         handleSearch();
@@ -855,100 +838,100 @@ export default function PuzzleDBViewer() {
                   />
                 </div>
                 {searchError && (
-                  <p className="text-sm text-red-500">{searchError}</p>
+                  <p className="text-sm text-error">{searchError}</p>
                 )}
               </div>
-              <Button 
+              <button 
                 onClick={handleSearch}
-                className="min-w-[120px]"
+                className="btn btn-primary min-w-[120px]"
               >
                 Search
-              </Button>
+              </button>
             </div>
           </div>
           
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center space-x-2">
-              <label htmlFor="sort-by" className="text-sm font-medium">Sort by:</label>
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dangerous">Dangerous</SelectItem>
-                  <SelectItem value="humble">Humble</SelectItem>
-                  <SelectItem value="research">Research</SelectItem>
-                  <SelectItem value="unexplored">Unexplored</SelectItem>
-                  <SelectItem value="accuracy">Accuracy (Low to High)</SelectItem>
-                  <SelectItem value="confidence">Confidence</SelectItem>
-                </SelectContent>
-              </Select>
+              <label htmlFor="sort-by" className="label label-text text-sm font-medium">Sort by:</label>
+              <select 
+                id="sort-by"
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="select select-bordered w-40"
+              >
+                <option value="dangerous">Dangerous</option>
+                <option value="humble">Humble</option>
+                <option value="research">Research</option>
+                <option value="unexplored">Unexplored</option>
+                <option value="accuracy">Accuracy (Low to High)</option>
+                <option value="confidence">Confidence</option>
+              </select>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="zero-only" 
-                checked={showZeroOnly} 
-                onCheckedChange={(checked) => setShowZeroOnly(checked === true)}
-              />
-              <label htmlFor="zero-only" className="text-sm font-medium cursor-pointer">
-                Show only UNEXPLORED puzzles (0 explanations)
+            <div className="form-control">
+              <label className="label cursor-pointer gap-2">
+                <input 
+                  type="checkbox"
+                  id="zero-only" 
+                  checked={showZeroOnly} 
+                  onChange={(e) => setShowZeroOnly(e.target.checked)}
+                  className="checkbox checkbox-primary"
+                />
+                <span className="label-text">Show only UNEXPLORED puzzles (0 explanations)</span>
+              </label>
+            </div>
+            
+            <div className="form-control">
+              <label className="label cursor-pointer gap-2">
+                <input 
+                  type="checkbox"
+                  id="dangerous-only" 
+                  checked={dangerousOnly} 
+                  onChange={(e) => setDangerousOnly(e.target.checked)}
+                  className="checkbox checkbox-error"
+                />
+                <span className="label-text">Show dangerous overconfident failures only</span>
               </label>
             </div>
             
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="dangerous-only" 
-                checked={dangerousOnly} 
-                onCheckedChange={(checked) => setDangerousOnly(checked === true)}
-              />
-              <label htmlFor="dangerous-only" className="text-sm font-medium cursor-pointer">
-                Show dangerous overconfident failures only
-              </label>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <label htmlFor="source-filter" className="text-sm font-medium">Dataset:</label>
-              <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Datasets</SelectItem>
-                  <SelectItem value="training">Training (400)</SelectItem>
-                  <SelectItem value="training2">Training2 (1000)</SelectItem>
-                  <SelectItem value="evaluation">Evaluation (400)</SelectItem>
-                  <SelectItem value="evaluation2">Evaluation2 (120)</SelectItem>
-                  <SelectItem value="arc-heavy">ARC-Heavy (300)</SelectItem>
-                  <SelectItem value="ConceptARC">ConceptARC</SelectItem>
-                </SelectContent>
-              </Select>
+              <label htmlFor="source-filter" className="label label-text text-sm font-medium">Dataset:</label>
+              <select 
+                id="source-filter"
+                value={sourceFilter} 
+                onChange={(e) => setSourceFilter(e.target.value)}
+                className="select select-bordered w-40"
+              >
+                <option value="all">All Datasets</option>
+                <option value="training">Training (400)</option>
+                <option value="training2">Training2 (1000)</option>
+                <option value="evaluation">Evaluation (400)</option>
+                <option value="evaluation2">Evaluation2 (120)</option>
+                <option value="arc-heavy">ARC-Heavy (300)</option>
+                <option value="ConceptARC">ConceptARC</option>
+              </select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Error State */}
       {error && (
-        <Card className="border-red-200">
-          <CardContent className="pt-6">
-            <div className="text-center text-red-600">
-              <p className="font-medium">Error loading puzzle data</p>
-              <p className="text-sm mt-1">{error.message}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div role="alert" className="alert alert-error">
+          <div className="text-center w-full">
+            <p className="font-medium">Error loading puzzle data</p>
+            <p className="text-sm mt-1">{error.message}</p>
+          </div>
+        </div>
       )}
 
       {/* Summary Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Database Overview</CardTitle>
-          <p className="text-sm text-gray-600">
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">Database Overview</h2>
+          <p className="text-sm text-base-content/70">
             Individual puzzle analysis attempts and binary accuracy statistics
           </p>
-        </CardHeader>
-        <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-700">Total Puzzles</p>
@@ -975,8 +958,8 @@ export default function PuzzleDBViewer() {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Puzzle Cards Grid */}
       {isLoading ? (
@@ -995,27 +978,30 @@ export default function PuzzleDBViewer() {
             const totalCost = puzzle.performanceData.avgCost ? puzzle.performanceData.avgCost * puzzle.performanceData.totalExplanations : 0;
             
             return (
-              <Card key={puzzle.id} className={`hover:shadow-md transition-shadow ${
-                interestLevel.priority === 1 ? 'border-red-200 bg-red-50' :
-                interestLevel.priority === 2 ? 'border-blue-200 bg-blue-50' :
-                'border-gray-200'
+              <div key={puzzle.id} className={`card shadow-lg hover:shadow-xl transition-shadow ${
+                interestLevel.priority === 1 ? 'border border-error bg-error/5' :
+                interestLevel.priority === 2 ? 'border border-info bg-info/5' :
+                'bg-base-100'
               }`}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-mono flex items-center gap-2">
+                <div className="card-body p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="card-title text-sm font-mono flex items-center gap-2">
                       {puzzle.id}
-                      <Badge variant="outline" className="text-xs">
+                      <div className="badge badge-outline text-xs">
                         {puzzle.source}
-                      </Badge>
-                    </CardTitle>
-                    <Badge variant={interestLevel.variant} className="flex items-center gap-1">
+                      </div>
+                    </h3>
+                    <div className={`badge ${
+                      interestLevel.priority === 1 ? 'badge-error' :
+                      interestLevel.priority === 2 ? 'badge-info' :
+                      'badge-outline'
+                    } gap-1`}>
                       <InterestIcon className="h-3 w-3" />
                       {interestLevel.text}
-                    </Badge>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-600">{interestLevel.description}</p>
-                </CardHeader>
-                <CardContent className="space-y-3">
+                  <p className="text-xs text-base-content/70">{interestLevel.description}</p>
+                  <div className="space-y-3">
                   {/* Key Metrics Display */}
                   {puzzle.performanceData.totalExplanations > 0 ? (
                     <>
@@ -1088,12 +1074,13 @@ export default function PuzzleDBViewer() {
                   
                   {/* Action Button */}
                   <Link href={`/puzzle/${puzzle.id}`}>
-                    <Button variant="outline" size="sm" className="w-full">
+                    <button className="btn btn-outline btn-sm w-full">
                       {puzzle.performanceData.totalExplanations === 0 ? 'Analyze First' : 'View Analysis'}
-                    </Button>
+                    </button>
                   </Link>
-                </CardContent>
-              </Card>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>

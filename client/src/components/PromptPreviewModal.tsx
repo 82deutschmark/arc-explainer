@@ -3,13 +3,11 @@
  * Modal component for previewing prompts that will be sent to AI models.
  * Uses the server-side /api/prompt-preview endpoint to get actual system and user prompts.
  * 
- * @author Claude Code with Sonnet 4
- * @date August 31, 2025
+ * @author Cascade using Claude Sonnet 4.5
+ * @date 2025-10-12T21:32:00Z
  */
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Copy, Check, Loader2 } from 'lucide-react';
 import { ARCTask } from '@shared/types';
 
@@ -31,6 +29,10 @@ interface PromptPreviewModalProps {
   promptId: string;
   customPrompt?: string;
   options?: PromptOptions;
+  // Confirmation mode - shows "Confirm & Run" button to execute action after preview
+  confirmMode?: boolean;
+  onConfirm?: () => void | Promise<void>;
+  confirmButtonText?: string;
 }
 
 interface PromptPreviewData {
@@ -48,12 +50,16 @@ export function PromptPreviewModal({
   taskId,
   promptId,
   customPrompt,
-  options = {}
+  options = {},
+  confirmMode = false,
+  onConfirm,
+  confirmButtonText = 'Confirm & Run'
 }: PromptPreviewModalProps) {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreviewData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   // Fetch prompt preview from server when modal opens or parameters change
   useEffect(() => {
@@ -115,26 +121,41 @@ export function PromptPreviewModal({
     }
   };
 
+  // Handle confirmation
+  const handleConfirm = async () => {
+    if (!onConfirm) return;
+
+    setIsConfirming(true);
+    try {
+      await onConfirm();
+      onClose(); // Close modal after successful confirmation
+    } catch (error) {
+      console.error('Confirmation failed:', error);
+      // Don't close modal if confirmation fails - let user retry or cancel
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setPromptPreview(null);
       setError(null);
       setCopiedSection(null);
+      setIsConfirming(false);
     }
   }, [isOpen]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle>
-            Prompt Preview - {promptId}
-            {promptPreview?.selectedTemplate?.emoji && (
-              <span className="ml-2">{promptPreview.selectedTemplate.emoji}</span>
-            )}
-          </DialogTitle>
-        </DialogHeader>
+    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
+      <div className="modal-box max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        <h3 className="font-bold text-lg mb-4">
+          Prompt Preview - {promptId}
+          {promptPreview?.selectedTemplate?.emoji && (
+            <span className="ml-2">{promptPreview.selectedTemplate.emoji}</span>
+          )}
+        </h3>
         
         <div className="flex-1 overflow-y-auto space-y-4">
           {isLoading && (
@@ -185,11 +206,9 @@ export function PromptPreviewModal({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-700">System Prompt</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <button
+                    className="btn btn-outline btn-sm h-8 px-2"
                     onClick={() => copyToClipboard(promptPreview.systemPrompt, 'system')}
-                    className="h-8 px-2"
                     disabled={!promptPreview.systemPrompt}
                   >
                     {copiedSection === 'system' ? (
@@ -197,7 +216,7 @@ export function PromptPreviewModal({
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
-                  </Button>
+                  </button>
                 </div>
                 <pre className="text-xs bg-gray-50 p-3 rounded border overflow-x-auto whitespace-pre-wrap min-h-[100px]">
                   {promptPreview.systemPrompt || '(No system prompt)'}
@@ -211,11 +230,9 @@ export function PromptPreviewModal({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-700">User Prompt</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <button
+                    className="btn btn-outline btn-sm h-8 px-2"
                     onClick={() => copyToClipboard(promptPreview.userPrompt, 'user')}
-                    className="h-8 px-2"
                     disabled={!promptPreview.userPrompt}
                   >
                     {copiedSection === 'user' ? (
@@ -223,7 +240,7 @@ export function PromptPreviewModal({
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
-                  </Button>
+                  </button>
                 </div>
                 <pre className="text-xs bg-gray-50 p-3 rounded border overflow-x-auto whitespace-pre-wrap min-h-[200px]">
                   {promptPreview.userPrompt || '(No user prompt)'}
@@ -250,11 +267,40 @@ export function PromptPreviewModal({
           )}
         </div>
 
-        <div className="flex justify-end pt-4 border-t">
-          <Button onClick={onClose}>Close</Button>
+        <div className="modal-action">
+          {confirmMode ? (
+            <>
+              <button
+                className="btn btn-ghost"
+                onClick={onClose}
+                disabled={isConfirming}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleConfirm}
+                disabled={isConfirming || !promptPreview || isLoading}
+              >
+                {isConfirming ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Starting...
+                  </>
+                ) : (
+                  confirmButtonText
+                )}
+              </button>
+            </>
+          ) : (
+            <button className="btn" onClick={onClose}>Close</button>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+      <form method="dialog" className="modal-backdrop">
+        <button onClick={onClose}>close</button>
+      </form>
+    </dialog>
   );
 }
 

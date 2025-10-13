@@ -13,11 +13,7 @@
 
 import React from 'react';
 import { useParams, Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, Rocket, Settings, Brain } from 'lucide-react';
+import { Loader2, ArrowLeft, Rocket, Settings, Brain, XCircle } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useGroverProgress } from '@/hooks/useGroverProgress';
 import GroverModelSelect, { type GroverModelKey } from '@/components/grover/GroverModelSelect';
@@ -25,14 +21,11 @@ import { IterationCard } from '@/components/grover/IterationCard';
 import { LiveActivityStream } from '@/components/grover/LiveActivityStream';
 import { SearchVisualization } from '@/components/grover/SearchVisualization';
 import { CollapsibleCard } from '@/components/ui/collapsible-card';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function GroverSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
-  const { state, start, sessionId } = useGroverProgress(taskId);
+  const { state, start, cancel, sessionId } = useGroverProgress(taskId);
   const [model, setModel] = React.useState<GroverModelKey>('grover-gpt-5-nano');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const [temperature, setTemperature] = React.useState(0.2);
@@ -73,9 +66,9 @@ export default function GroverSolver() {
   if (!taskId) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <Alert>
-          <AlertDescription>Invalid puzzle ID</AlertDescription>
-        </Alert>
+        <div role="alert" className="alert alert-error">
+          <span>Invalid puzzle ID</span>
+        </div>
       </div>
     );
   }
@@ -96,11 +89,9 @@ export default function GroverSolver() {
   if (taskError || !task) {
     return (
       <div className="container mx-auto p-6 max-w-6xl">
-        <Alert>
-          <AlertDescription>
-            Failed to load puzzle: {taskError?.message || 'Puzzle not found'}
-          </AlertDescription>
-        </Alert>
+        <div role="alert" className="alert alert-error">
+          <span>Failed to load puzzle: {taskError?.message || 'Puzzle not found'}</span>
+        </div>
       </div>
     );
   }
@@ -128,14 +119,12 @@ export default function GroverSolver() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Link href={`/puzzle/${taskId}`}>
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="hover:bg-gray-100 hover:border-gray-400 shadow-sm transition-all hover:shadow-md"
+            <button 
+              className="btn btn-outline btn-sm hover:bg-gray-100 hover:border-gray-400 shadow-sm transition-all hover:shadow-md"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
               <span className="font-medium">Back</span>
-            </Button>
+            </button>
           </Link>
           <div>
             <div className="flex items-center gap-2">
@@ -157,15 +146,23 @@ export default function GroverSolver() {
         </div>
         <div className="flex items-center gap-3">
           <GroverModelSelect value={model} onChange={setModel} disabled={isRunning} />
-          <Button 
-            onClick={onStart} 
-            disabled={isRunning} 
-            size="lg"
-            className="flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed px-6"
-          >
-            <Rocket className="h-5 w-5" />
-            <span className="text-base">{isRunning ? 'Running…' : 'Start Analysis'}</span>
-          </Button>
+          {isRunning ? (
+            <button 
+              onClick={cancel}
+              className="btn btn-error btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6"
+            >
+              <XCircle className="h-5 w-5" />
+              Cancel
+            </button>
+          ) : (
+            <button 
+              onClick={onStart} 
+              className="btn btn-primary btn-lg flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              <Rocket className="h-5 w-5" />
+              Start Grover Search
+            </button>
+          )}
         </div>
       </div>
 
@@ -182,18 +179,19 @@ export default function GroverSolver() {
             {/* Temperature Control */}
             <div className="p-2 bg-gray-50 border border-gray-200 rounded">
               <div className="flex items-center gap-3">
-                <Label htmlFor="temperature" className="text-sm font-medium whitespace-nowrap">
+                <label htmlFor="temperature" className="label text-sm font-medium whitespace-nowrap">
                   Temperature: {temperature}
-                </Label>
+                </label>
                 <div className="flex-1 max-w-xs">
-                  <Slider
+                  <input
+                    type="range"
                     id="temperature"
-                    min={0.1}
-                    max={2.0}
-                    step={0.05}
-                    value={[temperature]}
-                    onValueChange={(value) => setTemperature(value[0])}
-                    className="w-full"
+                    min="0.1"
+                    max="2.0"
+                    step="0.05"
+                    value={temperature}
+                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                    className="range range-xs w-full"
                     disabled={isRunning}
                   />
                 </div>
@@ -214,65 +212,53 @@ export default function GroverSolver() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* Effort Control */}
                   <div>
-                    <Label htmlFor="reasoning-effort" className="text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-effort" className="label text-sm font-medium text-blue-700">
                       Effort Level
-                    </Label>
-                    <Select 
+                    </label>
+                    <select 
+                      className="select select-bordered w-full mt-1"
                       value={reasoningEffort} 
-                      onValueChange={(value) => setReasoningEffort(value as 'minimal' | 'low' | 'medium' | 'high')}
+                      onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
                       disabled={isRunning}
                     >
-                      <SelectTrigger className="w-full mt-1">
-                        <SelectValue placeholder="Select effort level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="minimal">Minimal</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="minimal">Minimal</option>
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
                   </div>
 
                   {/* Verbosity Control */}
                   <div>
-                    <Label htmlFor="reasoning-verbosity" className="text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-verbosity" className="label text-sm font-medium text-blue-700">
                       Verbosity
-                    </Label>
-                    <Select 
+                    </label>
+                    <select 
+                      className="select select-bordered w-full mt-1"
                       value={reasoningVerbosity} 
-                      onValueChange={(value) => setReasoningVerbosity(value as 'low' | 'medium' | 'high')}
+                      onChange={(e) => setReasoningVerbosity(e.target.value as 'low' | 'medium' | 'high')}
                       disabled={isRunning}
                     >
-                      <SelectTrigger className="w-full mt-1">
-                        <SelectValue placeholder="Select verbosity" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
                   </div>
 
                   {/* Summary Control */}
                   <div>
-                    <Label htmlFor="reasoning-summary" className="text-sm font-medium text-blue-700">
+                    <label htmlFor="reasoning-summary" className="label text-sm font-medium text-blue-700">
                       Summary
-                    </Label>
-                    <Select 
+                    </label>
+                    <select 
+                      className="select select-bordered w-full mt-1"
                       value={reasoningSummaryType} 
-                      onValueChange={(value) => setReasoningSummaryType(value as 'auto' | 'detailed')}
+                      onChange={(e) => setReasoningSummaryType(e.target.value as 'auto' | 'detailed')}
                       disabled={isRunning}
                     >
-                      <SelectTrigger className="w-full mt-1">
-                        <SelectValue placeholder="Select summary type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="auto">Auto</SelectItem>
-                        <SelectItem value="detailed">Detailed</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <option value="auto">Auto</option>
+                      <option value="detailed">Detailed</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -281,8 +267,8 @@ export default function GroverSolver() {
 
       {/* Visual Status Panel */}
       {isRunning && (
-        <Card className="mb-3 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300">
-          <CardContent className="p-4">
+        <div className="card mb-3 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 shadow">
+          <div className="card-body p-4">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="relative">
@@ -308,16 +294,16 @@ export default function GroverSolver() {
                     {!state.phase && 'Processing...'}
                   </h3>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <div className="badge badge-outline text-xs">
                       Iteration {state.iteration}/{state.totalIterations || 5}
-                    </Badge>
+                    </div>
                     {state.bestScore !== undefined && (
-                      <Badge className="bg-green-600 text-xs">
+                      <div className="badge bg-green-600 text-xs">
                         Best: {state.bestScore.toFixed(1)}/10
-                      </Badge>
+                      </div>
                     )}
                     {startTime && (
-                      <Badge variant="outline" className="text-xs">{getElapsedTime()}</Badge>
+                      <div className="badge badge-outline text-xs">{getElapsedTime()}</div>
                     )}
                   </div>
                 </div>
@@ -332,21 +318,21 @@ export default function GroverSolver() {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Compact Status Bar (when not running) */}
       {!isRunning && (
         <div className="mb-2 p-2 bg-gray-50 rounded border flex items-center justify-between text-xs">
           <div className="flex items-center gap-3">
-            <Badge variant={isDone ? 'default' : hasError ? 'destructive' : 'secondary'} className="text-xs py-0">
+            <div className={`badge text-xs py-0 ${isDone ? '' : hasError ? 'badge-error' : 'badge-secondary'}`}>
               {state.status}
-            </Badge>
+            </div>
             {state.bestScore !== undefined && (
-              <Badge variant="default" className="bg-green-600 text-xs py-0">
+              <div className="badge bg-green-600 text-xs py-0">
                 Best: {state.bestScore.toFixed(1)}/10
-              </Badge>
+              </div>
             )}
           </div>
         </div>
@@ -390,9 +376,9 @@ export default function GroverSolver() {
               maxHeight="500px"
             />
           ) : (
-            <Card className="h-32 flex items-center justify-center text-gray-400 text-sm">
+            <div className="card h-32 flex items-center justify-center text-gray-400 text-sm bg-base-100 shadow">
               Start analysis to see live progress
-            </Card>
+            </div>
           )}
         </div>
 

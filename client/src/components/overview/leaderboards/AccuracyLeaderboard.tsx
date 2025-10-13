@@ -20,9 +20,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertTriangle, Shield, ShieldAlert, AlertCircle, Info } from 'lucide-react';
 
 interface AccuracyStats {
@@ -72,14 +69,12 @@ export function AccuracyLeaderboard({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             {React.createElement(icon, { className: "h-5 w-5 text-red-600" })}
             {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
@@ -96,8 +91,8 @@ export function AccuracyLeaderboard({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -105,44 +100,59 @@ export function AccuracyLeaderboard({
   if (showingOverconfident) {
     if (!overconfidentModels || overconfidentModels.length === 0) {
       return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2">
               <Shield className="h-5 w-5 text-green-600" />
               ✅ No Overconfident Models
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
             <div className="text-center py-8 text-gray-500">
               No dangerous overconfident models found with 100+ attempts.
               <br />
               <span className="text-sm">This is good - models are being appropriately cautious.</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       );
     }
   } else {
     if (!accuracyStats || !accuracyStats.modelAccuracyRankings?.length) {
       return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <div className="card bg-base-100 shadow">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-orange-600" />
-              Models Needing Improvement
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+              No Data
+            </h2>
             <div className="text-center py-8 text-gray-500">
               No accuracy data available
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       );
     }
   }
 
-  // Helper functions for overconfident models view
+  // Helper functions for styling
+  const getOverconfidenceColor = (rate: number, isHighRisk: boolean) => {
+    if (isHighRisk) return 'bg-red-100 text-red-800';
+    if (rate > 70) return 'bg-orange-100 text-orange-800';
+    if (rate > 50) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 80) return 'bg-red-100 text-red-800';
+    if (confidence >= 60) return 'bg-orange-100 text-orange-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  const getAccuracyColor = (accuracy: number) => {
+    if (accuracy >= 70) return 'bg-green-100 text-green-800';
+    if (accuracy >= 50) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
+  };
+
   const getRiskIcon = (model: OverconfidentModel, index: number) => {
     if (model.isHighRisk) return <ShieldAlert className="h-4 w-4 text-red-600" />;
     if (model.overconfidenceRate > 70) return <AlertCircle className="h-4 w-4 text-orange-500" />;
@@ -151,43 +161,20 @@ export function AccuracyLeaderboard({
   };
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return <AlertTriangle className="h-4 w-4 text-red-500" />;
-    if (index === 1) return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-    if (index === 2) return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
     return <span className="w-4 h-4 flex items-center justify-center text-sm font-medium text-gray-500">#{index + 1}</span>;
   };
 
-  const getOverconfidenceColor = (rate: number, isHighRisk: boolean) => {
-    if (isHighRisk) return 'bg-red-100 text-red-800 border-red-300';
-    if (rate > 70) return 'bg-orange-100 text-orange-800 border-orange-200';
-    if (rate > 50) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    return 'bg-blue-100 text-blue-800 border-blue-200';
-  };
-
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 90) return 'bg-purple-100 text-purple-800 border-purple-200';
-    if (confidence >= 80) return 'bg-red-100 text-red-800 border-red-200';
-    if (confidence >= 70) return 'bg-orange-100 text-orange-800 border-orange-200';
-    return 'bg-gray-100 text-gray-800 border-gray-200';
-  };
-
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 80) return 'bg-green-100 text-green-800 border-green-200';
-    if (accuracy >= 60) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    if (accuracy >= 40) return 'bg-orange-100 text-orange-800 border-orange-200';
-    return 'bg-red-100 text-red-800 border-red-200';
-  };
   // Render overconfident models view
   if (showingOverconfident && overconfidentModels && overconfidentModels.length > 0) {
     const topModels = overconfidentModels.slice(0, 15);
 
     return (
-      <Card className="h-full flex flex-col">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <ShieldAlert className="h-5 w-5 text-red-600" />
             ⚠️ Overconfident Models
-          </CardTitle>
+          </h2>
           <div className="text-sm text-gray-600">
             Models with high confidence (≥80%) but poor accuracy (&lt;50%) - minimum 100 attempts
             {overconfidentModels.length === 0 && (
@@ -196,8 +183,8 @@ export function AccuracyLeaderboard({
               </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="card-body">
           <div className="space-y-2">
             {topModels.map((model, index) => (
               <div
@@ -226,88 +213,20 @@ export function AccuracyLeaderboard({
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-col sm:flex-row">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge
-                          variant="secondary"
-                          className={`text-xs font-medium cursor-help ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}
-                        >
-                          {model.overconfidenceRate.toFixed(1)}% overconf. incorrect
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">
-                          <strong>Overconfidence Rate</strong>
-                          <br />
-                          {model.overconfidenceRate.toFixed(1)}% of high-confidence predictions (≥80%) were incorrect
-                          <br />
-                          ({model.wrongOverconfidentPredictions} incorrect / {model.totalOverconfidentAttempts} overconfident)
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge
-                          variant="secondary"
-                          className={`text-xs font-medium cursor-help ${getConfidenceColor(model.avgConfidence)}`}
-                        >
-                          {model.avgConfidence.toFixed(0)}% conf
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">
-                          <strong>Average Confidence</strong>
-                          <br />
-                          This model's average self-reported confidence across all attempts
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge
-                          variant="secondary"
-                          className={`text-xs font-medium cursor-help ${getAccuracyColor(model.overallAccuracy)}`}
-                        >
-                          {model.overallAccuracy.toFixed(1)}% acc
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">
-                          <strong>Overall Accuracy</strong>
-                          <br />
-                          Percentage of puzzles solved correctly across all attempts
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-
+                  <div className={`badge text-xs font-medium ${getOverconfidenceColor(model.overconfidenceRate, model.isHighRisk)}`}>
+                    {model.overconfidenceRate.toFixed(1)}% overconf
+                  </div>
+                  <div className={`badge text-xs font-medium ${getConfidenceColor(model.avgConfidence)}`}>
+                    {model.avgConfidence.toFixed(0)}% conf
+                  </div>
+                  <div className={`badge text-xs font-medium ${getAccuracyColor(model.overallAccuracy)}`}>
+                    {model.overallAccuracy.toFixed(1)}% acc
+                  </div>
                   {model.totalAttempts < 10 && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
-                            <Info className="h-3 w-3 mr-1" />
-                            Low sample
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-sm">
-                            <strong>Low Sample Size Warning</strong>
-                            <br />
-                            Only {model.totalAttempts} attempts - statistics may not be reliable
-                            <br />
-                            Recommended: 10+ attempts for confidence
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
+                      <Info className="h-3 w-3 mr-1" />
+                      Low sample
+                    </div>
                   )}
                 </div>
               </div>
@@ -326,20 +245,20 @@ export function AccuracyLeaderboard({
             <div className="text-sm space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Total Overconfident Models:</span>
-                <Badge className="bg-orange-100 text-orange-800">
+                <div className="badge bg-orange-100 text-orange-800">
                   {overconfidentModels.length}
-                </Badge>
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">High Risk Models:</span>
-                <Badge className="bg-red-100 text-red-800">
+                <div className="badge bg-red-100 text-red-800">
                   {overconfidentModels.filter(m => m.isHighRisk).length}
-                </Badge>
+                </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -349,17 +268,17 @@ export function AccuracyLeaderboard({
   const topModels = accuracyStats.modelAccuracyRankings.slice(0, 15);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-orange-600" />
           Models Needing Improvement
-        </CardTitle>
+        </h2>
         <div className="text-sm text-gray-600">
           Models with lowest accuracy rates - {accuracyStats.totalSolverAttempts.toLocaleString()} solver attempts
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="card-body">
         <div className="space-y-2">
           {topModels.map((model, index) => (
             <div
@@ -381,48 +300,14 @@ export function AccuracyLeaderboard({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge
-                        variant="secondary"
-                        className={`text-xs font-medium cursor-help ${getAccuracyColor(model.accuracyPercentage)}`}
-                      >
-                        {model.accuracyPercentage.toFixed(1)}%
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-sm">
-                        <strong>Accuracy Rate</strong>
-                        <br />
-                        {model.correctPredictions} correct / {model.totalAttempts} total attempts
-                        <br />
-                        = {model.accuracyPercentage.toFixed(1)}% success rate
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
+                <div className={`badge text-xs font-medium ${getAccuracyColor(model.accuracyPercentage)}`}>
+                  {model.accuracyPercentage.toFixed(1)}%
+                </div>
                 {model.totalAttempts < 10 && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge variant="outline" className="text-xs bg-yellow-50 border-yellow-300 text-yellow-800 cursor-help">
-                          <Info className="h-3 w-3 mr-1" />
-                          Low sample
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">
-                          <strong>Low Sample Size Warning</strong>
-                          <br />
-                          Only {model.totalAttempts} attempts - statistics may not be reliable
-                          <br />
-                          Recommended: 10+ attempts for confidence
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <div className="badge badge-outline text-xs bg-yellow-50 border-yellow-300 text-yellow-800">
+                    <Info className="h-3 w-3 mr-1" />
+                    Low sample
+                  </div>
                 )}
               </div>
             </div>
@@ -440,12 +325,12 @@ export function AccuracyLeaderboard({
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Overall Accuracy:</span>
-            <Badge className={getAccuracyColor(accuracyStats.overallAccuracyPercentage)}>
+            <div className={`badge ${getAccuracyColor(accuracyStats.overallAccuracyPercentage)}`}>
               {accuracyStats.overallAccuracyPercentage.toFixed(1)}%
-            </Badge>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

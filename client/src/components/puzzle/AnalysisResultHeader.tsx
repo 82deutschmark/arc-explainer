@@ -2,19 +2,17 @@
  * AnalysisResultHeader.tsx
  *
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-03T23:35:00-04:00
+ * Date: 2025-10-12T21:48:00Z
  * PURPOSE: Displays header information for analysis result cards including model badges,
  * correctness status, timestamps, processing time, costs, and feedback summaries.
  * Handles ELO mode hiding and multi-test correctness determination.
  * ADDED: Copy Link button for deep linking to specific explanations via query params.
  * SRP/DRY check: Pass - Single responsibility (header display), reuses utility functions
- * shadcn/ui: Pass - Uses shadcn/ui Badge and Button components
+ * shadcn/ui: Pass - Converted to DaisyUI badge and button
  */
 
 import React from 'react';
 import { Link } from 'wouter';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ThumbsUp, ThumbsDown, MessageSquare, ChevronDown, ChevronUp, CheckCircle, XCircle, Clock, Database, AlertCircle, MessageSquareWarning, Link2, Brain } from 'lucide-react';
 import { AnalysisResultCardProps } from '@/types/puzzle';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
@@ -128,18 +126,17 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
         {eloMode ? 'AI Model' : (model?.name || modelKey)}
       </h5>
       {result.createdAt && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-gray-50 border-gray-200">
           <span className="text-xs text-gray-600">
             {new Date(result.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
           </span>
-        </Badge>
+        </div>
       )}
       
       {/* Status badge for optimistic updates */}
       {result.isOptimistic && result.status && (
-        <Badge 
-          variant="outline" 
-          className={`flex items-center gap-1 animate-pulse ${
+        <div 
+          className={`badge badge-outline flex items-center gap-1 animate-pulse ${
             result.status === 'analyzing' ? 'bg-blue-50 border-blue-200 text-blue-700' :
             result.status === 'saving' ? 'bg-orange-50 border-orange-200 text-orange-700' :
             result.status === 'completed' ? 'bg-green-50 border-green-200 text-green-700' :
@@ -157,7 +154,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
              result.status === 'error' ? 'ERROR' :
              'PROCESSING'}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.puzzleId && (
@@ -165,32 +162,29 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
       )}
 
       {isSaturnResult && typeof result.saturnSuccess === 'boolean' && (
-        <Badge 
-          variant="outline" 
-          className={`flex items-center gap-1 ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+        <div 
+          className={`badge badge-outline flex items-center gap-1 ${result.saturnSuccess ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
           {result.saturnSuccess ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
           <span className="text-xs font-medium">
             {result.saturnSuccess ? 'SOLVED' : 'Incorrect'}
           </span>
-        </Badge>
+        </div>
       )}
 
       {isGroverResult && result.iterationCount && (
-        <Badge 
-          variant="outline" 
-          className="flex items-center gap-1 bg-green-50 border-green-200 text-green-700">
+        <div 
+          className="badge badge-outline flex items-center gap-1 bg-green-50 border-green-200 text-green-700">
           <span className="text-xs">🔄</span>
           <span className="text-xs font-medium">
             GROVER: {result.iterationCount} iterations
           </span>
-        </Badge>
+        </div>
       )}
 
       {!eloMode && (result.isPredictionCorrect !== undefined || result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined) && (
         <>
-          <Badge
-            variant="outline"
-            className={`flex items-center gap-1 ${
+          <div
+            className={`badge badge-outline flex items-center gap-1 ${
               isCorrect ? 'bg-green-50 border-green-200 text-green-700' :
               hasPrediction ? 'bg-red-50 border-red-200 text-red-700' :
               'bg-yellow-50 border-yellow-200 text-yellow-700'
@@ -199,140 +193,132 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
             <span className="text-xs font-medium">
               {isCorrect ? 'CORRECT' : hasPrediction ? 'INCORRECT' : 'NOT FOUND'}
             </span>
-          </Badge>
+          </div>
 
           {/* Challenge badge - only show when incorrect */}
           {showChallengeBadge && (
             <Link href={`/debate/${result.puzzleId}`}>
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 cursor-pointer ml-auto transition-colors">
+              <div
+                className="badge badge-outline flex items-center gap-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 cursor-pointer ml-auto transition-colors">
                 <MessageSquareWarning className="h-3 w-3" />
                 <span className="text-xs font-medium">Get a second opinion!</span>
-              </Badge>
+              </div>
             </Link>
           )}
 
           {/* Refine This Analysis badge - only for eligible reasoning models */}
           {canRefineAnalysis(result) && (
             <Link href={`/discussion/${result.puzzleId}?select=${result.id}`}>
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700 hover:from-purple-100 hover:to-blue-100 cursor-pointer transition-all"
+              <div
+                className="badge badge-outline flex items-center gap-1 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700 hover:from-purple-100 hover:to-blue-100 cursor-pointer transition-all"
                 title="Progressive reasoning with server-side memory (30-day retention)">
                 <Brain className="h-3 w-3" />
                 <span className="text-xs font-medium">Refine This Analysis</span>
-              </Badge>
+              </div>
             </Link>
           )}
         </>
       )}
       
       {model?.releaseDate && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-blue-50 border-blue-200">
           <span className="text-xs text-blue-600">
             📅 {model.releaseDate}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.apiProcessingTimeMs && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-blue-50 border-blue-200">
           <span className="text-xs text-blue-600">
             {formatProcessingTimeDetailed(result.apiProcessingTimeMs)}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.estimatedCost && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-green-50 border-green-200">
           <span className="text-xs text-green-600">
             Cost: {formatCost(result.estimatedCost)}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.totalTokens && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-blue-50 border-blue-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-blue-50 border-blue-200">
           <span className="text-xs text-blue-600">
             {formatTokens(result.totalTokens)} tokens
           </span>
-        </Badge>
+        </div>
       )}
       
       {(result.temperature !== null && result.temperature !== undefined && model?.supportsTemperature) && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-gray-50 border-gray-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-gray-50 border-gray-200">
           <span className="text-xs text-gray-600">
             Temp: {result.temperature}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.reasoningEffort && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-purple-50 border-purple-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-purple-50 border-purple-200">
           <span className="text-xs text-purple-600">
             Effort: {result.reasoningEffort}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.reasoningVerbosity && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-indigo-50 border-indigo-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-indigo-50 border-indigo-200">
           <span className="text-xs text-indigo-600">
             Verbosity: {result.reasoningVerbosity}
           </span>
-        </Badge>
+        </div>
       )}
       
       {result.reasoningSummaryType && (
-        <Badge variant="outline" className="flex items-center gap-1 bg-cyan-50 border-cyan-200">
+        <div className="badge badge-outline flex items-center gap-1 bg-cyan-50 border-cyan-200">
           <span className="text-xs text-cyan-600">
             Summary: {result.reasoningSummaryType}
           </span>
-        </Badge>
+        </div>
       )}
       {(hasFeedback || feedbackSummary.total > 0) && (
         <div className="flex items-center gap-2 text-xs">
-          <Badge variant="outline" className="flex items-center gap-1 bg-green-50 border-green-200">
+          <div className="badge badge-outline flex items-center gap-1 bg-green-50 border-green-200">
             <ThumbsUp className="h-3 w-3 text-green-600" />
             {feedbackSummary.helpful || result.helpfulVotes || 0}
-          </Badge>
-          <Badge variant="outline" className="flex items-center gap-1 bg-red-50 border-red-200">
+          </div>
+          <div className="badge badge-outline flex items-center gap-1 bg-red-50 border-red-200">
             <ThumbsDown className="h-3 w-3 text-red-600" />
             {feedbackSummary.notHelpful || result.notHelpfulVotes || 0}
-          </Badge>
+          </div>
           {feedbackSummary.total > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
+              className="btn btn-ghost btn-sm h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
               onClick={() => setShowExistingFeedback(!showExistingFeedback)}
-              className="h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
             >
               <MessageSquare className="h-3 w-3 mr-1" />
               View feedback
-            </Button>
+            </button>
           )}
         </div>
       )}
 
       {result.id && result.puzzleId && !eloMode && (
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
+          className="btn btn-ghost btn-sm h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
           onClick={handleCopyLink}
-          className="h-auto p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
           title="Copy direct link to this explanation"
         >
           <Link2 className="h-3 w-3 mr-1" />
           Copy Link
-        </Button>
+        </button>
       )}
 
-      <Button
-        variant="ghost"
-        size="sm"
+      <button
+        className={`btn btn-ghost btn-sm h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ${!showChallengeBadge && !result.id ? 'ml-auto' : ''}`}
         onClick={() => setShowRawDb(!showRawDb)}
-        className={`h-auto p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 ${!showChallengeBadge && !result.id ? 'ml-auto' : ''}`}
         title="Show the raw explanation record from the database"
       >
         {showRawDb ? (
@@ -346,7 +332,7 @@ export const AnalysisResultHeader: React.FC<AnalysisResultHeaderProps> = ({
             Show raw DB record
           </>
         )}
-      </Button>
+      </button>
     </div>
   );
 };

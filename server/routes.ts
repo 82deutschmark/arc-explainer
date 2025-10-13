@@ -37,6 +37,7 @@ import metricsRouter from './routes/metricsRoutes.ts';
 import { errorHandler } from "./middleware/errorHandler";
 import { asyncHandler } from "./middleware/asyncHandler";
 import { validation } from "./middleware/validation";
+import { apiKeyAuth, optionalApiKeyAuth } from "./middleware/apiKeyAuth.js";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";
@@ -128,10 +129,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/prompts", asyncHandler(promptController.getAll));
   app.post("/api/prompt-preview", validation.required(['provider', 'taskId']), asyncHandler(promptController.preview));
   
-  // Explanation routes
+  // Explanation routes (require API key for contributions)
   app.get("/api/puzzle/:puzzleId/explanations", asyncHandler(explanationController.getAll));
   app.get("/api/puzzle/:puzzleId/explanation", asyncHandler(explanationController.getOne));
-  app.post("/api/puzzle/save-explained/:puzzleId", validation.explanationCreate, asyncHandler(explanationController.create));
+  app.post("/api/puzzle/save-explained/:puzzleId", apiKeyAuth, validation.explanationCreate, asyncHandler(explanationController.create));
 
   // Rebuttal chain routes
   app.get("/api/explanations/:id/chain", asyncHandler(explanationController.getRebuttalChain));

@@ -16,9 +16,6 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Shield, ShieldCheck, Clock, DollarSign } from 'lucide-react';
 
 interface TrustworthinessLeader {
@@ -71,14 +68,14 @@ export function TrustworthinessLeaderboard({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <Shield className="h-5 w-5 text-blue-600" />
             Trustworthiness Leaders
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
+        </div>
+        <div className="card-body">
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
@@ -95,26 +92,26 @@ export function TrustworthinessLeaderboard({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (!performanceStats || !performanceStats.trustworthinessLeaders?.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="card bg-base-100 shadow">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-2">
             <Shield className="h-5 w-5 text-blue-600" />
             Trustworthiness Leaders
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h2>
+        </div>
+        <div className="card-body">
           <div className="text-center py-8 text-gray-500">
             No trustworthiness data available
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -140,17 +137,17 @@ export function TrustworthinessLeaderboard({
   const allModels = performanceStats.trustworthinessLeaders;
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="card bg-base-100 shadow h-full">
+      <div className="card-body">
+        <h2 className="card-title flex items-center gap-2">
           <Shield className="h-5 w-5 text-blue-600" />
           🛡️ Trustworthiness Leaders
-        </CardTitle>
+        </h2>
         <div className="text-sm text-gray-600">
           Models ranked by how well their confidence predicts correctness.
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="card-body">
         <div className="space-y-2">
           {allModels.map((model, index) => {
             return (
@@ -180,29 +177,9 @@ export function TrustworthinessLeaderboard({
                   </div>
                 </div>
                 <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge
-                          variant="secondary"
-                          className={`text-xs font-medium cursor-help ${getTrustworthinessColor(model.avgTrustworthiness)}`}
-                        >
-                          {(model.avgTrustworthiness * 100).toFixed(1)}% trust
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm">
-                          <strong>Trustworthiness Score</strong>
-                          <br />
-                          Measures how well AI confidence predicts actual correctness
-                          <br />
-                          Higher = AI confidence more reliable
-                          <br />
-                          Score: {(model.avgTrustworthiness * 100).toFixed(1)}%
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <div className={`badge text-xs font-medium ${getTrustworthinessColor(model.avgTrustworthiness)}`}>
+                    {(model.avgTrustworthiness * 100).toFixed(1)}% trust
+                  </div>
                 </div>
               </div>
             );
@@ -212,12 +189,12 @@ export function TrustworthinessLeaderboard({
         <div className="mt-4 pt-3 border-t">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">Overall Trustworthiness:</span>
-            <Badge className={getTrustworthinessColor(performanceStats.overallTrustworthiness)}>
+            <div className={`badge ${getTrustworthinessColor(performanceStats.overallTrustworthiness)}`}>
               {(performanceStats.overallTrustworthiness * 100).toFixed(1)}%
-            </Badge>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -2,17 +2,16 @@
  * TestCaseZoomModal.tsx
  * 
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-11
+ * Date: 2025-10-12T21:30:00Z
  * PURPOSE: Full-screen modal for examining a test case in detail.
  * Displays larger grids with full dimensions visible.
  * Similar to TrainingPairZoomModal for consistency.
  * 
  * SRP/DRY check: Pass - Single responsibility: modal zoom view for one test case
- * shadcn/ui: Pass - Uses Dialog component
+ * shadcn/ui: Pass - Converted to DaisyUI modal
  */
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { ArrowRight } from 'lucide-react';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -47,11 +46,9 @@ export function TestCaseZoomModal({
     : 'Test Case - Detailed View';
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
+    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
+      <div className="modal-box max-w-5xl max-h-[90vh] overflow-y-auto">
+        <h3 className="font-bold text-lg mb-4">{title}</h3>
         
         <div className="flex items-center justify-center gap-8 p-4">
           <PuzzleGrid 
@@ -70,7 +67,14 @@ export function TestCaseZoomModal({
             emojiSet={emojiSet}
           />
         </div>
-      </DialogContent>
-    </Dialog>
+        
+        <div className="modal-action">
+          <button className="btn" onClick={onClose}>Close</button>
+        </div>
+      </div>
+      <form method="dialog" className="modal-backdrop">
+        <button onClick={onClose}>close</button>
+      </form>
+    </dialog>
   );
 }

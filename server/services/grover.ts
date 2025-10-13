@@ -27,6 +27,32 @@ export class GroverService extends BaseAIService {
     "grover-gpt-5-mini": "gpt-5-mini-2025-08-07"
   };
 
+  /**
+   * Override streaming method to route to analyzePuzzleWithModel which already handles streaming harness
+   */
+  async analyzePuzzleWithStreaming(
+    task: ARCTask,
+    modelKey: string,
+    taskId: string,
+    temperature: number = 0.2,
+    promptId?: string,
+    customPrompt?: string,
+    options?: PromptOptions,
+    serviceOpts: ServiceOptions = {}
+  ): Promise<AIResponse> {
+    // analyzePuzzleWithModel already handles streaming via serviceOpts.stream
+    return this.analyzePuzzleWithModel(
+      task,
+      modelKey,
+      taskId,
+      temperature,
+      promptId || "grover",
+      customPrompt,
+      options,
+      serviceOpts
+    );
+  }
+
   async analyzePuzzleWithModel(
     task: ARCTask,
     modelKey: string,
@@ -202,17 +228,63 @@ export class GroverService extends BaseAIService {
           programsExtracted: programs.map((p, idx) => ({ index: idx, code: p, lines: p.split('\n').length }))
         });
 
-        const executionResults = await this.executeProgramsSandbox(programs, task.train);
+        // Show the actual generated code to the user
+        for (let progIdx = 0; progIdx < programs.length; progIdx++) {
+          const code = programs[progIdx];
+          sendProgress({
+            phase: 'code_display',
+            iteration: i + 1,
+            message: `\n━━━ Program ${progIdx + 1}/${programs.length} (${code.split('\n').length} lines) ━━━\n${code}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
+          });
+        }
+
+        const executionResults = await this.executeProgramsSandbox(
+          programs,
+          task.train,
+          (logMessage: string) => {
+            // Forward Python execution logs to UI in real-time
+            sendProgress({
+              phase: 'python_execution',
+              iteration: i + 1,
+              message: logMessage
+            });
+          }
+        );
         sendProgress({ phase: 'execution', iteration: i + 1, message: `Executed ${programs.length} program(s) on ${task.train.length} training examples` });
 
         const graded = this.gradeExecutions(executionResults, task.train);
+
+        // Show execution results for each program
+        sendProgress({ phase: 'execution_results', iteration: i + 1, message: `\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃  EXECUTION RESULTS - Iteration ${i + 1}  ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛` });
+
+        for (let resultIdx = 0; resultIdx < graded.length; resultIdx++) {
+          const result = graded[resultIdx];
+          const status = result.error ? '❌ FAILED' : '✅ SUCCESS';
+          const scoreDisplay = result.error ? `Error: ${result.error}` : `Score: ${result.score.toFixed(1)}/10`;
+          sendProgress({
+            phase: 'program_result',
+            iteration: i + 1,
+            message: `  Program ${result.programIdx + 1}: ${status} - ${scoreDisplay}`
+          });
+        }
+
         const iterationBest = graded[0];
         if (iterationBest && iterationBest.score > bestScore) {
           bestScore = iterationBest.score;
           bestProgram = iterationBest.code;
           log(`New best score: ${bestScore.toFixed(1)}/10`);
+          sendProgress({
+            phase: 'new_best',
+            iteration: i + 1,
+            message: `\n🏆 NEW BEST PROGRAM! Score: ${bestScore.toFixed(1)}/10\n━━━ Best Code ━━━\n${bestProgram}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`
+          });
         } else if (iterationBest) {
           log(`Iteration best: ${iterationBest.score.toFixed(1)}/10 (current best: ${bestScore.toFixed(1)})`);
+          sendProgress({
+            phase: 'iteration_best',
+            iteration: i + 1,
+            message: `\n📊 Iteration ${i + 1} best: ${iterationBest.score.toFixed(1)}/10 (Overall best remains: ${bestScore.toFixed(1)}/10)\n`
+          });
         }
 
         iterations.push({ iteration: i, programs, executionResults: graded, best: iterationBest || { programIdx: -1, score: 0, code: "" }, timestamp: Date.now() });
@@ -448,9 +520,9 @@ def transform(grid):
     return programs;
   }
 
-  private async executeProgramsSandbox(programs: string[], trainingData: any[]): Promise<any[]> {
+  private async executeProgramsSandbox(programs: string[], trainingData: any[], onLog?: (message: string) => void): Promise<any[]> {
     const trainingInputs = trainingData.map(ex => ex.input);
-    const result = await pythonBridge.runGroverExecution(programs, trainingInputs);
+    const result = await pythonBridge.runGroverExecution(programs, trainingInputs, onLog);
     return result.results || [];
   }
 
@@ -537,7 +609,14 @@ Generate new programs that build on successful patterns and avoid failures.`;
       try {
         const testInputs = testExamples.map(ex => ex.input);
         logger.service(this.provider, `Executing best program on ${testExamples.length} test input(s)...`);
-        const executionResult = await pythonBridge.runGroverTestExecution(bestProgram, testInputs);
+        const executionResult = await pythonBridge.runGroverTestExecution(
+          bestProgram,
+          testInputs,
+          (logMessage: string) => {
+            // Forward test execution logs (no sendProgress here since we're in buildGroverResponse)
+            logger.service(this.provider, logMessage);
+          }
+        );
 
         if (executionResult.error) {
           logger.service(this.provider, `Test execution error: ${executionResult.error}`, 'warn');

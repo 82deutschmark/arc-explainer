@@ -2,17 +2,16 @@
  * TestCaseGallery.tsx
  * 
  * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-10-11
+ * Date: 2025-10-12T21:24:00Z
  * PURPOSE: Layout orchestration for displaying multiple test cases.
  * Handles adaptive layouts (horizontal for 1-2 tests, vertical for 3+),
  * adaptive sizing based on test count, and zoom modal state management.
  * 
  * SRP/DRY check: Pass - Single responsibility: orchestrate test case display
- * shadcn/ui: Pass - Uses Badge component
+ * shadcn/ui: Pass - Converted to DaisyUI badge
  */
 
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { TestCaseCard } from './TestCaseCard';
 import { TestCaseZoomModal } from './TestCaseZoomModal';
 import type { ARCExample } from '@shared/types';
@@ -62,9 +61,9 @@ export function TestCaseGallery({
       {showHeader && (
         <div className="flex items-center gap-2 mb-3">
           <h3 className="text-base font-semibold">Test Cases</h3>
-          <Badge variant="outline" className="text-xs">
+          <div className="badge badge-outline text-xs">
             {testCases.length} {testCases.length === 1 ? 'test' : 'tests'}
-          </Badge>
+          </div>
         </div>
       )}
 

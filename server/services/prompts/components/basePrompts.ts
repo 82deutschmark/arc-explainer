@@ -23,37 +23,63 @@
  * - Could extract mode configs to separate mode definition files
  * - Not urgent - current structure is maintainable
  */
-export const BASE_SYSTEM_PROMPT = `Use careful reasoning and think hard about your answer. It is ok if you are not sure, give an honest confidence score between 1 and 100, with 1 being not at all confident and 100 being totally certain about your answer.
-`;
-
 /**
- * Common ARC structure explanation - DRY compliance
- * Used across multiple task descriptions to maintain consistency
+ * REFACTORED: System prompt now contains ONLY AI role/behavior
+ * Task descriptions moved to user prompt per OpenAI Responses API best practices
  */
-const ARC_STRUCTURE = `Each puzzle has training examples (the examples to learn from). Analyze training examples, identify the transformation patterns`;
+export const BASE_SYSTEM_PROMPT = `You work methodically to determine rules and state them in simple terms even a child could understand.
+- Carefully analyze all training examples to identify transformation rules (ex: find shape, turn shape clockwise, replace color)
+- Apply logical reasoning to discover the underlying transformation that applies to all training examples
+- Provide an honest confidence score (1-100) based on your certainty in the correctness of the grid you output as your answer
+- Think step-by-step
+
+Output your analysis in the requested JSON format.`;
 
 /**
- * Common task patterns for different prompt types
- * NOTE: JSON formatting rules have been moved to jsonInstructions.ts for DRY compliance
+ * REFACTORED: Task descriptions now intended for USER prompts, not system prompts
+ * These explain the specific problem to solve using the puzzle data.  Should appear AFTER the puzzle grid.
  */
 export const TASK_DESCRIPTIONS = {
-  solver: `TASK: ${ARC_STRUCTURE}, and predict the correct output for the test case. Some puzzles have multiple test cases.`,
+  solver: `Task: Provide the correct output grid(s) for the test case(s). Briefly explain your logic in the JSON output as instructed`,
 
-  explanation: `TASK: ${ARC_STRUCTURE}, and explain the correct output for the test case. Some puzzles have multiple test cases.`,
+  explanation: `PROBLEM: Analyze the training examples to identify and explain the transformation pattern. Then predict and explain the correct output for the test case(s).
 
-  alienCommunication: `SPECIAL CONTEXT: This puzzle comes from alien visitors who communicate through spatial patterns. The user sees these puzzles as emoji symbols representing their communication attempt.
+Each puzzle shows you training examples (input → output transformations). Discover the rule, explain it clearly, and apply it to the test case.`,
 
-TASK: Explain the transformation pattern AND interpret what the aliens might be trying to communicate.`,
+  alienCommunication: `SPECIAL CONTEXT: This puzzle comes from alien visitors who communicate through spatial patterns. You see emoji symbols representing their communication attempt.
 
-  educational: `TASK: Your goal is to solve the puzzle using a structured, algorithm-driven educational method. You must generate three distinct pseudo-code algorithms, evaluate them, select the best one, and use it to generate the final answer.`,
+PROBLEM: Study the training examples to identify the transformation pattern. Then predict the output AND interpret what the aliens might be trying to communicate through these patterns.`,
 
-  gepa: `TASK: ${ARC_STRUCTURE}, and predict the correct output for the test case. Some puzzles have multiple test cases.`,
+  educational: `PROBLEM: Solve this puzzle using a structured, algorithm-driven method:
+1. Generate three distinct pseudo-code algorithms for the transformation
+2. Evaluate each algorithm against the training examples
+3. Select the best algorithm
+4. Use it to predict the test output`,
 
-  debate: `TASK: You are correcting the explanation of another AI model. Another AI model from a competitor has already provided an incorrect explanation for this very simple visual reasoning puzzle that even a child could solve. 
-Your job is to critically evaluate their reasoning, identifing flaws or weaknesses. Find the key simple insights that make the solution obvious once understood, then provide a superior analysis with the correct solution. patternDescription and solvingStrategy should clearly address the flaw or weakness you identified in the approach of the previous explanation.`,
+  gepa: `PROBLEM: Analyze the training examples below using these strategies:
+- Check for simple global transformations (rotation, reflection, color replacement)
+- Look for grid partitioning by separator lines
+- Group contiguous pixels into objects and analyze their transformations
+- Identify marker pixels that define operation geometry
+- Find the simplest rule that explains ALL training examples
 
-  discussion: `TASK: You are refining your own previous analysis. Your previous solution and explanation were incorrect or incomplete. 
-Try again using different reasoning approaches. What new insights can you discover? What patterns did you miss before?`
+Then predict the output for the test case(s).`,
+
+  debate: `PROBLEM: Another AI model provided an INCORRECT analysis of this puzzle. You will see their explanation.
+
+Your task:
+1. Study the training examples yourself
+2. Identify specific flaws in the previous AI's reasoning
+3. Provide a superior analysis with the correct pattern
+4. Predict the correct output with proper reasoning`,
+
+  discussion: `PROBLEM: Your previous analysis of this puzzle was incorrect or you failed to output the required grid.
+Your task:
+1. Re-examine the training examples
+2. Identify what you missed or got wrong
+3. Apply different reasoning strategies
+4. Provide an improved analysis and correct prediction
+5. Focus on outputting the correct grid`
 
 
 } as const;

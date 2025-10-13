@@ -50,6 +50,23 @@ export interface PuzzleComparisonDetail {
   model4Result?: 'correct' | 'incorrect' | 'not_attempted';
 }
 
+export interface ModelPerformanceOnDataset {
+  modelName: string;
+  totalPuzzlesInDataset: number;
+  attempts: number;
+  coveragePercentage: number;
+  correctCount: number;
+  incorrectCount: number;
+  notAttemptedCount: number;
+  accuracyPercentage: number;
+  avgProcessingTime: number;
+  totalCost: number;
+  avgCostPerAttempt: number;
+  costPerCorrectAnswer: number | null;
+  avgConfidence: number;
+  confidenceWhenCorrect: number | null;
+}
+
 export interface ModelComparisonSummary {
   totalPuzzles: number;
   model1Name: string;
@@ -70,6 +87,14 @@ export interface ModelComparisonSummary {
   model2OnlyCorrect: number;
   model3OnlyCorrect?: number;
   model4OnlyCorrect?: number;
+  // NEW: Per-model performance metrics
+  modelPerformance: ModelPerformanceOnDataset[];
+  // NEW: Head-to-head insights
+  fullySolvedCount: number;
+  unsolvedCount: number;
+  winnerModel: string | null;
+  mostEfficientModel: string | null;
+  fastestModel: string | null;
 }
 
 export interface ModelComparisonResult {

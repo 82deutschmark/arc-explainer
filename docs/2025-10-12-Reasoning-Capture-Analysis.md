@@ -323,17 +323,7 @@ GPT-5 models with `text.format.type: "json_schema"` might:
 
 **Fix:** The above fallback to `output[]` scanning should handle this.
 
-### Issue 2: Empty Reasoning Due to Token Limits
 
-Per OpenAI documentation:
-> GPT-5 models support 272,000 input tokens + 128,000 output/reasoning tokens = 400,000 total context window.
-> Internal reasoning consumes tokens from the `max_output_tokens` allocation.
-
-**Current Settings:**
-- We pass `max_output_tokens` through if provided in `serviceOpts`
-- Default may be too low for reasoning models
-
-**Recommendation:** Add `max_output_tokens: 110000` or higher for GPT-5 models to prevent reasoning from starving visible output.
 
 ---
 
@@ -411,18 +401,9 @@ Per xAI documentation and our analysis:
 
 This is intentional and correct behavior - not a bug.
 
-### Token Limits and Reasoning
 
-From OpenAI documentation (Oct 2025):
-- GPT-5 models support **272K input + 128K output/reasoning = 400K total**
-- Internal reasoning consumes tokens from `max_output_tokens` allocation
-- If `max_output_tokens` is too low, model may run out before returning visible predictions
-- **Recommendation:** Set `maxOutputTokens: 110000` or higher for GPT-5 models
 
-**Current Implementation:**
-- `max_output_tokens` is passed through if provided in `serviceOpts`
-- Not set by default - caller responsibility
-- Controllers can set this via request parameters
+
 
 ---
 

@@ -106,6 +106,10 @@ export interface ExplanationData {
   hasReasoningLog?: boolean; // Whether reasoning log is available
   providerResponseId?: string | null; // Response ID from AI provider for conversation chaining
   apiProcessingTimeMs?: number; // Backend API processing time in milliseconds
+  // Prompt transparency fields - show users what was actually sent to AI
+  systemPromptUsed?: string | null; // System prompt that was sent to the AI model
+  userPromptUsed?: string | null; // User prompt (including puzzle data) sent to the AI model
+  promptTemplateId?: string | null; // Prompt template ID used (solver, explanation, custom, etc.)
   // Saturn-specific fields
   saturnSuccess?: boolean | null; // Whether Saturn solver successfully solved the puzzle
   saturnImages?: string[]; // Array of image paths generated during Saturn analysis

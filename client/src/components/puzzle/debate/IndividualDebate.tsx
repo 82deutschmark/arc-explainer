@@ -338,7 +338,7 @@ export const IndividualDebate: React.FC<IndividualDebateProps> = ({
           taskId={taskId}
           promptId="debate"
           options={{
-            omitAnswer: false,
+            omitAnswer: true,  // CRITICAL: Debate mode is SOLVER behavior - models should NOT see correct answers
             originalExplanation: originalExplanation,
             customChallenge: customChallenge
           }}

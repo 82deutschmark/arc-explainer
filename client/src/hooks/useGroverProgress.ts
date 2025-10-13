@@ -105,19 +105,235 @@ export function useGroverProgress(taskId: string | undefined) {
 
   const start = useCallback(async (options?: GroverOptions) => {
     if (!taskId) return;
-    
+
+    closeSocket();
+    closeEventSource();
+
     // Reset state
-    setState({ 
-      status: 'running', 
+    setState({
+      status: 'running',
       phase: 'initializing',
       iteration: 0,
       totalIterations: options?.maxIterations || 5,
       iterations: [],
-      logLines: []
+      logLines: [],
+      streamingStatus: streamingEnabled ? 'starting' : 'idle',
+      streamingText: undefined,
+      streamingReasoning: undefined,
+      streamingMessage: undefined,
     });
-    closeSocket();
     setSessionId(null);
 
+    const modelKey = options?.modelKey || 'grover-gpt-5-nano';
+
+    // SSE STREAMING PATH (when VITE_ENABLE_SSE_STREAMING === 'true')
+    if (streamingEnabled) {
+      const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
+      const apiUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+
+      const query = new URLSearchParams();
+      query.set('temperature', String(options?.temperature ?? 0.2));
+      query.set('maxIterations', String(options?.maxIterations ?? 5));
+      if (options?.previousResponseId) query.set('previousResponseId', options.previousResponseId);
+      if (options?.reasoningEffort) query.set('reasoningEffort', options.reasoningEffort);
+      if (options?.reasoningVerbosity) query.set('reasoningVerbosity', options.reasoningVerbosity);
+      if (options?.reasoningSummaryType) query.set('reasoningSummaryType', options.reasoningSummaryType);
+
+      const streamUrl = `${apiUrl}/api/stream/grover/${taskId}/${encodeURIComponent(modelKey)}${
+        query.toString() ? `?${query.toString()}` : ''
+      }`;
+
+      const eventSource = new EventSource(streamUrl);
+      sseRef.current = eventSource;
+
+      eventSource.addEventListener('stream.init', (evt) => {
+        try {
+          const payload = JSON.parse((evt as MessageEvent<string>).data) as {
+            sessionId: string;
+            taskId: string;
+            modelKey: string;
+            createdAt: string;
+          };
+          setSessionId(payload.sessionId);
+          setState((prev) => {
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            nextLogs.push(`🔬 Grover Iterative Solver initialized`);
+            nextLogs.push(`Session: ${payload.sessionId}`);
+            nextLogs.push(`Task: ${payload.taskId}`);
+            nextLogs.push(`Model: ${payload.modelKey}`);
+            nextLogs.push(`Started at: ${new Date(payload.createdAt).toLocaleTimeString()}`);
+            nextLogs.push('---');
+
+            return {
+              ...prev,
+              streamingStatus: 'in_progress',
+              status: 'running',
+              logLines: nextLogs,
+            };
+          });
+        } catch (error) {
+          console.error('[GroverStream] Failed to parse init payload:', error);
+        }
+      });
+
+      eventSource.addEventListener('stream.status', (evt) => {
+        try {
+          const status = JSON.parse((evt as MessageEvent<string>).data) as {
+            state?: string;
+            phase?: string;
+            message?: string;
+            iteration?: number;
+            totalIterations?: number;
+            progress?: number;
+          };
+          setState((prev) => {
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            if (status.message && typeof status.message === 'string') {
+              nextLogs.push(status.message);
+              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+            }
+
+            return {
+              ...prev,
+              streamingStatus: status.state === 'in_progress' ? 'in_progress' : (status.state === 'failed' ? 'failed' : prev.streamingStatus),
+              streamingPhase: status.phase ?? prev.phase,
+              streamingMessage: status.message ?? prev.streamingMessage,
+              status: status.state === 'failed' ? 'error' : prev.status,
+              phase: status.phase ?? prev.phase,
+              iteration: status.iteration ?? prev.iteration,
+              totalIterations: status.totalIterations ?? prev.totalIterations,
+              progress: status.progress ?? prev.progress,
+              logLines: nextLogs,
+            };
+          });
+        } catch (error) {
+          console.error('[GroverStream] Failed to parse status payload:', error);
+        }
+      });
+
+      eventSource.addEventListener('stream.chunk', (evt) => {
+        try {
+          const chunk = JSON.parse((evt as MessageEvent<string>).data) as {
+            type?: string;
+            delta?: string;
+            content?: string;
+            metadata?: { iteration?: number; phase?: string };
+          };
+          setState((prev) => {
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            const chunkText = chunk.delta ?? chunk.content;
+            if (chunk.type === 'text' && chunkText) {
+              const lines = chunkText.split('\n').filter(line => line.trim());
+              lines.forEach(line => {
+                nextLogs.push(line);
+              });
+              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+            }
+
+            return {
+              ...prev,
+              streamingText:
+                chunk.type === 'text'
+                  ? (prev.streamingText ?? '') + (chunk.delta ?? chunk.content ?? '')
+                  : prev.streamingText,
+              streamingReasoning:
+                chunk.type === 'reasoning'
+                  ? (prev.streamingReasoning ?? '') + (chunk.delta ?? chunk.content ?? '')
+                  : prev.streamingReasoning,
+              logLines: nextLogs,
+            };
+          });
+        } catch (error) {
+          console.error('[GroverStream] Failed to parse chunk payload:', error);
+        }
+      });
+
+      eventSource.addEventListener('stream.complete', (evt) => {
+        try {
+          const summary = JSON.parse((evt as MessageEvent<string>).data) as {
+            responseSummary?: { analysis?: any };
+            metadata?: {
+              tokenUsage?: { input?: number; output?: number; reasoning?: number };
+              bestScore?: number;
+              iterations?: any[];
+              bestProgram?: string;
+            };
+            status?: string;
+          };
+          setState((prev) => {
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            nextLogs.push('---');
+            nextLogs.push(`✅ Grover analysis complete`);
+            if (summary.metadata?.bestScore !== undefined) {
+              nextLogs.push(`Best score: ${summary.metadata.bestScore.toFixed(1)}/10`);
+            }
+
+            return {
+              ...prev,
+              status: 'completed',
+              streamingStatus: 'completed',
+              result: summary.responseSummary?.analysis ?? summary,
+              iterations: summary.metadata?.iterations ?? prev.iterations,
+              bestProgram: summary.metadata?.bestProgram ?? prev.bestProgram,
+              bestScore: summary.metadata?.bestScore ?? prev.bestScore,
+              streamingTokenUsage: summary.metadata?.tokenUsage,
+              logLines: nextLogs,
+            };
+          });
+        } catch (error) {
+          console.error('[GroverStream] Failed to parse completion payload:', error);
+          setState((prev) => ({
+            ...prev,
+            status: 'error',
+            streamingStatus: 'failed',
+            streamingMessage: 'Streaming completion parse error',
+          }));
+        } finally {
+          closeEventSource();
+        }
+      });
+
+      eventSource.addEventListener('stream.error', (evt) => {
+        try {
+          const payload = JSON.parse((evt as MessageEvent<string>).data) as {
+            message?: string;
+            code?: string;
+          };
+          setState((prev) => {
+            let nextLogs = prev.logLines ? [...prev.logLines] : [];
+            const errorMsg = payload.message ?? 'Streaming error';
+            nextLogs.push(`❌ ERROR: ${errorMsg}`);
+            if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+
+            return {
+              ...prev,
+              status: 'error',
+              streamingStatus: 'failed',
+              streamingMessage: errorMsg,
+              logLines: nextLogs,
+            };
+          });
+        } catch (error) {
+          console.error('[GroverStream] Failed to parse error payload:', error);
+        } finally {
+          closeEventSource();
+        }
+      });
+
+      eventSource.onerror = () => {
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          streamingStatus: 'failed',
+          streamingMessage: 'Streaming connection lost',
+        }));
+        closeEventSource();
+      };
+
+      return; // Exit early - SSE path complete
+    }
+
+    // LEGACY WEBSOCKET PATH (when streaming is disabled)
     const wireOptions = {
       temperature: options?.temperature ?? 0.2,
       maxIterations: options?.maxIterations ?? 5,
@@ -126,8 +342,6 @@ export function useGroverProgress(taskId: string | undefined) {
       ...(options?.reasoningVerbosity && { reasoningVerbosity: options.reasoningVerbosity }),
       ...(options?.reasoningSummaryType && { reasoningSummaryType: options.reasoningSummaryType }),
     };
-
-    const modelKey = options?.modelKey || 'grover-gpt-5-nano';
     
     try {
       const res = await apiRequest('POST', `/api/puzzle/grover/${taskId}/${modelKey}`, wireOptions);
@@ -381,11 +595,37 @@ export function useGroverProgress(taskId: string | undefined) {
     
     fetchSnapshot();
   }, [sessionId]); // Only depend on sessionId, not state
+  const cancel = useCallback(async () => {
+    if (!sessionId) {
+      console.warn('[Grover] Cannot cancel: no active session');
+      return;
+    }
+
+    try {
+      await apiRequest('POST', `/api/stream/cancel/${sessionId}`);
+
+      closeSocket();
+      closeEventSource();
+
+      setState(prev => ({
+        ...prev,
+        status: 'error',
+        streamingStatus: 'failed',
+        streamingMessage: 'Cancelled by user',
+        message: 'Analysis cancelled by user',
+        logLines: [...(prev.logLines || []), `[${new Date().toLocaleTimeString()}] ⚠️ Cancelled by user`]
+      }));
+    } catch (error) {
+      console.error('[Grover] Cancel failed:', error);
+    }
+  }, [sessionId, closeSocket, closeEventSource]);
+
   useEffect(() => {
     return () => {
       closeSocket();
+      closeEventSource();
     };
-  }, [closeSocket]);
+  }, [closeSocket, closeEventSource]);
 
-  return { sessionId, state, start };
+  return { sessionId, state, start, cancel };
 }
