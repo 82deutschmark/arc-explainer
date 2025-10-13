@@ -77,13 +77,13 @@ Your task:
 3. Provide a superior analysis with the correct pattern
 4. Predict the correct output with proper reasoning`,
 
-  discussion: `PROBLEM: Your previous analysis of this puzzle was incorrect or incomplete. You will see your previous attempt below.
-
+  discussion: `PROBLEM: Your previous analysis of this puzzle was incorrect or incomplete.
 Your task:
-1. Re-examine the training examples with fresh eyes
+1. Re-examine the training examples
 2. Identify what you missed or got wrong
 3. Apply different reasoning strategies
-4. Provide an improved analysis and correct prediction`
+4. Provide an improved analysis and correct prediction
+5. Focus on outputting the correct grid`
 
 
 } as const;
