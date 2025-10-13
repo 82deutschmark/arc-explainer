@@ -260,7 +260,29 @@ export default function PuzzleBrowser() {
                     <User className="h-4 w-4 text-orange-600" />
                     <p className="font-bold text-orange-800 text-sm">👥 Community</p>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
+                    <div className="mb-3 p-2 bg-orange-50 rounded border-l-4 border-orange-400">
+                      <p className="text-xs font-semibold text-orange-800 mb-1">🎯 Critical ARC-AGI-2 Research</p>
+                      <p className="text-xs text-orange-700 mb-1">
+                        With the dataset complete (<a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-800">github.com/cristianoc/arc-agi-2-abstraction-dataset</a>), made some progress understanding the structure needed to express the forms abstraction composition present in the solutions.
+                      </p>
+                      <p className="text-xs font-medium text-orange-800 mb-1">Statistical Summary (from analysis of 111 tasks):</p>
+                      <div className="text-xs text-orange-700 space-y-1">
+                        <p>• ~40% are pure sequential composition</p>
+                        <p>• ~30% require conditional branching</p>
+                        <p>• ~20% use pattern classification + dispatch</p>
+                        <p>• ~25% involve iteration/loops over collections</p>
+                        <p>• ~15% have nested/hierarchical structure</p>
+                        <p>• ~10% use parallel composition with merge</p>
+                        <p>• ~5% form graph/DAG structures</p>
+                      </div>
+                      <p className="text-xs text-orange-700 mt-2 italic">
+                        (Percentages sum to &gt;100% as some tasks use multiple patterns)
+                      </p>
+                      <p className="text-xs font-semibold text-orange-800 mt-2">
+                        There's a DSL wanting to come out of this.
+                      </p>
+                    </div>
                     <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
                       📛 Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
