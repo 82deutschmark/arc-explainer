@@ -8,7 +8,7 @@ This API client enables Python researchers to effortlessly contribute their ARC 
 
 **Key Features:**
 - ✅ **One-line integration** for any Python researcher
-- ✅ **Current model support** (October 2025 model names)
+- ✅ **Current model support** using actual model names from `models.ts`
 - ✅ **Existing API integration** (uses `POST /api/puzzle/save-explained/:puzzleId`)
 - ✅ **Zero external dependencies** (only requires `requests`)
 - ✅ **Batch processing** for multiple puzzles
@@ -24,7 +24,7 @@ from arc_client import contribute_to_arc_explainer
 result = contribute_to_arc_explainer(
     "3a25b0d8",                    # Puzzle ID
     analysis_result,               # Your analysis data
-    "grok-4-2025-10-13",          # Current model name
+    "gpt-4.1-nano-2025-04-14",    # Current model name from models.ts
     "https://arc-explainer-staging.up.railway.app",  # Platform URL
     "your-api-key"                # Your API key
 )
@@ -34,12 +34,16 @@ print(result["message"])  # "Analysis contributed successfully"
 
 ### Model-Specific Functions
 ```python
-from arc_client import contribute_grok4_analysis, contribute_gpt5_analysis
+from arc_client import (
+    contribute_gpt41_nano_analysis,
+    contribute_o3_mini_analysis,
+    contribute_o4_mini_analysis
+)
 
-# One-line for specific models (uses current Oct 2025 names)
-grok_result = contribute_grok4_analysis("3a25b0d8", analysis, url, api_key)
-gpt5_result = contribute_gpt5_analysis("3a25b0d8", analysis, url, api_key)
-claude_result = contribute_claude_analysis("3a25b0d8", analysis, url, api_key)
+# One-line for specific models (uses current model names)
+nano_result = contribute_gpt41_nano_analysis("3a25b0d8", analysis, url, api_key)
+o3_result = contribute_o3_mini_analysis("3a25b0d8", analysis, url, api_key)
+o4_result = contribute_o4_mini_analysis("3a25b0d8", analysis, url, api_key)
 ```
 
 ## 🔐 Authentication
@@ -72,7 +76,7 @@ headers = {
 **Parameters:**
 - `puzzle_id` (str): ARC puzzle ID (e.g., "3a25b0d8")
 - `analysis_result` (dict): Analysis from AI model
-- `model_name` (str): Model name (e.g., "grok-4-2025-10-13")
+- `model_name` (str): Model name from models.ts (e.g., "gpt-4.1-nano-2025-04-14")
 - `arc_explainer_url` (str): ARC Explainer URL
 - `arc_explainer_key` (str): API key for authentication
 - `contributor_name` (str): Your name for attribution
@@ -84,33 +88,36 @@ headers = {
 
 ### Model-Specific Functions
 
-#### `contribute_grok4_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="Grok-4 Researcher")`
-**Contribute using current Grok-4 model name.**
+#### `contribute_gpt41_nano_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="GPT-4.1-Nano Researcher")`
+**Contribute using current GPT-4.1-Nano model name.**
 
-#### `contribute_gpt5_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="GPT-5 Researcher")`
-**Contribute using current GPT-5 model name.**
+#### `contribute_gpt41_mini_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="GPT-4.1-Mini Researcher")`
+**Contribute using current GPT-4.1-Mini model name.**
 
-#### `contribute_claude_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="Claude Researcher")`
-**Contribute using current Claude model name.**
+#### `contribute_o3_mini_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="O3-Mini Researcher")`
+**Contribute using current O3-Mini model name.**
+
+#### `contribute_o4_mini_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="O4-Mini Researcher")`
+**Contribute using current O4-Mini model name.**
+
+#### `contribute_o3_analysis(puzzle_id, analysis_result, arc_explainer_url, arc_explainer_key, contributor_name="O3 Researcher")`
+**Contribute using current O3 model name.**
 
 ### Batch Processing
 
 #### `contribute_batch_analyses(puzzle_analyses, model_name, arc_explainer_url, arc_explainer_key, contributor_name="Batch Researcher")`
 **Contribute multiple analyses at once.**
 
-## 🔄 Current Model Names (October 2025)
+## 🔄 Current Model Names (from models.ts)
 
 | Provider | Model Name | Status |
 |----------|------------|--------|
-| OpenAI | `gpt-5-turbo-2025-10-13` | ✅ Current |
-| OpenAI | `gpt-4-turbo-2025-10-13` | ✅ Current |
-| OpenAI | `gpt-4o-2025-10-13` | ✅ Current |
-| xAI | `grok-4-2025-10-13` | ✅ Current |
-| xAI | `grok-4-fast-2025-10-13` | ✅ Current |
-| xAI | `grok-3-2025-10-13` | ✅ Current |
-| Anthropic | `claude-3-5-sonnet-20241022` | ✅ Current |
-| Anthropic | `claude-3-5-haiku-20241022` | ✅ Current |
-| Anthropic | `claude-3-opus-20241022` | ✅ Current |
+| OpenAI | `gpt-4.1-nano-2025-04-14` | ✅ Current |
+| OpenAI | `gpt-4.1-mini-2025-04-14` | ✅ Current |
+| OpenAI | `gpt-4o-mini-2024-07-18` | ✅ Current |
+| OpenAI | `o3-mini-2025-01-31` | ✅ Current |
+| OpenAI | `o4-mini-2025-04-16` | ✅ Current |
+| OpenAI | `o3-2025-04-16` | ✅ Current |
 
 ## 📊 Data Format
 
@@ -151,7 +158,7 @@ analysis = {
 
 # One-line contribution
 result = contribute_to_arc_explainer(
-    "3a25b0d8", analysis, "grok-4-2025-10-13",
+    "3a25b0d8", analysis, "gpt-4.1-nano-2025-04-14",
     "https://arc-explainer-staging.up.railway.app",
     "arc-explainer-public-key-2025"
 )
@@ -170,7 +177,7 @@ batch_analyses = {
 
 # Batch contribution
 batch_result = contribute_batch_analyses(
-    batch_analyses, "gpt-5-turbo-2025-10-13",
+    batch_analyses, "gpt-4.1-nano-2025-04-14",
     "https://arc-explainer-staging.up.railway.app",
     "your-api-key"
 )
@@ -251,7 +258,7 @@ analysis_result = {
 ## 📈 Best Practices
 
 ### For Individual Researchers
-1. **Use current model names** (October 2025 versions)
+1. **Use current model names** from `models.ts` (e.g., `gpt-4.1-nano-2025-04-14`)
 2. **Include complete analysis** (pattern, approach, code, confidence)
 3. **Test locally first** before contributing
 4. **Use descriptive contributor names** for attribution

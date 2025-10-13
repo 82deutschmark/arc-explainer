@@ -5,7 +5,7 @@ Simple Python client for researchers to contribute analyses to the
 ARC Explainer encyclopedia using the existing API endpoints.
 
 This client provides effortless integration for Python researchers
-to contribute their ARC puzzle analyses to the comprehensive encyclopedia.
+to contribute their ARC puzzle analyses using current SOTA models.
 """
 
 import requests
@@ -54,7 +54,7 @@ class ARCExplainerAPI:
         Args:
             puzzle_id: ARC puzzle ID (e.g., "3a25b0d8")
             analysis_result: Analysis result from AI model
-            model_name: Model name (e.g., "grok-4-2025-10-13")
+            model_name: Model name (e.g., "gpt-4.1-nano-2025-04-14")
             contributor_name: Name for attribution
 
         Returns:
@@ -104,7 +104,7 @@ def contribute_to_arc_explainer(puzzle_id: str, analysis_result: Dict[str, Any],
     Args:
         puzzle_id: ARC puzzle ID (e.g., "3a25b0d8")
         analysis_result: Analysis result from AI model
-        model_name: Model name (e.g., "grok-4-2025-10-13")
+        model_name: Model name (e.g., "gpt-4.1-nano-2025-04-14")
         arc_explainer_url: ARC Explainer URL (default: staging)
         arc_explainer_key: API key for authentication
         contributor_name: Your name for attribution
@@ -114,7 +114,7 @@ def contribute_to_arc_explainer(puzzle_id: str, analysis_result: Dict[str, Any],
 
     Example:
         >>> result = contribute_to_arc_explainer(
-        ...     "3a25b0d8", analysis_result, "grok-4-2025-10-13",
+        ...     "3a25b0d8", analysis_result, "gpt-4.1-nano-2025-04-14",
         ...     "https://arc-explainer-staging.up.railway.app", "your-api-key"
         ... )
     """
@@ -127,31 +127,49 @@ def get_puzzle_data(puzzle_id: str, arc_explainer_url: str = "https://arc-explai
     client = ARCExplainerAPI(arc_explainer_url, arc_explainer_key)
     return client.get_puzzle(puzzle_id)
 
-# Model-specific convenience functions (October 2025 models)
-def contribute_grok4_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
-                             arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
-                             arc_explainer_key: str = None,
-                             contributor_name: str = "Grok-4 Researcher") -> Dict[str, Any]:
-    """Contribute Grok-4 analysis using current model name."""
-    model_name = "grok-4-2025-10-13"  # Current October 2025 model
+# Model-specific convenience functions (using actual current model names)
+def contribute_gpt41_nano_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
+                                 arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
+                                 arc_explainer_key: str = None,
+                                 contributor_name: str = "GPT-4.1-Nano Researcher") -> Dict[str, Any]:
+    """Contribute GPT-4.1-Nano analysis using current model name."""
+    model_name = "gpt-4.1-nano-2025-04-14"  # Current model from models.ts
     return contribute_to_arc_explainer(puzzle_id, analysis_result, model_name,
                                      arc_explainer_url, arc_explainer_key, contributor_name)
 
-def contribute_gpt5_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
-                            arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
-                            arc_explainer_key: str = None,
-                            contributor_name: str = "GPT-5 Researcher") -> Dict[str, Any]:
-    """Contribute GPT-5 analysis using current model name."""
-    model_name = "gpt-5-turbo-2025-10-13"  # Current October 2025 model
+def contribute_gpt41_mini_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
+                                  arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
+                                  arc_explainer_key: str = None,
+                                  contributor_name: str = "GPT-4.1-Mini Researcher") -> Dict[str, Any]:
+    """Contribute GPT-4.1-Mini analysis using current model name."""
+    model_name = "gpt-4.1-mini-2025-04-14"  # Current model from models.ts
     return contribute_to_arc_explainer(puzzle_id, analysis_result, model_name,
                                      arc_explainer_url, arc_explainer_key, contributor_name)
 
-def contribute_claude_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
-                              arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
-                              arc_explainer_key: str = None,
-                              contributor_name: str = "Claude Researcher") -> Dict[str, Any]:
-    """Contribute Claude analysis using current model name."""
-    model_name = "claude-3-5-sonnet-20241022"  # Current October 2025 model
+def contribute_o3_mini_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
+                               arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
+                               arc_explainer_key: str = None,
+                               contributor_name: str = "O3-Mini Researcher") -> Dict[str, Any]:
+    """Contribute O3-Mini analysis using current model name."""
+    model_name = "o3-mini-2025-01-31"  # Current model from models.ts
+    return contribute_to_arc_explainer(puzzle_id, analysis_result, model_name,
+                                     arc_explainer_url, arc_explainer_key, contributor_name)
+
+def contribute_o4_mini_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
+                               arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
+                               arc_explainer_key: str = None,
+                               contributor_name: str = "O4-Mini Researcher") -> Dict[str, Any]:
+    """Contribute O4-Mini analysis using current model name."""
+    model_name = "o4-mini-2025-04-16"  # Current model from models.ts
+    return contribute_to_arc_explainer(puzzle_id, analysis_result, model_name,
+                                     arc_explainer_url, arc_explainer_key, contributor_name)
+
+def contribute_o3_analysis(puzzle_id: str, analysis_result: Dict[str, Any],
+                          arc_explainer_url: str = "https://arc-explainer-staging.up.railway.app",
+                          arc_explainer_key: str = None,
+                          contributor_name: str = "O3 Researcher") -> Dict[str, Any]:
+    """Contribute O3 analysis using current model name."""
+    model_name = "o3-2025-04-16"  # Current model from models.ts
     return contribute_to_arc_explainer(puzzle_id, analysis_result, model_name,
                                      arc_explainer_url, arc_explainer_key, contributor_name)
 
@@ -166,7 +184,7 @@ def contribute_batch_analyses(puzzle_analyses: Dict[str, Dict[str, Any]],
 
     Args:
         puzzle_analyses: Dict of {puzzle_id: analysis_result}
-        model_name: Model name (e.g., "grok-4-2025-10-13")
+        model_name: Model name (e.g., "gpt-4.1-nano-2025-04-14")
         arc_explainer_url: ARC Explainer URL
         arc_explainer_key: API key
         contributor_name: Name for attribution
