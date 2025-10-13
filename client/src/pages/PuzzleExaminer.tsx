@@ -21,7 +21,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'wouter';
-import { Loader2, Brain, Rocket, Settings } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
@@ -37,13 +37,11 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 // UI Components (SRP-compliant)
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
-import { PromptConfiguration } from '@/components/puzzle/PromptConfiguration';
-import { AdvancedControls } from '@/components/puzzle/AdvancedControls';
-import { ModelSelection } from '@/components/puzzle/ModelSelection';
+import { CompactControls } from '@/components/puzzle/CompactControls';
+import { ModelTable } from '@/components/puzzle/ModelTable';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
-import { CollapsibleCard } from '@/components/ui/collapsible-card';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -249,28 +247,33 @@ export default function PuzzleExaminer() {
         emojiSet={emojiSet}
       />
 
-      {/* Prompt Configuration */}
-      <CollapsibleCard
-        title="Prompt Style"
-        icon={Brain}
-        defaultOpen={false}
-        headerDescription={
-          <p className="text-sm opacity-60">Configure how puzzles are presented to AI models</p>
-        }
-      >
-        <PromptConfiguration
-          promptId={promptId}
-          onPromptChange={setPromptId}
-          customPrompt={customPrompt}
-          onCustomPromptChange={setCustomPrompt}
-          disabled={isAnalyzing}
-          sendAsEmojis={sendAsEmojis}
-          onSendAsEmojisChange={setSendAsEmojis}
-          omitAnswer={omitAnswer}
-          onOmitAnswerChange={setOmitAnswer}
-          onPreviewClick={() => setShowPromptPreview(true)}
-        />
-      </CollapsibleCard>
+      {/* Compact Controls - Prompt & Advanced Parameters */}
+      <CompactControls
+        promptId={promptId}
+        onPromptChange={setPromptId}
+        customPrompt={customPrompt}
+        onCustomPromptChange={setCustomPrompt}
+        disabled={isAnalyzing}
+        sendAsEmojis={sendAsEmojis}
+        onSendAsEmojisChange={setSendAsEmojis}
+        omitAnswer={omitAnswer}
+        onOmitAnswerChange={setOmitAnswer}
+        onPreviewClick={() => setShowPromptPreview(true)}
+        temperature={temperature}
+        onTemperatureChange={setTemperature}
+        topP={topP}
+        onTopPChange={setTopP}
+        candidateCount={candidateCount}
+        onCandidateCountChange={setCandidateCount}
+        thinkingBudget={thinkingBudget}
+        onThinkingBudgetChange={setThinkingBudget}
+        reasoningEffort={reasoningEffort}
+        onReasoningEffortChange={setReasoningEffort}
+        reasoningVerbosity={reasoningVerbosity}
+        onReasoningVerbosityChange={setReasoningVerbosity}
+        reasoningSummaryType={reasoningSummaryType}
+        onReasoningSummaryTypeChange={setReasoningSummaryType}
+      />
 
       {/* Streaming Modal Dialog */}
       <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
@@ -307,43 +310,13 @@ export default function PuzzleExaminer() {
         </form>
       </dialog>
 
-      {/* Advanced Controls */}
-      <CollapsibleCard
-        title="Advanced Controls"
-        icon={Settings}
-        defaultOpen={false}
-        headerDescription={
-          <p className="text-sm opacity-60">Fine-tune model behavior with advanced parameters</p>
-        }
-      >
-        <AdvancedControls
-          temperature={temperature}
-          onTemperatureChange={setTemperature}
-          topP={topP}
-          onTopPChange={setTopP}
-          candidateCount={candidateCount}
-          onCandidateCountChange={setCandidateCount}
-          thinkingBudget={thinkingBudget}
-          onThinkingBudgetChange={setThinkingBudget}
-          reasoningEffort={reasoningEffort}
-          onReasoningEffortChange={setReasoningEffort}
-          reasoningVerbosity={reasoningVerbosity}
-          onReasoningVerbosityChange={setReasoningVerbosity}
-          reasoningSummaryType={reasoningSummaryType}
-          onReasoningSummaryTypeChange={setReasoningSummaryType}
-        />
-      </CollapsibleCard>
-
-      {/* Model Selection */}
-      <CollapsibleCard
-        title="Model Selection"
-        icon={Rocket}
-        defaultOpen={true}
-        headerDescription={
-          <p className="text-sm opacity-60">Choose which AI models to run analysis with</p>
-        }
-      >
-        <ModelSelection
+      {/* Model Selection Table - Data Dense */}
+      <div className="border border-base-300 rounded-lg bg-base-100 p-3">
+        <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
+          🚀 Model Selection
+          <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
+        </h3>
+        <ModelTable
           models={models}
           processingModels={processingModels}
           streamingModelKey={streamingModelKey}
@@ -353,7 +326,7 @@ export default function PuzzleExaminer() {
           onAnalyze={handleAnalyzeWithModel}
           analyzerErrors={analyzerErrors}
         />
-      </CollapsibleCard>
+      </div>
 
       {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
       {(allResults.length > 0 || isAnalyzing || isLoadingExplanations) && (
