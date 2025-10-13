@@ -808,4 +808,3 @@ All critical indexes are created automatically. For custom analytics queries, co
 ```sql
 CREATE INDEX idx_custom ON explanations(your_field) WHERE your_condition;
 ```
-\n## STATUS 2025-10-10\n- Grover SSE streaming recovery in progress; see docs/2025-10-10-plan-grover-streaming-recovery.md for remaining steps.
