@@ -61,6 +61,40 @@ export function ModelTable({
   const isStreamingActive = streamingModelKey !== null;
   const [previewingModelKey, setPreviewingModelKey] = useState<string | null>(null);
 
+  // Track if user has already seen the prompt preview for current configuration
+  const [hasSeenPreview, setHasSeenPreview] = useState(false);
+  const [lastPromptConfig, setLastPromptConfig] = useState<string>('');
+
+  // Create a hash of current prompt configuration to detect changes
+  const currentPromptConfig = React.useMemo(() => {
+    return JSON.stringify({
+      promptId,
+      customPrompt,
+      emojiSetKey: promptOptions.emojiSetKey,
+      omitAnswer: promptOptions.omitAnswer,
+      sendAsEmojis: promptOptions.sendAsEmojis
+    });
+  }, [promptId, customPrompt, promptOptions]);
+
+  // Reset preview state when prompt configuration changes
+  React.useEffect(() => {
+    if (currentPromptConfig !== lastPromptConfig) {
+      setHasSeenPreview(false);
+      setLastPromptConfig(currentPromptConfig);
+    }
+  }, [currentPromptConfig, lastPromptConfig]);
+
+  // Handle model run - show preview only first time or after config change
+  const handleModelRun = (modelKey: string) => {
+    if (hasSeenPreview) {
+      // Skip preview - run directly
+      onAnalyze(modelKey);
+    } else {
+      // Show preview modal
+      setPreviewingModelKey(modelKey);
+    }
+  };
+
   if (!models) {
     return null;
   }
@@ -234,7 +268,7 @@ export function ModelTable({
                 <td className="text-center">
                   <button
                     className={`btn btn-xs ${error ? 'btn-error' : 'btn-primary'}`}
-                    onClick={() => setPreviewingModelKey(model.key)}
+                    onClick={() => handleModelRun(model.key)}
                     disabled={isProcessing || disableDueToStreaming}
                   >
                     {isProcessing ? (
@@ -244,6 +278,8 @@ export function ModelTable({
                       </span>
                     ) : error ? (
                       'Retry'
+                    ) : hasSeenPreview ? (
+                      'Run'
                     ) : (
                       'Preview & Run'
                     )}
@@ -271,6 +307,7 @@ export function ModelTable({
           }}
           confirmMode={true}
           onConfirm={() => {
+            setHasSeenPreview(true);
             onAnalyze(previewingModelKey);
             setPreviewingModelKey(null);
           }}
