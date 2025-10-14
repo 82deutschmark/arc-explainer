@@ -11,6 +11,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import { getDefaultSaturnModel } from '@/lib/saturnModels';
 
 export interface SaturnOptions {
   model?: string;
@@ -178,7 +179,9 @@ export function useSaturnProgress(taskId: string | undefined) {
         streamingMessage: undefined,
       });
 
-      const modelKey = options?.model || 'gpt-5-nano-2025-08-07';
+      // Use utility function to get default model if none provided
+      const defaultModel = getDefaultSaturnModel();
+      const modelKey = options?.model || (defaultModel?.key ?? 'gpt-5-nano-2025-08-07');
 
       if (streamingEnabled) {
         const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
@@ -217,7 +220,7 @@ export function useSaturnProgress(taskId: string | undefined) {
               nextLogs.push(`Model: ${payload.modelKey}`);
               nextLogs.push(`Started at: ${new Date(payload.createdAt).toLocaleTimeString()}`);
               nextLogs.push('---');
-              
+
               return {
                 ...prev,
                 streamingStatus: 'starting',
@@ -248,7 +251,7 @@ export function useSaturnProgress(taskId: string | undefined) {
                 nextLogs.push(status.message);
                 if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
               }
-              
+
               // Add any new images to gallery
               let nextGallery = prev.galleryImages ?? [];
               const incoming = Array.isArray(status.images) ? status.images : [];
@@ -263,7 +266,7 @@ export function useSaturnProgress(taskId: string | undefined) {
                   }
                 }
               }
-              
+
               return {
                 ...prev,
                 streamingStatus: status.state ?? prev.streamingStatus ?? 'idle',
@@ -302,7 +305,7 @@ export function useSaturnProgress(taskId: string | undefined) {
                 });
                 if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
               }
-              
+
               return {
                 ...prev,
                 streamingText:
@@ -356,7 +359,7 @@ export function useSaturnProgress(taskId: string | undefined) {
               const errorMsg = payload.message ?? 'Streaming error';
               nextLogs.push(`ERROR: ${errorMsg}`);
               if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
-              
+
               return {
                 ...prev,
                 status: 'error',
@@ -415,10 +418,10 @@ export function useSaturnProgress(taskId: string | undefined) {
 
     try {
       await apiRequest('POST', `/api/stream/cancel/${sessionId}`);
-      
+
       closeSocket();
       closeEventSource();
-      
+
       setState(prev => ({
         ...prev,
         status: 'error',

@@ -1,7 +1,7 @@
 /**
  * client/src/pages/SaturnVisualSolver.tsx
  *
- * Author: code-supernova
+ * Author: code-supernova using DeepSeek V3.2 Exp
  * Date: 2025-10-13
  * PURPOSE: Saturn Visual Solver redesigned with Agent Traffic Control design system.
  * Full black background, JetBrains Mono font, yellow accent tabs, grid-based layout.
@@ -19,14 +19,16 @@ import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnRadarCanvas from '@/components/saturn/SaturnRadarCanvas';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
+import { getDefaultSaturnModel } from '@/lib/saturnModels';
 
 export default function SaturnVisualSolver() {
   const { taskId } = useParams<{ taskId: string }>();
   const { currentTask: task, isLoadingTask, taskError } = usePuzzle(taskId);
   const { state, start, cancel, sessionId } = useSaturnProgress(taskId);
 
-  // Settings state
-  const [model, setModel] = React.useState('gpt-5');
+  // Settings state - use dynamic defaults from model configuration
+  const defaultModel = getDefaultSaturnModel();
+  const [model, setModel] = React.useState(defaultModel?.key || 'grok-4-fast-reasoning');
   const [temperature, setTemperature] = React.useState(0.2);
   const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('medium');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
