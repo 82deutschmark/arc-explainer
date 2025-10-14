@@ -31,7 +31,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, MessageSquare, Brain, Settings, Database, BarChart3 } from 'lucide-react';
+import { Loader2, Grid3X3, CheckCircle, XCircle, Copy, Lightbulb, Users, MessageSquare, Brain, Settings, Database, BarChart3, Search, Filter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
 import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
@@ -40,6 +40,7 @@ import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
 import { usePuzzleListAnalysis } from '@/hooks/usePuzzleListAnalysis';
 import type { ExplanationData } from '@/types/puzzle';
 import { formatPuzzleDisplay } from '@shared/utils/puzzleNames';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const LAST_MODEL_STORAGE_KEY = 'puzzleFeedback:lastModel';
 const LAST_CUSTOM_MODEL_STORAGE_KEY = 'puzzleFeedback:lastCustomModel';
@@ -75,6 +76,12 @@ export default function PuzzleFeedback() {
   // Puzzle list analysis state
   const [puzzleListInput, setPuzzleListInput] = useState('');
   const { analyzePuzzleList, data: puzzleAnalysisData, isLoading: isAnalyzing, isError: analysisError, error: analysisErrorDetails } = usePuzzleListAnalysis();
+
+  // Matrix filter state
+  const [modelSearchFilter, setModelSearchFilter] = useState('');
+  const [showCorrect, setShowCorrect] = useState(true);
+  const [showIncorrect, setShowIncorrect] = useState(true);
+  const [showNotAttempted, setShowNotAttempted] = useState(true);
 
 // Set page title
   React.useEffect(() => {
@@ -415,6 +422,24 @@ export default function PuzzleFeedback() {
               model.puzzleStatuses.some(status => status.status !== 'not_attempted')
             );
 
+            // Apply filters to get filtered models count
+            const filteredModels = activeModels.filter((model) => {
+              // Filter by model name search
+              if (modelSearchFilter && !model.modelName.toLowerCase().includes(modelSearchFilter.toLowerCase())) {
+                return false;
+              }
+              
+              // Filter by status visibility
+              const hasCorrect = model.puzzleStatuses.some(p => p.status === 'correct');
+              const hasIncorrect = model.puzzleStatuses.some(p => p.status === 'incorrect');
+              const hasNotAttempted = model.puzzleStatuses.some(p => p.status === 'not_attempted');
+              
+              // Show model if it has at least one status that's enabled
+              return (showCorrect && hasCorrect) || 
+                     (showIncorrect && hasIncorrect) || 
+                     (showNotAttempted && hasNotAttempted);
+            });
+
             // Calculate per-puzzle metrics
             const puzzleMetrics = puzzleAnalysisData.puzzleResults.map(puzzle => {
               const totalModels = activeModels.length;
@@ -502,7 +527,7 @@ export default function PuzzleFeedback() {
                     <Database className="h-3 w-3" />
                     Model Performance Matrix
                     <Badge variant="outline" className="text-xs">
-                      {activeModels.length} active / {puzzleAnalysisData.summary.totalModels} total
+                      {filteredModels.length} shown / {activeModels.length} active / {puzzleAnalysisData.summary.totalModels} total
                     </Badge>
                   </CardTitle>
                   <p className="text-xs text-gray-600">
@@ -510,6 +535,67 @@ export default function PuzzleFeedback() {
                   </p>
                 </CardHeader>
                 <CardContent className="pt-0">
+                  {/* Filter Controls */}
+                  <div className="mb-3 space-y-2 border-b pb-3">
+                    <div className="flex items-center gap-2">
+                      <Search className="h-3 w-3 text-gray-500" />
+                      <Input
+                        placeholder="Search models..."
+                        value={modelSearchFilter}
+                        onChange={(e) => setModelSearchFilter(e.target.value)}
+                        className="h-7 text-xs flex-1"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setModelSearchFilter('');
+                          setShowCorrect(true);
+                          setShowIncorrect(true);
+                          setShowNotAttempted(true);
+                        }}
+                        className="h-7 px-2 text-xs"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Filter className="h-3 w-3 text-gray-500" />
+                        <span className="text-xs text-gray-600 font-medium">Show:</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="showCorrect"
+                          checked={showCorrect}
+                          onCheckedChange={(checked: boolean) => setShowCorrect(checked === true)}
+                        />
+                        <label htmlFor="showCorrect" className="text-xs cursor-pointer flex items-center gap-1">
+                          <span className="text-green-600">✅</span> Correct
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="showIncorrect"
+                          checked={showIncorrect}
+                          onCheckedChange={(checked: boolean) => setShowIncorrect(checked === true)}
+                        />
+                        <label htmlFor="showIncorrect" className="text-xs cursor-pointer flex items-center gap-1">
+                          <span className="text-red-600">❌</span> Incorrect
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="showNotAttempted"
+                          checked={showNotAttempted}
+                          onCheckedChange={(checked: boolean) => setShowNotAttempted(checked === true)}
+                        />
+                        <label htmlFor="showNotAttempted" className="text-xs cursor-pointer flex items-center gap-1">
+                          <span className="text-gray-300">·</span> Not Attempted
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs border-collapse">
                       <thead>
@@ -531,7 +617,30 @@ export default function PuzzleFeedback() {
                         </tr>
                       </thead>
                       <tbody>
-                        {activeModels.map((model) => {
+                        {filteredModels.length === 0 ? (
+                          <tr>
+                            <td colSpan={4 + puzzleMetrics.length} className="text-center py-6 text-gray-500">
+                              <div className="flex flex-col items-center gap-2">
+                                <Filter className="h-8 w-8 text-gray-300" />
+                                <p className="text-sm">No models match the current filters</p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setModelSearchFilter('');
+                                    setShowCorrect(true);
+                                    setShowIncorrect(true);
+                                    setShowNotAttempted(true);
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Clear Filters
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredModels.map((model) => {
                           const correctCount = model.puzzleStatuses.filter(p => p.status === 'correct').length;
                           const incorrectCount = model.puzzleStatuses.filter(p => p.status === 'incorrect').length;
                           const attemptedCount = correctCount + incorrectCount;
@@ -554,7 +663,8 @@ export default function PuzzleFeedback() {
                               ))}
                             </tr>
                           );
-                        })}
+                        })
+                        )}
                       </tbody>
                     </table>
                   </div>
