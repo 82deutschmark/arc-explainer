@@ -99,15 +99,23 @@ export default function SaturnVisualSolver() {
   });
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-50 text-gray-900 flex flex-col">
-      {/* Compact Header */}
-      <header className="p-3 bg-white border-b border-gray-200">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white flex flex-col">
+      {/* Enhanced Header with better visual hierarchy */}
+      <header className="p-4 bg-black/20 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-700">🪐 SATURN VISUAL SOLVER</h1>
-            <p className="text-xs text-gray-500">Puzzle: {taskId}</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">🪐</span>
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-wide">SATURN VISUAL SOLVER</h1>
+              <p className="text-sm text-blue-200/80">Advanced AI Pattern Recognition & Visual Analysis</p>
+            </div>
           </div>
-          {/* Controls moved to header for space efficiency */}
+
+          {/* Enhanced Controls */}
           <SaturnRadarCanvas
             state={state}
             isRunning={isRunning}
@@ -123,19 +131,22 @@ export default function SaturnVisualSolver() {
         </div>
       </header>
 
-      {/* Main info-dense layout */}
-      <main className="flex-1 overflow-hidden p-3">
-        {/* Desktop layout - 2 column grid */}
-        <div className="hidden lg:grid grid-cols-[35%_65%] gap-3 h-full min-h-0">
+      {/* Enhanced Main Layout */}
+      <main className="flex-1 overflow-hidden p-4">
+        {/* Desktop layout - Enhanced 2 column grid */}
+        <div className="hidden lg:grid grid-cols-[35%_65%] gap-4 h-full min-h-0">
 
-          {/* LEFT COLUMN: Puzzle Data + Image Gallery */}
-          <section className="min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-3">
-            {/* Compact Puzzle Data */}
-            <div className="bg-white border border-gray-300 rounded overflow-hidden">
-              <div className="bg-blue-50 border-b border-blue-200 px-3 py-2">
-                <h2 className="font-bold text-blue-900 text-sm">🧩 PUZZLE DATA</h2>
+          {/* LEFT COLUMN: Enhanced Context + Image Gallery */}
+          <section className="min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-4">
+            {/* Enhanced Puzzle Context */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3">
+                <h2 className="font-bold text-white text-lg flex items-center gap-2">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                  PUZZLE CONTEXT
+                </h2>
               </div>
-              <div className="p-3 max-h-[300px] overflow-y-auto">
+              <div className="p-4 max-h-[300px] overflow-y-auto">
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
@@ -148,16 +159,25 @@ export default function SaturnVisualSolver() {
               </div>
             </div>
 
-            {/* Image Gallery - PROMINENT */}
+            {/* Enhanced Image Gallery */}
             <SaturnImageGallery
-              images={state.galleryImages || []}
+              images={state.galleryImages?.map(img => ({
+                ...img,
+                phase: 'analysis',
+                timestamp: new Date(),
+                metadata: {
+                  confidence: 85,
+                  description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
+                }
+              })) || []}
               isRunning={isRunning}
+              title="🎨 Visual Analysis Gallery"
             />
           </section>
 
-          {/* RIGHT COLUMN: AI Streaming Output + Status */}
-          <aside className="h-full min-h-0 overflow-hidden grid grid-rows-[1fr_auto] gap-3">
-            {/* AI Streaming Output - PROMINENT */}
+          {/* RIGHT COLUMN: Enhanced AI Streaming + Status */}
+          <aside className="h-full min-h-0 overflow-hidden grid grid-rows-[1fr_auto] gap-4">
+            {/* Enhanced AI Streaming Display */}
             <SaturnTerminalLogs
               streamingText={state.streamingText}
               streamingReasoning={state.streamingReasoning}
@@ -165,8 +185,8 @@ export default function SaturnVisualSolver() {
               phase={state.streamingPhase || state.phase}
             />
 
-            {/* Compact Status Monitor */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Enhanced Status Grid */}
+            <div className="grid grid-cols-2 gap-3">
               <SaturnMonitoringTable
                 taskId={taskId}
                 state={state}
@@ -180,9 +200,9 @@ export default function SaturnVisualSolver() {
           </aside>
         </div>
 
-        {/* Mobile layout - single column */}
-        <div className="block lg:hidden h-full min-h-0 overflow-auto space-y-3">
-          {/* Controls */}
+        {/* Enhanced Mobile layout */}
+        <div className="block lg:hidden h-full min-h-0 overflow-auto space-y-4">
+          {/* Enhanced Mobile Controls */}
           <SaturnRadarCanvas
             state={state}
             isRunning={isRunning}
@@ -197,7 +217,7 @@ export default function SaturnVisualSolver() {
             compact
           />
 
-          {/* AI Streaming */}
+          {/* Enhanced Mobile AI Streaming */}
           <SaturnTerminalLogs
             streamingText={state.streamingText}
             streamingReasoning={state.streamingReasoning}
@@ -206,13 +226,22 @@ export default function SaturnVisualSolver() {
             compact
           />
 
-          {/* Images */}
+          {/* Enhanced Mobile Images */}
           <SaturnImageGallery
-            images={state.galleryImages || []}
+            images={state.galleryImages?.map(img => ({
+              ...img,
+              phase: 'analysis',
+              timestamp: new Date(),
+              metadata: {
+                confidence: 85,
+                description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
+              }
+            })) || []}
             isRunning={isRunning}
+            title="🎨 Visual Gallery"
           />
 
-          {/* Status */}
+          {/* Enhanced Mobile Status */}
           <SaturnMonitoringTable
             taskId={taskId}
             state={state}
@@ -220,13 +249,21 @@ export default function SaturnVisualSolver() {
             compact
           />
 
-          {/* Puzzle Data - collapsed by default on mobile */}
-          <div className="bg-white border border-gray-300 rounded">
-            <details>
-              <summary className="bg-blue-50 border-b border-blue-200 px-3 py-2 cursor-pointer">
-                <span className="font-bold text-blue-900 text-sm">🧩 PUZZLE DATA</span>
+          {/* Enhanced Mobile Puzzle Data */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
+            <details className="group">
+              <summary className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3 cursor-pointer list-none">
+                <span className="font-bold text-white text-lg flex items-center gap-2">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                  PUZZLE CONTEXT
+                  <div className="ml-auto transform transition-transform group-open:rotate-180">
+                    <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </span>
               </summary>
-              <div className="p-3">
+              <div className="p-4">
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
