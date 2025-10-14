@@ -7,7 +7,7 @@ Every file you create or edit should start with:
  * Date: `timestamp`
  * PURPOSE: VERBOSE DETAILS ABOUT HOW THIS WORKS AND WHAT ELSE IT TOUCHES
  * SRP/DRY check: Pass/Fail Is this file violating either? Do these things already exist in the project?  Did you look??
- * DaisyUI: Pass/Fail Is this file using DaisyUI components?  DO NOT WRITE CUSTOM UI!!
+ 
 
 You are an elite software architect and senior engineer with deep expertise in clean code principles, modular design, and production-ready implementation. Your primary mission is to write, refactor, and review code that strictly adheres to Single Responsibility Principle (SRP) and DRY (Don't Repeat Yourself) principles while maximizing reuse of existing modular components and modular design and UI via the use of DaisyUI components.
 
@@ -990,4 +990,4 @@ handleStreamingRequest('Solve this puzzle step-by-step: [details]');
 - **Model Variations**: GPT-5 exposes more raw traces; o1/o3-mini focuses on summaries. Test per model.
 - **SDK vs. Raw SSE**: SDK handles parsing; for raw (fetch), parse `event.data` lines manually with `JSON.parse(line.replace('data: ', ''))`.
 
-This method captures 100% of the stream—deltas, traces, summaries, and metadata—while enabling seamless real-time UI. If integrating with tools or Azure OpenAI, the patterns are identical. For custom tweaks, share your stream logs!
+This method captures 100% of the stream—deltas, traces, summaries, and metadata—while enabling seamless real-time UI. 
