@@ -1,5 +1,5 @@
 /**
- * Author: code-supernova
+ * Author: code-supernova using DeepSeek V3.2 Exp
  * Date: 2025-10-13
  * PURPOSE: Radar canvas for Saturn solver - information-dense image gallery display.
  * Shows all generated images in a grid layout with controls.
@@ -10,6 +10,7 @@
 import React from 'react';
 import { Rocket, Square, Image as ImageIcon } from 'lucide-react';
 import type { SaturnProgressState } from '@/hooks/useSaturnProgress';
+import { getSaturnCompatibleModels, getDefaultSaturnModel, getModelDisplayName, modelSupportsTemperature, modelSupportsReasoningEffort } from '@/lib/saturnModels';
 
 interface Props {
   state: SaturnProgressState;
@@ -25,9 +26,9 @@ interface Props {
   onCancel: () => void;
 }
 
-export default function SaturnRadarCanvas({ 
-  state, 
-  isRunning, 
+export default function SaturnRadarCanvas({
+  state,
+  isRunning,
   compact,
   model,
   setModel,
@@ -40,6 +41,20 @@ export default function SaturnRadarCanvas({
 }: Props) {
 
   const images = state.galleryImages || [];
+  const saturnModels = getSaturnCompatibleModels();
+  const currentModel = saturnModels.find(m => m.key === model);
+  const supportsTemperature = currentModel ? modelSupportsTemperature(model) : false;
+  const supportsReasoningEffort = currentModel ? modelSupportsReasoningEffort(model) : false;
+
+  // Update model if current selection is not compatible
+  React.useEffect(() => {
+    if (saturnModels.length > 0 && !saturnModels.find(m => m.key === model)) {
+      const defaultModel = getDefaultSaturnModel();
+      if (defaultModel) {
+        setModel(defaultModel.key);
+      }
+    }
+  }, [model, saturnModels, setModel]);
 
   return (
     <div className="min-h-0 overflow-hidden flex flex-col">
@@ -57,58 +72,65 @@ export default function SaturnRadarCanvas({
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">Project</label>
             <select className="w-full px-2 py-1 border border-gray-300 text-xs font-mono bg-white">
-              <option>Humanoid</option>
+              <option>Saturn Visual Solver</option>
             </select>
           </div>
 
           <div>
             <label className="text-xs font-bold text-gray-700 block mb-1">Model</label>
-            <select 
+            <select
               value={model}
               onChange={(e) => setModel(e.target.value)}
               disabled={isRunning}
               className="w-full px-2 py-1 border border-gray-300 text-xs font-mono bg-white"
             >
-              <option value="gpt-5">GPT-5</option>
-              <option value="claude-3.5-sonnet">Claude 3.5</option>
-              <option value="gemini-1.5-pro">Gemini 1.5</option>
+              {saturnModels.map(saturnModel => (
+                <option key={saturnModel.key} value={saturnModel.key}>
+                  {getModelDisplayName(saturnModel.key)}
+                </option>
+              ))}
             </select>
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-gray-700 block mb-1">Temp</label>
-            <input
-              type="range"
-              min="0.1"
-              max="2.0"
-              step="0.1"
-              value={temperature}
-              onChange={(e) => setTemperature(parseFloat(e.target.value))}
-              disabled={isRunning}
-              className="w-full"
-            />
-            <div className="text-xs text-gray-600 text-center">{temperature}</div>
-          </div>
+          {supportsTemperature && (
+            <div>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Temp</label>
+              <input
+                type="range"
+                min="0.1"
+                max="2.0"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                disabled={isRunning}
+                className="w-full"
+              />
+              <div className="text-xs text-gray-600 text-center">{temperature}</div>
+            </div>
+          )}
 
-          <div>
-            <label className="text-xs font-bold text-gray-700 block mb-1">Effort</label>
-            <select
-              value={reasoningEffort}
-              onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
-              disabled={isRunning}
-              className="w-full px-2 py-1 border border-gray-300 text-xs font-mono bg-white"
-            >
-              <option value="minimal">Min</option>
-              <option value="low">Low</option>
-              <option value="medium">Med</option>
-              <option value="high">High</option>
-            </select>
-          </div>
+          {supportsReasoningEffort && (
+            <div>
+              <label className="text-xs font-bold text-gray-700 block mb-1">Effort</label>
+              <select
+                value={reasoningEffort}
+                onChange={(e) => setReasoningEffort(e.target.value as 'minimal' | 'low' | 'medium' | 'high')}
+                disabled={isRunning}
+                className="w-full px-2 py-1 border border-gray-300 text-xs font-mono bg-white"
+              >
+                <option value="minimal">Min</option>
+                <option value="low">Low</option>
+                <option value="medium">Med</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          )}
+
           <button
             onClick={isRunning ? onCancel : onStart}
             className={`w-full px-3 py-2 text-xs font-bold flex items-center justify-center gap-2 ${
-              isRunning 
-                ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer' 
+              isRunning
+                ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
                 : 'bg-green-600 text-white hover:bg-green-700'
             }`}
           >
