@@ -269,7 +269,7 @@ export function SaturnImageGallery({
                           <div className="mt-3 pt-3 border-t border-white/20">
                             <div className="text-white/60 text-xs mb-1">Description</div>
                             <div className="text-white/90 text-sm leading-relaxed">
-                              {shown[selectedImage].metadata.description}
+                              {shown[selectedImage]!.metadata!.description}
                             </div>
                           </div>
                         )}
