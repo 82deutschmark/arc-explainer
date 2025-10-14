@@ -190,6 +190,7 @@ export interface ModelComparisonSummary {
   winnerModel: string | null; // model with highest accuracy
   mostEfficientModel: string | null; // model with best cost per correct
   fastestModel: string | null; // model with lowest avg processing time
+  accuracyLeaderModel: string | null; // model with highest accuracy
 }
 
 export interface ModelComparisonResult {
@@ -743,6 +744,7 @@ export class MetricsRepository extends BaseRepository {
           winnerModel: null,
           mostEfficientModel: null,
           fastestModel: null,
+          accuracyLeaderModel: null,
         },
         details: [],
       };
@@ -771,6 +773,7 @@ export class MetricsRepository extends BaseRepository {
             winnerModel: null,
             mostEfficientModel: null,
             fastestModel: null,
+            accuracyLeaderModel: null,
           },
           details: []
         };
@@ -795,11 +798,26 @@ export class MetricsRepository extends BaseRepository {
       `;
 
       const result = await this.query(query, [models, puzzleIds]);
-      
+
+      // CRITICAL FIX: Validate that returned puzzle_ids are actually in our dataset
+      // This prevents counting puzzles that exist in DB but not in current dataset
+      const validPuzzleIds = new Set(puzzleIds);
+      const filteredRows = result.rows.filter(row => validPuzzleIds.has(row.puzzle_id));
+
+      // Log discrepancies for debugging
+      const returnedPuzzleIds = new Set(result.rows.map(r => r.puzzle_id));
+      const invalidPuzzleIds = Array.from(returnedPuzzleIds).filter(id => !validPuzzleIds.has(id));
+
+      if (invalidPuzzleIds.length > 0) {
+        logger.warn(`Found ${invalidPuzzleIds.length} puzzle_ids in DB that don't exist in dataset ${dataset}: ${invalidPuzzleIds.slice(0, 5).join(', ')}${invalidPuzzleIds.length > 5 ? '...' : ''}`, 'metrics');
+      }
+
+      logger.info(`Query returned ${result.rows.length} rows, ${filteredRows.length} valid puzzle attempts for ${puzzleIds.length} dataset puzzles`, 'metrics');
+
       // Build a map of puzzle_id -> model_name -> correctness
       const puzzleModelMap = new Map<string, Map<string, boolean | null>>();
-      
-      for (const row of result.rows) {
+
+      for (const row of filteredRows) {
         if (!puzzleModelMap.has(row.puzzle_id)) {
           puzzleModelMap.set(row.puzzle_id, new Map());
         }
@@ -920,6 +938,7 @@ export class MetricsRepository extends BaseRepository {
           winnerModel,
           mostEfficientModel,
           fastestModel,
+          accuracyLeaderModel: winnerModel,
         },
         details
       };
