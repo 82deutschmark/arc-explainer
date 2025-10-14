@@ -1,6 +1,3 @@
 [submodule "solver/grover-arc"]
 	path = solver/grover-arc
 	url = https://github.com/zoecarver/grover-arc
-[submodule "solvers/arc_agi"]
-	path = solvers/arc_agi
-	url = https://github.com/jjoshua2/arc_agi

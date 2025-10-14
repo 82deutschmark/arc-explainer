@@ -1,1 +1,0 @@
-solvers/arc_agi/**/*.pkl filter=lfs diff=lfs merge=lfs -text
