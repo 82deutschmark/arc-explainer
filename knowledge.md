@@ -56,8 +56,47 @@ PRESENT IN .env
   - arrays-of-arrays of integers; shallow nesting; `additionalProperties: false`
   - Avoid unsupported constraints: no `minLength/maxLength`, no `minItems/maxItems`, no `allOf`.
 - Fallback: on grammar/schema error (400/422/503), auto-retry once without schema; parsing still succeeds via `output_text`.
-- Batch run settings: `XAI_MAX_CONCURRENCY=2`, `XAI_MAX_RETRIES=2`, `XAI_RETRY_BASE_DELAY_MS=2000`.
-- Entry points:
-  - Service: `server/services/grok.ts` (uses `response_format.json_schema`, shared agent, bounded retries)
-  - Schema: `server/services/schemas/grokJsonSchema.ts`
-  - Scripts: `scripts/grok-4-fast-reasoning.ts` (ARC2-eval), also `grok-4-fast-non-reasoning.ts`, `grok-4.ts`
+
+
+## OPEN AI Structured Outputs (Oct 14, 2025)
+Supported schemas
+Structured Outputs supports a subset of the JSON Schema language.
+
+Supported types
+The following types are supported for Structured Outputs:
+
+String
+Number
+Boolean
+Integer
+Object
+Array
+Enum
+anyOf
+Supported properties
+In addition to specifying the type of a property, you can specify a selection of additional constraints:
+
+Supported string properties:
+
+pattern — A regular expression that the string must match.
+format — Predefined formats for strings. Currently supported:
+date-time
+time
+date
+duration
+email
+hostname
+ipv4
+ipv6
+uuid
+Supported number properties:
+
+multipleOf — The number must be a multiple of this value.
+maximum — The number must be less than or equal to this value.
+exclusiveMaximum — The number must be less than this value.
+minimum — The number must be greater than or equal to this value.
+exclusiveMinimum — The number must be greater than this value.
+Supported array properties:
+
+minItems — The array must have at least this many items.
+maxItems — The array must have at most this many items.
