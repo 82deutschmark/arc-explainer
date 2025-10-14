@@ -1,19 +1,24 @@
 /**
- * client/src/pages/SaturnVisualSolver.tsx - FIXED: Added Puzzle Data Display
+ * client/src/pages/SaturnVisualSolver.tsx
  *
- * Author: code-supernova using DeepSeek V3.2 Exp
+ * Author: Claude Code using Sonnet 4.5
  * Date: 2025-10-14
- * PURPOSE: Saturn Visual Solver with puzzle data display and information-dense layout.
- * Shows training examples and test cases prominently with clear In/Out labels.
+ * PURPOSE: Saturn Visual Solver with streaming AI output and generated images prominently displayed.
+ * Info-dense layout focusing on AI streaming responses and visual grid generation.
  *
- * DESIGN FIXES:
- * - Added CompactPuzzleDisplay component for taskID examples and expected outputs
- * - Information-dense layout showing all puzzle data at once
- * - Clear visual hierarchy with puzzle data prominently displayed
- * - Uses existing CompactPuzzleDisplay component from other pages
+ * KEY FEATURES:
+ * - Prominent AI streaming output display (reasoning + text responses)
+ * - Image gallery for generated grid visualizations (base64 display)
+ * - Compact puzzle data display (collapsible on mobile)
+ * - Real-time phase indicators and status monitoring
+ * - Removed Python logger approach - uses proper SSE streaming
+ *
+ * LAYOUT:
+ * Desktop: 35% left (puzzle + images) / 65% right (AI streaming + status)
+ * Mobile: Stacked with AI output first, collapsible puzzle data
  *
  * SRP/DRY check: Pass - Pure orchestration, delegates to specialized components
- * Design: Pass - Information-dense with puzzle data visibility
+ * DaisyUI: Fail - Uses custom layout patterns for ATC-style interface
  */
 
 import React from 'react';
@@ -25,6 +30,7 @@ import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
 import SaturnRadarCanvas from '@/components/saturn/SaturnRadarCanvas';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
+import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import { getDefaultSaturnModel } from '@/lib/saturnModels';
 import { CompactPuzzleDisplay } from '@/components/puzzle/CompactPuzzleDisplay';
 
@@ -93,151 +99,145 @@ export default function SaturnVisualSolver() {
   });
 
   return (
-    <div className="h-screen overflow-hidden bg-white text-gray-900 flex flex-col">
-      {/* Header - ATC Style with Light Theme */}
-      <header className="p-4 bg-gray-50 border-b border-gray-200">
-        <h1 className="text-2xl tracking-tighter font-bold text-gray-700 text-spacing-px">SATURN VISUAL SOLVER</h1>
-        <p className="mt-1 text-[10px] leading-none text-gray-500">
-          <a
-            href="#"
-            className="hover:text-gray-700 italic underline"
-          >
-            VISUAL AI
-          </a>
-          <span className="px-1">•</span>
-          <span className="text-gray-600">PUZZLE: {taskId}</span>
-        </p>
+    <div className="h-screen overflow-hidden bg-gray-50 text-gray-900 flex flex-col">
+      {/* Compact Header */}
+      <header className="p-3 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-700">🪐 SATURN VISUAL SOLVER</h1>
+            <p className="text-xs text-gray-500">Puzzle: {taskId}</p>
+          </div>
+          {/* Controls moved to header for space efficiency */}
+          <SaturnRadarCanvas
+            state={state}
+            isRunning={isRunning}
+            model={model}
+            setModel={setModel}
+            temperature={temperature}
+            setTemperature={setTemperature}
+            reasoningEffort={reasoningEffort}
+            setReasoningEffort={setReasoningEffort}
+            onStart={onStart}
+            onCancel={cancel}
+          />
+        </div>
       </header>
 
-      {/* Main ATC-style layout with light theme */}
-      <main className="flex-1 overflow-hidden p-4 bg-gray-50">
-        {/* Desktop layout - ATC grid system */}
-        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-[30%_70%] gap-4 h-full min-h-0">
+      {/* Main info-dense layout */}
+      <main className="flex-1 overflow-hidden p-3">
+        {/* Desktop layout - 2 column grid */}
+        <div className="hidden lg:grid grid-cols-[35%_65%] gap-3 h-full min-h-0">
 
-          {/* LEFT COLUMN: Puzzle Data + Monitoring + Work Table */}
-          <section className="min-h-0 overflow-hidden grid grid-rows-[auto_auto_1fr] gap-3">
-
-            {/* PUZZLE DATA DISPLAY - FIXED: Shows taskID examples and expected outputs */}
-            <div className="bg-white border border-gray-300 overflow-hidden">
-              <div className="bg-amber-50 border-b border-amber-200 px-3 py-2">
-                <h2 className="bg-amber-400 px-2 py-1 font-bold text-black text-sm inline-block">
-                  PUZZLE DATA
-                </h2>
+          {/* LEFT COLUMN: Puzzle Data + Image Gallery */}
+          <section className="min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-3">
+            {/* Compact Puzzle Data */}
+            <div className="bg-white border border-gray-300 rounded overflow-hidden">
+              <div className="bg-blue-50 border-b border-blue-200 px-3 py-2">
+                <h2 className="font-bold text-blue-900 text-sm">🧩 PUZZLE DATA</h2>
               </div>
-              <div className="p-3">
-                <CompactPuzzleDisplay
-                  trainExamples={task.train}
-                  testCases={task.test}
-                  showEmojis={false}
-                  title=""
-                  maxTrainingExamples={3}
-                  defaultTrainingCollapsed={false}
-                  showTitle={false}
-                />
-              </div>
-            </div>
-
-            {/* Monitoring Table */}
-            <SaturnMonitoringTable
-              taskId={taskId}
-              state={state}
-              isRunning={isRunning}
-            />
-
-            {/* Work Table */}
-            <SaturnWorkTable
-              state={state}
-              isRunning={isRunning}
-            />
-          </section>
-
-          {/* RIGHT COLUMN: Terminal Logs + Radar */}
-          <aside className="h-full min-h-0 overflow-hidden grid grid-rows-[1fr_auto] gap-3">
-
-            {/* Terminal Logs - Information Dense */}
-            <SaturnTerminalLogs
-              logs={state.logLines || []}
-              isRunning={isRunning}
-              reasoning={state.streamingReasoning}
-            />
-
-            {/* Radar Canvas */}
-            <SaturnRadarCanvas
-              state={state}
-              isRunning={isRunning}
-              model={model}
-              setModel={setModel}
-              temperature={temperature}
-              setTemperature={setTemperature}
-              reasoningEffort={reasoningEffort}
-              setReasoningEffort={setReasoningEffort}
-              onStart={onStart}
-              onCancel={cancel}
-            />
-          </aside>
-        </div>
-
-        {/* Mobile layout */}
-        <div className="block lg:hidden h-full min-h-0 overflow-auto">
-          <div className="flex flex-col gap-3 p-1">
-
-            {/* PUZZLE DATA DISPLAY - Mobile */}
-            <div className="bg-white border border-gray-300">
-              <div className="bg-amber-50 border-b border-amber-200 px-3 py-2">
-                <h2 className="bg-amber-400 px-2 py-1 font-bold text-black text-sm inline-block">
-                  PUZZLE DATA
-                </h2>
-              </div>
-              <div className="p-3">
+              <div className="p-3 max-h-[300px] overflow-y-auto">
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
                   showEmojis={false}
                   title=""
                   maxTrainingExamples={2}
-                  defaultTrainingCollapsed={true}
+                  defaultTrainingCollapsed={false}
                   showTitle={false}
                 />
               </div>
             </div>
 
-            {/* Compact Monitoring */}
-            <SaturnMonitoringTable
-              taskId={taskId}
-              state={state}
+            {/* Image Gallery - PROMINENT */}
+            <SaturnImageGallery
+              images={state.galleryImages || []}
               isRunning={isRunning}
-              compact
             />
+          </section>
 
-            {/* Terminal Logs */}
+          {/* RIGHT COLUMN: AI Streaming Output + Status */}
+          <aside className="h-full min-h-0 overflow-hidden grid grid-rows-[1fr_auto] gap-3">
+            {/* AI Streaming Output - PROMINENT */}
             <SaturnTerminalLogs
-              logs={state.logLines || []}
+              streamingText={state.streamingText}
+              streamingReasoning={state.streamingReasoning}
               isRunning={isRunning}
-              reasoning={state.streamingReasoning}
-              compact
+              phase={state.streamingPhase || state.phase}
             />
 
-            {/* Radar */}
-            <SaturnRadarCanvas
-              state={state}
-              isRunning={isRunning}
-              compact
-              model={model}
-              setModel={setModel}
-              temperature={temperature}
-              setTemperature={setTemperature}
-              reasoningEffort={reasoningEffort}
-              setReasoningEffort={setReasoningEffort}
-              onStart={onStart}
-              onCancel={cancel}
-            />
+            {/* Compact Status Monitor */}
+            <div className="grid grid-cols-2 gap-2">
+              <SaturnMonitoringTable
+                taskId={taskId}
+                state={state}
+                isRunning={isRunning}
+              />
+              <SaturnWorkTable
+                state={state}
+                isRunning={isRunning}
+              />
+            </div>
+          </aside>
+        </div>
 
-            {/* Work Table */}
-            <SaturnWorkTable
-              state={state}
-              isRunning={isRunning}
-              compact
-            />
+        {/* Mobile layout - single column */}
+        <div className="block lg:hidden h-full min-h-0 overflow-auto space-y-3">
+          {/* Controls */}
+          <SaturnRadarCanvas
+            state={state}
+            isRunning={isRunning}
+            model={model}
+            setModel={setModel}
+            temperature={temperature}
+            setTemperature={setTemperature}
+            reasoningEffort={reasoningEffort}
+            setReasoningEffort={setReasoningEffort}
+            onStart={onStart}
+            onCancel={cancel}
+            compact
+          />
+
+          {/* AI Streaming */}
+          <SaturnTerminalLogs
+            streamingText={state.streamingText}
+            streamingReasoning={state.streamingReasoning}
+            isRunning={isRunning}
+            phase={state.streamingPhase || state.phase}
+            compact
+          />
+
+          {/* Images */}
+          <SaturnImageGallery
+            images={state.galleryImages || []}
+            isRunning={isRunning}
+          />
+
+          {/* Status */}
+          <SaturnMonitoringTable
+            taskId={taskId}
+            state={state}
+            isRunning={isRunning}
+            compact
+          />
+
+          {/* Puzzle Data - collapsed by default on mobile */}
+          <div className="bg-white border border-gray-300 rounded">
+            <details>
+              <summary className="bg-blue-50 border-b border-blue-200 px-3 py-2 cursor-pointer">
+                <span className="font-bold text-blue-900 text-sm">🧩 PUZZLE DATA</span>
+              </summary>
+              <div className="p-3">
+                <CompactPuzzleDisplay
+                  trainExamples={task.train}
+                  testCases={task.test}
+                  showEmojis={false}
+                  title=""
+                  maxTrainingExamples={1}
+                  defaultTrainingCollapsed={true}
+                  showTitle={false}
+                />
+              </div>
+            </details>
           </div>
         </div>
       </main>
