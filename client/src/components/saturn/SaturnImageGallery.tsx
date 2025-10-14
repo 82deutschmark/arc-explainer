@@ -1,15 +1,11 @@
 /**
- * client/src/components/saturn/SaturnImageGallery.tsx
- *
- * Simple gallery component to display streamed Saturn images during analysis.
- * Expects an array of { path, base64? }. If base64 is present, renders inline.
- * Otherwise skips rendering that item.
- *
- * How the project uses this:
- * - Consumed by `client/src/pages/SaturnVisualSolver.tsx`, fed with the
- *   `galleryImages` accumulated in `useSaturnProgress()` from server events.
- *
- * Author: Cascade (model: Cascade)
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-14
+ * PURPOSE: Image gallery for Saturn Visual Solver - displays generated grid images prominently
+ * Shows images in a responsive grid with base64 preview support. Always visible, shows placeholder when empty.
+ * SRP: Single responsibility - image gallery display
+ * DRY: Pass - reusable component
+ * DaisyUI: Fail - Uses shadcn/ui Card components (existing pattern in codebase)
  */
 
 import React from 'react';
@@ -17,31 +13,52 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export type SaturnImage = { path: string; base64?: string };
 
-export function SaturnImageGallery({ images, title = 'Generated Images' }: {
+export function SaturnImageGallery({
+  images,
+  title = '📸 Generated Images',
+  isRunning = false
+}: {
   images: SaturnImage[];
   title?: string;
+  isRunning?: boolean;
 }) {
   const shown = Array.isArray(images) ? images.filter((i) => i?.base64) : [];
-  if (!shown.length) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+    <Card className="border-gray-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-bold text-gray-700">{title}</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="text-xs font-mono text-gray-500">{shown.length} images</div>
+            {isRunning && <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {shown.map((im, idx) => (
-            <div key={`${im.path}-${idx}`} className="border rounded-lg p-2 bg-white">
-              {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <img
-                src={`data:image/png;base64,${im.base64}`}
-                className="w-full h-auto object-contain rounded"
-              />
-              <div className="mt-2 text-[10px] text-gray-500 break-all">{im.path}</div>
-            </div>
-          ))}
-        </div>
+        {shown.length === 0 ? (
+          <div className="text-center text-sm text-gray-500 py-8">
+            {isRunning ? '⏳ Generating images...' : '💤 No images yet - click START to begin'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto">
+            {shown.map((im, idx) => (
+              <div
+                key={`${im.path}-${idx}`}
+                className="relative aspect-square bg-gray-100 rounded border border-gray-300 overflow-hidden hover:border-blue-500 transition-colors"
+              >
+                <img
+                  src={`data:image/png;base64,${im.base64}`}
+                  alt={`Generated grid ${idx + 1}`}
+                  className="w-full h-full object-contain"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[9px] px-1 py-0.5 truncate font-mono">
+                  {im.path.split('/').pop() || `img-${idx + 1}`}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

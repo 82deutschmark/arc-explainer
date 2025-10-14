@@ -1,83 +1,81 @@
 /**
- * Author: code-supernova
- * Date: 2025-10-13
- * PURPOSE: Terminal logs display for Saturn solver - monospace log output with auto-scroll.
- * ATC-style information-dense terminal following monospace patterns.
- * SRP: Single responsibility - log display only
+ * Author: Claude Code using Sonnet 4.5
+ * Date: 2025-10-14
+ * PURPOSE: Streaming AI output display for Saturn solver - shows AI responses and reasoning in real-time
+ * Displays streaming text and reasoning output prominently, separate from system logs
+ * SRP: Single responsibility - streaming AI output display
  * DRY: Pass - reusable component
+ * DaisyUI: Fail - Uses custom Tailwind (terminal-style component, no standard UI pattern)
  */
 
 import React, { useEffect, useRef } from 'react';
 
 interface Props {
-  logs: string[];
+  streamingText?: string;
+  streamingReasoning?: string;
   isRunning: boolean;
-  reasoning?: string;
+  phase?: string;
   compact?: boolean;
 }
 
-export default function SaturnTerminalLogs({ logs, isRunning, reasoning, compact }: Props) {
+export default function SaturnTerminalLogs({ streamingText, streamingReasoning, isRunning, phase, compact }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom when content updates
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [logs, reasoning]);
+  }, [streamingText, streamingReasoning]);
+
+  const hasContent = streamingText || streamingReasoning;
 
   return (
     <div className="min-h-0 overflow-hidden flex flex-col border border-gray-300 bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between bg-gray-100 border-b border-gray-300 px-2 py-1">
-        <h2 className="text-sm text-gray-700 font-bold">LIVE THROUGHPUT</h2>
+      <div className="flex items-center justify-between bg-blue-100 border-b border-blue-300 px-2 py-1">
+        <h2 className="text-sm text-blue-900 font-bold">🤖 AI STREAMING OUTPUT</h2>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">{logs.length} lines</span>
+          {phase && <span className="text-xs text-blue-700 font-mono">{phase}</span>}
           <div className={`w-2 h-2 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
         </div>
       </div>
 
-      {/* Terminal Content */}
-      <div 
+      {/* Streaming Content */}
+      <div
         ref={scrollRef}
-        className="flex-1 min-h-0 overflow-y-auto bg-gray-900 p-3 font-mono text-xs"
+        className="flex-1 min-h-0 overflow-y-auto bg-gray-900 p-3"
       >
-        {logs.length === 0 && !reasoning ? (
-          <div className="text-gray-500 text-center py-8">
-            {isRunning ? 'Initializing Saturn...' : 'No logs yet'}
+        {!hasContent ? (
+          <div className="text-gray-500 text-center py-8 font-mono text-sm">
+            {isRunning ? '⏳ Waiting for AI response...' : '💤 No streaming output yet'}
           </div>
         ) : (
-          <div className="space-y-0.5">
-            {logs.map((line, idx) => {
-              // Color-code based on content
-              const isError = line.includes('ERROR') || line.includes('failed');
-              const isWarning = line.includes('WARN') || line.includes('warning');
-              const isSuccess = line.includes('success') || line.includes('completed');
-              const isInfo = line.startsWith('🪐') || line.startsWith('📸');
-
-              return (
-                <div 
-                  key={idx}
-                  className={`${
-                    isError ? 'text-red-400' :
-                    isWarning ? 'text-yellow-400' :
-                    isSuccess ? 'text-green-400' :
-                    isInfo ? 'text-blue-400' :
-                    'text-gray-300'
-                  }`}
-                >
-                  {line}
+          <div className="space-y-4">
+            {/* Streaming Reasoning */}
+            {streamingReasoning && (
+              <div className="p-3 bg-blue-900/30 border border-blue-700 rounded">
+                <div className="text-blue-300 text-xs font-bold mb-2 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                  REASONING PROCESS
                 </div>
-              );
-            })}
+                <div className="text-blue-100 font-mono text-sm whitespace-pre-wrap leading-relaxed">
+                  {streamingReasoning}
+                  {isRunning && <span className="inline-block w-1 h-4 bg-blue-400 ml-1 animate-pulse"></span>}
+                </div>
+              </div>
+            )}
 
-            {/* Live Reasoning */}
-            {reasoning && (
-              <div className="mt-3 p-2 bg-blue-900/30 border border-blue-700 rounded">
-                <div className="text-blue-300 text-xs font-bold mb-1">● LIVE REASONING</div>
-                <div className="text-blue-100 whitespace-pre-wrap">
-                  {reasoning}
-                  {isRunning && <span className="inline-block w-1 h-3 bg-blue-400 ml-1 animate-pulse"></span>}
+            {/* Streaming Text Output */}
+            {streamingText && (
+              <div className="p-3 bg-green-900/20 border border-green-700 rounded">
+                <div className="text-green-300 text-xs font-bold mb-2 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  OUTPUT
+                </div>
+                <div className="text-green-100 font-mono text-sm whitespace-pre-wrap leading-relaxed">
+                  {streamingText}
+                  {isRunning && <span className="inline-block w-1 h-4 bg-green-400 ml-1 animate-pulse"></span>}
                 </div>
               </div>
             )}
@@ -85,9 +83,15 @@ export default function SaturnTerminalLogs({ logs, isRunning, reasoning, compact
         )}
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-gray-300 bg-gray-50 px-2 py-1 text-xs font-mono text-gray-600">
-        SATURN VISUAL SOLVER v2.0
+      {/* Footer with streaming indicator */}
+      <div className="border-t border-gray-300 bg-gray-50 px-2 py-1 text-xs font-mono text-gray-600 flex items-center justify-between">
+        <span>SATURN AI STREAMING</span>
+        {isRunning && (
+          <span className="text-green-600 flex items-center gap-1">
+            <span className="inline-block w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
+            LIVE
+          </span>
+        )}
       </div>
     </div>
   );
