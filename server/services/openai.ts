@@ -74,12 +74,22 @@ export class OpenAIService extends BaseAIService {
   }
 
   supportsStreaming(modelKey: string): boolean {
-    return [
+    // Support both full versioned names and shortened aliases
+    const streamingModels = [
       "gpt-5-2025-08-07",
       "gpt-5-mini-2025-08-07",
       "gpt-5-nano-2025-08-07",
       "gpt-5-chat-latest"
-    ].includes(modelKey);
+    ];
+
+    // Check exact match first
+    if (streamingModels.includes(modelKey)) {
+      return true;
+    }
+
+    // Check if modelKey is a shortened version (without date suffix)
+    // e.g., "gpt-5-mini" should match "gpt-5-mini-2025-08-07"
+    return streamingModels.some(fullKey => fullKey.startsWith(modelKey + "-"));
   }
 
   async analyzePuzzleWithModel(
