@@ -1,3 +1,12 @@
+## [4.8.14] - 2025-10-15
+### 🎯 UX: Improve puzzleExaminer Page Visual Differentiation and Usability
+
+**Improvements:**
+- **Enhanced Emoji Differentiation**: Input grids now use 📋 (clipboard) and output grids use 🎯 (target) instead of similar 📥/📤 emojis for clearer visual distinction
+- **Advanced Controls Accessibility**: Advanced parameters section now opens by default, making temperature, top-p, and reasoning settings immediately visible and accessible
+- **Improved Slider Visibility**: Range sliders now use `range-accent` styling for better contrast and visibility against the interface background
+- **Fixed Test Case Ordering**: Test cases now display in proper numerical order (Test 1, Test 2, Test 3, etc.) instead of being grouped by grid size categories, eliminating user confusion about test sequence
+
 ## [4.8.13] - 2025-10-15
 ### 🔥 CRITICAL FIX: Enable GPT-5 Model Alias Support for Streaming and Reasoning Configuration
 
