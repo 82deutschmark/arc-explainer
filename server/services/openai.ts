@@ -292,11 +292,52 @@ export class OpenAIService extends BaseAIService {
 
   /**
    * SRP Helper: Normalize OpenAI response for consistent processing
+   *
+   * OpenAI Responses API returns:
+   * - output_text OR output[] array with mixed types (reasoning, message, etc.)
+   * - output_parsed for JSON schema-enforced output
+   * - output_reasoning.summary and output_reasoning.items for reasoning
+   *
+   * This method ensures consistent structure for parseProviderResponse()
    */
   private normalizeOpenAIResponse(response: any, modelKey: string): any {
-    // Add any normalization logic here if needed
-    // For now, return the response as-is since OpenAI responses are already well-formed
-    return response;
+    // Extract token usage first
+    const usage = response?.usage ?? {};
+    const inputTokens = usage.input_tokens ?? 0;
+    const outputTokens = usage.output_tokens ?? 0;
+    const reasoningTokens = usage.output_tokens_details?.reasoning_tokens ?? 0;
+
+    const tokenUsage: TokenUsage = {
+      input: inputTokens,
+      output: outputTokens,
+      reasoning: reasoningTokens > 0 ? reasoningTokens : undefined
+    };
+
+    // Calculate cost using inherited method
+    const cost = this.calculateResponseCost(modelKey, tokenUsage);
+
+    // Build normalized structure with fallbacks
+    return {
+      id: response.id,
+      status: response.status,
+      incomplete_details: response.incomplete_details,
+      // output_text: use SDK field or fallback to extracting from output[] array
+      output_text: response.output_text ?? this.extractTextFromOutputBlocks(response.output ?? []),
+      // output_parsed: structured JSON from schema enforcement
+      output_parsed: response.output_parsed,
+      // output_reasoning: normalize reasoning structure with fallbacks
+      output_reasoning: {
+        summary: response.output_reasoning?.summary ?? this.extractReasoningFromOutputBlocks(response.output ?? []),
+        items: response.output_reasoning?.items ?? []
+      },
+      // output: keep raw output array for fallback extraction
+      output: response.output,
+      // Preserve raw response for debugging
+      raw_response: response,
+      usage: response.usage,
+      tokenUsage,
+      cost
+    };
   }
 
   generatePromptPreview(
@@ -891,6 +932,8 @@ export class OpenAIService extends BaseAIService {
 
   /**
    * SRP Helper: Make HTTP call to OpenAI Responses API
+   *
+   * Returns normalized response structure for consistent processing
    */
   private async callResponsesAPI(body: any, modelKey: string): Promise<any> {
     const startTime = Date.now();
@@ -900,7 +943,8 @@ export class OpenAIService extends BaseAIService {
       // Add processing time tracking
       (response as any).processingTime = Date.now() - startTime;
 
-      return response;
+      // Normalize response structure for consistent processing
+      return this.normalizeOpenAIResponse(response, modelKey);
     } catch (error) {
       console.error(`[OpenAI] API call failed for ${modelKey}:`, error);
       throw error;
