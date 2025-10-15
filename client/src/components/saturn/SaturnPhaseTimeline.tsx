@@ -1,70 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4.5
+ * Author: Cascade
  * Date: 2025-10-15
- * PURPOSE: Timeline showing Saturn's real iterative workflow - 5 iterations with program attempts,
- * grading system (0-10 scale), context saturation strategy, and phased analysis (visual, color-normalized).
- * Surfaces reasoning history, tool usage, and the Grover-inspired search algorithm mechanics.
- *
- * SATURN WORKFLOW (from README):
- * - Iteration 1: Initial attempts with varying context
- * - Iteration 2: Visual analysis with images
- * - Iteration 3: Color-normalized representations
- * - Iteration 4: Full training + test images to LLM
- * - Iteration 5: Final run after removing low-scoring attempts
- * Each iteration generates 3-5 program attempts, graded 0-10, sorted by quality
- *
- * SRP/DRY check: Pass - Displays real Saturn workflow data
+ * PURPOSE: Ultra-compact Saturn workflow display - essential iteration info only
+ * SRP/DRY check: Pass - Displays Saturn workflow data
  * DaisyUI: Pass - Uses DaisyUI components
- */
-
-import React from 'react';
-import { Layers, Image, CheckCircle, TrendingUp, Code, Star } from 'lucide-react';
-import type { SaturnProgressState } from '@/hooks/useSaturnProgress';
-
-export interface SaturnPhaseTimelineProps {
-  state: SaturnProgressState;
-  isRunning: boolean;
-  compact?: boolean;
-}
-
-interface IterationData {
-  iteration: number;
-  phase: string;
-  attempts: number;
-  bestGrade?: number;
-  description: string;
-  status: 'pending' | 'active' | 'completed';
-}
-
-function parseIterationsFromState(state: SaturnProgressState): IterationData[] {
-  const iterations: IterationData[] = [
-    { iteration: 1, phase: 'Initial Context', attempts: 0, description: 'Generate 3-5 programs with varying context', status: 'pending' },
-    { iteration: 2, phase: 'Visual Analysis', attempts: 0, description: 'Add image analysis to guide solution paths', status: 'pending' },
-    { iteration: 3, phase: 'Color Normalized', attempts: 0, description: 'Test with color-normalized representations', status: 'pending' },
-    { iteration: 4, phase: 'Full Visual Context', attempts: 0, description: 'Provide all training + test images to LLM', status: 'pending' },
-    { iteration: 5, phase: 'Context Pruning', attempts: 0, description: 'Remove low-scoring attempts, final generation', status: 'pending' },
-  ];
-
-  const currentIteration = state.step || 1;
-  iterations.forEach((iter, idx) => {
-    if (idx < currentIteration - 1) {
-      iter.status = 'completed';
-    } else if (idx === currentIteration - 1) {
-      iter.status = 'active';
-    }
-  });
-
-  return iterations;
-}
-
-export default function SaturnPhaseTimeline({ state, isRunning, compact = false }: SaturnPhaseTimelineProps) {
-  const iterations = parseIterationsFromState(state);
-  const progress = state.progress || (state.step && state.totalSteps ? (state.step / state.totalSteps) * 100 : 0);
-
-/**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-15
- * PURPOSE: Ultra-compact Saturn workflow display - no bullshit styling, just essential iteration info
  */
 
 import React from 'react';
