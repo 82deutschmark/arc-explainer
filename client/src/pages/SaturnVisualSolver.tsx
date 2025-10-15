@@ -28,7 +28,7 @@ import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
-import SaturnRadarCanvas from '@/components/saturn/SaturnRadarCanvas';
+import SaturnControlPanel from '@/components/saturn/SaturnControlPanel';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import { getDefaultSaturnModel } from '@/lib/saturnModels';
@@ -116,7 +116,7 @@ export default function SaturnVisualSolver() {
           </div>
 
           {/* Enhanced Controls */}
-          <SaturnRadarCanvas
+          <SaturnControlPanel
             state={state}
             isRunning={isRunning}
             model={model}
@@ -193,7 +193,7 @@ export default function SaturnVisualSolver() {
         {/* Mobile Layout - Simplified stack */}
         <div className="block lg:hidden h-full overflow-y-auto space-y-4">
           {/* Mobile Controls */}
-          <SaturnRadarCanvas
+          <SaturnControlPanel
             state={state}
             isRunning={isRunning}
             model={model}
