@@ -51,6 +51,24 @@ import {
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+/**
+ * Model name normalization mapping
+ * Maps short/alias names to full versioned model names
+ */
+const MODEL_ALIASES: Record<string, string> = {
+  "gpt-5": "gpt-5-2025-08-07",
+  "gpt-5-mini": "gpt-5-mini-2025-08-07",
+  "gpt-5-nano": "gpt-5-nano-2025-08-07",
+};
+
+/**
+ * Normalize model key to full versioned name
+ * Falls back to getApiModelName() for non-aliased models
+ */
+function normalizeModelKey(modelKey: string): string {
+  return MODEL_ALIASES[modelKey] || getApiModelName(modelKey);
+}
+
 export class OpenAIService extends BaseAIService {
   protected provider = "OpenAI";
   protected models = {
@@ -74,12 +92,22 @@ export class OpenAIService extends BaseAIService {
   }
 
   supportsStreaming(modelKey: string): boolean {
-    return [
+    // Support both full versioned names and shortened aliases
+    const streamingModels = [
       "gpt-5-2025-08-07",
       "gpt-5-mini-2025-08-07",
       "gpt-5-nano-2025-08-07",
       "gpt-5-chat-latest"
-    ].includes(modelKey);
+    ];
+
+    // Check exact match first
+    if (streamingModels.includes(modelKey)) {
+      return true;
+    }
+
+    // Check if modelKey is a shortened version (without date suffix)
+    // e.g., "gpt-5-mini" should match "gpt-5-mini-2025-08-07"
+    return streamingModels.some(fullKey => fullKey.startsWith(modelKey + "-"));
   }
 
   async analyzePuzzleWithModel(
@@ -275,7 +303,9 @@ export class OpenAIService extends BaseAIService {
     }
   }  getModelInfo(modelKey: string): ModelInfo {
     const modelName = getApiModelName(modelKey);
-    const isReasoning = MODELS_WITH_REASONING.has(modelKey);
+    // Normalize for Set lookups
+    const normalizedKey = normalizeModelKey(modelKey);
+    const isReasoning = MODELS_WITH_REASONING.has(normalizedKey);
     const modelConfig = getModelConfig(modelKey);
     
     return {
@@ -363,8 +393,10 @@ export class OpenAIService extends BaseAIService {
     }
     messages.push({ role: "user", content: userMessage });
 
-    const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
-    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+    // Normalize modelKey for Set lookups (e.g., "gpt-5-mini" → "gpt-5-mini-2025-08-07")
+    const normalizedKey = normalizeModelKey(modelKey);
+    const isReasoningModel = MODELS_WITH_REASONING.has(normalizedKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(normalizedKey);
 
     // Build message format for Responses API  
     const messageFormat: any = {
@@ -443,16 +475,21 @@ export class OpenAIService extends BaseAIService {
 
   /**
    * DRY Helper: Build reasoning configuration based on model type
+   * FIXED: Normalize modelKey to handle both shortened and full versions
    */
   private buildReasoningConfig(
     modelKey: string,
     serviceOpts: ServiceOptions
   ): Record<string, unknown> | undefined {
-    const isReasoningModel = MODELS_WITH_REASONING.has(modelKey);
+    // Normalize modelKey to full versioned name for Set lookups
+    // e.g., "gpt-5-mini" → "gpt-5-mini-2025-08-07"
+    const normalizedKey = normalizeModelKey(modelKey);
+
+    const isReasoningModel = MODELS_WITH_REASONING.has(normalizedKey);
     if (!isReasoningModel) return undefined;
 
-    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
-    const isO3O4Model = O3_O4_REASONING_MODELS.has(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(normalizedKey);
+    const isO3O4Model = O3_O4_REASONING_MODELS.has(normalizedKey);
 
     if (isGPT5Model) {
       return {
@@ -471,6 +508,7 @@ export class OpenAIService extends BaseAIService {
   /**
    * DRY Helper: Build text configuration including verbosity + JSON schema format
    * This is CRITICAL - must merge both fields into single text object
+   * FIXED: Normalize modelKey for Set lookups
    */
   private buildTextConfig(
     modelKey: string,
@@ -478,7 +516,9 @@ export class OpenAIService extends BaseAIService {
     serviceOpts: ServiceOptions
   ): Record<string, any> | undefined {
     const modelName = getApiModelName(modelKey);
-    const isGPT5Model = GPT5_REASONING_MODELS.has(modelKey);
+    // Normalize for Set lookups (e.g., "gpt-5-mini" → "gpt-5-mini-2025-08-07")
+    const normalizedKey = normalizeModelKey(modelKey);
+    const isGPT5Model = GPT5_REASONING_MODELS.has(normalizedKey);
     
     // Build verbosity config for GPT-5 models
     let textConfig: Record<string, unknown> | undefined;
@@ -564,7 +604,9 @@ export class OpenAIService extends BaseAIService {
   ) {
     const modelName = getApiModelName(modelKey);
     const isContinuation = !!serviceOpts.previousResponseId;
-    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(modelKey);
+    // Normalize for Set lookups
+    const normalizedKey = normalizeModelKey(modelKey);
+    const isGPT5ChatModel = GPT5_CHAT_MODELS.has(normalizedKey);
 
     // Use DRY helpers to build components
     const messages = this.buildMessageArray(promptPackage, isContinuation);
