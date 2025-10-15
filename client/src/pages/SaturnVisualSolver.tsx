@@ -131,22 +131,21 @@ export default function SaturnVisualSolver() {
         </div>
       </header>
 
-      {/* Enhanced Main Layout */}
+      {/* Main Content Area - Simplified Layout */}
       <main className="flex-1 overflow-hidden p-4">
-        {/* Desktop layout - Enhanced 2 column grid */}
-        <div className="hidden lg:grid grid-cols-[35%_65%] gap-4 h-full min-h-0">
-
-          {/* LEFT COLUMN: Enhanced Context + Image Gallery */}
-          <section className="min-h-0 overflow-hidden grid grid-rows-[auto_1fr] gap-4">
-            {/* Enhanced Puzzle Context */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+        {/* Desktop Layout - Clean 2-column design */}
+        <div className="hidden lg:flex gap-4 h-full">
+          {/* Left Column: Puzzle Context & Image Gallery */}
+          <div className="w-1/3 flex flex-col gap-4 min-h-0">
+            {/* Puzzle Context Panel */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl flex-1">
               <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3">
                 <h2 className="font-bold text-white text-lg flex items-center gap-2">
                   <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
                   PUZZLE CONTEXT
                 </h2>
               </div>
-              <div className="p-4 max-h-[300px] overflow-y-auto">
+              <div className="p-4 overflow-y-auto h-full">
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
@@ -158,51 +157,42 @@ export default function SaturnVisualSolver() {
                 />
               </div>
             </div>
+          </div>
 
-            {/* Enhanced Image Gallery */}
-            <SaturnImageGallery
-              images={state.galleryImages?.map(img => ({
-                ...img,
-                phase: 'analysis',
-                timestamp: new Date(),
-                metadata: {
-                  confidence: 85,
-                  description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
-                }
-              })) || []}
-              isRunning={isRunning}
-              title="🎨 Visual Analysis Gallery"
-            />
-          </section>
-
-          {/* RIGHT COLUMN: Enhanced AI Streaming + Status */}
-          <aside className="h-full min-h-0 overflow-hidden grid grid-rows-[1fr_auto] gap-4">
-            {/* Enhanced AI Streaming Display */}
-            <SaturnTerminalLogs
-              streamingText={state.streamingText}
-              streamingReasoning={state.streamingReasoning}
-              isRunning={isRunning}
-              phase={state.streamingPhase || state.phase}
-            />
-
-            {/* Enhanced Status Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              <SaturnMonitoringTable
-                taskId={taskId}
-                state={state}
+          {/* Right Column: AI Streaming & Status */}
+          <div className="flex-1 flex flex-col gap-4 min-h-0">
+            {/* AI Streaming Display - Takes most space */}
+            <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+              <SaturnTerminalLogs
+                streamingText={state.streamingText}
+                streamingReasoning={state.streamingReasoning}
                 isRunning={isRunning}
-              />
-              <SaturnWorkTable
-                state={state}
-                isRunning={isRunning}
+                phase={state.streamingPhase || state.phase}
               />
             </div>
-          </aside>
+
+            {/* Bottom Status Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+                <SaturnMonitoringTable
+                  taskId={taskId}
+                  state={state}
+                  isRunning={isRunning}
+                />
+              </div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+                <SaturnWorkTable
+                  state={state}
+                  isRunning={isRunning}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Enhanced Mobile layout */}
-        <div className="block lg:hidden h-full min-h-0 overflow-auto space-y-4">
-          {/* Enhanced Mobile Controls */}
+        {/* Mobile Layout - Simplified stack */}
+        <div className="block lg:hidden h-full overflow-y-auto space-y-4">
+          {/* Mobile Controls */}
           <SaturnRadarCanvas
             state={state}
             isRunning={isRunning}
@@ -217,39 +207,47 @@ export default function SaturnVisualSolver() {
             compact
           />
 
-          {/* Enhanced Mobile AI Streaming */}
-          <SaturnTerminalLogs
-            streamingText={state.streamingText}
-            streamingReasoning={state.streamingReasoning}
-            isRunning={isRunning}
-            phase={state.streamingPhase || state.phase}
-            compact
-          />
+          {/* Mobile AI Streaming - Full width */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
+            <SaturnTerminalLogs
+              streamingText={state.streamingText}
+              streamingReasoning={state.streamingReasoning}
+              isRunning={isRunning}
+              phase={state.streamingPhase || state.phase}
+              compact
+            />
+          </div>
 
-          {/* Enhanced Mobile Images */}
-          <SaturnImageGallery
-            images={state.galleryImages?.map(img => ({
-              ...img,
-              phase: 'analysis',
-              timestamp: new Date(),
-              metadata: {
-                confidence: 85,
-                description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
-              }
-            })) || []}
-            isRunning={isRunning}
-            title="🎨 Visual Gallery"
-          />
+          {/* Mobile Image Gallery */}
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
+            <SaturnImageGallery
+              images={state.galleryImages?.map(img => ({
+                ...img,
+                phase: 'analysis',
+                timestamp: new Date(),
+                metadata: {
+                  confidence: 85,
+                  description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
+                }
+              })) || []}
+              isRunning={isRunning}
+              title="🎨 Visual Gallery"
+            />
+          </div>
 
-          {/* Enhanced Mobile Status */}
-          <SaturnMonitoringTable
-            taskId={taskId}
-            state={state}
-            isRunning={isRunning}
-            compact
-          />
+          {/* Mobile Status Tables */}
+          <div className="grid grid-cols-1 gap-4">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
+              <SaturnMonitoringTable
+                taskId={taskId}
+                state={state}
+                isRunning={isRunning}
+                compact
+              />
+            </div>
+          </div>
 
-          {/* Enhanced Mobile Puzzle Data */}
+          {/* Mobile Puzzle Context - Collapsible */}
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
             <details className="group">
               <summary className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3 cursor-pointer list-none">
