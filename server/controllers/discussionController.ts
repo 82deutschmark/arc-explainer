@@ -35,7 +35,7 @@ export async function getEligibleExplanations(req: Request, res: Response) {
         confidence,
         is_prediction_correct,
         multi_test_all_correct,
-        EXTRACT(DAY FROM NOW() - created_at)::INTEGER as days_old
+        EXTRACT(EPOCH FROM NOW() - created_at)::INTEGER / 3600 as hours_old
       FROM explanations
       WHERE 
         created_at >= NOW() - INTERVAL '30 days'
@@ -71,7 +71,7 @@ export async function getEligibleExplanations(req: Request, res: Response) {
         modelName: row.model_name,
         provider,
         createdAt: row.created_at,
-        daysOld: row.days_old,
+        hoursOld: row.hours_old,
         hasProviderResponseId: row.provider_response_id !== null,
         confidence: row.confidence,
         isCorrect: row.is_prediction_correct || row.multi_test_all_correct
