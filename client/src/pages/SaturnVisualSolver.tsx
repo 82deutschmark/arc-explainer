@@ -29,9 +29,9 @@ export default function SaturnVisualSolver() {
 
   // Settings state - use dynamic defaults from model configuration
   const defaultModel = getDefaultSaturnModel();
-  const [model, setModel] = React.useState(defaultModel?.key || 'grok-4-fast-reasoning');
+  const [model, setModel] = React.useState(defaultModel?.key || 'gpt-5-mini-2025-08-07');
   const [temperature, setTemperature] = React.useState(0.2);
-  const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('medium');
+  const [reasoningEffort, setReasoningEffort] = React.useState<'minimal' | 'low' | 'medium' | 'high'>('high');
   const [startTime, setStartTime] = React.useState<Date | null>(null);
 
   // Track running state
