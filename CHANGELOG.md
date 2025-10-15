@@ -1,3 +1,78 @@
+## [4.8.13] - 2025-10-15
+### 🔥 CRITICAL FIX: Enable GPT-5 Model Alias Support for Streaming and Reasoning Configuration
+
+**Problem:** When using shortened model names (e.g., "gpt-5-mini"), two critical bugs prevented reasoning configuration from being built, resulting in empty reasoning logs despite models producing reasoning.
+
+**Symptoms:**
+- Error: "Streaming is not enabled for this model" for shortened names
+- Server logs: `Has reasoning: false`, `verbosity: none`
+- NO reasoning deltas emitted during streaming
+- Empty `reasoning_log` and `reasoning_items` despite 6,700+ reasoning tokens used
+
+**Root Cause:**
+
+#### Bug #1: supportsStreaming() Rejected Shortened Names
+- Method only checked exact versioned names like "gpt-5-mini-2025-08-07"
+- Rejected user-friendly shortened names like "gpt-5-mini"
+
+#### Bug #2: Set Lookups Failed Due to Missing Alias Support
+- Model configuration Sets (`MODELS_WITH_REASONING`, `GPT5_REASONING_MODELS`) contain FULL versioned keys
+- `getApiModelName()` used `ModelLookup.getById()` which has NO alias support
+- `getById("gpt-5-mini")` returned "gpt-5-mini" unchanged (fallback behavior)
+- `Set.has("gpt-5-mini")` failed because Set contains "gpt-5-mini-2025-08-07"
+- Result: `buildReasoningConfig()` returned undefined → reasoning disabled
+
+**Root Infrastructure Issue:** ModelLookup uses `model.key` field (full versioned names) as Map keys, with NO alias mapping for shortened names.
+
+**Solution:**
+
+1. **Added MODEL_ALIASES mapping** (lines 58-62 in openai.ts):
+```typescript
+const MODEL_ALIASES: Record<string, string> = {
+  "gpt-5": "gpt-5-2025-08-07",
+  "gpt-5-mini": "gpt-5-mini-2025-08-07",
+  "gpt-5-nano": "gpt-5-nano-2025-08-07",
+};
+```
+
+2. **Created normalizeModelKey() helper** (lines 64-70):
+```typescript
+function normalizeModelKey(modelKey: string): string {
+  return MODEL_ALIASES[modelKey] || getApiModelName(modelKey);
+}
+```
+
+3. **Enhanced supportsStreaming()** to handle both formats (lines 76-93):
+```typescript
+// Check exact match first
+if (streamingModels.includes(modelKey)) {
+  return true;
+}
+
+// Check if modelKey is a shortened version
+// e.g., "gpt-5-mini" should match "gpt-5-mini-2025-08-07"
+return streamingModels.some(fullKey => fullKey.startsWith(modelKey + "-"));
+```
+
+4. **Updated 5 methods** to use `normalizeModelKey()` for Set lookups:
+   - `buildReasoningConfig()` (line 486)
+   - `buildTextConfig()` (line 520)
+   - `getModelInfo()` (line 307)
+   - `generatePromptPreview()` (line 397)
+   - `buildResponsesAPIPayload()` (line 608)
+
+**Verification Results:**
+- ✅ Server logs: `Has reasoning: true` (was false)
+- ✅ Server logs: `verbosity: high` (was none)
+- ✅ Stream: Real-time reasoning deltas emitted during 60+ sec processing
+- ✅ Captured: 6,784 reasoning tokens with detailed summary
+
+**Impact:** Users can now use friendly shortened model names ("gpt-5-mini", "gpt-5", "gpt-5-nano") for ALL GPT-5 streaming requests with FULL reasoning support!
+
+**Files Modified:** `server/services/openai.ts`
+
+---
+
 ## [4.8.12] - 2025-10-15
 ### 🔥 CRITICAL FIX: Restore Complete Reasoning Extraction Logic (Broken by Commit 298babef)
 
