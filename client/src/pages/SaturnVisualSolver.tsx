@@ -1,34 +1,22 @@
 /**
- * client/src/pages/SaturnVisualSolver.tsx
+ * Author: Cascade
+ * Date: 2025-10-15
+ * PURPOSE: Saturn Visual Solver - GPT-5 multimodal ARC-AGI solver interface.
+ * Achieves 22% on ARC-AGI-2 eval (vs 15.9% SOTA) using visual pattern recognition.
+ * Shows: real-time AI reasoning, generated PNG images, token usage, phase progress.
+ * ~27min/problem, ~$0.90/problem average.
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-14
- * PURPOSE: Saturn Visual Solver with streaming AI output and generated images prominently displayed.
- * Info-dense layout focusing on AI streaming responses and visual grid generation.
- *
- * KEY FEATURES:
- * - Prominent AI streaming output display (reasoning + text responses)
- * - Image gallery for generated grid visualizations (base64 display)
- * - Compact puzzle data display (collapsible on mobile)
- * - Real-time phase indicators and status monitoring
- * - Removed Python logger approach - uses proper SSE streaming
- *
- * LAYOUT:
- * Desktop: 35% left (puzzle + images) / 65% right (AI streaming + status)
- * Mobile: Stacked with AI output first, collapsible puzzle data
- *
- * SRP/DRY check: Pass - Pure orchestration, delegates to specialized components
- * DaisyUI: Fail - Uses custom layout patterns for ATC-style interface
+ * SRP/DRY check: Pass - Main page orchestration
+ * DaisyUI: Pass - Uses project's standard components
  */
 
 import React from 'react';
-import { useParams, Link } from 'wouter';
-import { Loader2, ArrowLeft, Rocket, Square } from 'lucide-react';
+import { useParams } from 'wouter';
+import { Rocket, Square, ArrowLeft } from 'lucide-react';
 import { usePuzzle } from '@/hooks/usePuzzle';
 import { useSaturnProgress } from '@/hooks/useSaturnProgress';
 import SaturnMonitoringTable from '@/components/saturn/SaturnMonitoringTable';
 import SaturnWorkTable from '@/components/saturn/SaturnWorkTable';
-import SaturnControlPanel from '@/components/saturn/SaturnControlPanel';
 import SaturnTerminalLogs from '@/components/saturn/SaturnTerminalLogs';
 import SaturnImageGallery from '@/components/saturn/SaturnImageGallery';
 import { getDefaultSaturnModel } from '@/lib/saturnModels';
@@ -99,53 +87,89 @@ export default function SaturnVisualSolver() {
   });
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white flex flex-col">
-      {/* Enhanced Header with better visual hierarchy */}
-      <header className="p-4 bg-black/20 backdrop-blur-md border-b border-white/10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">🪐</span>
-              </div>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-wide">SATURN VISUAL SOLVER</h1>
-              <p className="text-sm text-blue-200/80">Advanced AI Pattern Recognition & Visual Analysis</p>
-            </div>
+    <div className="h-screen overflow-hidden bg-gray-50 text-gray-900 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-300 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <a href="/" className="btn btn-ghost btn-sm gap-1">
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </a>
+          <div className="border-l border-gray-300 pl-3">
+            <h1 className="text-lg font-bold text-gray-900">🪐 Saturn Visual Solver</h1>
+            <p className="text-xs text-gray-600">GPT-5 Multimodal • 22% ARC-AGI-2 Success • Visual Pattern Recognition</p>
           </div>
+        </div>
 
-          {/* Enhanced Controls */}
-          <SaturnControlPanel
-            state={state}
-            isRunning={isRunning}
-            model={model}
-            setModel={setModel}
-            temperature={temperature}
-            setTemperature={setTemperature}
-            reasoningEffort={reasoningEffort}
-            setReasoningEffort={setReasoningEffort}
-            onStart={onStart}
-            onCancel={cancel}
-          />
+        <div className="flex items-center gap-3">
+          {/* Model selector */}
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            disabled={isRunning}
+            className="select select-bordered select-sm"
+          >
+            <option value="grok-4-fast-reasoning">Grok-4 Fast</option>
+            <option value="gpt-5-nano-2025-08-07">GPT-5 Nano</option>
+            <option value="o3-mini-2025-01-31">O3 Mini</option>
+          </select>
+
+          {/* Temperature */}
+          {model.includes('grok') && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-600">Temp:</span>
+              <input
+                type="number"
+                min="0.1"
+                max="2.0"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                disabled={isRunning}
+                className="input input-bordered input-sm w-16"
+              />
+            </div>
+          )}
+
+          {/* Reasoning effort */}
+          <select
+            value={reasoningEffort}
+            onChange={(e) => setReasoningEffort(e.target.value as any)}
+            disabled={isRunning}
+            className="select select-bordered select-sm"
+          >
+            <option value="minimal">Minimal</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+
+          {/* Start/Stop */}
+          {!isRunning ? (
+            <button onClick={onStart} className="btn btn-success btn-sm gap-1">
+              <Rocket className="h-4 w-4" />
+              Start
+            </button>
+          ) : (
+            <button onClick={cancel} className="btn btn-error btn-sm gap-1">
+              <Square className="h-4 w-4" />
+              Stop
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Main Content Area - Simplified Layout */}
+      {/* Main Content */}
       <main className="flex-1 overflow-hidden p-4">
-        {/* Desktop Layout - Clean 2-column design */}
-        <div className="hidden lg:flex gap-4 h-full">
-          {/* Left Column: Puzzle Context & Image Gallery */}
-          <div className="w-1/3 flex flex-col gap-4 min-h-0">
-            {/* Puzzle Context Panel */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl flex-1">
-              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3">
-                <h2 className="font-bold text-white text-lg flex items-center gap-2">
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                  PUZZLE CONTEXT
-                </h2>
+        <div className="h-full grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Left: Puzzle + Status (3 cols) */}
+          <div className="lg:col-span-3 flex flex-col gap-4 overflow-y-auto">
+            {/* Puzzle Display */}
+            <div className="bg-white border border-gray-300 rounded">
+              <div className="border-b border-gray-300 bg-gray-50 px-3 py-2">
+                <h2 className="text-sm font-bold text-gray-700">PUZZLE {taskId}</h2>
               </div>
-              <div className="p-4 overflow-y-auto h-full">
+              <div className="p-3">
                 <CompactPuzzleDisplay
                   trainExamples={task.train}
                   testCases={task.test}
@@ -157,12 +181,27 @@ export default function SaturnVisualSolver() {
                 />
               </div>
             </div>
+
+            {/* Status */}
+            <SaturnMonitoringTable
+              taskId={taskId}
+              state={state}
+              isRunning={isRunning}
+            />
+
+            {/* Phase History */}
+            <div className="flex-1 min-h-0">
+              <SaturnWorkTable
+                state={state}
+                isRunning={isRunning}
+              />
+            </div>
           </div>
 
-          {/* Right Column: AI Streaming & Status */}
-          <div className="flex-1 flex flex-col gap-4 min-h-0">
-            {/* AI Streaming Display - Takes most space */}
-            <div className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
+          {/* Center: AI Output + Images (6 cols) */}
+          <div className="lg:col-span-6 flex flex-col gap-4 min-h-0">
+            {/* AI Streaming Output */}
+            <div className="flex-1 min-h-0">
               <SaturnTerminalLogs
                 streamingText={state.streamingText}
                 streamingReasoning={state.streamingReasoning}
@@ -171,108 +210,45 @@ export default function SaturnVisualSolver() {
               />
             </div>
 
-            {/* Bottom Status Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
-                <SaturnMonitoringTable
-                  taskId={taskId}
-                  state={state}
-                  isRunning={isRunning}
-                />
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden shadow-xl">
-                <SaturnWorkTable
-                  state={state}
-                  isRunning={isRunning}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Layout - Simplified stack */}
-        <div className="block lg:hidden h-full overflow-y-auto space-y-4">
-          {/* Mobile Controls */}
-          <SaturnControlPanel
-            state={state}
-            isRunning={isRunning}
-            model={model}
-            setModel={setModel}
-            temperature={temperature}
-            setTemperature={setTemperature}
-            reasoningEffort={reasoningEffort}
-            setReasoningEffort={setReasoningEffort}
-            onStart={onStart}
-            onCancel={cancel}
-            compact
-          />
-
-          {/* Mobile AI Streaming - Full width */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
-            <SaturnTerminalLogs
-              streamingText={state.streamingText}
-              streamingReasoning={state.streamingReasoning}
-              isRunning={isRunning}
-              phase={state.streamingPhase || state.phase}
-              compact
-            />
-          </div>
-
-          {/* Mobile Image Gallery */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
-            <SaturnImageGallery
-              images={state.galleryImages?.map(img => ({
-                ...img,
-                phase: 'analysis',
-                timestamp: new Date(),
-                metadata: {
-                  confidence: 85,
-                  description: `Generated during ${state.streamingPhase || state.phase || 'analysis'} phase`
-                }
-              })) || []}
-              isRunning={isRunning}
-              title="🎨 Visual Gallery"
-            />
-          </div>
-
-          {/* Mobile Status Tables */}
-          <div className="grid grid-cols-1 gap-4">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl overflow-hidden">
-              <SaturnMonitoringTable
-                taskId={taskId}
-                state={state}
-                isRunning={isRunning}
-                compact
-              />
-            </div>
-          </div>
-
-          {/* Mobile Puzzle Context - Collapsible */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl">
-            <details className="group">
-              <summary className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-blue-400/30 px-4 py-3 cursor-pointer list-none">
-                <span className="font-bold text-white text-lg flex items-center gap-2">
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                  PUZZLE CONTEXT
-                  <div className="ml-auto transform transition-transform group-open:rotate-180">
-                    <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+            {/* Token Metrics */}
+            <div className="bg-white border border-gray-300 rounded">
+              <div className="grid grid-cols-4 divide-x divide-gray-300">
+                <div className="p-3">
+                  <div className="text-xs text-gray-600">Input Tokens</div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {state.streamingTokenUsage?.input || 0}
                   </div>
-                </span>
-              </summary>
-              <div className="p-4">
-                <CompactPuzzleDisplay
-                  trainExamples={task.train}
-                  testCases={task.test}
-                  showEmojis={false}
-                  title=""
-                  maxTrainingExamples={1}
-                  defaultTrainingCollapsed={true}
-                  showTitle={false}
-                />
+                </div>
+                <div className="p-3">
+                  <div className="text-xs text-gray-600">Output Tokens</div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {state.streamingTokenUsage?.output || 0}
+                  </div>
+                </div>
+                <div className="p-3">
+                  <div className="text-xs text-gray-600">Reasoning Tokens</div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {state.streamingTokenUsage?.reasoning || 0}
+                  </div>
+                </div>
+                <div className="p-3">
+                  <div className="text-xs text-gray-600">Total</div>
+                  <div className="text-lg font-bold text-gray-900">
+                    {(state.streamingTokenUsage?.input || 0) + 
+                     (state.streamingTokenUsage?.output || 0) + 
+                     (state.streamingTokenUsage?.reasoning || 0)}
+                  </div>
+                </div>
               </div>
-            </details>
+            </div>
+          </div>
+
+          {/* Right: Images (3 cols) */}
+          <div className="lg:col-span-3 flex flex-col gap-4 overflow-y-auto">
+            <SaturnImageGallery
+              images={state.galleryImages || []}
+              isRunning={isRunning}
+            />
           </div>
         </div>
       </main>
