@@ -1,3 +1,54 @@
+## [4.8.15] - 2025-10-15
+### 🔥 CRITICAL: Saturn Visual Solver - Complete UI Rebuild + DB Persistence + Defaults
+
+**Saturn Visual Solver** is a research tool achieving **22% success on ARC-AGI-2** (vs 15.9% SOTA) using GPT-5 multimodal visual pattern recognition. This release fixes critical bugs and completely rebuilds the UI.
+
+#### Critical Fixes:
+
+**1. DATABASE PERSISTENCE BUG (CRITICAL)**
+- **Problem:** Streaming Saturn results were NOT being saved to database
+- **Root Cause:** `saturnStreamService.ts` had no call to `explanationService.saveExplanation()`
+- **Impact:** All streaming analyses lost - no persistence to `explanations` table
+- **Fix:** Added DB save in streaming harness `end()` callback
+- **Result:** All Saturn analyses now properly persist to database
+
+**2. SYNTAX ERROR - SaturnPhaseTimeline.tsx**
+- **Problem:** Parse error preventing compilation
+- **Root Cause:** Lines 1-63 were duplicated as lines 64-234 (duplicate header/imports)
+- **Fix:** Removed duplicate code block
+
+**3. DEFAULT MODEL & REASONING CONFIGURATION**
+- **Changed:** Default model from `gpt-5-nano` → `gpt-5-mini` (better quality for visual reasoning)
+- **Changed:** Reasoning effort from `medium` → `high` (essential for ARC-AGI-2)
+- **Changed:** Reasoning verbosity from `medium` → `high` (more detailed analysis)
+- **Files:** `saturnModels.ts`, `SaturnVisualSolver.tsx`, `saturnController.ts`
+
+#### UI Complete Rebuild:
+
+**Problem:** Previous UI was decorative, toy-like with hardcoded sizes, wasted space, broken image display
+
+**Changes:**
+- **SaturnVisualSolver.tsx:** Removed hardcoded widths (w-80), now uses CSS Grid (12-col responsive: 3-col left, 6-col center, 3-col right)
+- **SaturnImageGallery.tsx:** Removed 190 lines of decorative code (59% reduction), simplified to functional grid+detail view, pixelated rendering for grid fidelity
+- **SaturnTerminalLogs.tsx:** Removed 210 lines of decorative code (69% reduction), simplified to functional reasoning+output display
+
+**Result:** Data-dense, functional interface matching research tool requirements. No wasted space, proper image display, responsive without mobile-specific code.
+
+#### Technical Details:
+- Saturn costs ~$0.90/problem, takes ~27 minutes average
+- Uses GPT-5 multimodal to convert puzzle grids to PNG images with fixed color palette
+- Visual pattern recognition approach vs symbolic manipulation
+- No breaking changes - all APIs/props unchanged
+
+**Files Changed:**
+- `client/src/pages/SaturnVisualSolver.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnImageGallery.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnTerminalLogs.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnPhaseTimeline.tsx` (syntax fix)
+- `client/src/lib/saturnModels.ts` (default model change)
+- `server/controllers/saturnController.ts` (defaults + verbosity)
+- `server/services/streaming/saturnStreamService.ts` (DB persistence fix)
+
 ## [4.8.14] - 2025-10-15
 ### 🎯 UX: Improve puzzleExaminer Page Visual Differentiation and Usability
 
