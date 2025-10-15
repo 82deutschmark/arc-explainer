@@ -207,7 +207,7 @@ export default function ModelComparisonPage() {
                   Model Performance Comparison
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Dataset: {summary.dataset.toUpperCase()} • {summary.totalPuzzles} Total Puzzles • {summary.fullySolvedCount} Solved by ≥1 Model
+                  Dataset: {summary.dataset.toUpperCase()} • {summary.totalPuzzles} Total Puzzles • {summary.fullySolvedCount} Correct by ≥1 Model
                 </p>
               </div>
               <div className="flex gap-2">
@@ -245,14 +245,14 @@ export default function ModelComparisonPage() {
           </div>
           <div className="card bg-white shadow-sm border border-gray-200">
             <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Solved (≥1 Model)</div>
+              <div className="text-xs text-gray-600 mb-1">Correct by ≥1 Model</div>
               <div className="text-2xl font-bold text-blue-600">{summary.fullySolvedCount}</div>
             </div>
           </div>
           <div className="card bg-white shadow-sm border border-gray-200">
             <div className="card-body p-3">
-              <div className="text-xs text-gray-600 mb-1">Unsolved (All Failed)</div>
-              <div className="text-2xl font-bold text-gray-600">{summary.unsolvedCount}</div>
+              <div className="text-xs text-gray-600 mb-1">Not Attempted (All Failed)</div>
+              <div className="text-2xl font-bold text-gray-600">{summary.allNotAttempted + summary.allIncorrect}</div>
             </div>
           </div>
         </div>

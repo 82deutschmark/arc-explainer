@@ -16,7 +16,7 @@ export interface EligibleExplanation {
   modelName: string;
   provider: 'openai' | 'xai' | 'unknown';
   createdAt: string;
-  daysOld: number;
+  hoursOld: number;
   hasProviderResponseId: boolean;
   confidence: number;
   isCorrect: boolean;

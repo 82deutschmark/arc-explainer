@@ -360,7 +360,7 @@ export default function PuzzleDiscussion() {
                           <Badge variant="outline" className="text-xs">
                             {exp.provider.toUpperCase()}
                           </Badge>
-                          <span className="text-xs text-gray-500">{exp.daysOld}d ago</span>
+                          <span className="text-xs text-gray-500">{Math.floor(exp.hoursOld)}h {Math.floor((exp.hoursOld % 1) * 60)}m ago</span>
                         </div>
                         
                         {/* Right: Action */}

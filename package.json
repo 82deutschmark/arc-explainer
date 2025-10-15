@@ -65,7 +65,6 @@
     "@types/cors": "^2.8.19",
     "@types/pg": "^8.15.4",
     "axios": "^1.11.0",
-    "canvas": "^3.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -133,8 +132,5 @@
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
     "vite": "^6.3.0"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }

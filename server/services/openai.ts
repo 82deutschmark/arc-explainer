@@ -712,14 +712,19 @@ export class OpenAIService extends BaseAIService {
         reasoningLog = summary.map((s: any) => {
           if (typeof s === 'string') return s;
           if (s && typeof s === 'object' && s.text) return s.text;
-          return JSON.stringify(s);
-        }).filter(Boolean).join('\n');
+          if (s && typeof s === 'object' && s.content) return s.content;
+          return typeof s === 'object' ? JSON.stringify(s) : String(s);
+        }).filter(Boolean).join('\n\n');
       } else if (typeof summary === 'string') {
         reasoningLog = summary;
-      } else if (summary && typeof summary === 'object' && summary.text) {
-        reasoningLog = summary.text;
-      } else {
-        reasoningLog = JSON.stringify(summary);
+      } else if (summary && typeof summary === 'object') {
+        if (summary.text) {
+          reasoningLog = summary.text;
+        } else if (summary.content) {
+          reasoningLog = summary.content;
+        } else {
+          reasoningLog = JSON.stringify(summary, null, 2);
+        }
       }
     }
 
@@ -728,24 +733,61 @@ export class OpenAIService extends BaseAIService {
       reasoningLog = this.extractReasoningFromOutputBlocks(response.output);
     }
 
-    // Handle multi-test or JSON schema cases
-    if (reasoningLog && response.output_text) {
-      // Ensure reasoning isn't duplicated if already in output_text
-      try {
-        const parsedOutput = JSON.parse(response.output_text);
-        if (parsedOutput.reasoning) {
-          reasoningLog = reasoningLog + '\n\n' + parsedOutput.reasoning;
+    // Extract reasoning items
+    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
+      reasoningItems = response.output_reasoning.items.map((item: any) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && item.text) return item.text;
+        return JSON.stringify(item);
+      });
+    }
+
+    // Fallback: Scan output[] array for reasoning items
+    if ((!reasoningItems || reasoningItems.length === 0) && response.output && Array.isArray(response.output)) {
+      const reasoningBlocks = response.output.filter((block: any) =>
+        block && (
+          block.type === 'reasoning' ||
+          block.type === 'Reasoning' ||
+          (block.type === 'message' && (block.role === 'reasoning' || block.role === 'Reasoning'))
+        )
+      );
+
+      reasoningItems = reasoningBlocks.map((block: any) => {
+        if (typeof block.content === 'string') return block.content;
+        if (Array.isArray(block.content)) {
+          const textContent = block.content.find((c: any) => c.type === 'text');
+          return textContent?.text || JSON.stringify(block.content);
         }
-      } catch (e) {
-        // Ignore parse errors
+        return JSON.stringify(block);
+      }).filter(Boolean);
+    }
+
+    // Validate types and fix corruption
+    if (reasoningLog && typeof reasoningLog !== 'string') {
+      console.error(`[${this.provider}] WARNING: reasoningLog is not a string! Type: ${typeof reasoningLog}`, reasoningLog);
+      try {
+        reasoningLog = JSON.stringify(reasoningLog, null, 2);
+        console.log(`[${this.provider}] Converted reasoningLog object to JSON string: ${reasoningLog.length} chars`);
+      } catch (error) {
+        console.error(`[${this.provider}] Failed to stringify reasoningLog object:`, error);
+        reasoningLog = null;
       }
     }
 
-    // Extract reasoning items
-    if (response.output_reasoning?.items && Array.isArray(response.output_reasoning.items)) {
-      reasoningItems = response.output_reasoning.items.map((item: any) => 
-        item.text || JSON.stringify(item)
-      );
+    if (reasoningItems && !Array.isArray(reasoningItems)) {
+      console.error(`[${this.provider}] WARNING: reasoningItems is not an array! Type: ${typeof reasoningItems}`, reasoningItems);
+      reasoningItems = [];
+    }
+
+    // Fallback: Create log from items if log is empty
+    if (!reasoningLog && reasoningItems && reasoningItems.length > 0) {
+      reasoningLog = reasoningItems
+        .filter(item => item && typeof item === 'string' && item.trim().length > 0)
+        .map((item, index) => `Step ${index + 1}: ${item}`)
+        .join('\n\n');
+      if (!reasoningLog || reasoningLog.length === 0) {
+        reasoningLog = null;
+      }
     }
 
     return { reasoningLog, reasoningItems };
