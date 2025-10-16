@@ -4,8 +4,12 @@
 **Date:** 2025-09-28 18:26:41  
 **Purpose:** Guidance for AI Agents working with code in this repository
 
-## 🚨 CRITICAL PLATFORM NOTES
 
+
+When running on Codex you may do anything and run the dev server and do any testing you want to!
+
+## 🚨 CRITICAL PLATFORM NOTES
+If you are in the user's IDE!!
 - **The user is ON WINDOWS** - Use PowerShell syntax and commands only
 - **NEVER** use `&&` or `||` as statement separators on Windows
 - **NEVER** use `cd` commands - we are always in the correct directory
