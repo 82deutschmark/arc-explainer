@@ -15,9 +15,8 @@ import { useModels } from '@/hooks/useModels';
 import { Loader2, Grid3X3, Sparkles, Cpu, Database, Trophy, User, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
-import { useHasExplanation } from '@/hooks/useExplanation';
 import { formatProcessingTime } from '@/utils/timeFormatters';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 import { hasPuzzleName } from '@shared/utils/puzzleNames';
@@ -38,6 +37,17 @@ interface EnhancedPuzzleMetadata extends PuzzleMetadata {
   multiTestAverageAccuracy?: number;
   hasMultiplePredictions?: boolean;
   multiTestPredictionGrids?: any;
+}
+
+interface PuzzleStatsRecord extends PuzzleMetadata {
+  performanceData?: {
+    totalExplanations?: number;
+  } & Record<string, unknown>;
+}
+
+interface PuzzleStatsResponse {
+  puzzles: PuzzleStatsRecord[];
+  total: number;
 }
 
 export default function PuzzleBrowser() {
@@ -75,7 +85,35 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
-  
+
+  const {
+    data: statsData,
+    isLoading: isStatsLoading,
+    error: statsError,
+  } = useQuery<PuzzleStatsResponse>({
+    queryKey: ['puzzle-stats', 'rich'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/puzzles/stats?includeRichMetrics=true');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch puzzle stats (${response.status})`);
+      }
+
+      const json = await response.json();
+      const payload = json?.data;
+
+      if (!payload || !Array.isArray(payload.puzzles)) {
+        throw new Error('Puzzle stats payload missing puzzle list');
+      }
+
+      return {
+        puzzles: payload.puzzles as PuzzleStatsRecord[],
+        total: typeof payload.total === 'number' ? payload.total : payload.puzzles.length,
+      };
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
   // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
     let filtered = (puzzles || []) as unknown as EnhancedPuzzleMetadata[];
@@ -158,6 +196,69 @@ export default function PuzzleBrowser() {
 
     return filtered;
   }, [puzzles, explanationFilter, namedFilter, sortBy, searchQuery]);
+
+  const statsSummary = React.useMemo(() => {
+    if (!statsData?.puzzles) {
+      return null;
+    }
+
+    const totalPuzzles = typeof statsData.total === 'number' ? statsData.total : statsData.puzzles.length;
+    let explainedCount = 0;
+    let totalExplanations = 0;
+    const datasetCounts = new Map<string, number>();
+
+    statsData.puzzles.forEach((puzzle) => {
+      const dataset = puzzle.source ?? 'Unknown';
+      datasetCounts.set(dataset, (datasetCounts.get(dataset) ?? 0) + 1);
+
+      const explanationCount = puzzle.performanceData?.totalExplanations ?? 0;
+      totalExplanations += explanationCount;
+
+      if (puzzle.hasExplanation || explanationCount > 0) {
+        explainedCount += 1;
+      }
+    });
+
+    const datasetBreakdown = Array.from(datasetCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([dataset, count]) => ({
+        dataset,
+        count,
+        percentage: totalPuzzles > 0 ? Math.round((count / totalPuzzles) * 100) : 0,
+      }));
+
+    return {
+      totalPuzzles,
+      explainedCount,
+      unexplainedCount: Math.max(totalPuzzles - explainedCount, 0),
+      datasetBreakdown,
+      totalExplanations,
+      explainedCoverage: totalPuzzles > 0 ? (explainedCount / totalPuzzles) * 100 : 0,
+    };
+  }, [statsData]);
+
+  const filteredSummary = React.useMemo(() => {
+    const total = filteredPuzzles.length;
+    let named = 0;
+    let explained = 0;
+
+    filteredPuzzles.forEach((puzzle) => {
+      if (hasPuzzleName(puzzle.id)) {
+        named += 1;
+      }
+
+      if (puzzle.hasExplanation) {
+        explained += 1;
+      }
+    });
+
+    return {
+      total,
+      named,
+      explained,
+      unexplained: Math.max(total - explained, 0),
+    };
+  }, [filteredPuzzles]);
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
@@ -251,20 +352,121 @@ export default function PuzzleBrowser() {
           </div>
 
           <div className="border-t border-slate-200 bg-slate-50/80">
-            <dl className="grid gap-4 px-6 py-4 sm:grid-cols-3">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">In view</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.length.toLocaleString()}</dd>
+            <div className="grid gap-4 px-6 py-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="space-y-4">
+                {statsError && (
+                  <div role="alert" className="alert alert-error">
+                    <span>
+                      Unable to load dataset totals. {statsError instanceof Error ? statsError.message : 'Unknown error'}
+                    </span>
+                  </div>
+                )}
+                <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dataset coverage</p>
+                      <h3 className="text-lg font-semibold text-slate-900">Full corpus overview</h3>
+                    </div>
+                    <Database className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <div className="mt-4 space-y-4">
+                    {isStatsLoading && !statsSummary ? (
+                      <div className="space-y-4">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {Array.from({ length: 4 }).map((_, index) => (
+                            <div key={index} className="space-y-2">
+                              <div className="skeleton h-3 w-24" />
+                              <div className="skeleton h-6 w-28" />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="space-y-2">
+                          <div className="skeleton h-3 w-32" />
+                          {Array.from({ length: 4 }).map((_, index) => (
+                            <div key={index} className="skeleton h-4 w-full" />
+                          ))}
+                        </div>
+                      </div>
+                    ) : statsSummary ? (
+                      <>
+                        <dl className="grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <dt className="text-xs uppercase tracking-wide text-slate-500">Total puzzles</dt>
+                            <dd className="text-2xl font-semibold text-slate-900">{statsSummary.totalPuzzles.toLocaleString()}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-xs uppercase tracking-wide text-slate-500">Explained puzzles</dt>
+                            <dd className="text-2xl font-semibold text-emerald-600">
+                              {statsSummary.explainedCount.toLocaleString()}
+                              <span className="ml-2 text-xs font-semibold text-emerald-600/80">
+                                ({Math.round(statsSummary.explainedCoverage)}% coverage)
+                              </span>
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="text-xs uppercase tracking-wide text-slate-500">Unexplained puzzles</dt>
+                            <dd className="text-2xl font-semibold text-slate-900">{statsSummary.unexplainedCount.toLocaleString()}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-xs uppercase tracking-wide text-slate-500">Total explanations logged</dt>
+                            <dd className="text-2xl font-semibold text-slate-900">{statsSummary.totalExplanations.toLocaleString()}</dd>
+                          </div>
+                        </dl>
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dataset breakdown</p>
+                          <ul className="mt-2 space-y-1 text-sm text-slate-600">
+                            {statsSummary.datasetBreakdown.length > 0 ? (
+                              statsSummary.datasetBreakdown.map(({ dataset, count, percentage }) => (
+                                <li key={dataset} className="flex items-center justify-between rounded bg-slate-50 px-3 py-2">
+                                  <span className="font-medium text-slate-700">{dataset}</span>
+                                  <span className="text-slate-900">
+                                    {count.toLocaleString()}
+                                    <span className="ml-2 text-xs text-slate-500">({percentage}%)</span>
+                                  </span>
+                                </li>
+                              ))
+                            ) : (
+                              <li className="text-xs text-slate-500">Dataset mix unavailable.</li>
+                            )}
+                          </ul>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-slate-600">Dataset statistics are currently unavailable. Please retry shortly.</p>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => hasPuzzleName(p.id)).length.toLocaleString()}</dd>
+              <div className="rounded-lg border border-slate-200 bg-white/90 p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current filters</p>
+                <h3 className="text-lg font-semibold text-slate-900">In-view summary</h3>
+                <dl className="mt-4 space-y-3">
+                  <div>
+                    <dt className="text-xs uppercase tracking-wide text-slate-500">Puzzles shown</dt>
+                    <dd className="text-2xl font-semibold text-slate-900">{filteredSummary.total.toLocaleString()}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
+                    <dd className="text-2xl font-semibold text-slate-900">{filteredSummary.named.toLocaleString()}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase tracking-wide text-slate-500">With explanations</dt>
+                    <dd className="text-2xl font-semibold text-slate-900">
+                      {filteredSummary.explained.toLocaleString()}
+                      {statsSummary && statsSummary.totalPuzzles > 0 ? (
+                        <span className="ml-2 text-xs text-slate-500">
+                          {((filteredSummary.explained / statsSummary.totalPuzzles) * 100).toFixed(1)}% of corpus
+                        </span>
+                      ) : null}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs uppercase tracking-wide text-slate-500">Without explanations</dt>
+                    <dd className="text-2xl font-semibold text-slate-900">{filteredSummary.unexplained.toLocaleString()}</dd>
+                  </div>
+                </dl>
               </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Has analysis</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => p.hasExplanation).length.toLocaleString()}</dd>
-              </div>
-            </dl>
+            </div>
           </div>
         </header>
 
