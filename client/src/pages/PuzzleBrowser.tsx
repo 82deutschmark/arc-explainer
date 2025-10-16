@@ -9,16 +9,10 @@
  * DaisyUI: Pass - Continues using DaisyUI buttons and form controls.
  */
 import React, { useState, useCallback } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
-import { useModels } from '@/hooks/useModels';
 import { Loader2, Grid3X3, Sparkles, Cpu, Database, Trophy, User, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
-import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
 import type { PuzzleMetadata } from '@shared/types';
-import { useHasExplanation } from '@/hooks/useExplanation';
-import { formatProcessingTime } from '@/utils/timeFormatters';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
 import { hasPuzzleName } from '@shared/utils/puzzleNames';
 
@@ -49,12 +43,9 @@ export default function PuzzleBrowser() {
   const [multiTestFilter, setMultiTestFilter] = useState<string>('single'); // 'any', 'single', 'multi'
   const [sortBy, setSortBy] = useState<string>('named_first'); // 'named_first', 'unexplained_first', 'default', etc.
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchError, setSearchError] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [location, setLocation] = useLocation();
-  const { data: models = [] } = useModels();
-  const { toast } = useToast();
 
   // Set page title
   React.useEffect(() => {
@@ -228,7 +219,6 @@ export default function PuzzleBrowser() {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    setSearchError(null);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -244,9 +234,6 @@ export default function PuzzleBrowser() {
                   Open Puzzle
                 </button>
               </div>
-              {searchError && (
-                <p className="text-xs text-red-500">{searchError}</p>
-              )}
             </div>
           </div>
 
