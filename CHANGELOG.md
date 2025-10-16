@@ -1,3 +1,22 @@
+## [4.8.22] - 2025-10-16
+### 🪐 Saturn Streaming: Immediate UI Feedback & Merge Conflict Resolution
+
+**Fixed Saturn Visual Solver to show immediate UI feedback when analysis starts and resolved multiple merge conflict artifacts blocking streaming.**
+
+#### Key Fixes
+- **Immediate Feedback:** Added `logLines` display to `SaturnTerminalLogs` component so users see status updates immediately when clicking Start Analysis button
+- **Merge Conflict Cleanup:** Removed duplicate variable declarations in `useAnalysisResults`, `analysisStreamService`, and `openai/streaming` that were preventing successful builds
+- **Streaming Detection:** Fixed frontend to default streaming to enabled in development mode for better developer experience
+- **URL Construction:** Fixed SSE URL to use relative paths so Vite proxy correctly forwards requests to backend
+- **Error Handling:** Added comprehensive try/catch blocks and console logging throughout streaming flow for better debugging
+
+#### Quality Gates
+- Server starts successfully without build errors
+- Backend SSE endpoint tested and confirmed working with test script
+- Frontend displays status log with startup messages
+
+---
+
 ## [4.8.21] - 2025-10-17
 ### 🔁 Streaming Flag Diagnostics Hardening
 
