@@ -44,7 +44,16 @@ class SaturnStreamService {
     previousResponseId,
     abortSignal,
   }: SaturnStreamParams): Promise<void> {
-    const decodedModelKey = decodeURIComponent(modelKey);
+    let decodedModelKey: string;
+    try {
+      decodedModelKey = decodeURIComponent(modelKey);
+    } catch (error) {
+      logger.warn(
+        `[SaturnStream] Failed to decode model key '${modelKey}', using raw value. ${(error as Error)?.message ?? error}`,
+        'SaturnStream'
+      );
+      decodedModelKey = modelKey;
+    }
     const {
       original: originalModelKey,
       normalized: canonicalModelKey,
