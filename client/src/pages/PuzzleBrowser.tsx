@@ -193,25 +193,25 @@ export default function PuzzleBrowser() {
           <CollapsibleMission />
 
           {/* Resources & References Section - Enhanced with emojis and better styling */}
-          <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+          <div className="card shadow-lg border-0 bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
             <div className="card-body p-6">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Sparkles className="h-6 w-6 text-purple-600" />
-                <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
+                <Sparkles className="h-5 w-5 text-slate-500" />
+                <h3 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
                   🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪ ARC-AGI Knowledge Hub 🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪
                 </h3>
-                <Sparkles className="h-6 w-6 text-purple-600" />
+                <Sparkles className="h-5 w-5 text-slate-500" />
               </div>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Research Section */}
-                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-purple-100">
+                <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-slate-200">
                   <div className="flex items-center gap-2 mb-2">
-                    <Cpu className="h-4 w-4 text-purple-600" />
-                    <p className="font-bold text-purple-800 text-sm">🟪◻🟪 Research Papers</p>
+                    <Cpu className="h-4 w-4 text-slate-600" />
+                    <p className="font-bold text-slate-800 text-sm">🟪◻🟪 Research Papers</p>
                   </div>
                   <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                     className="text-blue-600 hover:text-purple-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                     className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1 transition-colors">
                     🔲 ARC2 Technical Report <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
