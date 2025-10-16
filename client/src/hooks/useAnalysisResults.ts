@@ -17,6 +17,7 @@ import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
 import type { AnalysisStreamParams } from '@/lib/streaming/analysisStream';
 import type { ModelConfig } from '@shared/types';
 import { isStreamingEnabled } from '@shared/config/streaming';
+import { isFeatureFlagEnabled } from '@shared/utils/featureFlags';
 
 interface UseAnalysisResultsProps {
   taskId: string;
@@ -62,12 +63,15 @@ export function useAnalysisResults({
 
   // Streaming integration
   const streamingEnabled = isStreamingEnabled();
+  const streamingEnabled = isFeatureFlagEnabled(import.meta.env.VITE_ENABLE_SSE_STREAMING as string | undefined);
   const {
     startStream,
     closeStream,
     status: streamStatus,
     visibleText: streamingVisibleText,
     reasoningText: streamingReasoningText,
+    structuredJsonText: streamingStructuredJsonText,
+    structuredJson: streamingStructuredJson,
     summary: streamSummary,
     error: streamError,
   } = useAnalysisStreaming();
@@ -210,7 +214,7 @@ export function useAnalysisResults({
         originalExplanationId: originalExplanation?.id,
       };
 
-      startStream(params, {
+      void startStream(params, {
         onStatus: status => {
           if (status && typeof status === 'object') {
             if ('phase' in status && typeof (status as any).phase === 'string') {
@@ -442,6 +446,8 @@ export function useAnalysisResults({
     streamStatus,
     streamingText: streamingVisibleText,
     streamingReasoning: streamingReasoningText,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
