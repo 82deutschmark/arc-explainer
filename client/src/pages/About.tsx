@@ -62,20 +62,71 @@ export default function About() {
           </div>
         </div>
 
-        {/* Why This Matters */}
+        {/* Personal Story */}
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
             <h2 className="card-title">
               <Heart className="h-6 w-6 text-error" />
+              The Personal Story
+            </h2>
+            <div className="space-y-4">
+              <p className="text-base-content/80 leading-relaxed">
+                I started this project after stumbling onto the ARC-AGI "easy for humans" tagline and immediately feeling the opposite... 
+                most of these puzzles made me feel <em>really</em> dumb. If you've ever stared at a grid and wondered what cosmic joke 
+                you're missing, you're not alone.
+              </p>
+              
+              <p className="text-base-content/80 leading-relaxed">
+                I built this app to explain to me WHY these answers are correct. 
+                These are the tasks directly cloned from the v1 and v2 sets of the ARC-AGI prize. The ARC-AGI puzzles are often described
+                as "easy for humans," but let's be honest... they're not easy for most of us. 
+                These tasks require sophisticated logical reasoning that many people find genuinely challenging.
+              </p>
+              
+              <p className="text-base-content/80 leading-relaxed">
+                This app takes a different approach: instead of asking AI to solve these puzzles, 
+                we ask it to explain why correct answers are correct. 
+                The results are revealing. If AI models can't even articulate the reasoning behind known solutions, 
+                how can they have any hope of solving novel problems?
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Accessibility Focus */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">
+              <BookOpen className="h-6 w-6 text-success" />
               Why Accessibility Matters
             </h2>
             <div className="space-y-4">
               <p className="text-base-content/80 leading-relaxed">
-                I want people from outside of computer science, machine learning, and math to understand the capabilities of AI models.
+                My dad is one of the smartest people I know, yet color-blindness turns half the grid into a monochrome blur for him.  
+                My nephew dreams of running mission control for rocket ships in twenty years, but genetics means he inherited my dad's colorblindness!
+                He'll need the fluid intelligence skills that can be built by solving these puzzles, and I don't want him to bounce off these puzzles just because the color palette got in the way.
               </p>
+              
               <p className="text-base-content/80 leading-relaxed">
-                I want to explore the kind of reasoning that currently eludes AI.
+                That's why this app replaces colors with emojis 
+                (behind the scenes, it is still all numbers 0-9 and you can switch back to colors and numbers if you want).  
+                The grids stay playful, the logic stays intact, and anyone—color-blind, math-shy, or simply curious—
+                can explore the kind of reasoning that eludes AI.
               </p>
+              
+              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-gray-800 mb-2">
+                  I also made a game based on ARC puzzles to help humans develop their fluid intelligence.
+                </p>
+                <a 
+                  href="https://sfmc.markbarney.net" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-sm font-medium text-blue-700 hover:text-blue-900 underline"
+                >
+                  Check out my experiment here →
+                </a>
+              </div>
             </div>
           </div>
         </div>
