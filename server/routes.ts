@@ -75,7 +75,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/puzzle/analyze/:taskId/:model", validation.puzzleAnalysis, asyncHandler(puzzleController.analyze));
   app.post("/api/puzzle/analyze-list", asyncHandler(puzzleController.analyzeList));
   app.get("/api/puzzle/:puzzleId/has-explanation", asyncHandler(puzzleController.hasExplanation));
-  app.get("/api/stream/analyze/:taskId/:modelKey", asyncHandler(streamController.startAnalysisStream));
+  app.post("/api/stream/analyze", asyncHandler(streamController.prepareAnalysisStream));
+  app.get(
+    "/api/stream/analyze/:taskId/:modelKey/:sessionId",
+    asyncHandler(streamController.startAnalysisStream),
+  );
   app.post("/api/stream/cancel/:sessionId", asyncHandler(streamController.cancel));
   
   // Debug route to force puzzle loader reinitialization
