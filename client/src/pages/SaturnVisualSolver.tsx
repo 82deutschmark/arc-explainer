@@ -289,6 +289,7 @@ export default function SaturnVisualSolver() {
               <SaturnTerminalLogs
                 streamingText={state.streamingText}
                 streamingReasoning={state.streamingReasoning}
+                logLines={state.logLines}
                 isRunning={isRunning}
                 phase={state.streamingPhase || state.phase}
               />

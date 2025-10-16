@@ -192,45 +192,54 @@ export function useSaturnProgress(taskId: string | undefined) {
 
   const start = useCallback(
     async (options?: SaturnOptions) => {
-      if (!taskId) return;
+      console.log('[SaturnStream] START CALLED with options:', options);
+      
+      if (!taskId) {
+        console.error('[SaturnStream] No taskId provided!');
+        return;
+      }
 
-      closeSocket();
-      closeEventSource();
+      try {
+        closeSocket();
+        closeEventSource();
 
-      promptLoggedRef.current = null;
+        promptLoggedRef.current = null;
 
-      setState({
-        status: 'running',
-        phase: 'initializing',
-        step: 0,
-        totalSteps: options?.maxSteps,
-        galleryImages: [],
-        logLines: [],
-        reasoningHistory: [],
-        streamingStatus: streamingEnabled ? 'starting' : 'idle',
-        streamingText: '',
-        streamingReasoning: '',
-        streamingMessage: undefined,
-        streamingJson: '',
-        streamingRefusal: '',
-        streamingAnnotations: [],
-        promptPreview: undefined,
-        promptLength: undefined,
-        promptModel: undefined,
-        promptId: undefined,
-        promptGeneratedAt: undefined,
-        conversationChain: undefined,
-        promptError: undefined,
-      });
+        // IMMEDIATE UI FEEDBACK - Set state synchronously FIRST
+        console.log('[SaturnStream] Setting initial state to running...');
+        setState({
+          status: 'running',
+          phase: 'initializing',
+          step: 0,
+          totalSteps: options?.maxSteps,
+          galleryImages: [],
+          logLines: ['🪐 Saturn Visual Solver starting...'],
+          reasoningHistory: [],
+          streamingStatus: streamingEnabled ? 'starting' : 'idle',
+          streamingText: '',
+          streamingReasoning: '',
+          streamingMessage: undefined,
+          streamingJson: '',
+          streamingRefusal: '',
+          streamingAnnotations: [],
+          promptPreview: undefined,
+          promptLength: undefined,
+          promptModel: undefined,
+          promptId: undefined,
+          promptGeneratedAt: undefined,
+          conversationChain: undefined,
+          promptError: undefined,
+        });
 
-      // Use utility function to get default model if none provided
-      const defaultModel = getDefaultSaturnModel();
-      const modelKey = options?.model || (defaultModel?.key ?? 'gpt-5-nano-2025-08-07');
+        // Use utility function to get default model if none provided
+        const defaultModel = getDefaultSaturnModel();
+        const modelKey = options?.model || (defaultModel?.key ?? 'gpt-5-nano-2025-08-07');
 
-      console.log('[SaturnStream] Streaming enabled:', streamingEnabled);
-      console.log('[SaturnStream] Selected model:', modelKey);
+        console.log('[SaturnStream] Streaming enabled:', streamingEnabled);
+        console.log('[SaturnStream] Selected model:', modelKey);
+        console.log('[SaturnStream] TaskId:', taskId);
 
-      if (streamingEnabled) {
+        if (streamingEnabled) {
         // For development, use empty string to make relative requests to same origin
         // Vite dev server proxy will forward /api/* to backend
         const query = new URLSearchParams();
@@ -576,6 +585,16 @@ export function useSaturnProgress(taskId: string | undefined) {
       const sid = json?.data?.sessionId as string;
       setSessionId(sid);
       openWebSocket(sid);
+      } catch (error) {
+        console.error('[SaturnStream] Error in start function:', error);
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          streamingStatus: 'failed',
+          streamingMessage: error instanceof Error ? error.message : 'Failed to start analysis',
+          logLines: [...(prev.logLines || []), `❌ Error: ${error instanceof Error ? error.message : String(error)}`],
+        }));
+      }
     },
     [closeEventSource, closeSocket, openWebSocket, streamingEnabled, taskId]
   );
