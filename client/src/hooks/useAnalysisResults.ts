@@ -210,7 +210,7 @@ export function useAnalysisResults({
         originalExplanationId: originalExplanation?.id,
       };
 
-      startStream(params, {
+      void startStream(params, {
         onStatus: status => {
           if (status && typeof status === 'object') {
             if ('phase' in status && typeof (status as any).phase === 'string') {

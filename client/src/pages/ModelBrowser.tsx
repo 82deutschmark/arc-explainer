@@ -88,7 +88,7 @@ export default function ModelBrowser() {
     if (streamingEnabled) {
       try {
         setCurrentStreamingPuzzle(puzzleId);
-        startStream(
+        void startStream(
           {
             taskId: puzzleId,
             modelKey: selectedModel,

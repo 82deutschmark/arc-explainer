@@ -34,10 +34,33 @@ export interface StreamAnalysisPayload {
   originalExplanationId?: number;
   originalExplanation?: any;
   customChallenge?: string;
+  createdAt?: number;
 }
 
 export class AnalysisStreamService {
-  async startStreaming(req: Request, payload: StreamAnalysisPayload): Promise<string> {
+  private readonly pendingSessions: Map<string, StreamAnalysisPayload> = new Map();
+
+  savePendingPayload(payload: StreamAnalysisPayload): string {
+    const sessionId = payload.sessionId ?? nanoid();
+    const enrichedPayload: StreamAnalysisPayload = {
+      ...payload,
+      sessionId,
+      createdAt: Date.now(),
+    };
+
+    this.pendingSessions.set(sessionId, enrichedPayload);
+    return sessionId;
+  }
+
+  getPendingPayload(sessionId: string): StreamAnalysisPayload | undefined {
+    return this.pendingSessions.get(sessionId);
+  }
+
+  clearPendingPayload(sessionId: string): void {
+    this.pendingSessions.delete(sessionId);
+  }
+
+  async startStreaming(_req: Request, payload: StreamAnalysisPayload): Promise<string> {
     const sessionId = payload.sessionId ?? nanoid();
 
     if (!sseStreamManager.has(sessionId)) {
@@ -46,6 +69,7 @@ export class AnalysisStreamService {
 
     if (!STREAMING_ENABLED) {
       sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
+      this.clearPendingPayload(sessionId);
       return sessionId;
     }
 
@@ -53,6 +77,11 @@ export class AnalysisStreamService {
     const decodedModel = decodeURIComponent(modelKey);
     const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
+    const aiService = aiServiceFactory.getService(decodedModel);
+    if (!aiService?.supportsStreaming?.(decodedModel)) {
+      logger.warn(`Streaming requested for unsupported model ${decodedModel}`, "stream-service");
+      sseStreamManager.error(sessionId, "STREAMING_UNAVAILABLE", "Streaming is not enabled for this model.");
+      this.clearPendingPayload(sessionId);
     const aiService = aiServiceFactory.getService(canonicalModelKey);
     if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
       logger.warn(
@@ -144,6 +173,8 @@ export class AnalysisStreamService {
       const message = error instanceof Error ? error.message : String(error);
       logger.error(`Streaming analysis failed: ${message}`, "stream-service");
       sseStreamManager.error(sessionId, "STREAMING_FAILED", message);
+    } finally {
+      this.clearPendingPayload(sessionId);
     }
 
     return sessionId;

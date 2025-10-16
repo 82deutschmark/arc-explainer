@@ -270,92 +270,65 @@ reasoning: {
 ### Express SSE Endpoint
 
 ```typescript
-app.get("/api/stream/analyze/:taskId/:modelKey", async (req, res) => {
-  const { taskId, modelKey } = req.params;
-  const sessionId = req.query.sessionId || nanoid();
+const pendingSessions = new Map<string, StreamAnalysisPayload>();
 
-  // Set SSE headers
+app.post("/api/stream/analyze", (req, res) => {
+  const payload = validateStreamPayload(req.body);
+  if (!payload) {
+    res.status(422).json({ error: "Invalid payload" });
+    return;
+  }
+
+  const sessionId = nanoid();
+  pendingSessions.set(sessionId, payload);
+  res.json({ sessionId });
+});
+
+app.get("/api/stream/analyze/:taskId/:modelKey/:sessionId", async (req, res) => {
+  const { taskId, modelKey, sessionId } = req.params;
+  const cached = pendingSessions.get(sessionId);
+
+  if (!cached || cached.taskId !== taskId || cached.modelKey !== decodeURIComponent(modelKey)) {
+    res.status(404).json({ error: "Session payload missing" });
+    return;
+  }
+
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.flushHeaders();
 
-  // Send initial event
   res.write(`event: stream.init\n`);
   res.write(`data: ${JSON.stringify({ sessionId, taskId, modelKey })}\n\n`);
 
   try {
-    // Get puzzle data
     const puzzle = await getPuzzle(taskId);
-    const prompt = buildPrompt(puzzle);
-
-    // Start OpenAI stream
+    const prompt = buildPrompt(puzzle, cached);
     const stream = await openai.responses.stream({
       model: getApiModelName(modelKey),
-      input: [
-        { role: "system", content: prompt.system },
-        { role: "user", content: prompt.user }
-      ],
-      reasoning: {
-        effort: "medium",
-        summary: "detailed"
-      },
-      text: {
-        verbosity: "high",
-        format: { type: "json_schema", name: "solution", strict: true, schema: yourSchema }
-      },
+      input: buildInputMessages(prompt, cached),
+      reasoning: cached.reasoning,
+      text: cached.text,
       stream: true
     });
 
-    // Forward events to client
     for await (const event of stream) {
-      switch (event.type) {
-        case "response.reasoning_summary_text.delta":
-          res.write(`event: stream.chunk\n`);
-          res.write(`data: ${JSON.stringify({
-            type: "reasoning",
-            delta: event.delta,
-            timestamp: Date.now()
-          })}\n\n`);
-          break;
-
-        case "response.content_part.added":
-          res.write(`event: stream.chunk\n`);
-          res.write(`data: ${JSON.stringify({
-            type: "text",
-            delta: event.part?.text,
-            timestamp: Date.now()
-          })}\n\n`);
-          break;
-
-        case "response.completed":
-          res.write(`event: stream.status\n`);
-          res.write(`data: ${JSON.stringify({ state: "completed" })}\n\n`);
-          break;
-      }
+      forwardEvent(res, event);
     }
 
-    // Get final response and save to database
     const finalResponse = await stream.finalResponse();
     const analysis = extractAnalysis(finalResponse);
     await saveToDatabase(analysis);
 
-    // Send completion event
     res.write(`event: stream.complete\n`);
-    res.write(`data: ${JSON.stringify({
-      status: "success",
-      analysisId: analysis.id,
-      tokenUsage: analysis.tokenUsage
-    })}\n\n`);
-
+    res.write(`data: ${JSON.stringify({ status: "success", analysisId: analysis.id })}\n\n`);
     res.end();
-
   } catch (error) {
     res.write(`event: stream.error\n`);
-    res.write(`data: ${JSON.stringify({
-      error: error.message
-    })}\n\n`);
+    res.write(`data: ${JSON.stringify({ error: error instanceof Error ? error.message : String(error) })}\n\n`);
     res.end();
+  } finally {
+    pendingSessions.delete(sessionId);
   }
 });
 ```
@@ -367,8 +340,22 @@ app.get("/api/stream/analyze/:taskId/:modelKey", async (req, res) => {
 ### JavaScript/TypeScript Client
 
 ```typescript
+const handshake = await fetch("/api/stream/analyze", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    taskId,
+    modelKey,
+    temperature: 0.2,
+    reasoningEffort: "medium",
+    reasoningVerbosity: "high",
+    captureReasoning: true,
+  }),
+});
+
+const { sessionId } = await handshake.json();
 const eventSource = new EventSource(
-  `/api/stream/analyze/${taskId}/${modelKey}?reasoningEffort=medium&reasoningVerbosity=high`
+  `/api/stream/analyze/${taskId}/${encodeURIComponent(modelKey)}/${sessionId}`
 );
 
 let reasoningBuffer = "";
