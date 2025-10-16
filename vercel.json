@@ -9,6 +9,9 @@
       }
     }
   ],
+  "env": {
+    "STREAMING_ENABLED": "true"
+  },
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/dist/index.js" },

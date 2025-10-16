@@ -13,6 +13,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
+import { isStreamingEnabled } from '@shared/config/streaming';
 
 export interface GroverOptions {
   modelKey?: string;
@@ -86,7 +87,7 @@ export function useGroverProgress(taskId: string | undefined) {
   });
   const wsRef = useRef<WebSocket | null>(null);
   const sseRef = useRef<EventSource | null>(null);
-  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const streamingEnabled = isStreamingEnabled();
 
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
@@ -126,7 +127,7 @@ export function useGroverProgress(taskId: string | undefined) {
 
     const modelKey = options?.modelKey || 'grover-gpt-5-nano';
 
-    // SSE STREAMING PATH (when VITE_ENABLE_SSE_STREAMING === 'true')
+    // SSE STREAMING PATH (when STREAMING_ENABLED resolves truthy)
     if (streamingEnabled) {
       const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
       const apiUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
