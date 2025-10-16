@@ -11,7 +11,7 @@ import { puzzleAnalysisService } from '../puzzleAnalysisService';
 import { explanationService } from '../explanationService';
 import { sseStreamManager } from './SSEStreamManager';
 import { logger } from '../../utils/logger';
-import { aiServiceFactory } from '../aiServiceFactory';
+import { aiServiceFactory, canonicalizeModelKey } from '../aiServiceFactory';
 import { saturnService } from '../saturnService';
 import { puzzleService } from '../puzzleService';
 import { validateStreamingResult } from '../streamingValidator';
@@ -45,20 +45,25 @@ class SaturnStreamService {
     abortSignal,
   }: SaturnStreamParams): Promise<void> {
     const decodedModelKey = decodeURIComponent(modelKey);
-    const isSaturnModel = saturnService.isSaturnModelKey(decodedModelKey);
+    const {
+      original: originalModelKey,
+      normalized: canonicalModelKey,
+    } = canonicalizeModelKey(decodedModelKey);
+    const isSaturnModel = saturnService.isSaturnModelKey(canonicalModelKey);
     const aiService = isSaturnModel
       ? saturnService
-      : aiServiceFactory.getService(decodedModelKey);
+      : aiServiceFactory.getService(canonicalModelKey);
 
-    if (!aiService?.supportsStreaming?.(decodedModelKey)) {
+    if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
       logger.warn(
-        `[SaturnStream] Streaming requested for unsupported model ${decodedModelKey}`,
+        `[SaturnStream] Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
         'SaturnStream'
       );
       sseStreamManager.error(
         sessionId,
         'SATURN_STREAMING_UNAVAILABLE',
-        `Model ${decodedModelKey} does not support streaming.`
+        `Model ${originalModelKey} does not support streaming.`,
+        { modelKey: originalModelKey }
       );
       return;
     }
@@ -66,15 +71,31 @@ class SaturnStreamService {
     sseStreamManager.sendEvent(sessionId, 'stream.status', {
       state: 'starting',
       phase: 'prompt_building',
-      message: `Preparing ${decodedModelKey} Saturn prompt...`,
+      message: `Preparing ${originalModelKey} Saturn prompt...`,
       taskId,
-      modelKey: decodedModelKey,
+      modelKey: originalModelKey,
     });
 
     const baseHarness: StreamingHarness = {
       sessionId,
-      emit: (chunk) => sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk),
-      emitEvent: (event, payload) => sseStreamManager.sendEvent(sessionId, event, payload),
+      emit: (chunk) => {
+        const enrichedChunk = {
+          ...(chunk ?? {}),
+          metadata: {
+            ...(chunk?.metadata ?? {}),
+            modelKey: originalModelKey,
+            taskId,
+          },
+        };
+        sseStreamManager.sendEvent(sessionId, 'stream.chunk', enrichedChunk);
+      },
+      emitEvent: (event, payload) => {
+        const enrichedEvent =
+          payload && typeof payload === 'object'
+            ? { ...payload, modelKey: originalModelKey, taskId }
+            : { modelKey: originalModelKey, taskId };
+        sseStreamManager.sendEvent(sessionId, event, enrichedEvent);
+      },
       end: async (summary) => {
         // CRITICAL: Save result to database before sending completion
         if (summary && 'responseSummary' in summary) {
@@ -83,7 +104,7 @@ class SaturnStreamService {
             try {
               logger.debug(`[SaturnStream] Saving analysis to database for ${taskId}`, 'SaturnStream');
               await explanationService.saveExplanation(taskId, {
-                [decodedModelKey]: completion.responseSummary.analysis
+                [originalModelKey]: completion.responseSummary.analysis
               });
               logger.debug(`[SaturnStream] Successfully saved to database`, 'SaturnStream');
             } catch (dbError) {
@@ -97,7 +118,7 @@ class SaturnStreamService {
       abortSignal,
       metadata: {
         taskId,
-        modelKey: decodedModelKey,
+        modelKey: originalModelKey,
       },
     };
 
@@ -148,7 +169,7 @@ class SaturnStreamService {
 
         await saturnService.analyzePuzzleWithStreaming(
           puzzle,
-          decodedModelKey,
+          canonicalModelKey,
           taskId,
           temperature,
           promptId,
@@ -159,7 +180,7 @@ class SaturnStreamService {
       } else {
         await puzzleAnalysisService.analyzePuzzleStreaming(
           taskId,
-          decodedModelKey,
+          canonicalModelKey,
           {
             temperature,
             promptId,
