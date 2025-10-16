@@ -1,3 +1,18 @@
+## [4.8.20] - 2025-10-16
+### 🛠️ OpenAI Responses API Remediation
+
+**Repaired the October 2025 Responses API migration so Saturn regains structured parsing and resilient streaming.**
+
+#### Key Fixes
+- **Payload Compliance:** `payloadBuilder` now emits system prompts via the `instructions` field and converts user prompts into `input_text` message items so continuations honour `previous_response_id` without duplicating context.
+- **Streaming Coverage:** Added handlers for `response.reasoning_text.*`, `response.reasoning_summary_text.*`, and summary part events so SSE clients receive the full reasoning trace and JSON annotations while runs are in flight.
+- **Finalization Signals:** Streaming harness surfaces accumulated reasoning summaries and aggregated JSON chunks to the session bus for downstream consumers.
+
+#### Quality Gates
+- `npm run check`
+
+---
+
 ## [4.8.19] - 2025-10-16
 ### 🛰️ Saturn Streaming: JSON & Annotation Parity
 
