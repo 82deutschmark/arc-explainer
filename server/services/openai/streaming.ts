@@ -35,6 +35,7 @@ export interface OpenAIStreamAggregates {
     sequenceNumber?: number;
   }>;
   expectingJson: boolean;
+  receivedAnnotatedJsonDelta: boolean;
 }
 
 export interface StreamCallbacks {
@@ -51,7 +52,8 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
     refusal: "",
     reasoningSummary: "",
     annotations: [],
-    expectingJson
+    expectingJson,
+    receivedAnnotatedJsonDelta: false
   };
 }
 
@@ -170,6 +172,19 @@ export function handleStreamEvent(
         content: aggregates.text,
         metadata: { sequence: sequenceNumber }
       });
+      if (aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta) {
+        aggregates.parsed += delta;
+        callbacks.emitChunk({
+          type: "json",
+          delta,
+          content: aggregates.parsed,
+          metadata: {
+            sequence: sequenceNumber,
+            expectingJson: aggregates.expectingJson,
+            fallback: true
+          }
+        });
+      }
       break;
     }
     case "response.output_text.done": {
@@ -182,6 +197,7 @@ export function handleStreamEvent(
     }
     case "response.output_text.delta.annotated": {
       const delta = (event as any).delta || "";
+      aggregates.receivedAnnotatedJsonDelta = true;
       aggregates.parsed += delta;
       callbacks.emitChunk({
         type: "json", // indicates structured output delta
