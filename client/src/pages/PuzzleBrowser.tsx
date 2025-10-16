@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
 import { useModels } from '@/hooks/useModels';
-import { Loader2, Grid3X3 } from 'lucide-react';
+import { Loader2, Grid3X3, Sparkles, Cpu, Database, Trophy, User, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useMutation, useQuery, useQueries } from '@tanstack/react-query';
@@ -41,6 +41,7 @@ export default function PuzzleBrowser() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [location, setLocation] = useLocation();
   const { data: models = [] } = useModels();
   const { toast } = useToast();
@@ -244,6 +245,146 @@ export default function PuzzleBrowser() {
             </div>
           </div>
         </header>
+
+        {/* Resources & References Section - Enhanced with emojis and better styling */}
+        <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+          <div className="card-body p-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Sparkles className="h-6 w-6 text-purple-600" />
+              <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
+                ARC-AGI Knowledge Hub
+              </h3>
+              <Sparkles className="h-6 w-6 text-purple-600" />
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Research Section */}
+              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-purple-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Cpu className="h-4 w-4 text-purple-600" />
+                  <p className="font-bold text-purple-800 text-sm">Research Papers</p>
+                </div>
+                <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
+                   className="text-blue-600 hover:text-purple-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                  ARC2 Technical Report <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+
+              {/* Data Sources Section */}
+              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Database className="h-4 w-4 text-blue-600" />
+                  <p className="font-bold text-blue-800 text-sm">Data Sources</p>
+                </div>
+                <div className="space-y-1">
+                  <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
+                     className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    HuggingFace Datasets <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
+                     className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    Official Repository <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* SOTA Solutions Section */}
+              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Trophy className="h-4 w-4 text-green-600" />
+                  <p className="font-bold text-green-800 text-sm">Top Solutions</p>
+                </div>
+                <div className="space-y-1">
+                  <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
+                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    zoecarver's Approach <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
+                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    jerber's Solutions <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
+                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    epang080516's Code <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Community Section */}
+              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="h-4 w-4 text-orange-600" />
+                  <p className="font-bold text-orange-800 text-sm">Community</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="mb-3">
+                    <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded-lg`}>
+                      <div className="collapse-title p-3">
+                        <button
+                          className="w-full flex justify-between items-center h-auto"
+                          onClick={() => setIsOpen(!isOpen)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-orange-800">Critical ARC-AGI-2 Research</span>
+                            <span className="text-xs text-orange-600">by cristianoc</span>
+                          </div>
+                          {isOpen ? (
+                            <ChevronUp className="h-4 w-4 text-orange-600" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 text-orange-600" />
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="collapse-content px-3 pb-3">
+                        <div className="text-xs text-orange-700 space-y-2">
+                          <p>
+                            Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:
+                          </p>
+                          <div className="grid grid-cols-2 gap-1 text-xs">
+                            <p>• 40% sequential composition</p>
+                            <p>• 30% conditional branching</p>
+                            <p>• 20% pattern classification</p>
+                            <p>• 25% iteration/loops</p>
+                            <p>• 15% nested structures</p>
+                            <p>• 10% parallel composition</p>
+                            <p>• 5% graph/DAG structures</p>
+                          </div>
+                          <p className="italic text-orange-600">
+                            A DSL is emerging from these patterns →
+                          </p>
+                          <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
+                             target="_blank" rel="noopener noreferrer"
+                             className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1">
+                            View cristianoc's research <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
+                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
+                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    All the ARC Resources <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
+                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                    Dataset Collection <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
+                <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement!
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Filters - Collapsible */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
