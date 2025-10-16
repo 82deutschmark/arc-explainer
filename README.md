@@ -115,6 +115,13 @@ npm run test  # Allow ~10s to warm up, then open localhost:5173
 
 **For detailed setup, deployment, and technical documentation, see [CLAUDE.md](./CLAUDE.md)**
 
+### Streaming feature flag values
+
+- **Server:** `ENABLE_SSE_STREAMING`
+- **Client:** `VITE_ENABLE_SSE_STREAMING`
+
+Set either variable to any of the following case-insensitive truthy values to enable SSE streaming for analysis flows: `true`, `1`, `yes`, `y`, `on`, `enable`, `enabled`. All other values (including empty strings) disable streaming.
+
 ---
 
 ## Architecture Overview
