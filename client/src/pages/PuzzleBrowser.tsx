@@ -246,6 +246,50 @@ export default function PuzzleBrowser() {
           </div>
         </header>
 
+        {/* PROMINENT ACKNOWLEDGEMENT - Simon Strandgaard */}
+        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-xl p-1">
+          <div className="bg-white rounded-lg p-6">
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center gap-3">
+                <Sparkles className="h-8 w-8 text-purple-600 animate-pulse" />
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Built with ARC Resources
+                </h2>
+                <Sparkles className="h-8 w-8 text-pink-600 animate-pulse" />
+              </div>
+              <p className="text-xl text-gray-800">
+                <strong className="text-2xl text-purple-700">Special thanks to Simon Strandgaard (@neoneye)</strong>
+              </p>
+              <p className="text-gray-700 max-w-2xl mx-auto">
+                For his incredible insights, support, and encouragement in the ARC-AGI community.
+                His comprehensive resources made this project possible!
+              </p>
+              <div className="flex flex-wrap justify-center gap-4 pt-2">
+                <a
+                  href="https://github.com/neoneye/arc-notes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary gap-2"
+                >
+                  <Database className="h-5 w-5" />
+                  All ARC Resources
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <a
+                  href="https://github.com/neoneye/arc-dataset-collection"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary gap-2"
+                >
+                  <Trophy className="h-5 w-5" />
+                  Dataset Collection
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Resources & References Section - Enhanced with emojis and better styling */}
         <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
           <div className="card-body p-6">
@@ -376,12 +420,6 @@ export default function PuzzleBrowser() {
                   </a>
                 </div>
               </div>
-            </div>
-
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
-                <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement!
-              </p>
             </div>
           </div>
         </div>
@@ -522,16 +560,6 @@ export default function PuzzleBrowser() {
             )}
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-            <Link href="/about" className="hover:text-blue-600 transition-colors">About This Project</Link>
-            <a href="https://github.com/82deutschmark/arc-explainer" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">GitHub</a>
-            <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">ARC2 Paper</a>
-            <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">Official ARC-AGI</a>
-          </div>
-        </footer>
       </div>
     </div>
   );
