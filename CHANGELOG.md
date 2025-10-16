@@ -1,3 +1,48 @@
+## [4.8.24] - 2025-10-16
+### 🔒 SECURITY: Complete Removal of API Authentication Requirements
+
+**CRITICAL CHANGE: All API endpoints are now publicly accessible with NO authentication required.**
+
+#### Problem
+Previous development mistakenly added API key authentication middleware to various endpoints, breaking external integrations and researcher access to the ARC Explainer API.
+
+#### Solution
+**Complete removal of all authentication requirements across the entire API surface.**
+
+#### Changes Made
+
+**1. Server Route Configuration (`server/routes.ts`)**
+- ✅ **REMOVED**: Unused `apiKeyAuth` and `optionalApiKeyAuth` imports
+- ✅ **ADDED**: Clear comment documenting that authentication middleware is NOT USED
+- ✅ **VERIFIED**: No routes in the codebase use authentication middleware
+
+**2. Authentication Middleware (`server/middleware/apiKeyAuth.ts`)**
+- ✅ **ADDED**: Prominent warning comment at file header: "⚠️ WARNING: DO NOT USE THIS MIDDLEWARE! ⚠️"
+- ✅ **DOCUMENTED**: All endpoints must remain public and freely accessible
+- ✅ **RETAINED**: File kept for reference only, never to be applied to routes
+
+**3. API Documentation (`docs/reference/api/EXTERNAL_API.md`)**
+- ✅ **REMOVED**: All authentication requirements sections
+- ✅ **REPLACED**: With clear "⚠️ NO AUTHENTICATION REQUIRED ⚠️" warnings
+- ✅ **UPDATED**: Python client example to remove API key parameter
+- ✅ **CLARIFIED**: All endpoints are publicly accessible with no authentication
+
+#### Verification Results
+- ✅ **Comprehensive search**: No authentication middleware applied anywhere
+- ✅ **API client compatibility**: Python client works without API key parameter
+- ✅ **External integrations**: All endpoints freely accessible for researchers
+- ✅ **Documentation consistency**: All references to authentication removed
+
+#### Impact
+**All ARC Explainer API endpoints are now completely public and require NO authentication.** This ensures maximum accessibility for researchers, external applications, and integrations while maintaining all existing functionality.
+
+**Files Modified:**
+- `server/routes.ts` - Removed unused authentication imports
+- `server/middleware/apiKeyAuth.ts` - Added prominent warnings against use
+- `docs/reference/api/EXTERNAL_API.md` - Removed all authentication requirements
+
+---
+
 ## [4.8.23] - 2025-10-16
 ### 🔴 CRITICAL: Saturn Non-Streaming Call Bug
 
