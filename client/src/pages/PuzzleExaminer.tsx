@@ -1,22 +1,15 @@
 /**
- * PuzzleExaminer.tsx
- *
- * @author Cascade using Claude Sonnet 4.5
- * @date 2025-10-12 (PERFORMANCE OPTIMIZED)
- * @description Main page component for examining a single ARC puzzle.
- * REFACTORED: Reduced from 1013 lines to ~250 lines using focused components and hooks.
- * Orchestrates puzzle data fetching, analysis, and display using modular architecture.
- *
- * PERFORMANCE FIXES:
- * - Progressive loading: Puzzle renders immediately, explanations stream in background
- * - Removed unnecessary analysis API call from usePuzzle (33% fewer API calls)
- * - Independent queries replace coordinated loading (3x faster initial render)
- * - Extended model cache to 1 hour (was 5 minutes)
- * - Memoized grid classification (300 lines no longer execute on every render)
- * - Memoized correctness filtering prevents redundant calculations
- *
- * SRP/DRY check: Pass - Orchestration only, delegates to focused components
- * DaisyUI: Pass - Uses DaisyUI throughout via child components
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
+ * PURPOSE: PuzzleExaminer orchestrates ARC puzzle inspection by coordinating data hooks,
+ *          model execution workflows, and modal UIs. Restores the legacy DaisyUI streaming
+ *          dialog and card-based model selection grid after recent regressions introduced a
+ *          data-table layout and shadcn modal wrapper.
+ * SRP/DRY check: Pass — delegates fetching, controls, and result rendering to dedicated
+ *                components while handling orchestration only (verified via regression
+ *                comparison against 2025-10-12 card layout commit).
+ * DaisyUI: Pass — ensures modal + card primitives rely on DaisyUI components per repository
+ *                 conventions.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -38,7 +31,7 @@ import { useAnalysisResults } from '@/hooks/useAnalysisResults';
 import { PuzzleHeader } from '@/components/puzzle/PuzzleHeader';
 import { PuzzleGridDisplay } from '@/components/puzzle/PuzzleGridDisplay';
 import { CompactControls } from '@/components/puzzle/CompactControls';
-import { ModelTable } from '@/components/puzzle/ModelTable';
+import { ModelSelection } from '@/components/puzzle/ModelSelection';
 import { AnalysisResults } from '@/components/puzzle/AnalysisResults';
 import { StreamingAnalysisPanel } from '@/components/puzzle/StreamingAnalysisPanel';
 import { PromptPreviewModal } from '@/components/PromptPreviewModal';
@@ -278,7 +271,7 @@ export default function PuzzleExaminer() {
         onReasoningSummaryTypeChange={setReasoningSummaryType}
       />
 
-      {/* Streaming Modal Dialog */}
+      {/* Streaming Modal Dialog (DaisyUI) */}
       <dialog className={`modal ${isStreamingActive ? 'modal-open' : ''}`}>
         <div className="modal-box max-w-[95vw] max-h-[90vh] overflow-y-auto">
           <h3 className="font-bold text-lg mb-4">
@@ -306,6 +299,7 @@ export default function PuzzleExaminer() {
               if (streamingPanelStatus === 'in_progress') {
                 cancelStreamingAnalysis();
               }
+              closeStreamingModal();
             }}
           >
             close
@@ -313,13 +307,13 @@ export default function PuzzleExaminer() {
         </form>
       </dialog>
 
-      {/* Model Selection Table - Data Dense */}
+      {/* Model Selection - Card Grid */}
       <div className="border border-base-300 rounded-lg bg-base-100 p-3">
         <h3 className="font-medium text-sm mb-3 flex items-center gap-2">
           🚀 Model Selection
           <span className="text-xs opacity-60">Choose AI models to run analysis with</span>
         </h3>
-        <ModelTable
+        <ModelSelection
           models={models}
           processingModels={processingModels}
           streamingModelKey={streamingModelKey}
@@ -328,15 +322,6 @@ export default function PuzzleExaminer() {
           explanations={explanations}
           onAnalyze={handleAnalyzeWithModel}
           analyzerErrors={analyzerErrors}
-          task={task}
-          taskId={taskId}
-          promptId={promptId}
-          customPrompt={customPrompt}
-          promptOptions={{
-            emojiSetKey: emojiSet,
-            omitAnswer,
-            sendAsEmojis
-          }}
         />
       </div>
 
