@@ -166,6 +166,7 @@ function handleParsedDelta(
   if (isFirstDelta) {
     aggregates.parsed = "";
     aggregates.parsedObject = null;
+    aggregates.usedFallbackJson = false;
   }
 
   const parsedOutput = extractParsedOutput(event);
@@ -367,7 +368,7 @@ export function handleStreamEvent(
         metadata: { sequence: sequenceNumber },
       });
 
-      if (aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta) {
+      if (aggregates.expectingJson && !aggregates.receivedParsedJsonDelta) {
         aggregates.parsed = `${aggregates.parsed}${delta}`;
         aggregates.usedFallbackJson = true;
         callbacks.emitChunk({
@@ -384,7 +385,7 @@ export function handleStreamEvent(
       break;
     }
     case "response.output_text.done": {
-      if (aggregates.expectingJson && aggregates.usedFallbackJson && !aggregates.receivedAnnotatedJsonDelta) {
+      if (aggregates.expectingJson && aggregates.usedFallbackJson && !aggregates.receivedParsedJsonDelta) {
         try {
           aggregates.parsedObject = aggregates.parsed ? (JSON.parse(aggregates.parsed) as Record<string, unknown> | Array<unknown>) : null;
         } catch {

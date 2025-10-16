@@ -277,3 +277,44 @@ test("OpenAI streaming handler prioritizes output_parsed deltas over fallback te
   assert.equal(jsonChunks[jsonChunks.length - 1].metadata?.source, "parsed");
   assert.equal(jsonChunks[jsonChunks.length - 1].content, JSON.stringify({ answer: "blue" }));
 });
+
+test("OpenAI streaming handler does not trigger fallback after parsed deltas", () => {
+  const aggregates = createStreamAggregates(true);
+
+  const emitted: any[] = [];
+  const events: Array<{ name: string; payload: any }> = [];
+  const callbacks = {
+    emitChunk: (chunk: any) => emitted.push(chunk),
+    emitEvent: (name: string, payload: any) => events.push({ name, payload })
+  };
+
+  const parsedFirst = {
+    type: "response.output_parsed.delta",
+    delta: { answer: "green" },
+    parsed_output: { answer: "green" },
+    sequence_number: 1,
+    output_index: 0
+  } as any;
+
+  const subsequentText = {
+    type: "response.output_text.delta",
+    delta: "ignored-text",
+    sequence_number: 2,
+    output_index: 0
+  } as any;
+
+  handleStreamEvent(parsedFirst, aggregates, callbacks);
+  handleStreamEvent(subsequentText, aggregates, callbacks);
+
+  assert.equal(aggregates.receivedParsedJsonDelta, true);
+  assert.equal(aggregates.parsed, JSON.stringify({ answer: "green" }));
+  assert.equal(aggregates.usedFallbackJson, false);
+
+  const allJsonChunks = emitted.filter(chunk => chunk.type === "json");
+  assert.ok(allJsonChunks.length >= 1);
+  assert.ok(allJsonChunks.every(chunk => chunk.metadata?.fallback === false));
+  assert.equal(allJsonChunks[0].metadata?.source, "parsed");
+
+  const fallbackEvents = events.filter(event => event.payload?.fallback);
+  assert.equal(fallbackEvents.length, 0);
+});

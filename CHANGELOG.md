@@ -1,3 +1,20 @@
+## [4.8.25] - 2025-10-16
+### BUGFIX: Prevent JSON fallback after parsed deltas
+
+Streaming structured responses started duplicating text into the parsed buffer and flagging fallback: true even after the Responses API delivered response.output_parsed.delta. This broke consumers that rely on pristine JSON streams.
+
+#### Root Cause
+- The guard aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta treated non-annotated parsed deltas as missing, so subsequent response.output_text.delta chunks re-entered the fallback path.
+
+#### Fix
+- Switch the fallback guard to !aggregates.receivedParsedJsonDelta and clear usedFallbackJson as soon as real parsed deltas arrive (server/services/openai/streaming.ts).
+- Add regression coverage to ensure text events after parsed deltas never emit fallback metadata (tests/openaiStreamingHandlers.test.ts).
+
+#### Verification
+- npm test -- openaiStreamingHandlers.test.ts
+- Confirmed new test fails prior to fix and passes after.
+
+---
 ## [4.8.24] - 2025-10-16
 ### 🔒 SECURITY: Complete Removal of API Authentication Requirements
 
@@ -4983,3 +5000,4 @@ To enable conversation chaining:
 - Actual ingestion execution with SSE streaming is prepared but awaits user testing
 - All new code follows established patterns and architectural principles
 \n### Added\n- Introduced streaming-aware analysis hook and UI panels across Puzzle Examiner, Discussion, and Model Debate pages.\n- Added reusable StreamingAnalysisPanel component for live token output with cancel support.\n- Model buttons now reflect streaming capability and status for supported models.
+
