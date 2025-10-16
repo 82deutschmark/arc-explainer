@@ -38,19 +38,39 @@ export function useAnalysisStreaming() {
   const [state, setState] = useState<UseAnalysisStreamingState>(INITIAL_STATE);
   const streamHandleRef = useRef<{ close: () => void } | null>(null);
 
-  const aggregatedText = useMemo(() => {
-    return state.chunks
-      .filter(chunk => chunk.type === 'text' && chunk.delta)
-      .map(chunk => chunk.delta)
-      .join('');
+  const aggregatedContent = useMemo(() => {
+    return state.chunks.reduce(
+      (acc, chunk) => {
+        if (chunk.delta) {
+          if (chunk.type === 'text') {
+            acc.text += chunk.delta;
+          } else if (chunk.type === 'reasoning') {
+            acc.reasoning += chunk.delta;
+          } else if (chunk.type === 'json') {
+            acc.json += chunk.delta;
+          }
+        }
+        return acc;
+      },
+      { text: '', reasoning: '', json: '' }
+    );
   }, [state.chunks]);
 
-  const aggregatedReasoning = useMemo(() => {
-    return state.chunks
-      .filter(chunk => chunk.type === 'reasoning' && chunk.delta)
-      .map(chunk => chunk.delta)
-      .join('');
-  }, [state.chunks]);
+  const aggregatedText = aggregatedContent.text;
+  const aggregatedReasoning = aggregatedContent.reasoning;
+  const aggregatedJson = aggregatedContent.json;
+
+  const parsedStructuredJson = useMemo(() => {
+    if (!aggregatedJson) {
+      return undefined;
+    }
+
+    try {
+      return JSON.parse(aggregatedJson);
+    } catch {
+      return undefined;
+    }
+  }, [aggregatedJson]);
 
   const startStream = useCallback(
     (params: AnalysisStreamParams, extraHandlers: Partial<AnalysisStreamHandlers> = {}) => {
@@ -135,6 +155,8 @@ export function useAnalysisStreaming() {
     error: state.error,
     visibleText: aggregatedText,
     reasoningText: aggregatedReasoning,
+    structuredJsonText: aggregatedJson,
+    structuredJson: parsedStructuredJson,
     startStream,
     closeStream,
   };
