@@ -7,16 +7,18 @@
  * shadcn/ui: Pass — backend service only.
  */
 
+import { isFeatureFlagEnabled } from "@shared/utils/featureFlags";
+
 import { nanoid } from "nanoid";
 import type { Request } from "express";
 import { puzzleAnalysisService } from "../puzzleAnalysisService";
 import { sseStreamManager } from "./SSEStreamManager";
 import { logger } from "../../utils/logger";
-import { aiServiceFactory } from "../aiServiceFactory";
+import { aiServiceFactory, canonicalizeModelKey } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
 
-const STREAMING_ENABLED = process.env.ENABLE_SSE_STREAMING === "true";
+const STREAMING_ENABLED = isFeatureFlagEnabled(process.env.ENABLE_SSE_STREAMING);
 
 export interface StreamAnalysisPayload {
   taskId: string;
@@ -73,17 +75,34 @@ export class AnalysisStreamService {
 
     const { taskId, modelKey } = payload;
     const decodedModel = decodeURIComponent(modelKey);
+    const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
     const aiService = aiServiceFactory.getService(decodedModel);
     if (!aiService?.supportsStreaming?.(decodedModel)) {
       logger.warn(`Streaming requested for unsupported model ${decodedModel}`, "stream-service");
       sseStreamManager.error(sessionId, "STREAMING_UNAVAILABLE", "Streaming is not enabled for this model.");
       this.clearPendingPayload(sessionId);
+    const aiService = aiServiceFactory.getService(canonicalModelKey);
+    if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+      logger.warn(
+        `Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+        "stream-service"
+      );
+      sseStreamManager.error(
+        sessionId,
+        "STREAMING_UNAVAILABLE",
+        "Streaming is not enabled for this model.",
+        { modelKey: originalModelKey }
+      );
       return sessionId;
     }
 
     try {
-      sseStreamManager.sendEvent(sessionId, "stream.status", { state: "starting" });
+      sseStreamManager.sendEvent(sessionId, "stream.status", {
+        state: "starting",
+        modelKey: originalModelKey,
+        taskId,
+      });
       const promptId = payload.promptId ?? "solver";
       const promptOptions = payload.options ?? {};
       const temperature = payload.temperature ?? 0.2;
@@ -93,13 +112,29 @@ export class AnalysisStreamService {
       const streamHarness = {
         sessionId,
         emit: (chunk: any) => {
-          sseStreamManager.sendEvent(sessionId, "stream.chunk", chunk);
+          const enrichedChunk = {
+            ...(chunk ?? {}),
+            metadata: {
+              ...(chunk?.metadata ?? {}),
+              modelKey: originalModelKey,
+              taskId,
+            },
+          };
+          sseStreamManager.sendEvent(sessionId, "stream.chunk", enrichedChunk);
         },
         end: (summary: any) => {
           sseStreamManager.close(sessionId, summary);
         },
         emitEvent: (event: string, data: any) => {
-          sseStreamManager.sendEvent(sessionId, event, data);
+          const enrichedEvent =
+            data && typeof data === "object"
+              ? { ...data, modelKey: originalModelKey, taskId }
+              : { modelKey: originalModelKey, taskId };
+          sseStreamManager.sendEvent(sessionId, event, enrichedEvent);
+        },
+        metadata: {
+          taskId,
+          modelKey: originalModelKey,
         },
       };
 
@@ -110,7 +145,7 @@ export class AnalysisStreamService {
 
       await puzzleAnalysisService.analyzePuzzleStreaming(
         taskId,
-        decodedModel,
+        canonicalModelKey,
         {
           temperature,
           captureReasoning,
