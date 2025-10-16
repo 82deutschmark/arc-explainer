@@ -6,7 +6,7 @@
 
 ## 🚨 CRITICAL PLATFORM NOTES
 
-- **WE ARE ON WINDOWS** - Use PowerShell syntax and commands only
+- **The user is ON WINDOWS** - Use PowerShell syntax and commands only
 - **NEVER** use `&&` or `||` as statement separators on Windows
 - **NEVER** use `cd` commands - we are always in the correct directory
 - **WAIT 5 SECONDS** after terminal commands before checking output
