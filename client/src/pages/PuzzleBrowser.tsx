@@ -326,7 +326,7 @@ export default function PuzzleBrowser() {
 
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
-                  🙏🏻 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🎃
+                  🙏🏻🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪ <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪
                 </p>
               </div>
             </div>
