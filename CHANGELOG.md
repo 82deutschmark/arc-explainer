@@ -1,3 +1,50 @@
+## [4.8.23] - 2025-10-16
+### 🔴 CRITICAL: Saturn Non-Streaming Call Bug
+
+**Fixed critical anti-pattern where Saturn called non-streaming method even when streaming harness was present, causing complete loss of real-time feedback.**
+
+#### The Bug
+Saturn service was unconditionally calling `analyzePuzzleWithModel()` for all 5 phases even when `serviceOpts.stream` harness existed, resulting in:
+- ❌ Zero `stream.chunk` events emitted to client
+- ❌ OpenAI generated reasoning tokens but never sent them until completion
+- ❌ Users saw "Waiting for AI output..." for 30+ seconds despite OpenAI streaming correctly
+- ❌ Backend confirmed correct payload (`verbosity: high`) but streaming loop never executed
+
+#### Root Cause
+```typescript
+// WRONG - Always non-streaming
+const phase1Response = await underlyingService.analyzePuzzleWithModel(
+  task, underlyingModel, taskId, temperature, promptId, phase1Prompt,
+  { ...options }, { ...serviceOpts }  // ← harness in serviceOpts ignored!
+);
+```
+
+#### The Fix
+```typescript
+// CORRECT - Conditional streaming
+const phase1Response = harness
+  ? await underlyingService.analyzePuzzleWithStreaming!(...)
+  : await underlyingService.analyzePuzzleWithModel(...);
+```
+
+Applied to all 5 Saturn phases: phase1, phase2, phase2.5, additional training loop, phase3.
+
+#### Detection Method
+1. Backend test showed `Chunks received: 0` despite successful SSE connection
+2. Added debug logging to `openai.ts` - streaming event loop never executed
+3. Traced call chain: `saturnStreamService` → `saturnService` → **BUG: always called non-streaming path**
+
+#### Prevention
+- **Code Review Checklist**: Any service wrapper accepting `ServiceOptions` must check `serviceOpts.stream` before choosing method
+- **Search Pattern**: `grep -r "analyzePuzzleWithModel.*serviceOpts" --include="*.ts"`
+- **Verified Clean**: All other services (Grover, PuzzleAnalysisService, Controllers) handle correctly
+
+#### Documentation
+- Created `docs/bugs/2025-10-16-saturn-streaming-non-streaming-call.md` with full technical details
+- Added anti-pattern examples and testing checklist
+
+---
+
 ## [4.8.22] - 2025-10-16
 ### 🪐 Saturn Streaming: Immediate UI Feedback & Merge Conflict Resolution
 
