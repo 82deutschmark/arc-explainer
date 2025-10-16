@@ -1,4 +1,10 @@
 /**
+ * Author: gpt-5-codex
+ * Date: 2025-02-14T00:00:00Z
+ * PURPOSE: Implements the OpenAI provider integration, including streaming orchestration, structured parsing,
+ *          and reasoning capture so ARC puzzle analysis can leverage the Responses API consistently.
+ * SRP/DRY check: Pass — reuses shared streaming aggregation patterns established for Grok to avoid duplication.
+ * DaisyUI: Pass — backend service with no UI responsibilities.
  * @file server/services/openai.ts
  * @description OpenAI Service for ARC Puzzle Analysis
  *
@@ -284,6 +290,7 @@ export class OpenAIService extends BaseAIService {
           reasoningLog,
           accumulatedText: aggregates.text,
           accumulatedReasoning: aggregates.reasoning,
+          accumulatedParsed: aggregates.parsed,
           refusal: aggregates.refusal,
           analysis: finalModelResponse
         }
@@ -891,6 +898,64 @@ export class OpenAIService extends BaseAIService {
         // Response creation event - can be ignored for streaming
         break;
       }
+      case "response.output_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.text += delta;
+          this.emitStreamChunk(harness, {
+            type: "text",
+            delta,
+            content: (event as any).snapshot ?? aggregates.text,
+            metadata: {
+              sequence: event.sequence_number,
+              outputIndex: (event as any).output_index
+            }
+          });
+        }
+        break;
+      }
+      case "response.output_text.done": {
+        aggregates.text = aggregates.text || "";
+        break;
+      }
+      case "response.reasoning_text.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.reasoning += delta;
+          this.emitStreamChunk(harness, {
+            type: "reasoning",
+            delta,
+            content: aggregates.reasoning,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.reasoning_text.done": {
+        aggregates.reasoning = aggregates.reasoning || "";
+        break;
+      }
+      case "response.output_json.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.parsed += delta;
+          this.emitStreamChunk(harness, {
+            type: "json",
+            delta,
+            content: aggregates.parsed,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.output_json.done": {
+        aggregates.parsed = aggregates.parsed || "";
+        break;
+      }
       case "response.output_item.added": {
         // Output item added - can be ignored for streaming
         break;
@@ -941,6 +1006,25 @@ export class OpenAIService extends BaseAIService {
           content: aggregates.text,
           metadata: { type: 'content' }
         });
+        break;
+      }
+      case "response.refusal.delta": {
+        const delta = (event as any).delta ?? "";
+        if (delta) {
+          aggregates.refusal += delta;
+          this.emitStreamChunk(harness, {
+            type: "refusal",
+            delta,
+            content: aggregates.refusal,
+            metadata: {
+              sequence: event.sequence_number
+            }
+          });
+        }
+        break;
+      }
+      case "response.refusal.done": {
+        aggregates.refusal = aggregates.refusal || "";
         break;
       }
       case "response.in_progress": {
