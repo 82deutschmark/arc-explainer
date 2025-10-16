@@ -52,7 +52,13 @@ export interface AnalysisStreamParams {
 }
 
 export interface AnalysisStreamHandlers {
-  onInit?: (payload: { sessionId: string; taskId: string; modelKey: string; createdAt: string }) => void;
+  onInit?: (payload: {
+    sessionId: string;
+    taskId: string;
+    modelKey: string;
+    createdAt: string;
+    expiresAt?: string;
+  }) => void;
   onChunk?: (chunk: StreamChunkPayload) => void;
   onStatus?: (status: StreamStatus) => void;
   onComplete?: (summary: StreamSummary) => void;
@@ -133,6 +139,7 @@ export async function createAnalysisStream(
         taskId: string;
         modelKey: string;
         createdAt: string;
+        expiresAt?: string;
       };
       handlers.onInit?.(initPayload);
     } catch (error) {
