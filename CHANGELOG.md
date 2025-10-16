@@ -1,3 +1,19 @@
+## [4.8.17] - 2025-10-16
+### ♻️ PuzzleExaminer: Restore Card Grid & DaisyUI Streaming Modal
+
+**Regression Audit:**
+- **4.8.1 (2025-10-12)** replaced the PuzzleExaminer model picker with the `ModelTable` data grid to support the mandatory prompt preview flow. While the preview safeguard was useful, the dense table removed the intuitive card layout that testers preferred for quick scanning.
+- **Post-4.8.16 hotfix** swapped the DaisyUI `<dialog>` streaming modal for the shadcn dialog wrapper while chasing accessibility issues. That change regressed the streaming UX by breaking the auto-open behaviour the DaisyUI modal provides when `modal-open` is toggled.
+
+**Fixes:**
+- Reinstated the DaisyUI `<dialog>` streaming modal so long-running analyses once again surface in the dedicated overlay without manual intervention.
+- Brought back the ModelSelection card grid so models render as the colorful badge cards from early October instead of the table rows. This keeps the prompt preview safeguards (handled in `PromptPreviewModal`) without the data-table UX regression.
+- Documented the above regressions directly in this entry for future reference.
+
+**Files Updated:** `client/src/pages/PuzzleExaminer.tsx`
+
+---
+
 ## [4.8.16] - 2025-10-15
 ### 🎨 PuzzleBrowser: Restore Acknowledgements & Fix Terrible Design
 
