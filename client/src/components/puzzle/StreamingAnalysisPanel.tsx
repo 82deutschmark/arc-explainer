@@ -20,6 +20,8 @@ interface StreamingAnalysisPanelProps {
   phase?: string;
   message?: string;
   text?: string;
+  structuredJsonText?: string;
+  structuredJson?: unknown;
   reasoning?: string;
   tokenUsage?: TokenUsageSummary;
   onCancel?: () => void;
@@ -32,6 +34,8 @@ export function StreamingAnalysisPanel({
   phase,
   message,
   text,
+  structuredJsonText,
+  structuredJson,
   reasoning,
   tokenUsage,
   onCancel,
@@ -56,6 +60,27 @@ export function StreamingAnalysisPanel({
         return <div className="badge badge-neutral badge-sm">Idle</div>;
     }
   };
+
+  const hasStructuredJson = Boolean(structuredJsonText && structuredJsonText.trim().length > 0);
+  let formattedStructuredJson: string | null = null;
+
+  if (hasStructuredJson) {
+    if (structuredJson && typeof structuredJson === 'object') {
+      try {
+        formattedStructuredJson = JSON.stringify(structuredJson, null, 2);
+      } catch {
+        formattedStructuredJson = structuredJsonText ?? null;
+      }
+    } else if (structuredJsonText) {
+      try {
+        formattedStructuredJson = JSON.stringify(JSON.parse(structuredJsonText), null, 2);
+      } catch {
+        formattedStructuredJson = structuredJsonText;
+      }
+    }
+  }
+
+  const visibleOutput = (formattedStructuredJson ?? text)?.trim();
 
   return (
     <div className="card bg-blue-50 border border-blue-200 shadow-sm">
@@ -83,9 +108,17 @@ export function StreamingAnalysisPanel({
           <div>
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Current Output</p>
             <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[500px] overflow-y-auto font-mono text-xs">
-              {text?.trim() || 'Waiting for output\u2026'}
+              {visibleOutput && visibleOutput.length > 0 ? visibleOutput : 'Waiting for output\u2026'}
             </pre>
           </div>
+          {hasStructuredJson && text && text.trim().length > 0 && formattedStructuredJson !== text.trim() && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Raw Text Stream</p>
+              <pre className="whitespace-pre-wrap bg-white border border-blue-200 rounded-md p-3 max-h-[300px] overflow-y-auto font-mono text-xs">
+                {text.trim()}
+              </pre>
+            </div>
+          )}
           {reasoning && reasoning.trim().length > 0 && (
             <div>
               <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Reasoning</p>

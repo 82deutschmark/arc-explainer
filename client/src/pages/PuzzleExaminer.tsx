@@ -126,6 +126,8 @@ export default function PuzzleExaminer() {
     streamStatus,
     streamingText,
     streamingReasoning,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
@@ -287,6 +289,8 @@ export default function PuzzleExaminer() {
                 : streamingMessage
             }
             text={streamingText}
+            structuredJsonText={streamingStructuredJsonText}
+            structuredJson={streamingStructuredJson}
             reasoning={streamingReasoning}
             tokenUsage={streamingTokenUsage}
             onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
