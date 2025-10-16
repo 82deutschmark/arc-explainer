@@ -37,20 +37,29 @@ export interface StreamAnalysisPayload {
   originalExplanation?: any;
   customChallenge?: string;
   createdAt?: number;
+  expiresAt?: number;
 }
+
+export const PENDING_SESSION_TTL_SECONDS = 60;
 
 export class AnalysisStreamService {
   private readonly pendingSessions: Map<string, StreamAnalysisPayload> = new Map();
+  private readonly pendingSessionTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
-  savePendingPayload(payload: StreamAnalysisPayload): string {
+  savePendingPayload(payload: StreamAnalysisPayload, ttlMs: number = PENDING_SESSION_TTL_SECONDS * 1000): string {
     const sessionId = payload.sessionId ?? nanoid();
+    const now = Date.now();
+    const expirationTimestamp = ttlMs > 0 ? now + ttlMs : now;
+
     const enrichedPayload: StreamAnalysisPayload = {
       ...payload,
       sessionId,
-      createdAt: Date.now(),
+      createdAt: now,
+      expiresAt: expirationTimestamp,
     };
 
     this.pendingSessions.set(sessionId, enrichedPayload);
+    this.scheduleExpiration(sessionId, ttlMs);
     return sessionId;
   }
 
@@ -60,52 +69,73 @@ export class AnalysisStreamService {
 
   clearPendingPayload(sessionId: string): void {
     this.pendingSessions.delete(sessionId);
+    const timer = this.pendingSessionTimers.get(sessionId);
+    if (timer) {
+      clearTimeout(timer);
+      this.pendingSessionTimers.delete(sessionId);
+    }
+  }
+
+  private scheduleExpiration(sessionId: string, ttlMs: number): void {
+    const existingTimer = this.pendingSessionTimers.get(sessionId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    if (ttlMs <= 0) {
+      this.clearPendingPayload(sessionId);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      this.pendingSessions.delete(sessionId);
+      this.pendingSessionTimers.delete(sessionId);
+      logger.debug(
+        `[Streaming] Pending payload for session ${sessionId} expired after ${ttlMs}ms`,
+        "stream-service"
+      );
+    }, ttlMs);
+
+    if (typeof (timer as any).unref === "function") {
+      (timer as any).unref();
+    }
+
+    this.pendingSessionTimers.set(sessionId, timer);
   }
 
   async startStreaming(_req: Request, payload: StreamAnalysisPayload): Promise<string> {
     const sessionId = payload.sessionId ?? nanoid();
 
-    if (!sseStreamManager.has(sessionId)) {
-      throw new Error("SSE session must be registered before starting analysis.");
-    }
-
-    const streamingConfig = resolveStreamingConfig();
-    if (!streamingConfig.enabled) {
-      sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
-      this.clearPendingPayload(sessionId);
-      return sessionId;
-    }
-
-    const { taskId, modelKey } = payload;
-    let decodedModel: string;
     try {
-      decodedModel = decodeURIComponent(modelKey);
-    } catch (error) {
-      logger.warn(
-        `Failed to decode model key '${modelKey}', using raw value. ${(error as Error)?.message ?? error}`,
-        "stream-service"
-      );
-      decodedModel = modelKey;
-    }
-    const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
+      if (!sseStreamManager.has(sessionId)) {
+        throw new Error("SSE session must be registered before starting analysis.");
+      }
 
-    const aiService = aiServiceFactory.getService(canonicalModelKey);
-    if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
-      logger.warn(
-        `Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
-        "stream-service"
-      );
-      sseStreamManager.error(
-        sessionId,
-        "STREAMING_UNAVAILABLE",
-        "Streaming is not enabled for this model.",
-        { modelKey: originalModelKey }
-      );
-      this.clearPendingPayload(sessionId);
-      return sessionId;
-    }
+      const streamingConfig = resolveStreamingConfig();
+      if (!streamingConfig.enabled) {
+        sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
+        return sessionId;
+      }
 
-    try {
+      const { taskId, modelKey } = payload;
+      const decodedModel = decodeURIComponent(modelKey);
+      const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
+
+      const aiService = aiServiceFactory.getService(canonicalModelKey);
+      if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
+        logger.warn(
+          `Streaming requested for unsupported model ${originalModelKey} (normalized: ${canonicalModelKey})`,
+          "stream-service"
+        );
+        sseStreamManager.error(
+          sessionId,
+          "STREAMING_UNAVAILABLE",
+          "Streaming is not enabled for this model.",
+          { modelKey: originalModelKey }
+        );
+        return sessionId;
+      }
+
       sseStreamManager.sendEvent(sessionId, "stream.status", {
         state: "starting",
         modelKey: originalModelKey,
