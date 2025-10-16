@@ -93,7 +93,8 @@ export function useSaturnProgress(taskId: string | undefined) {
   const wsRef = useRef<WebSocket | null>(null);
   const sseRef = useRef<EventSource | null>(null);
   const promptLoggedRef = useRef<string | null>(null);
-  const streamingEnabled = isStreamingEnabled();
+  // Enable streaming in development by default, or use config in production
+  const streamingEnabled = import.meta.env.DEV ? true : isStreamingEnabled();
 
   const closeSocket = useCallback(() => {
     if (wsRef.current) {
@@ -226,10 +227,12 @@ export function useSaturnProgress(taskId: string | undefined) {
       const defaultModel = getDefaultSaturnModel();
       const modelKey = options?.model || (defaultModel?.key ?? 'gpt-5-nano-2025-08-07');
 
-      if (streamingEnabled) {
-        const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
-        const apiUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      console.log('[SaturnStream] Streaming enabled:', streamingEnabled);
+      console.log('[SaturnStream] Selected model:', modelKey);
 
+      if (streamingEnabled) {
+        // For development, use empty string to make relative requests to same origin
+        // Vite dev server proxy will forward /api/* to backend
         const query = new URLSearchParams();
         query.set('temperature', String(options?.temperature ?? 0.2));
         query.set('promptId', 'solver');
@@ -238,9 +241,13 @@ export function useSaturnProgress(taskId: string | undefined) {
         if (options?.reasoningVerbosity) query.set('reasoningVerbosity', options.reasoningVerbosity);
         if (options?.reasoningSummaryType) query.set('reasoningSummaryType', options.reasoningSummaryType);
 
-        const streamUrl = `${apiUrl}/api/stream/saturn/${taskId}/${encodeURIComponent(modelKey)}${
+        const streamUrl = `/api/stream/saturn/${taskId}/${encodeURIComponent(modelKey)}${
           query.toString() ? `?${query.toString()}` : ''
         }`;
+
+        console.log('[SaturnStream] Starting SSE connection:', streamUrl);
+        console.log('[SaturnStream] Model:', modelKey);
+        console.log('[SaturnStream] Options:', options);
 
         const eventSource = new EventSource(streamUrl);
         sseRef.current = eventSource;
@@ -536,7 +543,9 @@ export function useSaturnProgress(taskId: string | undefined) {
           }
         });
 
-        eventSource.onerror = () => {
+        eventSource.onerror = (err) => {
+          console.error('[SaturnStream] EventSource error:', err);
+          console.error('[SaturnStream] EventSource readyState:', eventSource.readyState);
           setState((prev) => ({
             ...prev,
             status: 'error',
