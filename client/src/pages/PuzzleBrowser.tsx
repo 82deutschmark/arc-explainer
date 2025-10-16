@@ -1,3 +1,13 @@
+/**
+ * Author: gpt-5-codex
+ * Date: 2025-02-03
+ * PURPOSE: Professionalizes the ARC Puzzle Browser layout while reusing existing
+ *          puzzle filtering/search logic for a research-focused presentation.
+ *          Integrates with the existing hooks (usePuzzleList, useModels) and
+ *          retains DaisyUI components for consistency.
+ * SRP/DRY check: Pass - Enhances presentation only, data hooks remain shared.
+ * DaisyUI: Pass - Continues using DaisyUI buttons and form controls.
+ */
 import React, { useState, useCallback } from 'react';
 import { Link, useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
@@ -185,8 +195,8 @@ export default function PuzzleBrowser() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-slate-100 px-4 py-6">
+        <div className="mx-auto max-w-3xl">
           <div role="alert" className="alert alert-error">
             <span>Failed to load puzzles. Please check your connection and try again.</span>
           </div>
@@ -196,24 +206,25 @@ export default function PuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Hero Section - Action Focused */}
-        <header className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className="text-4xl font-bold text-gray-900">ARC-AGI Puzzle Explorer</h1>
-              <p className="text-gray-600">
-                Search and examine abstract reasoning puzzles with AI analysis
+    <div className="min-h-screen bg-slate-100">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 lg:px-8">
+        {/* Hero Section - Tight, professional layout */}
+        <header className="rounded-xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur">
+          <div className="grid gap-6 px-6 py-5 sm:gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:items-end">
+            <div className="space-y-3">
+              <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Puzzle Browser</div>
+              <h1 className="text-3xl font-semibold text-slate-900">ARC-AGI Puzzle Explorer</h1>
+              <p className="text-sm text-slate-600">
+                Search, triage, and examine ARC tasks with the latest model analysis. Built for focused research workflows.
               </p>
             </div>
 
-            {/* Primary Search Action */}
-            <div className="space-y-4">
-              <div className="relative">
+            <div className="flex flex-col gap-3">
+              <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Search by Puzzle ID</label>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <input
-                  className="input input-bordered w-full input-lg"
-                  placeholder="Search by puzzle ID (e.g., 1ae2feb7) or browse below..."
+                  className="input input-bordered w-full"
+                  placeholder="e.g. 1ae2feb7"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -225,221 +236,241 @@ export default function PuzzleBrowser() {
                     }
                   }}
                 />
+                <button
+                  className="btn btn-neutral whitespace-nowrap"
+                  type="button"
+                  onClick={handleSearch}
+                >
+                  Open Puzzle
+                </button>
               </div>
               {searchError && (
-                <p className="text-sm text-red-500">{searchError}</p>
+                <p className="text-xs text-red-500">{searchError}</p>
               )}
-              
-              {/* Quick Stats */}
-              <div className="flex justify-center gap-6 text-sm text-gray-600">
-                <div>
-                  <span className="font-semibold text-gray-900">{filteredPuzzles.length}</span> puzzles
-                </div>
-                <div>
-                  <span className="font-semibold text-gray-900">{filteredPuzzles.filter(p => hasPuzzleName(p.id)).length}</span> named
-                </div>
-                <div>
-                  <span className="font-semibold text-gray-900">{filteredPuzzles.filter(p => p.hasExplanation).length}</span> analyzed
-                </div>
-              </div>
             </div>
+          </div>
+
+          <div className="border-t border-slate-200 bg-slate-50/80">
+            <dl className="grid gap-4 px-6 py-4 sm:grid-cols-3">
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">In view</dt>
+                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.length.toLocaleString()}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
+                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => hasPuzzleName(p.id)).length.toLocaleString()}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Has analysis</dt>
+                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => p.hasExplanation).length.toLocaleString()}</dd>
+              </div>
+            </dl>
           </div>
         </header>
 
-        {/* PROMINENT ACKNOWLEDGEMENT - Simon Strandgaard */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-lg shadow-xl p-1">
-          <div className="bg-white rounded-lg p-6">
-            <div className="text-center space-y-3">
-              <div className="flex items-center justify-center gap-3">
-                <Sparkles className="h-8 w-8 text-purple-600 animate-pulse" />
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Built with ARC Resources
-                </h2>
-                <Sparkles className="h-8 w-8 text-pink-600 animate-pulse" />
+        {/* Community acknowledgement */}
+        <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Community Support</p>
+              <h2 className="text-xl font-semibold text-slate-900">Built with ARC Resources</h2>
+              <p className="text-sm text-slate-600 max-w-2xl">
+                Special thanks to Simon Strandgaard (@neoneye) for curating and maintaining the comprehensive ARC knowledge base that powers this explorer.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="https://github.com/neoneye/arc-notes"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline gap-2"
+              >
+                <Database className="h-4 w-4" />
+                ARC Notes
+                <ExternalLink className="h-3 w-3" />
+              </a>
+              <a
+                href="https://github.com/neoneye/arc-dataset-collection"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline gap-2"
+              >
+                <Trophy className="h-4 w-4" />
+                Dataset Collection
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Knowledge hub */}
+        <section className="rounded-xl border border-slate-200 bg-white/80 shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reference Library</p>
+              <h3 className="text-lg font-semibold text-slate-900">ARC-AGI Knowledge Hub</h3>
+            </div>
+            <Sparkles className="h-5 w-5 text-slate-400" />
+          </div>
+          <div className="grid gap-px border-t border-slate-200 bg-slate-100 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-2 bg-white px-6 py-4">
+              <div className="flex items-center gap-2 text-slate-600">
+                <Cpu className="h-4 w-4 text-slate-500" />
+                <span className="font-medium">Research Papers</span>
               </div>
-              <p className="text-xl text-gray-800">
-                <strong className="text-2xl text-purple-700">Special thanks to Simon Strandgaard (@neoneye)</strong>
-              </p>
-              <p className="text-gray-700 max-w-2xl mx-auto">
-                For his incredible insights, support, and encouragement in the ARC-AGI community.
-                His comprehensive resources made this project possible!
-              </p>
-              <div className="flex flex-wrap justify-center gap-4 pt-2">
+              <a
+                href="https://www.arxiv.org/pdf/2505.11831"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+              >
+                ARC2 Technical Report
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+
+            <div className="space-y-2 bg-white px-6 py-4">
+              <div className="flex items-center gap-2 text-slate-600">
+                <Database className="h-4 w-4 text-slate-500" />
+                <span className="font-medium">Data Sources</span>
+              </div>
+              <div className="space-y-1">
+                <a
+                  href="https://huggingface.co/arcprize"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  HuggingFace Datasets
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <a
+                  href="https://github.com/fchollet/ARC-AGI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  Official Repository
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-2 bg-white px-6 py-4">
+              <div className="flex items-center gap-2 text-slate-600">
+                <Trophy className="h-4 w-4 text-slate-500" />
+                <span className="font-medium">Top Solutions</span>
+              </div>
+              <div className="space-y-1">
+                <a
+                  href="https://github.com/zoecarver"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  zoecarver's Approach
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <a
+                  href="https://github.com/jerber"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  jerber's Solutions
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <a
+                  href="https://github.com/epang080516/arc_agi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  epang080516's Code
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="space-y-2 bg-white px-6 py-4">
+              <div className="flex items-center gap-2 text-slate-600">
+                <User className="h-4 w-4 text-slate-500" />
+                <span className="font-medium">Community Signals</span>
+              </div>
+              <div className="space-y-1 text-slate-700">
+                <button
+                  className="flex w-full items-center justify-between rounded border border-slate-200 px-3 py-2 text-left text-xs font-medium hover:bg-slate-50"
+                  onClick={() => setIsOpen(!isOpen)}
+                  type="button"
+                >
+                  <span>
+                    Critical ARC-AGI-2 Research
+                    <span className="block text-[11px] font-normal text-slate-500">cristianoc</span>
+                  </span>
+                  {isOpen ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                </button>
+                {isOpen && (
+                  <div className="space-y-2 rounded border border-slate-200 bg-slate-50 px-3 py-3 text-[11px] text-slate-600">
+                    <p>Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:</p>
+                    <div className="grid grid-cols-2 gap-1">
+                      <p>• 40% sequential composition</p>
+                      <p>• 30% conditional branching</p>
+                      <p>• 20% pattern classification</p>
+                      <p>• 25% iteration/loops</p>
+                      <p>• 15% nested structures</p>
+                      <p>• 10% parallel composition</p>
+                      <p>• 5% graph/DAG structures</p>
+                    </div>
+                    <a
+                      href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                    >
+                      View cristianoc's research
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                )}
+                <a
+                  href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
+                >
+                  Puzzle Nomenclature
+                  <ExternalLink className="h-3 w-3" />
+                </a>
                 <a
                   href="https://github.com/neoneye/arc-notes"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-primary gap-2"
+                  className="flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:underline"
                 >
-                  <Database className="h-5 w-5" />
-                  All ARC Resources
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://github.com/neoneye/arc-dataset-collection"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-secondary gap-2"
-                >
-                  <Trophy className="h-5 w-5" />
-                  Dataset Collection
-                  <ExternalLink className="h-4 w-4" />
+                  ARC Resources
+                  <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Resources & References Section - Enhanced with emojis and better styling */}
-        <div className="card shadow-lg border-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-          <div className="card-body p-6">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="h-6 w-6 text-purple-600" />
-              <h3 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-700 bg-clip-text text-transparent">
-                ARC-AGI Knowledge Hub
-              </h3>
-              <Sparkles className="h-6 w-6 text-purple-600" />
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Research Section */}
-              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-purple-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <Cpu className="h-4 w-4 text-purple-600" />
-                  <p className="font-bold text-purple-800 text-sm">Research Papers</p>
-                </div>
-                <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                   className="text-blue-600 hover:text-purple-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                  ARC2 Technical Report <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-
-              {/* Data Sources Section */}
-              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <Database className="h-4 w-4 text-blue-600" />
-                  <p className="font-bold text-blue-800 text-sm">Data Sources</p>
-                </div>
-                <div className="space-y-1">
-                  <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
-                     className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    HuggingFace Datasets <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
-                     className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    Official Repository <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-
-              {/* SOTA Solutions Section */}
-              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="h-4 w-4 text-green-600" />
-                  <p className="font-bold text-green-800 text-sm">Top Solutions</p>
-                </div>
-                <div className="space-y-1">
-                  <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
-                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    zoecarver's Approach <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
-                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    jerber's Solutions <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
-                     className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    epang080516's Code <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Community Section */}
-              <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
-                <div className="flex items-center gap-2 mb-2">
-                  <User className="h-4 w-4 text-orange-600" />
-                  <p className="font-bold text-orange-800 text-sm">Community</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="mb-3">
-                    <div className={`collapse ${isOpen ? 'collapse-open' : 'collapse-close'} bg-orange-50 border border-orange-200 rounded-lg`}>
-                      <div className="collapse-title p-3">
-                        <button
-                          className="w-full flex justify-between items-center h-auto"
-                          onClick={() => setIsOpen(!isOpen)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-orange-800">Critical ARC-AGI-2 Research</span>
-                            <span className="text-xs text-orange-600">by cristianoc</span>
-                          </div>
-                          {isOpen ? (
-                            <ChevronUp className="h-4 w-4 text-orange-600" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4 text-orange-600" />
-                          )}
-                        </button>
-                      </div>
-
-                      <div className="collapse-content px-3 pb-3">
-                        <div className="text-xs text-orange-700 space-y-2">
-                          <p>
-                            Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:
-                          </p>
-                          <div className="grid grid-cols-2 gap-1 text-xs">
-                            <p>• 40% sequential composition</p>
-                            <p>• 30% conditional branching</p>
-                            <p>• 20% pattern classification</p>
-                            <p>• 25% iteration/loops</p>
-                            <p>• 15% nested structures</p>
-                            <p>• 10% parallel composition</p>
-                            <p>• 5% graph/DAG structures</p>
-                          </div>
-                          <p className="italic text-orange-600">
-                            A DSL is emerging from these patterns →
-                          </p>
-                          <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
-                             target="_blank" rel="noopener noreferrer"
-                             className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1">
-                            View cristianoc's research <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
-                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
-                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    All the ARC Resources <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
-                     className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    Dataset Collection <ExternalLink className="h-3 w-3" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
 
         {/* Filters - Collapsible */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="rounded-xl border border-slate-200 bg-white/90 shadow-sm">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            className="flex w-full items-center justify-between px-6 py-4 transition-colors hover:bg-slate-50"
           >
             <div className="flex items-center gap-2">
-              <Grid3X3 className="h-5 w-5 text-gray-600" />
-              <span className="font-semibold text-gray-900">Advanced Filters</span>
-              <span className="text-sm text-gray-500">({Object.keys(filters).length > 0 ? 'Active' : 'None'})</span>
+              <Grid3X3 className="h-5 w-5 text-slate-500" />
+              <span className="font-semibold text-slate-900">Advanced Filters</span>
+              <span className="text-sm text-slate-500">({Object.keys(filters).length > 0 ? 'Active' : 'None'})</span>
             </div>
-            <span className="text-gray-400">{filtersOpen ? '−' : '+'}</span>
+            <span className="text-slate-400">{filtersOpen ? '−' : '+'}</span>
           </button>
-          
+
           {filtersOpen && (
-            <div className="px-6 pb-6 border-t border-gray-200">
+            <div className="border-t border-slate-200 px-6 pb-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
                 <div className="space-y-2">
                   <label htmlFor="maxGridSize" className="label">Maximum Grid Size</label>
@@ -521,37 +552,37 @@ export default function PuzzleBrowser() {
         </div>
 
         {/* Results */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="rounded-xl border border-slate-200 bg-white/90 p-6 shadow-sm">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Puzzles 
+            <h2 className="mb-4 text-xl font-semibold text-slate-900">
+              Puzzles
               {!isLoading && (
-                <div className="badge badge-outline ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                <div className="badge badge-outline ml-2 border-slate-300 text-slate-700">
                   {filteredPuzzles.length} found
                 </div>
               )}
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-600">
               Puzzles available for examination
             </p>
             {isLoading ? (
-              <div className="text-center py-8">
+              <div className="py-8 text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
                 <p>Loading puzzles...</p>
               </div>
             ) : filteredPuzzles.length === 0 ? (
-              <div className="text-center py-8">
-                <Grid3X3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <p className="text-gray-600">No puzzles match your current filters.</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="py-8 text-center">
+                <Grid3X3 className="mx-auto mb-4 h-12 w-12 text-slate-400" />
+                <p className="text-slate-600">No puzzles match your current filters.</p>
+                <p className="mt-2 text-sm text-slate-500">
                   Try adjusting your filters.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
-                  <PuzzleCard 
-                    key={puzzle.id} 
+                  <PuzzleCard
+                    key={puzzle.id}
                     puzzle={puzzle}
                     showGridPreview={true}
                   />
