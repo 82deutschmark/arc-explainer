@@ -255,6 +255,22 @@ export const MODELS: ModelConfig[] = [
     releaseDate: "2024-10"
   },
   { 
+    key: 'claude-haiku-4-5-20251015', 
+    name: 'Claude Haiku 4.5', 
+    color: 'bg-indigo-300', 
+    premium: false,
+    cost: { input: '$1.00', output: '$5.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'claude-haiku-4-5-20251015',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-10"
+  },
+  { 
     key: 'claude-3-haiku-20240307', 
     name: 'Claude 3 Haiku', 
     color: 'bg-purple-400', 
@@ -686,6 +702,24 @@ export const MODELS: ModelConfig[] = [
     contextWindow: 256000,
     maxOutputTokens: 31000,
     releaseDate: "2024-11"
+  },
+
+  // Anthropic Models (via OpenRouter)
+  {
+    key: 'anthropic/claude-haiku-4.5',
+    name: 'Claude Haiku 4.5 (OpenRouter)',
+    color: 'bg-indigo-300',
+    premium: false,
+    cost: { input: '$1.00', output: '$5.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-haiku-4.5',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2025-10"
   },
 
   {
