@@ -591,7 +591,7 @@ export default function PuzzleBrowser() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
