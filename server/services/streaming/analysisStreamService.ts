@@ -1,13 +1,13 @@
-const STREAMING_ENABLED = process.env.ENABLE_SSE_STREAMING === 'true';
-
 /**
- * 
+ *
  * Author: Codex using GPT-5-high
  * Date: 2025-10-09T00:00:00Z
  * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks, option parsing, and graceful lifecycle management.
  * SRP/DRY check: Pass — no existing orchestration layer for SSE token streaming.
  * shadcn/ui: Pass — backend service only.
  */
+
+import { isFeatureFlagEnabled } from "@shared/utils/featureFlags";
 
 import { nanoid } from "nanoid";
 import type { Request } from "express";
@@ -17,6 +17,8 @@ import { logger } from "../../utils/logger";
 import { aiServiceFactory } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
+
+const STREAMING_ENABLED = isFeatureFlagEnabled(process.env.ENABLE_SSE_STREAMING);
 
 export interface StreamAnalysisPayload {
   taskId: string;
