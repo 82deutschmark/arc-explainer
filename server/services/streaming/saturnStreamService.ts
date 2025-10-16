@@ -14,6 +14,7 @@ import { logger } from '../../utils/logger';
 import { aiServiceFactory } from '../aiServiceFactory';
 import { saturnService } from '../saturnService';
 import { puzzleService } from '../puzzleService';
+import { validateStreamingResult } from '../streamingValidator';
 import type { ServiceOptions } from '../base/BaseAIService';
 import type { StreamingHarness, StreamCompletion } from '../base/BaseAIService';
 
@@ -70,7 +71,7 @@ class SaturnStreamService {
       modelKey: decodedModelKey,
     });
 
-    const harness: StreamingHarness = {
+    const baseHarness: StreamingHarness = {
       sessionId,
       emit: (chunk) => sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk),
       emitEvent: (event, payload) => sseStreamManager.sendEvent(sessionId, event, payload),
@@ -104,8 +105,38 @@ class SaturnStreamService {
       if (isSaturnModel) {
         const puzzle = await puzzleService.getPuzzleById(taskId);
 
+        const validatingHarness: StreamingHarness = {
+          sessionId: baseHarness.sessionId,
+          emit: baseHarness.emit,
+          emitEvent: baseHarness.emitEvent,
+          abortSignal: baseHarness.abortSignal,
+          metadata: baseHarness.metadata,
+          end: async (summary: StreamCompletion) => {
+            if (summary && summary.responseSummary?.analysis) {
+              try {
+                logger.debug('[SaturnStream] Validating streaming result before completion', 'SaturnStream');
+                const validatedAnalysis = validateStreamingResult(
+                  summary.responseSummary.analysis,
+                  puzzle,
+                  promptId
+                );
+                summary.responseSummary.analysis = validatedAnalysis;
+              } catch (validationError) {
+                const message =
+                  validationError instanceof Error ? validationError.message : String(validationError);
+                logger.logError(
+                  `[SaturnStream] Validation failed, sending unvalidated result: ${message}`,
+                  { error: validationError, context: 'SaturnStream' }
+                );
+              }
+            }
+
+            await baseHarness.end(summary);
+          },
+        };
+
         const serviceOptions: ServiceOptions = {
-          stream: harness,
+          stream: validatingHarness,
           captureReasoning: true,
           sessionId,
         };
@@ -138,7 +169,7 @@ class SaturnStreamService {
             reasoningVerbosity,
             reasoningSummaryType,
           },
-          harness
+          baseHarness
         );
       }
     } catch (error) {
