@@ -1,15 +1,20 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-16T00:00:00Z
- * PURPOSE: Validates the pending-session store used by analysis streaming to ensure payloads persist through the SSE handshake lifecycle.
- * SRP/DRY check: Pass — focused on AnalysisStreamService pending-session helpers without duplicating integration coverage.
- * shadcn/ui: Pass — backend-only logic under test.
+ * PURPOSE: Regression coverage for AnalysisStreamService pending-session helpers and
+ *          canonical OpenAI model routing to streaming-capable providers. Ensures SSE
+ *          harness metadata preserves original model keys while canonical values drive
+ *          provider selection and streaming capability checks.
+ * SRP/DRY check: Pass — targeted tests for session storage and OpenAI prefix handling.
  */
 
-import { strict as assert } from "node:assert";
 import test from "node:test";
+import { strict as assert } from "node:assert";
 
 import { analysisStreamService } from "../server/services/streaming/analysisStreamService.ts";
+import { sseStreamManager } from "../server/services/streaming/SSEStreamManager.ts";
+import { aiServiceFactory } from "../server/services/aiServiceFactory.ts";
+import { puzzleAnalysisService } from "../server/services/puzzleAnalysisService.ts";
 
 const basePayload = {
   taskId: "T123",
@@ -30,29 +35,13 @@ test("AnalysisStreamService stores and clears pending payloads", () => {
     analysisStreamService.clearPendingPayload(sessionId);
     assert.equal(analysisStreamService.getPendingPayload(sessionId), undefined);
   }
- * Date: 2025-02-14T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
- * PURPOSE: Validates analysis streaming service routes OpenAI-prefixed models through the OpenAI provider while
- *          preserving original metadata in SSE payloads.
- * SRP/DRY check: Pass — targeted regression coverage without duplicating broader streaming suite.
- */
-
-import test from "node:test";
-import { strict as assert } from "node:assert";
-
-process.env.ENABLE_SSE_STREAMING = "true";
-
-const { analysisStreamService } = await import("../server/services/streaming/analysisStreamService.ts");
-const { sseStreamManager } = await import("../server/services/streaming/SSEStreamManager.ts");
-const { aiServiceFactory } = await import("../server/services/aiServiceFactory.ts");
-const { puzzleAnalysisService } = await import("../server/services/puzzleAnalysisService.ts");
-
-interface RecordedEvent {
-  event: string;
-  payload: any;
-}
+});
 
 test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
-  const events: RecordedEvent[] = [];
+  const previousFlag = process.env.ENABLE_SSE_STREAMING;
+  process.env.ENABLE_SSE_STREAMING = "true";
+
+  const events: Array<{ event: string; payload: any }> = [];
   const errors: Array<{ code: string; message: string }> = [];
   const completions: any[] = [];
   const factoryCalls: string[] = [];
@@ -77,8 +66,11 @@ test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
   sseStreamManager.close = (_session, summary) => {
     completions.push(summary);
   };
-  sseStreamManager.error = (_session, code, message) => {
+  sseStreamManager.error = (_session, code, message, metadata) => {
     errors.push({ code, message });
+    if (metadata) {
+      events.push({ event: "error.metadata", payload: metadata });
+    }
   };
 
   const fakeService = {
@@ -106,6 +98,7 @@ test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
   };
 
   t.after(() => {
+    process.env.ENABLE_SSE_STREAMING = previousFlag;
     sseStreamManager.has = originalHas;
     sseStreamManager.sendEvent = originalSendEvent;
     sseStreamManager.close = originalClose;
@@ -114,18 +107,19 @@ test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
     puzzleAnalysisService.analyzePuzzleStreaming = originalAnalyzeStreaming;
   });
 
-  await analysisStreamService.startStreaming({} as any, {
+  const returnedSessionId = await analysisStreamService.startStreaming({} as any, {
     taskId,
     modelKey: encodedModelKey,
     sessionId,
   });
 
+  assert.equal(returnedSessionId, sessionId, "should echo provided session id");
   assert.equal(errors.length, 0, "should not emit streaming error events");
   assert.ok(events.some((event) => event.event === "stream.status"), "status event should be emitted");
   assert.ok(events.some((event) => event.event === "stream.chunk"), "chunk event should be emitted");
 
   const statusWithModel = events.find(
-    (event) => event.event === "stream.status" && event.payload?.modelKey === "openai/gpt-5-2025-08-07"
+    (event) => event.event === "stream.status" && event.payload?.modelKey === "openai/gpt-5-2025-08-07",
   );
   assert.ok(statusWithModel, "status events should include original model key");
 
@@ -137,3 +131,4 @@ test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
   assert.deepEqual(puzzleCalls, [{ taskId, model: "gpt-5-2025-08-07" }]);
   assert.equal(completions.length, 1, "stream should close with completion summary");
 });
+
