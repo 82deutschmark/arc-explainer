@@ -887,11 +887,15 @@ export class OpenAIService extends BaseAIService {
    * SRP Helper: Handle streaming events for real-time updates
    */
   private handleStreamingEvent(
-    event: ResponseStreamEvent,
+    event: ResponseStreamEvent | { type: string; [key: string]: unknown },
     harness: StreamingHarness | undefined,
     aggregates: OpenAIStreamAggregates
   ): void {
-    const eventType = event.type;
+    const eventType = (event as { type: string }).type;
+    const sequenceNumber =
+      typeof (event as { sequence_number?: number }).sequence_number === 'number'
+        ? (event as { sequence_number?: number }).sequence_number
+        : undefined;
 
     switch (eventType) {
       case "response.created": {
@@ -907,7 +911,7 @@ export class OpenAIService extends BaseAIService {
             delta,
             content: (event as any).snapshot ?? aggregates.text,
             metadata: {
-              sequence: event.sequence_number,
+              sequence: sequenceNumber,
               outputIndex: (event as any).output_index
             }
           });
@@ -927,7 +931,7 @@ export class OpenAIService extends BaseAIService {
             delta,
             content: aggregates.reasoning,
             metadata: {
-              sequence: event.sequence_number
+              sequence: sequenceNumber
             }
           });
         }
@@ -946,7 +950,7 @@ export class OpenAIService extends BaseAIService {
             delta,
             content: aggregates.parsed,
             metadata: {
-              sequence: event.sequence_number
+              sequence: sequenceNumber
             }
           });
         }
@@ -1017,7 +1021,7 @@ export class OpenAIService extends BaseAIService {
             delta,
             content: aggregates.refusal,
             metadata: {
-              sequence: event.sequence_number
+              sequence: sequenceNumber
             }
           });
         }

@@ -1,12 +1,11 @@
 /**
- * aiServiceFactory.ts
- *
- * Factory pattern implementation to get the appropriate AI service based on model name.
- * Supports OpenAI, Anthropic (Claude), xAI Grok, Google Gemini, and DeepSeek providers.
- * This replaces dynamic imports in route handlers with a more efficient approach that
- * loads services once at startup.
- *
- * @author Cascade
+ * Author: gpt-5-codex
+ * Date: 2025-10-16
+ * PURPOSE: Centralized factory that lazily loads and routes AI service singletons by model prefix.
+ *          Integration points: dynamic ES module imports for provider implementations (OpenAI, Anthropic, Grok, Gemini,
+ *          DeepSeek, OpenRouter, Grover, Saturn, Heuristic) used by HTTP controllers when resolving model requests.
+ * SRP/DRY check: Pass — single responsibility for provider routing and reuse of existing services.
+ * DaisyUI: Pass — backend-only TypeScript module with no UI elements.
  */
 
 class AIServiceFactory {
@@ -18,7 +17,6 @@ class AIServiceFactory {
   private openrouterService: any;
   private groverService: any;
   private saturnService: any;
-  private jjoshService: any;
   private heuristicService: any;
 
   /**
@@ -35,7 +33,6 @@ class AIServiceFactory {
       const { openrouterService } = await import('./openrouter');
       const { groverService } = await import('./grover');
       const { saturnService } = await import('./saturnService');
-      const { jjoshService } = await import('./jjosh');
       const { heuristicService } = await import('./heuristic');
 
       this.anthropicService = anthropicService;
@@ -46,7 +43,6 @@ class AIServiceFactory {
       this.openrouterService = openrouterService;
       this.groverService = groverService;
       this.saturnService = saturnService;
-      this.jjoshService = jjoshService;
       this.heuristicService = heuristicService;
     } catch (error) {
       console.error('[Factory] Error initializing services:', error);
@@ -68,12 +64,6 @@ class AIServiceFactory {
     if (model.startsWith('claude-')) {
       console.log('   -> Anthropic service');
       return this.anthropicService;
-    }
-
-    // jjosh ARC AGI solver (external Python solver)
-    if (model.startsWith('jjosh-')) {
-      console.log('   -> jjosh service');
-      return this.jjoshService;
     }
 
     // Heuristic solver (internal Python solver)
