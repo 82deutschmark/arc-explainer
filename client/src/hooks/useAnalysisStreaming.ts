@@ -53,7 +53,7 @@ export function useAnalysisStreaming() {
   }, [state.chunks]);
 
   const startStream = useCallback(
-    (params: AnalysisStreamParams, extraHandlers: Partial<AnalysisStreamHandlers> = {}) => {
+    async (params: AnalysisStreamParams, extraHandlers: Partial<AnalysisStreamHandlers> = {}) => {
       if (streamHandleRef.current) {
         streamHandleRef.current.close();
       }
@@ -65,47 +65,60 @@ export function useAnalysisStreaming() {
         error: undefined,
       });
 
-      const handle = createAnalysisStream(params, {
-        onInit: payload => {
-          setState(prev => ({
-            ...prev,
-            sessionId: payload.sessionId,
-          }));
-          extraHandlers.onInit?.(payload);
-        },
-        onStatus: status => {
-          setState(prev => ({
-            ...prev,
-            status,
-          }));
-          extraHandlers.onStatus?.(status);
-        },
-        onChunk: chunk => {
-          setState(prev => ({
-            ...prev,
-            chunks: [...prev.chunks, chunk],
-          }));
-          extraHandlers.onChunk?.(chunk);
-        },
-        onComplete: summary => {
-          setState(prev => ({
-            ...prev,
-            status: { state: 'completed' },
-            summary,
-          }));
-          extraHandlers.onComplete?.(summary);
-        },
-        onError: error => {
-          setState(prev => ({
-            ...prev,
-            status: { state: 'failed', message: error.message },
-            error,
-          }));
-          extraHandlers.onError?.(error);
-        },
-      });
+      try {
+        const handle = await createAnalysisStream(params, {
+          onInit: payload => {
+            setState(prev => ({
+              ...prev,
+              sessionId: payload.sessionId,
+            }));
+            extraHandlers.onInit?.(payload);
+          },
+          onStatus: status => {
+            setState(prev => ({
+              ...prev,
+              status,
+            }));
+            extraHandlers.onStatus?.(status);
+          },
+          onChunk: chunk => {
+            setState(prev => ({
+              ...prev,
+              chunks: [...prev.chunks, chunk],
+            }));
+            extraHandlers.onChunk?.(chunk);
+          },
+          onComplete: summary => {
+            setState(prev => ({
+              ...prev,
+              status: { state: 'completed' },
+              summary,
+            }));
+            extraHandlers.onComplete?.(summary);
+          },
+          onError: error => {
+            setState(prev => ({
+              ...prev,
+              status: { state: 'failed', message: error.message },
+              error,
+            }));
+            extraHandlers.onError?.(error);
+          },
+        });
 
-      streamHandleRef.current = handle;
+        streamHandleRef.current = handle;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to start analysis stream';
+        const errorPayload = { code: 'HANDSHAKE_FAILED', message };
+
+        setState(prev => ({
+          ...prev,
+          status: { state: 'failed', message },
+          error: errorPayload,
+        }));
+
+        extraHandlers.onError?.(errorPayload);
+      }
     },
     []
   );
