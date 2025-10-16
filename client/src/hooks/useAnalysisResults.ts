@@ -67,6 +67,8 @@ export function useAnalysisResults({
     status: streamStatus,
     visibleText: streamingVisibleText,
     reasoningText: streamingReasoningText,
+    structuredJsonText: streamingStructuredJsonText,
+    structuredJson: streamingStructuredJson,
     summary: streamSummary,
     error: streamError,
   } = useAnalysisStreaming();
@@ -441,6 +443,8 @@ export function useAnalysisResults({
     streamStatus,
     streamingText: streamingVisibleText,
     streamingReasoning: streamingReasoningText,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
