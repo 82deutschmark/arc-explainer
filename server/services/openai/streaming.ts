@@ -22,6 +22,7 @@ import type { StreamChunk } from "../base/BaseAIService.js";
 export interface OpenAIStreamAggregates {
   text: string;
   parsed: string;
+  parsedObject?: Record<string, unknown> | Array<unknown>;
   parsedObject?: Record<string, unknown> | null;
   reasoning: string;
   summary: string;
@@ -37,6 +38,7 @@ export interface OpenAIStreamAggregates {
   }>;
   expectingJson: boolean;
   receivedAnnotatedJsonDelta: boolean;
+  usedFallbackJson: boolean;
   receivedParsedJsonDelta: boolean;
 }
 
@@ -49,6 +51,7 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
   return {
     text: "",
     parsed: "",
+    parsedObject: undefined,
     parsedObject: null,
     reasoning: "",
     summary: "",
@@ -57,6 +60,31 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
     annotations: [],
     expectingJson,
     receivedAnnotatedJsonDelta: false,
+    usedFallbackJson: false
+  };
+}
+
+function mergeStructuredDelta(
+  existing: Record<string, unknown> | undefined,
+  delta: Record<string, unknown>
+): Record<string, unknown> {
+  const base: Record<string, unknown> = existing ? { ...existing } : {};
+
+  for (const [key, value] of Object.entries(delta)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const current = base[key];
+      base[key] = mergeStructuredDelta(
+        current && typeof current === "object" && !Array.isArray(current)
+          ? (current as Record<string, unknown>)
+          : undefined,
+        value as Record<string, unknown>
+      );
+    } else {
+      base[key] = value;
+    }
+  }
+
+  return base;
     receivedParsedJsonDelta: false
   };
 }
@@ -339,6 +367,7 @@ export function handleStreamEvent(
       });
       if (aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta) {
         aggregates.parsed += delta;
+        aggregates.usedFallbackJson = true;
         callbacks.emitChunk({
           type: "json",
           delta,
@@ -353,10 +382,112 @@ export function handleStreamEvent(
       break;
     }
     case "response.output_text.done": {
+      if (aggregates.expectingJson && aggregates.usedFallbackJson && !aggregates.receivedAnnotatedJsonDelta) {
+        try {
+          aggregates.parsedObject = aggregates.parsed
+            ? (JSON.parse(aggregates.parsed) as Record<string, unknown> | Array<unknown>)
+            : undefined;
+        } catch {
+          aggregates.parsedObject = undefined;
+        }
+        callbacks.emitEvent("stream.chunk", {
+          type: "json.done",
+          content: aggregates.parsed,
+          sequence: sequenceNumber,
+          expectingJson: aggregates.expectingJson,
+          fallback: true
+        });
+      }
       callbacks.emitEvent("stream.chunk", {
         type: "text.done",
         content: aggregates.text,
         sequence: sequenceNumber
+      });
+      break;
+    }
+    case "response.output_parsed.delta": {
+      const deltaPayload = (event as any).delta;
+      aggregates.receivedAnnotatedJsonDelta = true;
+      aggregates.usedFallbackJson = false;
+
+      let deltaAsString = "";
+
+      if (typeof deltaPayload === "string") {
+        deltaAsString = deltaPayload;
+        aggregates.parsed += deltaPayload;
+      } else if (deltaPayload && typeof deltaPayload === "object") {
+        if (Array.isArray(deltaPayload)) {
+          aggregates.parsedObject = deltaPayload as Array<unknown>;
+        } else {
+          const prior = aggregates.parsedObject && typeof aggregates.parsedObject === "object" && !Array.isArray(aggregates.parsedObject)
+            ? (aggregates.parsedObject as Record<string, unknown>)
+            : undefined;
+          aggregates.parsedObject = mergeStructuredDelta(prior, deltaPayload as Record<string, unknown>);
+        }
+        try {
+          deltaAsString = JSON.stringify(deltaPayload);
+        } catch {
+          deltaAsString = String(deltaPayload);
+        }
+        try {
+          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
+        } catch {
+          aggregates.parsed = deltaAsString;
+        }
+      } else if (deltaPayload !== undefined && deltaPayload !== null) {
+        deltaAsString = String(deltaPayload);
+        aggregates.parsed += deltaAsString;
+      }
+
+      callbacks.emitChunk({
+        type: "json",
+        delta: deltaAsString,
+        content: aggregates.parsed,
+        metadata: {
+          sequence: sequenceNumber,
+          expectingJson: aggregates.expectingJson,
+          fallback: false
+        }
+      });
+      break;
+    }
+    case "response.output_parsed.done": {
+      aggregates.receivedAnnotatedJsonDelta = true;
+      aggregates.usedFallbackJson = false;
+      const parsedPayload = (event as any).output_parsed ?? (event as any).parsed ?? null;
+
+      if (parsedPayload && typeof parsedPayload === "object") {
+        if (Array.isArray(parsedPayload)) {
+          aggregates.parsedObject = parsedPayload as Array<unknown>;
+        } else {
+          aggregates.parsedObject = mergeStructuredDelta(undefined, parsedPayload as Record<string, unknown>);
+        }
+        try {
+          const source = aggregates.parsedObject ?? parsedPayload;
+          aggregates.parsed = JSON.stringify(source);
+        } catch {
+          try {
+            aggregates.parsed = JSON.stringify(parsedPayload);
+          } catch {
+            aggregates.parsed = String(parsedPayload);
+          }
+        }
+      } else if (typeof parsedPayload === "string") {
+        aggregates.parsed = parsedPayload;
+      } else if (aggregates.parsedObject) {
+        try {
+          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
+        } catch {
+          aggregates.parsed = String(aggregates.parsedObject);
+        }
+      }
+
+      callbacks.emitEvent("stream.chunk", {
+        type: "json.done",
+        content: aggregates.parsed,
+        sequence: sequenceNumber,
+        expectingJson: aggregates.expectingJson,
+        fallback: false
       });
       break;
     }
@@ -385,14 +516,23 @@ export function handleStreamEvent(
         outputIndex: annotationEvent.output_index,
         sequenceNumber
       });
+      let annotationContent = "";
+      try {
+        annotationContent = JSON.stringify(annotationEvent.annotation);
+      } catch {
+        annotationContent = String(annotationEvent.annotation);
+      }
       callbacks.emitChunk({
         type: "annotation",
+        content: annotationContent,
         content: JSON.stringify(annotationEvent.annotation),
         raw: annotationEvent,
         metadata: {
           sequence: sequenceNumber,
           annotationIndex: annotationEvent.annotation_index,
           contentIndex: annotationEvent.content_index,
+          itemId: annotationEvent.item_id,
+          outputIndex: annotationEvent.output_index
           itemId: annotationEvent.item_id
         }
       });
