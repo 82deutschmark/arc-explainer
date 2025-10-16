@@ -17,6 +17,7 @@ export interface StreamChunkPayload {
   content?: string;
   metadata?: Record<string, unknown>;
   timestamp?: number;
+  raw?: unknown;
 }
 
 export interface StreamSummary {
