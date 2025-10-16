@@ -1,15 +1,43 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-16T00:00:00Z
- * PURPOSE: Validates the pending-session store used by analysis streaming to ensure payloads persist through the SSE handshake lifecycle.
- * SRP/DRY check: Pass — focused on AnalysisStreamService pending-session helpers without duplicating integration coverage.
- * shadcn/ui: Pass — backend-only logic under test.
+ * PURPOSE: Validates the analysis streaming pending-session handshake and ensures lifecycle cleanup prevents payload leaks.
+ * SRP/DRY check: Pass — focused coverage on AnalysisStreamService cache helpers and lifecycle behaviours without duplicating integration tests.
+ * shadcn/ui: Pass — backend service coverage only.
  */
 
-import { strict as assert } from "node:assert";
 import test from "node:test";
+import { strict as assert } from "node:assert";
 
-import { analysisStreamService } from "../server/services/streaming/analysisStreamService.ts";
+import {
+  analysisStreamService,
+  PENDING_SESSION_TTL_SECONDS,
+} from "../server/services/streaming/analysisStreamService.ts";
+import { sseStreamManager } from "../server/services/streaming/SSEStreamManager.ts";
+import { aiServiceFactory } from "../server/services/aiServiceFactory.ts";
+import { streamController } from "../server/controllers/streamController.ts";
+
+function createMockResponse() {
+  let statusCode: number | undefined;
+  let jsonPayload: any;
+
+  const res = {
+    status(code: number) {
+      statusCode = code;
+      return this;
+    },
+    json(payload: any) {
+      jsonPayload = payload;
+      return this;
+    },
+  } as unknown as import("express").Response;
+
+  return {
+    res,
+    getStatus: () => statusCode ?? 200,
+    getJson: <T>() => jsonPayload as T,
+  };
+}
 
 const basePayload = {
   taskId: "T123",
@@ -30,110 +58,179 @@ test("AnalysisStreamService stores and clears pending payloads", () => {
     analysisStreamService.clearPendingPayload(sessionId);
     assert.equal(analysisStreamService.getPendingPayload(sessionId), undefined);
   }
- * Date: 2025-02-14T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
- * PURPOSE: Validates analysis streaming service routes OpenAI-prefixed models through the OpenAI provider while
- *          preserving original metadata in SSE payloads.
- * SRP/DRY check: Pass — targeted regression coverage without duplicating broader streaming suite.
- */
+});
 
-import test from "node:test";
-import { strict as assert } from "node:assert";
+test("startStreaming clears pending payload when model does not support streaming", async (t) => {
+  process.env.STREAMING_ENABLED = "true";
 
-process.env.ENABLE_SSE_STREAMING = "true";
-
-const { analysisStreamService } = await import("../server/services/streaming/analysisStreamService.ts");
-const { sseStreamManager } = await import("../server/services/streaming/SSEStreamManager.ts");
-const { aiServiceFactory } = await import("../server/services/aiServiceFactory.ts");
-const { puzzleAnalysisService } = await import("../server/services/puzzleAnalysisService.ts");
-
-interface RecordedEvent {
-  event: string;
-  payload: any;
-}
-
-test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
-  const events: RecordedEvent[] = [];
-  const errors: Array<{ code: string; message: string }> = [];
-  const completions: any[] = [];
-  const factoryCalls: string[] = [];
-  const supportsChecks: string[] = [];
-  const puzzleCalls: Array<{ taskId: string; model: string }> = [];
+  const sessionId = analysisStreamService.savePendingPayload({
+    taskId: "task-unsupported",
+    modelKey: "openai/gpt-non-streaming",
+  });
 
   const originalHas = sseStreamManager.has;
-  const originalSendEvent = sseStreamManager.sendEvent;
-  const originalClose = sseStreamManager.close;
   const originalError = sseStreamManager.error;
   const originalGetService = aiServiceFactory.getService;
-  const originalAnalyzeStreaming = puzzleAnalysisService.analyzePuzzleStreaming;
 
-  const sessionId = "session-prefixed";
-  const taskId = "task-123";
-  const encodedModelKey = encodeURIComponent("openai/gpt-5-2025-08-07");
+  const errorEvents: Array<{ code: string }> = [];
 
   sseStreamManager.has = () => true;
-  sseStreamManager.sendEvent = (_session, event, payload) => {
-    events.push({ event, payload });
-  };
-  sseStreamManager.close = (_session, summary) => {
-    completions.push(summary);
-  };
-  sseStreamManager.error = (_session, code, message) => {
-    errors.push({ code, message });
-  };
-
-  const fakeService = {
-    supportsStreaming: (model: string) => {
-      supportsChecks.push(model);
-      return true;
-    },
-  } as any;
-
-  aiServiceFactory.getService = (model: string) => {
-    factoryCalls.push(model);
-    return fakeService;
-  };
-
-  puzzleAnalysisService.analyzePuzzleStreaming = async (
-    incomingTaskId: string,
-    model: string,
-    _options: any,
-    streamHarness: any,
-  ) => {
-    puzzleCalls.push({ taskId: incomingTaskId, model });
-    streamHarness.emitEvent("stream.status", { state: "in_progress" });
-    streamHarness.emit({ type: "text", delta: "hello" });
-    streamHarness.end({ status: "success" });
-  };
+  sseStreamManager.error = ((incomingSessionId: string, code: string) => {
+    if (incomingSessionId === sessionId) {
+      errorEvents.push({ code });
+    }
+  }) as typeof sseStreamManager.error;
+  aiServiceFactory.getService = (() => ({
+    supportsStreaming: () => false,
+  })) as typeof aiServiceFactory.getService;
 
   t.after(() => {
     sseStreamManager.has = originalHas;
-    sseStreamManager.sendEvent = originalSendEvent;
-    sseStreamManager.close = originalClose;
     sseStreamManager.error = originalError;
     aiServiceFactory.getService = originalGetService;
-    puzzleAnalysisService.analyzePuzzleStreaming = originalAnalyzeStreaming;
   });
 
   await analysisStreamService.startStreaming({} as any, {
-    taskId,
-    modelKey: encodedModelKey,
+    taskId: "task-unsupported",
+    modelKey: "openai/gpt-non-streaming",
     sessionId,
   });
 
-  assert.equal(errors.length, 0, "should not emit streaming error events");
-  assert.ok(events.some((event) => event.event === "stream.status"), "status event should be emitted");
-  assert.ok(events.some((event) => event.event === "stream.chunk"), "chunk event should be emitted");
-
-  const statusWithModel = events.find(
-    (event) => event.event === "stream.status" && event.payload?.modelKey === "openai/gpt-5-2025-08-07"
+  assert.equal(analysisStreamService.getPendingPayload(sessionId), undefined, "Pending payload should be cleared");
+  assert.ok(
+    errorEvents.some((event) => event.code === "STREAMING_UNAVAILABLE"),
+    "Expected streaming unavailable error event",
   );
-  assert.ok(statusWithModel, "status events should include original model key");
-
-  const chunk = events.find((event) => event.event === "stream.chunk");
-  assert.equal(chunk?.payload?.metadata?.modelKey, "openai/gpt-5-2025-08-07");
-
-  assert.deepEqual(factoryCalls, ["gpt-5-2025-08-07"], "factory should receive canonical model key");
-  assert.deepEqual(supportsChecks, ["gpt-5-2025-08-07"], "supportsStreaming should receive canonical key");
-  assert.deepEqual(puzzleCalls, [{ taskId, model: "gpt-5-2025-08-07" }]);
-  assert.equal(completions.length, 1, "stream should close with completion summary");
 });
+
+test("startStreaming clears pending payload even when SSE session is missing", async (t) => {
+  process.env.STREAMING_ENABLED = "true";
+
+  const sessionId = analysisStreamService.savePendingPayload({
+    taskId: "task-missing-session",
+    modelKey: "openai/gpt-5-2025",
+  });
+
+  const originalHas = sseStreamManager.has;
+  const originalError = sseStreamManager.error;
+
+  const errorEvents: Array<{ code: string }> = [];
+
+  sseStreamManager.has = () => false;
+  sseStreamManager.error = ((incomingSessionId: string, code: string) => {
+    if (incomingSessionId === sessionId) {
+      errorEvents.push({ code });
+    }
+  }) as typeof sseStreamManager.error;
+
+  t.after(() => {
+    sseStreamManager.has = originalHas;
+    sseStreamManager.error = originalError;
+  });
+
+  await analysisStreamService.startStreaming({} as any, {
+    taskId: "task-missing-session",
+    modelKey: "openai/gpt-5-2025",
+    sessionId,
+  });
+
+  assert.equal(analysisStreamService.getPendingPayload(sessionId), undefined, "Pending payload should be cleared");
+  assert.ok(
+    errorEvents.some((event) => event.code === "STREAMING_FAILED"),
+    "Expected streaming failed error event",
+  );
+});
+
+test("prepareAnalysisStream validates payloads and stores pending session", async (t) => {
+  const savedPayloads: any[] = [];
+  const originalSave = analysisStreamService.savePendingPayload;
+
+  analysisStreamService.savePendingPayload = ((payload, ttlMs) => {
+    savedPayloads.push(payload);
+    assert.equal(ttlMs ?? PENDING_SESSION_TTL_SECONDS * 1000, PENDING_SESSION_TTL_SECONDS * 1000);
+    return "session-mock-123";
+  }) as typeof analysisStreamService.savePendingPayload;
+
+  t.after(() => {
+    analysisStreamService.savePendingPayload = originalSave;
+  });
+
+  const { res, getStatus, getJson } = createMockResponse();
+
+  await streamController.prepareAnalysisStream(
+    {
+      body: {
+        taskId: "task-handshake",
+        modelKey: "gpt-5-mini",
+        temperature: 0.25,
+      },
+    } as any,
+    res,
+  );
+
+  assert.equal(getStatus(), 200, "Handshake should respond with HTTP 200");
+  const json = getJson<{ sessionId: string; expiresInSeconds: number }>();
+  assert.deepEqual(json, {
+    sessionId: "session-mock-123",
+    expiresInSeconds: PENDING_SESSION_TTL_SECONDS,
+  });
+  assert.equal(savedPayloads.length, 1, "Handshake should store payload once");
+  assert.equal(savedPayloads[0].taskId, "task-handshake");
+  assert.equal(savedPayloads[0].modelKey, "gpt-5-mini");
+  assert.equal(savedPayloads[0].captureReasoning, true);
+});
+
+test("prepareAnalysisStream rejects invalid payloads", async (t) => {
+  let saveCalled = false;
+  const originalSave = analysisStreamService.savePendingPayload;
+
+  analysisStreamService.savePendingPayload = ((payload, ttlMs) => {
+    saveCalled = true;
+    return originalSave.call(analysisStreamService, payload, ttlMs);
+  }) as typeof analysisStreamService.savePendingPayload;
+
+  t.after(() => {
+    analysisStreamService.savePendingPayload = originalSave;
+  });
+
+  const { res, getStatus, getJson } = createMockResponse();
+
+  await streamController.prepareAnalysisStream(
+    {
+      body: {
+        modelKey: "gpt-5-mini",
+      },
+    } as any,
+    res,
+  );
+
+  assert.equal(getStatus(), 422, "Invalid handshake should return HTTP 422");
+  const json = getJson<{ error: string; details: string[] }>();
+  assert.equal(json.error, "Invalid stream request payload.");
+  assert.ok(json.details.includes("taskId is required and must be a non-empty string."));
+  assert.equal(saveCalled, false, "Handshake should not store payload when validation fails");
+});
+
+test("pending payloads expire automatically when handshake is abandoned", async () => {
+  const shortLivedSession = analysisStreamService.savePendingPayload(
+    {
+      taskId: "abandoned-task",
+      modelKey: "gpt-5-mini",
+    },
+    15,
+  );
+
+  assert.ok(
+    analysisStreamService.getPendingPayload(shortLivedSession),
+    "Payload should be cached immediately after handshake",
+  );
+
+  await new Promise((resolve) => setTimeout(resolve, 40));
+
+  assert.equal(
+    analysisStreamService.getPendingPayload(shortLivedSession),
+    undefined,
+    "Expired payload should be removed automatically",
+  );
+});
+

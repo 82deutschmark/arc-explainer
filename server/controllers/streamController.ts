@@ -8,7 +8,11 @@
  */
 
 import type { Request, Response } from "express";
-import { analysisStreamService, type StreamAnalysisPayload } from "../services/streaming/analysisStreamService";
+import {
+  analysisStreamService,
+  PENDING_SESSION_TTL_SECONDS,
+  type StreamAnalysisPayload,
+} from "../services/streaming/analysisStreamService";
 import { sseStreamManager } from "../services/streaming/SSEStreamManager";
 import { logger } from "../utils/logger";
 import type { PromptOptions } from "../services/promptBuilder";
@@ -167,7 +171,7 @@ export const streamController = {
       );
       res.status(200).json({
         sessionId,
-        expiresInSeconds: 60,
+        expiresInSeconds: PENDING_SESSION_TTL_SECONDS,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -234,6 +238,7 @@ export const streamController = {
     const pendingModelKey = decodeURIComponent(pendingPayload.modelKey);
 
     if (pendingPayload.taskId !== taskId || pendingModelKey !== decodedModelKey) {
+      analysisStreamService.clearPendingPayload(sessionId);
       res.status(400).json({ error: "Session parameters do not match pending payload." });
       return;
     }
