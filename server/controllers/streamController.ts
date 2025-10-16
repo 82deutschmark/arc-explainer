@@ -8,7 +8,11 @@
  */
 
 import type { Request, Response } from "express";
-import { analysisStreamService, type StreamAnalysisPayload } from "../services/streaming/analysisStreamService";
+import {
+  analysisStreamService,
+  PENDING_SESSION_TTL_SECONDS,
+  type StreamAnalysisPayload,
+} from "../services/streaming/analysisStreamService";
 import { sseStreamManager } from "../services/streaming/SSEStreamManager";
 import { logger } from "../utils/logger";
 import type { PromptOptions } from "../services/promptBuilder";
@@ -31,6 +35,12 @@ function parseBoolean(value: unknown, fallback?: boolean): boolean | undefined {
   return fallback;
 }
 
+function ensureString(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function parseJson<T>(value: unknown): T | undefined {
   if (typeof value !== "string") return undefined;
   try {
@@ -40,10 +50,16 @@ function parseJson<T>(value: unknown): T | undefined {
   }
 }
 
-function ensureString(value: unknown): string | undefined {
-  if (typeof value !== "string") return undefined;
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function pruneUndefined<T extends Record<string, unknown>>(value: T): T | undefined {
+  const entries = Object.entries(value).filter(([, v]) => v !== undefined);
+  if (entries.length === 0) {
+    return undefined;
+  }
+  return Object.fromEntries(entries) as T;
 }
 
 function coerceOriginalExplanation(value: unknown): any | undefined {
@@ -75,7 +91,60 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
   const originalExplanationId = parseNumber(body?.originalExplanationId);
   const customChallenge = ensureString(body?.customChallenge);
 
+  const rawPromptOptions = isPlainObject(body?.options) ? (body.options as Record<string, unknown>) : undefined;
   const promptOptions: PromptOptions = {};
+  if (rawPromptOptions) {
+    const rawEmojiSetKey = ensureString(rawPromptOptions["emojiSetKey"]);
+    if (rawEmojiSetKey) {
+      promptOptions.emojiSetKey = rawEmojiSetKey;
+    }
+    const rawOmitAnswer = parseBoolean(rawPromptOptions["omitAnswer"]);
+    if (typeof rawOmitAnswer === "boolean") {
+      promptOptions.omitAnswer = rawOmitAnswer;
+    }
+    const rawTopP = parseNumber(rawPromptOptions["topP"]);
+    if (typeof rawTopP === "number") {
+      promptOptions.topP = rawTopP;
+    }
+    const rawCandidateCount = parseNumber(rawPromptOptions["candidateCount"]);
+    if (typeof rawCandidateCount === "number") {
+      promptOptions.candidateCount = rawCandidateCount;
+    }
+    const rawThinkingBudget = parseNumber(rawPromptOptions["thinkingBudget"]);
+    if (typeof rawThinkingBudget === "number") {
+      promptOptions.thinkingBudget = rawThinkingBudget;
+    }
+    const rawRetryMode = parseBoolean(rawPromptOptions["retryMode"]);
+    if (typeof rawRetryMode === "boolean") {
+      promptOptions.retryMode = rawRetryMode;
+    }
+    const rawTemperature = parseNumber(rawPromptOptions["temperature"]);
+    if (typeof rawTemperature === "number") {
+      promptOptions.temperature = rawTemperature;
+    }
+    const rawSystemPromptMode = ensureString(rawPromptOptions["systemPromptMode"]);
+    if (rawSystemPromptMode) {
+      promptOptions.systemPromptMode = rawSystemPromptMode as PromptOptions["systemPromptMode"];
+    }
+    const rawCustomChallenge = ensureString(rawPromptOptions["customChallenge"]);
+    if (rawCustomChallenge) {
+      promptOptions.customChallenge = rawCustomChallenge;
+    }
+    if (rawPromptOptions["previousAnalysis"] !== undefined) {
+      promptOptions.previousAnalysis = rawPromptOptions["previousAnalysis"];
+    }
+    if (rawPromptOptions["originalExplanation"] !== undefined) {
+      promptOptions.originalExplanation = rawPromptOptions["originalExplanation"];
+    }
+    if (Array.isArray(rawPromptOptions["badFeedback"])) {
+      promptOptions.badFeedback = rawPromptOptions["badFeedback"] as any[];
+    }
+    const rawUseStructuredOutput = parseBoolean(rawPromptOptions["useStructuredOutput"]);
+    if (typeof rawUseStructuredOutput === "boolean") {
+      promptOptions.useStructuredOutput = rawUseStructuredOutput;
+    }
+  }
+
   const emojiSetKey = ensureString(body?.emojiSetKey);
   if (emojiSetKey) {
     promptOptions.emojiSetKey = emojiSetKey;
@@ -101,10 +170,66 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
     errors.push("originalExplanation must be a JSON object or JSON string.");
   }
 
+  if (originalExplanation !== undefined) {
+    promptOptions.originalExplanation = promptOptions.originalExplanation ?? originalExplanation;
+  }
+
   const promptId = ensureString(body?.promptId) ?? "solver";
   const customPrompt = ensureString(body?.customPrompt);
 
+  const rawServiceOpts = isPlainObject(body?.serviceOpts) ? (body.serviceOpts as Record<string, unknown>) : undefined;
   const serviceOpts: ServiceOptions = {};
+  if (rawServiceOpts) {
+    const rawCaptureReasoning = parseBoolean(rawServiceOpts["captureReasoning"]);
+    if (typeof rawCaptureReasoning === "boolean") {
+      serviceOpts.captureReasoning = rawCaptureReasoning;
+    }
+    const rawReasoningEffort = ensureString(rawServiceOpts["reasoningEffort"]);
+    if (rawReasoningEffort) {
+      serviceOpts.reasoningEffort = rawReasoningEffort as ServiceOptions["reasoningEffort"];
+    }
+    const rawReasoningVerbosity = ensureString(rawServiceOpts["reasoningVerbosity"]);
+    if (rawReasoningVerbosity) {
+      serviceOpts.reasoningVerbosity = rawReasoningVerbosity as ServiceOptions["reasoningVerbosity"];
+    }
+    const rawReasoningSummaryType = ensureString(rawServiceOpts["reasoningSummaryType"]);
+    if (rawReasoningSummaryType) {
+      serviceOpts.reasoningSummaryType = rawReasoningSummaryType as ServiceOptions["reasoningSummaryType"];
+    }
+    const rawSystemPromptMode = ensureString(rawServiceOpts["systemPromptMode"]);
+    if (rawSystemPromptMode) {
+      serviceOpts.systemPromptMode = rawSystemPromptMode as ServiceOptions["systemPromptMode"];
+    }
+    const rawPreviousResponseId = ensureString(rawServiceOpts["previousResponseId"]);
+    if (rawPreviousResponseId) {
+      serviceOpts.previousResponseId = rawPreviousResponseId;
+    }
+    const rawReasoningSummary = ensureString(rawServiceOpts["reasoningSummary"]);
+    if (rawReasoningSummary) {
+      serviceOpts.reasoningSummary = rawReasoningSummary as ServiceOptions["reasoningSummary"];
+    }
+    const rawMaxSteps = parseNumber(rawServiceOpts["maxSteps"]);
+    if (typeof rawMaxSteps === "number") {
+      serviceOpts.maxSteps = rawMaxSteps;
+    }
+    const rawMaxRetries = parseNumber(rawServiceOpts["maxRetries"]);
+    if (typeof rawMaxRetries === "number") {
+      serviceOpts.maxRetries = rawMaxRetries;
+    }
+    const rawMaxOutputTokens = parseNumber(rawServiceOpts["maxOutputTokens"]);
+    if (typeof rawMaxOutputTokens === "number") {
+      serviceOpts.maxOutputTokens = rawMaxOutputTokens;
+    }
+    const rawStore = parseBoolean(rawServiceOpts["store"]);
+    if (typeof rawStore === "boolean") {
+      serviceOpts.store = rawStore;
+    }
+    const rawSessionId = ensureString(rawServiceOpts["sessionId"]);
+    if (rawSessionId) {
+      serviceOpts.sessionId = rawSessionId;
+    }
+  }
+
   if (typeof captureReasoning === "boolean") {
     serviceOpts.captureReasoning = captureReasoning;
   }
@@ -134,8 +259,8 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
     modelKey: modelKey ?? "",
     promptId,
     temperature,
-    options: Object.keys(promptOptions).length > 0 ? promptOptions : undefined,
-    serviceOpts: Object.keys(serviceOpts).length > 0 ? serviceOpts : undefined,
+    options: pruneUndefined(promptOptions),
+    serviceOpts: pruneUndefined(serviceOpts),
     customPrompt,
     captureReasoning,
     retryMode,
@@ -167,7 +292,7 @@ export const streamController = {
       );
       res.status(200).json({
         sessionId,
-        expiresInSeconds: 60,
+        expiresInSeconds: PENDING_SESSION_TTL_SECONDS,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -234,6 +359,7 @@ export const streamController = {
     const pendingModelKey = decodeURIComponent(pendingPayload.modelKey);
 
     if (pendingPayload.taskId !== taskId || pendingModelKey !== decodedModelKey) {
+      analysisStreamService.clearPendingPayload(sessionId);
       res.status(400).json({ error: "Session parameters do not match pending payload." });
       return;
     }
