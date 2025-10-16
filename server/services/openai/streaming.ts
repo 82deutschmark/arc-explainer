@@ -22,8 +22,7 @@ import type { StreamChunk } from "../base/BaseAIService.js";
 export interface OpenAIStreamAggregates {
   text: string;
   parsed: string;
-  parsedObject?: Record<string, unknown> | Array<unknown>;
-  parsedObject?: Record<string, unknown> | null;
+  parsedObject?: Record<string, unknown> | Array<unknown> | null;
   reasoning: string;
   summary: string;
   refusal: string;
@@ -51,7 +50,6 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
   return {
     text: "",
     parsed: "",
-    parsedObject: undefined,
     parsedObject: null,
     reasoning: "",
     summary: "",
@@ -60,7 +58,8 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
     annotations: [],
     expectingJson,
     receivedAnnotatedJsonDelta: false,
-    usedFallbackJson: false
+    usedFallbackJson: false,
+    receivedParsedJsonDelta: false
   };
 }
 
@@ -85,8 +84,6 @@ function mergeStructuredDelta(
   }
 
   return base;
-    receivedParsedJsonDelta: false
-  };
 }
 
 function stringifyStructuredDelta(delta: unknown): string {
@@ -525,7 +522,6 @@ export function handleStreamEvent(
       callbacks.emitChunk({
         type: "annotation",
         content: annotationContent,
-        content: JSON.stringify(annotationEvent.annotation),
         raw: annotationEvent,
         metadata: {
           sequence: sequenceNumber,
@@ -533,7 +529,6 @@ export function handleStreamEvent(
           contentIndex: annotationEvent.content_index,
           itemId: annotationEvent.item_id,
           outputIndex: annotationEvent.output_index
-          itemId: annotationEvent.item_id
         }
       });
       break;
