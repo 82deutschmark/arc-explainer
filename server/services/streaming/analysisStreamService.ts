@@ -1,12 +1,9 @@
-const STREAMING_ENABLED = process.env.ENABLE_SSE_STREAMING === 'true';
-
 /**
- * 
- * Author: Codex using GPT-5-high
- * Date: 2025-10-09T00:00:00Z
- * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks, option parsing, and graceful lifecycle management.
- * SRP/DRY check: Pass — no existing orchestration layer for SSE token streaming.
- * shadcn/ui: Pass — backend service only.
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
+ * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks,
+ * option parsing, and graceful lifecycle management while honoring the shared STREAMING_ENABLED feature flag.
+ * SRP/DRY check: Pass — reuse of centralized streaming config avoids duplicate env parsing.
  */
 
 import { nanoid } from "nanoid";
@@ -17,6 +14,7 @@ import { logger } from "../../utils/logger";
 import { aiServiceFactory } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
+import { resolveStreamingConfig } from "@shared/config/streaming";
 
 export interface StreamAnalysisPayload {
   taskId: string;
@@ -42,7 +40,8 @@ export class AnalysisStreamService {
       throw new Error("SSE session must be registered before starting analysis.");
     }
 
-    if (!STREAMING_ENABLED) {
+    const streamingConfig = resolveStreamingConfig();
+    if (!streamingConfig.enabled) {
       sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
       return sessionId;
     }

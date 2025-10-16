@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 import { getDefaultSaturnModel } from '@/lib/saturnModels';
+import { isStreamingEnabled } from '@shared/config/streaming';
 
 export interface SaturnOptions {
   model?: string;
@@ -92,7 +93,7 @@ export function useSaturnProgress(taskId: string | undefined) {
   const wsRef = useRef<WebSocket | null>(null);
   const sseRef = useRef<EventSource | null>(null);
   const promptLoggedRef = useRef<string | null>(null);
-  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const streamingEnabled = isStreamingEnabled();
 
   const closeSocket = useCallback(() => {
     if (wsRef.current) {

@@ -93,8 +93,10 @@ Some endpoints now require API key authentication via `Authorization: Bearer <ap
   - **Params**: `taskId` (string), `modelKey` (string) - Model name
   - **Query**: Accepts same analysis options as the POST endpoint (`temperature`, `promptId`, `omitAnswer`, `reasoningEffort`, etc.)
   - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
-  - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
+  - **Notes**: Enabled when `STREAMING_ENABLED=true`; defaults to `true` in development builds so SSE works out of the box. Currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models.
   - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
+
+> 📘 **Streaming configuration** — Set `STREAMING_ENABLED=false` to disable SSE globally (frontend and backend). Leaving it unset keeps streaming enabled in development and requires explicit opt-out in production.
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)
