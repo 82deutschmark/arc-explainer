@@ -31,7 +31,8 @@ import type {
   ResponseStreamEvent,
   ResponseReasoningSummaryTextDeltaEvent,
   ResponseReasoningSummaryPartAddedEvent,
-  ResponseContentPartAddedEvent
+  ResponseContentPartAddedEvent,
+  ResponseOutputTextAnnotationAddedEvent
 } from "openai/resources/responses/responses";
 
 type OpenAIStreamAggregates = {
@@ -41,6 +42,15 @@ type OpenAIStreamAggregates = {
   summary: string;
   refusal: string;
   reasoningSummary?: string;  // Added for reasoning summary accumulation
+  annotations: Array<{
+    annotation: unknown;
+    annotationIndex: number;
+    contentIndex: number;
+    itemId: string;
+    outputIndex: number;
+    sequenceNumber?: number;
+  }>;
+  expectingJson: boolean;
 };
 
 // Import centralized model configuration
@@ -224,6 +234,9 @@ export class OpenAIService extends BaseAIService {
         taskId
       );
 
+      const expectingJsonSchema =
+        !!body?.text && typeof body.text === "object" && (body.text as { format?: { type?: string } }).format?.type === "json_schema";
+
       this.emitStreamEvent(harness, "stream.status", { state: "requested" });
 
       const stream = openai.responses.stream(
@@ -236,7 +249,10 @@ export class OpenAIService extends BaseAIService {
         parsed: "",  // Accumulates structured JSON output
         reasoning: "",
         summary: "",
-        refusal: ""
+        refusal: "",
+        reasoningSummary: "",
+        annotations: [],
+        expectingJson: expectingJsonSchema
       };
 
       for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
@@ -908,7 +924,23 @@ export class OpenAIService extends BaseAIService {
       }
       case "response.output_text.delta": {
         const delta = (event as any).delta ?? "";
-        if (delta) {
+        if (!delta) {
+          break;
+        }
+
+        if (aggregates.expectingJson) {
+          aggregates.parsed += delta;
+          this.emitStreamChunk(harness, {
+            type: "json",
+            delta,
+            content: aggregates.parsed,
+            metadata: {
+              sequence: sequenceNumber,
+              outputIndex: (event as any).output_index,
+              contentIndex: (event as any).content_index
+            }
+          });
+        } else {
           aggregates.text += delta;
           this.emitStreamChunk(harness, {
             type: "text",
@@ -923,7 +955,11 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       case "response.output_text.done": {
-        aggregates.text = aggregates.text || "";
+        if (aggregates.expectingJson) {
+          aggregates.parsed = aggregates.parsed || "";
+        } else {
+          aggregates.text = aggregates.text || "";
+        }
         break;
       }
       case "response.reasoning_text.delta": {
@@ -943,25 +979,6 @@ export class OpenAIService extends BaseAIService {
       }
       case "response.reasoning_text.done": {
         aggregates.reasoning = aggregates.reasoning || "";
-        break;
-      }
-      case "response.output_json.delta": {
-        const delta = (event as any).delta ?? "";
-        if (delta) {
-          aggregates.parsed += delta;
-          this.emitStreamChunk(harness, {
-            type: "json",
-            delta,
-            content: aggregates.parsed,
-            metadata: {
-              sequence: sequenceNumber
-            }
-          });
-        }
-        break;
-      }
-      case "response.output_json.done": {
-        aggregates.parsed = aggregates.parsed || "";
         break;
       }
       case "response.output_item.added": {
@@ -1004,6 +1021,9 @@ export class OpenAIService extends BaseAIService {
         break;
       }
       case "response.content_part.added": {
+        if (aggregates.expectingJson) {
+          break;
+        }
         // SDK Type: ResponseContentPartAddedEvent has 'part: ResponseOutputText' with 'text: string' field
         const typedEvent = event as ResponseContentPartAddedEvent;
         const partText = typedEvent.part && 'text' in typedEvent.part ? typedEvent.part.text : '';
@@ -1013,6 +1033,43 @@ export class OpenAIService extends BaseAIService {
           delta: partText,
           content: aggregates.text,
           metadata: { type: 'content' }
+        });
+        break;
+      }
+      case "response.output_text.annotation.added": {
+        const typedEvent = event as ResponseOutputTextAnnotationAddedEvent;
+        const annotationEntry = {
+          annotation: typedEvent.annotation,
+          annotationIndex: typedEvent.annotation_index,
+          contentIndex: typedEvent.content_index,
+          itemId: typedEvent.item_id,
+          outputIndex: typedEvent.output_index,
+          sequenceNumber: typedEvent.sequence_number ?? sequenceNumber
+        };
+        aggregates.annotations.push(annotationEntry);
+
+        let annotationText: string;
+        if (typeof typedEvent.annotation === 'string') {
+          annotationText = typedEvent.annotation;
+        } else {
+          try {
+            annotationText = JSON.stringify(typedEvent.annotation);
+          } catch {
+            annotationText = '[annotation]';
+          }
+        }
+
+        this.emitStreamChunk(harness, {
+          type: "annotation",
+          content: annotationText,
+          raw: typedEvent.annotation,
+          metadata: {
+            sequence: typedEvent.sequence_number ?? sequenceNumber,
+            annotationIndex: typedEvent.annotation_index,
+            contentIndex: typedEvent.content_index,
+            outputIndex: typedEvent.output_index,
+            itemId: typedEvent.item_id
+          }
         });
         break;
       }

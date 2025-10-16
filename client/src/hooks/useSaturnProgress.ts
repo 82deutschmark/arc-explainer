@@ -43,6 +43,11 @@ export interface SaturnProgressState {
   streamingReasoning?: string;
   streamingJson?: string;
   streamingRefusal?: string;
+  streamingAnnotations?: Array<{
+    annotation: unknown;
+    metadata?: Record<string, unknown>;
+    timestamp?: number;
+  }>;
   streamingTokenUsage?: {
     input?: number;
     output?: number;
@@ -82,6 +87,7 @@ export function useSaturnProgress(taskId: string | undefined) {
     logLines: [],
     reasoningHistory: [],
     streamingStatus: 'idle',
+    streamingAnnotations: [],
   });
   const wsRef = useRef<WebSocket | null>(null);
   const sseRef = useRef<EventSource | null>(null);
@@ -205,6 +211,7 @@ export function useSaturnProgress(taskId: string | undefined) {
         streamingMessage: undefined,
         streamingJson: '',
         streamingRefusal: '',
+        streamingAnnotations: [],
         promptPreview: undefined,
         promptLength: undefined,
         promptModel: undefined,
@@ -359,11 +366,25 @@ export function useSaturnProgress(taskId: string | undefined) {
               delta?: string;
               content?: string;
               metadata?: Record<string, unknown>;
+              raw?: unknown;
+              timestamp?: number;
             };
             setState((prev) => {
               // Add text chunks to logLines for live display
               let nextLogs = prev.logLines ? [...prev.logLines] : [];
-              const chunkText = chunk.delta ?? chunk.content;
+              const annotationText =
+                chunk.type === 'annotation'
+                  ? typeof chunk.raw === 'string'
+                    ? chunk.raw
+                    : (() => {
+                        try {
+                          return JSON.stringify(chunk.raw);
+                        } catch {
+                          return '[annotation]';
+                        }
+                      })()
+                  : undefined;
+              const chunkText = chunk.delta ?? chunk.content ?? annotationText;
               const recordLines = (label: string, text: string) => {
                 const timestamp = new Date().toLocaleTimeString();
                 nextLogs.push(`[${timestamp}] ${label}`);
@@ -391,6 +412,8 @@ export function useSaturnProgress(taskId: string | undefined) {
                   recordLines('📦 Structured output streaming', chunkText);
                 } else if (chunk.type === 'refusal') {
                   recordLines('⛔ Model refusal content', chunkText);
+                } else if (chunk.type === 'annotation') {
+                  recordLines('🔖 Annotation metadata', chunkText);
                 } else if (chunk.type === 'prompt') {
                   if (promptLoggedRef.current !== chunkText) {
                     recordLines('📝 Saturn prompt', chunkText);
@@ -428,6 +451,20 @@ export function useSaturnProgress(taskId: string | undefined) {
                   chunk.type === 'refusal'
                     ? (prev.streamingRefusal ?? '') + (chunk.delta ?? chunk.content ?? '')
                     : prev.streamingRefusal,
+                streamingAnnotations:
+                  chunk.type === 'annotation'
+                    ? [
+                        ...(prev.streamingAnnotations ?? []),
+                        {
+                          annotation: chunk.raw ?? annotationText,
+                          metadata: chunk.metadata,
+                          timestamp:
+                            typeof chunk.timestamp === 'number'
+                              ? chunk.timestamp
+                              : Date.now(),
+                        },
+                      ]
+                    : prev.streamingAnnotations,
                 promptPreview: nextPromptPreview,
                 promptLength: nextPromptLength,
                 promptGeneratedAt: nextPromptGeneratedAt,

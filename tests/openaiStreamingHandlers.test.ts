@@ -21,7 +21,9 @@ test("OpenAI streaming handler emits text chunk deltas", () => {
     reasoning: "",
     summary: "",
     refusal: "",
-    reasoningSummary: ""
+    reasoningSummary: "",
+    annotations: [],
+    expectingJson: false
   };
 
   const emitted: any[] = [];
@@ -57,7 +59,9 @@ test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", 
     reasoning: "",
     summary: "",
     refusal: "",
-    reasoningSummary: ""
+    reasoningSummary: "",
+    annotations: [],
+    expectingJson: true
   };
 
   const emitted: any[] = [];
@@ -69,8 +73,18 @@ test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", 
   };
 
   const reasoningEvent = { type: "response.reasoning_text.delta", delta: "Think", sequence_number: 2 } as any;
-  const jsonEvent = { type: "response.output_json.delta", delta: "{\"key\":", sequence_number: 3 } as any;
-  const jsonEventPart2 = { type: "response.output_json.delta", delta: "\"value\"}", sequence_number: 4 } as any;
+  const jsonEvent = {
+    type: "response.output_text.delta",
+    delta: "{\"key\":",
+    sequence_number: 3,
+    output_index: 0
+  } as any;
+  const jsonEventPart2 = {
+    type: "response.output_text.delta",
+    delta: "\"value\"}",
+    sequence_number: 4,
+    output_index: 0
+  } as any;
   const refusalEvent = { type: "response.refusal.delta", delta: "No", sequence_number: 5 } as any;
 
   (service as any).handleStreamingEvent(reasoningEvent, harness, aggregates);
@@ -95,4 +109,46 @@ test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", 
   assert.ok(refusalChunk);
   assert.equal(refusalChunk.delta, "No");
   assert.equal(refusalChunk.content, "No");
+});
+
+test("OpenAI streaming handler surfaces output text annotations", () => {
+  const service = new OpenAIService();
+  const aggregates = {
+    text: "",
+    parsed: "",
+    reasoning: "",
+    summary: "",
+    refusal: "",
+    reasoningSummary: "",
+    annotations: [],
+    expectingJson: false
+  };
+
+  const emitted: any[] = [];
+  const harness = {
+    sessionId: "session-test",
+    emit: (chunk: any) => emitted.push(chunk),
+    end: () => undefined,
+    emitEvent: () => undefined
+  };
+
+  const annotationPayload = {
+    type: "response.output_text.annotation.added",
+    annotation: { type: "citation", url: "https://example.com" },
+    annotation_index: 0,
+    content_index: 0,
+    item_id: "msg_123",
+    output_index: 0,
+    sequence_number: 6
+  } as any;
+
+  (service as any).handleStreamingEvent(annotationPayload, harness, aggregates);
+
+  assert.equal(aggregates.annotations.length, 1);
+  assert.deepEqual(aggregates.annotations[0].annotation, { type: "citation", url: "https://example.com" });
+  assert.equal(emitted.length, 1);
+  assert.equal(emitted[0].type, "annotation");
+  assert.equal(emitted[0].metadata.annotationIndex, 0);
+  assert.equal(emitted[0].metadata.itemId, "msg_123");
+  assert.equal(typeof emitted[0].content, "string");
 });
