@@ -12,8 +12,6 @@
  * shadcn/ui: Pass — backend service only.
  */
 
-import { isFeatureFlagEnabled } from "@shared/utils/featureFlags";
-
 import { nanoid } from "nanoid";
 import type { Request } from "express";
 import { puzzleAnalysisService } from "../puzzleAnalysisService";
@@ -23,8 +21,6 @@ import { aiServiceFactory, canonicalizeModelKey } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
 import { resolveStreamingConfig } from "@shared/config/streaming";
-
-const STREAMING_ENABLED = isFeatureFlagEnabled(process.env.ENABLE_SSE_STREAMING);
 
 export interface StreamAnalysisPayload {
   taskId: string;
@@ -81,7 +77,16 @@ export class AnalysisStreamService {
     }
 
     const { taskId, modelKey } = payload;
-    const decodedModel = decodeURIComponent(modelKey);
+    let decodedModel: string;
+    try {
+      decodedModel = decodeURIComponent(modelKey);
+    } catch (error) {
+      logger.warn(
+        `Failed to decode model key '${modelKey}', using raw value. ${(error as Error)?.message ?? error}`,
+        "stream-service"
+      );
+      decodedModel = modelKey;
+    }
     const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
     const aiService = aiServiceFactory.getService(canonicalModelKey);
@@ -96,6 +101,7 @@ export class AnalysisStreamService {
         "Streaming is not enabled for this model.",
         { modelKey: originalModelKey }
       );
+      this.clearPendingPayload(sessionId);
       return sessionId;
     }
 
