@@ -1,16 +1,17 @@
 /**
  * Author: gpt-5-codex
- * Date: 2025-02-03
+ * Date: 2025-02-03  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
  * PURPOSE: Professionalizes the ARC Puzzle Browser layout while reusing existing
  *          puzzle filtering/search logic for a research-focused presentation.
  *          Integrates with the existing hooks (usePuzzleList, useModels) and
  *          retains DaisyUI components for consistency.
- * SRP/DRY check: Pass - Enhances presentation only, data hooks remain shared.
+ * SRP/DRY check: Pass — Verified puzzle list filtering and navigation remain unchanged after UI updates.
  * DaisyUI: Pass - Continues using DaisyUI buttons and form controls.
  */
 import React, { useState, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { usePuzzleList } from '@/hooks/usePuzzle';
+import { usePuzzleStats } from '@/hooks/usePuzzleStats';
 import { Loader2, Grid3X3, Sparkles, Cpu, Database, Trophy, User, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import type { PuzzleMetadata } from '@shared/types';
 import { PuzzleCard } from '@/components/puzzle/PuzzleCard';
@@ -66,6 +67,18 @@ export default function PuzzleBrowser() {
   }, [maxGridSize, gridSizeConsistent, arcVersion, multiTestFilter]);
 
   const { puzzles, isLoading, error } = usePuzzleList(filters);
+  const { summary: puzzleStatsSummary, isLoading: statsLoading, error: statsError } = usePuzzleStats();
+  const datasetBreakdownEntries = React.useMemo(
+    () =>
+      Object.entries(puzzleStatsSummary.datasetBreakdown).sort(([, a], [, b]) => {
+        return b.total - a.total;
+      }),
+    [puzzleStatsSummary.datasetBreakdown]
+  );
+  const analyzedCoveragePercent = React.useMemo(
+    () => Math.min(Math.max(puzzleStatsSummary.analyzedCoverage * 100, 0), 100),
+    [puzzleStatsSummary.analyzedCoverage]
+  );
   
   // Apply explanation filtering and sorting after getting puzzles from the hook
   const filteredPuzzles = React.useMemo(() => {
@@ -149,6 +162,25 @@ export default function PuzzleBrowser() {
 
     return filtered;
   }, [puzzles, explanationFilter, namedFilter, sortBy, searchQuery]);
+
+  const currentViewStats = React.useMemo(() => {
+    let named = 0;
+    let analyzed = 0;
+    filteredPuzzles.forEach((puzzle) => {
+      if (hasPuzzleName(puzzle.id)) {
+        named += 1;
+      }
+      if (puzzle.hasExplanation) {
+        analyzed += 1;
+      }
+    });
+
+    return {
+      total: filteredPuzzles.length,
+      named,
+      analyzed
+    };
+  }, [filteredPuzzles]);
 
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
@@ -238,22 +270,85 @@ export default function PuzzleBrowser() {
           </div>
 
           <div className="border-t border-slate-200 bg-slate-50/80">
-            <dl className="grid gap-4 px-6 py-4 sm:grid-cols-3">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">In view</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.length.toLocaleString()}</dd>
+            {statsLoading ? (
+              <div className="px-6 py-5">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {[0, 1, 2].map((item) => (
+                    <div key={item} className="h-20 animate-pulse rounded-lg bg-slate-200/60" />
+                  ))}
+                </div>
+                <div className="mt-4 h-24 animate-pulse rounded-lg bg-slate-200/60" />
               </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => hasPuzzleName(p.id)).length.toLocaleString()}</dd>
+            ) : statsError ? (
+              <div className="px-6 py-4">
+                <div role="alert" className="alert alert-error">
+                  <span>Unable to load global puzzle statistics. Please refresh and try again.</span>
+                </div>
               </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Has analysis</dt>
-                <dd className="text-xl font-semibold text-slate-900">{filteredPuzzles.filter(p => p.hasExplanation).length.toLocaleString()}</dd>
+            ) : (
+              <div className="space-y-4 px-6 py-5">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total puzzles</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{puzzleStatsSummary.totalPuzzles.toLocaleString()}</p>
+                    <p className="mt-1 text-xs text-slate-500">Across {datasetBreakdownEntries.length} datasets</p>
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Analyzed coverage</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{analyzedCoveragePercent.toFixed(1)}%</p>
+                    <p className="mt-1 text-xs text-slate-500">{puzzleStatsSummary.analyzedPuzzles.toLocaleString()} puzzles with explanations</p>
+                    <progress className="progress progress-primary mt-3 h-2 w-full" value={analyzedCoveragePercent} max={100} />
+                  </div>
+                  <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Analysis backlog</p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">{puzzleStatsSummary.backlogPuzzles.toLocaleString()}</p>
+                    <p className="mt-1 text-xs text-slate-500">Puzzles still awaiting analysis</p>
+                  </div>
+                </div>
+                {datasetBreakdownEntries.length > 0 && (
+                  <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dataset coverage</p>
+                    <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {datasetBreakdownEntries.map(([dataset, stats]) => (
+                        <div key={dataset} className="rounded-md border border-slate-200 bg-slate-50 p-3">
+                          <div className="flex items-center justify-between text-sm font-semibold text-slate-800">
+                            <span>{dataset}</span>
+                            <span>{(stats.coverage * 100).toFixed(0)}%</span>
+                          </div>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {stats.analyzed.toLocaleString()} / {stats.total.toLocaleString()} analyzed
+                          </p>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                )}
               </div>
-            </dl>
+            )}
           </div>
         </header>
+
+        <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current view</p>
+            <h2 className="text-lg font-semibold text-slate-900">Active filter snapshot</h2>
+            <p className="text-xs text-slate-500">Counts reflect the puzzles shown below after applying filters.</p>
+          </div>
+          <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-slate-500">In view</dt>
+              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.total.toLocaleString()}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
+              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.named.toLocaleString()}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-slate-500">With analysis</dt>
+              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.analyzed.toLocaleString()}</dd>
+            </div>
+          </dl>
+        </section>
 
         {/* Community acknowledgement */}
         <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm">

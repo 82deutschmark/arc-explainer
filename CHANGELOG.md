@@ -1,9 +1,18 @@
 ## [4.8.17] - 2025-10-16
-### 🪐 Saturn Streaming UX Restored
+### ♻️ PuzzleExaminer: Restore Card Grid & DaisyUI Streaming Modal
 
-- Guarded Saturn SSE sessions against non-streaming models and emit an immediate `starting` status so the UI shows progress right away.
-- Emit prompt preview chunks from `puzzleAnalysisService.analyzePuzzleStreaming()` so clients receive the exact dispatched prompt alongside status metadata.
-- Reset Saturn hook streaming accumulators, dedupe prompt logs, and capture prompt chunk metadata for consistent real-time feedback.
+**Regression Audit:**
+- **4.8.1 (2025-10-12)** replaced the PuzzleExaminer model picker with the `ModelTable` data grid to support the mandatory prompt preview flow. While the preview safeguard was useful, the dense table removed the intuitive card layout that testers preferred for quick scanning.
+- **Post-4.8.16 hotfix** swapped the DaisyUI `<dialog>` streaming modal for the shadcn dialog wrapper while chasing accessibility issues. That change regressed the streaming UX by breaking the auto-open behaviour the DaisyUI modal provides when `modal-open` is toggled.
+
+**Fixes:**
+- Reinstated the DaisyUI `<dialog>` streaming modal so long-running analyses once again surface in the dedicated overlay without manual intervention.
+- Brought back the ModelSelection card grid so models render as the colorful badge cards from early October instead of the table rows. This keeps the prompt preview safeguards (handled in `PromptPreviewModal`) without the data-table UX regression.
+- Documented the above regressions directly in this entry for future reference.
+
+**Files Updated:** `client/src/pages/PuzzleExaminer.tsx`
+
+---
 
 ## [4.8.16] - 2025-10-15
 ### 🎨 PuzzleBrowser: Restore Acknowledgements & Fix Terrible Design
