@@ -1,31 +1,17 @@
 /**
- * puzzleAnalysisService.ts
- *
- * Author: Cascade using GPT-4.1 (original), Claude Code using Sonnet 4.5 (2025-09-30 fix), 
- *         Cascade using Claude Sonnet 4 (2025-10-10 streaming validation fix)
- * Date: 2025-09-29T17:15:00-04:00 (original), 2025-09-30 (validation fix), 2025-10-10 (streaming fix)
- * PURPOSE: Service for handling puzzle analysis business logic. Extracts complex AI analysis
- * orchestration from controller. Manages the full analysis pipeline: prompt building, AI service
- * calls, response validation, and database persistence preparation.
- *
- * CRITICAL FIX (2025-10-10): Fixed streaming validation bug where streaming responses skipped
- * validateAndEnrichResult() entirely, causing NULL predicted_output_grid, isPredictionCorrect=false,
- * and trustworthinessScore=0 to be saved to database. Now wraps streaming harness to intercept
- * completion and validate analysis using validateStreamingResult() before sending to client.
- * This ensures streaming results match database schema expectations just like non-streaming analysis.
- *
- * CRITICAL FIX (2025-09-30): Fixed debate validation bug where 'debate' prompt type was excluded
- * from validateAndEnrichResult() call (line 124). This caused debate rebuttals to skip prediction
- * extraction and validation entirely, resulting in NULL predicted grids and default values
- * (isPredictionCorrect: false, trustworthinessScore: 0) being saved to database. Now uses
- * centralized isSolverMode() function from systemPrompts.ts to ensure consistent validation.
- *
- * PREVIOUS FIX (2025-09-29): Added originalExplanation and customChallenge extraction in
- * generatePromptPreview() to enable debate mode prompt preview. These fields were missing,
- * causing API calls to fail when previewing debate prompts.
- *
- * SRP/DRY check: Pass - Single service responsibility (analysis orchestration), now properly
- * uses centralized solver mode detection instead of duplicating logic.
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: Orchestrates puzzle analysis and streaming flows by coordinating prompt construction,
+ * AI provider execution, and validation across standard + SSE pathways. Centralizes prompt preview
+ * emission and validation so all controllers (Saturn, Grover, generic SSE) behave consistently.
+ * SRP/DRY check: Pass — verified streaming hook reuse with existing controllers while preserving validation harness.
+ */
+
+/**
+ * Historical notes:
+ * - 2025-10-10: Streaming validation harness added to enforce validateStreamingResult().
+ * - 2025-09-30: Debate mode validation bug resolved via centralized solver detection.
+ * - 2025-09-29: Debate prompt preview enhancements for rebuttal context.
  */
 
 import { aiServiceFactory } from './aiServiceFactory';
@@ -229,6 +215,105 @@ export class PuzzleAnalysisService {
     }
     if (resolvedOriginalExplanation) promptOptions.originalExplanation = resolvedOriginalExplanation;
     if (customChallenge) promptOptions.customChallenge = customChallenge;
+
+    if (stream?.emitEvent) {
+      stream.emitEvent('stream.status', {
+        state: 'starting',
+        phase: 'prompt_building',
+        message: `Building prompt for ${model}...`,
+        promptId,
+        promptModel: model,
+        conversationChain: previousResponseId ?? null,
+      });
+    }
+
+    const previewHarness = stream;
+    if (previewHarness?.emitEvent) {
+      try {
+        const previewServiceOpts: ServiceOptions = {
+          ...overrides,
+          captureReasoning,
+        };
+        if (reasoningEffort && ['minimal', 'low', 'medium', 'high'].includes(reasoningEffort)) {
+          previewServiceOpts.reasoningEffort = reasoningEffort as ServiceOptions['reasoningEffort'];
+        }
+        if (reasoningVerbosity && ['low', 'medium', 'high'].includes(reasoningVerbosity)) {
+          previewServiceOpts.reasoningVerbosity = reasoningVerbosity as ServiceOptions['reasoningVerbosity'];
+        }
+        if (reasoningSummaryType && ['auto', 'detailed'].includes(reasoningSummaryType)) {
+          previewServiceOpts.reasoningSummaryType = reasoningSummaryType as ServiceOptions['reasoningSummaryType'];
+        }
+        if (systemPromptMode && ['ARC', 'None'].includes(systemPromptMode)) {
+          previewServiceOpts.systemPromptMode = systemPromptMode as ServiceOptions['systemPromptMode'];
+        }
+        if (previousResponseId) previewServiceOpts.previousResponseId = previousResponseId;
+
+        const preview = aiService.generatePromptPreview(
+          puzzle,
+          model,
+          promptId,
+          customPrompt,
+          promptOptions,
+          previewServiceOpts
+        );
+
+        if (preview?.promptText) {
+          const promptText = preview.promptText;
+          const promptLength = preview.promptStats?.characterCount ?? promptText.length;
+          const promptTimestamp = new Date().toISOString();
+          previewHarness.emitEvent('stream.status', {
+            state: 'in_progress',
+            phase: 'prompt_ready',
+            message: `Prompt ready (${promptLength} chars). Dispatching to ${model}.`,
+            promptPreview: promptText,
+            promptLength,
+            promptId,
+            promptModel: model,
+            conversationChain: previousResponseId ?? null,
+            promptGeneratedAt: promptTimestamp,
+          });
+
+          previewHarness.emit?.({
+            type: 'prompt',
+            delta: promptText,
+            content: promptText,
+            metadata: {
+              promptLength,
+              promptId,
+              promptModel: model,
+              promptGeneratedAt: promptTimestamp,
+            },
+            timestamp: Date.now(),
+          });
+        } else {
+          previewHarness.emitEvent('stream.status', {
+            state: 'in_progress',
+            phase: 'prompt_ready',
+            message: `Prompt ready for ${model}.`,
+            promptId,
+            promptModel: model,
+            conversationChain: previousResponseId ?? null,
+            promptGeneratedAt: new Date().toISOString(),
+          });
+        }
+      } catch (previewError) {
+        const message = previewError instanceof Error ? previewError.message : String(previewError);
+        logger.logError('[Streaming Analysis] Failed to generate prompt preview before streaming', {
+          error: previewError,
+          context: 'puzzle-analysis-service',
+        });
+        previewHarness.emitEvent('stream.status', {
+          state: 'in_progress',
+          phase: 'prompt_ready',
+          message: `Prompt built, but preview unavailable: ${message}`,
+          promptId,
+          promptModel: model,
+          conversationChain: previousResponseId ?? null,
+          promptError: message,
+          promptGeneratedAt: new Date().toISOString(),
+        });
+      }
+    }
 
     // Wrap the streaming harness to validate results before sending completion
     const validatingHarness: StreamingHarness = {

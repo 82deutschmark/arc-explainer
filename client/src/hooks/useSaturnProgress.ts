@@ -1,12 +1,9 @@
 /**
- * client/src/hooks/useSaturnProgress.ts
- *
- * Hook for managing a Saturn analysis session. Supports two execution paths:
- * 1) SSE streaming when VITE_ENABLE_SSE_STREAMING === 'true'
- * 2) Legacy WebSocket polling when streaming is disabled
- *
- * Returns helpers and state so pages can render the current phase/progress,
- * live streaming output, and final result.
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * PURPOSE: React hook that orchestrates Saturn Visual Solver progress, bridging SSE streaming (prompt preview + deltas)
+ * and legacy WebSocket fallback so the UI receives immediate feedback and continuous updates.
+ * SRP/DRY check: Pass — reused shared streaming handlers, aligning behaviour with Grover/useGroverProgress while avoiding duplication.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -44,12 +41,38 @@ export interface SaturnProgressState {
   streamingMessage?: string;
   streamingText?: string;
   streamingReasoning?: string;
+  streamingJson?: string;
+  streamingRefusal?: string;
   streamingTokenUsage?: {
     input?: number;
     output?: number;
     reasoning?: number;
   };
+  promptPreview?: string;
+  promptLength?: number;
+  promptModel?: string;
+  promptId?: string;
+  promptGeneratedAt?: string;
+  conversationChain?: string | null;
+  promptError?: string;
 }
+
+type SaturnStreamStatusPayload = {
+  state?: SaturnProgressState['streamingStatus'];
+  phase?: string;
+  message?: string;
+  images?: { path: string; base64?: string }[];
+  step?: number;
+  totalSteps?: number;
+  progress?: number;
+  promptPreview?: string;
+  promptLength?: number;
+  promptModel?: string;
+  promptId?: string;
+  promptGeneratedAt?: string;
+  conversationChain?: string | null;
+  promptError?: string;
+};
 
 export function useSaturnProgress(taskId: string | undefined) {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -62,6 +85,7 @@ export function useSaturnProgress(taskId: string | undefined) {
   });
   const wsRef = useRef<WebSocket | null>(null);
   const sseRef = useRef<EventSource | null>(null);
+  const promptLoggedRef = useRef<string | null>(null);
   const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
 
   const closeSocket = useCallback(() => {
@@ -165,6 +189,8 @@ export function useSaturnProgress(taskId: string | undefined) {
       closeSocket();
       closeEventSource();
 
+      promptLoggedRef.current = null;
+
       setState({
         status: 'running',
         phase: 'initializing',
@@ -174,9 +200,18 @@ export function useSaturnProgress(taskId: string | undefined) {
         logLines: [],
         reasoningHistory: [],
         streamingStatus: streamingEnabled ? 'starting' : 'idle',
-        streamingText: undefined,
-        streamingReasoning: undefined,
+        streamingText: '',
+        streamingReasoning: '',
         streamingMessage: undefined,
+        streamingJson: '',
+        streamingRefusal: '',
+        promptPreview: undefined,
+        promptLength: undefined,
+        promptModel: undefined,
+        promptId: undefined,
+        promptGeneratedAt: undefined,
+        conversationChain: undefined,
+        promptError: undefined,
       });
 
       // Use utility function to get default model if none provided
@@ -235,21 +270,36 @@ export function useSaturnProgress(taskId: string | undefined) {
 
         eventSource.addEventListener('stream.status', (evt) => {
           try {
-            const status = JSON.parse((evt as MessageEvent<string>).data) as {
-              state?: SaturnProgressState['streamingStatus'];
-              phase?: string;
-              message?: string;
-              images?: { path: string; base64?: string }[];
-              step?: number;
-              totalSteps?: number;
-              progress?: number;
-            };
+            const status = JSON.parse((evt as MessageEvent<string>).data) as SaturnStreamStatusPayload;
+
             setState((prev) => {
               // Add status message to logLines if present
               let nextLogs = prev.logLines ? [...prev.logLines] : [];
               if (status.message && typeof status.message === 'string') {
                 nextLogs.push(status.message);
                 if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+              }
+
+              const promptPreview = typeof status.promptPreview === 'string' ? status.promptPreview : undefined;
+              const promptAlreadyCaptured =
+                promptPreview && promptLoggedRef.current === promptPreview;
+              if (promptPreview && !promptAlreadyCaptured) {
+                const timestamp = new Date().toLocaleTimeString();
+                const promptLength = typeof status.promptLength === 'number' ? status.promptLength : promptPreview.length;
+                nextLogs.push(`[${timestamp}] ━━━━━━━━━━ SATURN PROMPT (${promptLength} chars) ━━━━━━━━━━`);
+                promptPreview.split('\n').forEach((line: string) => {
+                  nextLogs.push(line);
+                });
+                nextLogs.push(`[${timestamp}] ━━━━━━━━━━ END SATURN PROMPT ━━━━━━━━━━`);
+                if (status.conversationChain) {
+                  nextLogs.push(`[${timestamp}] 🔗 Conversation Chain: ${status.conversationChain}`);
+                }
+                promptLoggedRef.current = promptPreview;
+              }
+
+              if (status.promptError && typeof status.promptError === 'string') {
+                const timestamp = new Date().toLocaleTimeString();
+                nextLogs.push(`[${timestamp}] ⚠️ Prompt preview error: ${status.promptError}`);
               }
 
               // Add any new images to gallery
@@ -279,6 +329,22 @@ export function useSaturnProgress(taskId: string | undefined) {
                 progress: status.progress ?? prev.progress,
                 logLines: nextLogs,
                 galleryImages: nextGallery,
+                promptPreview: promptPreview ?? prev.promptPreview,
+                promptLength:
+                  typeof status.promptLength === 'number'
+                    ? status.promptLength
+                    : prev.promptLength,
+                promptModel: typeof status.promptModel === 'string' ? status.promptModel : prev.promptModel,
+                promptId: typeof status.promptId === 'string' ? status.promptId : prev.promptId,
+                promptGeneratedAt:
+                  typeof status.promptGeneratedAt === 'string'
+                    ? status.promptGeneratedAt
+                    : prev.promptGeneratedAt,
+                conversationChain:
+                  status.conversationChain !== undefined
+                    ? (status.conversationChain as string | null)
+                    : prev.conversationChain,
+                promptError: typeof status.promptError === 'string' ? status.promptError : prev.promptError,
               };
             });
           } catch (error) {
@@ -292,19 +358,57 @@ export function useSaturnProgress(taskId: string | undefined) {
               type?: string;
               delta?: string;
               content?: string;
+              metadata?: Record<string, unknown>;
             };
             setState((prev) => {
               // Add text chunks to logLines for live display
               let nextLogs = prev.logLines ? [...prev.logLines] : [];
               const chunkText = chunk.delta ?? chunk.content;
-              if (chunk.type === 'text' && chunkText) {
-                // Split by newlines and add each line separately
-                const lines = chunkText.split('\n').filter(line => line.trim());
-                lines.forEach(line => {
-                  nextLogs.push(line);
+              const recordLines = (label: string, text: string) => {
+                const timestamp = new Date().toLocaleTimeString();
+                nextLogs.push(`[${timestamp}] ${label}`);
+                text.split('\n').forEach((line: string) => {
+                  if (line.trim().length > 0) {
+                    nextLogs.push(line);
+                  }
                 });
-                if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
+                nextLogs.push(`[${timestamp}] ────────────────`);
+              };
+
+              let nextPromptPreview = prev.promptPreview;
+              let nextPromptLength = prev.promptLength;
+              let nextPromptGeneratedAt = prev.promptGeneratedAt;
+
+              if (chunkText) {
+                if (chunk.type === 'text') {
+                  const lines = chunkText.split('\n').filter(line => line.trim());
+                  lines.forEach((line: string) => {
+                    nextLogs.push(line);
+                  });
+                } else if (chunk.type === 'reasoning') {
+                  recordLines('🧠 Saturn reasoning update', chunkText);
+                } else if (chunk.type === 'json') {
+                  recordLines('📦 Structured output streaming', chunkText);
+                } else if (chunk.type === 'refusal') {
+                  recordLines('⛔ Model refusal content', chunkText);
+                } else if (chunk.type === 'prompt') {
+                  if (promptLoggedRef.current !== chunkText) {
+                    recordLines('📝 Saturn prompt', chunkText);
+                    promptLoggedRef.current = chunkText;
+                  }
+                  nextPromptPreview = chunkText;
+                  const metaLength =
+                    typeof chunk.metadata?.promptLength === 'number'
+                      ? (chunk.metadata.promptLength as number)
+                      : chunkText.length;
+                  nextPromptLength = metaLength;
+                  if (typeof chunk.metadata?.promptGeneratedAt === 'string') {
+                    nextPromptGeneratedAt = chunk.metadata.promptGeneratedAt as string;
+                  }
+                }
               }
+
+              if (nextLogs.length > 500) nextLogs = nextLogs.slice(-500);
 
               return {
                 ...prev,
@@ -316,6 +420,25 @@ export function useSaturnProgress(taskId: string | undefined) {
                   chunk.type === 'reasoning'
                     ? (prev.streamingReasoning ?? '') + (chunk.delta ?? chunk.content ?? '')
                     : prev.streamingReasoning,
+                streamingJson:
+                  chunk.type === 'json'
+                    ? (prev.streamingJson ?? '') + (chunk.delta ?? chunk.content ?? '')
+                    : prev.streamingJson,
+                streamingRefusal:
+                  chunk.type === 'refusal'
+                    ? (prev.streamingRefusal ?? '') + (chunk.delta ?? chunk.content ?? '')
+                    : prev.streamingRefusal,
+                promptPreview: nextPromptPreview,
+                promptLength: nextPromptLength,
+                promptGeneratedAt: nextPromptGeneratedAt,
+                promptId:
+                  typeof chunk.metadata?.promptId === 'string'
+                    ? (chunk.metadata?.promptId as string)
+                    : prev.promptId,
+                promptModel:
+                  typeof chunk.metadata?.promptModel === 'string'
+                    ? (chunk.metadata?.promptModel as string)
+                    : prev.promptModel,
                 logLines: nextLogs,
               };
             });

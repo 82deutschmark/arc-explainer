@@ -1,3 +1,10 @@
+## [4.8.17] - 2025-10-16
+### 🪐 Saturn Streaming UX Restored
+
+- Guarded Saturn SSE sessions against non-streaming models and emit an immediate `starting` status so the UI shows progress right away.
+- Emit prompt preview chunks from `puzzleAnalysisService.analyzePuzzleStreaming()` so clients receive the exact dispatched prompt alongside status metadata.
+- Reset Saturn hook streaming accumulators, dedupe prompt logs, and capture prompt chunk metadata for consistent real-time feedback.
+
 ## [4.8.16] - 2025-10-15
 ### 🎨 PuzzleBrowser: Restore Acknowledgements & Fix Terrible Design
 
