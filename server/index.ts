@@ -1,3 +1,10 @@
+/**
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
+ * PURPOSE: Bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
+ * SRP/DRY check: Pass — initialization and environment checks consolidated in a single entry point.
+ */
+
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from 'cors';
@@ -9,6 +16,7 @@ import { fileURLToPath } from "url";
 import { attach as attachWs } from './services/wsService';
 import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from './utils/logger.ts';
+import { resolveStreamingConfig } from '@shared/config/streaming';
 
 // Fix for ES modules and bundled code - get the actual current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -19,6 +27,28 @@ logger.info('Environment variables loaded: ' + (process.env.OPENAI_API_KEY ? 'OP
 logger.info('DeepSeek API key status: ' + (process.env.DEEPSEEK_API_KEY ? 'DEEPSEEK_API_KEY is set' : 'DEEPSEEK_API_KEY is NOT set'), 'startup');
 logger.debug('Current working directory: ' + process.cwd(), 'startup');
 logger.debug('__dirname: ' + __dirname, 'startup');
+
+const streamingConfig = resolveStreamingConfig();
+const streamingSource = streamingConfig.backendSource?.key ?? streamingConfig.frontendSource?.key ?? 'default';
+
+if (streamingConfig.legacySources.length > 0) {
+  logger.warn(
+    `Legacy streaming env var(s) detected (${streamingConfig.legacySources.join(', ')}). Please migrate to STREAMING_ENABLED for consistency.`,
+    'startup'
+  );
+}
+
+if (streamingConfig.frontendAdvertises && !streamingConfig.enabled) {
+  logger.warn(
+    'Streaming mismatch detected: frontend build advertises streaming while backend disabled. Align STREAMING_ENABLED across environments to avoid silent regressions.',
+    'startup'
+  );
+} else {
+  logger.info(
+    `Streaming feature flag resolved to ${streamingConfig.enabled ? 'ENABLED' : 'DISABLED'} (source: ${streamingSource}).`,
+    'startup'
+  );
+}
 
 const app = express();
 

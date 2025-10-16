@@ -1,4 +1,9 @@
 /**
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z
+ * PURPOSE: Coordinates streaming analysis sessions, bridging SSE connections with provider services, handling capability checks,
+ * option parsing, and graceful lifecycle management while honoring the shared STREAMING_ENABLED feature flag.
+ * SRP/DRY check: Pass — reuse of centralized streaming config avoids duplicate env parsing.
  *
  * Author: Codex using GPT-5-high
  * Date: 2025-10-09T00:00:00Z
@@ -17,6 +22,7 @@ import { logger } from "../../utils/logger";
 import { aiServiceFactory, canonicalizeModelKey } from "../aiServiceFactory";
 import type { PromptOptions } from "../promptBuilder";
 import type { ServiceOptions } from "../base/BaseAIService";
+import { resolveStreamingConfig } from "@shared/config/streaming";
 
 const STREAMING_ENABLED = isFeatureFlagEnabled(process.env.ENABLE_SSE_STREAMING);
 
@@ -67,7 +73,8 @@ export class AnalysisStreamService {
       throw new Error("SSE session must be registered before starting analysis.");
     }
 
-    if (!STREAMING_ENABLED) {
+    const streamingConfig = resolveStreamingConfig();
+    if (!streamingConfig.enabled) {
       sseStreamManager.error(sessionId, "STREAMING_DISABLED", "Streaming is disabled on this server.");
       this.clearPendingPayload(sessionId);
       return sessionId;

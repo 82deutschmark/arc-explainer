@@ -1,3 +1,17 @@
+## [4.8.21] - 2025-10-17
+### 🔁 Streaming Flag Diagnostics Hardening
+
+**Improved the unified streaming configuration helper so deprecated env vars and mismatched builds surface immediately during boot.**
+
+#### Key Fixes
+- **Legacy detection:** `resolveStreamingConfig` now inspects both `process.env` and `import.meta.env` for `ENABLE_SSE_STREAMING`/`VITE_ENABLE_SSE_STREAMING` usage even when shadowed, guaranteeing the startup warning fires whenever legacy flags linger.
+- **Metadata alignment:** Updated the shared helper header to follow the October 2025 TypeScript comment convention applied across the repo.
+
+#### Quality Gates
+- `npm run check`
+
+---
+
 ## [4.8.20] - 2025-10-16
 ### 🛠️ OpenAI Responses API Remediation
 
@@ -2358,7 +2372,7 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 
 ### Added
 - **SSE Streaming Scaffold (Needs Audit)**
-  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `ENABLE_SSE_STREAMING` feature flag.
+  - Introduced `/api/stream/analyze/:taskId/:modelKey` endpoint guarded by `STREAMING_ENABLED` feature flag.
   - Added frontend EventSource helper (`createAnalysisStream`) and hook (`useAnalysisStreaming`) currently wired into the dormant Model Browser page.
   - UI integration for active workflows (PuzzleExaminer, Discussion, Debate, Grover) still pending—feature is incomplete and must be audited before use.
   - Updated navigation to expose `/models`, but no production flow consumes the new streaming path yet.
