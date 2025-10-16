@@ -51,10 +51,9 @@ Every TypeScript file **must** start with:
 ```typescript
 /**
  * Author: {Your Model Name}
- * Date: {timestamp}
+ * Date: {timestamp}  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
  * PURPOSE: Verbose details about functionality, integration points, dependencies
  * SRP/DRY check: Pass/Fail — did you verify existing functionality?
- * DaisyUI: Pass/Fail — are you using DaisyUI components instead of custom UI?
  */
 ```
 
