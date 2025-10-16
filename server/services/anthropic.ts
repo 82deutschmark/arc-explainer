@@ -72,9 +72,14 @@ export class AnthropicService extends BaseAIService {
   private getDefaultMaxTokens(modelKey: string): number {
     const modelName = getApiModelName(modelKey) || modelKey;
     
-    // Claude 4 series - 64k generation limit
-    if (modelName.includes('claude-4') || modelName.includes('sonnet-4')) {
+    // Claude 4 series - 64k generation limit for Sonnet 4/4.5
+    if (modelName.includes('claude-sonnet-4') || modelName.includes('sonnet-4-5')) {
       return 64000;
+    }
+    
+    // Claude Haiku 4.5 - 16k generation limit
+    if (modelName.includes('haiku-4-5') || modelName.includes('claude-haiku-4.5')) {
+      return 16000;
     }
     
     // Claude 3.5 Sonnet (new) and Haiku - 8192 hard cap
