@@ -11,20 +11,13 @@ import test from "node:test";
 
 process.env.OPENAI_API_KEY ??= "test-key";
 
-const { OpenAIService } = await import("../server/services/openai.ts");
+const {
+  createStreamAggregates,
+  handleStreamEvent
+} = await import("../server/services/openai/streaming.ts");
 
 test("OpenAI streaming handler emits text chunk deltas", () => {
-  const service = new OpenAIService();
-  const aggregates = {
-    text: "",
-    parsed: "",
-    reasoning: "",
-    summary: "",
-    refusal: "",
-    reasoningSummary: "",
-    annotations: [],
-    expectingJson: false
-  };
+  const aggregates = createStreamAggregates(false);
 
   const emitted: any[] = [];
   const harness = {
@@ -42,7 +35,10 @@ test("OpenAI streaming handler emits text chunk deltas", () => {
     output_index: 0
   } as any;
 
-  (service as any).handleStreamingEvent(event, harness, aggregates);
+  handleStreamEvent(event, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
 
   assert.equal(aggregates.text, "Hello");
   assert.equal(emitted.length, 1);
@@ -52,17 +48,7 @@ test("OpenAI streaming handler emits text chunk deltas", () => {
 });
 
 test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", () => {
-  const service = new OpenAIService();
-  const aggregates = {
-    text: "",
-    parsed: "",
-    reasoning: "",
-    summary: "",
-    refusal: "",
-    reasoningSummary: "",
-    annotations: [],
-    expectingJson: true
-  };
+  const aggregates = createStreamAggregates(true);
 
   const emitted: any[] = [];
   const harness = {
@@ -87,10 +73,22 @@ test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", 
   } as any;
   const refusalEvent = { type: "response.refusal.delta", delta: "No", sequence_number: 5 } as any;
 
-  (service as any).handleStreamingEvent(reasoningEvent, harness, aggregates);
-  (service as any).handleStreamingEvent(jsonEvent, harness, aggregates);
-  (service as any).handleStreamingEvent(jsonEventPart2, harness, aggregates);
-  (service as any).handleStreamingEvent(refusalEvent, harness, aggregates);
+  handleStreamEvent(reasoningEvent, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
+  handleStreamEvent(jsonEvent, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
+  handleStreamEvent(jsonEventPart2, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
+  handleStreamEvent(refusalEvent, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
 
   assert.equal(aggregates.reasoning, "Think");
   assert.equal(aggregates.parsed, "{\"key\":\"value\"}");
@@ -112,17 +110,7 @@ test("OpenAI streaming handler aggregates reasoning, JSON, and refusal deltas", 
 });
 
 test("OpenAI streaming handler surfaces output text annotations", () => {
-  const service = new OpenAIService();
-  const aggregates = {
-    text: "",
-    parsed: "",
-    reasoning: "",
-    summary: "",
-    refusal: "",
-    reasoningSummary: "",
-    annotations: [],
-    expectingJson: false
-  };
+  const aggregates = createStreamAggregates(false);
 
   const emitted: any[] = [];
   const harness = {
@@ -142,7 +130,10 @@ test("OpenAI streaming handler surfaces output text annotations", () => {
     sequence_number: 6
   } as any;
 
-  (service as any).handleStreamingEvent(annotationPayload, harness, aggregates);
+  handleStreamEvent(annotationPayload, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
 
   assert.equal(aggregates.annotations.length, 1);
   assert.deepEqual(aggregates.annotations[0].annotation, { type: "citation", url: "https://example.com" });
@@ -151,4 +142,49 @@ test("OpenAI streaming handler surfaces output text annotations", () => {
   assert.equal(emitted[0].metadata.annotationIndex, 0);
   assert.equal(emitted[0].metadata.itemId, "msg_123");
   assert.equal(typeof emitted[0].content, "string");
+});
+
+test("OpenAI streaming handler prioritizes output_parsed deltas over fallback text", () => {
+  const aggregates = createStreamAggregates(true);
+
+  const emitted: any[] = [];
+  const harness = {
+    sessionId: "session-test",
+    emit: (chunk: any) => emitted.push(chunk),
+    end: () => undefined,
+    emitEvent: () => undefined
+  };
+
+  const fallbackText = {
+    type: "response.output_text.delta",
+    delta: "{\"answer\":\"",
+    sequence_number: 1,
+    output_index: 0
+  } as any;
+
+  const parsedDelta = {
+    type: "response.output_parsed.delta",
+    delta: { answer: { value: { append: "blue" } } },
+    parsed_output: { answer: "blue" },
+    sequence_number: 2,
+    output_index: 0
+  } as any;
+
+  handleStreamEvent(fallbackText, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
+
+  handleStreamEvent(parsedDelta, aggregates, {
+    emitChunk: chunk => harness.emit(chunk),
+    emitEvent: () => undefined
+  });
+
+  assert.equal(aggregates.receivedParsedJsonDelta, true);
+  assert.equal(aggregates.parsed, JSON.stringify({ answer: "blue" }));
+
+  const jsonChunks = emitted.filter(chunk => chunk.type === "json");
+  assert.ok(jsonChunks.length >= 1);
+  assert.equal(jsonChunks[jsonChunks.length - 1].metadata?.source, "parsed");
+  assert.equal(jsonChunks[jsonChunks.length - 1].content, JSON.stringify({ answer: "blue" }));
 });
