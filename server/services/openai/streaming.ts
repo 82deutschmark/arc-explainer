@@ -22,6 +22,7 @@ import type { StreamChunk } from "../base/BaseAIService.js";
 export interface OpenAIStreamAggregates {
   text: string;
   parsed: string;
+  parsedObject?: Record<string, unknown>;
   reasoning: string;
   summary: string;
   refusal: string;
@@ -47,6 +48,7 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
   return {
     text: "",
     parsed: "",
+    parsedObject: undefined,
     reasoning: "",
     summary: "",
     refusal: "",
@@ -195,6 +197,76 @@ export function handleStreamEvent(
       });
       break;
     }
+    case "response.output_parsed.delta": {
+      const deltaPayload = (event as any).delta;
+      aggregates.receivedAnnotatedJsonDelta = true;
+
+      let deltaAsString = "";
+
+      if (typeof deltaPayload === "string") {
+        deltaAsString = deltaPayload;
+        aggregates.parsed += deltaPayload;
+      } else if (deltaPayload && typeof deltaPayload === "object") {
+        const prior = aggregates.parsedObject && typeof aggregates.parsedObject === "object"
+          ? aggregates.parsedObject
+          : {};
+        aggregates.parsedObject = { ...prior, ...(deltaPayload as Record<string, unknown>) };
+        try {
+          deltaAsString = JSON.stringify(deltaPayload);
+        } catch {
+          deltaAsString = String(deltaPayload);
+        }
+        try {
+          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
+        } catch {
+          aggregates.parsed = deltaAsString;
+        }
+      } else if (deltaPayload !== undefined && deltaPayload !== null) {
+        deltaAsString = String(deltaPayload);
+        aggregates.parsed += deltaAsString;
+      }
+
+      callbacks.emitChunk({
+        type: "json",
+        delta: deltaAsString,
+        content: aggregates.parsed,
+        metadata: {
+          sequence: sequenceNumber,
+          expectingJson: aggregates.expectingJson,
+          fallback: false
+        }
+      });
+      break;
+    }
+    case "response.output_parsed.done": {
+      aggregates.receivedAnnotatedJsonDelta = true;
+      const parsedPayload = (event as any).output_parsed ?? (event as any).parsed ?? null;
+
+      if (parsedPayload && typeof parsedPayload === "object") {
+        aggregates.parsedObject = parsedPayload as Record<string, unknown>;
+        try {
+          aggregates.parsed = JSON.stringify(parsedPayload);
+        } catch {
+          aggregates.parsed = String(parsedPayload);
+        }
+      } else if (typeof parsedPayload === "string") {
+        aggregates.parsed = parsedPayload;
+      } else if (aggregates.parsedObject) {
+        try {
+          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
+        } catch {
+          aggregates.parsed = String(aggregates.parsedObject);
+        }
+      }
+
+      callbacks.emitEvent("stream.chunk", {
+        type: "json.done",
+        content: aggregates.parsed,
+        sequence: sequenceNumber,
+        expectingJson: aggregates.expectingJson
+      });
+      break;
+    }
     case "response.output_text.delta.annotated": {
       const delta = (event as any).delta || "";
       aggregates.receivedAnnotatedJsonDelta = true;
@@ -220,13 +292,22 @@ export function handleStreamEvent(
         outputIndex: annotationEvent.output_index,
         sequenceNumber
       });
+      let annotationContent = "";
+      try {
+        annotationContent = JSON.stringify(annotationEvent.annotation);
+      } catch {
+        annotationContent = String(annotationEvent.annotation);
+      }
       callbacks.emitChunk({
         type: "annotation",
+        content: annotationContent,
         raw: annotationEvent,
         metadata: {
           sequence: sequenceNumber,
           annotationIndex: annotationEvent.annotation_index,
-          contentIndex: annotationEvent.content_index
+          contentIndex: annotationEvent.content_index,
+          itemId: annotationEvent.item_id,
+          outputIndex: annotationEvent.output_index
         }
       });
       break;
