@@ -9,20 +9,38 @@ This version merges the best material from previous guidelines and adds **quick 
 
 ## 📚 Quick Reference – Where to Find Things
 
-- **Architecture & onboarding** – `docs/DEVELOPER_GUIDE.md`
-- **Public REST/SSE APIs** – `docs/EXTERNAL_API.md`
-- **React hooks cheat-sheet** – `docs/HOOKS_REFERENCE.md`
-- **OpenAI Responses API streaming implementation** – `docs/OpenAI_Responses_API_Streaming_Implementation.md`
-- **Backend controllers** – `server/controllers/`
-- **Domain repositories (SRP compliant)** – `server/repositories/`
-- **Prompt components** – `server/services/prompts/components/`
-- **Frontend pages** – `client/src/pages/`
-- **Reusable UI components** – `client/src/components/`
-- **Shared TypeScript types** – `shared/types.ts`
-- **ARC datasets** – `data/`
-- **Python visual solver** – `solver/`
+- **Core Documentation**
+  - README.md – `docs/README.md`
+  - DEVELOPER_GUIDE.md – `docs/DEVELOPER_GUIDE.md` (Architecture & onboarding)
 
-_Need a deeper explanation? Start with the developer guide, then follow the paths above._
+- **Reference Materials**
+  - **API Documentation** – `docs/reference/api/`
+    - EXTERNAL_API.md – `docs/reference/api/EXTERNAL_API.md` (Public REST/SSE APIs)
+    - OpenAI_Responses_API_Streaming_Implementation.md – `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md`
+    - ResponsesAPI.md – `docs/reference/api/ResponsesAPI.md`
+    - xAI-API.md – `docs/reference/api/xAI-API.md`
+    - API_Conversation_Chaining.md – `docs/reference/api/API_Conversation_Chaining.md`
+  - **Architecture** – `docs/reference/architecture/`
+  - **Data** – `docs/reference/data/`
+  - **Frontend** – `docs/reference/frontend/`
+  - **Solvers** – `docs/reference/solvers/`
+
+- **Other Key Areas**
+  - HOOKS_REFERENCE.md – `docs/HOOKS_REFERENCE.md` (React hooks cheat-sheet)
+  - Backend controllers – `server/controllers/`
+  - Domain repositories (SRP compliant) – `server/repositories/`
+  - Prompt components – `server/services/prompts/components/`
+  - Frontend pages – `client/src/pages/`
+  - Reusable UI components – `client/src/components/`
+  - Shared TypeScript types – `shared/types.ts`
+  - ARC datasets – `data/`
+  - Python visual solver – `solver/`
+
+- **Plans and Historical Context**
+  - Current plans – `docs/plans/`
+  - Old plans – `docs/oldPlans/`
+
+_This directory provides a structured overview of critical docs. For deeper dives, start with the developer guide or specific reference sections._
 
 ## 🚨 Critical Platform Notes
 
