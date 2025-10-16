@@ -1,17 +1,17 @@
 /**
- * Author: Cascade
- * Date: 2025-10-15
+ * Author: gpt-5-codex
+ * Date: 2025-10-16T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
  * PURPOSE: Coordinates Saturn solver runs over Server-Sent Events so the frontend can render
- * incremental output while the final analysis is persisted to the database.
- * CRITICAL FIX: Now saves streaming results to DB (was missing before!)
- * SRP/DRY check: Pass — dedicated orchestration layer for Saturn streaming.
- * shadcn/ui: Pass — backend logic only.
+ * incremental output while the final analysis is persisted to the database. Aligns the Saturn
+ * streaming pipeline with the shared Responses API streaming contract (prompt preview + deltas).
+ * SRP/DRY check: Pass — verified behaviour against analysisStreamService to reuse existing patterns.
  */
 
 import { puzzleAnalysisService } from '../puzzleAnalysisService';
 import { explanationService } from '../explanationService';
 import { sseStreamManager } from './SSEStreamManager';
 import { logger } from '../../utils/logger';
+import { aiServiceFactory } from '../aiServiceFactory';
 import type { ServiceOptions } from '../base/BaseAIService';
 import type { StreamingHarness, StreamCompletion } from '../base/BaseAIService';
 
@@ -41,6 +41,30 @@ class SaturnStreamService {
     previousResponseId,
     abortSignal,
   }: SaturnStreamParams): Promise<void> {
+    const decodedModelKey = decodeURIComponent(modelKey);
+    const aiService = aiServiceFactory.getService(decodedModelKey);
+
+    if (!aiService?.supportsStreaming?.(decodedModelKey)) {
+      logger.warn(
+        `[SaturnStream] Streaming requested for unsupported model ${decodedModelKey}`,
+        'SaturnStream'
+      );
+      sseStreamManager.error(
+        sessionId,
+        'SATURN_STREAMING_UNAVAILABLE',
+        `Model ${decodedModelKey} does not support streaming.`
+      );
+      return;
+    }
+
+    sseStreamManager.sendEvent(sessionId, 'stream.status', {
+      state: 'starting',
+      phase: 'prompt_building',
+      message: `Preparing ${decodedModelKey} Saturn prompt...`,
+      taskId,
+      modelKey: decodedModelKey,
+    });
+
     const harness: StreamingHarness = {
       sessionId,
       emit: (chunk) => sseStreamManager.sendEvent(sessionId, 'stream.chunk', chunk),
@@ -53,7 +77,7 @@ class SaturnStreamService {
             try {
               logger.debug(`[SaturnStream] Saving analysis to database for ${taskId}`, 'SaturnStream');
               await explanationService.saveExplanation(taskId, {
-                [modelKey]: completion.responseSummary.analysis
+                [decodedModelKey]: completion.responseSummary.analysis
               });
               logger.debug(`[SaturnStream] Successfully saved to database`, 'SaturnStream');
             } catch (dbError) {
@@ -65,12 +89,16 @@ class SaturnStreamService {
         sseStreamManager.close(sessionId, summary);
       },
       abortSignal,
+      metadata: {
+        taskId,
+        modelKey: decodedModelKey,
+      },
     };
 
     try {
       await puzzleAnalysisService.analyzePuzzleStreaming(
         taskId,
-        modelKey,
+        decodedModelKey,
         {
           temperature,
           promptId,

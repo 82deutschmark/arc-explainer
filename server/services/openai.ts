@@ -243,6 +243,10 @@ export class OpenAIService extends BaseAIService {
         this.handleStreamingEvent(event, harness, aggregates);
       }
 
+      if ((stream as any)?.completed) {
+        await (stream as any).completed;
+      }
+
       const finalResponse = await stream.finalResponse();
       const parsedResponse = this.normalizeOpenAIResponse(finalResponse, modelKey);
 
