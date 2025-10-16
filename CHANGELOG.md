@@ -1,3 +1,43 @@
+## [4.8.16] - 2025-10-15
+### 🎨 PuzzleBrowser: Restore Acknowledgements & Fix Terrible Design
+
+**Fixed the previous redesign that removed critical acknowledgements and used poor UX patterns.**
+
+#### Changes:
+
+**1. RESTORED ACKNOWLEDGEMENTS SECTION**
+- Previous redesign accidentally deleted the entire Resources & References section
+- Restored complete "ARC-AGI Knowledge Hub" with:
+  - Research papers (ARC2 Technical Report)
+  - Data sources (HuggingFace, Official Repository)
+  - SOTA solutions (zoecarver, jerber, epang080516)
+  - Community resources with collapsible ARC-AGI-2 research by cristianoc
+- Added all necessary Lucide icons and state management
+
+**2. PROMINENT ACKNOWLEDGEMENT BANNER (NEW)**
+- Created eye-catching gradient-bordered banner at top of page
+- Large, bold acknowledgement to Simon Strandgaard (@neoneye)
+- Direct prominent buttons linking to essential repos:
+  - arc-notes (All ARC Resources)
+  - arc-dataset-collection (Dataset Collection)
+- Front and center positioning ensures maximum visibility
+- Animated sparkle icons for visual emphasis
+
+**3. REMOVED USELESS FOOTER**
+- Deleted footer section that nobody would ever see
+- Footer links buried at bottom are terrible UX
+- Important links already present in Resources section above
+
+**Design Philosophy:**
+- Acknowledgements should be prominent, not hidden in footers
+- Simon's contributions deserve front-and-center recognition
+- Footers are terrible design for important information
+
+**Files Changed:**
+- `client/src/pages/PuzzleBrowser.tsx`
+
+---
+
 ## [4.8.15] - 2025-10-15
 ### 🔥 CRITICAL: Saturn Visual Solver - Complete UI Rebuild + DB Persistence + Defaults
 
