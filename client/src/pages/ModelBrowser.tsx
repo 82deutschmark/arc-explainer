@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { apiRequest } from '@/lib/queryClient';
 import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
+import { isStreamingEnabled } from '@shared/config/streaming';
 
 const DATASET_DISPLAY_NAME_MAP: Record<string, string> = {
   evaluation: 'ARC1-Eval',
@@ -36,7 +37,7 @@ export default function ModelBrowser() {
   const [selectedDataset, setSelectedDataset] = useState<string>('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [analyzingIds, setAnalyzingIds] = useState<Set<string>>(new Set());
-  const streamingEnabled = import.meta.env.VITE_ENABLE_SSE_STREAMING === 'true';
+  const streamingEnabled = isStreamingEnabled();
   const {
     startStream,
     closeStream,
