@@ -1,3 +1,114 @@
+## [4.8.24] - 2025-10-16
+### 🔒 SECURITY: Complete Removal of API Authentication Requirements
+
+**CRITICAL CHANGE: All API endpoints are now publicly accessible with NO authentication required.**
+
+#### Problem
+Previous development mistakenly added API key authentication middleware to various endpoints, breaking external integrations and researcher access to the ARC Explainer API.
+
+#### Solution
+**Complete removal of all authentication requirements across the entire API surface.**
+
+#### Changes Made
+
+**1. Server Route Configuration (`server/routes.ts`)**
+- ✅ **REMOVED**: Unused `apiKeyAuth` and `optionalApiKeyAuth` imports
+- ✅ **ADDED**: Clear comment documenting that authentication middleware is NOT USED
+- ✅ **VERIFIED**: No routes in the codebase use authentication middleware
+
+**2. Authentication Middleware (`server/middleware/apiKeyAuth.ts`)**
+- ✅ **ADDED**: Prominent warning comment at file header: "⚠️ WARNING: DO NOT USE THIS MIDDLEWARE! ⚠️"
+- ✅ **DOCUMENTED**: All endpoints must remain public and freely accessible
+- ✅ **RETAINED**: File kept for reference only, never to be applied to routes
+
+**3. API Documentation (`docs/reference/api/EXTERNAL_API.md`)**
+- ✅ **REMOVED**: All authentication requirements sections
+- ✅ **REPLACED**: With clear "⚠️ NO AUTHENTICATION REQUIRED ⚠️" warnings
+- ✅ **UPDATED**: Python client example to remove API key parameter
+- ✅ **CLARIFIED**: All endpoints are publicly accessible with no authentication
+
+#### Verification Results
+- ✅ **Comprehensive search**: No authentication middleware applied anywhere
+- ✅ **API client compatibility**: Python client works without API key parameter
+- ✅ **External integrations**: All endpoints freely accessible for researchers
+- ✅ **Documentation consistency**: All references to authentication removed
+
+#### Impact
+**All ARC Explainer API endpoints are now completely public and require NO authentication.** This ensures maximum accessibility for researchers, external applications, and integrations while maintaining all existing functionality.
+
+**Files Modified:**
+- `server/routes.ts` - Removed unused authentication imports
+- `server/middleware/apiKeyAuth.ts` - Added prominent warnings against use
+- `docs/reference/api/EXTERNAL_API.md` - Removed all authentication requirements
+
+---
+
+## [4.8.23] - 2025-10-16
+### 🔴 CRITICAL: Saturn Non-Streaming Call Bug
+
+**Fixed critical anti-pattern where Saturn called non-streaming method even when streaming harness was present, causing complete loss of real-time feedback.**
+
+#### The Bug
+Saturn service was unconditionally calling `analyzePuzzleWithModel()` for all 5 phases even when `serviceOpts.stream` harness existed, resulting in:
+- ❌ Zero `stream.chunk` events emitted to client
+- ❌ OpenAI generated reasoning tokens but never sent them until completion
+- ❌ Users saw "Waiting for AI output..." for 30+ seconds despite OpenAI streaming correctly
+- ❌ Backend confirmed correct payload (`verbosity: high`) but streaming loop never executed
+
+#### Root Cause
+```typescript
+// WRONG - Always non-streaming
+const phase1Response = await underlyingService.analyzePuzzleWithModel(
+  task, underlyingModel, taskId, temperature, promptId, phase1Prompt,
+  { ...options }, { ...serviceOpts }  // ← harness in serviceOpts ignored!
+);
+```
+
+#### The Fix
+```typescript
+// CORRECT - Conditional streaming
+const phase1Response = harness
+  ? await underlyingService.analyzePuzzleWithStreaming!(...)
+  : await underlyingService.analyzePuzzleWithModel(...);
+```
+
+Applied to all 5 Saturn phases: phase1, phase2, phase2.5, additional training loop, phase3.
+
+#### Detection Method
+1. Backend test showed `Chunks received: 0` despite successful SSE connection
+2. Added debug logging to `openai.ts` - streaming event loop never executed
+3. Traced call chain: `saturnStreamService` → `saturnService` → **BUG: always called non-streaming path**
+
+#### Prevention
+- **Code Review Checklist**: Any service wrapper accepting `ServiceOptions` must check `serviceOpts.stream` before choosing method
+- **Search Pattern**: `grep -r "analyzePuzzleWithModel.*serviceOpts" --include="*.ts"`
+- **Verified Clean**: All other services (Grover, PuzzleAnalysisService, Controllers) handle correctly
+
+#### Documentation
+- Created `docs/bugs/2025-10-16-saturn-streaming-non-streaming-call.md` with full technical details
+- Added anti-pattern examples and testing checklist
+
+---
+
+## [4.8.22] - 2025-10-16
+### 🪐 Saturn Streaming: Immediate UI Feedback & Merge Conflict Resolution
+
+**Fixed Saturn Visual Solver to show immediate UI feedback when analysis starts and resolved multiple merge conflict artifacts blocking streaming.**
+
+#### Key Fixes
+- **Immediate Feedback:** Added `logLines` display to `SaturnTerminalLogs` component so users see status updates immediately when clicking Start Analysis button
+- **Merge Conflict Cleanup:** Removed duplicate variable declarations in `useAnalysisResults`, `analysisStreamService`, and `openai/streaming` that were preventing successful builds
+- **Streaming Detection:** Fixed frontend to default streaming to enabled in development mode for better developer experience
+- **URL Construction:** Fixed SSE URL to use relative paths so Vite proxy correctly forwards requests to backend
+- **Error Handling:** Added comprehensive try/catch blocks and console logging throughout streaming flow for better debugging
+
+#### Quality Gates
+- Server starts successfully without build errors
+- Backend SSE endpoint tested and confirmed working with test script
+- Frontend displays status log with startup messages
+
+---
+
 ## [4.8.21] - 2025-10-17
 ### 🔁 Streaming Flag Diagnostics Hardening
 

@@ -174,16 +174,28 @@ export class SaturnService extends BaseAIService {
         'phase1'
       );
       
-      const phase1Response = await underlyingService.analyzePuzzleWithModel(
-        task,
-        underlyingModel,
-        taskId,
-        temperature,
-        promptId,
-        phase1Prompt,
-        { ...options, includeImages: true, imagePaths: phase1Images },
-        { ...serviceOpts, previousResponseId }
-      );
+      // Use streaming method if harness is provided, otherwise use regular method
+      const phase1Response = harness
+        ? await underlyingService.analyzePuzzleWithStreaming!(
+            task,
+            underlyingModel,
+            taskId,
+            temperature,
+            promptId,
+            phase1Prompt,
+            { ...options, includeImages: true, imagePaths: phase1Images },
+            { ...serviceOpts, previousResponseId }
+          )
+        : await underlyingService.analyzePuzzleWithModel(
+            task,
+            underlyingModel,
+            taskId,
+            temperature,
+            promptId,
+            phase1Prompt,
+            { ...options, includeImages: true, imagePaths: phase1Images },
+            { ...serviceOpts, previousResponseId }
+          );
       
       previousResponseId = phase1Response.providerResponseId;
       phases.push({ 
@@ -225,16 +237,27 @@ export class SaturnService extends BaseAIService {
           'phase2'
         );
         
-        const phase2Response = await underlyingService.analyzePuzzleWithModel(
-          task,
-          underlyingModel,
-          taskId,
-          temperature,
-          promptId,
-          phase2Prompt,
-          { ...options, includeImages: true, imagePaths: phase2Images },
-          { ...serviceOpts, previousResponseId }
-        );
+        const phase2Response = harness
+          ? await underlyingService.analyzePuzzleWithStreaming!(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              phase2Prompt,
+              { ...options, includeImages: true, imagePaths: phase2Images },
+              { ...serviceOpts, previousResponseId }
+            )
+          : await underlyingService.analyzePuzzleWithModel(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              phase2Prompt,
+              { ...options, includeImages: true, imagePaths: phase2Images },
+              { ...serviceOpts, previousResponseId }
+            );
         
         previousResponseId = phase2Response.providerResponseId;
         phases.push({ 
@@ -275,16 +298,27 @@ export class SaturnService extends BaseAIService {
           'phase2_actual'
         );
         
-        const phase25Response = await underlyingService.analyzePuzzleWithModel(
-          task,
-          underlyingModel,
-          taskId,
-          temperature,
-          promptId,
-          phase25Prompt,
-          { ...options, includeImages: true, imagePaths: phase25Images },
-          { ...serviceOpts, previousResponseId }
-        );
+        const phase25Response = harness
+          ? await underlyingService.analyzePuzzleWithStreaming!(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              phase25Prompt,
+              { ...options, includeImages: true, imagePaths: phase25Images },
+              { ...serviceOpts, previousResponseId }
+            )
+          : await underlyingService.analyzePuzzleWithModel(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              phase25Prompt,
+              { ...options, includeImages: true, imagePaths: phase25Images },
+              { ...serviceOpts, previousResponseId }
+            );
         
         previousResponseId = phase25Response.providerResponseId;
         phases.push({ 
@@ -324,16 +358,27 @@ export class SaturnService extends BaseAIService {
           `train${i}`
         );
         
-        const additionalResponse = await underlyingService.analyzePuzzleWithModel(
-          task,
-          underlyingModel,
-          taskId,
-          temperature,
-          promptId,
-          additionalPrompt,
-          { ...options, includeImages: true, imagePaths: additionalImages },
-          { ...serviceOpts, previousResponseId }
-        );
+        const additionalResponse = harness
+          ? await underlyingService.analyzePuzzleWithStreaming!(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              additionalPrompt,
+              { ...options, includeImages: true, imagePaths: additionalImages },
+              { ...serviceOpts, previousResponseId }
+            )
+          : await underlyingService.analyzePuzzleWithModel(
+              task,
+              underlyingModel,
+              taskId,
+              temperature,
+              promptId,
+              additionalPrompt,
+              { ...options, includeImages: true, imagePaths: additionalImages },
+              { ...serviceOpts, previousResponseId }
+            );
         
         previousResponseId = additionalResponse.providerResponseId;
         phases.push({ 
@@ -366,16 +411,27 @@ export class SaturnService extends BaseAIService {
         'test'
       );
       
-      const phase3Response = await underlyingService.analyzePuzzleWithModel(
-        task,
-        underlyingModel,
-        taskId,
-        temperature,
-        promptId,
-        phase3Prompt,
-        { ...options, includeImages: true, imagePaths: phase3Images },
-        { ...serviceOpts, previousResponseId }
-      );
+      const phase3Response = harness
+        ? await underlyingService.analyzePuzzleWithStreaming!(
+            task,
+            underlyingModel,
+            taskId,
+            temperature,
+            promptId,
+            phase3Prompt,
+            { ...options, includeImages: true, imagePaths: phase3Images },
+            { ...serviceOpts, previousResponseId }
+          )
+        : await underlyingService.analyzePuzzleWithModel(
+            task,
+            underlyingModel,
+            taskId,
+            temperature,
+            promptId,
+            phase3Prompt,
+            { ...options, includeImages: true, imagePaths: phase3Images },
+            { ...serviceOpts, previousResponseId }
+          );
       
       phases.push({ 
         phase: 3, 

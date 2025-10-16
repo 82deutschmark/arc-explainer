@@ -37,7 +37,8 @@ import metricsRouter from './routes/metricsRoutes.ts';
 import { errorHandler } from "./middleware/errorHandler";
 import { asyncHandler } from "./middleware/asyncHandler";
 import { validation } from "./middleware/validation";
-import { apiKeyAuth, optionalApiKeyAuth } from "./middleware/apiKeyAuth.js";
+// NOTE: Authentication middleware is NOT USED - all endpoints are public
+// import { apiKeyAuth, optionalApiKeyAuth } from "./middleware/apiKeyAuth.js";
 
 // Import services
 import { aiServiceFactory } from "./services/aiServiceFactory";

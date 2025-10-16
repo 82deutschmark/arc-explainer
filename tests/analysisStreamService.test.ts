@@ -39,6 +39,11 @@ function createMockResponse() {
   };
 }
 
+import { analysisStreamService } from "../server/services/streaming/analysisStreamService.ts";
+import { sseStreamManager } from "../server/services/streaming/SSEStreamManager.ts";
+import { aiServiceFactory } from "../server/services/aiServiceFactory.ts";
+import { puzzleAnalysisService } from "../server/services/puzzleAnalysisService.ts";
+
 const basePayload = {
   taskId: "T123",
   modelKey: "gpt-5-mini",
@@ -75,6 +80,17 @@ test("startStreaming clears pending payload when model does not support streamin
     modelKey: "openai/gpt-non-streaming",
   });
 
+test("analysisStreamService streams OpenAI-prefixed models", async (t) => {
+  const previousFlag = process.env.ENABLE_SSE_STREAMING;
+  process.env.ENABLE_SSE_STREAMING = "true";
+
+  const events: Array<{ event: string; payload: any }> = [];
+  const errors: Array<{ code: string; message: string }> = [];
+  const completions: any[] = [];
+  const factoryCalls: string[] = [];
+  const supportsChecks: string[] = [];
+  const puzzleCalls: Array<{ taskId: string; model: string }> = [];
+
   const originalHas = sseStreamManager.has;
   const originalError = sseStreamManager.error;
   const originalGetService = aiServiceFactory.getService;
@@ -90,6 +106,18 @@ test("startStreaming clears pending payload when model does not support streamin
   aiServiceFactory.getService = (() => ({
     supportsStreaming: () => false,
   })) as typeof aiServiceFactory.getService;
+  sseStreamManager.sendEvent = (_session, event, payload) => {
+    events.push({ event, payload });
+  };
+  sseStreamManager.close = (_session, summary) => {
+    completions.push(summary);
+  };
+  sseStreamManager.error = (_session, code, message, metadata) => {
+    errors.push({ code, message });
+    if (metadata) {
+      events.push({ event: "error.metadata", payload: metadata });
+    }
+  };
 
   t.after(() => {
     sseStreamManager.has = originalHas;
@@ -131,6 +159,7 @@ test("startStreaming clears pending payload even when SSE session is missing", a
   }) as typeof sseStreamManager.error;
 
   t.after(() => {
+    process.env.ENABLE_SSE_STREAMING = previousFlag;
     sseStreamManager.has = originalHas;
     sseStreamManager.error = originalError;
   });
@@ -274,6 +303,19 @@ test("prepareAnalysisStream rejects invalid payloads", async (t) => {
       },
     } as any,
     res,
+  const returnedSessionId = await analysisStreamService.startStreaming({} as any, {
+    taskId,
+    modelKey: encodedModelKey,
+    sessionId,
+  });
+
+  assert.equal(returnedSessionId, sessionId, "should echo provided session id");
+  assert.equal(errors.length, 0, "should not emit streaming error events");
+  assert.ok(events.some((event) => event.event === "stream.status"), "status event should be emitted");
+  assert.ok(events.some((event) => event.event === "stream.chunk"), "chunk event should be emitted");
+
+  const statusWithModel = events.find(
+    (event) => event.event === "stream.status" && event.payload?.modelKey === "openai/gpt-5-2025-08-07",
   );
 
   assert.equal(getStatus(), 422, "Invalid handshake should return HTTP 422");

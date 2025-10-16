@@ -17,10 +17,10 @@ cp tools/api-client/arc_client.py your_project/
 ```python
 from arc_client import contribute_to_arc_explainer
 
-# One-line contribution to encyclopedia
+# One-line contribution to encyclopedia (no API key required)
 result = contribute_to_arc_explainer(
     "3a25b0d8", analysis_result, "grok-4-2025-10-13",
-    "https://arc-explainer-staging.up.railway.app", "your-api-key"
+    "https://arc-explainer-staging.up.railway.app"
 )
 ```
 
@@ -38,33 +38,9 @@ result = contribute_to_arc_explainer(
 
 ## Authentication
 
-**NEW (Oct 2025):** API key authentication now available for contribution endpoints.
+**⚠️ NO AUTHENTICATION REQUIRED ⚠️**
 
-### API Key Authentication
-Some endpoints now require API key authentication via `Authorization: Bearer <api-key>` header.
-
-**Available API Keys:**
-- `arc-explainer-public-key-2025` - Public access key for researchers
-- `researcher-access-key-001` - Researcher access key
-- `demo-api-key-for-researchers` - Demo key for testing
-
-**Environment Variables:**
-- `ARC_EXPLAINER_API_KEY` - Master API key (set in `.env`)
-- `PUBLIC_API_KEYS` - Comma-separated list of additional valid keys
-
-**Endpoints Requiring Authentication:**
-- `POST /api/puzzle/save-explained/:puzzleId` - Save AI-generated explanation
-- `POST /api/feedback` - Submit user feedback
-- `POST /api/puzzles/:puzzleId/solutions` - Submit community solution
-- `POST /api/solutions/:solutionId/vote` - Vote on community solutions
-
-**Endpoints Open (No Authentication Required):**
-- `GET /api/puzzle/list` - Get puzzle list
-- `GET /api/puzzle/task/:taskId` - Get puzzle data
-- `GET /api/puzzle/:puzzleId/explanations` - Get explanations
-- `GET /api/models` - List available models
-- `GET /api/metrics/*` - Performance statistics
-- All analytics and read-only endpoints
+All API endpoints are publicly accessible and require **NO authentication**. Do not add authentication to any endpoints.
 
 ## Core Data Endpoints SUPER IMPORTANT!!
 
@@ -655,7 +631,7 @@ interface IngestionRun {
 
 ## Authentication
 
-Currently no authentication required. All endpoints are publicly accessible.
+**All endpoints are publicly accessible with NO authentication required.**
 
 ## Rate Limiting
 

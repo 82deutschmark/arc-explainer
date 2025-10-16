@@ -185,8 +185,19 @@ export class OpenAIService extends BaseAIService {
       const aggregates: OpenAIStreamAggregates = createStreamAggregates(expectingJsonSchema);
 
       for await (const event of stream as AsyncIterable<ResponseStreamEvent>) {
+        const eventType = (event as any)?.type;
+        console.log(`[OpenAI-Stream] Received event: ${eventType}`);
+        
+        // Log first few reasoning/text events to verify they're coming
+        if (eventType?.includes('reasoning') || eventType?.includes('text') || eventType?.includes('content')) {
+          console.log(`[OpenAI-Stream] ${eventType} data:`, JSON.stringify(event).substring(0, 200));
+        }
+        
         handleStreamEvent(event, aggregates, {
-          emitChunk: chunk => this.emitStreamChunk(harness, chunk),
+          emitChunk: chunk => {
+            console.log(`[OpenAI-Stream] Emitting chunk: type=${chunk.type}, delta length=${chunk.delta?.length || 0}`);
+            this.emitStreamChunk(harness, chunk);
+          },
           emitEvent: (eventName, payload) => this.emitStreamEvent(harness, eventName, payload)
         });
       }
