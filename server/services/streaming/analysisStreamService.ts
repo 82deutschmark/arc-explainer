@@ -84,11 +84,6 @@ export class AnalysisStreamService {
     const decodedModel = decodeURIComponent(modelKey);
     const { original: originalModelKey, normalized: canonicalModelKey } = canonicalizeModelKey(decodedModel);
 
-    const aiService = aiServiceFactory.getService(decodedModel);
-    if (!aiService?.supportsStreaming?.(decodedModel)) {
-      logger.warn(`Streaming requested for unsupported model ${decodedModel}`, "stream-service");
-      sseStreamManager.error(sessionId, "STREAMING_UNAVAILABLE", "Streaming is not enabled for this model.");
-      this.clearPendingPayload(sessionId);
     const aiService = aiServiceFactory.getService(canonicalModelKey);
     if (!aiService?.supportsStreaming?.(canonicalModelKey)) {
       logger.warn(
