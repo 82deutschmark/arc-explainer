@@ -5,7 +5,7 @@
 
 A research platform for analyzing Abstract Reasoning Corpus (ARC-AGI) puzzles using state-of-the-art AI models with deep reasoning capture, conversation chaining, and comprehensive performance analytics.
 
-**[Live Demo](https://your-demo-url) • [Technical Docs](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)**
+**[Live Production Environment](https://arc.markbarney.net) • [Technical Docs](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)**
 
 ---
 
