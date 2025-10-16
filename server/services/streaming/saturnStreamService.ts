@@ -12,6 +12,8 @@ import { explanationService } from '../explanationService';
 import { sseStreamManager } from './SSEStreamManager';
 import { logger } from '../../utils/logger';
 import { aiServiceFactory } from '../aiServiceFactory';
+import { saturnService } from '../saturnService';
+import { puzzleService } from '../puzzleService';
 import type { ServiceOptions } from '../base/BaseAIService';
 import type { StreamingHarness, StreamCompletion } from '../base/BaseAIService';
 
@@ -42,7 +44,10 @@ class SaturnStreamService {
     abortSignal,
   }: SaturnStreamParams): Promise<void> {
     const decodedModelKey = decodeURIComponent(modelKey);
-    const aiService = aiServiceFactory.getService(decodedModelKey);
+    const isSaturnModel = saturnService.isSaturnModelKey(decodedModelKey);
+    const aiService = isSaturnModel
+      ? saturnService
+      : aiServiceFactory.getService(decodedModelKey);
 
     if (!aiService?.supportsStreaming?.(decodedModelKey)) {
       logger.warn(
@@ -96,20 +101,46 @@ class SaturnStreamService {
     };
 
     try {
-      await puzzleAnalysisService.analyzePuzzleStreaming(
-        taskId,
-        decodedModelKey,
-        {
+      if (isSaturnModel) {
+        const puzzle = await puzzleService.getPuzzleById(taskId);
+
+        const serviceOptions: ServiceOptions = {
+          stream: harness,
+          captureReasoning: true,
+          sessionId,
+        };
+
+        if (previousResponseId) serviceOptions.previousResponseId = previousResponseId;
+        if (reasoningEffort) serviceOptions.reasoningEffort = reasoningEffort;
+        if (reasoningVerbosity) serviceOptions.reasoningVerbosity = reasoningVerbosity;
+        if (reasoningSummaryType) serviceOptions.reasoningSummaryType = reasoningSummaryType;
+
+        await saturnService.analyzePuzzleWithStreaming(
+          puzzle,
+          decodedModelKey,
+          taskId,
           temperature,
           promptId,
-          captureReasoning: true,
-          previousResponseId,
-          reasoningEffort,
-          reasoningVerbosity,
-          reasoningSummaryType,
-        },
-        harness
-      );
+          undefined,
+          undefined,
+          serviceOptions
+        );
+      } else {
+        await puzzleAnalysisService.analyzePuzzleStreaming(
+          taskId,
+          decodedModelKey,
+          {
+            temperature,
+            promptId,
+            captureReasoning: true,
+            previousResponseId,
+            reasoningEffort,
+            reasoningVerbosity,
+            reasoningSummaryType,
+          },
+          harness
+        );
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       logger.logError(`[SaturnStream] Failed to run streaming analysis: ${message}`, { error, context: 'SaturnStream' });
