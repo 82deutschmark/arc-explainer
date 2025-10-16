@@ -163,25 +163,6 @@ export default function PuzzleBrowser() {
     return filtered;
   }, [puzzles, explanationFilter, namedFilter, sortBy, searchQuery]);
 
-  const currentViewStats = React.useMemo(() => {
-    let named = 0;
-    let analyzed = 0;
-    filteredPuzzles.forEach((puzzle) => {
-      if (hasPuzzleName(puzzle.id)) {
-        named += 1;
-      }
-      if (puzzle.hasExplanation) {
-        analyzed += 1;
-      }
-    });
-
-    return {
-      total: filteredPuzzles.length,
-      named,
-      analyzed
-    };
-  }, [filteredPuzzles]);
-
   const getGridSizeColor = (size: number) => {
     if (size <= 5) return 'bg-green-100 text-green-800 hover:bg-green-200';
     if (size <= 10) return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
@@ -230,11 +211,11 @@ export default function PuzzleBrowser() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl space-y-4 px-4 py-5 lg:px-6">
         {/* Hero Section - Tight, professional layout */}
         <header className="rounded-xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur">
-          <div className="grid gap-6 px-6 py-5 sm:gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:items-end">
-            <div className="space-y-3">
+          <div className="grid gap-4 px-6 py-4 sm:gap-6 md:grid-cols-[minmax(0,1fr)_320px] md:items-end">
+            <div className="space-y-2.5">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Puzzle Browser</div>
               <h1 className="text-3xl font-semibold text-slate-900">ARC-AGI Puzzle Explorer</h1>
               <p className="text-sm text-slate-600">
@@ -242,7 +223,7 @@ export default function PuzzleBrowser() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Search by Puzzle ID</label>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <input
@@ -271,13 +252,13 @@ export default function PuzzleBrowser() {
 
           <div className="border-t border-slate-200 bg-slate-50/80">
             {statsLoading ? (
-              <div className="px-6 py-5">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className="px-6 py-4">
+                <div className="grid gap-3 sm:grid-cols-3">
                   {[0, 1, 2].map((item) => (
                     <div key={item} className="h-20 animate-pulse rounded-lg bg-slate-200/60" />
                   ))}
                 </div>
-                <div className="mt-4 h-24 animate-pulse rounded-lg bg-slate-200/60" />
+                <div className="mt-3 h-24 animate-pulse rounded-lg bg-slate-200/60" />
               </div>
             ) : statsError ? (
               <div className="px-6 py-4">
@@ -286,8 +267,8 @@ export default function PuzzleBrowser() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 px-6 py-5">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-3.5 px-6 py-4">
+                <div className="grid gap-3 sm:grid-cols-3">
                   <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total puzzles</p>
                     <p className="mt-2 text-2xl font-semibold text-slate-900">{puzzleStatsSummary.totalPuzzles.toLocaleString()}</p>
@@ -305,55 +286,15 @@ export default function PuzzleBrowser() {
                     <p className="mt-1 text-xs text-slate-500">Puzzles still awaiting analysis</p>
                   </div>
                 </div>
-                {datasetBreakdownEntries.length > 0 && (
-                  <div className="rounded-lg border border-slate-200 bg-white/90 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Dataset coverage</p>
-                    <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {datasetBreakdownEntries.map(([dataset, stats]) => (
-                        <div key={dataset} className="rounded-md border border-slate-200 bg-slate-50 p-3">
-                          <div className="flex items-center justify-between text-sm font-semibold text-slate-800">
-                            <span>{dataset}</span>
-                            <span>{(stats.coverage * 100).toFixed(0)}%</span>
-                          </div>
-                          <p className="mt-1 text-xs text-slate-500">
-                            {stats.analyzed.toLocaleString()} / {stats.total.toLocaleString()} analyzed
-                          </p>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                )}
               </div>
             )}
           </div>
         </header>
 
-        <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current view</p>
-            <h2 className="text-lg font-semibold text-slate-900">Active filter snapshot</h2>
-            <p className="text-xs text-slate-500">Counts reflect the puzzles shown below after applying filters.</p>
-          </div>
-          <dl className="mt-4 grid gap-4 sm:grid-cols-3">
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-500">In view</dt>
-              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.total.toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-500">Named puzzles</dt>
-              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.named.toLocaleString()}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-500">With analysis</dt>
-              <dd className="text-xl font-semibold text-slate-900">{currentViewStats.analyzed.toLocaleString()}</dd>
-            </div>
-          </dl>
-        </section>
-
         {/* Community acknowledgement */}
-        <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-1">
+        <section className="rounded-xl border border-slate-200 bg-white/90 px-6 py-4 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-1.5">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Community Support</p>
               <h2 className="text-xl font-semibold text-slate-900">Built with ARC Resources</h2>
               <p className="text-sm text-slate-600 max-w-2xl">
@@ -387,7 +328,7 @@ export default function PuzzleBrowser() {
 
         {/* Knowledge hub */}
         <section className="rounded-xl border border-slate-200 bg-white/80 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center justify-between px-6 py-3.5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reference Library</p>
               <h3 className="text-lg font-semibold text-slate-900">ARC-AGI Knowledge Hub</h3>
@@ -541,7 +482,7 @@ export default function PuzzleBrowser() {
         <div className="rounded-xl border border-slate-200 bg-white/90 shadow-sm">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="flex w-full items-center justify-between px-6 py-4 transition-colors hover:bg-slate-50"
+            className="flex w-full items-center justify-between px-5 py-3.5 transition-colors hover:bg-slate-50"
           >
             <div className="flex items-center gap-2">
               <Grid3X3 className="h-5 w-5 text-slate-500" />
@@ -552,9 +493,9 @@ export default function PuzzleBrowser() {
           </button>
 
           {filtersOpen && (
-            <div className="border-t border-slate-200 px-6 pb-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                <div className="space-y-2">
+            <div className="border-t border-slate-200 px-5 pb-5">
+              <div className="grid grid-cols-1 gap-3 pt-3 md:grid-cols-3">
+                <div className="space-y-1.5">
                   <label htmlFor="maxGridSize" className="label">Maximum Grid Size</label>
                   <select className="select select-bordered w-full" value={maxGridSize} onChange={(e) => setMaxGridSize(e.target.value)}>
                     <option value="any">Any Size</option>
@@ -566,7 +507,7 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label htmlFor="explanationFilter" className="label">Explanation Status</label>
                   <select className="select select-bordered w-full" value={explanationFilter} onChange={(e) => setExplanationFilter(e.target.value)}>
                     <option value="all">All Puzzles</option>
@@ -575,7 +516,7 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label htmlFor="namedFilter" className="label">Puzzle Names</label>
                   <select className="select select-bordered w-full" value={namedFilter} onChange={(e) => setNamedFilter(e.target.value)}>
                     <option value="all">All Puzzles</option>
@@ -583,8 +524,8 @@ export default function PuzzleBrowser() {
                     <option value="unnamed">Unnamed Only</option>
                   </select>
                 </div>
-                
-                <div className="space-y-2">
+
+                <div className="space-y-1.5">
                   <label htmlFor="gridConsistent" className="label">Grid Size Consistency</label>
                   <select className="select select-bordered w-full" value={gridSizeConsistent} onChange={(e) => setGridSizeConsistent(e.target.value)}>
                     <option value="any">Any consistency</option>
@@ -592,8 +533,8 @@ export default function PuzzleBrowser() {
                     <option value="false">Variable size only</option>
                   </select>
                 </div>
-                
-                <div className="space-y-2">
+
+                <div className="space-y-1.5">
                   <label htmlFor="arcVersion" className="label">ARC Version</label>
                   <select className="select select-bordered w-full" value={arcVersion} onChange={(e) => setArcVersion(e.target.value)}>
                     <option value="any">Any ARC version</option>
@@ -606,7 +547,7 @@ export default function PuzzleBrowser() {
                   </select>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <label htmlFor="multiTestFilter" className="label">Test Cases</label>
                   <select className="select select-bordered w-full" value={multiTestFilter} onChange={(e) => setMultiTestFilter(e.target.value)}>
                     <option value="any">Any number of test cases</option>
@@ -614,8 +555,8 @@ export default function PuzzleBrowser() {
                     <option value="multi">Multiple test cases (2+ outputs required)</option>
                   </select>
                 </div>
-                
-                <div className="space-y-2">
+
+                <div className="space-y-1.5">
                   <label htmlFor="sortBy" className="label">Sort By</label>
                   <select className="select select-bordered w-full" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                     <option value="named_first">Named First</option>
@@ -634,9 +575,9 @@ export default function PuzzleBrowser() {
         </div>
 
         {/* Results */}
-        <div className="rounded-xl border border-slate-200 bg-white/90 p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white/90 p-5 shadow-sm">
           <div>
-            <h2 className="mb-4 text-xl font-semibold text-slate-900">
+            <h2 className="mb-3.5 text-xl font-semibold text-slate-900">
               Puzzles
               {!isLoading && (
                 <div className="badge badge-outline ml-2 border-slate-300 text-slate-700">
@@ -648,20 +589,20 @@ export default function PuzzleBrowser() {
               Puzzles available for examination
             </p>
             {isLoading ? (
-              <div className="py-8 text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <div className="py-7 text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3.5" />
                 <p>Loading puzzles...</p>
               </div>
             ) : filteredPuzzles.length === 0 ? (
-              <div className="py-8 text-center">
-                <Grid3X3 className="mx-auto mb-4 h-12 w-12 text-slate-400" />
+              <div className="py-7 text-center">
+                <Grid3X3 className="mx-auto mb-3.5 h-12 w-12 text-slate-400" />
                 <p className="text-slate-600">No puzzles match your current filters.</p>
                 <p className="mt-2 text-sm text-slate-500">
                   Try adjusting your filters.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPuzzles.map((puzzle: EnhancedPuzzleMetadata) => (
                   <PuzzleCard
                     key={puzzle.id}
