@@ -89,12 +89,16 @@ Some endpoints now require API key authentication via `Authorization: Bearer <ap
   - **Response**: Analysis result with explanation and predictions
   - **Limits**: No limits
   - **Debate Mode**: Include `originalExplanation` and `customChallenge` in body to generate debate rebuttals
-- `GET /api/stream/analyze/:taskId/:modelKey` - Start Server-Sent Events stream for token-by-token analysis
-  - **Params**: `taskId` (string), `modelKey` (string) - Model name
-  - **Query**: Accepts same analysis options as the POST endpoint (`temperature`, `promptId`, `omitAnswer`, `reasoningEffort`, etc.)
+- `POST /api/stream/analyze` - Prepare Server-Sent Events analysis stream
+  - **Body**: Same analysis options accepted by the non-streaming POST endpoint (temperature, promptId, omitAnswer, reasoning options, etc.) plus `taskId` and `modelKey`
+  - **Response**: `{ sessionId }` token referencing a cached payload stored on the server for the follow-up SSE request
+  - **Notes**: Payloads are discarded automatically when the stream completes, errors, or is cancelled
+- `GET /api/stream/analyze/:taskId/:modelKey/:sessionId` - Start Server-Sent Events stream for token-by-token analysis
+  - **Params**: `taskId` (string), `modelKey` (string), `sessionId` (string) returned from the POST handshake
+  - **Query**: No longer accepts large option blobs; the server retrieves the cached payload prepared during the POST handshake
   - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
   - **Notes**: Enabled when `ENABLE_SSE_STREAMING=true`; currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models
-  - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
+  - **Client**: `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` now performs the POST handshake automatically before opening the SSE connection
 
 - `GET /api/puzzle/:puzzleId/has-explanation` - Check if puzzle has existing explanation
   - **Params**: `puzzleId` (string)
