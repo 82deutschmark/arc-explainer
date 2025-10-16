@@ -98,6 +98,8 @@ export default function PuzzleDiscussion() {
     streamStatus,
     streamingText,
     streamingReasoning,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
@@ -486,6 +488,8 @@ export default function PuzzleDiscussion() {
                       : streamingMessage
                   }
                   text={streamingText}
+                  structuredJsonText={streamingStructuredJsonText}
+                  structuredJson={streamingStructuredJson}
                   reasoning={streamingReasoning}
                   tokenUsage={streamingTokenUsage}
                   onCancel={

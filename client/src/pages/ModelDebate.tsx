@@ -66,6 +66,8 @@ export default function ModelDebate() {
     streamStatus,
     streamingText,
     streamingReasoning,
+    streamingStructuredJsonText,
+    streamingStructuredJson,
     streamingPhase,
     streamingMessage,
     streamingTokenUsage,
@@ -318,6 +320,8 @@ export default function ModelDebate() {
                         : streamingMessage
                     }
                     text={streamingText}
+                    structuredJsonText={streamingStructuredJsonText}
+                    structuredJson={streamingStructuredJson}
                     reasoning={streamingReasoning}
                     tokenUsage={streamingTokenUsage}
                     onCancel={streamingPanelStatus === 'in_progress' ? () => { cancelStreamingAnalysis(); setPendingStream(null); } : undefined}
