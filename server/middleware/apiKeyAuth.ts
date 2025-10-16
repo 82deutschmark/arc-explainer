@@ -1,6 +1,12 @@
 /**
  * API Key Authentication Middleware
  *
+ * ⚠️ WARNING: DO NOT USE THIS MIDDLEWARE! ⚠️
+ * ALL ENDPOINTS MUST BE PUBLIC AND REQUIRE NO AUTHENTICATION!
+ * 
+ * This file is kept for reference only but should never be applied to any routes.
+ * The project requires all API endpoints to be freely accessible without auth.
+ *
  * Simple API key authentication for external integrations.
  * Checks for Bearer token in Authorization header.
  *
