@@ -16,7 +16,6 @@ import type { ExplanationData } from '@/types/puzzle';
 import { useAnalysisStreaming } from '@/hooks/useAnalysisStreaming';
 import type { AnalysisStreamParams } from '@/lib/streaming/analysisStream';
 import type { ModelConfig } from '@shared/types';
-import { isStreamingEnabled } from '@shared/config/streaming';
 import { isFeatureFlagEnabled } from '@shared/utils/featureFlags';
 
 interface UseAnalysisResultsProps {
@@ -62,7 +61,6 @@ export function useAnalysisResults({
   const [reasoningSummaryType, setReasoningSummaryType] = useState<'auto' | 'detailed'>('detailed');
 
   // Streaming integration
-  const streamingEnabled = isStreamingEnabled();
   const streamingEnabled = isFeatureFlagEnabled(import.meta.env.VITE_ENABLE_SSE_STREAMING as string | undefined);
   const {
     startStream,
