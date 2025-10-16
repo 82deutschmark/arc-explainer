@@ -92,10 +92,11 @@ Some endpoints now require API key authentication via `Authorization: Bearer <ap
 - `POST /api/stream/analyze` - Prepare Server-Sent Events analysis stream
   - **Body**: Same analysis options accepted by the non-streaming POST endpoint (temperature, promptId, omitAnswer, reasoning options, etc.) plus `taskId` and `modelKey`
   - **Response**: `{ sessionId }` token referencing a cached payload stored on the server for the follow-up SSE request
-  - **Notes**: Payloads are discarded automatically when the stream completes, errors, or is cancelled
+  - **Notes**: Payloads are discarded automatically when the stream completes, errors, or is cancelled, and they auto-expire after 60 seconds if the SSE connection is never opened
 - `GET /api/stream/analyze/:taskId/:modelKey/:sessionId` - Start Server-Sent Events stream for token-by-token analysis
   - **Params**: `taskId` (string), `modelKey` (string), `sessionId` (string) returned from the POST handshake
   - **Query**: No longer accepts large option blobs; the server retrieves the cached payload prepared during the POST handshake
+  - **Safety**: If the `taskId`/`modelKey` tuple does not match the cached payload, the server rejects the connection and clears the pending session to avoid leaks.
   - **Response**: SSE channel emitting `stream.init`, `stream.chunk`, `stream.status`, `stream.complete`, `stream.error`
   - **Notes**: Enabled when `STREAMING_ENABLED=true`; defaults to `true` in development builds so SSE works out of the box. Currently implemented for GPT-5 mini/nano and Grok-4(-Fast) models.
   - **Client**: New `createAnalysisStream` utility in `client/src/lib/streaming/analysisStream.ts` provides a typed wrapper
