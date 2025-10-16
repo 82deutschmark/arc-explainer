@@ -1,3 +1,19 @@
+## [4.8.19] - 2025-10-16
+### 🛰️ Saturn Streaming: JSON & Annotation Parity
+
+**Closed the streaming parity gap so Saturn surfaces structured output and safety metadata while responses are still inflight.**
+
+#### Key Fixes
+- **Structured Output Streaming:** `server/services/openai.ts` now treats `json_schema` responses as text deltas, emitting `type: "json"` chunks so operators can watch structured payloads build in real time.
+- **Annotation Delivery:** Streaming harness propagates `response.output_text.annotation.added` events end-to-end, preserving citation and safety markers in Saturn session logs and UI state.
+- **Shared Contracts:** Extended shared streaming types plus `useSaturnProgress` consumer logic to record the new chunk shapes without breaking existing clients.
+
+#### Quality Gates
+- Added regression coverage in `tests/openaiStreamingHandlers.test.ts` to assert JSON deltas and annotation events surface through the SSE shim.
+- Documented implementation approach in `docs/2025-02-15-streaming-fix-plan.md` for future streaming audits.
+
+---
+
 ## [4.8.18] - 2025-10-16
 ### 🎨 PuzzleBrowser: Restore Colors & Visual Effects
 
@@ -2334,6 +2350,11 @@ app.get("/api/model-dataset/metrics/:modelName/:datasetName", asyncHandler(model
 
 ### Changed
 - Updated `EXTERNAL_API.md`, README streaming notes, and execution plan docs with provisional instructions; documentation reflects unverified behavior and needs review.
+
+### Fixed
+- **OpenAI SSE streaming reliability**
+  - JSON-schema responses now stream via the actual `response.output_text.delta` events, ensuring structured chunks reach SSE consumers in real time instead of waiting on nonexistent `response.output_json.*` events.
+  - Surfaced `response.output_text.annotation.added` events so safety/citation metadata flows through the harness and is recorded by Saturn's progress UI.
 
 ### Testing
 - Added unit coverage for SSE parser (`npx tsx --test tests/sseUtils.test.ts`). No end-to-end validation performed.
