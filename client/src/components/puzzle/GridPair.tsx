@@ -67,7 +67,7 @@ export function GridPair({
         {/* INPUT Section */}
         <div className="flex-1 p-2 bg-blue-50">
           <div className="flex items-center gap-1 mb-1">
-            <span className="text-[10px] font-bold text-blue-700 uppercase">📥 Input</span>
+            <span className="text-[10px] font-bold text-blue-700 uppercase">📋 Input</span>
           </div>
           <PuzzleGrid
             grid={input}
@@ -90,7 +90,7 @@ export function GridPair({
               <span className={`text-[10px] font-bold uppercase ${
                 isTest ? 'text-green-700' : 'text-amber-700'
               }`}>
-                📤 Output{hasMultipleOutputs ? ` ${idx + 1}` : ''}
+                🎯 Output{hasMultipleOutputs ? ` ${idx + 1}` : ''}
               </span>
             </div>
             <PuzzleGrid

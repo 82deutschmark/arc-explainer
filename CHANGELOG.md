@@ -1,3 +1,138 @@
+## [4.8.15] - 2025-10-15
+### 🔥 CRITICAL: Saturn Visual Solver - Complete UI Rebuild + DB Persistence + Defaults
+
+**Saturn Visual Solver** is a research tool achieving **22% success on ARC-AGI-2** (vs 15.9% SOTA) using GPT-5 multimodal visual pattern recognition. This release fixes critical bugs and completely rebuilds the UI.
+
+#### Critical Fixes:
+
+**1. DATABASE PERSISTENCE BUG (CRITICAL)**
+- **Problem:** Streaming Saturn results were NOT being saved to database
+- **Root Cause:** `saturnStreamService.ts` had no call to `explanationService.saveExplanation()`
+- **Impact:** All streaming analyses lost - no persistence to `explanations` table
+- **Fix:** Added DB save in streaming harness `end()` callback
+- **Result:** All Saturn analyses now properly persist to database
+
+**2. SYNTAX ERROR - SaturnPhaseTimeline.tsx**
+- **Problem:** Parse error preventing compilation
+- **Root Cause:** Lines 1-63 were duplicated as lines 64-234 (duplicate header/imports)
+- **Fix:** Removed duplicate code block
+
+**3. DEFAULT MODEL & REASONING CONFIGURATION**
+- **Changed:** Default model from `gpt-5-nano` → `gpt-5-mini` (better quality for visual reasoning)
+- **Changed:** Reasoning effort from `medium` → `high` (essential for ARC-AGI-2)
+- **Changed:** Reasoning verbosity from `medium` → `high` (more detailed analysis)
+- **Files:** `saturnModels.ts`, `SaturnVisualSolver.tsx`, `saturnController.ts`
+
+#### UI Complete Rebuild:
+
+**Problem:** Previous UI was decorative, toy-like with hardcoded sizes, wasted space, broken image display
+
+**Changes:**
+- **SaturnVisualSolver.tsx:** Removed hardcoded widths (w-80), now uses CSS Grid (12-col responsive: 3-col left, 6-col center, 3-col right)
+- **SaturnImageGallery.tsx:** Removed 190 lines of decorative code (59% reduction), simplified to functional grid+detail view, pixelated rendering for grid fidelity
+- **SaturnTerminalLogs.tsx:** Removed 210 lines of decorative code (69% reduction), simplified to functional reasoning+output display
+
+**Result:** Data-dense, functional interface matching research tool requirements. No wasted space, proper image display, responsive without mobile-specific code.
+
+#### Technical Details:
+- Saturn costs ~$0.90/problem, takes ~27 minutes average
+- Uses GPT-5 multimodal to convert puzzle grids to PNG images with fixed color palette
+- Visual pattern recognition approach vs symbolic manipulation
+- No breaking changes - all APIs/props unchanged
+
+**Files Changed:**
+- `client/src/pages/SaturnVisualSolver.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnImageGallery.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnTerminalLogs.tsx` (UI rebuild)
+- `client/src/components/saturn/SaturnPhaseTimeline.tsx` (syntax fix)
+- `client/src/lib/saturnModels.ts` (default model change)
+- `server/controllers/saturnController.ts` (defaults + verbosity)
+- `server/services/streaming/saturnStreamService.ts` (DB persistence fix)
+
+## [4.8.14] - 2025-10-15
+### 🎯 UX: Improve puzzleExaminer Page Visual Differentiation and Usability
+
+**Improvements:**
+- **Enhanced Emoji Differentiation**: Input grids now use 📋 (clipboard) and output grids use 🎯 (target) instead of similar 📥/📤 emojis for clearer visual distinction
+- **Advanced Controls Accessibility**: Advanced parameters section now opens by default, making temperature, top-p, and reasoning settings immediately visible and accessible
+- **Improved Slider Visibility**: Range sliders now use `range-accent` styling for better contrast and visibility against the interface background
+- **Fixed Test Case Ordering**: Test cases now display in proper numerical order (Test 1, Test 2, Test 3, etc.) instead of being grouped by grid size categories, eliminating user confusion about test sequence
+
+## [4.8.13] - 2025-10-15
+### 🔥 CRITICAL FIX: Enable GPT-5 Model Alias Support for Streaming and Reasoning Configuration
+
+**Problem:** When using shortened model names (e.g., "gpt-5-mini"), two critical bugs prevented reasoning configuration from being built, resulting in empty reasoning logs despite models producing reasoning.
+
+**Symptoms:**
+- Error: "Streaming is not enabled for this model" for shortened names
+- Server logs: `Has reasoning: false`, `verbosity: none`
+- NO reasoning deltas emitted during streaming
+- Empty `reasoning_log` and `reasoning_items` despite 6,700+ reasoning tokens used
+
+**Root Cause:**
+
+#### Bug #1: supportsStreaming() Rejected Shortened Names
+- Method only checked exact versioned names like "gpt-5-mini-2025-08-07"
+- Rejected user-friendly shortened names like "gpt-5-mini"
+
+#### Bug #2: Set Lookups Failed Due to Missing Alias Support
+- Model configuration Sets (`MODELS_WITH_REASONING`, `GPT5_REASONING_MODELS`) contain FULL versioned keys
+- `getApiModelName()` used `ModelLookup.getById()` which has NO alias support
+- `getById("gpt-5-mini")` returned "gpt-5-mini" unchanged (fallback behavior)
+- `Set.has("gpt-5-mini")` failed because Set contains "gpt-5-mini-2025-08-07"
+- Result: `buildReasoningConfig()` returned undefined → reasoning disabled
+
+**Root Infrastructure Issue:** ModelLookup uses `model.key` field (full versioned names) as Map keys, with NO alias mapping for shortened names.
+
+**Solution:**
+
+1. **Added MODEL_ALIASES mapping** (lines 58-62 in openai.ts):
+```typescript
+const MODEL_ALIASES: Record<string, string> = {
+  "gpt-5": "gpt-5-2025-08-07",
+  "gpt-5-mini": "gpt-5-mini-2025-08-07",
+  "gpt-5-nano": "gpt-5-nano-2025-08-07",
+};
+```
+
+2. **Created normalizeModelKey() helper** (lines 64-70):
+```typescript
+function normalizeModelKey(modelKey: string): string {
+  return MODEL_ALIASES[modelKey] || getApiModelName(modelKey);
+}
+```
+
+3. **Enhanced supportsStreaming()** to handle both formats (lines 76-93):
+```typescript
+// Check exact match first
+if (streamingModels.includes(modelKey)) {
+  return true;
+}
+
+// Check if modelKey is a shortened version
+// e.g., "gpt-5-mini" should match "gpt-5-mini-2025-08-07"
+return streamingModels.some(fullKey => fullKey.startsWith(modelKey + "-"));
+```
+
+4. **Updated 5 methods** to use `normalizeModelKey()` for Set lookups:
+   - `buildReasoningConfig()` (line 486)
+   - `buildTextConfig()` (line 520)
+   - `getModelInfo()` (line 307)
+   - `generatePromptPreview()` (line 397)
+   - `buildResponsesAPIPayload()` (line 608)
+
+**Verification Results:**
+- ✅ Server logs: `Has reasoning: true` (was false)
+- ✅ Server logs: `verbosity: high` (was none)
+- ✅ Stream: Real-time reasoning deltas emitted during 60+ sec processing
+- ✅ Captured: 6,784 reasoning tokens with detailed summary
+
+**Impact:** Users can now use friendly shortened model names ("gpt-5-mini", "gpt-5", "gpt-5-nano") for ALL GPT-5 streaming requests with FULL reasoning support!
+
+**Files Modified:** `server/services/openai.ts`
+
+---
+
 ## [4.8.12] - 2025-10-15
 ### 🔥 CRITICAL FIX: Restore Complete Reasoning Extraction Logic (Broken by Commit 298babef)
 

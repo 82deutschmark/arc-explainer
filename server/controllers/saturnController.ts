@@ -35,8 +35,8 @@ export const saturnController = {
     const sessionId = randomUUID();
 
     // Saturn model key (maps to underlying provider model - RESPONSES API compatible only)
-    // saturn-grok-4-fast-reasoning, saturn-gpt-5-nano, saturn-gpt-5-mini
-    const modelKey = (req.body?.modelKey as string) || 'saturn-gpt-5-nano';
+    // Default: gpt-5-mini-2025-08-07 (best for visual reasoning)
+    const modelKey = (req.body?.modelKey as string) || 'gpt-5-mini-2025-08-07';
     const temperature = typeof req.body?.temperature === 'number' ? req.body.temperature : 0.2;
     const promptId = (req.body?.promptId as string) || 'solver';
 
@@ -140,7 +140,7 @@ export const saturnController = {
       sessionId,
       previousResponseId: req.body?.previousResponseId as string | undefined,
       reasoningEffort: (req.body?.reasoningEffort as 'minimal' | 'low' | 'medium' | 'high') || 'high',
-      reasoningVerbosity: (req.body?.reasoningVerbosity as 'low' | 'medium' | 'high') || 'medium',
+      reasoningVerbosity: (req.body?.reasoningVerbosity as 'low' | 'medium' | 'high') || 'high',
       captureReasoning: true,
     };
 
