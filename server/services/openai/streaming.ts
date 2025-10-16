@@ -3,7 +3,7 @@
  * Date: 2025-10-16T00:00:00Z
  * PURPOSE: Provides reusable helpers for handling OpenAI Responses API streaming events and
  *          aggregating incremental deltas before the final response arrives.
- * SRP/DRY check: Pass — moves event-type branching out of the service class for clarity and reuse.
+ * SRP/DRY check: Pass — consolidates event handling in a single helper used by OpenAI services.
  */
 
 import type {
@@ -15,19 +15,18 @@ import type {
   ResponseReasoningSummaryTextDoneEvent,
   ResponseReasoningTextDeltaEvent,
   ResponseReasoningTextDoneEvent,
-  ResponseStreamEvent
+  ResponseStreamEvent,
 } from "openai/resources/responses/responses";
 import type { StreamChunk } from "../base/BaseAIService.js";
 
 export interface OpenAIStreamAggregates {
   text: string;
   parsed: string;
-  parsedObject?: Record<string, unknown> | Array<unknown>;
-  parsedObject?: Record<string, unknown> | null;
+  parsedObject: Record<string, unknown> | Array<unknown> | null;
   reasoning: string;
+  reasoningSummary: string;
   summary: string;
   refusal: string;
-  reasoningSummary?: string;
   annotations: Array<{
     annotation: unknown;
     annotationIndex: number;
@@ -38,8 +37,8 @@ export interface OpenAIStreamAggregates {
   }>;
   expectingJson: boolean;
   receivedAnnotatedJsonDelta: boolean;
-  usedFallbackJson: boolean;
   receivedParsedJsonDelta: boolean;
+  usedFallbackJson: boolean;
 }
 
 export interface StreamCallbacks {
@@ -51,22 +50,22 @@ export function createStreamAggregates(expectingJson: boolean): OpenAIStreamAggr
   return {
     text: "",
     parsed: "",
-    parsedObject: undefined,
     parsedObject: null,
     reasoning: "",
+    reasoningSummary: "",
     summary: "",
     refusal: "",
-    reasoningSummary: "",
     annotations: [],
     expectingJson,
     receivedAnnotatedJsonDelta: false,
-    usedFallbackJson: false
+    receivedParsedJsonDelta: false,
+    usedFallbackJson: false,
   };
 }
 
 function mergeStructuredDelta(
   existing: Record<string, unknown> | undefined,
-  delta: Record<string, unknown>
+  delta: Record<string, unknown>,
 ): Record<string, unknown> {
   const base: Record<string, unknown> = existing ? { ...existing } : {};
 
@@ -77,7 +76,7 @@ function mergeStructuredDelta(
         current && typeof current === "object" && !Array.isArray(current)
           ? (current as Record<string, unknown>)
           : undefined,
-        value as Record<string, unknown>
+        value as Record<string, unknown>,
       );
     } else {
       base[key] = value;
@@ -85,8 +84,6 @@ function mergeStructuredDelta(
   }
 
   return base;
-    receivedParsedJsonDelta: false
-  };
 }
 
 function stringifyStructuredDelta(delta: unknown): string {
@@ -107,22 +104,35 @@ function stringifyStructuredDelta(delta: unknown): string {
 
 function updateParsedAggregate(
   aggregates: OpenAIStreamAggregates,
-  parsedOutput: unknown
+  parsedOutput: unknown,
 ): void {
-  if (parsedOutput === undefined) {
+  if (parsedOutput === undefined || parsedOutput === null) {
     return;
   }
 
-  const normalized = typeof parsedOutput === "string"
-    ? parsedOutput
-    : stringifyStructuredDelta(parsedOutput);
-
-  if (normalized) {
-    aggregates.parsed = normalized;
+  if (typeof parsedOutput === "string") {
+    if (parsedOutput) {
+      aggregates.parsed = parsedOutput;
+      aggregates.parsedObject = null;
+    }
+    return;
   }
 
-  if (parsedOutput && typeof parsedOutput === "object") {
-    aggregates.parsedObject = parsedOutput as Record<string, unknown>;
+  if (Array.isArray(parsedOutput)) {
+    aggregates.parsedObject = parsedOutput;
+  } else if (typeof parsedOutput === "object") {
+    const previous =
+      aggregates.parsedObject && !Array.isArray(aggregates.parsedObject)
+        ? (aggregates.parsedObject as Record<string, unknown>)
+        : undefined;
+    aggregates.parsedObject = mergeStructuredDelta(previous, parsedOutput as Record<string, unknown>);
+  }
+
+  try {
+    const source = aggregates.parsedObject ?? parsedOutput;
+    aggregates.parsed = JSON.stringify(source);
+  } catch {
+    aggregates.parsed = stringifyStructuredDelta(parsedOutput);
   }
 }
 
@@ -136,14 +146,57 @@ function extractParsedOutput(event: Record<string, unknown>): unknown {
   );
 }
 
+function handleParsedDelta(
+  event: Record<string, unknown>,
+  aggregates: OpenAIStreamAggregates,
+  callbacks: StreamCallbacks,
+  sequenceNumber: number | undefined,
+  source: "parsed" | "parsed.annotated",
+  annotated: boolean,
+): void {
+  const isFirstDelta = !aggregates.receivedParsedJsonDelta;
+  const deltaPayload = (event as { delta?: unknown }).delta;
+  const deltaText = stringifyStructuredDelta(deltaPayload);
+
+  aggregates.receivedParsedJsonDelta = true;
+  if (annotated) {
+    aggregates.receivedAnnotatedJsonDelta = true;
+  }
+
+  if (isFirstDelta) {
+    aggregates.parsed = "";
+    aggregates.parsedObject = null;
+  }
+
+  const parsedOutput = extractParsedOutput(event);
+  if (parsedOutput !== undefined) {
+    updateParsedAggregate(aggregates, parsedOutput);
+  } else if (deltaText) {
+    aggregates.parsed += deltaText;
+  }
+
+  callbacks.emitChunk({
+    type: "json",
+    delta: deltaText,
+    content: aggregates.parsed,
+    metadata: {
+      sequence: sequenceNumber,
+      expectingJson: aggregates.expectingJson,
+      source,
+      annotated,
+      fallback: false,
+    },
+  });
+}
+
 export function handleStreamEvent(
   event: ResponseStreamEvent | { type: string; [key: string]: unknown },
   aggregates: OpenAIStreamAggregates,
-  callbacks: StreamCallbacks
+  callbacks: StreamCallbacks,
 ): void {
   const eventType = (event as { type: string }).type;
   const sequenceNumber =
-    typeof (event as { sequence_number?: number }).sequence_number === 'number'
+    typeof (event as { sequence_number?: number }).sequence_number === "number"
       ? (event as { sequence_number?: number }).sequence_number
       : undefined;
 
@@ -155,7 +208,7 @@ export function handleStreamEvent(
     case "response.in_progress": {
       callbacks.emitEvent("stream.status", {
         state: "in_progress",
-        step: (event as any).step
+        step: (event as { step?: string }).step,
       });
       break;
     }
@@ -165,148 +218,86 @@ export function handleStreamEvent(
     }
     case "response.failed":
     case "error": {
-      const message = (event as any).error?.message ?? "Streaming failed";
-      callbacks.emitEvent("stream.status", {
-        state: "failed",
-        message
-      });
+      const message = (event as { error?: { message?: string } }).error?.message ?? "Streaming failed";
+      callbacks.emitEvent("stream.status", { state: "failed", message });
       break;
     }
     case "response.reasoning_summary_text.delta": {
-      const delta = (event as ResponseReasoningSummaryTextDeltaEvent).delta || "";
-      aggregates.reasoningSummary = (aggregates.reasoningSummary || "") + delta;
+      const delta = (event as ResponseReasoningSummaryTextDeltaEvent).delta ?? "";
+      aggregates.reasoningSummary = `${aggregates.reasoningSummary}${delta}`;
       callbacks.emitChunk({
-        type: "reasoning", // keep compatibility
+        type: "reasoning",
         delta,
         content: aggregates.reasoningSummary,
-        metadata: { sequence: sequenceNumber }
+        metadata: { sequence: sequenceNumber },
       });
       break;
     }
     case "response.reasoning_summary_text.done": {
       const doneEvent = event as ResponseReasoningSummaryTextDoneEvent;
-      aggregates.reasoningSummary = doneEvent.text || aggregates.reasoningSummary || "";
+      aggregates.reasoningSummary = doneEvent.text ?? aggregates.reasoningSummary;
       aggregates.summary = aggregates.reasoningSummary;
       callbacks.emitEvent("stream.chunk", {
         type: "reasoning.summary",
         content: aggregates.reasoningSummary,
-        sequence: sequenceNumber
+        sequence: sequenceNumber,
       });
       break;
     }
     case "response.reasoning_summary_part.added": {
       const part = (event as ResponseReasoningSummaryPartAddedEvent).part;
-      const text = (part as any)?.text || (part as any)?.content || "";
+      const text = (part as { text?: string; content?: string })?.text ?? (part as { content?: string })?.content ?? "";
       if (text) {
-        aggregates.reasoning += text;
+        aggregates.reasoning = `${aggregates.reasoning}${text}`;
         aggregates.summary = `${aggregates.summary}${text}`;
         callbacks.emitChunk({
           type: "reasoning",
           delta: text,
           content: aggregates.reasoning,
-          metadata: { sequence: sequenceNumber }
+          metadata: { sequence: sequenceNumber },
         });
       }
       break;
     }
     case "response.reasoning_summary_part.done": {
       const donePart = event as ResponseReasoningSummaryPartDoneEvent;
-      const text = (donePart.part as any)?.text || "";
+      const text = (donePart.part as { text?: string })?.text ?? "";
       if (text) {
         aggregates.summary = `${aggregates.summary}${text}`;
       }
       break;
     }
     case "response.reasoning_text.delta": {
-      const delta = (event as ResponseReasoningTextDeltaEvent).delta || "";
-      aggregates.reasoning += delta;
+      const delta = (event as ResponseReasoningTextDeltaEvent).delta ?? "";
+      aggregates.reasoning = `${aggregates.reasoning}${delta}`;
       callbacks.emitChunk({
         type: "reasoning",
         delta,
         content: aggregates.reasoning,
         metadata: {
           sequence: sequenceNumber,
-          contentIndex: (event as ResponseReasoningTextDeltaEvent).content_index
-        }
+          contentIndex: (event as ResponseReasoningTextDeltaEvent).content_index,
+        },
       });
       break;
     }
     case "response.reasoning_text.done": {
       const doneEvent = event as ResponseReasoningTextDoneEvent;
-      const text = doneEvent.text || aggregates.reasoning || "";
+      const text = doneEvent.text ?? aggregates.reasoning;
       aggregates.reasoning = text;
       callbacks.emitEvent("stream.chunk", {
         type: "reasoning.done",
         content: text,
-        sequence: sequenceNumber
+        sequence: sequenceNumber,
       });
       break;
     }
     case "response.output_parsed.delta": {
-      const parsedEvent = event as Record<string, unknown>;
-      const isFirstParsedDelta = !aggregates.receivedParsedJsonDelta;
-      const delta = stringifyStructuredDelta(parsedEvent.delta);
-
-      aggregates.receivedAnnotatedJsonDelta = true;
-      aggregates.receivedParsedJsonDelta = true;
-
-      if (isFirstParsedDelta) {
-        aggregates.parsed = "";
-        aggregates.parsedObject = null;
-      }
-
-      const parsedOutput = extractParsedOutput(parsedEvent);
-      if (parsedOutput !== undefined) {
-        updateParsedAggregate(aggregates, parsedOutput);
-      } else if (delta) {
-        aggregates.parsed += delta;
-      }
-
-      callbacks.emitChunk({
-        type: "json",
-        delta,
-        content: aggregates.parsed,
-        metadata: {
-          sequence: sequenceNumber,
-          expectingJson: aggregates.expectingJson,
-          source: "parsed",
-          fallback: false
-        }
-      });
+      handleParsedDelta(event as Record<string, unknown>, aggregates, callbacks, sequenceNumber, "parsed", false);
       break;
     }
     case "response.output_parsed.delta.annotated": {
-      const parsedEvent = event as Record<string, unknown>;
-      const isFirstParsedDelta = !aggregates.receivedParsedJsonDelta;
-      const delta = stringifyStructuredDelta(parsedEvent.delta);
-
-      aggregates.receivedAnnotatedJsonDelta = true;
-      aggregates.receivedParsedJsonDelta = true;
-
-      if (isFirstParsedDelta) {
-        aggregates.parsed = "";
-        aggregates.parsedObject = null;
-      }
-
-      const parsedOutput = extractParsedOutput(parsedEvent);
-      if (parsedOutput !== undefined) {
-        updateParsedAggregate(aggregates, parsedOutput);
-      } else if (delta) {
-        aggregates.parsed += delta;
-      }
-
-      callbacks.emitChunk({
-        type: "json",
-        delta,
-        content: aggregates.parsed,
-        metadata: {
-          sequence: sequenceNumber,
-          expectingJson: aggregates.expectingJson,
-          source: "parsed.annotated",
-          fallback: false,
-          annotated: true
-        }
-      });
+      handleParsedDelta(event as Record<string, unknown>, aggregates, callbacks, sequenceNumber, "parsed.annotated", true);
       break;
     }
     case "response.output_parsed.annotation.added": {
@@ -319,27 +310,36 @@ export function handleStreamEvent(
         contentIndex: annotationEvent.content_index,
         itemId: annotationEvent.item_id,
         outputIndex: annotationEvent.output_index,
-        sequenceNumber
+        sequenceNumber,
       });
+
+      let annotationContent = "";
+      try {
+        annotationContent = JSON.stringify(annotationEvent.annotation);
+      } catch {
+        annotationContent = String(annotationEvent.annotation);
+      }
 
       callbacks.emitChunk({
         type: "annotation",
-        content: JSON.stringify(annotationEvent.annotation),
+        content: annotationContent,
         raw: annotationEvent,
         metadata: {
           sequence: sequenceNumber,
           annotationIndex: annotationEvent.annotation_index,
           contentIndex: annotationEvent.content_index,
           itemId: annotationEvent.item_id,
-          source: "parsed"
-        }
+          outputIndex: annotationEvent.output_index,
+          source: "parsed",
+        },
       });
       break;
     }
     case "response.output_parsed.done": {
       const parsedEvent = event as Record<string, unknown>;
-      aggregates.receivedAnnotatedJsonDelta = true;
       aggregates.receivedParsedJsonDelta = true;
+      aggregates.receivedAnnotatedJsonDelta = true;
+
       const parsedOutput = extractParsedOutput(parsedEvent);
       if (parsedOutput !== undefined) {
         updateParsedAggregate(aggregates, parsedOutput);
@@ -351,22 +351,24 @@ export function handleStreamEvent(
         sequence: sequenceNumber,
         metadata: {
           expectingJson: aggregates.expectingJson,
-          source: "parsed"
-        }
+          source: "parsed",
+          fallback: false,
+        },
       });
       break;
     }
     case "response.output_text.delta": {
-      const delta = (event as any).delta || "";
-      aggregates.text += delta;
+      const delta = (event as { delta?: string }).delta ?? "";
+      aggregates.text = `${aggregates.text}${delta}`;
       callbacks.emitChunk({
         type: "text",
         delta,
         content: aggregates.text,
-        metadata: { sequence: sequenceNumber }
+        metadata: { sequence: sequenceNumber },
       });
+
       if (aggregates.expectingJson && !aggregates.receivedAnnotatedJsonDelta) {
-        aggregates.parsed += delta;
+        aggregates.parsed = `${aggregates.parsed}${delta}`;
         aggregates.usedFallbackJson = true;
         callbacks.emitChunk({
           type: "json",
@@ -375,8 +377,8 @@ export function handleStreamEvent(
           metadata: {
             sequence: sequenceNumber,
             expectingJson: aggregates.expectingJson,
-            fallback: true
-          }
+            fallback: true,
+          },
         });
       }
       break;
@@ -384,125 +386,23 @@ export function handleStreamEvent(
     case "response.output_text.done": {
       if (aggregates.expectingJson && aggregates.usedFallbackJson && !aggregates.receivedAnnotatedJsonDelta) {
         try {
-          aggregates.parsedObject = aggregates.parsed
-            ? (JSON.parse(aggregates.parsed) as Record<string, unknown> | Array<unknown>)
-            : undefined;
+          aggregates.parsedObject = aggregates.parsed ? (JSON.parse(aggregates.parsed) as Record<string, unknown> | Array<unknown>) : null;
         } catch {
-          aggregates.parsedObject = undefined;
+          aggregates.parsedObject = null;
         }
         callbacks.emitEvent("stream.chunk", {
           type: "json.done",
           content: aggregates.parsed,
           sequence: sequenceNumber,
           expectingJson: aggregates.expectingJson,
-          fallback: true
+          fallback: true,
         });
       }
+
       callbacks.emitEvent("stream.chunk", {
         type: "text.done",
         content: aggregates.text,
-        sequence: sequenceNumber
-      });
-      break;
-    }
-    case "response.output_parsed.delta": {
-      const deltaPayload = (event as any).delta;
-      aggregates.receivedAnnotatedJsonDelta = true;
-      aggregates.usedFallbackJson = false;
-
-      let deltaAsString = "";
-
-      if (typeof deltaPayload === "string") {
-        deltaAsString = deltaPayload;
-        aggregates.parsed += deltaPayload;
-      } else if (deltaPayload && typeof deltaPayload === "object") {
-        if (Array.isArray(deltaPayload)) {
-          aggregates.parsedObject = deltaPayload as Array<unknown>;
-        } else {
-          const prior = aggregates.parsedObject && typeof aggregates.parsedObject === "object" && !Array.isArray(aggregates.parsedObject)
-            ? (aggregates.parsedObject as Record<string, unknown>)
-            : undefined;
-          aggregates.parsedObject = mergeStructuredDelta(prior, deltaPayload as Record<string, unknown>);
-        }
-        try {
-          deltaAsString = JSON.stringify(deltaPayload);
-        } catch {
-          deltaAsString = String(deltaPayload);
-        }
-        try {
-          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
-        } catch {
-          aggregates.parsed = deltaAsString;
-        }
-      } else if (deltaPayload !== undefined && deltaPayload !== null) {
-        deltaAsString = String(deltaPayload);
-        aggregates.parsed += deltaAsString;
-      }
-
-      callbacks.emitChunk({
-        type: "json",
-        delta: deltaAsString,
-        content: aggregates.parsed,
-        metadata: {
-          sequence: sequenceNumber,
-          expectingJson: aggregates.expectingJson,
-          fallback: false
-        }
-      });
-      break;
-    }
-    case "response.output_parsed.done": {
-      aggregates.receivedAnnotatedJsonDelta = true;
-      aggregates.usedFallbackJson = false;
-      const parsedPayload = (event as any).output_parsed ?? (event as any).parsed ?? null;
-
-      if (parsedPayload && typeof parsedPayload === "object") {
-        if (Array.isArray(parsedPayload)) {
-          aggregates.parsedObject = parsedPayload as Array<unknown>;
-        } else {
-          aggregates.parsedObject = mergeStructuredDelta(undefined, parsedPayload as Record<string, unknown>);
-        }
-        try {
-          const source = aggregates.parsedObject ?? parsedPayload;
-          aggregates.parsed = JSON.stringify(source);
-        } catch {
-          try {
-            aggregates.parsed = JSON.stringify(parsedPayload);
-          } catch {
-            aggregates.parsed = String(parsedPayload);
-          }
-        }
-      } else if (typeof parsedPayload === "string") {
-        aggregates.parsed = parsedPayload;
-      } else if (aggregates.parsedObject) {
-        try {
-          aggregates.parsed = JSON.stringify(aggregates.parsedObject);
-        } catch {
-          aggregates.parsed = String(aggregates.parsedObject);
-        }
-      }
-
-      callbacks.emitEvent("stream.chunk", {
-        type: "json.done",
-        content: aggregates.parsed,
         sequence: sequenceNumber,
-        expectingJson: aggregates.expectingJson,
-        fallback: false
-      });
-      break;
-    }
-    case "response.output_text.delta.annotated": {
-      const delta = (event as any).delta || "";
-      aggregates.receivedAnnotatedJsonDelta = true;
-      aggregates.parsed += delta;
-      callbacks.emitChunk({
-        type: "json", // indicates structured output delta
-        delta,
-        content: aggregates.parsed,
-        metadata: {
-          sequence: sequenceNumber,
-          expectingJson: aggregates.expectingJson
-        }
       });
       break;
     }
@@ -514,52 +414,53 @@ export function handleStreamEvent(
         contentIndex: annotationEvent.content_index,
         itemId: annotationEvent.item_id,
         outputIndex: annotationEvent.output_index,
-        sequenceNumber
+        sequenceNumber,
       });
+
       let annotationContent = "";
       try {
         annotationContent = JSON.stringify(annotationEvent.annotation);
       } catch {
         annotationContent = String(annotationEvent.annotation);
       }
+
       callbacks.emitChunk({
         type: "annotation",
         content: annotationContent,
-        content: JSON.stringify(annotationEvent.annotation),
         raw: annotationEvent,
         metadata: {
           sequence: sequenceNumber,
           annotationIndex: annotationEvent.annotation_index,
           contentIndex: annotationEvent.content_index,
           itemId: annotationEvent.item_id,
-          outputIndex: annotationEvent.output_index
-          itemId: annotationEvent.item_id
-        }
+          outputIndex: annotationEvent.output_index,
+          source: "text",
+        },
       });
       break;
     }
     case "response.content_part.added": {
       const contentEvent = event as ResponseContentPartAddedEvent;
-      const text = (contentEvent.part as any)?.text || "";
+      const text = (contentEvent.part as { text?: string })?.text ?? "";
       if (text) {
-        aggregates.text += text;
+        aggregates.text = `${aggregates.text}${text}`;
         callbacks.emitChunk({
           type: "text",
           delta: text,
           content: aggregates.text,
-          metadata: { sequence: sequenceNumber }
+          metadata: { sequence: sequenceNumber },
         });
       }
       break;
     }
     case "response.refusal.delta": {
-      const delta = (event as any).delta || "";
-      aggregates.refusal += delta;
+      const delta = (event as { delta?: string }).delta ?? "";
+      aggregates.refusal = `${aggregates.refusal}${delta}`;
       callbacks.emitChunk({
         type: "refusal",
         delta,
         content: aggregates.refusal,
-        metadata: { sequence: sequenceNumber }
+        metadata: { sequence: sequenceNumber },
       });
       break;
     }
@@ -568,7 +469,8 @@ export function handleStreamEvent(
       break;
     }
     default: {
-      if (!eventType.startsWith('response.')) {
+      if (!eventType?.startsWith("response.")) {
+        // eslint-disable-next-line no-console
         console.log(`[OpenAI-Streaming] Unhandled event type: ${eventType}`);
       }
       break;
