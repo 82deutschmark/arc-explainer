@@ -317,9 +317,7 @@ ARC-AGI datasets loaded in priority order:
 2. ARC2 (training2)  
 3. ARC1-Eval (evaluation)
 4. ARC1 (training)
-Abstraction and Reasoning Corpus for Artificial General Intelligence v2 (ARC-AGI-2)
 
-"ARC can be seen as a general artificial intelligence benchmark, as a program synthesis benchmark, or as a psychometric intelligence test. It is targeted at both humans and artificially intelligent systems that aim at emulating a human-like form of general fluid intelligence."
 ### Environment Variables All present and working:
 Required for AI analysis (at least one):
 - `OPENAI_API_KEY`, `GROK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`
