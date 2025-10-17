@@ -183,9 +183,11 @@ export default function PuzzleBrowser() {
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="text-center space-y-4">
           <div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">🟥🟦🟩 ARC-AGI Puzzle Explorer 🟪🟧🟨</h1>
-            <p className="text-lg text-slate-600 mt-2">
-              🔲🔳 ◾◽◼0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣◻▫▪ ARC-AGI Explainer Hub 9️8️⃣7️⃣6️⃣5️⃣4️⃣3️⃣2️⃣1️⃣0️⃣ ◾◽◼◻▫▪ 🔳🔲
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-blue-800 bg-clip-text text-transparent">
+              🟦🟦🟦 ⬜⬛⬜ ARC-AGI Puzzle Explorer ⬜⬛⬜ 🟩🟩🟩
+            </h1>
+            <p className="text-lg text-slate-600 mt-2 font-mono">
+              3️⃣×3️⃣ 🟦⬜🟦 → 🟩🟩🟩 ⬜ ARC-AGI Explainer Hub ⬜ 🟥⬜🟥 → 🟪🟪🟪 3️⃣×3️⃣
             </p>
           </div>
           
@@ -198,7 +200,7 @@ export default function PuzzleBrowser() {
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Sparkles className="h-5 w-5 text-slate-500" />
                 <h3 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent">
-                  🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪ ARC-AGI Knowledge Hub 🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪
+                  <span className="font-mono">🟥🟥🟥 🟦🟦🟦 🟩🟩🟩</span> ARC-AGI Knowledge Hub <span className="font-mono">🟪🟪🟪 🟧🟧🟧 🟨🟨🟨</span>
                 </h3>
                 <Sparkles className="h-5 w-5 text-slate-500" />
               </div>
@@ -208,11 +210,11 @@ export default function PuzzleBrowser() {
                 <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Cpu className="h-4 w-4 text-slate-600" />
-                    <p className="font-bold text-slate-800 text-sm">🟪◻🟪 Research Papers</p>
+                    <p className="font-bold text-slate-800 text-sm font-mono">⬛️⬜️⬛️ Research Papers</p>
                   </div>
                   <a href="https://www.arxiv.org/pdf/2505.11831" target="_blank" rel="noopener noreferrer"
-                     className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                    🔲 ARC2 Technical Report <ExternalLink className="h-3 w-3" />
+                       className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1 transition-colors">
+                      <span className="font-mono">📄</span> ARC2 Technical Report <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
 
@@ -220,16 +222,16 @@ export default function PuzzleBrowser() {
                 <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-blue-100">
                   <div className="flex items-center gap-2 mb-2">
                     <Database className="h-4 w-4 text-blue-600" />
-                    <p className="font-bold text-blue-800 text-sm">🟦◻🟦 Data Sources</p>
+                    <p className="font-bold text-blue-800 text-sm font-mono">🟦⬛🟦 Data Sources</p>
                   </div>
                   <div className="space-y-1">
                     <a href="https://huggingface.co/arcprize" target="_blank" rel="noopener noreferrer"
                        className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟦⬜ HuggingFace Datasets <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">🗂️</span> HuggingFace Datasets <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/fchollet/ARC-AGI" target="_blank" rel="noopener noreferrer"
                        className="text-blue-600 hover:text-blue-700 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟦🔳 Official Repository <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">📦</span> Official Repository <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
@@ -238,20 +240,20 @@ export default function PuzzleBrowser() {
                 <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-green-100">
                   <div className="flex items-center gap-2 mb-2">
                     <Trophy className="h-4 w-4 text-green-600" />
-                    <p className="font-bold text-green-800 text-sm">🟩◻🟩 Top Solutions</p>
+                    <p className="font-bold text-green-800 text-sm font-mono">🟩⬜🟩 Top Solutions</p>
                   </div>
                   <div className="space-y-1">
                     <a href="https://github.com/zoecarver" target="_blank" rel="noopener noreferrer"
                        className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟩⬛ zoecarver's Approach <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">1️⃣</span> zoecarver's Approach <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/jerber" target="_blank" rel="noopener noreferrer"
                        className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟩🔲 jerber's Solutions <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">2️⃣</span> jerber's Solutions <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/epang080516/arc_agi" target="_blank" rel="noopener noreferrer"
                        className="text-green-700 hover:text-green-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟩◼ epang080516's Code <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">3️⃣</span> epang080516's Code <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
@@ -260,7 +262,7 @@ export default function PuzzleBrowser() {
                 <div className="group bg-white/60 rounded-lg p-3 hover:bg-white/80 hover:shadow-md transition-all duration-200 border border-orange-100">
                   <div className="flex items-center gap-2 mb-2">
                     <User className="h-4 w-4 text-orange-600" />
-                    <p className="font-bold text-orange-800 text-sm">🟧◻🟧 Community</p>
+                    <p className="font-bold text-orange-800 text-sm font-mono">🟧🟨🟧 Community</p>
                   </div>
                   <div className="space-y-2">
                     <div className="mb-3">
@@ -271,7 +273,7 @@ export default function PuzzleBrowser() {
                             onClick={() => setIsOpen(!isOpen)}
                           >
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-orange-800">🟧🟨 Critical ARC-AGI-2 Research</span>
+                              <span className="text-sm font-semibold text-orange-800 font-mono">🟧🟨🟧 Critical ARC-AGI-2 Research</span>
                               <span className="text-xs text-orange-600">by cristianoc</span>
                             </div>
                             {isOpen ? (
@@ -284,20 +286,20 @@ export default function PuzzleBrowser() {
 
                         <div className="collapse-content px-3 pb-3">
                           <div className="text-xs text-orange-700 space-y-2">
-                            <p>
-                              🔲 Analysis of 111 ARC-AGI-2 tasks reveals composition patterns:
+                            <p className="font-mono">
+                              📊 Analysis of 1️⃣1️⃣1️⃣ ARC-AGI-2 tasks reveals composition patterns:
                             </p>
-                            <div className="grid grid-cols-2 gap-1 text-xs">
-                              <p>🟥 40% sequential composition</p>
-                              <p>🟧 30% conditional branching</p>
-                              <p>🟨 20% pattern classification</p>
-                              <p>🟩 25% iteration/loops</p>
-                              <p>🟦 15% nested structures</p>
-                              <p>🟪 10% parallel composition</p>
-                              <p>🟫 5% graph/DAG structures</p>
+                            <div className="grid grid-cols-2 gap-1 text-xs font-mono">
+                              <p>🟥🟥🟥🟥 4️⃣0️⃣% sequential composition</p>
+                              <p>🟧🟧🟧⬜ 3️⃣0️⃣% conditional branching</p>
+                              <p>🟨🟨⬜⬜ 2️⃣0️⃣% pattern classification</p>
+                              <p>🟩🟩⬜⬜ 2️⃣5️⃣% iteration/loops</p>
+                              <p>🟦🟦⬜⬜ 1️⃣5️⃣% nested structures</p>
+                              <p>🟪⬜⬜⬜ 1️⃣0️⃣% parallel composition</p>
+                              <p>🟫⬜⬜⬜ 5️⃣% graph/DAG structures</p>
                             </div>
-                            <p className="italic text-orange-600">
-                              ◼◻◼ A DSL is emerging from these patterns ◼◻◼
+                            <p className="italic text-orange-600 font-mono">
+                              ⬛⬜⬛ A DSL is emerging from these patterns ⬛⬜⬛
                             </p>
                             <a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
                                target="_blank" rel="noopener noreferrer"
@@ -310,23 +312,23 @@ export default function PuzzleBrowser() {
                     </div>
                     <a href="https://github.com/google/ARC-GEN/blob/main/task_list.py#L422" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟧🔳 Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">📖</span> Puzzle Nomenclature <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/neoneye/arc-notes" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟨🔲 All the ARC Resources <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">📚</span> All the ARC Resources <ExternalLink className="h-3 w-3" />
                     </a>
                     <a href="https://github.com/neoneye/arc-dataset-collection" target="_blank" rel="noopener noreferrer"
                        className="text-orange-700 hover:text-orange-800 hover:underline text-xs flex items-center gap-1 transition-colors">
-                      🟫◼ Dataset Collection <ExternalLink className="h-3 w-3" />
+                      <span className="font-mono">🗃️</span> Dataset Collection <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block">
-                  🙏🏻🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪ <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🟥⬛⬜🟫🟧🟨🟩🟦🟪🔲🔳⏹❎◾◽◼◻▫▪
+                <p className="text-sm text-gray-600 bg-white/40 rounded-full px-4 py-2 inline-block font-mono">
+                  🟥🟦🟩🟪🟧🟨 <strong>Special thanks to Simon Strandgaard (@neoneye)</strong> for his incredible insights, support, and encouragement! 🟨🟧🟪🟩🟦🟥
                 </p>
               </div>
             </div>
