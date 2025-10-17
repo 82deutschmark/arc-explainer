@@ -295,6 +295,9 @@ export default function PuzzleExaminer() {
             tokenUsage={streamingTokenUsage}
             onCancel={streamingPanelStatus === 'in_progress' ? cancelStreamingAnalysis : undefined}
             onClose={closeStreamingModal}
+            task={task}
+            promptId={promptId}
+            customPrompt={customPrompt}
           />
         </div>
         <form method="dialog" className="modal-backdrop">
