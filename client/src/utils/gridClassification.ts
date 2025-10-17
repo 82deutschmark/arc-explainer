@@ -24,10 +24,16 @@ export interface ClassifiedGridPairs<T extends GridPair> {
  * @param pairs - Array of grid pairs with input/output grids
  * @returns Classified pairs organized by layout type
  *
- * Classification rules:
- * - tall: maxHeight > 20 (requires horizontal scroll)
- * - wide: combinedWidth > 40 OR maxDim > 18 (requires full width)
- * - standard: all others (can flex-wrap)
+ * Classification rules (updated for better extreme dimension handling):
+ * - tall: maxHeight > 15 (vertical grids need horizontal scroll)
+ * - wide: combinedWidth > 30 OR maxDim > 15 (wide grids need full width)
+ * - standard: all others (compact grids can flex-wrap)
+ * 
+ * Examples:
+ * - 1x25 grid → wide (combinedWidth could be 25+25=50)
+ * - 30x4 grid → wide (maxDim=30 > 15)
+ * - 20x5 grid → wide (maxDim=20 > 15)
+ * - 2x2 grid → standard (small and compact)
  */
 export function classifyGridPairs<T extends GridPair>(
   pairs: T[]
@@ -46,10 +52,10 @@ export function classifyGridPairs<T extends GridPair>(
     const combinedWidth = inputCols + outputCols;
     const maxDim = Math.max(inputRows, inputCols, outputRows, outputCols);
 
-    // Classification logic
-    if (maxHeight > 20) {
+    // Classification logic - more aggressive categorization
+    if (maxHeight > 15) {
       tall.push({ item, idx });
-    } else if (combinedWidth > 40 || maxDim > 18) {
+    } else if (combinedWidth > 30 || maxDim > 15) {
       wide.push({ item, idx });
     } else {
       standard.push({ item, idx });
